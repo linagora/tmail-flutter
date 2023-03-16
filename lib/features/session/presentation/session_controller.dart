@@ -71,16 +71,22 @@ class SessionController extends ReloadableController {
     log('SessionController::_handleSessionFailure(): $failure');
     if (failure is GetSessionFailure) {
       final sessionException = failure.exception;
+      var errorMessage = '';
       if (_checkUrlError(sessionException) && currentContext != null) {
-        _appToast.showErrorToast(AppLocalizations.of(currentContext!).wrongUrlMessage);
+        errorMessage = AppLocalizations.of(currentContext!).wrongUrlMessage;
       } else if (sessionException is BadCredentialsException && currentContext != null) {
-        _appToast.showErrorToast(AppLocalizations.of(currentContext!).badCredentials);
+        errorMessage = AppLocalizations.of(currentContext!).badCredentials;
       } else if (sessionException is UnknownError && currentContext != null) {
         if (sessionException.message != null) {
-          _appToast.showErrorToast('[${sessionException.code}] ${sessionException.message}');
+          errorMessage = '[${sessionException.code}] ${sessionException.message}';
         } else {
-          _appToast.showErrorToast(AppLocalizations.of(currentContext!).unknownError);
+          errorMessage = AppLocalizations.of(currentContext!).unknownError;
         }
+      }
+
+      logError('SessionController::_handleSessionFailure():errorMessage: $errorMessage');
+      if (errorMessage.isNotEmpty && currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(currentOverlayContext!, errorMessage);
       }
     }
   }

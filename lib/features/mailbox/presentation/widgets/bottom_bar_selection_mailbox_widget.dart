@@ -37,7 +37,6 @@ class BottomBarSelectionMailboxWidget extends StatelessWidget {
 
   Widget _buildMailboxActionButton(BuildContext context, MailboxActions actions) {
     return Expanded(child: (ButtonBuilder(actions.getContextMenuIcon(_imagePaths))
-      ..key(const Key('button_move_all_mailbox'))
       ..radiusSplash(8)
       ..padding(const EdgeInsets.all(8))
       ..tooltip(actions.getTitleContextMenu(context))

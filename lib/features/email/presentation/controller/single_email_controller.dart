@@ -212,11 +212,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
                     taskId: success.taskId,
                     attachment: success.attachment));
 
-              if (currentOverlayContext != null &&  currentContext != null) {
-                _appToast.showToastWithIcon(currentOverlayContext!,
-                    message: AppLocalizations.of(currentContext!).your_download_has_started,
-                    iconColor: AppColor.primaryColor,
-                    icon: imagePaths.icDownload);
+              if (currentOverlayContext != null && currentContext != null) {
+                _appToast.showToastMessage(
+                  currentOverlayContext!,
+                  AppLocalizations.of(currentContext!).your_download_has_started,
+                  leadingSVGIconColor: AppColor.primaryColor,
+                  leadingSVGIcon: imagePaths.icDownload);
               }
             } else if (success is DownloadingAttachmentForWeb) {
               final percent = success.progress.round();
@@ -445,8 +446,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           _downloadAttachmentsAction(attachments);
           break;
         case PermissionStatus.permanentlyDenied:
-          if (context.mounted) {
-            _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+          if (context.mounted && currentOverlayContext != null && currentContext != null) {
+            _appToast.showToastMessage(
+              currentOverlayContext!,
+              AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments,
+            );
           }
           break;
         default: {
@@ -456,8 +460,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               _downloadAttachmentsAction(attachments);
               break;
             default:
-              if (context.mounted) {
-                _appToast.showToast(AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments);
+              if (context.mounted && currentOverlayContext != null && currentContext != null) {
+                _appToast.showToastMessage(
+                  currentOverlayContext!,
+                  AppLocalizations.of(context).you_need_to_grant_files_permission_to_download_attachments,
+                );
               }
               break;
           }
@@ -477,8 +484,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _downloadAttachmentsFailure(DownloadAttachmentsFailure failure) {
-    if (currentContext != null) {
-      _appToast.showErrorToast(AppLocalizations.of(currentContext!).attachment_download_failed);
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).attachment_download_failed);
     }
   }
 
@@ -526,8 +535,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _exportAttachmentFailureAction(ExportAttachmentFailure failure) {
     if (failure.exception is! CancelDownloadFileException) {
       popBack();
-      if (currentContext != null) {
-        _appToast.showErrorToast(AppLocalizations.of(currentContext!).attachment_download_failed);
+
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).attachment_download_failed);
       }
     }
   }
@@ -550,8 +562,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (openResult.type != open_file.ResultType.done) {
       logError('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
-      if (currentContext != null) {
-        _appToast.showErrorToast(AppLocalizations.of(currentContext!).noPreviewAvailable);
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).noPreviewAvailable);
       }
     }
   }
@@ -587,13 +601,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     log('SingleEmailController::_downloadAttachmentForWebFailureAction(): $failure');
     mailboxDashBoardController.deleteDownloadTask(failure.taskId);
 
-    if (currentOverlayContext != null &&  currentContext != null) {
-      _appToast.showToastWithIcon(currentOverlayContext!,
-          message: AppLocalizations.of(currentContext!).attachment_download_failed,
-          bgColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          iconColor: Colors.white,
-          icon: imagePaths.icDownload);
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).attachment_download_failed);
     }
   }
 
@@ -682,7 +693,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
     mailboxDashBoardController.dispatchState(Right(success));
     if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
-      _appToast.showBottomToast(
+      _appToast.showToastMessage(
         currentOverlayContext!,
         success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -694,17 +705,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               mailboxDashBoardController.sessionCurrent!,
               success.emailActionType));
         },
-        leadingIcon: SvgPicture.asset(
-            imagePaths.icFolderMailbox,
-            width: 24,
-            height: 24,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-            fit: BoxFit.fill),
+        leadingSVGIcon: imagePaths.icFolderMailbox,
+        leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
-        textActionColor: Colors.white,
-        actionIcon: SvgPicture.asset(imagePaths.icUndo),
-        maxWidth: responsiveUtils.getMaxWidthToast(currentContext!)
+        actionIcon: SvgPicture.asset(imagePaths.icUndo)
       );
     }
   }
@@ -931,53 +936,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     if (_sendReceiptToSenderInteractor == null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(context).toastMessageNotSupportMdnWhenSendReceipt,
-          leadingIcon: SvgPicture.asset(
-              imagePaths.icNotConnection,
-              width: 24,
-              height: 24,
-              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(context).toastMessageNotSupportMdnWhenSendReceipt);
       return;
     }
 
     if (_identitySelected == null || _identitySelected?.id == null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(context).toastMessageCannotFoundIdentityWhenSendReceipt,
-          leadingIcon: SvgPicture.asset(
-              imagePaths.icNotConnection,
-              width: 24,
-              height: 24,
-              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(context).toastMessageCannotFoundIdentityWhenSendReceipt);
       return;
     }
 
     if (currentEmail == null || _currentEmailId == null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(context).toastMessageCannotFoundEmailIdWhenSendReceipt,
-          leadingIcon: SvgPicture.asset(
-              imagePaths.icNotConnection,
-              width: 24,
-              height: 24,
-              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(context).toastMessageCannotFoundEmailIdWhenSendReceipt);
       return;
     }
 
@@ -1027,18 +1002,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _sendReceiptToSenderSuccess(SendReceiptToSenderSuccess success) {
     log('SingleEmailController::_sendReceiptToSenderSuccess(): ${success.mdn.toString()}');
     if (currentContext != null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).toastMessageSendReceiptSuccess,
-          leadingIcon: SvgPicture.asset(
-              imagePaths.icReadReceiptMessage,
-              width: 24,
-              height: 24,
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastSuccessBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageSendReceiptSuccess,
+        leadingSVGIcon: imagePaths.icReadReceiptMessage);
     }
   }
 
@@ -1152,10 +1119,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _createNewRuleFilterSuccess(CreateNewRuleFilterSuccess success) {
     if (success.newListRules.isNotEmpty == true) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastWithIcon(
+        _appToast.showToastSuccessMessage(
           currentOverlayContext!,
-          message: AppLocalizations.of(currentContext!).newFilterWasCreated,
-          icon: imagePaths.icSelected);
+          AppLocalizations.of(currentContext!).newFilterWasCreated);
       }
     }
   }

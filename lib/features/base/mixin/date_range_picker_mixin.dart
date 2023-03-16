@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_date_range_picker/multiple_view_date_range_picker.dart';
@@ -54,36 +53,26 @@ mixin DateRangePickerMixin {
     DateTime? endDate,
     {Function(DateTime? startDate, DateTime? endDate)? onCallbackAction}
   ) {
-    final _appToast = Get.find<AppToast>();
-    final _imagePaths = Get.find<ImagePaths>();
+    final appToast = Get.find<AppToast>();
 
     if (startDate == null) {
-      _appToast.showToastWithIcon(
+      appToast.showToastErrorMessage(
         context,
-        textColor: Colors.black,
-        message: AppLocalizations.of(context).toastMessageErrorWhenSelectStartDateIsEmpty,
-        icon: _imagePaths.icNotConnection
-      );
+        AppLocalizations.of(context).toastMessageErrorWhenSelectStartDateIsEmpty);
       return;
     }
 
     if (endDate == null) {
-      _appToast.showToastWithIcon(
+      appToast.showToastErrorMessage(
         context,
-        textColor: Colors.black,
-        message: AppLocalizations.of(context).toastMessageErrorWhenSelectEndDateIsEmpty,
-        icon: _imagePaths.icNotConnection
-      );
+        AppLocalizations.of(context).toastMessageErrorWhenSelectEndDateIsEmpty);
       return;
     }
 
     if (endDate.isBefore(startDate)) {
-      _appToast.showToastWithIcon(
+      appToast.showToastErrorMessage(
         context,
-        textColor: Colors.black,
-        message: AppLocalizations.of(context).toastMessageErrorWhenSelectDateIsInValid,
-        icon: _imagePaths.icNotConnection
-      );
+        AppLocalizations.of(context).toastMessageErrorWhenSelectDateIsInValid);
       return;
     }
 
