@@ -29,6 +29,7 @@ class MailboxCreatorController extends BaseController {
 
   final selectedMailbox = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();
+  bool _createdMailbox = false;
 
   FocusNode? nameInputFocusNode;
   TextEditingController? nameInputController;
@@ -77,19 +78,6 @@ class MailboxCreatorController extends BaseController {
     super.onClose();
   }
 
-  bool isCreateMailboxValidated(BuildContext context) {
-    final nameValidated = getErrorInputNameString(context);
-
-    if (nameInputFocusNode?.hasFocus == false && newNameMailbox.value == null) {
-      return false;
-    }
-
-    if (nameValidated?.isNotEmpty == true) {
-      return false;
-    }
-    return true;
-  }
-
   MailboxNode? _findMailboxNodeById(MailboxId mailboxId) {
     final mailboxNode = defaultMailboxTree?.findNode((node) => node.item.id == mailboxId)
      ?? personalMailboxTree?.findNode((node) => node.item.id == mailboxId)
@@ -126,20 +114,19 @@ class MailboxCreatorController extends BaseController {
 
   String? getErrorInputNameString(BuildContext context) {
     final nameMailbox = newNameMailbox.value;
-
-    if (nameInputFocusNode?.hasFocus == false && nameMailbox == null) {
-      return null;
-    }
+    final canCheckNameString = _createdMailbox && nameInputFocusNode?.hasFocus == false;
 
     return _verifyNameInteractor.execute(
         nameMailbox,
         [
-          EmptyNameValidator(),
+          if (canCheckNameString)
+            EmptyNameValidator(),
           DuplicateNameValidator(listMailboxNameAsStringExist),
         ]
     ).fold(
       (failure) {
         if (failure is VerifyNameFailure) {
+          _createdMailbox = false;
           return failure.getMessage(context);
         } else {
           return null;
@@ -199,7 +186,13 @@ class MailboxCreatorController extends BaseController {
     FocusScope.of(context).unfocus();
 
     final nameMailbox = newNameMailbox.value;
-    if (nameMailbox != null && nameMailbox.isNotEmpty) {
+    final nameValidated = getErrorInputNameString(context);
+
+    if (nameValidated == null) {
+      _createdMailbox = true;
+    }
+
+    if (nameMailbox != null && nameMailbox.isNotEmpty && _createdMailbox) {
       final newMailboxArguments = NewMailboxArguments(
           MailboxName(nameMailbox),
           mailboxLocation: selectedMailbox.value);
