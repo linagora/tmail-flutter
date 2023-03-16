@@ -1,5 +1,8 @@
 import 'package:core/core.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 extension PresentationMailboxExtension on PresentationMailbox {
 
@@ -48,4 +51,6 @@ extension PresentationMailboxExtension on PresentationMailbox {
         return imagePaths.icFolderMailbox;
      }
   }
+
+  Uri get mailboxRouteWeb => RouteUtils.generateRouteBrowser(AppRoutes.dashboard, NavigationRouter(mailboxId: id));
 }
