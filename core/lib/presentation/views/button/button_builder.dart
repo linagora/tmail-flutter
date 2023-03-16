@@ -18,13 +18,13 @@ class ButtonBuilder {
   bool? _isVertical;
   Key? _key;
   Color? _iconColor;
-  Color? _colorButton;
   TextStyle? _textStyle;
   BoxDecoration? _decoration;
   Widget? _iconAction;
   double? _radiusSplash;
   double? _maxWidth;
   EdgeInsets? _padding;
+  EdgeInsets? _margin;
   String? _tooltip;
   BoxConstraints? _constraints;
 
@@ -48,10 +48,6 @@ class ButtonBuilder {
     _iconColor = color;
   }
 
-  void colorButton(Color color) {
-    _colorButton = color;
-  }
-
   void decoration(BoxDecoration decoration) {
     _decoration = decoration;
   }
@@ -66,6 +62,10 @@ class ButtonBuilder {
 
   void padding(EdgeInsets? padding) {
     _padding = padding;
+  }
+
+  void margin(EdgeInsets? margin) {
+    _margin = margin;
   }
 
   void textStyle(TextStyle style) {
@@ -100,38 +100,40 @@ class ButtonBuilder {
   }
 
   Widget build() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => _onPressActionClick != null ? _onPressActionClick!.call() : null,
-        onTapDown: (detail) {
-          if (_onPressActionWithPositionClick != null && _context != null) {
-            final screenSize = MediaQuery.of(_context!).size;
-            final offset = detail.globalPosition;
-            final position = RelativeRect.fromLTRB(
-              offset.dx,
-              offset.dy,
-              screenSize.width - offset.dx,
-              screenSize.height - offset.dy,
-            );
-            _onPressActionWithPositionClick?.call(position);
-          }
-        },
-        customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(_radiusSplash ?? 20)),
-        child: Tooltip(
-          message: _tooltip ?? '',
-          child: Container(
-            key: _key,
-            alignment: Alignment.center,
-            color: _decoration == null ? _colorButton : null,
-            decoration: _decoration,
-            width: _maxWidth,
-            constraints: _constraints,
-            padding: _padding ?? EdgeInsets.zero,
-            child: _buildBody()
-          ),
-        )
+    return Padding(
+      padding: _margin ?? EdgeInsets.zero,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _onPressActionClick,
+          onTapDown: (detail) {
+            if (_onPressActionWithPositionClick != null && _context != null) {
+              final screenSize = MediaQuery.of(_context!).size;
+              final offset = detail.globalPosition;
+              final position = RelativeRect.fromLTRB(
+                offset.dx,
+                offset.dy,
+                screenSize.width - offset.dx,
+                screenSize.height - offset.dy,
+              );
+              _onPressActionWithPositionClick?.call(position);
+            }
+          },
+          borderRadius: BorderRadius.circular(_radiusSplash ?? 20),
+          child: Tooltip(
+            message: _tooltip ?? '',
+            child: Container(
+              key: _key,
+              alignment: Alignment.center,
+              color: _decoration == null ? Colors.transparent : null,
+              decoration: _decoration,
+              width: _maxWidth,
+              constraints: _constraints,
+              padding: _padding ?? EdgeInsets.zero,
+              child: _buildBody()
+            ),
+          )
+        ),
       ),
     );
   }
@@ -163,11 +165,12 @@ class ButtonBuilder {
   Widget _buildIcon() => Padding(
     padding: _paddingIcon ?? const EdgeInsets.all(10),
     child: SvgPicture.asset(
-        _icon ?? '',
-        width: _size ?? 24,
-        height: _size ?? 24,
-        fit: BoxFit.fill,
-        colorFilter: _iconColor.asFilter()));
+      _icon ?? '',
+      width: _size ?? 24,
+      height: _size ?? 24,
+      fit: BoxFit.fill,
+      colorFilter: _iconColor.asFilter()
+    ));
 
   Widget _buildText() {
     return Text(
@@ -176,8 +179,9 @@ class ButtonBuilder {
       softWrap: CommonTextStyle.defaultSoftWrap,
       overflow: CommonTextStyle.defaultTextOverFlow,
       style: _textStyle ?? const TextStyle(
-          fontSize: 12,
-          color: AppColor.colorTextButton),
+        fontSize: 12,
+        color: AppColor.colorTextButton
+      ),
     );
   }
 }

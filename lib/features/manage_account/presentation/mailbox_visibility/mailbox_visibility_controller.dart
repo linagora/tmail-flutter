@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +40,6 @@ class MailboxVisibilityController extends BaseMailboxController {
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
   final mailboxListScrollController = ScrollController();
 
   MailboxVisibilityController(
@@ -209,29 +207,22 @@ class MailboxVisibilityController extends BaseMailboxController {
       {List<MailboxId>? listDescendantMailboxIds}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
-          actionName: AppLocalizations.of(currentContext!).undo,
-          onActionClick: () => _subscribeMailboxAction(
-            SubscribeMailboxRequest(
-              mailboxIdSubscribed,
-              MailboxSubscribeState.enabled,
-              MailboxSubscribeAction.subscribe
-            )
-          ),
-          leadingIcon: SvgPicture.asset(
-            _imagePaths.icFolderMailbox,
-            width: 24,
-            height: 24,
-            colorFilter: Colors.white.asFilter(),
-            fit: BoxFit.fill
-          ),
-          backgroundColor: AppColor.toastSuccessBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
+      _appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () => _subscribeMailboxAction(
+          SubscribeMailboxRequest(
+            mailboxIdSubscribed,
+            MailboxSubscribeState.enabled,
+            MailboxSubscribeAction.subscribe
+          )
+        ),
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: _imagePaths.icFolderMailbox,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(_imagePaths.icUndo),
       );
     }
   }

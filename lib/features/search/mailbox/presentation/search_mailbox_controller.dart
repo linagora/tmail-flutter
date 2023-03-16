@@ -332,7 +332,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void _moveMailboxSuccess(MoveMailboxSuccess success) {
     if (success.moveAction == MoveAction.moving && currentOverlayContext != null && currentContext != null) {
-      _appToast.showBottomToast(
+      _appToast.showToastMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).allMailboxes),
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -344,17 +344,11 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
             parentId: success.destinationMailboxId)
           );
         },
-        leadingIcon: SvgPicture.asset(
-          imagePaths.icFolderMailbox,
-          width: 24,
-          height: 24,
-          colorFilter: Colors.white.asFilter(),
-          fit: BoxFit.fill),
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: imagePaths.icFolderMailbox,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
-        textActionColor: Colors.white,
-        actionIcon: SvgPicture.asset(imagePaths.icUndo),
-        maxWidth: responsiveUtils.getMaxWidthToast(currentContext!)
+        actionIcon: SvgPicture.asset(imagePaths.icUndo)
       );
     }
 
@@ -396,11 +390,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void _deleteMultipleMailboxSuccess(List<MailboxId> listMailboxIdDeleted, jmap.State? currentMailboxState) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        message: AppLocalizations.of(currentContext!).delete_mailboxes_successfully,
-        icon: imagePaths.icSelected
-      );
+        AppLocalizations.of(currentContext!).delete_mailboxes_successfully);
     }
 
     if (listMailboxIdDeleted.contains(dashboardController.selectedMailbox.value?.id)) {
@@ -413,11 +405,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showToastErrorMessage(
         currentOverlayContext!,
-        message: AppLocalizations.of(currentContext!).delete_mailboxes_failure,
-        icon: imagePaths.icDeleteToast
-      );
+        AppLocalizations.of(currentContext!).delete_mailboxes_failure);
     }
   }
 
@@ -503,7 +493,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       {List<MailboxId>? listDescendantMailboxIds}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showBottomToast(
+      _appToast.showToastMessage(
         currentOverlayContext!,
         subscribeAction.getToastMessageSuccess(currentContext!),
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -520,18 +510,11 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
             );
           }
         },
-        leadingIcon: SvgPicture.asset(
-          imagePaths.icFolderMailbox,
-          width: 24,
-          height: 24,
-          colorFilter: Colors.white.asFilter(),
-          fit: BoxFit.fill
-        ),
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: imagePaths.icFolderMailbox,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
-        textActionColor: Colors.white,
         actionIcon: SvgPicture.asset(imagePaths.icUndo),
-        maxWidth: responsiveUtils.getMaxWidthToast(currentContext!)
       );
     }
   }

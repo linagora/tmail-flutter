@@ -151,11 +151,9 @@ class ForwardController extends BaseController {
 
   void _handleDeleteRecipientSuccess(DeleteRecipientInForwardingSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        message: AppLocalizations.of(currentContext!).toastMessageDeleteRecipientSuccessfully,
-        icon: _imagePaths.icSelected,
-      );
+        AppLocalizations.of(currentContext!).toastMessageDeleteRecipientSuccessfully);
     }
 
     currentForward.value = success.forward;
@@ -255,11 +253,9 @@ class ForwardController extends BaseController {
 
   void _handleAddRecipientsSuccess(AddRecipientsInForwardingSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        message: AppLocalizations.of(currentContext!).toastMessageAddRecipientsSuccessfully,
-        icon: _imagePaths.icSelected,
-      );
+        AppLocalizations.of(currentContext!).toastMessageAddRecipientsSuccessfully);
     }
 
     currentForward.value = success.forward;
@@ -283,13 +279,11 @@ class ForwardController extends BaseController {
 
   void _handleEditLocalCopySuccess(EditLocalCopyInForwardingSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        message: success.forward.localCopy ?
-          AppLocalizations.of(currentContext!).toastMessageLocalCopyEnable :
-          AppLocalizations.of(currentContext!).toastMessageLocalCopyDisable,
-        icon: _imagePaths.icSelected,
-      );
+        success.forward.localCopy
+          ? AppLocalizations.of(currentContext!).toastMessageLocalCopyEnable
+          : AppLocalizations.of(currentContext!).toastMessageLocalCopyDisable);
     }
 
     currentForward.value = success.forward;

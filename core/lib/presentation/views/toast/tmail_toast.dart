@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/toast/toast_position.dart';
 import 'package:flutter/material.dart';
 
@@ -34,52 +35,68 @@ class TMailToast {
   /// defines the size width widget of the toast
   double? width;
 
-  // ignore: type_annotate_public_apis, always_declare_return_types
+  /// defines the padding widget of the toast
+  EdgeInsets? padding;
+
   static showToast(
       text,
       BuildContext context, {
         toastDuration,
         toastPosition,
-        backgroundColor = const Color(0xAA000000),
-        textStyle = const TextStyle(fontSize: 15, color: Colors.white),
-        toastBorderRadius = 20.0,
+        backgroundColor,
+        textStyle = const TextStyle(
+          fontSize: 15,
+          color: Colors.white,
+          fontWeight: FontWeight.normal
+        ),
+        toastBorderRadius = 10.0,
         border,
         trailing,
         leading,
         width,
+        padding,
       }) {
     assert(text != null);
     ToastView.dismiss();
-    ToastView.createView(text, context, toastPosition,
-        backgroundColor, textStyle, toastBorderRadius, border, trailing,
-        leading, width, toastDuration: toastDuration,);
+    ToastView.createView(
+      text,
+      context,
+      toastPosition,
+      backgroundColor,
+      textStyle,
+      toastBorderRadius,
+      border,
+      trailing,
+      leading,
+      width,
+      padding,
+      toastDuration: toastDuration,
+    );
   }
 }
 
 class ToastView {
   static final ToastView _instance = ToastView._internal();
-  // ignore: sort_constructors_first
   factory ToastView() => _instance;
-  // ignore: sort_constructors_first
   ToastView._internal();
 
   static OverlayState? overlayState;
   static OverlayEntry? _overlayEntry;
   static bool _isVisible = false;
 
-  // ignore: avoid_void_async
   static void createView(
     String text,
     BuildContext context,
     ToastPosition? toastPosition,
-    Color backgroundColor,
-    TextStyle textStyle,
+    Color? backgroundColor,
+    TextStyle? textStyle,
     double toastBorderRadius,
     Border? border,
     Widget? trailing,
     Widget? leading,
     double? width,
-    {int? toastDuration = 2}
+    EdgeInsets? padding,
+    {int? toastDuration}
   ) async {
     overlayState = Overlay.of(context, rootOverlay: false);
 
@@ -89,49 +106,72 @@ class ToastView {
         child: Container(
           width: width,
           decoration: BoxDecoration(
-            color: backgroundColor,
+            color: backgroundColor ?? Colors.white,
             borderRadius: BorderRadius.circular(toastBorderRadius),
             border: border,
+            boxShadow: const [
+              BoxShadow(
+                color: AppColor.colorShadowLayerBottom,
+                blurRadius: 24,
+                offset: Offset.zero),
+              BoxShadow(
+                color: AppColor.colorShadowBgContentEmail,
+                blurRadius: 2,
+                offset: Offset.zero),
+            ]
           ),
           margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-          child: trailing == null && leading == null ?
-            Text(text, softWrap: true, style: textStyle) :
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (leading != null) leading,
-                Expanded(child: Text(text, style: textStyle)),
-                if (trailing != null) trailing
-              ],
-            ),
+          padding: padding ?? const EdgeInsets.all(12),
+          child: trailing == null && leading == null
+            ? Text(
+                text,
+                softWrap: true,
+                style: textStyle ?? const TextStyle(
+                  fontSize: 15,
+                  color: Colors.white,
+                  fontWeight: FontWeight.normal
+                )
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (leading != null) leading,
+                  Expanded(child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      text,
+                      style: textStyle ?? const TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal
+                      )
+                    )
+                  )),
+                  if (trailing != null) trailing
+                ],
+              ),
         ),
       ),
     );
 
 
-    _overlayEntry = OverlayEntry(
-        builder: (BuildContext context) =>
-            _showWidgetBasedOnPosition(
-              toastDuration != null ?
-                ToastCard(
-                    child,
-                    Duration(seconds: toastDuration),
-                    fadeDuration: 500,
-                )
-                : child, toastPosition,
-            ));
+    _overlayEntry = OverlayEntry(builder: (context) =>
+      _showWidgetBasedOnPosition(
+        toastDuration != null
+          ? ToastCard(child, Duration(seconds: toastDuration))
+          : child,
+        toastPosition,
+      )
+    );
 
     _isVisible = true;
     overlayState!.insert(_overlayEntry!);
-    if (toastDuration != null) {
-      await Future.delayed(Duration(seconds: toastDuration));
-      await dismiss();
-    }
   }
 
   static Positioned _showWidgetBasedOnPosition(
-      Widget child, ToastPosition? toastPosition) {
+    Widget child,
+    ToastPosition? toastPosition
+  ) {
     switch (toastPosition) {
       case ToastPosition.BOTTOM:
         return Positioned(bottom: 60, left: 18, right: 18, child: child);
@@ -140,8 +180,7 @@ class ToastView {
       case ToastPosition.BOTTOM_RIGHT:
         return Positioned(bottom: 60, right: 18, child: child);
       case ToastPosition.CENTER:
-        return Positioned(
-            top: 60, bottom: 60, left: 18, right: 18, child: child);
+        return Positioned(top: 60, bottom: 60, left: 18, right: 18, child: child);
       case ToastPosition.CENTER_LEFT:
         return Positioned(top: 60, bottom: 60, left: 18, child: child);
       case ToastPosition.CENTER_RIGHT:
@@ -165,9 +204,14 @@ class ToastView {
 }
 
 class ToastCard extends StatefulWidget {
-  const ToastCard(this.child, this.duration,
-      {Key? key, this.fadeDuration = 500})
-      : super(key: key);
+  const ToastCard(
+    this.child,
+    this.duration,
+    {
+      Key? key,
+      this.fadeDuration = 300
+    }
+  ) : super(key: key);
 
   final Widget child;
   final Duration duration;
@@ -199,8 +243,7 @@ class ToastStateFulState extends State<ToastCard>
       vsync: this,
       duration: Duration(milliseconds: widget.fadeDuration),
     );
-    _fadeAnimation =
-        CurvedAnimation(parent: _animationController!, curve: Curves.easeIn);
+    _fadeAnimation = CurvedAnimation(parent: _animationController!, curve: Curves.easeIn);
     super.initState();
 
     showAnimation();
