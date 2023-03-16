@@ -85,18 +85,20 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
       padding: SettingsUtils.getPaddingKeepLocalSwitchButtonForwarding(context, _responsiveUtils),
       child: Row(children: [
         Obx(() {
-          return InkWell(
-            onTap: controller.handleEditLocalCopy,
-            child: SvgPicture.asset(
-              controller.currentForwardLocalCopyState
-                ? _imagePaths.icSwitchOn
-                : _imagePaths.icSwitchOff,
-              fit: BoxFit.fill,
-              width: 36,
-              height: 24)
-          );
+          return controller.listRecipientForward.isNotEmpty
+            ? Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: InkWell(
+                  onTap: controller.handleEditLocalCopy,
+                  child: SvgPicture.asset(
+                    controller.currentForwardLocalCopyState
+                      ? _imagePaths.icSwitchOn
+                      : _imagePaths.icSwitchOff,
+                    fit: BoxFit.fill,
+                    width: 36,
+                    height: 24)))
+            : const SizedBox();
         }),
-        const SizedBox(width: 16),
         Expanded(
           child: Text(
             AppLocalizations.of(context).keepLocalCopyForwardLabel,
