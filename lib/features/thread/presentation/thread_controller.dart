@@ -642,10 +642,11 @@ class ThreadController extends BaseController with EmailActionController {
 
     mailboxDashBoardController.filterMessageOption.value = newFilterOption;
 
-    _appToast.showToastWithIcon(
-        currentOverlayContext!,
-        message: newFilterOption.getMessageToast(context),
-        icon: newFilterOption.getIconToast(_imagePaths));
+    _appToast.showToastMessage(
+      context,
+      newFilterOption.getMessageToast(context),
+      leadingSVGIcon: newFilterOption.getIconToast(_imagePaths),
+    );
 
     if (searchController.isSearchEmailRunning) {
       _searchEmail();

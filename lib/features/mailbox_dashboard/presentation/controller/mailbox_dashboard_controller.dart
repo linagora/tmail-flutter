@@ -262,10 +262,10 @@ class MailboxDashBoardController extends ReloadableController {
         log('MailboxDashBoardController::onData():success $success');
         if (success is SendingEmailState) {
           if (currentOverlayContext != null && currentContext != null) {
-            _appToast.showToastWithIcon(
-                currentOverlayContext!,
-                message: AppLocalizations.of(currentContext!).your_email_being_sent,
-                icon: _imagePaths.icSendToast,
+            _appToast.showToastMessage(
+              currentOverlayContext!,
+              AppLocalizations.of(currentContext!).your_email_being_sent,
+              leadingSVGIcon: _imagePaths.icSendToast
             );
           }
         } else if (success is GetEmailStateToRefreshSuccess) {
@@ -301,11 +301,10 @@ class MailboxDashBoardController extends ReloadableController {
       (success) {
         if (success is SendEmailSuccess) {
           if (currentOverlayContext != null && currentContext != null) {
-            _appToast.showToastWithIcon(
-                currentOverlayContext!,
-                textColor: AppColor.primaryColor,
-                message: AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
-                icon: _imagePaths.icSendToast);
+            _appToast.showToastSuccessMessage(
+              currentOverlayContext!,
+              AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
+              leadingSVGIcon: _imagePaths.icSendSuccessToast);
           }
         } else if (success is SaveEmailAsDraftsSuccess) {
           log('MailboxDashBoardController::onDone(): SaveEmailAsDraftsSuccess');
@@ -580,23 +579,16 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _saveEmailAsDraftsSuccess(SaveEmailAsDraftsSuccess success) {
     if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).drafts_saved,
-          actionName: AppLocalizations.of(currentContext!).discard,
-          onActionClick: () => _discardEmail(success.emailAsDrafts),
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icMailboxDrafts,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastSuccessBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
-      );
+      _appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).drafts_saved,
+        actionName: AppLocalizations.of(currentContext!).discard,
+        onActionClick: () => _discardEmail(success.emailAsDrafts),
+        leadingSVGIcon: _imagePaths.icMailboxDrafts,
+        leadingSVGIconColor: Colors.white,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(_imagePaths.icUndo));
     }
   }
 
@@ -606,30 +598,24 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
     if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
-          actionName: AppLocalizations.of(currentContext!).undo,
-          onActionClick: () {
-            _revertedToOriginalMailbox(MoveToMailboxRequest(
-                {success.destinationMailboxId: [success.emailId]},
-                success.currentMailboxId,
-                MoveAction.undo,
-                sessionCurrent!,
-                success.emailActionType));
-          },
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icFolderMailbox,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastSuccessBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
-      );
+      _appToast.showToastMessage(
+        currentOverlayContext!,
+        success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () {
+          _revertedToOriginalMailbox(MoveToMailboxRequest(
+            {success.destinationMailboxId: [success.emailId]},
+            success.currentMailboxId,
+            MoveAction.undo,
+            sessionCurrent!,
+            success.emailActionType
+          ));
+        },
+        leadingSVGIcon: _imagePaths.icFolderMailbox,
+        leadingSVGIconColor: Colors.white,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(_imagePaths.icUndo));
     }
   }
 
@@ -655,12 +641,12 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _deleteEmailPermanentlySuccess(DeleteEmailPermanentlySuccess success) {
-    if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
-          message: AppLocalizations.of(currentContext!).toast_message_delete_a_email_permanently_success,
-          icon: _imagePaths.icDeleteToast);
+    if (currentOverlayContext != null &&  currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toast_message_delete_a_email_permanently_success,
+        leadingSVGIcon: _imagePaths.icDeleteToast
+      );
     }
   }
 
@@ -704,16 +690,18 @@ class MailboxDashBoardController extends ReloadableController {
       readActions = success.readActions;
     }
 
-    if (currentContext != null && readActions != null && currentOverlayContext != null) {
+    if (readActions != null && currentContext != null && currentOverlayContext != null) {
       final message = readActions == ReadActions.markAsUnread
-          ? AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).unread)
-          : AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).read);
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          message: message,
-          icon: readActions == ReadActions.markAsUnread
-              ? _imagePaths.icUnreadToast
-              : _imagePaths.icReadToast);
+        ? AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).unread)
+        : AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).read);
+
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        message,
+        leadingSVGIcon: readActions == ReadActions.markAsUnread
+          ? _imagePaths.icUnreadToast
+          : _imagePaths.icReadToast
+      );
     }
   }
 
@@ -741,16 +729,19 @@ class MailboxDashBoardController extends ReloadableController {
       countMarkStarSuccess = success.countMarkStarSuccess;
     }
 
-    if (currentContext != null && markStarAction != null && currentOverlayContext != null) {
+    if (markStarAction != null) {
       final message = markStarAction == MarkStarAction.unMarkStar
-          ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
-          : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess);
-      _appToast.showToastWithIcon(
+        ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
+        : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess);
+
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastMessage(
           currentOverlayContext!,
-          message: message,
-          icon: markStarAction == MarkStarAction.unMarkStar
-              ? _imagePaths.icUnStar
-              : _imagePaths.icStar);
+          message,
+          leadingSVGIcon: markStarAction == MarkStarAction.unMarkStar
+            ? _imagePaths.icUnStar
+            : _imagePaths.icStar);
+      }
     }
   }
 
@@ -932,36 +923,31 @@ class MailboxDashBoardController extends ReloadableController {
         currentOverlayContext != null &&
         emailActionType != null &&
         moveAction == MoveAction.moving) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          emailActionType.getToastMessageMoveToMailboxSuccess(
-              currentContext!,
-              destinationPath: destinationPath),
-          actionName: AppLocalizations.of(currentContext!).undo,
-          onActionClick: () {
-            final newCurrentMailboxId = destinationMailboxId;
-            final newDestinationMailboxId = currentMailboxId;
-            if (newCurrentMailboxId != null && newDestinationMailboxId != null) {
-              _revertedSelectionEmailToOriginalMailbox(MoveToMailboxRequest(
-                  {newCurrentMailboxId: movedEmailIds},
-                  newDestinationMailboxId,
-                  MoveAction.undo,
-                  sessionCurrent!,
-                  emailActionType!,
-                  destinationPath: destinationPath));
-            }
-          },
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icFolderMailbox,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastSuccessBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
+      _appToast.showToastMessage(
+        currentOverlayContext!,
+        emailActionType.getToastMessageMoveToMailboxSuccess(
+          currentContext!,
+          destinationPath: destinationPath),
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () {
+          final newCurrentMailboxId = destinationMailboxId;
+          final newDestinationMailboxId = currentMailboxId;
+          if (newCurrentMailboxId != null && newDestinationMailboxId != null) {
+            _revertedSelectionEmailToOriginalMailbox(MoveToMailboxRequest(
+              {newCurrentMailboxId: movedEmailIds},
+              newDestinationMailboxId,
+              MoveAction.undo,
+              sessionCurrent!,
+              emailActionType!,
+              destinationPath: destinationPath
+            ));
+          }
+        },
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: _imagePaths.icFolderMailbox,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(_imagePaths.icUndo),
       );
     }
   }
@@ -1095,12 +1081,10 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _emptyTrashFolderSuccess(EmptyTrashFolderSuccess success) {
-    if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
-          message: AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success,
-          icon: _imagePaths.icDeleteToast);
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success);
     }
   }
 
@@ -1122,12 +1106,10 @@ class MailboxDashBoardController extends ReloadableController {
       listEmailIdResult = success.emailIds;
     }
 
-    if (currentContext != null && currentOverlayContext != null && listEmailIdResult.isNotEmpty) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
-          message: AppLocalizations.of(currentContext!).toast_message_delete_multiple_email_permanently_success(listEmailIdResult.length),
-          icon: _imagePaths.icDeleteToast);
+    if (currentOverlayContext != null && currentContext != null && listEmailIdResult.isNotEmpty) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toast_message_delete_multiple_email_permanently_success(listEmailIdResult.length));
     }
   }
 
@@ -1237,21 +1219,17 @@ class MailboxDashBoardController extends ReloadableController {
 
     if (success is MarkAsMailboxReadAllSuccess) {
       if (currentContext != null && currentOverlayContext != null) {
-        _appToast.showToastWithIcon(
-            currentOverlayContext!,
-            widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
-            message: AppLocalizations.of(currentContext!)
-                .toastMessageMarkAsMailboxReadSuccess(success.mailboxName.name),
-            icon: _imagePaths.icReadToast);
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadSuccess(success.mailboxName.name),
+          leadingSVGIcon: _imagePaths.icReadToast);
       }
     } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
       if (currentContext != null && currentOverlayContext != null) {
-        _appToast.showToastWithIcon(
-            currentOverlayContext!,
-            widthToast: _responsiveUtils.isDesktop(currentContext!) ? 360 : null,
-            message: AppLocalizations.of(currentContext!)
-                .toastMessageMarkAsMailboxReadHasSomeEmailFailure(success.mailboxName.name, success.countEmailsRead),
-            icon: _imagePaths.icReadToast);
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadHasSomeEmailFailure(success.mailboxName.name, success.countEmailsRead),
+          leadingSVGIcon: _imagePaths.icReadToast);
       }
     }
   }
@@ -1347,10 +1325,9 @@ class MailboxDashBoardController extends ReloadableController {
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty) {
       if (currentContext != null && currentOverlayContext != null) {
-        _appToast.showToastWithIcon(
-            currentOverlayContext!,
-            message: AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully,
-            icon: _imagePaths.icChecked);
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully);
       }
       vacationResponse.value = success.listVacationResponse.first;
       log('MailboxDashBoardController::_handleUpdateVacationSuccess(): $vacationResponse');
@@ -1623,13 +1600,11 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _showToastSendMessageFailure(String message) {
-    if (currentOverlayContext != null) {
-      _appToast.showToastWithIcon(
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastErrorMessage(
         currentOverlayContext!,
-        textColor: AppColor.toastErrorBackgroundColor,
-        message: message,
-        icon: _imagePaths.icSendToast
-      );
+        message,
+        leadingSVGIcon: _imagePaths.icSendSuccessToast);
     }
   }
 

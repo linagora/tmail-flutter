@@ -189,10 +189,9 @@ class IdentitiesController extends BaseController {
 
   void _createNewIdentitySuccess(CreateNewIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          message: AppLocalizations.of(currentContext!).you_have_created_a_new_identity,
-          icon: _imagePaths.icSelected);
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).you_have_created_a_new_identity);
     }
 
     _refreshAllIdentities();
@@ -200,10 +199,9 @@ class IdentitiesController extends BaseController {
 
   void _createNewDefaultIdentitySuccess(CreateNewDefaultIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        message: AppLocalizations.of(currentContext!).you_have_created_a_new_default_identity,
-        icon: _imagePaths.icSelected);
+        AppLocalizations.of(currentContext!).you_have_created_a_new_default_identity);
     }
 
     _refreshAllIdentities();
@@ -231,10 +229,10 @@ class IdentitiesController extends BaseController {
 
   void _deleteIdentitySuccess(DeleteIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          message: AppLocalizations.of(currentContext!).identity_has_been_deleted,
-          icon: _imagePaths.icDeleteToast);
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).identity_has_been_deleted,
+        leadingSVGIcon: _imagePaths.icDeleteToast);
     }
 
     _refreshAllIdentities();
@@ -314,10 +312,9 @@ class IdentitiesController extends BaseController {
 
   void _editIdentitySuccess(EditIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          message: AppLocalizations.of(currentContext!).you_are_changed_your_identity_successfully,
-          icon: _imagePaths.icSelected);
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).you_are_changed_your_identity_successfully);
     }
 
     _refreshAllIdentities();

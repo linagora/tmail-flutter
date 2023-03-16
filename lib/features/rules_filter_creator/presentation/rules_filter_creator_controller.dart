@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
@@ -281,20 +280,22 @@ class RulesFilterCreatorController extends BaseMailboxController {
     final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.name?.name);
     if (errorAction?.isNotEmpty == true) {
       errorRuleActionValue.value = errorAction;
-      _appToast.showToastWithIcon(
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
           currentOverlayContext!,
-          textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(currentContext!).this_field_cannot_be_blank);
+          AppLocalizations.of(currentContext!).this_field_cannot_be_blank);
+      }
       return;
     }
 
     if (ruleConditionFieldSelected.value == null ||
         ruleConditionComparatorSelected.value == null ||
         emailRuleFilterActionSelected.value == null) {
-      _appToast.showToastWithIcon(
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
           currentOverlayContext!,
-          textColor: AppColor.toastErrorBackgroundColor,
-          message: AppLocalizations.of(currentContext!).toastErrorMessageWhenCreateNewRule);
+          AppLocalizations.of(currentContext!).toastErrorMessageWhenCreateNewRule);
+      }
       return;
     }
 

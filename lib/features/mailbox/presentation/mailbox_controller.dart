@@ -509,19 +509,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icFolderMailbox,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastSuccessBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: _imagePaths.icFolderMailbox);
     }
 
     _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
@@ -534,20 +526,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       if (exception is ErrorMethodResponse) {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
       }
-
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          messageError,
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icNotConnection,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
   }
 
@@ -685,11 +664,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       jmap.State? currentMailboxState
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          message: AppLocalizations.of(currentContext!).delete_mailboxes_successfully,
-          icon: _imagePaths.icSelected);
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).delete_mailboxes_successfully);
     }
+
     if (listMailboxIdDeleted.contains(selectedMailbox?.id)) {
       _switchBackToMailboxDefault();
       _closeEmailViewIfMailboxDisabledOrNotExist(listMailboxIdDeleted);
@@ -772,10 +751,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
-          currentOverlayContext!,
-          message: AppLocalizations.of(currentContext!).delete_mailboxes_failure,
-          icon: _imagePaths.icDeleteToast);
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).delete_mailboxes_failure,
+        leadingSVGIcon: _imagePaths.icDeleteToast
+      );
     }
   }
 
@@ -810,7 +790,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (success.moveAction == MoveAction.moving
         && currentOverlayContext != null
         && currentContext != null) {
-      _appToast.showBottomToast(
+      _appToast.showToastMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).moved_to_mailbox(
               success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).allMailboxes),
@@ -822,17 +802,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
                 destinationMailboxId: success.parentId,
                 parentId: success.destinationMailboxId));
           },
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icFolderMailbox,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
+          leadingSVGIcon: _imagePaths.icFolderMailbox,
+          leadingSVGIconColor: Colors.white,
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
-          textActionColor: Colors.white,
-          actionIcon: SvgPicture.asset(_imagePaths.icUndo),
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+          actionIcon: SvgPicture.asset(_imagePaths.icUndo));
     }
 
     _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
@@ -1106,7 +1080,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       {List<MailboxId>? listDescendantMailboxIds}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showBottomToast(
+      _appToast.showToastMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -1114,19 +1088,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           mailboxIdSubscribed,
           listDescendantMailboxIds: listDescendantMailboxIds
         ),
-        leadingIcon: SvgPicture.asset(
-          _imagePaths.icFolderMailbox,
-          width: 24,
-          height: 24,
-          colorFilter: Colors.white.asFilter(),
-          fit: BoxFit.fill
-        ),
+        leadingSVGIcon: _imagePaths.icFolderMailbox,
+        leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
-        textActionColor: Colors.white,
-        actionIcon: SvgPicture.asset(_imagePaths.icUndo),
-        maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!)
-      );
+        actionIcon: SvgPicture.asset(_imagePaths.icUndo));
     }
   }
 

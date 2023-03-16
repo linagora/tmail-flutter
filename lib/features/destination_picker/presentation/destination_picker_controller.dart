@@ -1,14 +1,10 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
@@ -51,8 +47,6 @@ class DestinationPickerController extends BaseMailboxController {
 
   final _uuid = Get.find<Uuid>();
   final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final SearchMailboxInteractor _searchMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
@@ -318,19 +312,9 @@ class DestinationPickerController extends BaseMailboxController {
 
   void openCreateNewMailboxView(BuildContext context) async {
     if (mailboxDestination.value == null) {
-      _appToast.showBottomToast(
+      _appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox,
-        leadingIcon: SvgPicture.asset(
-          _imagePaths.icNotConnection,
-          width: 24,
-          height: 24,
-          colorFilter: Colors.white.asFilter(),
-          fit: BoxFit.fill),
-        backgroundColor: AppColor.toastErrorBackgroundColor,
-        textColor: Colors.white,
-        textActionColor: Colors.white,
-        maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+        AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox);
     } else {
       destinationScreenType.value = DestinationScreenType.createNewMailbox;
       _createListMailboxNameAsStringInMailboxLocation();
@@ -363,20 +347,7 @@ class DestinationPickerController extends BaseMailboxController {
       if (exception is ErrorMethodResponse) {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
       }
-
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          messageError,
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icNotConnection,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
   }
 
@@ -409,19 +380,9 @@ class DestinationPickerController extends BaseMailboxController {
     FocusScope.of(context).unfocus();
 
     if (mailboxDestination.value == null) {
-      _appToast.showBottomToast(
-          currentOverlayContext!,
-          AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox,
-          leadingIcon: SvgPicture.asset(
-              _imagePaths.icNotConnection,
-              width: 24,
-              height: 24,
-              colorFilter: Colors.white.asFilter(),
-              fit: BoxFit.fill),
-          backgroundColor: AppColor.toastErrorBackgroundColor,
-          textColor: Colors.white,
-          textActionColor: Colors.white,
-          maxWidth: _responsiveUtils.getMaxWidthToast(currentContext!));
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox);
       return;
     }
 

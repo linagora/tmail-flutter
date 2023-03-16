@@ -123,10 +123,9 @@ class EmailRulesController extends BaseController {
   void _createNewRuleFilterSuccess(CreateNewRuleFilterSuccess success) {
     if (success.newListRules.isNotEmpty == true) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastWithIcon(
-            currentOverlayContext!,
-            message: AppLocalizations.of(currentContext!).newFilterWasCreated,
-            icon: _imagePaths.icSelected);
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).newFilterWasCreated);
       }
       listEmailRule.value = success.newListRules;
       listEmailRule.refresh();
@@ -176,10 +175,9 @@ class EmailRulesController extends BaseController {
   void _editEmailRuleFilterSuccess(EditEmailRuleFilterSuccess success) {
     if (success.listRulesUpdated.isNotEmpty == true) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastWithIcon(
-            currentOverlayContext!,
-            message: AppLocalizations.of(currentContext!).yourFilterHasBeenUpdated,
-            icon: _imagePaths.icSelected);
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).yourFilterHasBeenUpdated);
       }
       listEmailRule.value = success.listRulesUpdated;
       listEmailRule.refresh();
@@ -239,11 +237,9 @@ class EmailRulesController extends BaseController {
 
   void _handleDeleteEmailRuleSuccess(DeleteEmailRuleSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastWithIcon(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        message: AppLocalizations.of(currentContext!).toastMessageDeleteEmailRuleSuccessfully,
-        icon: _imagePaths.icSelected,
-      );
+        AppLocalizations.of(currentContext!).toastMessageDeleteEmailRuleSuccessfully);
     }
 
     if (success.rules?.isNotEmpty == true) {
