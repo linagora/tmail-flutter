@@ -100,13 +100,13 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   }
 
   Widget _buildAppBar(BuildContext context) {
-    return Obx(() => (AppBarMailboxCreatorBuilder(
-            context,
-            title: AppLocalizations.of(context).new_mailbox,
-            isValidated: controller.isCreateMailboxValidated(context))
-        ..addOnCancelActionClick(() => controller.closeMailboxCreator(context))
-        ..addOnDoneActionClick(() => controller.createNewMailbox(context)))
-      .build());
+    return (AppBarMailboxCreatorBuilder(
+      context,
+      title: AppLocalizations.of(context).new_mailbox,
+      isValidated: true)
+    ..addOnCancelActionClick(() => controller.closeMailboxCreator(context))
+    ..addOnDoneActionClick(() => controller.createNewMailbox(context)))
+    .build();
   }
 
   Widget _buildCreateMailboxNameInput(BuildContext context) {
