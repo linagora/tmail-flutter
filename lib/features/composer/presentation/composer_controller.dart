@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
@@ -118,6 +119,10 @@ class ComposerController extends BaseController {
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyCcEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyBccEmailTagEditor = GlobalKey<TagsEditorState>();
+  final GlobalKey headerEditorMobileWidgetKey = GlobalKey();
+  final double defaultPaddingCoordinateYCursorEditor = 8;
+  final double maxKeyBoardHeight = 500;
+  final double richTextBarHeight = 200;
 
   FocusNode? subjectEmailInputFocusNode;
   FocusNode? toAddressFocusNode;
@@ -346,7 +351,8 @@ class ComposerController extends BaseController {
       editorApi,
       onEnterKeyDown: _onEnterKeyDown,
       context: context,
-      onFocus: _onEditorFocusOnMobile
+      onFocus: _onEditorFocusOnMobile,
+      onChangeCursor: _onChangeCursorOnMobile,
     );
   }
 
@@ -1502,6 +1508,30 @@ class ComposerController extends BaseController {
     if (Platform.isAndroid) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
+    }
+  }
+
+  void _onChangeCursorOnMobile(List<int>? coordinates) {
+
+    final headerEditorMobileWidgetRenderObject = headerEditorMobileWidgetKey.currentContext?.findRenderObject();
+
+    if (headerEditorMobileWidgetRenderObject is RenderBox?) {
+      final headerEditorMobileSize = headerEditorMobileWidgetRenderObject?.size;
+      if (coordinates?[1] != null && coordinates?[1] != 0) {
+        final coordinateY = max((coordinates?[1] ?? 0) - defaultPaddingCoordinateYCursorEditor, 0);
+        final realCoordinateY = coordinateY + (headerEditorMobileSize?.height ?? 0);
+        if (scrollController.position.pixels >= realCoordinateY) {
+          scrollController.jumpTo(
+            realCoordinateY.toDouble() - (headerEditorMobileSize?.height ?? 0) / 2,
+          );
+        }
+
+        if ((realCoordinateY) >= max(Get.height - maxKeyBoardHeight - richTextBarHeight, 0) + scrollController.position.pixels) {
+          scrollController.jumpTo(
+            realCoordinateY.toDouble(),
+          );
+        }
+      }
     }
   }
 
