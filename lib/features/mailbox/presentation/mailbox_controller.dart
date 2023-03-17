@@ -93,6 +93,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
 
   final currentSelectMode = SelectMode.INACTIVE.obs;
+  final _activeScrollTop = RxBool(false);
+  final _activeScrollBottom = RxBool(true);
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   final mailboxListScrollController = ScrollController();
@@ -130,8 +132,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     _openMailboxEventController.stream.throttleTime(const Duration(milliseconds: 800)).listen((event) {
       _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
-
     _initCollapseMailboxCategories();
+    mailboxListScrollController.addListener(_mailboxListScrollControllerListener);
     super.onReady();
   }
 
@@ -1127,4 +1129,33 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     }
   }
+
+  void _mailboxListScrollControllerListener() {
+    _handleScrollTop();
+    _handleScrollBottom();
+  }
+
+  void _handleScrollTop() {
+    if (mailboxListScrollController.position.pixels == 0) {
+      _activeScrollTop.value = false;
+    }
+
+    if (mailboxListScrollController.position.pixels > 40) {
+      _activeScrollTop.value = true;
+    }
+  }
+
+  void _handleScrollBottom() {
+    if (mailboxListScrollController.position.pixels - mailboxListScrollController.position.maxScrollExtent == 0) {
+      _activeScrollBottom.value = false;
+    }
+
+    if (mailboxListScrollController.position.maxScrollExtent - mailboxListScrollController.position.pixels > 40) {
+      _activeScrollBottom.value = true;
+    }
+  }
+
+  bool get activeScrollTop => _activeScrollTop.value;
+
+  bool get activeScrollBottom => _activeScrollBottom.value;
 }

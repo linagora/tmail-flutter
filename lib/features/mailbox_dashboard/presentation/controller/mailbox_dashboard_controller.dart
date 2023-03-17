@@ -164,6 +164,7 @@ class MailboxDashBoardController extends ReloadableController {
   final vacationResponse = Rxn<VacationResponse>();
   final routerParameters = Rxn<Map<String, String?>>();
   final _isDraggingMailbox = RxBool(false);
+  final _triggerDropMailbox = RxBool(true);
   final searchMailboxActivated = RxBool(false);
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -1561,6 +1562,12 @@ class MailboxDashBoardController extends ReloadableController {
   void onDragMailbox(bool isDragging) {
     _isDraggingMailbox.value = isDragging;
   }
+
+  void onTriggerDropMailbox(bool onScroll) {
+    _triggerDropMailbox.value = onScroll;
+  }
+
+  bool get triggerDropMailbox => _triggerDropMailbox.value;
 
   bool get isDraggingMailbox => _isDraggingMailbox.value;
 
