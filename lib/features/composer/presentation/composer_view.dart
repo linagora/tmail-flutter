@@ -379,6 +379,7 @@ class ComposerView extends GetWidget<ComposerController>
                         PrefixEmailAddress.cc,
                         controller.listCcEmailAddress,
                         controller.listEmailAddressType,
+                        focusNode: controller.ccAddressFocusNode,
                         expandMode: controller.ccAddressExpandMode.value,
                         controller: controller.ccEmailAddressController,
                         keyTagEditor: controller.keyCcEmailTagEditor,
@@ -404,6 +405,7 @@ class ComposerView extends GetWidget<ComposerController>
                         PrefixEmailAddress.bcc,
                         controller.listBccEmailAddress,
                         controller.listEmailAddressType,
+                        focusNode: controller.bccAddressFocusNode,
                         expandMode: controller.bccAddressExpandMode.value,
                         controller: controller.bccEmailAddressController,
                         keyTagEditor: controller.keyBccEmailTagEditor,
@@ -627,14 +629,19 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildHtmlEditor(BuildContext context, {String? initialContent}) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-      child: HtmlEditor(
-        key: const Key('composer_editor'),
-        minHeight: 550,
-        addDefaultSelectionMenuItems: false,
-        initialContent: initialContent ?? '',
-        onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi, initialContent)
+    return GestureDetector(
+      onTapDown: (_) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+        child: HtmlEditor(
+          key: const Key('composer_editor'),
+          minHeight: 550,
+          addDefaultSelectionMenuItems: false,
+          initialContent: initialContent ?? '',
+          onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
+        ),
       ),
     );
   }
