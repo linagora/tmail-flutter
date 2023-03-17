@@ -1516,18 +1516,17 @@ class ComposerController extends BaseController {
     if (Platform.isAndroid) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
-      _removeFocusAllInputEditorHeader();
     }
   }
 
-  void _removeFocusAllInputEditorHeader() {
+  void removeFocusAllInputEditorHeader() {
     subjectEmailInputFocusNode?.unfocus();
     toAddressFocusNode?.unfocus();
     ccAddressFocusNode?.unfocus();
     bccAddressFocusNode?.unfocus();
   }
-  void _onChangeCursorOnMobile(List<int>? coordinates) {
 
+  void _onChangeCursorOnMobile(List<int>? coordinates) {
     final headerEditorMobileWidgetRenderObject = headerEditorMobileWidgetKey.currentContext?.findRenderObject();
 
     if (headerEditorMobileWidgetRenderObject is RenderBox?) {
