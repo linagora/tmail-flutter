@@ -126,6 +126,8 @@ class ComposerController extends BaseController {
 
   FocusNode? subjectEmailInputFocusNode;
   FocusNode? toAddressFocusNode;
+  FocusNode? ccAddressFocusNode;
+  FocusNode? bccAddressFocusNode;
 
   final RichTextController keyboardRichTextController = RichTextController();
 
@@ -248,6 +250,10 @@ class ComposerController extends BaseController {
     subjectEmailInputFocusNode = null;
     toAddressFocusNode?.dispose();
     toAddressFocusNode = null;
+    ccAddressFocusNode?.dispose();
+    ccAddressFocusNode = null;
+    bccAddressFocusNode?.dispose();
+    bccAddressFocusNode = null;
     subjectEmailInputController.dispose();
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
@@ -331,6 +337,8 @@ class ComposerController extends BaseController {
   void createFocusNodeInput() {
     toAddressFocusNode = FocusNode();
     subjectEmailInputFocusNode = FocusNode();
+    ccAddressFocusNode = FocusNode();
+    bccAddressFocusNode = FocusNode();
 
     subjectEmailInputFocusNode?.addListener(() {
       log('ComposerController::createFocusNodeInput():subjectEmailInputFocusNode: ${subjectEmailInputFocusNode?.hasFocus}');
@@ -1508,9 +1516,16 @@ class ComposerController extends BaseController {
     if (Platform.isAndroid) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
+      _removeFocusAllInputEditorHeader();
     }
   }
 
+  void _removeFocusAllInputEditorHeader() {
+    subjectEmailInputFocusNode?.unfocus();
+    toAddressFocusNode?.unfocus();
+    ccAddressFocusNode?.unfocus();
+    bccAddressFocusNode?.unfocus();
+  }
   void _onChangeCursorOnMobile(List<int>? coordinates) {
 
     final headerEditorMobileWidgetRenderObject = headerEditorMobileWidgetKey.currentContext?.findRenderObject();
