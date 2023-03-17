@@ -212,7 +212,7 @@ class MailboxView extends GetWidget<MailboxController>
             })
           ])
         ),
-        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox
+        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox && controller.activeScrollTop
             ? Align(
                 alignment: Alignment.topCenter,
                 child: InkWell(
@@ -221,7 +221,7 @@ class MailboxView extends GetWidget<MailboxController>
                   child: Container(
                     height: 40)))
             : const SizedBox.shrink()),
-        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox
+        Obx(() => controller.mailboxDashBoardController.isDraggingMailbox && controller.activeScrollBottom
             ? Align(
                 alignment: Alignment.bottomCenter,
                 child: InkWell(
