@@ -1520,13 +1520,14 @@ class ComposerController extends BaseController {
       if (coordinates?[1] != null && coordinates?[1] != 0) {
         final coordinateY = max((coordinates?[1] ?? 0) - defaultPaddingCoordinateYCursorEditor, 0);
         final realCoordinateY = coordinateY + (headerEditorMobileSize?.height ?? 0);
+        final webViewEditorClientY = max(Get.height - maxKeyBoardHeight - richTextBarHeight, 0) + scrollController.position.pixels;
         if (scrollController.position.pixels >= realCoordinateY) {
           scrollController.jumpTo(
             realCoordinateY.toDouble() - (headerEditorMobileSize?.height ?? 0) / 2,
           );
         }
 
-        if ((realCoordinateY) >= max(Get.height - maxKeyBoardHeight - richTextBarHeight, 0) + scrollController.position.pixels) {
+        if ((realCoordinateY) >= webViewEditorClientY) {
           scrollController.jumpTo(
             realCoordinateY.toDouble(),
           );
