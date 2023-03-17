@@ -467,26 +467,38 @@ class ComposerView extends GetWidget<ComposerController>
       ),
       richTextController: controller.keyboardRichTextController,
       child: SingleChildScrollView(
-          controller: controller.scrollController,
-          physics: const ClampingScrollPhysics(),
-          child: Column(children: [
-            Obx(() => controller.identitySelected.value != null
-              ? _buildFromEmailAddress(context)
-              : const SizedBox.shrink()),
-            Obx(() => controller.identitySelected.value != null
-              ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-              : const SizedBox.shrink()),
-            _buildEmailAddress(context),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _buildSubjectEmail(context)),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
-            _buildAttachmentsWidget(context),
-            buildInlineLoadingView(controller),
+        controller: controller.scrollController,
+        physics: const ClampingScrollPhysics(),
+        child: Column(
+          children: [
+            _buildHeaderEditorMobile(context),
             _buildComposerEditor(context),
-          ])
+            SizedBox(height: controller.maxKeyBoardHeight),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildHeaderEditorMobile(BuildContext context) {
+    return Column(
+      key: controller.headerEditorMobileWidgetKey,
+      children: [
+        Obx(() => controller.identitySelected.value != null
+            ? _buildFromEmailAddress(context)
+            : const SizedBox.shrink()),
+        Obx(() => controller.identitySelected.value != null
+            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+            : const SizedBox.shrink()),
+        _buildEmailAddress(context),
+        const Divider(color: AppColor.colorDividerComposer, height: 1),
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: _buildSubjectEmail(context)),
+        const Divider(color: AppColor.colorDividerComposer, height: 1),
+        _buildAttachmentsWidget(context),
+        buildInlineLoadingView(controller),
+      ],
     );
   }
 
