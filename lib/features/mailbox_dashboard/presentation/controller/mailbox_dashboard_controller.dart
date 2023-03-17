@@ -1563,10 +1563,6 @@ class MailboxDashBoardController extends ReloadableController {
     _isDraggingMailbox.value = isDragging;
   }
 
-  void onTriggerDropMailbox(bool onScroll) {
-    _triggerDropMailbox.value = onScroll;
-  }
-
   bool get triggerDropMailbox => _triggerDropMailbox.value;
 
   bool get isDraggingMailbox => _isDraggingMailbox.value;
