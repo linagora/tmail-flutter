@@ -487,16 +487,16 @@ class ComposerView extends GetWidget<ComposerController>
       key: controller.headerEditorMobileWidgetKey,
       children: [
         Obx(() => controller.identitySelected.value != null
-            ? _buildFromEmailAddress(context)
-            : const SizedBox.shrink()),
+          ? _buildFromEmailAddress(context)
+          : const SizedBox.shrink()),
         Obx(() => controller.identitySelected.value != null
-            ? const Divider(color: AppColor.colorDividerComposer, height: 1)
-            : const SizedBox.shrink()),
+          ? const Divider(color: AppColor.colorDividerComposer, height: 1)
+          : const SizedBox.shrink()),
         _buildEmailAddress(context),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
         Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: _buildSubjectEmail(context)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: _buildSubjectEmail(context)),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
         _buildAttachmentsWidget(context),
         buildInlineLoadingView(controller),
@@ -631,7 +631,7 @@ class ComposerView extends GetWidget<ComposerController>
   Widget _buildHtmlEditor(BuildContext context, {String? initialContent}) {
     return GestureDetector(
       onTapDown: (_) {
-        FocusManager.instance.primaryFocus?.unfocus();
+        controller.removeFocusAllInputEditorHeader();
       },
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
@@ -640,7 +640,7 @@ class ComposerView extends GetWidget<ComposerController>
           minHeight: 550,
           addDefaultSelectionMenuItems: false,
           initialContent: initialContent ?? '',
-          onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
+          onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi, initialContent)
         ),
       ),
     );
