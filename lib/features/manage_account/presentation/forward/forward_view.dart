@@ -80,38 +80,38 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   }
 
   Widget _buildKeepLocalSwitchButton(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      padding: SettingsUtils.getPaddingKeepLocalSwitchButtonForwarding(context, _responsiveUtils),
-      child: Row(children: [
-        Obx(() {
-          return controller.listRecipientForward.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: InkWell(
-                  onTap: controller.handleEditLocalCopy,
-                  child: SvgPicture.asset(
-                    controller.currentForwardLocalCopyState
-                      ? _imagePaths.icSwitchOn
-                      : _imagePaths.icSwitchOff,
-                    fit: BoxFit.fill,
-                    width: 36,
-                    height: 24)))
-            : const SizedBox();
-        }),
-        Expanded(
-          child: Text(
-            AppLocalizations.of(context).keepLocalCopyForwardLabel,
-            overflow: CommonTextStyle.defaultTextOverFlow,
-            softWrap: CommonTextStyle.defaultSoftWrap,
-            style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black)
-          ),
-        )
-      ]),
-    );
+    return Obx(() {
+      return controller.listRecipientForward.isNotEmpty
+          ? Container(
+              color: Colors.transparent,
+              padding: SettingsUtils.getPaddingKeepLocalSwitchButtonForwarding(context, _responsiveUtils),
+              child: Row(children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: InkWell(
+                    onTap: controller.handleEditLocalCopy,
+                    child: SvgPicture.asset(
+                      controller.currentForwardLocalCopyState
+                        ? _imagePaths.icSwitchOn
+                        : _imagePaths.icSwitchOff,
+                      fit: BoxFit.fill,
+                      width: 36,
+                      height: 24))),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context).keepLocalCopyForwardLabel,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black)
+                  ),
+                )
+              ]))
+          : const SizedBox();
+    });
+
   }
 
   Widget _buildLoadingView() {
