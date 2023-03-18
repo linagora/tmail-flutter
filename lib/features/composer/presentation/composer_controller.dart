@@ -1516,6 +1516,7 @@ class ComposerController extends BaseController {
     if (Platform.isAndroid) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
+      removeFocusAllInputEditorHeader();
     }
   }
 
@@ -1528,7 +1529,6 @@ class ComposerController extends BaseController {
 
   void _onChangeCursorOnMobile(List<int>? coordinates) {
     final headerEditorMobileWidgetRenderObject = headerEditorMobileWidgetKey.currentContext?.findRenderObject();
-
     if (headerEditorMobileWidgetRenderObject is RenderBox?) {
       final headerEditorMobileSize = headerEditorMobileWidgetRenderObject?.size;
       if (coordinates?[1] != null && coordinates?[1] != 0) {
@@ -1543,7 +1543,7 @@ class ComposerController extends BaseController {
 
         if ((realCoordinateY) >= webViewEditorClientY) {
           scrollController.jumpTo(
-            realCoordinateY.toDouble(),
+            realCoordinateY.toDouble()  - (headerEditorMobileSize?.height ?? 0) / 2,
           );
         }
       }
