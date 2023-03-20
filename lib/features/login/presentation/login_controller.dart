@@ -306,7 +306,8 @@ class LoginController extends ReloadableController {
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
     log('LoginController::_getTokenOIDCSuccess(): ${success.tokenOIDC.toString()}');
     loginState.value = LoginState(Right(success));
-    _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.setJmapUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.changeBaseUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
     authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
@@ -322,7 +323,8 @@ class LoginController extends ReloadableController {
 
   void _loginSuccessAction(AuthenticationUserSuccess success) {
     loginState.value = LoginState(Right(success));
-    _dynamicUrlInterceptors.changeBaseUrl(kIsWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.setJmapUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.changeBaseUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
     authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
