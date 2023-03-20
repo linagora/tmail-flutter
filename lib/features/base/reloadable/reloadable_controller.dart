@@ -72,6 +72,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _setUpInterceptors(GetCredentialViewState credentialViewState) {
+    _dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
     _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
       credentialViewState.userName.userName,
@@ -126,6 +127,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
+    _dynamicUrlInterceptors.setJmapUrl(tokenOidcSuccess.baseUrl.toString());
     _dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: tokenOidcSuccess.tokenOidc.toToken(),

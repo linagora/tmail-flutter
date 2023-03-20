@@ -183,6 +183,7 @@ class HomeController extends BaseController {
   }
 
   void _goToSessionWithTokenOidc(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
+    _dynamicUrlInterceptors.setJmapUrl(storedTokenOidcSuccess.baseUrl.toString());
     _dynamicUrlInterceptors.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
@@ -194,6 +195,7 @@ class HomeController extends BaseController {
   }
 
   void _goToSessionWithBasicAuth(GetCredentialViewState credentialViewState) {
+    _dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
     _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
       credentialViewState.userName.userName,
