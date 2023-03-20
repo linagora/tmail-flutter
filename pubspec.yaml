@@ -82,7 +82,7 @@ dependencies:
       ref: master
 
   ### Dependencies from pub.dev ###
-  cupertino_icons: ^1.0.5
+  cupertino_icons: 1.0.5
 
   get: 4.6.5
 
@@ -133,7 +133,7 @@ dependencies:
 
   fk_user_agent: 2.1.0
 
-  pointer_interceptor: ^0.9.3+4
+  pointer_interceptor: 0.9.3+4
 
   rxdart: 0.27.7
 
@@ -207,7 +207,7 @@ dev_dependencies:
 
   hive_generator: 2.0.0
 
-  flutter_lints: ^2.0.1
+  flutter_lints: 2.0.1
 
   flutter_native_splash: 2.2.18
 
