@@ -425,7 +425,7 @@ class MailboxDashBoardController extends ReloadableController {
       sessionCurrent = arguments;
       accountId.value = sessionCurrent?.accounts.keys.first;
       _getUserProfile();
-      updateAuthenticationAccount(sessionCurrent, accountId.value);
+      updateAuthenticationAccount(sessionCurrent!, accountId.value!);
       injectAutoCompleteBindings(sessionCurrent, accountId.value);
       injectRuleFilterBindings(sessionCurrent, accountId.value);
       injectVacationBindings(sessionCurrent, accountId.value);
