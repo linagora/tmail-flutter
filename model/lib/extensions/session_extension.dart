@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -8,8 +9,13 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:uri/uri.dart';
 
 extension SessionExtension on Session {
-  String getDownloadUrl() {
-    var baseUrl = '${downloadUrl.origin}${downloadUrl.path}?${downloadUrl.query}';
+
+  String getDownloadUrl({String? jmapUrl}) {
+    final downloadUrlValid = jmapUrl != null
+      ? downloadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl))
+      : downloadUrl;
+    log('SessionExtension::getDownloadUrl():downloadUrlValid: $downloadUrlValid');
+    var baseUrl = '${downloadUrlValid.origin}${downloadUrlValid.path}?${downloadUrlValid.query}';
     if (baseUrl.endsWith('/')) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
     }
@@ -19,8 +25,12 @@ extension SessionExtension on Session {
     return downloadUrlDecode;
   }
 
-  Uri getUploadUri(AccountId accountId) {
-    final baseUrl = '${uploadUrl.origin}${uploadUrl.path}';
+  Uri getUploadUri(AccountId accountId, {String? jmapUrl}) {
+    final uploadUrlValid = jmapUrl != null
+      ? uploadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl))
+      : uploadUrl;
+    log('SessionExtension::getUploadUri():downloadUrlValid: $uploadUrlValid');
+    final baseUrl = '${uploadUrlValid.origin}${uploadUrlValid.path}';
     final uploadUriTemplate = UriTemplate(Uri.decodeFull(baseUrl));
     final uploadUri = uploadUriTemplate.expand({
       'accountId' : accountId.id.value
