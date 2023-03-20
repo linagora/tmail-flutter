@@ -80,6 +80,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final _appToast = Get.find<AppToast>();
   final _uuid = Get.find<Uuid>();
   final _downloadManager = Get.find<DownloadManager>();
+  final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -292,7 +293,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _getEmailContentAction(EmailId emailId) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
     final emailLoaded = emailSupervisorController.getEmailInQueueByEmailId(emailId);
 
     if (emailLoaded != null) {
@@ -478,7 +479,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _downloadAttachmentsAction(List<Attachment> attachments) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       consumeState(_downloadAttachmentsInteractor.execute(attachments, accountId, baseDownloadUrl));
     }
   }
@@ -527,7 +528,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       consumeState(_exportAttachmentInteractor.execute(attachment, accountId, baseDownloadUrl, cancelToken));
     }
   }
@@ -577,7 +578,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _downloadAttachmentForWebAction(BuildContext context, Attachment attachment) async {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl();
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       final generateTaskId = DownloadTaskId(_uuid.v4());
       consumeState(_downloadAttachmentForWebInteractor.execute(
           generateTaskId,
