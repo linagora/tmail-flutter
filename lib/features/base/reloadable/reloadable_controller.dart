@@ -1,4 +1,5 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -109,7 +110,11 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
-    final apiUrl = success.session.apiUrl.toString();
+    final jmapUrl = _dynamicUrlInterceptors.jmapUrl;
+    final apiUrl = jmapUrl != null
+      ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
+      : success.session.apiUrl.toString();
+    log('ReloadableController::_handleGetSessionSuccess():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
       updateAuthenticationAccount(success.session, success.session.accounts.keys.first);
@@ -146,10 +151,13 @@ abstract class ReloadableController extends BaseController {
     }
   }
 
-  void updateAuthenticationAccount(Session? session, AccountId? accountId) {
-    final apiUrl = session?.apiUrl.toString() ?? '';
+  void updateAuthenticationAccount(Session session, AccountId accountId) {
+    final jmapUrl = _dynamicUrlInterceptors.jmapUrl;
+    final apiUrl = jmapUrl != null
+      ? session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
+      : session.apiUrl.toString();
     log('ReloadableController::updateAuthenticationAccount():apiUrl: $apiUrl');
-    if (accountId != null && apiUrl.isNotEmpty) {
+    if (apiUrl.isNotEmpty) {
       consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl));
     }
   }
