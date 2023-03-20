@@ -360,7 +360,9 @@ class ComposerController extends BaseController {
       onEnterKeyDown: _onEnterKeyDown,
       context: context,
       onFocus: _onEditorFocusOnMobile,
-      onChangeCursor: _onChangeCursorOnMobile,
+      onChangeCursor: (coordinates) {
+        _onChangeCursorOnMobile(coordinates, context);
+      },
     );
   }
 
@@ -1527,7 +1529,7 @@ class ComposerController extends BaseController {
     bccAddressFocusNode?.unfocus();
   }
 
-  void _onChangeCursorOnMobile(List<int>? coordinates) {
+  void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {
     final headerEditorMobileWidgetRenderObject = headerEditorMobileWidgetKey.currentContext?.findRenderObject();
     if (headerEditorMobileWidgetRenderObject is RenderBox?) {
       final headerEditorMobileSize = headerEditorMobileWidgetRenderObject?.size;
@@ -1536,18 +1538,30 @@ class ComposerController extends BaseController {
         final realCoordinateY = coordinateY + (headerEditorMobileSize?.height ?? 0);
         final webViewEditorClientY = max(Get.height - maxKeyBoardHeight - richTextBarHeight, 0) + scrollController.position.pixels;
         if (scrollController.position.pixels >= realCoordinateY) {
-          scrollController.jumpTo(
-            realCoordinateY.toDouble() - (headerEditorMobileSize?.height ?? 0) / 2,
+          _scrollToCursorEditor(
+            realCoordinateY.toDouble(),
+            headerEditorMobileSize?.height ?? 0,
+            context,
           );
-        }
-
-        if ((realCoordinateY) >= webViewEditorClientY) {
-          scrollController.jumpTo(
-            realCoordinateY.toDouble()  - (headerEditorMobileSize?.height ?? 0) / 2,
+        } else if ((realCoordinateY) >= webViewEditorClientY) {
+          _scrollToCursorEditor(
+            realCoordinateY.toDouble(),
+            headerEditorMobileSize?.height ?? 0,
+            context,
           );
         }
       }
     }
+  }
+
+  void _scrollToCursorEditor(
+    double realCoordinateY,
+    double headerEditorMobileHeight,
+    BuildContext context,
+  ) {
+    scrollController.jumpTo(
+      realCoordinateY - (_responsiveUtils.isLandscapeMobile(context) ? 0 : headerEditorMobileHeight / 2),
+    );
   }
 
   void _onEnterKeyDown() {
