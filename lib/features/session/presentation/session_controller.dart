@@ -1,4 +1,5 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
@@ -106,7 +107,11 @@ class SessionController extends ReloadableController {
   }
 
   void _goToMailboxDashBoard(GetSessionSuccess success) {
-    final apiUrl = success.session.apiUrl.toString();
+    final jmapUrl = _dynamicUrlInterceptors.jmapUrl;
+    final apiUrl = jmapUrl != null
+      ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
+      : success.session.apiUrl.toString();
+    log('SessionController::_goToMailboxDashBoard():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
       pushAndPop(
