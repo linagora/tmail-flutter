@@ -33,7 +33,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.1
+  flutter_lints: 2.0.1
 
   build_runner: 2.3.3
 
