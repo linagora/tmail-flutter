@@ -3,6 +3,7 @@ library core;
 // Extensions
 export 'presentation/extensions/color_extension.dart';
 export 'presentation/extensions/url_extension.dart';
+export 'presentation/extensions/uri_extension.dart';
 export 'presentation/extensions/capitalize_extension.dart';
 export 'presentation/extensions/list_extensions.dart';
 export 'domain/extensions/datetime_extension.dart';
