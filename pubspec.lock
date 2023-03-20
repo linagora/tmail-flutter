@@ -666,12 +666,11 @@ packages:
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
-      path: "."
-      ref: upgrade-dependencies
-      resolved-ref: "4f40f567d6c6ed449830a2bbbda8adb33d382d7d"
-      url: "https://github.com/dab246/flutter_launcher_icons.git"
-    source: git
-    version: "0.11.0"
+      name: flutter_launcher_icons
+      sha256: "02dcaf49d405f652b7160e882bacfc02cb497041bb2eab2a49b1c393cf9aac12"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.12.0"
   flutter_lints:
     dependency: "direct dev"
     description:
