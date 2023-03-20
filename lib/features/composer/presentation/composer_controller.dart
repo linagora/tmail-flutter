@@ -75,6 +75,7 @@ class ComposerController extends BaseController {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _uuid = Get.find<Uuid>();
+  final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
 
   final expandModeAttachments = ExpandMode.COLLAPSE.obs;
   final composerArguments = Rxn<ComposerArguments>();
@@ -917,7 +918,7 @@ class ComposerController extends BaseController {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
-      final uploadUri = session.getUploadUri(accountId);
+      final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       uploadController.justUploadAttachmentsAction(pickedFiles, uploadUri);
     }
   }
@@ -1091,7 +1092,7 @@ class ComposerController extends BaseController {
       _emailContents = arguments.emailContents;
       emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], null));
     } else {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
       final emailId = arguments.presentationEmail?.id;
       if (emailId != null && baseDownloadUrl != null && accountId != null) {
@@ -1475,7 +1476,7 @@ class ComposerController extends BaseController {
       final session = mailboxDashBoardController.sessionCurrent;
       final accountId = mailboxDashBoardController.accountId.value;
       if (session != null && accountId != null) {
-        final uploadUri = session.getUploadUri(accountId);
+        final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
         uploadController.uploadFileAction(pickedFile, uploadUri, isInline: true);
       }
     } else {
@@ -1495,7 +1496,7 @@ class ComposerController extends BaseController {
   void _handleUploadInlineSuccess(SuccessAttachmentUploadState uploadState) {
     uploadController.clearUploadInlineViewState();
 
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl();
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (baseDownloadUrl != null && accountId != null) {
