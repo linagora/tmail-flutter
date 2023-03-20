@@ -28,4 +28,22 @@ extension URLExtension on String {
   }
 
   bool isValid() => startsWith(prefixUrlHttps) || startsWith(prefixUrlHttp);
+
+  String removeLastSlashOfUrl() {
+    final lastSlash = lastIndexOf('/');
+    if (lastSlash == length - 1) {
+      return substring(0, lastSlash);
+    } else {
+      return this;
+    }
+  }
+
+  String addFirstSlashOfUrl() {
+    final firstSlash = indexOf('/');
+    if (firstSlash == 0) {
+      return this;
+    } else {
+      return '/$this';
+    }
+  }
 }
