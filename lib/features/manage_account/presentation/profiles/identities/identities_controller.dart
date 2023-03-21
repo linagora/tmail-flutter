@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
@@ -100,7 +101,10 @@ class IdentitiesController extends BaseController {
   void _initWorker() {
     accountIdWorker = ever(_accountDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
-        _getAllIdentities(accountId);
+        final session = _accountDashBoardController.sessionCurrent.value;
+        if (session != null) {
+          _getAllIdentities(session, accountId);
+        }
       }
     });
 
@@ -113,8 +117,8 @@ class IdentitiesController extends BaseController {
     accountIdWorker.call();
   }
 
-  void _getAllIdentities(AccountId accountId) {
-    consumeState(_getAllIdentitiesInteractor.execute(accountId));
+  void _getAllIdentities(Session session, AccountId accountId) {
+    consumeState(_getAllIdentitiesInteractor.execute(session, accountId));
   }
 
   void _refreshAllIdentities() {
@@ -122,8 +126,9 @@ class IdentitiesController extends BaseController {
     listAllIdentities.clear();
 
     final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null) {
-      _getAllIdentities(accountId);
+    final session = _accountDashBoardController.sessionCurrent.value;
+    if (accountId != null && session != null) {
+      _getAllIdentities(session, accountId);
     }
   }
 
@@ -157,9 +162,9 @@ class IdentitiesController extends BaseController {
             arguments: arguments,
             onCreatedIdentity: (arguments) {
               if (arguments is CreateNewIdentityRequest) {
-                _createNewIdentityAction(accountId, arguments);
+                _createNewIdentityAction(session, accountId, arguments);
               } else if (arguments is EditIdentityRequest) {
-                _editIdentityAction(accountId, arguments);
+                _editIdentityAction(session, accountId, arguments);
               }
             });
       } else {
@@ -168,22 +173,23 @@ class IdentitiesController extends BaseController {
           arguments: arguments);
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
-          _createNewIdentityAction(accountId, newIdentityArguments);
+          _createNewIdentityAction(session, accountId, newIdentityArguments);
         } else if (newIdentityArguments is EditIdentityRequest) {
-          _editIdentityAction(accountId, newIdentityArguments);
+          _editIdentityAction(session, accountId, newIdentityArguments);
         }
       }
     }
   }
 
   void _createNewIdentityAction(
+    Session session,
     AccountId accountId, 
     CreateNewIdentityRequest identityRequest
   ) async {
     if (identityRequest.isDefaultIdentity) {
-       consumeState(_createNewDefaultIdentityInteractor.execute(accountId, identityRequest));
+       consumeState(_createNewDefaultIdentityInteractor.execute(session, accountId, identityRequest));
     } else {
-      consumeState(_createNewIdentityInteractor.execute(accountId, identityRequest));
+      consumeState(_createNewIdentityInteractor.execute(session, accountId, identityRequest));
     }
   }
 
@@ -221,9 +227,10 @@ class IdentitiesController extends BaseController {
   void _deleteIdentityAction(Identity identity) {
     popBack();
 
+    final session = _accountDashBoardController.sessionCurrent.value;
     final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null && identity.id != null) {
-      consumeState(_deleteIdentityInteractor.execute(accountId, identity.id!));
+    if (accountId != null && session != null && identity.id != null) {
+      consumeState(_deleteIdentityInteractor.execute(session, accountId, identity.id!));
     }
   }
 
@@ -280,9 +287,9 @@ class IdentitiesController extends BaseController {
             arguments: arguments,
             onCreatedIdentity: (arguments) {
               if (arguments is CreateNewIdentityRequest) {
-                _createNewIdentityAction(accountId, arguments);
+                _createNewIdentityAction(session, accountId, arguments);
               } else if (arguments is EditIdentityRequest) {
-                _editIdentityAction(accountId, arguments);
+                _editIdentityAction(session, accountId, arguments);
               }
             });
       } else {
@@ -291,22 +298,23 @@ class IdentitiesController extends BaseController {
           arguments: arguments);
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
-          _createNewIdentityAction(accountId, newIdentityArguments);
+          _createNewIdentityAction(session, accountId, newIdentityArguments);
         } else if (newIdentityArguments is EditIdentityRequest) {
-          _editIdentityAction(accountId, newIdentityArguments);
+          _editIdentityAction(session, accountId, newIdentityArguments);
         }
       }
     }
   }
 
   void _editIdentityAction(
-    AccountId accountId, 
+    Session session,
+    AccountId accountId,
     EditIdentityRequest editIdentityRequest
   ) async {
     if (editIdentityRequest.isDefaultIdentity) {
-      consumeState(_editDefaultIdentityInteractor.execute(accountId, editIdentityRequest));
+      consumeState(_editDefaultIdentityInteractor.execute(session, accountId, editIdentityRequest));
     } else {
-      consumeState(_editIdentityInteractor.execute(accountId, editIdentityRequest));
+      consumeState(_editIdentityInteractor.execute(session, accountId, editIdentityRequest));
     }
   }
 

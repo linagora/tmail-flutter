@@ -4,6 +4,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_default_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
@@ -21,13 +22,14 @@ class EditDefaultIdentityInteractor {
   );
 
   Stream<Either<Failure, Success>> execute(
-      AccountId accountId,
-      EditIdentityRequest editIdentityRequest
+    Session session,
+    AccountId accountId,
+    EditIdentityRequest editIdentityRequest
   ) async* {
     try {
       yield Right(EditDefaultIdentityLoading());
 
-      final defaultIdentities = await _getDefaultIdentities(accountId);
+      final defaultIdentities = await _getDefaultIdentities(session, accountId);
       _removeEditIdentityFromDefaultIdentities(defaultIdentities, editIdentityRequest.identityId);
 
       final editDefaultRequest = EditDefaultIdentityRequest(
@@ -38,19 +40,20 @@ class EditDefaultIdentityInteractor {
             ?.map((identity) => identity.id!)
             .toList());
 
-      final result = await _identityRepository.editIdentity(accountId, editDefaultRequest);
+      final result = await _identityRepository.editIdentity(session, accountId, editDefaultRequest);
       yield result ? Right(EditDefaultIdentitySuccess()) : Left(EditDefaultIdentityFailure(null));
     } catch (exception) {
       yield Left(EditDefaultIdentityFailure(exception));
     }
   }
 
-  Future<List<Identity>?> _getDefaultIdentities(AccountId accountId) async {
+  Future<List<Identity>?> _getDefaultIdentities(Session session, AccountId accountId) async {
     final listIdentities = await _identityRepository
-        .getAllIdentities(
-            accountId, 
-            properties: Properties({'sortOrder'})
-        );
+      .getAllIdentities(
+        session,
+        accountId,
+        properties: Properties({'sortOrder'})
+      );
     return _identityUtils
         .getSmallestOrderedIdentity(listIdentities.identities)
         ?.toList();

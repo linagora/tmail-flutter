@@ -271,13 +271,20 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             child: _buildSignatureHtmlTemplate(context),
           ),
           if (_responsiveUtils.isTablet(context) || _responsiveUtils.isMobile(context))...[
-            Obx(() => Padding(
-            padding: const EdgeInsets.only(top: 27),
-            child: SetDefaultIdentityCheckboxBuilder(
-              imagePaths: _imagePaths,
-              isCheck: controller.isDefaultIdentity.value,
-              onCheckboxChanged: controller.onCheckboxChanged),
-            )),
+            Obx(() {
+              if (controller.isDefaultIdentitySupported.isTrue) {
+                return Padding(
+                  padding: const EdgeInsets.only(top: 27),
+                  child: SetDefaultIdentityCheckboxBuilder(
+                    imagePaths: _imagePaths,
+                    isCheck: controller.isDefaultIdentity.value,
+                    onCheckboxChanged: controller.onCheckboxChanged
+                  )
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
             const SizedBox(height: 24),
             Container(
               alignment: Alignment.center,
@@ -467,10 +474,15 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
     return Row(
       children: [
         Obx(() {
-          return SetDefaultIdentityCheckboxBuilder(
-            imagePaths: _imagePaths,
-            isCheck: controller.isDefaultIdentity.value,
-            onCheckboxChanged: controller.onCheckboxChanged);
+          if (controller.isDefaultIdentitySupported.isTrue) {
+            return SetDefaultIdentityCheckboxBuilder(
+              imagePaths: _imagePaths,
+              isCheck: controller.isDefaultIdentity.value,
+              onCheckboxChanged: controller.onCheckboxChanged
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         }),
         Expanded(
           child: Padding(

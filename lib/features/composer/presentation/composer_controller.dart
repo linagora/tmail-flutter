@@ -409,8 +409,9 @@ class ComposerController extends BaseController {
 
   void _getAllIdentities() {
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null) {
-      consumeState(_getAllIdentitiesInteractor.execute(accountId));
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      consumeState(_getAllIdentitiesInteractor.execute(session, accountId));
     }
   }
 
