@@ -638,11 +638,9 @@ class ComposerController extends BaseController {
       mapKeywords[KeyWordIdentifier.emailSeen] = true;
     }
 
-    final generateEmailId = EmailId(Id(_uuid.v1()));
     final generatePartId = PartId(_uuid.v1());
 
     return Email(
-      generateEmailId,
       mailboxIds: mailboxIds.isNotEmpty ? mailboxIds : null,
       from: listFromEmailAddress,
       to: listToEmailAddress.toSet(),
@@ -988,12 +986,16 @@ class ComposerController extends BaseController {
             draftMailboxId: draftMailboxId);
         final oldEmail = arguments.presentationEmail;
 
-        if (arguments.emailActionType == EmailActionType.edit && oldEmail != null) {
+        if (arguments.emailActionType == EmailActionType.edit && oldEmail != null && oldEmail.id != null) {
           mailboxDashBoardController.consumeState(
-              _updateEmailDraftsInteractor.execute(accountId, newEmail, oldEmail.id));
+            _updateEmailDraftsInteractor.execute(
+              accountId,
+              newEmail,
+              oldEmail.id!
+            )
+          );
         } else {
-          mailboxDashBoardController.consumeState(
-              _saveEmailAsDraftsInteractor.execute(accountId, newEmail));
+          mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
         }
 
         uploadController.clearInlineFileUploaded();

@@ -157,7 +157,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   dartz.Tuple2<Email, Email?> _combineUpdatedWithEmailInCache(Email updatedEmail, List<Email>? emailCacheList) {
-    final emailOld = emailCacheList?.findEmailById(updatedEmail.id);
+    final emailOld = updatedEmail.id != null
+      ? emailCacheList?.findEmailById(updatedEmail.id!)
+      : null;
     if (emailOld != null) {
       log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit');
       return dartz.Tuple2(updatedEmail, emailOld);

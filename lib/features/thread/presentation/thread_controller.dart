@@ -887,8 +887,8 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void calculateDragValue(PresentationEmail? currentPresentationEmail) {
-    if(currentPresentationEmail != null) {
-      if(mailboxDashBoardController.listEmailSelected.findEmail(currentPresentationEmail.id) != null){
+    if (currentPresentationEmail != null) {
+      if (currentPresentationEmail.id != null && mailboxDashBoardController.listEmailSelected.findEmail(currentPresentationEmail.id!) != null){
         listEmailDrag.clear();
         listEmailDrag.addAll(mailboxDashBoardController.listEmailSelected);
       } else {

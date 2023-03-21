@@ -41,6 +41,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -54,14 +55,16 @@ import 'package:tmail_ui_user/features/email/domain/state/download_attachment_fo
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:uuid/uuid.dart';
 
 class EmailAPI with HandleSetErrorMixin {
 
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
   final DioClient _dioClient;
+  final Uuid _uuid;
 
-  EmailAPI(this._httpClient, this._downloadManager, this._dioClient);
+  EmailAPI(this._httpClient, this._downloadManager, this._dioClient, this._uuid);
 
   Future<Email> getEmailContent(AccountId accountId, EmailId emailId) async {
     final processingInvocation = ProcessingInvocation();
@@ -129,8 +132,9 @@ class EmailAPI with HandleSetErrorMixin {
       emailNeedsToBeCreated = emailRequest.email;
     }
 
+    final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addCreate(emailNeedsToBeCreated.id.id, emailNeedsToBeCreated);
+      ..addCreate(idCreateMethod, emailNeedsToBeCreated);
 
     if (emailRequest.emailIdDestroyed != null) {
       setEmailMethod.addDestroy({emailRequest.emailIdDestroyed!.id});
@@ -142,7 +146,7 @@ class EmailAPI with HandleSetErrorMixin {
           emailRequest.submissionCreateId,
           EmailSubmission(
               identityId: emailRequest.identity?.id?.id,
-              emailId: EmailId(ReferenceId(ReferencePrefix.defaultPrefix, emailNeedsToBeCreated.id.id)),
+              emailId: EmailId(ReferenceId(ReferencePrefix.defaultPrefix, idCreateMethod)),
               envelope: Envelope(
                   Address(emailNeedsToBeCreated.from?.first.email ?? ''),
                   emailNeedsToBeCreated.getRecipientEmailAddressList().map((emailAddress) => Address(emailAddress)).toSet()
@@ -173,7 +177,7 @@ class EmailAPI with HandleSetErrorMixin {
       SetEmailSubmissionResponse.deserialize,
       methodName: setEmailInvocation.methodName);
 
-    final emailCreated = setEmailResponse?.created?[emailNeedsToBeCreated.id.id];
+    final emailCreated = setEmailResponse?.created?[idCreateMethod];
     final listEntriesErrors = _handleSetEmailResponse(
       response: setEmailResponse,
       submissionResponse: setEmailSubmissionResponse
@@ -218,13 +222,11 @@ class EmailAPI with HandleSetErrorMixin {
   }
 
   Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) async {
-    final emailIds = emails.map((email) => email.id).toList();
-
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(emailIds.generateMapUpdateObjectMarkAsRead(readActions));
+      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(readActions));
 
     final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds(emailIds.toIds().toSet())
+      ..addIds(emails.listEmailIds.toIds().toSet())
       ..addProperties(Properties({'keywords'}));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
@@ -406,13 +408,11 @@ class EmailAPI with HandleSetErrorMixin {
 
 
   Future<List<Email>> markAsStar(AccountId accountId, List<Email> emails, MarkStarAction markStarAction) async {
-    final emailIds = emails.map((email) => email.id).toList();
-
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(emailIds.generateMapUpdateObjectMarkAsStar(markStarAction));
+      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsStar(markStarAction));
 
     final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds(emailIds.toIds().toSet())
+      ..addIds(emails.listEmailIds.toIds().toSet())
       ..addProperties(Properties({'keywords'}));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
@@ -438,8 +438,9 @@ class EmailAPI with HandleSetErrorMixin {
   }
 
   Future<Email> saveEmailAsDrafts(AccountId accountId, Email email) async {
+    final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addCreate(email.id.id, email);
+      ..addCreate(idCreateMethod, email);
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
@@ -455,7 +456,7 @@ class EmailAPI with HandleSetErrorMixin {
       SetEmailResponse.deserialize
     );
 
-    final emailCreated = setEmailResponse?.created?[email.id.id];
+    final emailCreated = setEmailResponse?.created?[idCreateMethod];
     final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
@@ -491,8 +492,9 @@ class EmailAPI with HandleSetErrorMixin {
   }
 
   Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) async {
+    final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addCreate(newEmail.id.id, newEmail)
+      ..addCreate(idCreateMethod, newEmail)
       ..addDestroy({oldEmailId.id});
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
@@ -509,7 +511,7 @@ class EmailAPI with HandleSetErrorMixin {
       SetEmailResponse.deserialize
     );
 
-    final emailUpdated = setEmailResponse?.created?[newEmail.id.id];
+    final emailUpdated = setEmailResponse?.created?[idCreateMethod];
     final isEmailDestroyedSuccess = setEmailResponse?.destroyed?.contains(oldEmailId.id) ?? false;
     final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse);
     final mapErrors = Map.fromEntries(listEntriesErrors);

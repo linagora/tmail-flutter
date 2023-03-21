@@ -34,7 +34,7 @@ extension EmailExtension on Email {
 
   Email updatedEmail({Map<KeyWordIdentifier, bool>? newKeywords, Map<MailboxId, bool>? newMailboxIds}) {
     return Email(
-        id,
+        id: id,
         keywords: newKeywords ?? keywords,
         size: size,
         receivedAt: receivedAt,
@@ -57,7 +57,7 @@ extension EmailExtension on Email {
 
   PresentationEmail toPresentationEmail({SelectMode selectMode = SelectMode.INACTIVE}) {
     return PresentationEmail(
-      id,
+      id: id,
       keywords: keywords,
       size: size,
       receivedAt: receivedAt,
@@ -77,7 +77,7 @@ extension EmailExtension on Email {
 
   Email combineEmail(Email newEmail, Properties updatedProperties) {
     return Email(
-      newEmail.id,
+      id: newEmail.id,
       keywords: updatedProperties.contain(EmailProperty.keywords) ? newEmail.keywords : keywords,
       size: updatedProperties.contain(EmailProperty.size) ? newEmail.size : size,
       receivedAt: updatedProperties.contain(EmailProperty.receivedAt) ? newEmail.receivedAt : receivedAt,

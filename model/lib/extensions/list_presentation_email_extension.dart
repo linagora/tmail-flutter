@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -18,7 +19,7 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
     return where((email) => email.selectMode == SelectMode.ACTIVE).toList();
   }
 
-  List<EmailId> get listEmailIds => map((email) => email.id).toList();
+  List<EmailId> get listEmailIds => map((email) => email.id).whereNotNull().toList();
 
   bool isAllCanDeletePermanently(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final listMailboxContain = map((email) => email.findMailboxContain(mapMailbox))
@@ -88,9 +89,13 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
 
   List<PresentationEmail> combine(List<PresentationEmail> listEmailBefore)  {
     return map((presentationEmail) {
-      final emailBefore = listEmailBefore.findEmail(presentationEmail.id);
-      if (emailBefore != null) {
-        return presentationEmail.toSelectedEmail(selectMode: emailBefore.selectMode);
+      if (presentationEmail.id != null) {
+        final emailBefore = listEmailBefore.findEmail(presentationEmail.id!);
+        if (emailBefore != null) {
+          return presentationEmail.toSelectedEmail(selectMode: emailBefore.selectMode);
+        } else {
+          return presentationEmail;
+        }
       } else {
         return presentationEmail;
       }
