@@ -1,5 +1,6 @@
 
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
@@ -21,6 +22,7 @@ class SpamReportDataSourceImpl extends SpamReportDataSource {
 
   @override
   Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(
+    Session session,
     AccountId accountId,
     {
       MailboxFilterCondition? mailboxFilterCondition,
@@ -29,7 +31,10 @@ class SpamReportDataSourceImpl extends SpamReportDataSource {
   ) {
      return Future.sync(() async {
       final unreadSpamEmailsResponse = await _spamReportApi.getUnreadSpamEmailbox(
-        accountId, mailboxFilterCondition: mailboxFilterCondition, limit: limit);
+        session,
+        accountId,
+        mailboxFilterCondition: mailboxFilterCondition,
+        limit: limit);
       return unreadSpamEmailsResponse;
     }).catchError(_exceptionThrower.throwException);
   }

@@ -2,6 +2,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:model/extensions/mailbox_extension.dart';
@@ -61,10 +62,13 @@ class SpamReportController extends BaseController {
     _storeLastTimeDismissedSpamReportedAction();
   }
 
-  void getUnreadSpamMailboxAction(AccountId accountId) {
+  void getUnreadSpamMailboxAction(Session session, AccountId accountId) {
     final mailboxFilterCondition = MailboxFilterCondition(role: Role('Spam'));
     getSpamReportStateAction();
-    consumeState(_getNumberOfUnreadSpamEmailsInteractor.execute(accountId,mailboxFilterCondition: mailboxFilterCondition));
+    consumeState(_getNumberOfUnreadSpamEmailsInteractor.execute(
+      session,
+      accountId,
+      mailboxFilterCondition: mailboxFilterCondition));
   }
 
   void _storeLastTimeDismissedSpamReportedAction() {
