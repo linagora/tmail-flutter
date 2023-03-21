@@ -571,10 +571,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "7d6d50b470e31917d22a31028b485e16685b30a8"
+      resolved-ref: "609fce1ac4d877d74290728711a1e3629e29ed3c"
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
-    version: "1.0.1"
+    version: "1.0.2"
   flutter_dotenv:
     dependency: "direct main"
     description:
