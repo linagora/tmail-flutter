@@ -8,7 +8,7 @@ extension EmailExtension on Email {
 
   EmailCache toEmailCache() {
     return EmailCache(
-      id.id.value,
+      id!.id.value,
       keywords: keywords?.toMapString(),
       size: size?.value.round(),
       receivedAt: receivedAt?.value,

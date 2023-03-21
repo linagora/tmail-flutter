@@ -13,7 +13,7 @@ import 'package:model/mailbox/select_mode.dart';
 
 class PresentationEmail with EquatableMixin {
 
-  final EmailId id;
+  final EmailId? id;
   final Map<KeyWordIdentifier, bool>? keywords;
   final UnsignedInt? size;
   final UTCDate? receivedAt;
@@ -32,28 +32,26 @@ class PresentationEmail with EquatableMixin {
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
 
-  PresentationEmail(
+  PresentationEmail({
     this.id,
-    {
-      this.keywords,
-      this.size,
-      this.receivedAt,
-      this.hasAttachment,
-      this.preview,
-      this.subject,
-      this.sentAt,
-      this.from,
-      this.to,
-      this.cc,
-      this.bcc,
-      this.replyTo,
-      this.mailboxIds,
-      this.mailboxNames,
-      this.selectMode = SelectMode.INACTIVE,
-      this.routeWeb,
-      this.mailboxContain
-    }
-  );
+    this.keywords,
+    this.size,
+    this.receivedAt,
+    this.hasAttachment,
+    this.preview,
+    this.subject,
+    this.sentAt,
+    this.from,
+    this.to,
+    this.cc,
+    this.bcc,
+    this.replyTo,
+    this.mailboxIds,
+    this.mailboxNames,
+    this.selectMode = SelectMode.INACTIVE,
+    this.routeWeb,
+    this.mailboxContain
+  });
 
   String getSenderName() {
     if (from?.isNotEmpty == true) {
