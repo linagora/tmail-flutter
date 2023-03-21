@@ -172,8 +172,8 @@ class SearchEmailController extends BaseController
         textOption: value.isNotEmpty ? Some(SearchQuery(value)) : const None(),
         beforeOption: const None()
       );
-      if (value.isNotEmpty && accountId != null) {
-        listSuggestionSearch.value = await quickSearchEmails(accountId: accountId!);
+      if (value.isNotEmpty && session != null && accountId != null) {
+        listSuggestionSearch.value = await quickSearchEmails(session: session!, accountId: accountId!);
       } else {
         listSuggestionSearch.clear();
       }
@@ -215,12 +215,13 @@ class SearchEmailController extends BaseController
   }
 
   void _refreshEmailChanges() {
-    if (searchIsRunning.isTrue && accountId != null) {
+    if (searchIsRunning.isTrue && session != null && accountId != null) {
       final limit = listResultSearch.isNotEmpty
           ? UnsignedInt(listResultSearch.length)
           : ThreadConstants.defaultLimit;
       _updateSimpleSearchFilter(beforeOption: const None());
       consumeState(_refreshChangesSearchEmailInteractor.execute(
+        session!,
         accountId!,
         limit: limit,
         sort: <Comparator>{}
@@ -259,15 +260,20 @@ class SearchEmailController extends BaseController
             : <RecentSearch>[]));
   }
 
-  Future<List<PresentationEmail>> quickSearchEmails({required AccountId accountId}) async {
+  Future<List<PresentationEmail>> quickSearchEmails({
+    required AccountId accountId,
+    required Session session,
+  }) async {
     return _quickSearchEmailInteractor
-        .execute(accountId,
-            limit: UnsignedInt(5),
+        .execute(
+          session,
+          accountId,
+          limit: UnsignedInt(5),
             sort: <Comparator>{}..add(
-                EmailComparator(EmailComparatorProperty.receivedAt)
-                  ..setIsAscending(false)),
-            filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
-            properties: ThreadConstants.propertiesQuickSearch)
+              EmailComparator(EmailComparatorProperty.receivedAt)
+                ..setIsAscending(false)),
+          filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
+          properties: ThreadConstants.propertiesQuickSearch)
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
             (success) => success is QuickSearchEmailSuccess
@@ -282,12 +288,13 @@ class SearchEmailController extends BaseController
   void _searchEmailAction(BuildContext context) {
     FocusScope.of(context).unfocus();
 
-    if (accountId != null) {
+    if (session != null && accountId != null) {
       canSearchMore = true;
       searchIsRunning.value = true;
       cancelSelectionMode(context);
 
       consumeState(_searchEmailInteractor.execute(
+        session!,
         accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: <Comparator>{}
@@ -327,19 +334,20 @@ class SearchEmailController extends BaseController
   }
 
   void searchMoreEmailsAction() {
-    if (canSearchMore && accountId != null) {
+    if (canSearchMore && session != null && accountId != null) {
       final lastEmail = listResultSearch.last;
       _updateSimpleSearchFilter(beforeOption: optionOf(lastEmail.receivedAt));
 
       consumeState(_searchMoreEmailInteractor.execute(
-          accountId!,
-          limit: ThreadConstants.defaultLimit,
-          sort: <Comparator>{}
-            ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-              ..setIsAscending(false)),
-          filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
-          properties: ThreadConstants.propertiesDefault,
-          lastEmailId: lastEmail.id
+        session!,
+        accountId!,
+        limit: ThreadConstants.defaultLimit,
+        sort: <Comparator>{}
+          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+            ..setIsAscending(false)),
+        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
+        properties: ThreadConstants.propertiesDefault,
+        lastEmailId: lastEmail.id
       ));
     }
   }

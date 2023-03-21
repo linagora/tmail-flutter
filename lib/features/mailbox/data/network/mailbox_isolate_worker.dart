@@ -43,25 +43,27 @@ class MailboxIsolateWorker {
   ) async {
     if (BuildUtils.isWeb) {
       return _handleMarkAsMailboxReadActionOnWeb(
-          accountId,
-          mailboxId,
-          totalEmailUnread,
-          onProgressController);
+        session,
+        accountId,
+        mailboxId,
+        totalEmailUnread,
+        onProgressController);
     } else {
       final result = await _isolateExecutor.execute(
           arg1: MailboxMarkAsReadArguments(
-              _threadApi,
-              _emailApi,
-              accountId,
-              mailboxId),
+            session,
+            _threadApi,
+            _emailApi,
+            accountId,
+            mailboxId),
           fun1: _handleMarkAsMailboxReadAction,
           notification: (value) {
             if (value is List<Email>) {
               log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
               onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
-                  mailboxId: mailboxId,
-                  totalUnread: totalEmailUnread,
-                  countRead: value.length)));
+                mailboxId: mailboxId,
+                totalUnread: totalEmailUnread,
+                countRead: value.length)));
             }
           });
       return result;
@@ -80,16 +82,18 @@ class MailboxIsolateWorker {
 
       while (mailboxHasEmails) {
         final emailResponse = await args.threadAPI
-            .getAllEmail(args.accountId,
-                limit: UnsignedInt(30),
-                filter: EmailFilterCondition(
+            .getAllEmail(
+              args.session,
+              args.accountId,
+              limit: UnsignedInt(30),
+              filter: EmailFilterCondition(
                     inMailbox: args.mailboxId,
                     notKeyword: KeyWordIdentifier.emailSeen.value,
                     before: lastReceivedDate),
-                sort: <Comparator>{}..add(
-                    EmailComparator(EmailComparatorProperty.receivedAt)
-                      ..setIsAscending(false)),
-                properties: Properties({
+              sort: <Comparator>{}..add(
+                EmailComparator(EmailComparatorProperty.receivedAt)
+                  ..setIsAscending(false)),
+              properties: Properties({
                   EmailProperty.id,
                   EmailProperty.keywords,
                   EmailProperty.receivedAt,
@@ -98,8 +102,8 @@ class MailboxIsolateWorker {
               var listEmails = response.emailList;
               if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
                 listEmails = listEmails
-                    .where((email) => email.id != lastEmailId)
-                    .toList();
+                  .where((email) => email.id != lastEmailId)
+                  .toList();
               }
               return EmailsResponse(emailList: listEmails, state: response.state);
             });
@@ -131,10 +135,11 @@ class MailboxIsolateWorker {
   }
 
   Future<List<Email>> _handleMarkAsMailboxReadActionOnWeb(
-      AccountId accountId,
-      MailboxId mailboxId,
-      int totalEmailUnread,
-      StreamController<Either<Failure, Success>> onProgressController
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailUnread,
+    StreamController<Either<Failure, Success>> onProgressController
   ) async {
     List<Email> emailListCompleted = List.empty(growable: true);
     try {
@@ -144,28 +149,30 @@ class MailboxIsolateWorker {
 
       while (mailboxHasEmails) {
         final emailResponse = await _threadApi
-            .getAllEmail(accountId,
-                limit: UnsignedInt(30),
-                filter: EmailFilterCondition(
-                    inMailbox: mailboxId,
-                    notKeyword: KeyWordIdentifier.emailSeen.value,
-                    before: lastReceivedDate),
-                sort: <Comparator>{}..add(
+            .getAllEmail(
+              session,
+              accountId,
+              limit: UnsignedInt(30),
+              filter: EmailFilterCondition(
+                inMailbox: mailboxId,
+                notKeyword: KeyWordIdentifier.emailSeen.value,
+                before: lastReceivedDate),
+              sort: <Comparator>{}..add(
                     EmailComparator(EmailComparatorProperty.receivedAt)
                       ..setIsAscending(false)),
-                properties: Properties({
+              properties: Properties({
                   EmailProperty.id,
                   EmailProperty.keywords,
                   EmailProperty.receivedAt,
-                }))
-            .then((response) {
-                var listEmails = response.emailList;
-                if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
-                  listEmails = listEmails
-                      .where((email) => email.id != lastEmailId)
-                      .toList();
-                }
-                return EmailsResponse(emailList: listEmails, state: response.state);
+              })
+            ).then((response) {
+              var listEmails = response.emailList;
+              if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
+                listEmails = listEmails
+                  .where((email) => email.id != lastEmailId)
+                  .toList();
+            }
+              return EmailsResponse(emailList: listEmails, state: response.state);
             });
         final listEmailUnread = emailResponse.emailList;
 

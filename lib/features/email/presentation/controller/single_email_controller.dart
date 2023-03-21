@@ -293,6 +293,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentAction(EmailId emailId) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
     final emailLoaded = emailSupervisorController.getEmailInQueueByEmailId(emailId);
@@ -305,8 +306,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailLoaded.emailContentsDisplayed,
         emailLoaded.attachments,
         emailLoaded.emailCurrent))));
-    } else if (accountId != null && baseDownloadUrl != null) {
-      consumeState(_getEmailContentInteractor.execute(accountId, emailId, baseDownloadUrl));
+    } else if (session != null && accountId != null && baseDownloadUrl != null) {
+      consumeState(_getEmailContentInteractor.execute(session, accountId, emailId, baseDownloadUrl));
     }
   }
 

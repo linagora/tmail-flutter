@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dar
 
 abstract class ThreadRepository {
   Stream<EmailsResponse> getAllEmail(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -26,6 +28,7 @@ abstract class ThreadRepository {
   );
 
   Stream<EmailsResponse> refreshChanges(
+    Session session,
     AccountId accountId,
     jmap.State currentState,
     {
@@ -39,6 +42,7 @@ abstract class ThreadRepository {
   Stream<EmailsResponse> loadMoreEmails(GetEmailRequest emailRequest);
 
   Future<List<Email>> searchEmails(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -49,9 +53,15 @@ abstract class ThreadRepository {
   );
 
   Future<List<EmailId>> emptyTrashFolder(
-      AccountId accountId,
-      MailboxId trashMailboxId,
+    Session session,
+    AccountId accountId,
+    MailboxId trashMailboxId,
   );
 
-  Future<PresentationEmail> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties});
+  Future<PresentationEmail> getEmailById(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {Properties? properties}
+  );
 }

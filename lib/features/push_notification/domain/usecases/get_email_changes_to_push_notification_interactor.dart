@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
@@ -14,6 +15,7 @@ class GetEmailChangesToPushNotificationInteractor {
   GetEmailChangesToPushNotificationInteractor(this._fcmRepository);
 
   Stream<Either<Failure, Success>> execute(
+    Session session,
     AccountId accountId,
     jmap.State currentState,
     {
@@ -25,6 +27,7 @@ class GetEmailChangesToPushNotificationInteractor {
       yield Right<Failure, Success>(GetEmailChangesToPushNotificationLoading());
 
       final emailsResponse = await _fcmRepository.getEmailChangesToPushNotification(
+        session,
         accountId,
         currentState,
         propertiesCreated: propertiesCreated,

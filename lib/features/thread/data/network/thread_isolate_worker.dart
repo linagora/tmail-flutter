@@ -4,6 +4,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
@@ -25,15 +26,16 @@ class ThreadIsolateWorker {
   ThreadIsolateWorker(this._threadAPI, this._emailAPI, this._isolateExecutor);
 
   Future<List<EmailId>> emptyTrashFolder(
+    Session session,
     AccountId accountId,
     MailboxId mailboxId,
     Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   ) async {
     if (BuildUtils.isWeb) {
-      return _emptyTrashFolderOnWeb(accountId, mailboxId, updateDestroyedEmailCache);
+      return _emptyTrashFolderOnWeb(session, accountId, mailboxId, updateDestroyedEmailCache);
     } else {
       final result = await _isolateExecutor.execute(
-          arg1: EmptyTrashFolderArguments(_threadAPI, _emailAPI, accountId, mailboxId),
+          arg1: EmptyTrashFolderArguments(session, _threadAPI, _emailAPI, accountId, mailboxId),
           fun1: _emptyTrashFolderAction,
           notification: (value) {
             if (value is List<EmailId>) {
@@ -52,12 +54,14 @@ class ThreadIsolateWorker {
       Email? lastEmail;
 
       while (hasEmails) {
-        final emailsResponse = await args.threadAPI.getAllEmail(args.accountId,
-            sort: <Comparator>{}..add(
-                EmailComparator(EmailComparatorProperty.receivedAt)
-                  ..setIsAscending(false)),
-            filter: EmailFilterCondition(inMailbox: args.trashMailboxId, before: lastEmail?.receivedAt),
-            properties: Properties({EmailProperty.id}));
+        final emailsResponse = await args.threadAPI.getAllEmail(
+          args.session,
+          args.accountId,
+          sort: <Comparator>{}..add(
+            EmailComparator(EmailComparatorProperty.receivedAt)
+              ..setIsAscending(false)),
+          filter: EmailFilterCondition(inMailbox: args.trashMailboxId, before: lastEmail?.receivedAt),
+          properties: Properties({EmailProperty.id}));
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
         if (lastEmail != null) {
@@ -89,6 +93,7 @@ class ThreadIsolateWorker {
   }
 
   Future<List<EmailId>> _emptyTrashFolderOnWeb(
+    Session session,
     AccountId accountId,
     MailboxId trashMailboxId,
     Future<void> Function(List<EmailId> newDestroyed) updateDestroyedEmailCache,
@@ -99,12 +104,14 @@ class ThreadIsolateWorker {
       Email? lastEmail;
 
       while (hasEmails) {
-        final emailsResponse = await _threadAPI.getAllEmail(accountId,
-            sort: <Comparator>{}..add(
-                EmailComparator(EmailComparatorProperty.receivedAt)
-                  ..setIsAscending(false)),
-            filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),
-            properties: Properties({EmailProperty.id}));
+        final emailsResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          sort: <Comparator>{}..add(
+            EmailComparator(EmailComparatorProperty.receivedAt)
+              ..setIsAscending(false)),
+          filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),
+          properties: Properties({EmailProperty.id}));
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
         if (lastEmail != null) {

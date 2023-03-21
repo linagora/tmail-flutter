@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mail
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
+import '../../../../fixtures/session_fixtures.dart';
 import 'get_emails_in_mailbox_interactor_test.mocks.dart';
 
 @GenerateMocks([ThreadRepository])
@@ -37,6 +38,7 @@ void main() {
 
     test('getEmailsInMailboxInteractor should execute to get all email from cache and network', () async {
       when(threadRepository.getAllEmail(
+          SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
           limit: UnsignedInt(20),
           sort: {}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
@@ -65,6 +67,7 @@ void main() {
         }));
 
       final streamStates = getEmailsInMailboxInteractor.execute(
+        SessionFixtures.aliceSession,
         AccountFixtures.aliceAccountId,
         limit: UnsignedInt(20),
         sort: {}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),

@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -17,6 +19,7 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class ThreadAPI {
 
@@ -24,7 +27,25 @@ class ThreadAPI {
 
   ThreadAPI(this.httpClient);
 
+  Set<CapabilityIdentifier> _capabilitiesForEmailMethod(Session session, AccountId accountId) {
+    final getMailboxCreated = GetEmailMethod(accountId);
+    try {
+      requireCapability(
+          session,
+          accountId,
+          [CapabilityIdentifier.jmapTeamMailboxes]);
+      return {
+        CapabilityIdentifier.jmapCore,
+        CapabilityIdentifier.jmapMail,
+        CapabilityIdentifier.jmapTeamMailboxes
+      };
+    } catch (_) {
+      return getMailboxCreated.requiredCapabilities;
+    }
+  }
+
   Future<EmailsResponse> getAllEmail(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -58,7 +79,7 @@ class ThreadAPI {
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
     final result = await (jmapRequestBuilder
-        ..usings(getEmailMethod.requiredCapabilities))
+        ..usings(_capabilitiesForEmailMethod(session, accountId)))
       .build()
       .execute();
 
@@ -75,6 +96,7 @@ class ThreadAPI {
   }
 
   Future<EmailChangeResponse> getChanges(
+    Session session,
     AccountId accountId,
     State sinceState,
     {
@@ -112,7 +134,7 @@ class ThreadAPI {
     final getEmailCreatedInvocation = jmapRequestBuilder.invocation(getEmailCreated);
 
     final result = await (jmapRequestBuilder
-        ..usings(getEmailCreated.requiredCapabilities))
+        ..usings(_capabilitiesForEmailMethod(session, accountId)))
       .build()
       .execute();
 
@@ -140,7 +162,7 @@ class ThreadAPI {
       updatedProperties: propertiesUpdated);
   }
 
-  Future<Email> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties}) async {
+  Future<Email> getEmailById(Session session, AccountId accountId, EmailId emailId, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
@@ -154,7 +176,7 @@ class ThreadAPI {
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
     final result = await (jmapRequestBuilder
-        ..usings(getEmailMethod.requiredCapabilities))
+        ..usings(_capabilitiesForEmailMethod(session, accountId)))
       .build()
       .execute();
 

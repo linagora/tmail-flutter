@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -103,6 +104,8 @@ class ThreadController extends BaseController with EmailActionController {
   bool get isLoadingMore => _isLoadingMore;
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
+
+  Session? get _session => mailboxDashBoardController.sessionCurrent;
 
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
@@ -387,8 +390,9 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _getAllEmailAction() {
-    if (_accountId != null) {
+    if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
+        _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
@@ -458,8 +462,9 @@ class ThreadController extends BaseController with EmailActionController {
     } else {
       final newEmailState = currentEmailState ?? _currentEmailState;
       log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
-      if (_accountId != null && newEmailState != null) {
+      if (_session != null && _accountId != null && newEmailState != null) {
         consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
+          _session!,
           _accountId!,
           newEmailState,
           sort: _sortOrder,
@@ -477,12 +482,13 @@ class ThreadController extends BaseController with EmailActionController {
 
   void loadMoreEmails() {
     log('ThreadController::loadMoreEmails()');
-    if (canLoadMore && _accountId != null) {
+    if (canLoadMore && _session != null && _accountId != null) {
       final oldestEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
+          _session!,
           _accountId!,
           limit: ThreadConstants.defaultLimit,
           sort: _sortOrder,
@@ -665,7 +671,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _searchEmail({UnsignedInt? limit}) {
-    if (_accountId != null) {
+    if (_session != null && _accountId != null) {
       if (listEmailController.hasClients) {
         listEmailController.jumpTo(0);
       }
@@ -676,6 +682,7 @@ class ThreadController extends BaseController with EmailActionController {
       searchController.activateSimpleSearch();
 
       consumeState(_searchEmailInteractor.execute(
+        _session!,
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
         sort: _sortOrder,
@@ -716,12 +723,13 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void searchMoreEmails() {
-    if (canSearchMore && _accountId != null) {
+    if (canSearchMore && _session != null && _accountId != null) {
       final oldestEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
       searchController.updateFilterEmail(beforeOption: optionOf(oldestEmail?.receivedAt));
       consumeState(_searchMoreEmailInteractor.execute(
+        _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
@@ -935,8 +943,9 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _getEmailByIdAction(EmailId emailId) {
-    if (_accountId != null) {
+    if (_session != null && _accountId != null) {
       consumeState(_getEmailByIdInteractor.execute(
+        _session!,
         _accountId!,
         emailId,
         properties: ThreadConstants.propertiesDefault));
