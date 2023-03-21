@@ -1074,8 +1074,8 @@ class MailboxDashBoardController extends ReloadableController {
     onCancelSelectionEmail?.call();
 
     final trashMailboxId = mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
-    if (accountId.value != null && trashMailboxId != null) {
-      consumeState(_emptyTrashFolderInteractor.execute(accountId.value!, trashMailboxId));
+    if (sessionCurrent != null && accountId.value != null && trashMailboxId != null) {
+      consumeState(_emptyTrashFolderInteractor.execute(sessionCurrent!, accountId.value!, trashMailboxId));
     }
   }
 
@@ -1285,7 +1285,10 @@ class MailboxDashBoardController extends ReloadableController {
     searchController.addFilterToSuggestionForm(filter);
   }
 
-  Future<List<PresentationEmail>> quickSearchEmails() => searchController.quickSearchEmails(accountId: accountId.value!);
+  Future<List<PresentationEmail>> quickSearchEmails() => searchController.quickSearchEmails(
+    session: sessionCurrent!,
+    accountId: accountId.value!
+  );
 
   void addDownloadTask(DownloadTaskState task) {
     downloadController.addDownloadTask(task);
@@ -1479,11 +1482,12 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleNotificationMessageFromEmailId(EmailId emailId, {bool onForeground = true}) {
     final currentAccountId = accountId.value;
-    if (currentAccountId != null) {
+    final session = sessionCurrent;
+    if (currentAccountId != null && session != null) {
       if (onForeground) {
         _showWaitingView();
       }
-      _getPresentationEmailFromEmailIdAction(emailId, currentAccountId);
+      _getPresentationEmailFromEmailIdAction(emailId, currentAccountId, session);
     } else {
       dispatchRoute(DashboardRoutes.thread);
     }
@@ -1500,9 +1504,10 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute(DashboardRoutes.thread);
   }
 
-  void _getPresentationEmailFromEmailIdAction(EmailId emailId, AccountId accountId) {
+  void _getPresentationEmailFromEmailIdAction(EmailId emailId, AccountId accountId, Session session) {
     log('MailboxDashBoardController:_getPresentationEmailFromEmailIdAction:emailId: $emailId');
     consumeState(_getEmailByIdInteractor.execute(
+      session,
       accountId,
       emailId,
       properties: ThreadConstants.propertiesDefault

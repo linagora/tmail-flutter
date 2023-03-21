@@ -3,6 +3,7 @@ import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/extensions/fcm_subscription_extensions.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
@@ -25,6 +26,7 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<EmailsResponse> getEmailChangesToPushNotification(
+    Session session,
     AccountId accountId,
     jmap.State currentState,
     {
@@ -38,6 +40,7 @@ class FCMRepositoryImpl extends FCMRepository {
 
     while (hasMoreChanges && sinceState != null) {
       final changesResponse = await _threadDataSource.getChanges(
+        session,
         accountId,
         sinceState,
         propertiesCreated: propertiesCreated,

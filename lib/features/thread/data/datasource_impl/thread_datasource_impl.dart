@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -32,6 +33,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
 
   @override
   Future<EmailsResponse> getAllEmail(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -42,6 +44,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   ) {
     return Future.sync(() async {
       return await threadAPI.getAllEmail(
+        session,
         accountId,
         limit: limit,
         sort: sort,
@@ -52,15 +55,17 @@ class ThreadDataSourceImpl extends ThreadDataSource {
 
   @override
   Future<EmailChangeResponse> getChanges(
-      AccountId accountId,
-      State sinceState,
-      {
-        Properties? propertiesCreated,
-        Properties? propertiesUpdated
-      }
+    Session session,
+    AccountId accountId,
+    State sinceState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
   ) {
     return Future.sync(() async {
       return await threadAPI.getChanges(
+        session,
         accountId,
         sinceState,
         propertiesCreated: propertiesCreated,
@@ -79,20 +84,26 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<EmailId>> emptyTrashFolder(AccountId accountId, MailboxId mailboxId, Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache) {
+  Future<List<EmailId>> emptyTrashFolder(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache
+  ) {
     return Future.sync(() async {
       return await _threadIsolateWorker.emptyTrashFolder(
-          accountId,
-          mailboxId,
-          updateDestroyedEmailCache,
+        session,
+        accountId,
+        mailboxId,
+        updateDestroyedEmailCache,
       );
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<PresentationEmail> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties}) {
+  Future<PresentationEmail> getEmailById(Session session, AccountId accountId, EmailId emailId, {Properties? properties}) {
     return Future.sync(() async {
-      final email = await threadAPI.getEmailById(accountId, emailId, properties: properties);
+      final email = await threadAPI.getEmailById(session, accountId, emailId, properties: properties);
       return email.toPresentationEmail();
     }).catchError(_exceptionThrower.throwException);
   }

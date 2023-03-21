@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -103,10 +104,12 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   Future<List<PresentationEmail>> quickSearchEmails({
+    required Session session,
     required AccountId accountId,
     UserProfile? userProfile
   }) async {
     return await _quickSearchEmailInteractor.execute(
+      session,
       accountId,
       limit: UnsignedInt(5),
       sort: <Comparator>{}..add(

@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
@@ -13,6 +14,7 @@ class GetEmailByIdInteractor {
   GetEmailByIdInteractor(this._threadRepository);
 
   Stream<Either<Failure, Success>> execute(
+    Session session,
     AccountId accountId,
     EmailId emailId,
     {
@@ -21,7 +23,7 @@ class GetEmailByIdInteractor {
   ) async* {
     try {
       yield Right<Failure, Success>(GetEmailByIdLoading());
-      final email = await _threadRepository.getEmailById(accountId, emailId, properties: properties);
+      final email = await _threadRepository.getEmailById(session, accountId, emailId, properties: properties);
       yield Right<Failure, Success>(GetEmailByIdSuccess(email));
     } catch (e) {
       yield Left<Failure, Success>(GetEmailByIdFailure(e));

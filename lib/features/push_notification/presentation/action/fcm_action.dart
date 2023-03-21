@@ -1,6 +1,7 @@
 
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
@@ -20,16 +21,18 @@ class SynchronizeEmailOnForegroundAction extends FcmStateChangeAction {
 
 class PushNotificationAction extends FcmStateChangeAction {
 
+  final Session session;
   final AccountId accountId;
 
   PushNotificationAction(
     TypeName typeName,
     jmap.State newState,
+    this.session,
     this.accountId
   ) : super(typeName, newState);
 
   @override
-  List<Object?> get props => [typeName, newState, accountId];
+  List<Object?> get props => [typeName, newState, accountId, session];
 }
 
 class StoreEmailStateToRefreshAction extends FcmStateChangeAction {

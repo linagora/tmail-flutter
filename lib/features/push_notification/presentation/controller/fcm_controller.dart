@@ -10,6 +10,7 @@ import 'package:dartz/dartz.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/oidc/token_oidc.dart';
@@ -37,6 +38,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class FcmController extends BaseController {
 
   AccountId? _currentAccountId;
+  Session? _currentSession;
   RemoteMessage? _remoteMessageBackground;
 
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
@@ -50,7 +52,8 @@ class FcmController extends BaseController {
 
   static FcmController get instance => _instance;
 
-  void initialize({AccountId? accountId}) {
+  void initialize({Session? session, AccountId? accountId}) {
+    _currentSession = session;
     _currentAccountId = accountId;
     FcmTokenHandler.instance.initialize();
   }
@@ -86,10 +89,10 @@ class FcmController extends BaseController {
 
   void _handleForegroundMessageAction(RemoteMessage newRemoteMessage) {
     log('FcmController::_handleForegroundMessageAction():remoteMessage: ${newRemoteMessage.data}');
-    if (_currentAccountId != null) {
+    if (_currentAccountId != null && _currentSession != null) {
       final stateChange = _convertRemoteMessageToStateChange(newRemoteMessage);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!);
+      _mappingTypeStateToAction(_currentSession!, mapTypeState, _currentAccountId!);
     }
   }
 
@@ -105,6 +108,7 @@ class FcmController extends BaseController {
   }
 
   void _mappingTypeStateToAction(
+    Session session,
     Map<String, dynamic> mapTypeState,
     AccountId accountId, {
     bool isForeground = true,
@@ -116,7 +120,7 @@ class FcmController extends BaseController {
 
     final listEmailActions = listTypeName
       .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground))
+      .map((typeName) => toFcmAction(session, typeName, accountId, mapTypeState, isForeground))
       .whereNotNull()
       .toList();
 
@@ -128,7 +132,7 @@ class FcmController extends BaseController {
 
     final listMailboxActions = listTypeName
       .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground))
+      .map((typeName) => toFcmAction(session, typeName, accountId, mapTypeState, isForeground))
       .whereNotNull()
       .toList();
 
@@ -140,6 +144,7 @@ class FcmController extends BaseController {
   }
 
   FcmAction? toFcmAction(
+    Session session,
     TypeName typeName,
     AccountId accountId,
     Map<String, dynamic> mapTypeState,
@@ -154,7 +159,7 @@ class FcmController extends BaseController {
       }
     } else if (typeName == TypeName.emailDelivery) {
       if (!isForeground) {
-        return PushNotificationAction(typeName, newState, accountId);
+        return PushNotificationAction(typeName, newState, session, accountId);
       }
     } else if (typeName == TypeName.mailboxType) {
       if (isForeground) {
@@ -243,10 +248,10 @@ class FcmController extends BaseController {
 
   void _pushActionFromRemoteMessageBackground() {
     log('FcmController::_pushActionFromRemoteMessageBackground():');
-    if (_remoteMessageBackground != null && _currentAccountId != null) {
+    if (_remoteMessageBackground != null && _currentAccountId != null && _currentSession != null) {
       final stateChange = _convertRemoteMessageToStateChange(_remoteMessageBackground!);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, isForeground: false);
+      _mappingTypeStateToAction(_currentSession!, mapTypeState, _currentAccountId!, isForeground: false);
     }
     _clearRemoteMessageBackground();
   }

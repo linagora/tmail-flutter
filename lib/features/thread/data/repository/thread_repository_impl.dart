@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -32,6 +33,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Stream<EmailsResponse> getAllEmail(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -58,6 +60,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     if (!localEmailResponse.hasEmails()
         || (localEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
       networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+        session,
         accountId,
         limit: limit,
         sort: sort,
@@ -65,6 +68,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         properties: propertiesCreated);
       if (_isApproveFilterOption(emailFilter?.filterOption, networkEmailResponse.emailList)) {
         _getFirstPage(
+          session,
           accountId,
           sort: sort,
           mailboxId: emailFilter?.mailboxId,
@@ -83,6 +87,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     if (localEmailResponse.hasState()) {
       log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} local has state: ${localEmailResponse.state}');
       await _synchronizeCacheWithChanges(
+        session,
         accountId,
         localEmailResponse.state!,
         propertiesCreated: propertiesCreated,
@@ -116,6 +121,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   Future<EmailsResponse> _getFirstPage(
+    Session session,
     AccountId accountId,
     {
       Set<Comparator>? sort,
@@ -125,6 +131,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
   ) async {
       final networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+        session,
         accountId,
         limit: ThreadConstants.defaultLimit,
         sort: sort,
@@ -187,17 +194,19 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Stream<EmailsResponse> refreshChanges(
-      AccountId accountId,
-      State currentState,
-      {
-        Set<Comparator>? sort,
-        EmailFilter? emailFilter,
-        Properties? propertiesCreated,
-        Properties? propertiesUpdated,
-      }
+    Session session,
+    AccountId accountId,
+    State currentState,
+    {
+      Set<Comparator>? sort,
+      EmailFilter? emailFilter,
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated,
+    }
   ) async* {
     log('ThreadRepositoryImpl::refreshChanges(): $currentState');
     await _synchronizeCacheWithChanges(
+      session,
       accountId,
       currentState,
       propertiesCreated: propertiesCreated,
@@ -214,6 +223,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     if (!newEmailResponse.hasEmails()
         || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
       final networkEmailResponse = await _getFirstPage(
+        session,
         accountId,
         sort: sort,
         filter: emailFilter?.filter,
@@ -237,14 +247,15 @@ class ThreadRepositoryImpl extends ThreadRepository {
   Future<EmailsResponse> _getAllEmailsWithoutLastEmailId(GetEmailRequest emailRequest) async {
     final emailResponse = await mapDataSource[DataSourceType.network]!
         .getAllEmail(
-            emailRequest.accountId,
-            limit: emailRequest.limit,
-            sort: emailRequest.sort,
-            filter: emailRequest.filter,
-            properties: emailRequest.properties)
+          emailRequest.session,
+          emailRequest.accountId,
+          limit: emailRequest.limit,
+          sort: emailRequest.sort,
+          filter: emailRequest.filter,
+          properties: emailRequest.properties)
         .then((response) {
-            var listEmails = response.emailList;
-            return EmailsResponse(emailList: listEmails, state: response.state);
+          final listEmails = response.emailList;
+          return EmailsResponse(emailList: listEmails, state: response.state);
         });
 
     return emailResponse;
@@ -252,6 +263,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Future<List<Email>> searchEmails(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -261,6 +273,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
   ) async {
     final emailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+      session,
       accountId,
       limit: limit,
       sort: sort,
@@ -271,8 +284,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<List<EmailId>> emptyTrashFolder(AccountId accountId, MailboxId trashMailboxId) async {
+  Future<List<EmailId>> emptyTrashFolder(Session session, AccountId accountId, MailboxId trashMailboxId) async {
     return mapDataSource[DataSourceType.network]!.emptyTrashFolder(
+      session,
       accountId,
       trashMailboxId,
       (listEmailIdDeleted) async {
@@ -282,6 +296,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   Future<void> _synchronizeCacheWithChanges(
+    Session session,
     AccountId accountId,
     State currentState,
     {
@@ -299,10 +314,11 @@ class ThreadRepositoryImpl extends ThreadRepository {
     while(hasMoreChanges && sinceState != null) {
       log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): sinceState = $sinceState');
       final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(
-          accountId,
-          sinceState,
-          propertiesCreated: propertiesCreated,
-          propertiesUpdated: propertiesUpdated);
+        session,
+        accountId,
+        sinceState,
+        propertiesCreated: propertiesCreated,
+        propertiesUpdated: propertiesUpdated);
 
       hasMoreChanges = changesResponse.hasMoreChanges;
       sinceState = changesResponse.newStateChanges;
@@ -337,7 +353,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<PresentationEmail> getEmailById(AccountId accountId, EmailId emailId, {Properties? properties}) {
-    return mapDataSource[DataSourceType.network]!.getEmailById(accountId, emailId, properties: properties);
+  Future<PresentationEmail> getEmailById(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {Properties? properties}
+  ) {
+    return mapDataSource[DataSourceType.network]!.getEmailById(session, accountId, emailId, properties: properties);
   }
 }

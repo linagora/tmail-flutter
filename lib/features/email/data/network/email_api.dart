@@ -17,6 +17,7 @@ import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/core/reference_prefix.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
@@ -66,7 +67,24 @@ class EmailAPI with HandleSetErrorMixin {
 
   EmailAPI(this._httpClient, this._downloadManager, this._dioClient, this._uuid);
 
-  Future<Email> getEmailContent(AccountId accountId, EmailId emailId) async {
+  Set<CapabilityIdentifier> _capabilitiesForEmailMethod(Session session, AccountId accountId) {
+    final getMailboxCreated = GetEmailMethod(accountId);
+    try {
+      requireCapability(
+          session,
+          accountId,
+          [CapabilityIdentifier.jmapTeamMailboxes]);
+      return {
+        CapabilityIdentifier.jmapCore,
+        CapabilityIdentifier.jmapMail,
+        CapabilityIdentifier.jmapTeamMailboxes
+      };
+    } catch (_) {
+      return getMailboxCreated.requiredCapabilities;
+    }
+  }
+
+  Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) async {
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
@@ -86,7 +104,7 @@ class EmailAPI with HandleSetErrorMixin {
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
     final result = await (jmapRequestBuilder
-        ..usings(getEmailMethod.requiredCapabilities))
+        ..usings(_capabilitiesForEmailMethod(session, accountId)))
       .build()
       .execute();
 
