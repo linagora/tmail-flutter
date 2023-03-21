@@ -55,7 +55,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     throw UnimplementedError();
   }
 
@@ -65,17 +65,18 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
+  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) {
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
+  Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request) {
     throw UnimplementedError();
   }
 
   @override
   Future<List<Email>> markAsMailboxRead(
+      Session session,
       AccountId accountId,
       MailboxId mailboxId,
       int totalEmailUnread,
@@ -84,12 +85,12 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
+  Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request) {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
+  Future<List<MailboxId>> subscribeMultipleMailbox(Session session, AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
     throw UnimplementedError();
   }
 }
