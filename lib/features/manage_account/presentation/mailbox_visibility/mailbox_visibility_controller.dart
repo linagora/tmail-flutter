@@ -94,7 +94,7 @@ class MailboxVisibilityController extends BaseMailboxController {
 
   @override
   void onReady() {
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     final accountId = _accountDashBoardController.accountId.value;
     if(session != null && accountId != null) {
       getAllMailbox(session, accountId);
@@ -194,7 +194,7 @@ class MailboxVisibilityController extends BaseMailboxController {
   }
 
   void _refreshMailboxChanges(jmap.State? newMailboxState) {
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     final accountId = _accountDashBoardController.accountId.value;
     final mailboxState = newMailboxState ?? currentMailboxState;
     if (session != null && accountId != null && mailboxState != null) {

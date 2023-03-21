@@ -141,7 +141,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                   controller.userProfile.value,
                   onLogoutAction: () {
                     popBack();
-                    controller.logout(controller.sessionCurrent.value, controller.accountId.value);
+                    controller.logout(controller.sessionCurrent, controller.accountId.value);
                     },
                   onSettingAction: ()  {
                     popBack();
@@ -164,13 +164,13 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         case AccountMenuItem.languageAndRegion:
           return LanguageAndRegionView();
         case AccountMenuItem.emailRules:
-          if(controller.checkAvailableRuleFilterInSession()){
+          if(controller.isRuleFilterCapabilitySupported){
             return EmailRulesView();
           } else {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.forward:
-          if(controller.checkAvailableForwardInSession()){
+          if(controller.isForwardCapabilitySupported){
             return ForwardView();
           } else {
             return const SizedBox.shrink();

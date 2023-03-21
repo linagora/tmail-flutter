@@ -18,7 +18,7 @@ class ManageAccountMenuController extends BaseController {
   ]);
 
   void _initWorker() {
-    sessionWorker = ever(dashBoardController.sessionCurrent, (_) {
+    sessionWorker = ever(dashBoardController.accountId, (_) {
       _createListAccountMenu();
     });
   }
@@ -37,13 +37,13 @@ class ManageAccountMenuController extends BaseController {
   void _createListAccountMenu(){
     listAccountMenuItem.clear();
     listAccountMenuItem.add(AccountMenuItem.profiles);
-    if (dashBoardController.checkAvailableRuleFilterInSession()) {
+    if (dashBoardController.isRuleFilterCapabilitySupported) {
       listAccountMenuItem.add(AccountMenuItem.emailRules);
     }
-    if (dashBoardController.checkAvailableForwardInSession()) {
+    if (dashBoardController.isForwardCapabilitySupported) {
       listAccountMenuItem.add(AccountMenuItem.forward);
     }
-    if (dashBoardController.checkAvailableVacationInSession()) {
+    if (dashBoardController.isVacationCapabilitySupported) {
       listAccountMenuItem.add(AccountMenuItem.vacation);
     }
     listAccountMenuItem.addAll(

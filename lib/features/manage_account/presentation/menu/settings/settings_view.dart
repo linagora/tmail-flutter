@@ -194,19 +194,19 @@ class SettingsView extends GetWidget<SettingsController> {
         case AccountMenuItem.languageAndRegion:
           return LanguageAndRegionView();
         case AccountMenuItem.emailRules:
-          if (controller.manageAccountDashboardController.checkAvailableRuleFilterInSession()) {
+          if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return EmailRulesView();
           } else {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.forward:
-          if (controller.manageAccountDashboardController.checkAvailableForwardInSession()) {
+          if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
             return ForwardView();
           } else {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.vacation:
-          if (controller.manageAccountDashboardController.checkAvailableVacationInSession()) {
+          if (controller.manageAccountDashboardController.isVacationCapabilitySupported) {
             return VacationView();
           } else {
             return const SizedBox.shrink();
