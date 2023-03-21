@@ -322,10 +322,11 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   void _dispatchCreateNewMailboxFolder(
-      AccountId accountId,
-      CreateNewMailboxRequest request
+    Session session,
+    AccountId accountId,
+    CreateNewMailboxRequest request
   ) async {
-    consumeState(_createNewMailboxInteractor.execute(accountId, request));
+    consumeState(_createNewMailboxInteractor.execute(session, accountId, request));
   }
 
   void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
@@ -404,6 +405,7 @@ class DestinationPickerController extends BaseMailboxController {
         : mailboxDestination.value?.id;
 
       _dispatchCreateNewMailboxFolder(
+        _session!,
         accountId!,
         CreateNewMailboxRequest(
           generateCreateId,

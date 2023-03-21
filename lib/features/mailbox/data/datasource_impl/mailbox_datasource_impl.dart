@@ -56,9 +56,9 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     return Future.sync(() async {
-      return await mailboxAPI.createNewMailbox(accountId, newMailboxRequest);
+      return await mailboxAPI.createNewMailbox(session, accountId, newMailboxRequest);
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -70,27 +70,29 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
+  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) {
     return Future.sync(() async {
-      return await mailboxAPI.renameMailbox(accountId, request);
+      return await mailboxAPI.renameMailbox(session, accountId, request);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
+  Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request) {
     return Future.sync(() async {
-      return await mailboxAPI.moveMailbox(accountId, request);
+      return await mailboxAPI.moveMailbox(session, accountId, request);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<List<Email>> markAsMailboxRead(
+      Session session,
       AccountId accountId,
       MailboxId mailboxId,
       int totalEmailUnread,
       StreamController<dartz.Either<Failure, Success>> onProgressController) {
     return Future.sync(() async {
       return await _mailboxIsolateWorker.markAsMailboxRead(
+          session,
           accountId,
           mailboxId,
           totalEmailUnread,
@@ -99,16 +101,20 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
+  Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request) {
     return Future.sync(() async {
-      return await mailboxAPI.subscribeMailbox(accountId, request);
+      return await mailboxAPI.subscribeMailbox(session, accountId, request);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
+  Future<List<MailboxId>> subscribeMultipleMailbox(
+    Session session,
+    AccountId accountId,
+    SubscribeMultipleMailboxRequest subscribeRequest
+  ) {
     return Future.sync(() async {
-      return await mailboxAPI.subscribeMultipleMailbox(accountId, subscribeRequest);
+      return await mailboxAPI.subscribeMultipleMailbox(session, accountId, subscribeRequest);
     }).catchError(_exceptionThrower.throwException);
   }
 }
