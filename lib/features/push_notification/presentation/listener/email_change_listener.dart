@@ -6,6 +6,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/email/presentation_email.dart';
 import 'package:model/notification/notification_payload.dart';
@@ -41,6 +42,7 @@ class EmailChangeListener extends ChangeListener {
 
   jmap.State? _newState;
   AccountId? _accountId;
+  Session? _session;
 
   EmailChangeListener._internal() {
     try {
@@ -66,7 +68,7 @@ class EmailChangeListener extends ChangeListener {
       if (action is SynchronizeEmailOnForegroundAction) {
         _synchronizeEmailOnForegroundAction(action.newState);
       } else if (action is PushNotificationAction) {
-        _pushNotificationAction(action.newState, action.accountId);
+        _pushNotificationAction(action.newState, action.accountId, action.session);
       } else if (action is StoreEmailStateToRefreshAction) {
         _handleStoreEmailStateToRefreshAction(action.newState);
       }
@@ -80,7 +82,7 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _pushNotificationAction(jmap.State newState, AccountId accountId) {
+  void _pushNotificationAction(jmap.State newState, AccountId accountId, Session session) {
     _newState = newState;
     _accountId = accountId;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
@@ -116,8 +118,9 @@ class EmailChangeListener extends ChangeListener {
   }
 
   void _getEmailChangesAction(jmap.State state) {
-    if (_getEmailChangesToPushNotificationInteractor != null && _accountId != null) {
+    if (_getEmailChangesToPushNotificationInteractor != null && _accountId != null && _session != null) {
       consumeState(_getEmailChangesToPushNotificationInteractor!.execute(
+        _session!,
         _accountId!,
         state,
         propertiesCreated: ThreadConstants.propertiesDefault,

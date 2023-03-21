@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
+import '../../../../fixtures/session_fixtures.dart';
 import '../../../../fixtures/state_fixtures.dart';
 import 'refresh_changes_emails_in_mailbox_interactor_test.mocks.dart';
 
@@ -36,6 +37,7 @@ void main() {
 
     test('refreshChangesEmailsInMailboxInteractor should execute to get changes email from cache and network', () async {
       when(threadRepository.refreshChanges(
+          SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
           StateFixtures.currentEmailState,
           sort: <EmailComparator>{}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),
@@ -56,6 +58,7 @@ void main() {
         }));
 
       final streamStates = refreshChangesEmailsInMailboxInteractor.execute(
+        SessionFixtures.aliceSession,
         AccountFixtures.aliceAccountId,
         StateFixtures.currentEmailState,
         sort: <EmailComparator>{}..add(EmailComparator(EmailComparatorProperty.sentAt)..setIsAscending(false)),

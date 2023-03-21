@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
@@ -16,6 +17,7 @@ class GetEmailsInMailboxInteractor {
   GetEmailsInMailboxInteractor(this.threadRepository);
 
   Stream<Either<Failure, Success>> execute(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -30,6 +32,7 @@ class GetEmailsInMailboxInteractor {
 
       yield* threadRepository
         .getAllEmail(
+          session,
           accountId,
           limit: limit,
           sort: sort,

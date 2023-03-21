@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
@@ -16,6 +17,7 @@ class RefreshChangesEmailsInMailboxInteractor {
   RefreshChangesEmailsInMailboxInteractor(this.threadRepository);
 
   Stream<Either<Failure, Success>> execute(
+    Session session,
     AccountId accountId,
     jmap.State currentState,
     {
@@ -30,6 +32,7 @@ class RefreshChangesEmailsInMailboxInteractor {
     try {
       yield* threadRepository
         .refreshChanges(
+          session,
           accountId,
           currentState,
           sort: sort,

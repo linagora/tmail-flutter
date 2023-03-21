@@ -7,6 +7,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -24,9 +25,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   EmailDataSourceImpl(this.emailAPI, this._exceptionThrower);
 
   @override
-  Future<Email> getEmailContent(AccountId accountId, EmailId emailId) {
+  Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
-      return await emailAPI.getEmailContent(accountId, emailId);
+      return await emailAPI.getEmailContent(session, accountId, emailId);
     }).catchError(_exceptionThrower.throwException);
   }
 
