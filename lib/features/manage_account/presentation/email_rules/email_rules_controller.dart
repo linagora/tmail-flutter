@@ -86,7 +86,7 @@ class EmailRulesController extends BaseController {
 
   void goToCreateNewRule(BuildContext context) async {
     final accountId = _accountDashBoardController.accountId.value;
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       final arguments = RulesFilterCreatorArguments(accountId, session);
 
@@ -134,7 +134,7 @@ class EmailRulesController extends BaseController {
 
   void editEmailRule(BuildContext context, TMailRule rule) async {
     final accountId = _accountDashBoardController.accountId.value;
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       final arguments = RulesFilterCreatorArguments(
         accountId,

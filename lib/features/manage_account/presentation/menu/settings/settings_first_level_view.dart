@@ -50,7 +50,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
         ),
         Obx(() {
-          if (controller.manageAccountDashboardController.checkAvailableRuleFilterInSession()) {
+          if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
                 AccountMenuItem.emailRules.getName(context),
@@ -70,7 +70,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           }
         }),
         Obx(() {
-          if (controller.manageAccountDashboardController.checkAvailableForwardInSession()) {
+          if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
                 AccountMenuItem.forward.getName(context),
@@ -90,7 +90,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           }
         }),
         Obx(() {
-          if (controller.manageAccountDashboardController.checkAvailableVacationInSession()) {
+          if (controller.manageAccountDashboardController.isVacationCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
                 AccountMenuItem.vacation.getName(context),
@@ -138,7 +138,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           AppLocalizations.of(context).sign_out,
           _imagePaths.icSignOut,
           () => controller.manageAccountDashboardController.logout(
-              controller.manageAccountDashboardController.sessionCurrent.value,
+              controller.manageAccountDashboardController.sessionCurrent,
               controller.manageAccountDashboardController.accountId.value)
         ),
       ]),

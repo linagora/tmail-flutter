@@ -53,7 +53,7 @@ class ForwardController extends BaseController {
   ForwardController() {
     recipientController = ForwardRecipientController(
       accountId: accountDashBoardController.accountId.value,
-      session: accountDashBoardController.sessionCurrent.value);
+      session: accountDashBoardController.sessionCurrent);
   }
 
   @override
