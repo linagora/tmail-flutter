@@ -1,7 +1,10 @@
+
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/get/get_identity_method.dart';
 import 'package:jmap_dart_client/jmap/identities/get/get_identity_response.dart';
@@ -15,28 +18,27 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_id
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_default_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class IdentityAPI {
   final HttpClient _httpClient;
 
   IdentityAPI(this._httpClient);
 
-  Future<IdentitiesResponse> getAllIdentities(AccountId accountId, {Properties? properties}) async {
+  Future<IdentitiesResponse> getAllIdentities(Session session, AccountId accountId, {Properties? properties}) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final getIdentityMethod = GetIdentityMethod(accountId);
-    var capability = getIdentityMethod.requiredCapabilities;
     if (properties != null) {
       getIdentityMethod.addProperties(properties);
-      if(properties.value.contains('sortOrder')) {
-        capability = getIdentityMethod.requiredCapabilitiesSupportSortOrder;
-      }
-    } else {
-      capability = getIdentityMethod.requiredCapabilitiesSupportSortOrder;
     }
+    final capabilitySupported = [CapabilityIdentifier.jamesSortOrder].isSupported(session, accountId)
+      ? getIdentityMethod.requiredCapabilitiesSupportSortOrder
+      : getIdentityMethod.requiredCapabilities;
+
     final queryInvocation = requestBuilder.invocation(getIdentityMethod);
 
     final result = await (requestBuilder
-        ..usings(capability))
+        ..usings(capabilitySupported))
       .build()
       .execute();
 
