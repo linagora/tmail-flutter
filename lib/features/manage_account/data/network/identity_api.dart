@@ -12,7 +12,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/identities/set/set_identity_method.dart';
 import 'package:jmap_dart_client/jmap/identities/set/set_identity_response.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
-import 'package:model/identity/identity_request_dto.dart';
+import 'package:model/extensions/list_identity_id_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_default_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_default_identity_request.dart';
@@ -31,7 +31,9 @@ class IdentityAPI {
     if (properties != null) {
       getIdentityMethod.addProperties(properties);
     }
-    final capabilitySupported = [CapabilityIdentifier.jamesSortOrder].isSupported(session, accountId)
+
+    final jamesSortOrderIsSupported = [CapabilityIdentifier.jamesSortOrder].isSupported(session, accountId);
+    final capabilitySupported = jamesSortOrderIsSupported
       ? getIdentityMethod.requiredCapabilitiesSupportSortOrder
       : getIdentityMethod.requiredCapabilities;
 
@@ -49,14 +51,22 @@ class IdentityAPI {
     return IdentitiesResponse(identities: response?.list, state: response?.state);
   }
 
-  Future<Identity> createNewIdentity(AccountId accountId, CreateNewIdentityRequest identityRequest) async {
+  Future<Identity> createNewIdentity(Session session, AccountId accountId, CreateNewIdentityRequest identityRequest) async {
     final setIdentityMethod = SetIdentityMethod(accountId)
       ..addCreate(identityRequest.creationId, identityRequest.newIdentity);
-    
-    var capabilities = setIdentityMethod.requiredCapabilities;
-    if (identityRequest is CreateNewDefaultIdentityRequest) {
-      capabilities = setIdentityMethod.requiredCapabilitiesSupportSortOrder;
-      _addUpdatesToCreateDefaultIdentityMethod(setIdentityMethod, identityRequest);
+
+    final jamesSortOrderIsSupported = [CapabilityIdentifier.jamesSortOrder].isSupported(session, accountId);
+    final capabilitySupported = jamesSortOrderIsSupported
+      ? setIdentityMethod.requiredCapabilitiesSupportSortOrder
+      : setIdentityMethod.requiredCapabilities;
+
+    if (jamesSortOrderIsSupported &&
+        identityRequest is CreateNewDefaultIdentityRequest &&
+        identityRequest.oldDefaultIdentityIds != null
+    ) {
+      setIdentityMethod.addUpdates(
+        identityRequest.oldDefaultIdentityIds!.generateMapUpdateObjectSortOrder(sortOrder: UnsignedInt(100))
+      );
     }
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
@@ -64,7 +74,7 @@ class IdentityAPI {
     final setIdentityInvocation = requestBuilder.invocation(setIdentityMethod);
 
     final response = await (requestBuilder
-        ..usings(capabilities))
+        ..usings(capabilitySupported))
       .build()
       .execute();
 
@@ -75,27 +85,21 @@ class IdentityAPI {
     return setIdentityResponse!.created![identityRequest.creationId]!;
   }
 
-  void _addUpdatesToCreateDefaultIdentityMethod(
-    SetIdentityMethod setIdentityMethod, 
-    CreateNewDefaultIdentityRequest identityRequest
-  ) {
-    for (var i = 0; i < (identityRequest.oldDefaultIdentityIds?.length ?? 0); i++) {
-      setIdentityMethod.addUpdates({
-        identityRequest.oldDefaultIdentityIds![i].id : PatchObject(IdentityRequestDto(sortOrder: UnsignedInt(100)).toJson())
-      });
-    }
-  }
- 
-  Future<bool> deleteIdentity(AccountId accountId, IdentityId identityId) async {
+  Future<bool> deleteIdentity(Session session, AccountId accountId, IdentityId identityId) async {
     final setIdentityMethod = SetIdentityMethod(accountId)
       ..addDestroy({identityId.id});
+
+    final jamesSortOrderIsSupported = [CapabilityIdentifier.jamesSortOrder].isSupported(session, accountId);
+    final capabilitySupported = jamesSortOrderIsSupported
+      ? setIdentityMethod.requiredCapabilitiesSupportSortOrder
+      : setIdentityMethod.requiredCapabilities;
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setIdentityInvocation = requestBuilder.invocation(setIdentityMethod);
 
     final response = await (requestBuilder
-        ..usings(setIdentityMethod.requiredCapabilities))
+        ..usings(capabilitySupported))
       .build()
       .execute();
 
@@ -106,21 +110,24 @@ class IdentityAPI {
     return setIdentityResponse?.destroyed?.contains(identityId.id) == true;
   }
 
-  Future<bool> editIdentity(AccountId accountId, EditIdentityRequest editIdentityRequest) async {
+  Future<bool> editIdentity(Session session, AccountId accountId, EditIdentityRequest editIdentityRequest) async {
     final setIdentityMethod = SetIdentityMethod(accountId)
       ..addUpdates({
         editIdentityRequest.identityId.id : PatchObject(editIdentityRequest.identityRequest.toJson())
       });
-    
-    var capabilities = setIdentityMethod.requiredCapabilities;
 
-    if (editIdentityRequest is EditDefaultIdentityRequest) {
-      for (var identityId in editIdentityRequest.oldDefaultIdentityIds ?? []) {
-        setIdentityMethod.addUpdates({
-          identityId.id: PatchObject(IdentityRequestDto(sortOrder: UnsignedInt(100)).toJson())
-        });
-      }
-      capabilities = setIdentityMethod.requiredCapabilitiesSupportSortOrder;
+    final jamesSortOrderIsSupported = [CapabilityIdentifier.jamesSortOrder].isSupported(session, accountId);
+    final capabilitySupported = jamesSortOrderIsSupported
+      ? setIdentityMethod.requiredCapabilitiesSupportSortOrder
+      : setIdentityMethod.requiredCapabilities;
+    
+    if (jamesSortOrderIsSupported &&
+        editIdentityRequest is EditDefaultIdentityRequest &&
+        editIdentityRequest.oldDefaultIdentityIds != null
+    ) {
+      setIdentityMethod.addUpdates(
+        editIdentityRequest.oldDefaultIdentityIds!.generateMapUpdateObjectSortOrder(sortOrder: UnsignedInt(100))
+      );
     }
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
@@ -128,7 +135,7 @@ class IdentityAPI {
     final setIdentityInvocation = requestBuilder.invocation(setIdentityMethod);
 
     final response = await (requestBuilder
-        ..usings(capabilities))
+        ..usings(capabilitySupported))
       .build()
       .execute();
 
