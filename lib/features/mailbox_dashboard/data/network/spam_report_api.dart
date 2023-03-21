@@ -1,6 +1,8 @@
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
@@ -8,6 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/query/query_mailbox_method.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class SpamReportApi {
   final HttpClient _httpClient;
@@ -16,6 +19,7 @@ class SpamReportApi {
   SpamReportApi(this._httpClient);
 
   Future<UnreadSpamEmailsResponse> getUnreadSpamEmailbox(
+    Session session,
     AccountId accountId,
     {
       MailboxFilterCondition? mailboxFilterCondition,
@@ -36,7 +40,7 @@ class SpamReportApi {
         ));
     final getMailboxInvocation = requestBuilder.invocation(getMailBoxMethod);
     final result = await (requestBuilder
-            ..usings(getMailBoxMethod.requiredCapabilities))
+            ..usings(_capabilitiesForMailboxMethod(session, accountId)))
           .build()
           .execute();
 
@@ -49,5 +53,18 @@ class SpamReportApi {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  Set<CapabilityIdentifier> _capabilitiesForMailboxMethod(Session session, AccountId accountId) {
+    final getMailboxCreated = GetMailboxMethod(accountId);
+    try {
+      requireCapability(
+        session,
+        accountId,
+        [CapabilityIdentifier.jmapTeamMailboxes]);
+      return getMailboxCreated.requiredCapabilitiesSupportTeamMailboxes;
+    } catch (_) {
+      return getMailboxCreated.requiredCapabilities;
+    }
   }
 }
