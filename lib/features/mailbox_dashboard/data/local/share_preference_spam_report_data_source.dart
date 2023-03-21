@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +33,7 @@ class SharePreferenceSpamReportDataSource extends SpamReportDataSource {
 
   @override
   Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(
+    Session session,
     AccountId accountId,
     {
       MailboxFilterCondition? mailboxFilterCondition,
