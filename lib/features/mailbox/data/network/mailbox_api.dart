@@ -135,7 +135,7 @@ class MailboxAPI with HandleSetErrorMixin {
       updatedProperties: resultChanges?.updatedProperties);
   }
 
-  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest request) async {
+  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest request) async {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addCreate(
           request.creationId,
@@ -151,7 +151,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
     final response = await (requestBuilder
-          ..usings(setMailboxMethod.requiredCapabilities))
+          ..usings(_capabilitiesForMailboxMethod(session, accountId)))
         .build()
         .execute();
 
@@ -190,7 +190,6 @@ class MailboxAPI with HandleSetErrorMixin {
   }
 
   Future<Map<Id, SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
-    requireCapability(session, accountId, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
     final coreCapability = session.getCapabilityProperties<CoreCapability>(
         accountId, CapabilityIdentifier.jmapCore);
@@ -219,7 +218,7 @@ class MailboxAPI with HandleSetErrorMixin {
         .toList();
 
       final response = await (requestBuilder
-          ..usings({CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail}))
+          ..usings(_capabilitiesForMailboxMethod(session, accountId)))
         .build()
         .execute();
 
@@ -252,7 +251,7 @@ class MailboxAPI with HandleSetErrorMixin {
     return remainedErrors;
   }
 
-  Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) async {
+  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) async {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates({request.mailboxId.id : PatchObject({'name' : request.newName.name})});
 
@@ -261,7 +260,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
     final response = await (requestBuilder
-          ..usings(setMailboxMethod.requiredCapabilities))
+          ..usings(_capabilitiesForMailboxMethod(session, accountId)))
         .build()
         .execute();
 
@@ -276,7 +275,7 @@ class MailboxAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) async {
+  Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request) async {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates({
         request.mailboxId.id : PatchObject({
@@ -289,7 +288,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
     final response = await (requestBuilder
-        ..usings(setMailboxMethod.requiredCapabilities))
+        ..usings(_capabilitiesForMailboxMethod(session, accountId)))
       .build()
       .execute();
 
@@ -304,7 +303,7 @@ class MailboxAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) async {
+  Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request) async {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates({
         request.mailboxId.id : PatchObject({
@@ -317,7 +316,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
     final response = await (requestBuilder
-        ..usings(setMailboxMethod.requiredCapabilities))
+        ..usings(_capabilitiesForMailboxMethod(session, accountId)))
       .build()
       .execute();
 
@@ -332,7 +331,11 @@ class MailboxAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) async {
+  Future<List<MailboxId>> subscribeMultipleMailbox(
+    Session session,
+    AccountId accountId,
+    SubscribeMultipleMailboxRequest subscribeRequest
+  ) async {
     final mapMailboxUpdated = subscribeRequest.mailboxIdsSubscribe
       .generateMapUpdateObjectSubscribeMailbox(subscribeRequest.subscribeState);
 
@@ -344,7 +347,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
     final response = await (requestBuilder
-        ..usings(setMailboxMethod.requiredCapabilities))
+        ..usings(_capabilitiesForMailboxMethod(session, accountId)))
       .build()
       .execute();
 

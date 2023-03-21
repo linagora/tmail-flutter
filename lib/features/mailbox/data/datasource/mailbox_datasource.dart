@@ -28,21 +28,22 @@ abstract class MailboxDataSource {
 
   Future<void> update({List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed});
 
-  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
+  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
 
   Future<Map<Id,SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds);
 
-  Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request);
+  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request);
 
-  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request);
+  Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request);
 
   Future<List<Email>> markAsMailboxRead(
+      Session session,
       AccountId accountId,
       MailboxId mailboxId,
       int totalEmailUnread,
       StreamController<dartz.Either<Failure, Success>> onProgressController);
 
-  Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request);
+  Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request);
 
-  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest);
+  Future<List<MailboxId>> subscribeMultipleMailbox(Session session, AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest);
 }

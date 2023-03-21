@@ -7,6 +7,7 @@ import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -34,10 +35,11 @@ class MailboxIsolateWorker {
   MailboxIsolateWorker(this._threadApi, this._emailApi, this._isolateExecutor);
 
   Future<List<Email>> markAsMailboxRead(
-      AccountId accountId,
-      MailboxId mailboxId,
-      int totalEmailUnread,
-      StreamController<Either<Failure, Success>> onProgressController
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailUnread,
+    StreamController<Either<Failure, Success>> onProgressController
   ) async {
     if (BuildUtils.isWeb) {
       return _handleMarkAsMailboxReadActionOnWeb(
