@@ -1190,27 +1190,30 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void markAsReadMailboxAction() {
+    final session = sessionCurrent;
     final currentAccountId = accountId.value;
     final mailboxId = selectedMailbox.value?.id;
     final mailboxName = selectedMailbox.value?.name;
     final countEmailsUnread = selectedMailbox.value?.unreadEmails?.value.value ?? 0;
-    if (currentAccountId != null && mailboxId != null && mailboxName != null) {
-      markAsReadMailbox(currentAccountId, mailboxId, mailboxName, countEmailsUnread.toInt());
+    if (session != null && currentAccountId != null && mailboxId != null && mailboxName != null) {
+      markAsReadMailbox(session, currentAccountId, mailboxId, mailboxName, countEmailsUnread.toInt());
     }
   }
 
   void markAsReadMailbox(
-      AccountId accountId,
-      MailboxId mailboxId,
-      MailboxName mailboxName,
-      int totalEmailsUnread
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    MailboxName mailboxName,
+    int totalEmailsUnread
   ) {
     consumeState(_markAsMailboxReadInteractor.execute(
-        accountId,
-        mailboxId,
-        mailboxName,
-        totalEmailsUnread,
-        _progressStateController));
+      session,
+      accountId,
+      mailboxId,
+      mailboxName,
+      totalEmailsUnread,
+      _progressStateController));
   }
 
   void _markAsReadMailboxSuccess(Success success) {

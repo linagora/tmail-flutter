@@ -154,8 +154,8 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<Mailbox?> createNewMailbox(AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
-    return mapDataSource[DataSourceType.network]!.createNewMailbox(accountId, newMailboxRequest);
+  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+    return mapDataSource[DataSourceType.network]!.createNewMailbox(session, accountId, newMailboxRequest);
   }
 
   @override
@@ -164,17 +164,19 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<bool> renameMailbox(AccountId accountId, RenameMailboxRequest request) {
-    return mapDataSource[DataSourceType.network]!.renameMailbox(accountId, request);
+  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) {
+    return mapDataSource[DataSourceType.network]!.renameMailbox(session, accountId, request);
   }
 
   @override
   Future<List<Email>> markAsMailboxRead(
+      Session session,
       AccountId accountId,
       MailboxId mailboxId,
       int totalEmailUnread,
       StreamController<dartz.Either<Failure, Success>> onProgressController) async {
     return mapDataSource[DataSourceType.network]!.markAsMailboxRead(
+      session,
       accountId,
       mailboxId,
       totalEmailUnread,
@@ -182,8 +184,8 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<bool> moveMailbox(AccountId accountId, MoveMailboxRequest request) {
-    return mapDataSource[DataSourceType.network]!.moveMailbox(accountId, request);
+  Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request) {
+    return mapDataSource[DataSourceType.network]!.moveMailbox(session, accountId, request);
   }
 
   @override
@@ -192,12 +194,12 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<bool> subscribeMailbox(AccountId accountId, SubscribeMailboxRequest request) {
-    return mapDataSource[DataSourceType.network]!.subscribeMailbox(accountId, request);
+  Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request) {
+    return mapDataSource[DataSourceType.network]!.subscribeMailbox(session, accountId, request);
   }
 
   @override
-  Future<List<MailboxId>> subscribeMultipleMailbox(AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
-    return mapDataSource[DataSourceType.network]!.subscribeMultipleMailbox(accountId, subscribeRequest);
+  Future<List<MailboxId>> subscribeMultipleMailbox(Session session, AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
+    return mapDataSource[DataSourceType.network]!.subscribeMultipleMailbox(session, accountId, subscribeRequest);
   }
 }

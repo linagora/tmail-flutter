@@ -124,7 +124,8 @@ class MailboxVisibilityController extends BaseMailboxController {
 
   void _subscribeMailboxAction(SubscribeMailboxRequest subscribeMailboxRequest) {
     final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null) {
+    final session = _accountDashBoardController.sessionCurrent.value;
+    if (session != null && accountId != null) {
       final subscribeRequest = generateSubscribeRequest(
         subscribeMailboxRequest.mailboxId,
         subscribeMailboxRequest.subscribeState,
@@ -132,9 +133,9 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
 
       if (subscribeRequest is SubscribeMultipleMailboxRequest) {
-        consumeState(_subscribeMultipleMailboxInteractor!.execute(accountId, subscribeRequest));
+        consumeState(_subscribeMultipleMailboxInteractor!.execute(session, accountId, subscribeRequest));
       } else if (subscribeRequest is SubscribeMailboxRequest) {
-        consumeState(_subscribeMailboxInteractor!.execute(accountId, subscribeRequest));
+        consumeState(_subscribeMailboxInteractor!.execute(session, accountId, subscribeRequest));
       }
     }
   }
