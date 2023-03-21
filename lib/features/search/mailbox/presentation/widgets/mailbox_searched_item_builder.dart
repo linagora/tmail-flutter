@@ -10,7 +10,6 @@ import 'package:focused_menu_custom/focused_menu.dart';
 import 'package:focused_menu_custom/modals.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/widget/link_browser_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
@@ -53,16 +52,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   Widget build(BuildContext context) {
     if (BuildUtils.isWeb) {
       return DragTarget<List<PresentationEmail>>(
-        builder: (_, __, ___) {
-          if (widget._presentationMailbox.allowedToDisplay) {
-            return LinkBrowserWidget(
-              uri: widget._presentationMailbox.mailboxRouteWeb,
-              child: _buildMailboxItem(context)
-            );
-          } else {
-            return _buildMailboxItem(context);
-          }
-        },
+        builder: (_, __, ___) => _buildMailboxItem(context),
         onAccept: (emails) {
           widget.onDragEmailToMailboxAccepted?.call(emails, widget._presentationMailbox);
         }
