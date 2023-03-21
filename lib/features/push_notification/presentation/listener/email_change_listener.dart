@@ -136,7 +136,7 @@ class EmailChangeListener extends ChangeListener {
     final notificationPayload = NotificationPayload(emailId: presentationEmail.id);
     log('EmailChangeListener::_showLocalNotification():notificationPayload: $notificationPayload');
     LocalNotificationManager.instance.showPushNotification(
-      id: presentationEmail.id.id.value,
+      id: presentationEmail.id?.id.value ?? '',
       title: presentationEmail.subject ?? '',
       message: presentationEmail.preview,
       emailAddress: presentationEmail.from?.first,

@@ -235,7 +235,7 @@ class MailboxDashBoardController extends ReloadableController {
             final ComposerArguments composerArguments = ComposerArguments(
               emailActionType: EmailActionType.edit,
               presentationEmail: PresentationEmail(
-                success.composerCache.id,
+                id: success.composerCache.id,
                 subject: success.composerCache.subject,
                 from: success.composerCache.from,
                 to: success.composerCache.to,
@@ -519,7 +519,7 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute(DashboardRoutes.emailDetailed);
     if (BuildUtils.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.updateRouteOnBrowser(
-        'Email-${presentationEmail.id.id.value}',
+        'Email-${presentationEmail.id?.id.value ?? ''}',
         presentationEmail.routeWeb!
       );
     }
@@ -628,15 +628,15 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _discardEmail(Email email) {
     final currentAccountId = accountId.value;
-    if (currentAccountId != null) {
-      consumeState(_removeEmailDraftsInteractor.execute(currentAccountId, email.id));
+    if (currentAccountId != null && email.id != null) {
+      consumeState(_removeEmailDraftsInteractor.execute(currentAccountId, email.id!));
     }
   }
 
   void deleteEmailPermanently(PresentationEmail email) {
     final currentAccountId = accountId.value;
-    if (currentAccountId != null) {
-      consumeState(_deleteEmailPermanentlyInteractor.execute(currentAccountId, email.id));
+    if (currentAccountId != null && email.id != null) {
+      consumeState(_deleteEmailPermanentlyInteractor.execute(currentAccountId, email.id!));
     }
   }
 
@@ -825,22 +825,21 @@ class MailboxDashBoardController extends ReloadableController {
     List<PresentationEmail> listEmails,
     PresentationMailbox destinationMailbox,
   ) {
-    if(searchController.isSearchEmailRunning){
+    if (searchController.isSearchEmailRunning){
       final Map<MailboxId,List<EmailId>> mapListEmailSelectedByMailBoxId = {};
       for (var element in listEmails) {
         final mailbox = element.findMailboxContain(mapMailboxById);
-        if(mailbox != null) {
-          if(mapListEmailSelectedByMailBoxId.containsKey(mailbox.id)) {
-            mapListEmailSelectedByMailBoxId[mailbox.id]?.add(element.id);
+        if (mailbox != null && element.id != null) {
+          if (mapListEmailSelectedByMailBoxId.containsKey(mailbox.id)) {
+            mapListEmailSelectedByMailBoxId[mailbox.id]?.add(element.id!);
           } else {
-            mapListEmailSelectedByMailBoxId.addAll({mailbox.id: [element.id]});
+            mapListEmailSelectedByMailBoxId.addAll({mailbox.id: [element.id!]});
           }
         }
       }
       _handleDragSelectedMultipleEmailToMailboxAction(mapListEmailSelectedByMailBoxId, destinationMailbox);
-
     } else {
-      if(selectedMailbox.value != null) {
+      if (selectedMailbox.value != null) {
         _handleDragSelectedMultipleEmailToMailboxAction({selectedMailbox.value!.id: listEmails.listEmailIds}, destinationMailbox);
       }
     }

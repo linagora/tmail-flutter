@@ -170,9 +170,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _resetToOriginalValue();
 
     if (isListEmailContainSelectedEmail(selectedEmail)) {
-      _createMultipleEmailViewAsPageView(selectedEmail.id);
+      _createMultipleEmailViewAsPageView(selectedEmail.id!);
     } else {
-      _createSingleEmailView(selectedEmail.id);
+      _createSingleEmailView(selectedEmail.id!);
     }
 
     if (!selectedEmail.hasRead) {
@@ -663,21 +663,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   ) {
     if (destinationMailbox.isTrash) {
       _moveToTrashAction(context, accountId, MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id]},
+          {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       _moveToSpamAction(context, accountId, MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id]},
+          {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
           EmailActionType.moveToSpam));
     } else {
       _moveToMailbox(context, accountId, MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id]},
+          {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
@@ -729,7 +729,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (accountId != null && currentMailbox != null && trashMailboxId != null) {
       _moveToTrashAction(context, accountId, MoveToMailboxRequest(
-        {currentMailbox.id: [email.id]},
+        {currentMailbox.id: [email.id!]},
         trashMailboxId,
         MoveAction.moving,
         mailboxDashBoardController.sessionCurrent!,
@@ -750,7 +750,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (accountId != null && currentMailbox != null && spamMailboxId != null) {
       _moveToSpamAction(context, accountId, MoveToMailboxRequest(
-          {currentMailbox.id: [email.id]},
+          {currentMailbox.id: [email.id!]},
           spamMailboxId,
           MoveAction.moving,
           mailboxDashBoardController.sessionCurrent!,
@@ -766,7 +766,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (accountId != null && spamMailboxId != null && inboxMailboxId != null) {
       _moveToSpamAction(context, accountId, MoveToMailboxRequest(
-          {spamMailboxId: [email.id]},
+          {spamMailboxId: [email.id!]},
           inboxMailboxId,
           MoveAction.moving,
           mailboxDashBoardController.sessionCurrent!,

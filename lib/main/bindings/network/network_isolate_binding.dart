@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_work
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class NetworkIsolateBindings extends Bindings {
@@ -51,7 +52,9 @@ class NetworkIsolateBindings extends Bindings {
     Get.put(EmailAPI(
       httpClient,
       Get.find<DownloadManager>(tag: BindingTag.isolateTag),
-      Get.find<DioClient>(tag: BindingTag.isolateTag)), tag: BindingTag.isolateTag);
+      Get.find<DioClient>(tag: BindingTag.isolateTag),
+      Get.find<Uuid>()
+    ), tag: BindingTag.isolateTag);
   }
 
   void _bindingIsolateWorker() {
