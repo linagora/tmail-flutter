@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:uuid/uuid.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -82,7 +83,9 @@ class NetworkBindings extends Bindings {
     Get.put(EmailAPI(
       Get.find<HttpClient>(),
       Get.find<DownloadManager>(),
-      Get.find<DioClient>()));
+      Get.find<DioClient>(),
+      Get.find<Uuid>(),
+    ));
     Get.put(RuleFilterAPI(Get.find<HttpClient>()));
     Get.put(VacationAPI(Get.find<HttpClient>()));
     Get.put(ContactAPI(Get.find<HttpClient>()));

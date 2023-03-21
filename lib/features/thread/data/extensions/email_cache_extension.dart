@@ -13,7 +13,7 @@ import 'package:tmail_ui_user/features/thread/data/extensions/email_address_hive
 extension EmailCacheExtension on EmailCache {
   Email toEmail() {
     return Email(
-      EmailId(Id(id)),
+      id: EmailId(Id(id)),
       keywords: keywords != null
         ? Map.fromIterables(keywords!.keys.map((value) => KeyWordIdentifier(value)), keywords!.values)
         : null,

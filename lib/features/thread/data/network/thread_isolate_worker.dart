@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart'
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
+import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/thread/data/model/empty_trash_folder_arguments.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -68,11 +69,9 @@ class ThreadIsolateWorker {
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
-          final emailIds = newEmailList.map((email) => email.id).toList();
+          final listEmailIdDeleted = await args.emailAPI.deleteMultipleEmailsPermanently(args.accountId, newEmailList.listEmailIds);
 
-          final listEmailIdDeleted = await args.emailAPI.deleteMultipleEmailsPermanently(args.accountId, emailIds);
-
-          if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == emailIds.length) {
+          if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == newEmailList.listEmailIds.length) {
             sendPort.send(listEmailIdDeleted);
           }
           emailListCompleted.addAll(listEmailIdDeleted);
@@ -117,11 +116,9 @@ class ThreadIsolateWorker {
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
-          final emailIds = newEmailList.map((email) => email.id).toList();
+          final listEmailIdDeleted = await _emailAPI.deleteMultipleEmailsPermanently(accountId, newEmailList.listEmailIds);
 
-          final listEmailIdDeleted = await _emailAPI.deleteMultipleEmailsPermanently(accountId, emailIds);
-
-          if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == emailIds.length) {
+          if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == newEmailList.listEmailIds.length) {
             await updateDestroyedEmailCache(listEmailIdDeleted);
           }
           emailListCompleted.addAll(listEmailIdDeleted);
