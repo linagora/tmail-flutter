@@ -1095,11 +1095,13 @@ class ComposerController extends BaseController {
       _emailContents = arguments.emailContents;
       emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], null));
     } else {
+      final session = mailboxDashBoardController.sessionCurrent;
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       final accountId = mailboxDashBoardController.sessionCurrent?.accounts.keys.first;
       final emailId = arguments.presentationEmail?.id;
-      if (emailId != null && baseDownloadUrl != null && accountId != null) {
+      if (session != null && emailId != null && baseDownloadUrl != null && accountId != null) {
         consumeState(_getEmailContentInteractor.execute(
+          session,
           accountId,
           emailId,
           baseDownloadUrl,

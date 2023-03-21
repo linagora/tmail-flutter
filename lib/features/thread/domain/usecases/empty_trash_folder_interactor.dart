@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
@@ -18,7 +19,7 @@ class EmptyTrashFolderInteractor {
     this._emailRepository
   );
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, MailboxId trashMailboxId) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, MailboxId trashMailboxId) async* {
     try {
       yield Right<Failure, Success>(LoadingState());
 
@@ -30,7 +31,7 @@ class EmptyTrashFolderInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final result = await threadRepository.emptyTrashFolder(accountId, trashMailboxId);
+      final result = await threadRepository.emptyTrashFolder(session, accountId, trashMailboxId);
       if (result.isNotEmpty) {
         yield Right<Failure, Success>(EmptyTrashFolderSuccess(
           currentMailboxState: currentMailboxState,

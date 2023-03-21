@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -17,6 +18,7 @@ class SearchEmailInteractor {
   SearchEmailInteractor(this.threadRepository);
 
   Stream<Either<Failure, Success>> execute(
+    Session session,
     AccountId accountId,
     {
       UnsignedInt? limit,
@@ -29,6 +31,7 @@ class SearchEmailInteractor {
       yield Right(SearchingState());
 
       final emailList = await threadRepository.searchEmails(
+        session,
         accountId,
         limit: limit,
         sort: sort,
