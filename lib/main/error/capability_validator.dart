@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -22,5 +23,18 @@ void requireCapability(Session session, AccountId accountId, List<CapabilityIden
   final missingCapabilities = requiredCapabilities.toSet().difference(matchedCapabilities);
   if (missingCapabilities.isNotEmpty) {
     throw SessionMissingCapability(missingCapabilities);
+  }
+}
+
+extension CapabilityIdentifierExtension on List<CapabilityIdentifier> {
+
+  bool isSupported(Session session, AccountId accountId) {
+    try {
+      requireCapability(session, accountId, this);
+      return true;
+    } catch (error) {
+      logError('CapabilityIdentifierExtension::isSupported(): $error');
+      return false;
+    }
   }
 }
