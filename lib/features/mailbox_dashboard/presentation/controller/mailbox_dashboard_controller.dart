@@ -1551,7 +1551,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void showSpamReportBanner() {
     if (spamReportController.enableSpamReport) {
-      spamReportController.getUnreadSpamMailboxAction(accountId.value!);
+      spamReportController.getUnreadSpamMailboxAction(sessionCurrent!, accountId.value!);
     }
   }
 
