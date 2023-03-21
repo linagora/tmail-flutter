@@ -51,9 +51,10 @@ class ManageAccountDashBoardController extends ReloadableController {
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final settingsPageLevel = SettingsPageLevel.universal.obs;
-  final sessionCurrent = Rxn<Session>();
   final vacationResponse = Rxn<VacationResponse>();
   final dashboardSettingAction = Rxn<UIAction>();
+
+  Session? sessionCurrent;
 
   ManageAccountDashBoardController(
     LogoutOidcInteractor logoutOidcInteractor,
@@ -93,14 +94,14 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
+    sessionCurrent = session;
     accountId.value = session.accounts.keys.first;
-    sessionCurrent.value = session;
     _getUserProfile();
-    injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
-    injectForwardBindings(sessionCurrent.value, accountId.value);
-    injectRuleFilterBindings(sessionCurrent.value, accountId.value);
+    injectAutoCompleteBindings(sessionCurrent, accountId.value);
+    injectForwardBindings(sessionCurrent, accountId.value);
+    injectRuleFilterBindings(sessionCurrent, accountId.value);
     injectMailboxVisibilityBindings();
-    injectVacationBindings(sessionCurrent.value, accountId.value);
+    injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
   }
 
@@ -108,14 +109,14 @@ class ManageAccountDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     log('ManageAccountDashBoardController::_getAccountIdAndUserProfile(): $arguments');
     if (arguments is ManageAccountArguments) {
+      sessionCurrent = arguments.session;
       accountId.value = arguments.session?.accounts.keys.first;
-      sessionCurrent.value = arguments.session;
       _getUserProfile();
-      injectAutoCompleteBindings(sessionCurrent.value, accountId.value);
-      injectForwardBindings(sessionCurrent.value, accountId.value);
-      injectRuleFilterBindings(sessionCurrent.value, accountId.value);
+      injectAutoCompleteBindings(sessionCurrent, accountId.value);
+      injectForwardBindings(sessionCurrent, accountId.value);
+      injectRuleFilterBindings(sessionCurrent, accountId.value);
       injectMailboxVisibilityBindings();
-      injectVacationBindings(sessionCurrent.value, accountId.value);
+      injectVacationBindings(sessionCurrent, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
         _goToSettingMenuCurrent(arguments.menuSettingCurrent!);
@@ -154,8 +155,8 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void _getUserProfile() async {
-    log('ManageAccountDashBoardController::_getUserProfile(): ${sessionCurrent.value}');
-    userProfile.value = sessionCurrent.value != null ? UserProfile(sessionCurrent.value!.username.value) : null;
+    log('ManageAccountDashBoardController::_getUserProfile(): $sessionCurrent');
+    userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
   }
 
   void _getVacationResponse() {
@@ -211,7 +212,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   void goToSettings() {
     pushAndPop(AppRoutes.settings,
-        arguments: ManageAccountArguments(sessionCurrent.value));
+        arguments: ManageAccountArguments(sessionCurrent));
   }
 
   void backToMailboxDashBoard(BuildContext context) {
@@ -225,32 +226,26 @@ class ManageAccountDashBoardController extends ReloadableController {
     }
   }
 
-  bool checkAvailableVacationInSession() {
-    try {
-      requireCapability(sessionCurrent.value!, accountId.value!, [CapabilityIdentifier.jmapVacationResponse]);
-      return true;
-    } catch(e) {
-      logError('ManageAccountDashBoardController::checkAvailableVacationInSession(): exception = $e');
+  bool get isVacationCapabilitySupported {
+    if (accountId.value != null && sessionCurrent != null) {
+      return [CapabilityIdentifier.jmapVacationResponse].isSupported(sessionCurrent!, accountId.value!);
+    } else {
       return false;
     }
   }
 
-  bool checkAvailableRuleFilterInSession() {
-    try {
-      requireCapability(sessionCurrent.value!, accountId.value!, [capabilityRuleFilter]);
-      return true;
-    } catch(e) {
-      logError('ManageAccountDashBoardController::checkAvailableRuleFilterInSession(): exception = $e');
+  bool get isRuleFilterCapabilitySupported {
+    if (accountId.value != null && sessionCurrent != null) {
+      return [capabilityRuleFilter].isSupported(sessionCurrent!, accountId.value!);
+    } else {
       return false;
     }
   }
 
-  bool checkAvailableForwardInSession() {
-    try {
-      requireCapability(sessionCurrent.value!, accountId.value!, [capabilityForward]);
-      return true;
-    } catch(e) {
-      logError('ManageAccountDashBoardController::checkAvailableRuleFilterInSession(): exception = $e');
+  bool get isForwardCapabilitySupported {
+    if (accountId.value != null && sessionCurrent != null) {
+      return [capabilityForward].isSupported(sessionCurrent!, accountId.value!);
+    } else {
       return false;
     }
   }

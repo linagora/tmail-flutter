@@ -101,7 +101,7 @@ class IdentitiesController extends BaseController {
   void _initWorker() {
     accountIdWorker = ever(_accountDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
-        final session = _accountDashBoardController.sessionCurrent.value;
+        final session = _accountDashBoardController.sessionCurrent;
         if (session != null) {
           _getAllIdentities(session, accountId);
         }
@@ -126,7 +126,7 @@ class IdentitiesController extends BaseController {
     listAllIdentities.clear();
 
     final accountId = _accountDashBoardController.accountId.value;
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       _getAllIdentities(session, accountId);
     }
@@ -152,7 +152,7 @@ class IdentitiesController extends BaseController {
   void goToCreateNewIdentity(BuildContext context) async {
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null && userProfile != null) {
       final arguments = IdentityCreatorArguments(accountId, session, userProfile);
 
@@ -227,7 +227,7 @@ class IdentitiesController extends BaseController {
   void _deleteIdentityAction(Identity identity) {
     popBack();
 
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null && session != null && identity.id != null) {
       consumeState(_deleteIdentityInteractor.execute(session, accountId, identity.id!));
@@ -272,7 +272,7 @@ class IdentitiesController extends BaseController {
   void goToEditIdentity(BuildContext context, Identity identity) async {
     final accountId = _accountDashBoardController.accountId.value;
     final userProfile = _accountDashBoardController.userProfile.value;
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null && userProfile != null) {
       final arguments = IdentityCreatorArguments(
           accountId,
