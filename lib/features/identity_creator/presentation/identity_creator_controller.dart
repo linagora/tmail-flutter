@@ -55,6 +55,7 @@ class IdentityCreatorController extends BaseController {
   final bccOfIdentity = Rxn<EmailAddress>();
   final actionType = IdentityActionType.create.obs;
   final isDefaultIdentity = RxBool(false);
+  final isDefaultIdentitySupported = RxBool(false);
 
   late RichTextController keyboardRichTextController;
   late RichTextWebController richTextWebController;
@@ -120,6 +121,7 @@ class IdentityCreatorController extends BaseController {
       userProfile = arguments!.userProfile;
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
+      _checkDefaultIdentityIsSupported();
       _setUpValueFromIdentity();
       _getAllIdentities();
     }
@@ -147,6 +149,12 @@ class IdentityCreatorController extends BaseController {
     );
   }
 
+  void _checkDefaultIdentityIsSupported() {
+    if (session != null && accountId != null) {
+      isDefaultIdentitySupported.value = [CapabilityIdentifier.jamesSortOrder].isSupported(session!, accountId!);
+    }
+  }
+
   void _setUpValueFromIdentity() {
     _nameIdentity = identity?.name ?? '';
     inputNameIdentityController?.text = identity?.name ?? '';
@@ -160,21 +168,12 @@ class IdentityCreatorController extends BaseController {
   }
 
   void _getAllIdentities() {
-    log('IdentityCreatorController::_getAllIdentities() ');
-    if (accountId != null) {
-      try {
-        requireCapability(session!, accountId!, [CapabilityIdentifier.jamesSortOrder]);
-        consumeState(_getAllIdentitiesInteractor.execute(
-          accountId!,
-          properties: Properties({'email', 'sortOrder'})
-        ));
-      } catch (e) {
-        logError('IdentityCreatorController::_getAllIdentities(): exception: $e');
-        consumeState(_getAllIdentitiesInteractor.execute(
-          accountId!,
-          properties: Properties({'email'})
-        ));
-      }
+    if (accountId != null && session != null) {
+      final propertiesRequired = isDefaultIdentitySupported.isTrue
+        ? Properties({'email', 'sortOrder'})
+        : Properties({'email'});
+
+      consumeState(_getAllIdentitiesInteractor.execute(session!, accountId!, properties: propertiesRequired));
     }
   }
 
@@ -187,7 +186,10 @@ class IdentityCreatorController extends BaseController {
       listEmailAddressOfReplyTo.add(noneEmailAddress);
       listEmailAddressOfReplyTo.addAll(listEmailAddressDefault);
       _setUpAllFieldEmailAddress();
-      _setUpDefaultIdentity(success.identities);
+
+      if (isDefaultIdentitySupported.isTrue) {
+        _setUpDefaultIdentity(success.identities);
+      }
     } else {
       _setDefaultEmailAddressList();
     }
@@ -319,9 +321,9 @@ class IdentityCreatorController extends BaseController {
         ? {replyToOfIdentity.value!}
         : <EmailAddress>{};
 
-    final sortOrder = isDefaultIdentity.value 
-        ? UnsignedInt(0) 
-        : UnsignedInt(100);
+    final sortOrder = isDefaultIdentitySupported.isTrue
+      ? UnsignedInt(isDefaultIdentity.value ? 0 : 100)
+      : null;
     
     final newIdentity = Identity(
       name: _nameIdentity,
