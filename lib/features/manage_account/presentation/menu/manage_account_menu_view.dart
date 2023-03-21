@@ -118,7 +118,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                           child: InkWell(
                             onTap: () {
                               controller.logout(
-                                controller.dashBoardController.sessionCurrent.value,
+                                controller.dashBoardController.sessionCurrent,
                                 controller.dashBoardController.accountId.value
                               );
                             },
