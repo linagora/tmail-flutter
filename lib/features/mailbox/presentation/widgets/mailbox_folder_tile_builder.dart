@@ -11,7 +11,6 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:tmail_ui_user/features/base/widget/link_browser_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
@@ -84,21 +83,11 @@ class MailBoxFolderTileBuilder {
   Widget build() {
     if (responsiveUtils?.isWebDesktop(_context) == true && mailboxDisplayed == MailboxDisplayed.mailbox) {
       return DragTarget<List<PresentationEmail>>(
-        builder: (_, __, ___) => LinkBrowserWidget(
-          uri: _mailboxNode.item.mailboxRouteWeb,
-          child: _buildMailboxItem(_context)
-        ),
+        builder: (_, __, ___) => _buildMailboxItem(_context),
         onAccept: (emails) => _onDragItemAccepted?.call(emails, _mailboxNode.item),
       );
     } else {
-      if (BuildUtils.isWeb && mailboxDisplayed == MailboxDisplayed.mailbox) {
-        return LinkBrowserWidget(
-          uri: _mailboxNode.item.mailboxRouteWeb,
-          child: _buildMailboxItem(_context)
-        );
-      } else {
-        return _buildMailboxItem(_context);
-      }
+      return _buildMailboxItem(_context);
     }
   }
 
