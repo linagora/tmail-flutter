@@ -28,6 +28,16 @@ void requireCapability(Session session, AccountId accountId, List<CapabilityIden
 
 extension CapabilityIdentifierExtension on List<CapabilityIdentifier> {
 
+  bool isSupportTeamMailboxes(Session session, AccountId accountId) {
+    try {
+      requireCapability(session, accountId, this);
+      return true;
+    } catch (error) {
+      logError('CapabilityIdentifierExtension::isSupported(): $error');
+      return false;
+    }
+  }
+
   bool isSupported(Session session, AccountId accountId) {
     try {
       requireCapability(session, accountId, this);

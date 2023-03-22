@@ -67,23 +67,6 @@ class EmailAPI with HandleSetErrorMixin {
 
   EmailAPI(this._httpClient, this._downloadManager, this._dioClient, this._uuid);
 
-  Set<CapabilityIdentifier> _capabilitiesForEmailMethod(Session session, AccountId accountId) {
-    final getMailboxCreated = GetEmailMethod(accountId);
-    try {
-      requireCapability(
-          session,
-          accountId,
-          [CapabilityIdentifier.jmapTeamMailboxes]);
-      return {
-        CapabilityIdentifier.jmapCore,
-        CapabilityIdentifier.jmapMail,
-        CapabilityIdentifier.jmapTeamMailboxes
-      };
-    } catch (_) {
-      return getMailboxCreated.requiredCapabilities;
-    }
-  }
-
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) async {
     final processingInvocation = ProcessingInvocation();
 
@@ -103,8 +86,14 @@ class EmailAPI with HandleSetErrorMixin {
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
+    final capabilitiesSupportTeamMailboxes = getEmailMethod.requiredCapabilities.add(CapabilityIdentifier.jmapTeamMailboxes) as Set<CapabilityIdentifier>;
+
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? capabilitiesSupportTeamMailboxes
+      : getEmailMethod.requiredCapabilities;
+
     final result = await (jmapRequestBuilder
-        ..usings(_capabilitiesForEmailMethod(session, accountId)))
+        ..usings(capabilities))
       .build()
       .execute();
 

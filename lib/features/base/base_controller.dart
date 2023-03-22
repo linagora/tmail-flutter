@@ -232,7 +232,7 @@ abstract class BaseController extends GetxController
           await LocalNotificationManager.instance.setUp();
         }
         FcmInteractorBindings().dependencies();
-        FcmController.instance.initialize(session: session,accountId: accountId);
+        FcmController.instance.initialize(session: session, accountId: accountId);
       } else {
         throw NotSupportFCMException();
       }

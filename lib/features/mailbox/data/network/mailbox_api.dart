@@ -52,7 +52,9 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
-    final capabilities = _capabilitiesForMailboxMethod(session, accountId);
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? getMailboxCreated.requiredCapabilitiesSupportTeamMailboxes
+      : getMailboxCreated.requiredCapabilities;
 
     final result = await (jmapRequestBuilder
         ..usings(capabilities))
@@ -64,19 +66,6 @@ class MailboxAPI with HandleSetErrorMixin {
       GetMailboxResponse.deserialize);
 
     return MailboxResponse(mailboxes: resultCreated?.list, state: resultCreated?.state);
-  }
-
-  Set<CapabilityIdentifier> _capabilitiesForMailboxMethod(Session session, AccountId accountId) {
-    final getMailboxCreated = GetMailboxMethod(accountId);
-    try {
-     requireCapability(
-        session,
-        accountId,
-        [CapabilityIdentifier.jmapTeamMailboxes]);
-      return getMailboxCreated.requiredCapabilitiesSupportTeamMailboxes;
-    } catch (_) {
-      return getMailboxCreated.requiredCapabilities;
-    }
   }
 
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState) async {
@@ -104,7 +93,9 @@ class MailboxAPI with HandleSetErrorMixin {
     final getMailboxUpdatedInvocation = jmapRequestBuilder.invocation(getMailboxUpdated);
     final getMailboxCreatedInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
-    final capabilities = _capabilitiesForMailboxMethod(session, accountId);
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? getMailboxUpdated.requiredCapabilitiesSupportTeamMailboxes
+      : getMailboxUpdated.requiredCapabilities;
 
     final result = await (jmapRequestBuilder
         ..usings(capabilities))
@@ -150,8 +141,12 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? setMailboxMethod.requiredCapabilities.add(CapabilityIdentifier.jmapTeamMailboxes) as Set<CapabilityIdentifier>
+      : setMailboxMethod.requiredCapabilities;
+
     final response = await (requestBuilder
-          ..usings(_capabilitiesForMailboxMethod(session, accountId)))
+          ..usings(capabilities))
         .build()
         .execute();
 
@@ -217,8 +212,12 @@ class MailboxAPI with HandleSetErrorMixin {
         .map(requestBuilder.invocation)
         .toList();
 
+      final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+        ? {CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail, CapabilityIdentifier.jmapTeamMailboxes}
+        : {CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail};
+
       final response = await (requestBuilder
-          ..usings(_capabilitiesForMailboxMethod(session, accountId)))
+          ..usings(capabilities))
         .build()
         .execute();
 
@@ -259,8 +258,12 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? setMailboxMethod.requiredCapabilities.add(CapabilityIdentifier.jmapTeamMailboxes) as Set<CapabilityIdentifier>
+      : setMailboxMethod.requiredCapabilities;
+
     final response = await (requestBuilder
-          ..usings(_capabilitiesForMailboxMethod(session, accountId)))
+          ..usings(capabilities))
         .build()
         .execute();
 
@@ -287,8 +290,12 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? setMailboxMethod.requiredCapabilities.add(CapabilityIdentifier.jmapTeamMailboxes) as Set<CapabilityIdentifier>
+      : setMailboxMethod.requiredCapabilities;
+
     final response = await (requestBuilder
-        ..usings(_capabilitiesForMailboxMethod(session, accountId)))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -315,8 +322,12 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? setMailboxMethod.requiredCapabilities.add(CapabilityIdentifier.jmapTeamMailboxes) as Set<CapabilityIdentifier>
+      : setMailboxMethod.requiredCapabilities;
+
     final response = await (requestBuilder
-        ..usings(_capabilitiesForMailboxMethod(session, accountId)))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -346,8 +357,12 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? setMailboxMethod.requiredCapabilities.add(CapabilityIdentifier.jmapTeamMailboxes) as Set<CapabilityIdentifier>
+      : setMailboxMethod.requiredCapabilities;
+
     final response = await (requestBuilder
-        ..usings(_capabilitiesForMailboxMethod(session, accountId)))
+        ..usings(capabilities))
       .build()
       .execute();
 
