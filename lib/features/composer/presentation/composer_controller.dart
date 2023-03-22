@@ -771,13 +771,14 @@ class ComposerController extends BaseController {
   }
 
   void _handleSendMessages(BuildContext context) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final arguments = composerArguments.value;
     final accountId = mailboxDashBoardController.accountId.value;
     final sentMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent];
     final outboxMailboxId = mailboxDashBoardController.outboxMailbox?.id;
     final userProfile = mailboxDashBoardController.userProfile.value;
 
-    if (arguments != null && accountId != null && userProfile != null) {
+    if (arguments != null && accountId != null && userProfile != null && session != null) {
       final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
       final submissionCreateId = Id(_uuid.v1());
       final emailRequest = EmailRequest(
@@ -793,7 +794,7 @@ class ComposerController extends BaseController {
         ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)
         : null;
 
-      mailboxDashBoardController.handleSendEmailAction(accountId, emailRequest, mailboxRequest);
+      mailboxDashBoardController.handleSendEmailAction(session, accountId, emailRequest, mailboxRequest);
       uploadController.clearInlineFileUploaded();
     }
 
@@ -976,8 +977,9 @@ class ComposerController extends BaseController {
     final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
     final userProfile = mailboxDashBoardController.userProfile.value;
     final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
 
-    if (arguments != null && userProfile != null && accountId != null) {
+    if (arguments != null && userProfile != null && accountId != null && session != null) {
       final isChanged = await _isEmailChanged(context, arguments);
       if (isChanged && context.mounted) {
         final newEmail = await _generateEmail(
@@ -990,13 +992,14 @@ class ComposerController extends BaseController {
         if (arguments.emailActionType == EmailActionType.edit && oldEmail != null && oldEmail.id != null) {
           mailboxDashBoardController.consumeState(
             _updateEmailDraftsInteractor.execute(
+              session,
               accountId,
               newEmail,
               oldEmail.id!
             )
           );
         } else {
-          mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(accountId, newEmail));
+          mailboxDashBoardController.consumeState(_saveEmailAsDraftsInteractor.execute(session, accountId, newEmail));
         }
 
         uploadController.clearInlineFileUploaded();

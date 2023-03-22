@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
@@ -12,7 +13,7 @@ class RemoveEmailDraftsInteractor {
 
   RemoveEmailDraftsInteractor(this._emailRepository, this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, EmailId emailId) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, EmailId emailId) async* {
     try {
       final listState = await Future.wait([
         _mailboxRepository.getMailboxState(),
@@ -22,7 +23,7 @@ class RemoveEmailDraftsInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final result = await _emailRepository.removeEmailDrafts(accountId, emailId);
+      final result = await _emailRepository.removeEmailDrafts(session, accountId, emailId);
       if (result) {
         yield Right<Failure, Success>(RemoveEmailDraftsSuccess(
             currentEmailState: currentEmailState,

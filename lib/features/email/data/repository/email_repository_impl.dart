@@ -37,13 +37,23 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest, {CreateNewMailboxRequest? mailboxRequest}) {
-    return emailDataSource.sendEmail(accountId, emailRequest, mailboxRequest: mailboxRequest);
+  Future<bool> sendEmail(
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    {CreateNewMailboxRequest? mailboxRequest}
+  ) {
+    return emailDataSource.sendEmail(session, accountId, emailRequest, mailboxRequest: mailboxRequest);
   }
 
   @override
-  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) {
-    return emailDataSource.markAsRead(accountId, emails, readActions);
+  Future<List<Email>> markAsRead(
+    Session session,
+    AccountId accountId,
+    List<Email> emails,
+    ReadActions readActions
+  ) {
+    return emailDataSource.markAsRead(session, accountId, emails, readActions);
   }
 
   @override
@@ -73,17 +83,18 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) {
-    return emailDataSource.moveToMailbox(accountId, moveRequest);
+  Future<List<EmailId>> moveToMailbox(Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
+    return emailDataSource.moveToMailbox(session, accountId, moveRequest);
   }
 
   @override
   Future<List<Email>> markAsStar(
-      AccountId accountId,
-      List<Email> emails,
-      MarkStarAction markStarAction
+    Session session,
+    AccountId accountId,
+    List<Email> emails,
+    MarkStarAction markStarAction
   ) {
-    return emailDataSource.markAsStar(accountId, emails, markStarAction);
+    return emailDataSource.markAsStar(session, accountId, emails, markStarAction);
   }
 
   @override
@@ -110,18 +121,18 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<Email> saveEmailAsDrafts(AccountId accountId, Email email) {
-    return emailDataSource.saveEmailAsDrafts(accountId, email);
+  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email) {
+    return emailDataSource.saveEmailAsDrafts(session, accountId, email);
   }
 
   @override
-  Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId) {
-    return emailDataSource.removeEmailDrafts(accountId, emailId);
+  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId) {
+    return emailDataSource.removeEmailDrafts(session, accountId, emailId);
   }
 
   @override
-  Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) {
-    return emailDataSource.updateEmailDrafts(accountId, newEmail, oldEmailId);
+  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId) {
+    return emailDataSource.updateEmailDrafts(session, accountId, newEmail, oldEmailId);
   }
 
   @override
@@ -143,13 +154,13 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<EmailId>> deleteMultipleEmailsPermanently(AccountId accountId, List<EmailId> emailIds) {
-    return emailDataSource.deleteMultipleEmailsPermanently(accountId, emailIds);
+  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds) {
+    return emailDataSource.deleteMultipleEmailsPermanently(session, accountId, emailIds);
   }
 
   @override
-  Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) {
-    return emailDataSource.deleteEmailPermanently(accountId, emailId);
+  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId) {
+    return emailDataSource.deleteEmailPermanently(session, accountId, emailId);
   }
 
   @override

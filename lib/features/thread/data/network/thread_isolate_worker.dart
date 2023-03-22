@@ -73,7 +73,7 @@ class ThreadIsolateWorker {
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
-          final listEmailIdDeleted = await args.emailAPI.deleteMultipleEmailsPermanently(args.accountId, newEmailList.listEmailIds);
+          final listEmailIdDeleted = await args.emailAPI.deleteMultipleEmailsPermanently(args.session, args.accountId, newEmailList.listEmailIds);
 
           if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == newEmailList.listEmailIds.length) {
             sendPort.send(listEmailIdDeleted);
@@ -123,7 +123,7 @@ class ThreadIsolateWorker {
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
-          final listEmailIdDeleted = await _emailAPI.deleteMultipleEmailsPermanently(accountId, newEmailList.listEmailIds);
+          final listEmailIdDeleted = await _emailAPI.deleteMultipleEmailsPermanently(session, accountId, newEmailList.listEmailIds);
 
           if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == newEmailList.listEmailIds.length) {
             await updateDestroyedEmailCache(listEmailIdDeleted);
