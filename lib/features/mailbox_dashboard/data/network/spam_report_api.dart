@@ -39,8 +39,13 @@ class SpamReportApi {
           ReferencePath.idsPath,
         ));
     final getMailboxInvocation = requestBuilder.invocation(getMailBoxMethod);
+
+    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
+      ? getMailBoxMethod.requiredCapabilitiesSupportTeamMailboxes
+      : getMailBoxMethod.requiredCapabilities;
+
     final result = await (requestBuilder
-            ..usings(_capabilitiesForMailboxMethod(session, accountId)))
+            ..usings(capabilities))
           .build()
           .execute();
 
@@ -53,18 +58,5 @@ class SpamReportApi {
     }).catchError((error) {
       throw error;
     });
-  }
-
-  Set<CapabilityIdentifier> _capabilitiesForMailboxMethod(Session session, AccountId accountId) {
-    final getMailboxCreated = GetMailboxMethod(accountId);
-    try {
-      requireCapability(
-        session,
-        accountId,
-        [CapabilityIdentifier.jmapTeamMailboxes]);
-      return getMailboxCreated.requiredCapabilitiesSupportTeamMailboxes;
-    } catch (_) {
-      return getMailboxCreated.requiredCapabilities;
-    }
   }
 }
