@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/richtext_controller.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -199,17 +200,19 @@ class VacationController extends BaseController {
       context: context,
       initialTime: currentTime ?? TimeOfDay.now(),
       builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColor.primaryColor,
-              onPrimary: Colors.white,
-              onSurface: Colors.black),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(foregroundColor: AppColor.primaryColor))),
-          child: MediaQuery(
-              data: const MediaQueryData(alwaysUse24HourFormat: false),
-              child: child!),
+        return PointerInterceptor(
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: AppColor.primaryColor,
+                onPrimary: Colors.white,
+                onSurface: Colors.black),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(foregroundColor: AppColor.primaryColor))),
+            child: MediaQuery(
+                data: const MediaQueryData(alwaysUse24HourFormat: false),
+                child: child!),
+          ),
         );
       }
     );
