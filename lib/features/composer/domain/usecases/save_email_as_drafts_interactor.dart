@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -12,7 +13,7 @@ class SaveEmailAsDraftsInteractor {
 
   SaveEmailAsDraftsInteractor(this._emailRepository, this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, Email email) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, Email email) async* {
     try {
       yield Right<Failure, Success>(SaveEmailAsDraftsLoading());
 
@@ -24,7 +25,7 @@ class SaveEmailAsDraftsInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final emailAsDrafts = await _emailRepository.saveEmailAsDrafts(accountId, email);
+      final emailAsDrafts = await _emailRepository.saveEmailAsDrafts(session, accountId, email);
       yield Right<Failure, Success>(
         SaveEmailAsDraftsSuccess(
           emailAsDrafts,

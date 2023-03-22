@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -12,7 +13,7 @@ class UpdateEmailDraftsInteractor {
 
   UpdateEmailDraftsInteractor(this._emailRepository, this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, Email newEmail, EmailId oldEmailId) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId) async* {
     try {
       yield Right<Failure, Success>(UpdatingEmailDrafts());
 
@@ -24,7 +25,7 @@ class UpdateEmailDraftsInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final newEmailDrafts = await _emailRepository.updateEmailDrafts(accountId, newEmail, oldEmailId);
+      final newEmailDrafts = await _emailRepository.updateEmailDrafts(session, accountId, newEmail, oldEmailId);
       yield Right<Failure, Success>(
         UpdateEmailDraftsSuccess(
           newEmailDrafts,

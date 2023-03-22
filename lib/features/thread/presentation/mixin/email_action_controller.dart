@@ -51,57 +51,69 @@ mixin EmailActionController on ViewAsDialogActionMixin {
   }
 
   void moveToTrash(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final trashMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
 
-    if (mailboxContain != null && accountId != null && trashMailboxId != null) {
-      _moveToTrashAction(accountId, MoveToMailboxRequest(
-        {mailboxContain.id: email.id != null ? [email.id!] : []},
-        trashMailboxId,
-        MoveAction.moving,
-        mailboxDashBoardController.sessionCurrent!,
-        EmailActionType.moveToTrash)
+    if (session != null && mailboxContain != null && accountId != null && trashMailboxId != null) {
+      _moveToTrashAction(
+        session,
+        accountId,
+        MoveToMailboxRequest(
+          {mailboxContain.id: email.id != null ? [email.id!] : []},
+          trashMailboxId,
+          MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
+          EmailActionType.moveToTrash)
       );
     }
   }
 
-  void _moveToTrashAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
-    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
+  void _moveToTrashAction(Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
+    mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
   void moveToSpam(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
 
-    if (mailboxContain != null && accountId != null && spamMailboxId != null) {
-      moveToSpamAction(accountId, MoveToMailboxRequest(
-        {mailboxContain.id: email.id != null ? [email.id!] : []},
-        spamMailboxId,
-        MoveAction.moving,
-        mailboxDashBoardController.sessionCurrent!,
-        EmailActionType.moveToSpam)
+    if (session != null && mailboxContain != null && accountId != null && spamMailboxId != null) {
+      moveToSpamAction(
+        session,
+        accountId,
+        MoveToMailboxRequest(
+          {mailboxContain.id: email.id != null ? [email.id!] : []},
+          spamMailboxId,
+          MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
+          EmailActionType.moveToSpam)
       );
     }
   }
 
   void unSpam(PresentationEmail email) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
     final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
 
-    if (inboxMailboxId != null && accountId != null && spamMailboxId != null) {
-      moveToSpamAction(accountId, MoveToMailboxRequest(
-        {spamMailboxId: email.id != null ? [email.id!] : []},
-        inboxMailboxId,
-        MoveAction.moving,
-        mailboxDashBoardController.sessionCurrent!,
-        EmailActionType.unSpam)
+    if (session != null && inboxMailboxId != null && accountId != null && spamMailboxId != null) {
+      moveToSpamAction(
+        session,
+        accountId,
+        MoveToMailboxRequest(
+          {spamMailboxId: email.id != null ? [email.id!] : []},
+          inboxMailboxId,
+          MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
+          EmailActionType.unSpam)
       );
     }
   }
 
-  void moveToSpamAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
-    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
+  void moveToSpamAction(Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
+    mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
   void moveToMailbox(
@@ -160,32 +172,41 @@ mixin EmailActionController on ViewAsDialogActionMixin {
     PresentationMailbox destinationMailbox
   ) {
     if (destinationMailbox.isTrash) {
-      moveToSpamAction(accountId, MoveToMailboxRequest(
-        {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
-        destinationMailbox.id,
-        MoveAction.moving,
+      moveToSpamAction(
         session,
-        EmailActionType.moveToTrash));
+        accountId,
+        MoveToMailboxRequest(
+          {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
+          destinationMailbox.id,
+          MoveAction.moving,
+          session,
+          EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
-      moveToSpamAction(accountId, MoveToMailboxRequest(
-        {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
-        destinationMailbox.id,
-        MoveAction.moving,
+      moveToSpamAction(
         session,
-        EmailActionType.moveToSpam));
+        accountId,
+        MoveToMailboxRequest(
+          {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
+          destinationMailbox.id,
+          MoveAction.moving,
+          session,
+          EmailActionType.moveToSpam));
     } else {
-      _moveToMailboxAction(accountId, MoveToMailboxRequest(
-        {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
-        destinationMailbox.id,
-        MoveAction.moving,
+      _moveToMailboxAction(
         session,
-        EmailActionType.moveToMailbox,
-        destinationPath: destinationMailbox.mailboxPath));
+        accountId,
+        MoveToMailboxRequest(
+          {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
+          destinationMailbox.id,
+          MoveAction.moving,
+          session,
+          EmailActionType.moveToMailbox,
+          destinationPath: destinationMailbox.mailboxPath));
     }
   }
 
-  void _moveToMailboxAction(AccountId accountId, MoveToMailboxRequest moveRequest) {
-    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
+  void _moveToMailboxAction(Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
+    mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
   void deleteEmailPermanently(BuildContext context, PresentationEmail email) {

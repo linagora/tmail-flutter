@@ -2,6 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -15,9 +16,10 @@ class SendEmailInteractor {
   SendEmailInteractor(this._emailRepository, this._mailboxRepository);
 
   Stream<Either<Failure, Success>> execute(
-      AccountId accountId,
-      EmailRequest emailRequest,
-      {CreateNewMailboxRequest? mailboxRequest}
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    {CreateNewMailboxRequest? mailboxRequest}
   ) async* {
     try {
       yield Right<Failure, Success>(SendingEmailState());
@@ -31,6 +33,7 @@ class SendEmailInteractor {
       final currentEmailState = listState.last;
 
       final result = await _emailRepository.sendEmail(
+        session,
         accountId,
         emailRequest,
         mailboxRequest: mailboxRequest

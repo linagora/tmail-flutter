@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -12,9 +13,10 @@ class MarkAsStarMultipleEmailInteractor {
   MarkAsStarMultipleEmailInteractor(this._emailRepository);
 
   Stream<Either<Failure, Success>> execute(
-      AccountId accountId,
-      List<Email> emails,
-      MarkStarAction markStarAction
+    Session session,
+    AccountId accountId,
+    List<Email> emails,
+    MarkStarAction markStarAction
   ) async* {
     try {
       yield Right(LoadingMarkAsStarMultipleEmailAll());
@@ -25,7 +27,7 @@ class MarkAsStarMultipleEmailInteractor {
           .where((email) => markStarAction == MarkStarAction.unMarkStar ? email.hasStarred : !email.hasStarred)
           .toList();
 
-      final result = await _emailRepository.markAsStar(accountId, listEmailNeedMarkStar, markStarAction);
+      final result = await _emailRepository.markAsStar(session, accountId, listEmailNeedMarkStar, markStarAction);
 
       if (listEmailNeedMarkStar.length == result.length) {
         final countMarkStarSuccess = emails.length;
