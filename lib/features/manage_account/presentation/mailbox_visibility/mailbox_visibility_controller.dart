@@ -124,7 +124,7 @@ class MailboxVisibilityController extends BaseMailboxController {
 
   void _subscribeMailboxAction(SubscribeMailboxRequest subscribeMailboxRequest) {
     final accountId = _accountDashBoardController.accountId.value;
-    final session = _accountDashBoardController.sessionCurrent.value;
+    final session = _accountDashBoardController.sessionCurrent;
     if (session != null && accountId != null) {
       final subscribeRequest = generateSubscribeRequest(
         subscribeMailboxRequest.mailboxId,
