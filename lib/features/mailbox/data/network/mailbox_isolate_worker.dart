@@ -118,9 +118,10 @@ class MailboxIsolateWorker {
           lastReceivedDate = listEmailUnread.last.receivedAt;
 
           final result = await args.emailAPI.markAsRead(
-              args.accountId,
-              listEmailUnread,
-              ReadActions.markAsRead);
+            args.session,
+            args.accountId,
+            listEmailUnread,
+            ReadActions.markAsRead);
 
           log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.length}');
           emailListCompleted.addAll(result);
@@ -184,8 +185,7 @@ class MailboxIsolateWorker {
           lastEmailId = listEmailUnread.last.id;
           lastReceivedDate = listEmailUnread.last.receivedAt;
 
-          final result = await _emailApi.markAsRead(
-              accountId, listEmailUnread, ReadActions.markAsRead);
+          final result = await _emailApi.markAsRead(session, accountId, listEmailUnread, ReadActions.markAsRead);
           log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): MARK_READ: ${result.length}');
           emailListCompleted.addAll(result);
 

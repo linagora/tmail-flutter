@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
@@ -26,23 +25,6 @@ class ThreadAPI {
   final HttpClient httpClient;
 
   ThreadAPI(this.httpClient);
-
-  Set<CapabilityIdentifier> _capabilitiesForEmailMethod(Session session, AccountId accountId) {
-    final getMailboxCreated = GetEmailMethod(accountId);
-    try {
-      requireCapability(
-          session,
-          accountId,
-          [CapabilityIdentifier.jmapTeamMailboxes]);
-      return {
-        CapabilityIdentifier.jmapCore,
-        CapabilityIdentifier.jmapMail,
-        CapabilityIdentifier.jmapTeamMailboxes
-      };
-    } catch (_) {
-      return getMailboxCreated.requiredCapabilities;
-    }
-  }
 
   Future<EmailsResponse> getAllEmail(
     Session session,
@@ -78,8 +60,11 @@ class ThreadAPI {
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
+    final capabilities = getEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final result = await (jmapRequestBuilder
-        ..usings(_capabilitiesForEmailMethod(session, accountId)))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -133,8 +118,11 @@ class ThreadAPI {
     final getEmailUpdatedInvocation = jmapRequestBuilder.invocation(getMailboxUpdated);
     final getEmailCreatedInvocation = jmapRequestBuilder.invocation(getEmailCreated);
 
+    final capabilities = getEmailCreated.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final result = await (jmapRequestBuilder
-        ..usings(_capabilitiesForEmailMethod(session, accountId)))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -175,8 +163,11 @@ class ThreadAPI {
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
+    final capabilities = getEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final result = await (jmapRequestBuilder
-        ..usings(_capabilitiesForEmailMethod(session, accountId)))
+        ..usings(capabilities))
       .build()
       .execute();
 

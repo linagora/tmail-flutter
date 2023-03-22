@@ -408,8 +408,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null) {
-      consumeState(_markAsEmailReadInteractor.execute(accountId, presentationEmail.toEmail(), readActions));
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      consumeState(_markAsEmailReadInteractor.execute(session, accountId, presentationEmail.toEmail(), readActions));
     }
   }
 
@@ -664,21 +665,33 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       PresentationMailbox destinationMailbox
   ) {
     if (destinationMailbox.isTrash) {
-      _moveToTrashAction(context, accountId, MoveToMailboxRequest(
+      _moveToTrashAction(
+        context,
+        session,
+        accountId,
+        MoveToMailboxRequest(
           {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
-      _moveToSpamAction(context, accountId, MoveToMailboxRequest(
+      _moveToSpamAction(
+        context,
+        session,
+        accountId,
+        MoveToMailboxRequest(
           {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
           session,
           EmailActionType.moveToSpam));
     } else {
-      _moveToMailbox(context, accountId, MoveToMailboxRequest(
+      _moveToMailbox(
+        context,
+        session,
+        accountId,
+        MoveToMailboxRequest(
           {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
@@ -688,9 +701,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _moveToMailbox(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveToMailbox(BuildContext context, Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
     closeEmailView(context);
-    consumeState(_moveToMailboxInteractor.execute(accountId, moveRequest));
+    consumeState(_moveToMailboxInteractor.execute(session, accountId, moveRequest));
   }
 
   void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
@@ -719,39 +732,55 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null) {
-      _moveToMailbox(currentContext!, accountId, newMoveRequest);
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      _moveToMailbox(currentContext!, session, accountId, newMoveRequest);
     }
   }
 
   void moveToTrash(BuildContext context, PresentationEmail email) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final trashMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleTrash);
     final currentMailbox = getMailboxContain(email);
 
-    if (accountId != null && currentMailbox != null && trashMailboxId != null) {
-      _moveToTrashAction(context, accountId, MoveToMailboxRequest(
-        {currentMailbox.id: [email.id!]},
-        trashMailboxId,
-        MoveAction.moving,
-        mailboxDashBoardController.sessionCurrent!,
-        EmailActionType.moveToTrash)
+    if (session != null && accountId != null && currentMailbox != null && trashMailboxId != null) {
+      _moveToTrashAction(
+        context,
+        session,
+        accountId,
+        MoveToMailboxRequest(
+          {currentMailbox.id: [email.id!]},
+          trashMailboxId,
+          MoveAction.moving,
+          mailboxDashBoardController.sessionCurrent!,
+          EmailActionType.moveToTrash)
       );
     }
   }
 
-  void _moveToTrashAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveToTrashAction(
+    BuildContext context,
+    Session session,
+    AccountId accountId,
+    MoveToMailboxRequest moveRequest
+  ) {
     closeEmailView(context);
-    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
+    mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
   void moveToSpam(BuildContext context, PresentationEmail email) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
     final currentMailbox = getMailboxContain(email);
 
-    if (accountId != null && currentMailbox != null && spamMailboxId != null) {
-      _moveToSpamAction(context, accountId, MoveToMailboxRequest(
+    if (session != null && accountId != null && currentMailbox != null && spamMailboxId != null) {
+      _moveToSpamAction(
+        context,
+        session,
+        accountId,
+        MoveToMailboxRequest(
           {currentMailbox.id: [email.id!]},
           spamMailboxId,
           MoveAction.moving,
@@ -762,12 +791,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void unSpam(BuildContext context, PresentationEmail email) async {
+    final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
     final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
 
-    if (accountId != null && spamMailboxId != null && inboxMailboxId != null) {
-      _moveToSpamAction(context, accountId, MoveToMailboxRequest(
+    if (session != null && accountId != null && spamMailboxId != null && inboxMailboxId != null) {
+      _moveToSpamAction(
+        context,
+        session,
+        accountId,
+        MoveToMailboxRequest(
           {spamMailboxId: [email.id!]},
           inboxMailboxId,
           MoveAction.moving,
@@ -777,15 +811,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _moveToSpamAction(BuildContext context, AccountId accountId, MoveToMailboxRequest moveRequest) {
+  void _moveToSpamAction(
+    BuildContext context,
+    Session session,
+    AccountId accountId,
+    MoveToMailboxRequest moveRequest
+  ) {
     closeEmailView(context);
-    mailboxDashBoardController.moveToMailbox(accountId, moveRequest);
+    mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction markStarAction) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null) {
-      consumeState(_markAsStarEmailInteractor.execute(accountId, presentationEmail.toEmail(), markStarAction));
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      consumeState(_markAsStarEmailInteractor.execute(session, accountId, presentationEmail.toEmail(), markStarAction));
     }
   }
 

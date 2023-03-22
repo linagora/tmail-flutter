@@ -86,11 +86,8 @@ class EmailAPI with HandleSetErrorMixin {
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
-    final capabilitiesSupportTeamMailboxes = getEmailMethod.requiredCapabilities.add(CapabilityIdentifier.jmapTeamMailboxes) as Set<CapabilityIdentifier>;
-
-    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
-      ? capabilitiesSupportTeamMailboxes
-      : getEmailMethod.requiredCapabilities;
+    final capabilities = getEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
     final result = await (jmapRequestBuilder
         ..usings(capabilities))
@@ -108,6 +105,7 @@ class EmailAPI with HandleSetErrorMixin {
   }
 
   Future<bool> sendEmail(
+    Session session,
     AccountId accountId,
     EmailRequest emailRequest,
     {CreateNewMailboxRequest? mailboxRequest}
@@ -170,8 +168,11 @@ class EmailAPI with HandleSetErrorMixin {
 
     final setEmailSubmissionInvocation = requestBuilder.invocation(setEmailSubmissionMethod);
 
+    final capabilities = setEmailSubmissionMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailSubmissionMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -228,7 +229,12 @@ class EmailAPI with HandleSetErrorMixin {
     return remainedErrors;
   }
 
-  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions) async {
+  Future<List<Email>> markAsRead(
+    Session session,
+    AccountId accountId,
+    List<Email> emails,
+    ReadActions readActions
+  ) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(readActions));
 
@@ -242,8 +248,11 @@ class EmailAPI with HandleSetErrorMixin {
 
     final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
 
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -358,7 +367,11 @@ class EmailAPI with HandleSetErrorMixin {
     return bytesDownloaded;
   }
 
-  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest) async {
+  Future<List<EmailId>> moveToMailbox(
+    Session session,
+    AccountId accountId,
+    MoveToMailboxRequest moveRequest
+  ) async {
 
     requireCapability(moveRequest.session, accountId, [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]);
 
@@ -388,7 +401,10 @@ class EmailAPI with HandleSetErrorMixin {
           ..addUpdates(currentItem.value.generateMapUpdateObjectMoveToMailbox(currentItem.key, moveRequest.destinationMailboxId));
       }).map(requestBuilder.invocation).toList();
 
-      final response = await (requestBuilder..usings({CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail}))
+      final capabilities = {CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail}
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+      final response = await (requestBuilder..usings(capabilities))
         .build()
         .execute();
 
@@ -414,7 +430,12 @@ class EmailAPI with HandleSetErrorMixin {
   }
 
 
-  Future<List<Email>> markAsStar(AccountId accountId, List<Email> emails, MarkStarAction markStarAction) async {
+  Future<List<Email>> markAsStar(
+    Session session,
+    AccountId accountId,
+    List<Email> emails,
+    MarkStarAction markStarAction
+  ) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsStar(markStarAction));
 
@@ -428,8 +449,11 @@ class EmailAPI with HandleSetErrorMixin {
 
     final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
 
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -444,7 +468,7 @@ class EmailAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<Email> saveEmailAsDrafts(AccountId accountId, Email email) async {
+  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email) async {
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(idCreateMethod, email);
@@ -453,8 +477,11 @@ class EmailAPI with HandleSetErrorMixin {
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -474,7 +501,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId) async {
+  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy({emailId.id});
 
@@ -482,8 +509,11 @@ class EmailAPI with HandleSetErrorMixin {
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -498,7 +528,12 @@ class EmailAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId) async {
+  Future<Email> updateEmailDrafts(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId
+  ) async {
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(idCreateMethod, newEmail)
@@ -508,8 +543,11 @@ class EmailAPI with HandleSetErrorMixin {
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -530,15 +568,22 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<List<EmailId>> deleteMultipleEmailsPermanently(AccountId accountId, List<EmailId> emailIds) async {
+  Future<List<EmailId>> deleteMultipleEmailsPermanently(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds
+  ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy(emailIds.map((emailId) => emailId.id).toSet());
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 
@@ -555,15 +600,18 @@ class EmailAPI with HandleSetErrorMixin {
     return List.empty();
   }
 
-  Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId) async {
+  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy({emailId.id});
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
     final response = await (requestBuilder
-        ..usings(setEmailMethod.requiredCapabilities))
+        ..usings(capabilities))
       .build()
       .execute();
 

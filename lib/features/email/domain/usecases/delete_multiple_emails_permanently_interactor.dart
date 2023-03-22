@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -12,7 +13,7 @@ class DeleteMultipleEmailsPermanentlyInteractor {
 
   DeleteMultipleEmailsPermanentlyInteractor(this._emailRepository, this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, List<EmailId> emailIds) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, List<EmailId> emailIds) async* {
     try {
       yield Right<Failure, Success>(LoadingDeleteMultipleEmailsPermanentlyAll());
 
@@ -24,7 +25,7 @@ class DeleteMultipleEmailsPermanentlyInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final listResult = await _emailRepository.deleteMultipleEmailsPermanently(accountId, emailIds);
+      final listResult = await _emailRepository.deleteMultipleEmailsPermanently(session, accountId, emailIds);
       if (listResult.length == emailIds.length) {
         yield Right<Failure, Success>(DeleteMultipleEmailsPermanentlyAllSuccess(
             listResult,

@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -12,7 +13,7 @@ class MoveToMailboxInteractor {
 
   MoveToMailboxInteractor(this._emailRepository, this._mailboxRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, MoveToMailboxRequest moveRequest) async* {
+  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, MoveToMailboxRequest moveRequest) async* {
     try {
       yield Right(LoadingMoveToMailbox());
 
@@ -24,7 +25,7 @@ class MoveToMailboxInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final result = await _emailRepository.moveToMailbox(accountId, moveRequest);
+      final result = await _emailRepository.moveToMailbox(session, accountId, moveRequest);
       if (result.isNotEmpty) {
         yield Right(MoveToMailboxSuccess(
           result.first,
