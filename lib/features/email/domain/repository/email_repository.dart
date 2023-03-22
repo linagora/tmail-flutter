@@ -16,9 +16,14 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 abstract class EmailRepository {
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId);
 
-  Future<bool> sendEmail(AccountId accountId, EmailRequest emailRequest, {CreateNewMailboxRequest? mailboxRequest});
+  Future<bool> sendEmail(
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    {CreateNewMailboxRequest? mailboxRequest}
+  );
 
-  Future<List<Email>> markAsRead(AccountId accountId, List<Email> emails, ReadActions readActions);
+  Future<List<Email>> markAsRead(Session session, AccountId accountId, List<Email> emails, ReadActions readActions);
 
   Future<List<DownloadTaskId>> downloadAttachments(
     List<Attachment> attachments,
@@ -44,9 +49,10 @@ abstract class EmailRepository {
     StreamController<Either<Failure, Success>> onReceiveController
   );
 
-  Future<List<EmailId>> moveToMailbox(AccountId accountId, MoveToMailboxRequest moveRequest);
+  Future<List<EmailId>> moveToMailbox(Session session, AccountId accountId, MoveToMailboxRequest moveRequest);
 
   Future<List<Email>> markAsStar(
+    Session session,
     AccountId accountId,
     List<Email> emails,
     MarkStarAction markStarAction
@@ -62,15 +68,15 @@ abstract class EmailRepository {
 
   Future<List<EmailContent>> addTooltipWhenHoverOnLink(List<EmailContent> emailContents);
 
-  Future<Email> saveEmailAsDrafts(AccountId accountId, Email email);
+  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email);
 
-  Future<bool> removeEmailDrafts(AccountId accountId, EmailId emailId);
+  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId);
 
-  Future<Email> updateEmailDrafts(AccountId accountId, Email newEmail, EmailId oldEmailId);
+  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId);
 
-  Future<List<EmailId>> deleteMultipleEmailsPermanently(AccountId accountId, List<EmailId> emailIds);
+  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
 
-  Future<bool> deleteEmailPermanently(AccountId accountId, EmailId emailId);
+  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId);
 
   Future<jmap.State?> getEmailState();
 }

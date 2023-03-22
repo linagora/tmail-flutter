@@ -1,6 +1,5 @@
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -40,9 +39,8 @@ class SpamReportApi {
         ));
     final getMailboxInvocation = requestBuilder.invocation(getMailBoxMethod);
 
-    final capabilities = [CapabilityIdentifier.jmapTeamMailboxes].isSupportTeamMailboxes(session, accountId)
-      ? getMailBoxMethod.requiredCapabilitiesSupportTeamMailboxes
-      : getMailBoxMethod.requiredCapabilities;
+    final capabilities = getMailBoxMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
     final result = await (requestBuilder
             ..usings(capabilities))

@@ -28,7 +28,7 @@ void requireCapability(Session session, AccountId accountId, List<CapabilityIden
 
 extension CapabilityIdentifierExtension on List<CapabilityIdentifier> {
 
-  bool isSupportTeamMailboxes(Session session, AccountId accountId) {
+  bool isSupported(Session session, AccountId accountId) {
     try {
       requireCapability(session, accountId, this);
       return true;
@@ -37,14 +37,18 @@ extension CapabilityIdentifierExtension on List<CapabilityIdentifier> {
       return false;
     }
   }
+}
 
-  bool isSupported(Session session, AccountId accountId) {
+extension CapabilityIdentifierSetExtension on Set<CapabilityIdentifier> {
+
+  Set<CapabilityIdentifier> toCapabilitiesSupportTeamMailboxes(Session session, AccountId accountId) {
     try {
-      requireCapability(session, accountId, this);
-      return true;
+      requireCapability(session, accountId, [CapabilityIdentifier.jmapTeamMailboxes]);
+      add(CapabilityIdentifier.jmapTeamMailboxes);
+      return this;
     } catch (error) {
-      logError('CapabilityIdentifierExtension::isSupported(): $error');
-      return false;
+      logError('CapabilityIdentifierExtension::toCapabilitiesSupportTeamMailboxes(): $error');
+      return this;
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -14,9 +15,10 @@ class MarkAsMultipleEmailReadInteractor {
   MarkAsMultipleEmailReadInteractor(this._emailRepository, this._mailboxRepository);
 
   Stream<Either<Failure, Success>> execute(
-      AccountId accountId,
-      List<Email> emails,
-      ReadActions readAction
+    Session session,
+    AccountId accountId,
+    List<Email> emails,
+    ReadActions readAction
   ) async* {
     try {
       yield Right(LoadingMarkAsMultipleEmailReadAll());
@@ -33,7 +35,7 @@ class MarkAsMultipleEmailReadInteractor {
           .where((email) => readAction == ReadActions.markAsUnread ? email.hasRead : !email.hasRead)
           .toList();
 
-      final result = await _emailRepository.markAsRead(accountId, listEmailNeedMarkAsRead, readAction);
+      final result = await _emailRepository.markAsRead(session, accountId, listEmailNeedMarkAsRead, readAction);
 
       if (listEmailNeedMarkAsRead.length == result.length) {
         final countMarkAsReadSuccess = emails.length;
