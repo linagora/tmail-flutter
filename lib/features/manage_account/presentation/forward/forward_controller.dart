@@ -48,7 +48,6 @@ class ForwardController extends BaseController {
   bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
 
   late ForwardRecipientController recipientController;
-  late Worker dashboardActionWorker;
 
   ForwardController() {
     recipientController = ForwardRecipientController(
@@ -73,7 +72,6 @@ class ForwardController extends BaseController {
   @override
   void onClose() {
     recipientController.onClose();
-    unregisterListenerWorker();
     super.onClose();
   }
 
@@ -291,7 +289,7 @@ class ForwardController extends BaseController {
   }
 
   void registerListenerWorker() {
-    dashboardActionWorker = ever(
+    ever(
       accountDashBoardController.dashboardSettingAction,
       (action) {
         if (action is ClearAllInputForwarding) {
@@ -300,9 +298,5 @@ class ForwardController extends BaseController {
         }
       }
     );
-  }
-
-  void unregisterListenerWorker() {
-    dashboardActionWorker.dispose();
   }
 }

@@ -28,7 +28,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -51,8 +50,6 @@ class IdentitiesController extends BaseController {
   final identitySelected = Rxn<Identity>();
   final listAllIdentities = <Identity>[].obs;
 
-  late Worker accountIdWorker;
-
   IdentitiesController(
     this._getAllIdentitiesInteractor,
     this._deleteIdentityInteractor,
@@ -64,14 +61,8 @@ class IdentitiesController extends BaseController {
 
   @override
   void onInit() {
-    _initWorker();
+    _registerObxStreamListener();
     super.onInit();
-  }
-
-  @override
-  void onClose() {
-    _clearWorker();
-    super.onClose();
   }
 
   @override
@@ -98,23 +89,13 @@ class IdentitiesController extends BaseController {
     );
   }
 
-  void _initWorker() {
-    accountIdWorker = ever(_accountDashBoardController.accountId, (accountId) {
-      if (accountId is AccountId) {
-        final session = _accountDashBoardController.sessionCurrent;
-        if (session != null) {
-          _getAllIdentities(session, accountId);
-        }
+  void _registerObxStreamListener() {
+    ever(_accountDashBoardController.accountId, (accountId) {
+      final session = _accountDashBoardController.sessionCurrent;
+      if (accountId != null && session != null) {
+        _getAllIdentities(session, accountId);
       }
     });
-
-    if (_accountDashBoardController.settingsPageLevel.value == SettingsPageLevel.level1) {
-      _accountDashBoardController.accountId.refresh();
-    }
-  }
-
-  void _clearWorker() {
-    accountIdWorker.call();
   }
 
   void _getAllIdentities(Session session, AccountId accountId) {
