@@ -32,7 +32,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/bindings/mailbox_visibility_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_subscription_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_fcm_subscription_local.dart';
@@ -220,10 +219,6 @@ abstract class BaseController extends GetxController
     } catch(e) {
       logError('BaseController::injectRuleFilterBindings(): exception: $e');
     }
-  }
-
-  void injectMailboxVisibilityBindings() {
-    MailboxVisibilityInteractorBindings().dependencies();
   }
 
   void injectFCMBindings(Session? session, AccountId? accountId) async {

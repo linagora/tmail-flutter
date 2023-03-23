@@ -1,67 +1,58 @@
 
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class ManageAccountMenuController extends BaseController {
+class ManageAccountMenuController extends GetxController {
 
   final dashBoardController = Get.find<ManageAccountDashBoardController>();
-
-  late Worker sessionWorker;
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final listAccountMenuItem = RxList<AccountMenuItem>([
     AccountMenuItem.profiles,
-    AccountMenuItem.vacation,
+    AccountMenuItem.mailboxVisibility,
     AccountMenuItem.languageAndRegion,
   ]);
 
-  void _initWorker() {
-    sessionWorker = ever(dashBoardController.accountId, (_) {
-      _createListAccountMenu();
+  void _registerObxStreamListener() {
+    ever(dashBoardController.accountId, (accountId) {
+      if (accountId != null) {
+        _createListAccountMenu();
+      }
     });
-  }
-
-  void _clearWorker() {
-    sessionWorker.call();
   }
 
   @override
   void onInit() {
-    _initWorker();
-    _createListAccountMenu();
+    _registerObxStreamListener();
     super.onInit();
   }
 
-  void _createListAccountMenu(){
-    listAccountMenuItem.clear();
-    listAccountMenuItem.add(AccountMenuItem.profiles);
-    if (dashBoardController.isRuleFilterCapabilitySupported) {
-      listAccountMenuItem.add(AccountMenuItem.emailRules);
-    }
-    if (dashBoardController.isForwardCapabilitySupported) {
-      listAccountMenuItem.add(AccountMenuItem.forward);
-    }
-    if (dashBoardController.isVacationCapabilitySupported) {
-      listAccountMenuItem.add(AccountMenuItem.vacation);
-    }
-    listAccountMenuItem.addAll(
-      [
-        AccountMenuItem.mailboxVisibility,
-        AccountMenuItem.languageAndRegion
-      ]
-    );
-  }
+  void _createListAccountMenu() {
+    final newListMenuSetting = [
+      AccountMenuItem.profiles,
+      if (dashBoardController.isRuleFilterCapabilitySupported)
+        AccountMenuItem.emailRules,
+      if (dashBoardController.isForwardCapabilitySupported)
+        AccountMenuItem.forward,
+      if (dashBoardController.isVacationCapabilitySupported)
+        AccountMenuItem.vacation,
+      AccountMenuItem.mailboxVisibility,
+      AccountMenuItem.languageAndRegion
+    ];
+    listAccountMenuItem.value = newListMenuSetting;
 
-  @override
-  void onClose() {
-    _clearWorker();
-    super.onClose();
+    if (listAccountMenuItem.isNotEmpty) {
+      if (currentContext != null && _responsiveUtils.isWebDesktop(currentContext!)) {
+        selectAccountMenuItem(listAccountMenuItem.first);
+      } else {
+        selectAccountMenuItem(AccountMenuItem.none);
+      }
+    }
   }
-
-  @override
-  void onDone() {}
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
     dashBoardController.selectAccountMenuItem(newAccountMenuItem);
