@@ -44,7 +44,10 @@
 
 - The mini tips information of event (When event will be started!? Who are invited !? Where is the event place!?)
 - The description will be demonstrated in email description
-- **Yes/Maybe/No** button to select my decision _(Only display in case event status = New/Update, not display in case event status = Canceled)_
+
+
+
+**NOTE**: We will implement **Event calendar - User decision ** in another story **Yes/Maybe/No** button to select my decision _(Only display in case event status = New/Update, not display in case event status = Canceled)_
 
 
 
