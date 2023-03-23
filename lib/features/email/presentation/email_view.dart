@@ -148,15 +148,11 @@ class EmailView extends GetWidget<SingleEmailController> {
           (responsiveUtils.isMobile(context) ||
               responsiveUtils.isTablet(context) ||
               responsiveUtils.isLandscapeMobile(context))) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: VacationNotificationMessageWidget(
-              radius: 0,
-              margin: EdgeInsets.zero,
-              vacationResponse: vacation!,
-              actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
-              actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
-        );
+        return VacationNotificationMessageWidget(
+          margin: const EdgeInsets.only(left: 12, right: 12, bottom: 5),
+          vacationResponse: vacation!,
+          actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
+          actionEndNow: controller.mailboxDashBoardController.disableVacationResponder);
       } else {
         return const SizedBox.shrink();
       }
