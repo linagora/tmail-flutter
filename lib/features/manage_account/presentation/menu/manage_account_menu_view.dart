@@ -89,24 +89,29 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                                 AppLocalizations.of(context).manage_account,
                                 style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17))),
                         const SizedBox(height: 12),
-                        Obx(
-                          () => ListView.builder(
+                        Obx(() {
+                          if (controller.listAccountMenuItem.isNotEmpty) {
+                            return ListView.builder(
+                              key: const Key('list_manage_account_menu_item'),
                               padding: EdgeInsets.only(
                                 left: AppUtils.isDirectionRTL(context) ? 8 : 16,
                                 right: AppUtils.isDirectionRTL(context) ? 16 : 8
                               ),
-                              key: const Key('list_manage_account_property'),
                               shrinkWrap: true,
                               itemCount: controller.listAccountMenuItem.length,
-                              itemBuilder: (context, index) => Obx(() => AccountMenuItemTileBuilder(
-                                  context,
-                                  _imagePaths,
-                                  _responsiveUtils,
-                                  controller.listAccountMenuItem[index],
+                              itemBuilder: (context, index) => Obx(() {
+                                final menuItem = controller.listAccountMenuItem[index];
+                                return AccountMenuItemTileBuilder(
+                                  menuItem,
                                   controller.dashBoardController.accountMenuItemSelected.value,
-                                  onSelectAccountMenuItemAction: (newAccountMenuItem) =>
-                                      controller.selectAccountMenuItem(newAccountMenuItem)))),
-                        ),
+                                  onSelectAccountMenuItemAction: controller.selectAccountMenuItem
+                                );
+                              })
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
                         const Padding(
                             padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
@@ -117,7 +122,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              controller.logout(
+                              controller.dashBoardController.logout(
                                 controller.dashBoardController.sessionCurrent,
                                 controller.dashBoardController.accountId.value
                               );

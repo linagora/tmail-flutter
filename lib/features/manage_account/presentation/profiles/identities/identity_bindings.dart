@@ -14,7 +14,7 @@ class IdentityBindings extends Bindings {
   void dependencies() {
     IdentityInteractorsBindings().dependencies();
 
-    Get.lazyPut(() => IdentitiesController(
+    Get.put(IdentitiesController(
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<DeleteIdentityInteractor>(),
       Get.find<CreateNewIdentityInteractor>(),

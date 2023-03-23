@@ -21,8 +21,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/vacatio
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_message_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_presentation.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/utils/vacation_utils.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -31,11 +29,11 @@ class VacationController extends BaseController {
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _appToast = Get.find<AppToast>();
   final _settingController = Get.find<SettingsController>();
-  final _richTextControllerForWeb = Get.find<RichTextWebController>(tag: VacationUtils.vacationTagName);
 
   final GetAllVacationInteractor _getAllVacationInteractor;
   final UpdateVacationInteractor _updateVacationInteractor;
   final VerifyNameInteractor _verifyNameInteractor;
+  final RichTextWebController _richTextControllerForWeb;
 
   final vacationPresentation = VacationPresentation.initialize().obs;
   final errorMessageBody = Rxn<String>();
@@ -51,14 +49,13 @@ class VacationController extends BaseController {
   VacationResponse? currentVacation;
   String? _vacationMessageHtmlText;
 
-  late Worker vacationWorker;
-
   final ScrollController scrollController = ScrollController();
 
   VacationController(
     this._getAllVacationInteractor,
     this._updateVacationInteractor,
-    this._verifyNameInteractor
+    this._verifyNameInteractor,
+    this._richTextControllerForWeb
   );
 
   String? get vacationMessageHtmlText => _vacationMessageHtmlText;
@@ -92,7 +89,7 @@ class VacationController extends BaseController {
   }
 
   void _initWorker() {
-    vacationWorker = ever(_accountDashBoardController.vacationResponse, (vacation) {
+    ever(_accountDashBoardController.vacationResponse, (vacation) {
       if (vacation is VacationResponse) {
         currentVacation = vacation;
         final newVacationPresentation = currentVacation?.toVacationPresentation();
@@ -387,9 +384,7 @@ class VacationController extends BaseController {
     messageTextController.dispose();
     subjectTextController.dispose();
     richTextControllerForMobile.dispose();
-    vacationWorker.dispose();
     scrollController.dispose();
-    VacationControllerBindings().dispose();
     super.onClose();
   }
 }

@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/widgets/profiles_header_widget.dart';
 
-class ProfilesView extends GetWidget<ProfilesController> {
+class ProfilesView extends StatelessWidget {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();

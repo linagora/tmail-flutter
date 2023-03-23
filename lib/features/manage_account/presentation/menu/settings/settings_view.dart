@@ -55,6 +55,9 @@ class SettingsView extends GetWidget<SettingsController> {
                         top: 16),
                     fromAccountDashBoard: true,
                     vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                    actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
+                      ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
+                      : null,
                     actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder());
               } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
                   || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
