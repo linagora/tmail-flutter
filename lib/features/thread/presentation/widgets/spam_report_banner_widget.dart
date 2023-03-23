@@ -20,7 +20,7 @@ class SpamReportBannerWidget extends StatelessWidget {
       }
       return Container(
         height: 124,
-        margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        margin: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),

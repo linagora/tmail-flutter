@@ -25,7 +25,6 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_bindings.dart';
@@ -41,16 +40,15 @@ class ManageAccountDashBoardBindings extends BaseBindings {
     SettingsBindings().dependencies();
     ManageAccountMenuBindings().dependencies();
     ProfileBindings().dependencies();
-    LanguageAndRegionBindings().dependencies();
   }
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => ManageAccountDashBoardController(
-        Get.find<LogoutOidcInteractor>(),
-        Get.find<DeleteAuthorityOidcInteractor>(),
-        Get.find<GetAuthenticatedAccountInteractor>(),
-        Get.find<UpdateAuthenticationAccountInteractor>()
+    Get.put(ManageAccountDashBoardController(
+      Get.find<LogoutOidcInteractor>(),
+      Get.find<DeleteAuthorityOidcInteractor>(),
+      Get.find<GetAuthenticatedAccountInteractor>(),
+      Get.find<UpdateAuthenticationAccountInteractor>()
     ));
   }
 

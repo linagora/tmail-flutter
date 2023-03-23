@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dar
 
 class QuotasWarningBannerWidget extends GetWidget<QuotasController> {
   const QuotasWarningBannerWidget({this.margin ,Key? key}) : super(key: key);
-  final EdgeInsetsGeometry? margin;
+  final EdgeInsets? margin;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class QuotasWarningBannerWidget extends GetWidget<QuotasController> {
       () => controller.enableShowWarningQuotas
         ? Container(
             padding: const EdgeInsets.all(16),
-            margin: margin ?? const EdgeInsets.only(left: 12, right: 12, top: 8),
+            margin: margin ?? const EdgeInsets.only(left: 12, right: 12, bottom: 12),
             decoration: BoxDecoration(
               color: controller.quotasState.value.getBackgroundColorWarningBanner(),
               borderRadius: const BorderRadius.all(Radius.circular(10)),

@@ -26,10 +26,12 @@ import 'package:tmail_ui_user/features/manage_account/presentation/action/dashbo
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/bindings/mailbox_visibility_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -68,9 +70,9 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void onReady() {
+    _initialPageLevel();
     _getArguments();
     _getAppVersion();
-    _initialPageLevel();
     super.onReady();
   }
 
@@ -97,26 +99,18 @@ class ManageAccountDashBoardController extends ReloadableController {
     sessionCurrent = session;
     accountId.value = session.accounts.keys.first;
     _getUserProfile();
-    injectAutoCompleteBindings(sessionCurrent, accountId.value);
-    injectForwardBindings(sessionCurrent, accountId.value);
-    injectRuleFilterBindings(sessionCurrent, accountId.value);
-    injectMailboxVisibilityBindings();
-    injectVacationBindings(sessionCurrent, accountId.value);
+    _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
   }
 
   void _getArguments() {
     final arguments = Get.arguments;
-    log('ManageAccountDashBoardController::_getAccountIdAndUserProfile(): $arguments');
+    log('ManageAccountDashBoardController::_getArguments(): $arguments');
     if (arguments is ManageAccountArguments) {
       sessionCurrent = arguments.session;
       accountId.value = arguments.session?.accounts.keys.first;
       _getUserProfile();
-      injectAutoCompleteBindings(sessionCurrent, accountId.value);
-      injectForwardBindings(sessionCurrent, accountId.value);
-      injectRuleFilterBindings(sessionCurrent, accountId.value);
-      injectMailboxVisibilityBindings();
-      injectVacationBindings(sessionCurrent, accountId.value);
+      _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
         _goToSettingMenuCurrent(arguments.menuSettingCurrent!);
@@ -134,6 +128,13 @@ class ManageAccountDashBoardController extends ReloadableController {
     } else {
       settingsPageLevel.value = SettingsPageLevel.universal;
     }
+  }
+
+  void _bindingInteractorForMenuItemView(Session? session, AccountId? accountId) {
+    injectAutoCompleteBindings(session, accountId);
+    injectVacationBindings(session, accountId);
+    injectForwardBindings(session, accountId);
+    injectRuleFilterBindings(session, accountId);
   }
 
   @override
@@ -170,17 +171,36 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
+    settingsPageLevel.value = newAccountMenuItem == AccountMenuItem.none
+      ? SettingsPageLevel.universal
+      : SettingsPageLevel.level1;
+
     clearInputFormView();
-    if (newAccountMenuItem == AccountMenuItem.emailRules) {
-      EmailRulesBindings().dependencies();
-    }
-    if (newAccountMenuItem == AccountMenuItem.forward) {
-      ForwardBindings().dependencies();
-    }
-    if (newAccountMenuItem == AccountMenuItem.mailboxVisibility) {
-      MailboxVisibilityBindings().dependencies();
-    }
+    _bindingControllerMenuItemView(newAccountMenuItem);
     accountMenuItemSelected.value = newAccountMenuItem;
+  }
+
+  void _bindingControllerMenuItemView(AccountMenuItem item) {
+    switch (item) {
+      case AccountMenuItem.profiles:
+        ProfileBindings().dependencies();
+        break;
+      case AccountMenuItem.languageAndRegion:
+        LanguageAndRegionBindings().dependencies();
+        break;
+      case AccountMenuItem.emailRules:
+        EmailRulesBindings().dependencies();
+        break;
+      case AccountMenuItem.forward:
+        ForwardBindings().dependencies();
+        break;
+      case AccountMenuItem.mailboxVisibility:
+        MailboxVisibilityBindings().dependencies();
+        break;
+      case AccountMenuItem.vacation:
+      case AccountMenuItem.none:
+        break;
+    }
   }
 
   void clearInputFormView() {
@@ -194,20 +214,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void _goToSettingMenuCurrent(AccountMenuItem accountMenuItem) {
-    if (accountMenuItem == AccountMenuItem.emailRules) {
-      EmailRulesBindings().dependencies();
-    }
-    if (accountMenuItem == AccountMenuItem.forward) {
-      ForwardBindings().dependencies();
-    }
-    if (accountMenuItem == AccountMenuItem.mailboxVisibility) {
-      MailboxVisibilityBindings().dependencies();
-    }
-    accountMenuItemSelected.value = accountMenuItem;
-    if (currentContext != null &&
-        !_responsiveUtils.isDesktop(currentContext!)) {
-      settingsPageLevel.value = SettingsPageLevel.level1;
-    }
+    selectAccountMenuItem(accountMenuItem);
   }
 
   void goToSettings() {

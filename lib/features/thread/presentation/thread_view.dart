@@ -108,13 +108,11 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() {
       final vacation = controller.mailboxDashBoardController.vacationResponse.value;
       if (vacation?.vacationResponderIsValid == true) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8, top: 4),
-          child: VacationNotificationMessageWidget(
-              vacationResponse: vacation!,
-              actionGotoVacationSetting: () => controller.mailboxDashBoardController.goToVacationSetting(),
-              actionEndNow: () => controller.mailboxDashBoardController.disableVacationResponder()),
-        );
+        return VacationNotificationMessageWidget(
+          margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+          vacationResponse: vacation!,
+          actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
+          actionEndNow: controller.mailboxDashBoardController.disableVacationResponder);
       } else {
         return const SizedBox.shrink();
       }
