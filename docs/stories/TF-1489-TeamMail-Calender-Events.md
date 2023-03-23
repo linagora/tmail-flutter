@@ -46,37 +46,7 @@
 - The description will be demonstrated in email description
 - **Yes/Maybe/No** button to select my decision _(Only display in case event status = New/Update, not display in case event status = Canceled)_
 
-**UC3. As an user, I want to see the decision of receiver via email on thread-view**
- _On thread-view, I can see email from each decision of receiver which having title include:_
-- The icon indicator events in front of email title 
-- The icon indicator .ics file which having in events email
-- The event name on subject
-- The event short description
-- The ReceiverName email who be invited to this event
-- The decision type (Accepted/Tentatively/Declined) which displayed following action (Yes/Maybe/No)
-- **Expected** decision event email: **[Events icon] DecisionType: EventName (ReceiverName) (email description) [Attachment icon]**
 
-        **_Accepted event sample:_** **[Events icon] Accepted: EventName (Benoît TELLIER)** _Benoît TELLIER has accepted this invitation EventName Time: Friday 10 March 2023 11:00 - 12:00..._  [Attachment icon]
-        **_Tentatively accepted event sample:_** **[Events icon] Tentatively accepted: EventName (Benoît TELLIER)** _Benoît TELLIER has replied "Maybe" to this invitation EventName TimeChanged: Friday 10 March 2023 11:00 - 12:00..._  [Attachment icon]
-        **_Declined event sample:_** **[Events icon] Declined: EventName (Benoît TELLIER)** _Benoît TELLIER has declined this invitation EventName Time: Friday 10 March 2023 11:00 - 12:00..._  [Attachment icon]
-
-**UC4.  As an user, I want to see the decision of receiver on email details-view**
- _When receiver click to (Yes/Maybe/No) button to make a decision for events invitation then I can see (Accepted/Tentatively/Declined) email which having description include:_
-- The Calendar icon indicator event date
-- The event name on subject:
-
-      **_Accepted event sample:_** **Accepted: EventName (Benoît TELLIER)
-      **_Tentatively accepted event sample:_** **Tentatively accepted: EventName (Benoît TELLIER)
-      **_Declined event sample:_** **Declined: EventName (Benoît TELLIER)
-
-- The notification with color to describe each event status:
-
-       **_Accepted event sample: GREEN COLOR_** **Benoît TELLIER has accepted this invitation
-       **_Tentatively accepted event sample: YEALLOW COLOR_** **Benoît TELLIER has replied "Maybe" to this invitation
-       **_Declined event sample: RED COLOR_** **Benoît TELLIER has declined this invitation
-
-- The mini tips information of event (When event will be started!? Who are invited !? Where is the event place!?)
-- The description will be demonstrated in email description
 
 
 [Back to Summary](#summary)
