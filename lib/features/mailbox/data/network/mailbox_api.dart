@@ -185,7 +185,7 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final coreCapability = session.getCapabilityProperties<CoreCapability>(
         accountId, CapabilityIdentifier.jmapCore);
-    final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
+    final maxMethodCount = coreCapability.maxCallsInRequest?.value.toInt() ?? 0;
 
     final Map<Id,SetError> finalDeletedMailboxErrors = {};
     var start = 0;
