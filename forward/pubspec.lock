@@ -5,18 +5,18 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: d74f051467a841ce893a50ebeb420b7a5695f985d2781e22b3927fbc849aea45
+      sha256: a36ec4843dc30ea6bf652bf25e3448db6c5e8bcf4aa55f063a5d1dad216d8214
       url: "https://pub.dev"
     source: hosted
-    version: "57.0.0"
+    version: "58.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
-      sha256: b665679cdccab0c754e65021f01087c6fab07a0b13659dd58827f765739b40f8
+      sha256: cc4242565347e98424ce9945c819c192ec0838cb9d1f6aa4a97cc96becbc5b27
       url: "https://pub.dev"
     source: hosted
-    version: "5.9.0"
+    version: "5.10.0"
   args:
     dependency: transitive
     description:
@@ -296,7 +296,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: fb65ebf36853b152f37c92919d7bd8701b1cb9e6
+      resolved-ref: "345f21bbb41f6d42272e0ca1998a9e0dcd98c47e"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
