@@ -2,7 +2,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
-import 'package:tmail_ui_user/features/login/data/utils/login_constant.dart';
+import 'package:tmail_ui_user/features/login/domain/model/login_constants.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 
 class CredentialRepositoryImpl extends CredentialRepository {
@@ -17,17 +17,17 @@ class CredentialRepositoryImpl extends CredentialRepository {
 
   @override
   Future<Uri> getBaseUrl() async {
-    return Uri.parse(sharedPreferences.getString(LoginConstant.keyBaseUrl) ?? '');
+    return Uri.parse(sharedPreferences.getString(LoginConstants.KEY_BASE_URL) ?? '');
   }
 
   @override
   Future saveBaseUrl(Uri baseUrl) async {
-    await sharedPreferences.setString(LoginConstant.keyBaseUrl, baseUrl.toString());
+    await sharedPreferences.setString(LoginConstants.KEY_BASE_URL, baseUrl.toString());
   }
 
   @override
   Future removeBaseUrl() async {
-    await sharedPreferences.remove(LoginConstant.keyBaseUrl);
+    await sharedPreferences.remove(LoginConstants.KEY_BASE_URL);
   }
 
   @override
