@@ -121,53 +121,58 @@ class SettingsView extends GetWidget<SettingsController> {
   }
 
   Widget _buildSettingLevel1AppBar(BuildContext context) {
-    return Stack(children: [
-      Align(
-        alignment: Alignment.centerLeft,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: controller.backToUniversalSettings,
-            customBorder: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(15))),
-            child: Tooltip(
-              message: AppLocalizations.of(context).back,
-              child: Container(
-                color: Colors.transparent,
-                height: 40,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  SvgPicture.asset(
-                      AppUtils.isDirectionRTL(context) ? _imagePaths.icCollapseFolder : _imagePaths.icBack,
-                      colorFilter: AppColor.colorTextButton.asFilter(),
-                      fit: BoxFit.fill),
-                  Container(
-                    margin: EdgeInsets.only(
-                      left: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                      right: AppUtils.isDirectionRTL(context) ? 8 : 0,
-                    ),
-                    constraints: const BoxConstraints(maxWidth: 100),
-                    child: Text(
-                        AppLocalizations.of(context).settings,
-                        maxLines: 1,
-                        overflow: CommonTextStyle.defaultTextOverFlow,
-                        softWrap: CommonTextStyle.defaultSoftWrap,
-                        style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)),
+    return Row(children: [
+      Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: controller.backToUniversalSettings,
+          customBorder: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+          child: Tooltip(
+            message: AppLocalizations.of(context).back,
+            child: Container(
+              color: Colors.transparent,
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                SvgPicture.asset(
+                  AppUtils.isDirectionRTL(context)
+                    ? _imagePaths.icCollapseFolder
+                    : _imagePaths.icBack,
+                  colorFilter: AppColor.colorTextButton.asFilter(),
+                  fit: BoxFit.fill),
+                Container(
+                  margin: EdgeInsets.only(
+                    left: AppUtils.isDirectionRTL(context) ? 0 : 4,
+                    right: AppUtils.isDirectionRTL(context) ? 4 : 0,
                   ),
-                ]),
-              ),
+                  constraints: const BoxConstraints(maxWidth: 80),
+                  child: Text(
+                    AppLocalizations.of(context).settings,
+                    maxLines: 1,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
+                    style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)
+                  )
+                ),
+              ]),
             ),
           ),
         ),
       ),
-      Align(
-        alignment: Alignment.center,
-        child: Text(
-          controller.manageAccountDashboardController.accountMenuItemSelected.value.getName(context),
-          maxLines: 1,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-          style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold)))
+      Expanded(child: Text(
+        controller.manageAccountDashboardController.accountMenuItemSelected.value.getName(context),
+        maxLines: 1,
+        textAlign: TextAlign.center,
+        overflow: CommonTextStyle.defaultTextOverFlow,
+        softWrap: CommonTextStyle.defaultSoftWrap,
+        style: const TextStyle(
+          fontSize: 20,
+          color: Colors.black,
+          fontWeight: FontWeight.bold
+        )
+      )),
+      Container(constraints: const BoxConstraints(maxWidth: 80))
     ]);
   }
 
