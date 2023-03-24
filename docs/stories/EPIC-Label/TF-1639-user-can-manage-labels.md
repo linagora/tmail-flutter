@@ -42,19 +42,12 @@ https://github.com/linagora/tmail-flutter/issues/1638
 - I can only select another color for this label then click button Save
 - The new color is update for the label and all the messages that have this label will be updated with new color too.
 
-![image](https://user-images.githubusercontent.com/68209176/226866342-6be723c5-c096-4b0e-905e-8517c77eee2d.png)
+![image](https://user-images.githubusercontent.com/68209176/227483148-6d3edee7-7b10-4248-a12c-724bbc4c5a14.png)
+
 
 ![image](https://user-images.githubusercontent.com/68209176/226866412-3d5aca75-e290-4bb4-a8b5-676577571ef0.png)
 
 
-#### UC4. Delete a label 
-- I click on three-dot button of a label in left panel, a list of actions is shown: Open in new tab, Edit and Delete
-- I select Delete, there will be a confirmation popup
-- In popup, I can see how many messages have this label
-- When I click Delete button, this label will be removed from the list on left panel
-- Label is also removed in all messages that have this label before
-
-![image](https://user-images.githubusercontent.com/68209176/226866469-88584cdd-1d74-46cf-80e8-4e8febc358d7.png)
 
 
 [Back to Summary](#summary)
