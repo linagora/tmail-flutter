@@ -118,14 +118,14 @@ class DestinationPickerController extends BaseMailboxController {
       if (success is GetAllMailboxSuccess) {
         if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
           buildTree(
-            success.mailboxList.listSubscribedMailboxes,
+            success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes,
             mailboxIdSelected: mailboxIdSelected
           );
         } else {
-          buildTree(success.mailboxList.listSubscribedMailboxes);
+          buildTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
         }
       } else if (success is RefreshChangesAllMailboxSuccess) {
-        refreshTree(success.mailboxList.listSubscribedMailboxes);
+        refreshTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
       }
     });
   }
