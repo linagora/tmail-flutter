@@ -377,7 +377,7 @@ class EmailAPI with HandleSetErrorMixin {
 
     final coreCapability = moveRequest.session.getCapabilityProperties<CoreCapability>(
         accountId, CapabilityIdentifier.jmapCore);
-    final maxMethodCount = coreCapability.maxCallsInRequest.value.toInt();
+    final maxMethodCount = coreCapability.maxCallsInRequest?.value.toInt() ?? 0;
 
     var start = 0;
     var end = 0;

@@ -64,9 +64,14 @@ class QuotasController extends BaseController {
   void _handleGetQuotasSuccess(GetQuotasSuccess success) {
     try {
       final quotas = success.quotas.firstWhere((e) => e.resourceType == ResourceType.octets);
-      usedCapacity.value = DoubleConvert.bytesToGigaBytes(quotas.used.value);
-      warningLimitCapacity.value =  DoubleConvert.bytesToGigaBytes(quotas.limit.value * warningProgressConstant);
-      limitCapacity.value = DoubleConvert.bytesToGigaBytes(quotas.limit.value);
+      if (quotas.used != null) {
+        usedCapacity.value = DoubleConvert.bytesToGigaBytes(quotas.used!.value);
+      }
+      if (quotas.limit != null) {
+        warningLimitCapacity.value = DoubleConvert.bytesToGigaBytes(quotas.limit!.value * warningProgressConstant);
+        limitCapacity.value = DoubleConvert.bytesToGigaBytes(quotas.limit!.value);
+      }
+
       if(usedCapacity.value >= limitCapacity.value) {
         quotasState.value = QuotasState.runOutOfStorage;
       } else if (usedCapacity.value >= warningLimitCapacity.value) {
