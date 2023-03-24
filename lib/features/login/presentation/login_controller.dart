@@ -16,6 +16,7 @@ import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/login/domain/model/login_constants.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
@@ -53,6 +54,7 @@ import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:universal_html/html.dart' as html;
 
 class LoginController extends ReloadableController {
 
@@ -69,7 +71,6 @@ class LoginController extends ReloadableController {
   final GetAllRecentLoginUrlOnMobileInteractor _getAllRecentLoginUrlOnMobileInteractor;
   final SaveLoginUsernameOnMobileInteractor _saveLoginUsernameOnMobileInteractor;
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
-
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -277,6 +278,7 @@ class LoginController extends ReloadableController {
   }
 
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
+    log('LoginController::_getOIDCConfigurationSuccess():success: $success');
     loginState.value = LoginState(Right(success));
     if (BuildUtils.isWeb) {
       _authenticateOidcOnBrowserAction(success.oidcConfiguration);
@@ -295,11 +297,20 @@ class LoginController extends ReloadableController {
   }
 
   void _authenticateOidcOnBrowserAction(OIDCConfiguration config) async {
+    _removeAuthDestinationUrlInSessionStorage();
+
     final baseUri = _parseUri(AppConfig.baseUrl);
     if (baseUri != null) {
       consumeState(_authenticateOidcOnBrowserInteractor.execute(baseUri, config));
     } else {
       loginState.value = LoginState(Left(LoginCanNotAuthenticationSSOAction()));
+    }
+  }
+
+  void _removeAuthDestinationUrlInSessionStorage() {
+    final authDestinationUrlExist = html.window.sessionStorage.containsKey(LoginConstants.AUTH_DESTINATION_KEY);
+    if (authDestinationUrlExist) {
+      html.window.sessionStorage.remove(LoginConstants.AUTH_DESTINATION_KEY);
     }
   }
 
