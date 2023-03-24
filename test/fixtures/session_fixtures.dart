@@ -18,28 +18,29 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 class SessionFixtures {
   static final aliceSession = Session(
     {
-      CapabilityIdentifier.jmapSubmission: SubmissionCapability(UnsignedInt(0), {}),
+      CapabilityIdentifier.jmapSubmission: SubmissionCapability(
+        maxDelayedSend: UnsignedInt(0),
+        submissionExtensions: {}
+      ),
       CapabilityIdentifier.jmapCore: CoreCapability(
-        UnsignedInt(20971520),
-        UnsignedInt(4),
-        UnsignedInt(10000000),
-        UnsignedInt(4),
-        UnsignedInt(16),
-        UnsignedInt(500),
-        UnsignedInt(500),
-        {CollationIdentifier("i;unicode-casemap")}
+        maxSizeUpload: UnsignedInt(20971520),
+        maxConcurrentUpload: UnsignedInt(4),
+        maxSizeRequest: UnsignedInt(10000000),
+        maxConcurrentRequests: UnsignedInt(4),
+        maxCallsInRequest: UnsignedInt(16),
+        maxObjectsInGet: UnsignedInt(500),
+        maxObjectsInSet: UnsignedInt(500),
+        collationAlgorithms: {CollationIdentifier("i;unicode-casemap")}
       ),
       CapabilityIdentifier.jmapMail: MailCapability(
-        UnsignedInt(10000000),
-        null,
-        UnsignedInt(200),
-        UnsignedInt(20000000),
-        {"receivedAt", "sentAt", "size", "from", "to", "subject"},
-        true
+        maxMailboxesPerEmail: UnsignedInt(10000000),
+        maxSizeAttachmentsPerEmail: UnsignedInt(20000000),
+        emailQuerySortOptions: {"receivedAt", "sentAt", "size", "from", "to", "subject"},
+        mayCreateTopLevelMailbox: true
       ),
       CapabilityIdentifier.jmapWebSocket: WebSocketCapability(
-        true,
-        Uri.parse('ws://domain.com/jmap/ws')
+        supportsPush: true,
+        url: Uri.parse('ws://domain.com/jmap/ws')
       ),
       CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): DefaultCapability(<String, dynamic>{}),
       CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): DefaultCapability(<String, dynamic>{}),
@@ -52,28 +53,29 @@ class SessionFixtures {
         true,
         false,
         {
-          CapabilityIdentifier.jmapSubmission: SubmissionCapability(UnsignedInt(0), {}),
+          CapabilityIdentifier.jmapSubmission: SubmissionCapability(
+            maxDelayedSend: UnsignedInt(0),
+            submissionExtensions: {}
+          ),
           CapabilityIdentifier.jmapWebSocket: WebSocketCapability(
-            true,
-            Uri.parse('ws://domain.com/jmap/ws')
+            supportsPush: true,
+            url: Uri.parse('ws://domain.com/jmap/ws')
           ),
           CapabilityIdentifier.jmapCore: CoreCapability(
-            UnsignedInt(20971520),
-            UnsignedInt(4),
-            UnsignedInt(10000000),
-            UnsignedInt(4),
-            UnsignedInt(16),
-            UnsignedInt(500),
-            UnsignedInt(500),
-            {CollationIdentifier("i;unicode-casemap")}
+            maxSizeUpload: UnsignedInt(20971520),
+            maxConcurrentUpload: UnsignedInt(4),
+            maxSizeRequest: UnsignedInt(10000000),
+            maxConcurrentRequests: UnsignedInt(4),
+            maxCallsInRequest: UnsignedInt(16),
+            maxObjectsInGet: UnsignedInt(500),
+            maxObjectsInSet: UnsignedInt(500),
+            collationAlgorithms: {CollationIdentifier("i;unicode-casemap")}
           ),
           CapabilityIdentifier.jmapMail: MailCapability(
-            UnsignedInt(10000000),
-            null,
-            UnsignedInt(200),
-            UnsignedInt(20000000),
-            {"receivedAt", "sentAt", "size", "from", "to", "subject"},
-            true
+            maxMailboxesPerEmail: UnsignedInt(10000000),
+            maxSizeAttachmentsPerEmail: UnsignedInt(20000000),
+            emailQuerySortOptions: {"receivedAt", "sentAt", "size", "from", "to", "subject"},
+            mayCreateTopLevelMailbox: true
           ),
           CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): DefaultCapability(<String, dynamic>{}),
           CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): DefaultCapability(<String, dynamic>{}),
