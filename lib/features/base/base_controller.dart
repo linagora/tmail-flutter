@@ -262,15 +262,15 @@ abstract class BaseController extends GetxController
 
   void logout(Session? session, AccountId? accountId) {
     _isFcmEnabled = fcmEnabled(session, accountId);
-    if (_isFcmEnabled) {
-      final authenticationType = authorizationInterceptors.authenticationType;
-      if (authenticationType == AuthenticationType.oidc) {
-        consumeState(logoutOidcInteractor.execute());
-      } else {
-        _getSubscriptionLocalAction();
-      }
+    final authenticationType = authorizationInterceptors.authenticationType;
+    if (authenticationType == AuthenticationType.oidc) {
+      consumeState(logoutOidcInteractor.execute());
     } else {
-      checkAuthenticationTypeWhenLogout();
+      if (_isFcmEnabled) {
+        _getSubscriptionLocalAction();
+      } else {
+        logoutAction();
+      }
     }
   }
 
@@ -333,6 +333,5 @@ abstract class BaseController extends GetxController
       _fcmReceiver.deleteFcmToken();
     }
     await cachingManager.closeHive();
-    goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
 }
