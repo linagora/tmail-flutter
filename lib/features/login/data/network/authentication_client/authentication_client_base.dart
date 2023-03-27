@@ -1,5 +1,6 @@
 
 import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_mobile.dart'
@@ -27,7 +28,7 @@ abstract class AuthenticationClientBase {
       List<String> scopes,
       String refreshToken);
 
-  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config);
+  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery);
 
   factory AuthenticationClientBase() => getAuthenticationClientImplementation();
 }
