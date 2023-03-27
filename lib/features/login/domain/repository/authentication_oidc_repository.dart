@@ -6,6 +6,8 @@ abstract class AuthenticationOIDCRepository {
 
   Future<OIDCConfiguration> getOIDCConfiguration(OIDCResponse oidcResponse);
 
+  Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration oidcConfiguration);
+
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes);
 
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc);
@@ -27,7 +29,7 @@ abstract class AuthenticationOIDCRepository {
       List<String> scopes,
       String refreshToken);
 
-  Future<bool> logout(TokenId tokenId, OIDCConfiguration config);
+  Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery);
 
   Future<void> authenticateOidcOnBrowser(
       String clientId,
