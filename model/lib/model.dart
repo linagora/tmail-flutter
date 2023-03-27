@@ -67,6 +67,7 @@ export 'oidc/oidc_configuration.dart';
 export 'oidc/request/oidc_request.dart';
 export 'oidc/response/oidc_link_dto.dart';
 // OIDC
+export 'oidc/response/oidc_discovery_response.dart';
 export 'oidc/response/oidc_response.dart';
 export 'oidc/token.dart';
 export 'oidc/token_id.dart';
