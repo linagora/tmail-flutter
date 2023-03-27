@@ -59,7 +59,23 @@ class SpamReportController extends BaseController {
   }
   
   void dismissSpamReportAction() {
-    _storeLastTimeDismissedSpamReportedAction();
+    if (Get.isRegistered<MailboxDashBoardController>()) {
+      final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+      final spamMailbox = _presentationSpamMailbox.value;
+      final session = mailboxDashBoardController.sessionCurrent;
+      final accountId = mailboxDashBoardController.accountId.value;
+
+      if (spamMailbox != null && session != null && accountId != null) {
+        mailboxDashBoardController.markAsReadMailbox(
+          session,
+          accountId,
+          spamMailbox.id,
+          spamMailbox.name ?? MailboxName(''),
+          spamMailbox.unreadEmails?.value.value.toInt() ?? 0
+        );
+        _presentationSpamMailbox.value = null;
+      }
+    }
   }
 
   void getUnreadSpamMailboxAction(Session session, AccountId accountId) {
@@ -83,7 +99,7 @@ class SpamReportController extends BaseController {
 
   void openMailbox(BuildContext context) {
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-    dismissSpamReportAction();
+    _storeLastTimeDismissedSpamReportedAction();
     mailboxDashBoardController.openMailboxAction(context, _presentationSpamMailbox.value!);
   }
 
