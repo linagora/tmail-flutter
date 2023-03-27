@@ -1,5 +1,6 @@
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
@@ -19,6 +20,12 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   @override
   Future<OIDCConfiguration> getOIDCConfiguration(OIDCResponse oidcResponse) {
     return _oidcDataSource.getOIDCConfiguration(oidcResponse);
+  }
+
+
+  @override
+  Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration oidcConfiguration) {
+    return _oidcDataSource.discoverOIDC(oidcConfiguration);
   }
 
   @override
@@ -63,8 +70,8 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
-  Future<bool> logout(TokenId tokenId, OIDCConfiguration config) {
-    return _oidcDataSource.logout(tokenId, config);
+  Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery) {
+    return _oidcDataSource.logout(tokenId, config, oidcRescovery);
   }
 
   @override

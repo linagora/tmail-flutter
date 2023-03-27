@@ -3,6 +3,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
@@ -43,11 +44,19 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   }
 
   @override
-  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config) async {
+  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery) async {
+    final authorizationServiceConfiguration = oidcRescovery.authorizationEndpoint == null || oidcRescovery.tokenEndpoint == null
+        ? null
+        : AuthorizationServiceConfiguration(
+            authorizationEndpoint: oidcRescovery.authorizationEndpoint!,
+            tokenEndpoint: oidcRescovery.tokenEndpoint!,
+            endSessionEndpoint: oidcRescovery.endSessionEndpoint);
+            
     final endSession = await _appAuth.endSession(EndSessionRequest(
         idTokenHint: tokenId.uuid,
         postLogoutRedirectUrl: config.logoutRedirectUrl,
-        discoveryUrl: config.discoveryUrl
+        discoveryUrl: config.discoveryUrl,
+        serviceConfiguration: authorizationServiceConfiguration
     ));
     log('AuthenticationClientMobile::logoutOidc(): ${endSession?.state}');
     return endSession?.state?.isNotEmpty == true;
