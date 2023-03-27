@@ -27,11 +27,18 @@ https://github.com/linagora/tmail-flutter/issues/1638
 - I click on this button, there will be a popup displayed. I need to fill in:
    - Field “Name: Input label’s name. This is mandatory field and the max length of label name is as same as max length of mailbox’s name
 - Color: I can select a color for the label from a  color palette. Default is no color.
-- After inputting  name and selecting the color for the new label, I click button Save, then new label will be created and it appears in label list in left panel with selected color.
+- After inputting  name and selecting the color for the new label, I click button Save, the system will validate: 
+   - If the field “Name’ is blank, there will be an error message: “This field is required.”
+   - If there is existing label with the same name, there will be an toast message: “ A label with this name already exists”
+- If there is no error, new label will be created and it appears in label list in left panel with selected color.
+
 
 ![image](https://user-images.githubusercontent.com/68209176/226866143-e99884e7-db1e-46e6-918b-b1b539e7cea0.png)
 
 ![image](https://user-images.githubusercontent.com/68209176/226866188-a40d43d6-460f-4972-85be-114b69ceb9d7.png)
+
+![image](https://user-images.githubusercontent.com/68209176/227886707-d7319f9d-4d0e-4ed1-a834-9ef9a19320d7.png)
+
 
 
 #### UC3. Edit a label 
