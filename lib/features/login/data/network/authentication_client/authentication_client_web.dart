@@ -1,6 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
@@ -45,11 +46,18 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   }
 
   @override
-  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config) async {
+  Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery) async {
+    final authorizationServiceConfiguration = oidcRescovery.authorizationEndpoint == null || oidcRescovery.tokenEndpoint == null
+      ? null
+      : AuthorizationServiceConfiguration(
+          authorizationEndpoint: oidcRescovery.authorizationEndpoint!,
+          tokenEndpoint: oidcRescovery.tokenEndpoint!,
+          endSessionEndpoint: oidcRescovery.endSessionEndpoint);
     final endSession = await _appAuthWeb.endSession(EndSessionRequest(
         idTokenHint: tokenId.uuid,
         postLogoutRedirectUrl: config.logoutRedirectUrl,
-        discoveryUrl: config.discoveryUrl
+        discoveryUrl: config.discoveryUrl,
+        serviceConfiguration: authorizationServiceConfiguration
     ));
     return endSession != null;
   }
