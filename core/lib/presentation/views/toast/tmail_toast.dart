@@ -166,6 +166,10 @@ class ToastView {
 
     _isVisible = true;
     overlayState!.insert(_overlayEntry!);
+    if (toastDuration != null) {
+      await Future.delayed(Duration(seconds: toastDuration));
+      await dismiss();
+    }
   }
 
   static Positioned _showWidgetBasedOnPosition(
