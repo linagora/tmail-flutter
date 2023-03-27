@@ -38,6 +38,13 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
+  Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration oidcConfiguration) {
+    return Future.sync(() async {
+      return await _oidcHttpClient.discoverOIDC(oidcConfiguration);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) {
     return Future.sync(() async {
       return await _authenticationClient.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
@@ -91,9 +98,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
-  Future<bool> logout(TokenId tokenId, OIDCConfiguration config) {
+  Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery) {
     return Future.sync(() async {
-       return await _authenticationClient.logoutOidc(tokenId, config);
+       return await _authenticationClient.logoutOidc(tokenId, config, oidcRescovery);
     }).catchError(_exceptionThrower.throwException);
   }
 

@@ -7,6 +7,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
@@ -46,5 +47,15 @@ class OIDCHttpClient {
       clientId: OIDCConstant.clientId,
       scopes: OIDCConstant.oidcScope
     );
+  }
+
+  Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration configuration) async {
+    final result = await _dioClient.get(configuration.discoveryUrl);
+    log('OIDCHttpClient::discoverOIDC(): RESULT: $result');
+    if (result is Map<String, dynamic>) {
+      return OIDCDiscoveryResponse.fromJson(result);
+    } else {
+      return OIDCDiscoveryResponse.fromJson(jsonDecode(result));
+    }
   }
 }
