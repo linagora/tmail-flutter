@@ -82,9 +82,10 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _pushNotificationAction(jmap.State newState, AccountId accountId, Session session) {
+  void _pushNotificationAction(jmap.State newState, AccountId accountId, Session? session) {
     _newState = newState;
     _accountId = accountId;
+    _session = session;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
     if (BuildUtils.isWeb) {
@@ -184,7 +185,7 @@ class EmailChangeListener extends ChangeListener {
       if (_newState != null) {
         _storeEmailDeliveryStateAction(_newState!);
 
-        if (!BuildUtils.isWeb && Platform.isAndroid) {
+        if (FcmUtils.instance.isMobileAndroid) {
           _handleLocalPushNotification(success.emailList);
         }
       }

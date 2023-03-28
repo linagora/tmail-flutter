@@ -21,7 +21,7 @@ class SynchronizeEmailOnForegroundAction extends FcmStateChangeAction {
 
 class PushNotificationAction extends FcmStateChangeAction {
 
-  final Session session;
+  final Session? session;
   final AccountId accountId;
 
   PushNotificationAction(

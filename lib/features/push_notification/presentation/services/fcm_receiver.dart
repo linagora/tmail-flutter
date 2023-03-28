@@ -1,8 +1,8 @@
 
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 @pragma('vm:entry-point')
@@ -30,7 +30,7 @@ class FcmReceiver {
     try {
       final currentToken = await FirebaseMessaging.instance.getToken(vapidKey: AppUtils.fcmVapidPublicKey);
       log('FcmReceiver::onFcmToken():currentToken: $currentToken');
-      if (BuildUtils.isWeb) {
+      if (!FcmUtils.instance.isMobileAndroid) {
         FcmService.instance.handleGetToken(currentToken);
       }
     } catch(e) {
