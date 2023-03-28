@@ -131,6 +131,9 @@ class LocalNotificationManager {
     EmailAddress? emailAddress,
     String? payload
   }) async {
+    if (!_notificationsEnabled) {
+      return;
+    }
     final inboxStyleInformation = InboxStyleInformation(
       [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
       htmlFormatLines: true,
