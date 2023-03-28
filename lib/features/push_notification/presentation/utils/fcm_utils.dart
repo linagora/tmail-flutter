@@ -108,4 +108,6 @@ class FcmUtils {
     log('FcmUtils::hashCodeTokenToDeviceId():deviceId: $deviceId');
     return deviceId;
   }
+
+  bool get isMobileAndroid => !BuildUtils.isWeb && Platform.isAndroid;
 }

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/session/data/datasource/session_datasource.dart';
 import 'package:tmail_ui_user/features/session/data/datasource_impl/session_datasource_impl.dart';
 import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
@@ -8,11 +8,7 @@ import 'package:tmail_ui_user/features/session/domain/repository/session_reposit
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
-class SessionBindings extends BaseBindings {
-
-  @override
-  void bindingsController() {
-  }
+class SessionBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSource() {

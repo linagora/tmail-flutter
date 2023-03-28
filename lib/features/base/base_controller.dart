@@ -228,11 +228,11 @@ abstract class BaseController extends GetxController
         final mapEnvData = Map<String, String>.from(dotenv.env);
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
         FcmConfiguration.initialize();
-        if (!BuildUtils.isWeb) {
-          await LocalNotificationManager.instance.setUp();
-        }
         FcmInteractorBindings().dependencies();
-        FcmMessageController.instance.initialize(session: session, accountId: accountId);
+        FcmMessageController.instance.initializeFromAccountId(accountId);
+        if (!BuildUtils.isWeb) {
+          LocalNotificationManager.instance.setUp();
+        }
       } else {
         throw NotSupportFCMException();
       }
