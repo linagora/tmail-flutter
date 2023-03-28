@@ -39,7 +39,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -232,7 +232,7 @@ abstract class BaseController extends GetxController
           await LocalNotificationManager.instance.setUp();
         }
         FcmInteractorBindings().dependencies();
-        FcmController.instance.initialize(session: session, accountId: accountId);
+        FcmMessageController.instance.initialize(session: session, accountId: accountId);
       } else {
         throw NotSupportFCMException();
       }

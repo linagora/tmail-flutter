@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 
 class FcmService {
 
@@ -37,7 +37,7 @@ class FcmService {
   }
 
   void handleFirebaseBackgroundMessage(RemoteMessage newRemoteMessage) {
-    FcmController.instance.initialize();
+    FcmMessageController.instance.initialize();
     if (!backgroundMessageStreamController.isClosed) {
       backgroundMessageStreamController.add(newRemoteMessage);
     }
@@ -48,7 +48,7 @@ class FcmService {
     if (fcmTokenStreamController.isClosed) {
       log('FcmService::handleGetToken():fcmTokenStreamController: isClosed');
       fcmTokenStreamController = StreamController<String?>.broadcast();
-      await FcmController.instance.listenTokenStream();
+      await FcmMessageController.instance.listenTokenStream();
     }
     if (!fcmTokenStreamController.isClosed) {
       fcmTokenStreamController.add(currentToken);
@@ -60,7 +60,7 @@ class FcmService {
     if (fcmTokenStreamController.isClosed) {
       log('FcmService::handleRefreshToken():fcmTokenStreamController: isClosed');
       fcmTokenStreamController = StreamController<String?>.broadcast();
-      await FcmController.instance.listenTokenStream();
+      await FcmMessageController.instance.listenTokenStream();
     }
     if (!fcmTokenStreamController.isClosed) {
       fcmTokenStreamController.add(newToken);
@@ -70,15 +70,15 @@ class FcmService {
   Future<void> recreateStreamController() async {
     if (foregroundMessageStreamController.isClosed) {
       foregroundMessageStreamController = StreamController<RemoteMessage>.broadcast();
-      await FcmController.instance.listenForegroundMessageStream();
+      await FcmMessageController.instance.listenForegroundMessageStream();
     }
     if (backgroundMessageStreamController.isClosed) {
       backgroundMessageStreamController = StreamController<RemoteMessage>.broadcast();
-      await FcmController.instance.listenBackgroundMessageStream();
+      await FcmMessageController.instance.listenBackgroundMessageStream();
     }
     if (fcmTokenStreamController.isClosed) {
       fcmTokenStreamController = StreamController<String?>.broadcast();
-      await FcmController.instance.listenTokenStream();
+      await FcmMessageController.instance.listenTokenStream();
     }
     return Future.value();
   }
