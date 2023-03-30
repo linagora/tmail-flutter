@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -242,5 +243,20 @@ extension PresentationEmailExtension on PresentationEmail {
       routeWeb: routeWeb,
       mailboxContain: mailboxContain
     );
+  }
+
+  bool isBelongToOneOfTheMailboxes(List<MailboxId> mailboxIdsSource) {
+    final mapMailboxIds = mailboxIds;
+    mapMailboxIds?.removeWhere((key, value) => !value);
+
+    if (mapMailboxIds?.isNotEmpty == true) {
+      final listMailboxId = mapMailboxIds!.keys.toList();
+      log('PresentationEmailExtension::isBelongToOneOfTheMailboxes():listMailboxId: $listMailboxId');
+      final listMailboxIdValid = listMailboxId.where((mailboxId) => mailboxIdsSource.contains(mailboxId));
+      log('PresentationEmailExtension::isBelongToOneOfTheMailboxes():listMailboxIdValid: $listMailboxIdValid');
+      return listMailboxIdValid.isNotEmpty;
+    }
+
+    return false;
   }
 }
