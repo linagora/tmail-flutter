@@ -90,6 +90,8 @@ class PresentationEmail with EquatableMixin {
 
   String get routeWebAsString => routeWeb.toString();
 
+  bool get pushNotificationActivated => !isDraft && !hasRead;
+
   @override
   List<Object?> get props => [
     id,
