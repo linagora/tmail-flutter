@@ -88,6 +88,8 @@ class LocalNotificationManager {
       final granted = await _isAndroidPermissionGranted();
       if (!granted) {
         _notificationsEnabled = await _requestPermissions();
+      } else {
+        _notificationsEnabled = granted;
       }
     } else {
       _notificationsEnabled = await _requestPermissions();
@@ -131,9 +133,6 @@ class LocalNotificationManager {
     EmailAddress? emailAddress,
     String? payload
   }) async {
-    if (!_notificationsEnabled) {
-      return;
-    }
     final inboxStyleInformation = InboxStyleInformation(
       [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
       htmlFormatLines: true,
