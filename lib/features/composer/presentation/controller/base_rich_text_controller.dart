@@ -22,7 +22,7 @@ abstract class BaseRichTextController extends GetxController {
   ) async {
     await ColorPickerDialogBuilder(
         context,
-        currentColor,
+        ValueNotifier<Color>(currentColor),
         title: AppLocalizations.of(context).chooseAColor,
         textActionSetColor: AppLocalizations.of(context).setColor,
         textActionResetDefault: AppLocalizations.of(context).resetToDefault,
