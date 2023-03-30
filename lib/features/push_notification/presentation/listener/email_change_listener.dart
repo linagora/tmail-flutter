@@ -9,6 +9,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/list_presentation_email_extension.dart';
+import 'package:model/extensions/list_presentation_mailbox_extension.dart';
 import 'package:model/notification/notification_payload.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_stored_state_email_state.dart';
@@ -17,8 +19,10 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailboxes_not_put_notifications_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_email_delivery_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailboxes_not_put_notifications_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
@@ -39,10 +43,12 @@ class EmailChangeListener extends ChangeListener {
   GetEmailChangesToPushNotificationInteractor? _getEmailChangesToPushNotificationInteractor;
   GetStoredEmailStateInteractor? _getStoredEmailStateInteractor;
   StoreEmailStateToRefreshInteractor? _storeEmailStateToRefreshInteractor;
+  GetMailboxesNotPutNotificationsInteractor? _getMailboxesNotPutNotificationsInteractor;
 
   jmap.State? _newState;
   AccountId? _accountId;
   Session? _session;
+  List<PresentationEmail> _emailsAvailablePushNotification = [];
 
   EmailChangeListener._internal() {
     try {
@@ -52,6 +58,7 @@ class EmailChangeListener extends ChangeListener {
       _storeEmailDeliveryStateInteractor = getBinding<StoreEmailDeliveryStateInteractor>();
       _getEmailChangesToPushNotificationInteractor = getBinding<GetEmailChangesToPushNotificationInteractor>();
       _storeEmailStateToRefreshInteractor = getBinding<StoreEmailStateToRefreshInteractor>();
+      _getMailboxesNotPutNotificationsInteractor = getBinding<GetMailboxesNotPutNotificationsInteractor>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -169,6 +176,9 @@ class EmailChangeListener extends ChangeListener {
     if (failure is GetStoredEmailDeliveryStateFailure &&
         failure.exception is NotFoundEmailDeliveryStateException) {
       _getStoredEmailState();
+    } else if (failure is GetMailboxesNotPutNotificationsFailure) {
+      final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification();
+      _handleLocalPushNotification(listEmails);
     }
   }
 
@@ -186,18 +196,39 @@ class EmailChangeListener extends ChangeListener {
         _storeEmailDeliveryStateAction(_newState!);
 
         if (FcmUtils.instance.isMobileAndroid) {
-          _handleLocalPushNotification(success.emailList);
+          _handleListEmailToPushNotification(success.emailList);
         }
       }
+    } else if (success is GetMailboxesNotPutNotificationsSuccess) {
+      final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification(
+        mailboxIdsNotPutNotifications: success.mailboxes.mailboxIds);
+      _handleLocalPushNotification(listEmails);
+    }
+  }
+
+  void _handleListEmailToPushNotification(List<PresentationEmail> emailList) {
+    _emailsAvailablePushNotification = emailList;
+    if (_getMailboxesNotPutNotificationsInteractor != null && _accountId != null && _session != null) {
+      consumeState(_getMailboxesNotPutNotificationsInteractor!.execute(_session!, _accountId!));
+    } else {
+      final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification();
+      _handleLocalPushNotification(listEmails);
     }
   }
 
   void _handleLocalPushNotification(List<PresentationEmail> emailList) {
+    log('EmailChangeListener::_handleLocalPushNotification():emailList: $emailList');
+    if (emailList.isEmpty) {
+      return;
+    }
+
     for (var presentationEmail in emailList) {
       _showLocalNotification(presentationEmail);
     }
 
     LocalNotificationManager.instance.groupPushNotification();
+
+    _emailsAvailablePushNotification.clear();
   }
 
   void _handleStoreEmailStateToRefreshAction(jmap.State newState) {
