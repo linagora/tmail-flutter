@@ -1,31 +1,35 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:core/presentation/views/pick_color/color_code_field.dart';
+import 'package:core/presentation/views/pick_color/color_picker_action_buttons.dart';
+import 'package:core/presentation/views/pick_color/color_picker_copy_past_behaivor.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 typedef SelectColorActionCallback = Function(Color? colorSelected);
 
 class ColorPickerDialogBuilder {
-
   final SelectColorActionCallback? setColorActionCallback;
   final VoidCallback? cancelActionCallback;
   final VoidCallback? resetToDefaultActionCallback;
   final BuildContext _context;
   final Color defaultColor;
-  final Color _currentColor;
+  final ValueNotifier<Color> _currentColor;
   final String? title;
   final String? textActionSetColor;
   final String? textActionCancel;
   final String? textActionResetDefault;
+  final Function(Color)? onSelected;
 
-  Color? _colorSelected;
+  bool _shouldUpdate = false;
+  Color _colorCode = Colors.black;
 
   ColorPickerDialogBuilder(
     this._context,
     this._currentColor,
     {
+      this.onSelected,
       this.title,
       this.textActionSetColor,
       this.textActionCancel,
@@ -35,22 +39,23 @@ class ColorPickerDialogBuilder {
       this.cancelActionCallback,
       this.resetToDefaultActionCallback
     }
-  ) : _colorSelected = _currentColor;
+  );
 
   Future show() async {
     await showDialog(context: _context, builder: (BuildContext context) {
       return PointerInterceptor(
         child: AlertDialog(
-          title: Text(title ?? '',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Colors.black)),
-          titleTextStyle: const TextStyle(
+          title: Text(
+            title ?? '',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: Colors.black),
+              color: Colors.black)),
+          titleTextStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.black),
           titlePadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
           actionsPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -59,27 +64,55 @@ class ColorPickerDialogBuilder {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           scrollable: true,
           elevation: 10,
-          content: ColorPicker(
-            color: _currentColor,
-            onColorChanged: (color) => _colorSelected = color,
-            width: 40,
-            height: 40,
-            spacing: 0,
-            runSpacing: 0,
-            borderRadius: 0,
-            wheelDiameter: 165,
-            enableOpacity: false,
-            showColorCode: true,
-            colorCodeHasColor: true,
-            pickersEnabled: const <ColorPickerType, bool>{
-              ColorPickerType.wheel: true,
+          content: ValueListenableBuilder(
+            valueListenable: _currentColor,
+            builder: (context, _, __) {
+              return Column(
+                children: [
+                  Container(
+                    width: 600,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      color: Colors.white
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(4)),
+                      child: Wrap(children: AppColor.listColorsPicker
+                        .map((color) => _itemColorWidget(context, color))
+                        .toList(),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: ColorCodeField(
+                      color: _currentColor.value,
+                      colorCodeHasColor: true,
+                      shouldUpdate: _shouldUpdate,
+                      onColorChanged: (Color color) {
+                        if (AppColor.listColorsPicker.any((element) => element.value == color.value)) {
+                          _shouldUpdate = true;
+                          _currentColor.value = color;
+                        } else {
+                          _shouldUpdate = false;
+                          _currentColor.value = Colors.black;
+                          _colorCode = color;
+                        }
+                      },
+                      onEditFocused: (bool editInFocus) {
+                        _shouldUpdate = editInFocus ? true : false;
+                      },
+                      copyPasteBehavior: const ColorPickerCopyPasteBehavior(
+                        parseShortHexCode: true,
+                      ),
+                      toolIcons: const ColorPickerActionButtons(
+                        dialogActionButtons: true,
+                      ),
+                    ),
+                  ),
+                ],
+              );
             },
-            copyPasteBehavior: const ColorPickerCopyPasteBehavior(
-              parseShortHexCode: true,
-            ),
-            actionButtons: const ColorPickerActionButtons(
-              dialogActionButtons: true,
-            ),
           ),
           actions: <Widget>[
             buildButtonWrapText(
@@ -108,13 +141,42 @@ class ColorPickerDialogBuilder {
                 radius: 5,
                 height: 30,
                 textStyle: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
-                onTap: () => setColorActionCallback?.call(_colorSelected))
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500),
+                onTap: () {
+                  if (!_shouldUpdate) {
+                    setColorActionCallback?.call(_colorCode);
+                  } else {
+                    setColorActionCallback?.call(_currentColor.value);
+                  }
+                })
           ],
         ),
       );
     });
+  }
+
+  Widget _itemColorWidget(BuildContext context, Color color) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          _shouldUpdate = true;
+          _currentColor.value = color;
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: color,
+            border: Border.all(
+              color: _currentColor.value == color ? Colors.white : Colors.transparent,
+              width: 8,
+            ),
+          ),
+          width: 40,
+          height: 40,
+        ),
+      ),
+    );
   }
 }

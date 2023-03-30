@@ -192,6 +192,39 @@ extension AppColor on Color {
       .toRadixString(16)
       .padLeft(6, '0')
       .toUpperCase()}';
+
+  static List<Color> get listColorsPicker {
+    return [
+      ...Colors.grey.listShadeColors,
+      ...listMaterialColors.map((color) => color.shade900).toList(),
+      ...listMaterialColors.map((color) => color.shade800).toList(),
+      ...listMaterialColors.map((color) => color.shade700).toList(),
+      ...listMaterialColors.map((color) => color.shade600).toList(),
+      ...listMaterialColors.map((color) => color.shade500).toList(),
+      ...listMaterialColors.map((color) => color.shade400).toList(),
+      ...listMaterialColors.map((color) => color.shade300).toList(),
+      ...listMaterialColors.map((color) => color.shade200).toList(),
+      ...listMaterialColors.map((color) => color.shade100).toList(),
+      ...listMaterialColors.map((color) => color.shade50).toList(),
+    ];
+  }
+
+  static List<MaterialColor> get listMaterialColors {
+    return [
+      Colors.cyan,
+      Colors.blue,
+      Colors.deepPurple,
+      Colors.purple,
+      Colors.pink,
+      Colors.red,
+      Colors.deepOrange,
+      Colors.orange,
+      Colors.amber,
+      Colors.yellow,
+      Colors.lime,
+      Colors.green
+    ];
+  }
 }
 
 extension ColorNullableExtension on Color? {
@@ -201,5 +234,25 @@ extension ColorNullableExtension on Color? {
     } else {
       return ColorFilter.mode(this!, blendMode ?? BlendMode.srcIn);
     }
+  }
+}
+
+extension MaterialColorExtension on MaterialColor {
+
+  List<Color> get listShadeColors {
+    return [
+      const Color(0xFFFFFFFF),
+      const Color(0xFFFCFCFC),
+      shade50,
+      shade100,
+      shade200,
+      shade300,
+      shade400,
+      shade500,
+      shade600,
+      shade700,
+      shade800,
+      shade900
+    ];
   }
 }
