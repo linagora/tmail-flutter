@@ -1,5 +1,6 @@
 
 import 'package:collection/collection.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -103,4 +104,13 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
   }
 
   int matchedIndex(EmailId emailId) => indexWhere((email) => email.id == emailId);
+
+  List<PresentationEmail> toEmailsAvailablePushNotification({List<MailboxId>? mailboxIdsNotPutNotifications}) {
+    log('ListPresentationEmailExtension::toEmailsAvailablePushNotification():mailboxIdsNotPutNotifications: $mailboxIdsNotPutNotifications');
+    if (mailboxIdsNotPutNotifications?.isNotEmpty == true) {
+      return where((email) => !email.isBelongToOneOfTheMailboxes(mailboxIdsNotPutNotifications!) && email.pushNotificationActivated).toList();
+    } else {
+      return where((email) => email.pushNotificationActivated).toList();
+    }
+  }
 }

@@ -115,6 +115,8 @@ class PresentationMailbox with EquatableMixin {
     }
   }
 
+  bool get pushNotificationDeactivated => isOutbox || isSent || isDrafts || isTrash || isSpam;
+
   @override
   List<Object?> get props => [
     id,
