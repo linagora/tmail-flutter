@@ -38,15 +38,15 @@ https://github.com/linagora/tmail-flutter/issues/1638
 
 - Given that I am a Tmail user and I have logged in successfully
 - On thread-view I click on one message that currently have some label, the content view of this message is opened.
-- On content view, I click on the label, there will be a drop-down list with 2 available options: Go to label and Remove label
-- I select option “Remove label”
+- On content view, I can see labels of this emaill, each label contains a cross icon
+- I click on Cross icon, 
 - The label is removed from this message and there will be a toast notification 
 “[Label name] is removed from this email]” and Undo button
 - If I click Undo, the label is back to this email again.
 
 ![image](https://user-images.githubusercontent.com/68209176/228167740-50be89b5-f3d4-44b3-8f22-012848ade474.png)
 
-![image](https://user-images.githubusercontent.com/68209176/228167811-e89bfe40-29e1-495b-b2a3-26f38060e89f.png)
+![image](https://user-images.githubusercontent.com/68209176/228920266-5f398a0b-45bf-44ef-904a-aa3016c53bc3.png)
 
 
 [Back to Summary](#summary)
