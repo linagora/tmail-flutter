@@ -5,14 +5,15 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/extensions/fcm_subscription_extensions.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/utils/fcm_constants.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
@@ -119,7 +120,7 @@ class FCMRepositoryImpl extends FCMRepository {
       .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)
       .toList();
     log('FCMRepositoryImpl::getMailboxesNotPutNotifications():mailboxesCacheNotPutNotifications: $mailboxesCacheNotPutNotifications');
-    if (mailboxesCacheNotPutNotifications.isNotEmpty && mailboxesCacheNotPutNotifications.length == 5) {
+    if (mailboxesCacheNotPutNotifications.isNotEmpty && mailboxesCacheNotPutNotifications.length == FcmConstants.mailboxRuleAllowPushNotifications.length) {
       return mailboxesCacheNotPutNotifications;
     } else {
       final mailboxResponse = await _mapMailboxDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
