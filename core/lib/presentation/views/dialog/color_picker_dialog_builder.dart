@@ -68,19 +68,17 @@ class ColorPickerDialogBuilder {
             valueListenable: _currentColor,
             builder: (context, _, __) {
               return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 600,
+                    width: 500,
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                       color: Colors.white
                     ),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(4)),
-                      child: Wrap(children: AppColor.listColorsPicker
-                        .map((color) => _itemColorWidget(context, color))
-                        .toList(),
-                      ),
+                    child: Wrap(children: AppColor.listColorsPicker
+                      .map((color) => _itemColorWidget(context, color))
+                      .toList(),
                     ),
                   ),
                   Padding(
