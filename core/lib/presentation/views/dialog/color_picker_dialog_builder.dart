@@ -1,9 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:core/presentation/views/pick_color/color_code_field.dart';
-import 'package:core/presentation/views/pick_color/color_picker_action_buttons.dart';
-import 'package:core/presentation/views/pick_color/color_picker_copy_past_behaivor.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
@@ -76,9 +74,11 @@ class ColorPickerDialogBuilder {
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                       color: Colors.white
                     ),
-                    child: Wrap(children: AppColor.listColorsPicker
-                      .map((color) => _itemColorWidget(context, color))
-                      .toList(),
+                    child: Center(
+                      child: Wrap(children: AppColor.listColorsPicker
+                        .map((color) => _itemColorWidget(context, color))
+                        .toList(),
+                      ),
                     ),
                   ),
                   Padding(
