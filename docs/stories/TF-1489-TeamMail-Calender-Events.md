@@ -54,7 +54,7 @@
 
 [Back to Summary](#summary)
 
-## Screenshots: https://www.figma.com/file/fAWU39IESCRj7J4h4JxoFt/Teammail%2FEmail-Calender-(Community)?node-id=0%3A1&t=QQRSAgHhAhsmiPNx-1
+## Screenshots: https://github.com/linagora/tmail-flutter/issues/1700
 None
 
 [Back to Summary](#summary)
