@@ -1,3 +1,12 @@
+import 'package:core/presentation/utils/html_transformer/dom/add_target_blank_in_tag_a_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/add_tooltip_link_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/blockcode_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sigature_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -41,6 +50,23 @@ class IdentityDataSourceImpl extends IdentityDataSource {
   Future<bool> editIdentity(Session session, AccountId accountId, EditIdentityRequest editIdentityRequest) {
     return Future.sync(() async {
       return await _identityAPI.editIdentity(session, accountId, editIdentityRequest);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<String> transformHtmlSignature(String signature) {
+    return Future.sync(() async {
+      final signatureUnescape = await HtmlTransform(signature).transformToHtml(
+        transformConfiguration: TransformConfiguration.create(customDomTransformers: [
+          const RemoveScriptTransformer(),
+          const SignatureTransformer(),
+          const BlockQuotedTransformer(),
+          const BlockCodeTransformer(),
+          const AddTargetBlankInTagATransformer(),
+          const ImageTransformer(),
+          const AddTooltipLinkTransformer()
+        ]));
+      return signatureUnescape;
     }).catchError(_exceptionThrower.throwException);
   }
 }
