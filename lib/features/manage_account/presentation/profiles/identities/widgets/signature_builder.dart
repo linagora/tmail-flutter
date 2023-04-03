@@ -1,23 +1,19 @@
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:html_unescape/html_unescape_small.dart';
-import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 
 class SignatureBuilder extends StatelessWidget {
 
-  const SignatureBuilder({
+  const SignatureBuilder(
+    this.signatureSelected, {
     Key? key,
-    required this.identity,
     this.width,
     this.height = 256
   }) : super(key: key);
 
-  final Identity identity;
+  final String signatureSelected;
   final double? width;
   final double height;
 
@@ -38,13 +34,10 @@ class SignatureBuilder extends StatelessWidget {
   }
 
   Widget _buildSignature(double width, double height) {
-    final signature = identity.signatureAsString;
-    log('SignatureBuilder::_buildSignature():signature: $signature');
-    if (signature.isNotEmpty) {
-      final htmlSignatureDecoded = _decodeHtml(signature);
+    if (signatureSelected.isNotEmpty) {
       if (BuildUtils.isWeb) {
         return HtmlContentViewerOnWeb(
-          contentHtml: htmlSignatureDecoded,
+          contentHtml: signatureSelected,
           widthContent: width,
           heightContent: height,
           controller: HtmlViewerControllerForWeb(),
@@ -52,17 +45,12 @@ class SignatureBuilder extends StatelessWidget {
         );
       } else {
         return HtmlContentViewer(
-          contentHtml: htmlSignatureDecoded,
+          contentHtml: signatureSelected,
           heightContent: height
         );
       }
     } else {
       return SizedBox(width: width, height: height);
     }
-  }
-
-  String _decodeHtml(String htmlString) {
-    final unescape = HtmlUnescape();
-    return unescape.convert(htmlString);
   }
 }
