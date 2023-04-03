@@ -2,8 +2,10 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/transform_html_signature_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_list_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/signature_builder.dart';
@@ -46,7 +48,13 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
           ...[
             _buildListIdentityView(context),
             Container(height: 1, color: AppColor.attachmentFileBorderColor),
-            Obx(() => SignatureBuilder(identity: controller.identitySelected.value!))
+            Obx(() {
+              if (controller.signatureSelected.value != null) {
+                return SignatureBuilder(controller.signatureSelected.value!);
+              } else {
+                return _buildLoadingView();
+              }
+            })
           ]
         else
           _buildListIdentityView(context)
@@ -62,9 +70,13 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
           ...[
             _buildListIdentityView(context),
             Container(width: 1, color: AppColor.attachmentFileBorderColor),
-            Expanded(
-              child: Obx(() => SignatureBuilder(identity: controller.identitySelected.value!)),
-            )
+            Expanded(child: Obx(() {
+              if (controller.signatureSelected.value != null) {
+                return SignatureBuilder(controller.signatureSelected.value!);
+              } else {
+                return _buildLoadingView();
+              }
+            }))
           ]
         else
           Expanded(child: _buildListIdentityView(context))
@@ -101,5 +113,27 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
         ),
       ))
     );
+  }
+
+  Widget _buildLoadingView() {
+    return Obx(() => controller.viewState.value.fold(
+      (failure) => const SizedBox.shrink(),
+      (success) {
+        if (success is TransformHtmlSignatureLoading) {
+          return const Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CupertinoActivityIndicator(color: AppColor.colorLoading)
+              ))
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      }
+    ));
   }
 }

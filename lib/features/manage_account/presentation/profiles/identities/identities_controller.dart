@@ -20,12 +20,15 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_id
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/transform_html_signature_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_html_signature_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
@@ -46,8 +49,10 @@ class IdentitiesController extends BaseController {
   final DeleteIdentityInteractor _deleteIdentityInteractor;
   final EditIdentityInteractor _editIdentityInteractor;
   final EditDefaultIdentityInteractor _editDefaultIdentityInteractor;
+  final TransformHtmlSignatureInteractor _transformHtmlSignatureInteractor;
 
   final identitySelected = Rxn<Identity>();
+  final signatureSelected = Rxn<String>();
   final listAllIdentities = <Identity>[].obs;
 
   IdentitiesController(
@@ -56,7 +61,8 @@ class IdentitiesController extends BaseController {
     this._createNewIdentityInteractor,
     this._editIdentityInteractor,
     this._createNewDefaultIdentityInteractor,
-    this._editDefaultIdentityInteractor
+    this._editDefaultIdentityInteractor,
+    this._transformHtmlSignatureInteractor
   );
 
   @override
@@ -84,6 +90,8 @@ class IdentitiesController extends BaseController {
           _deleteIdentitySuccess(success);
         } else if (success is EditIdentitySuccess) {
           _editIdentitySuccess(success);
+        } else if (success is TransformHtmlSignatureSuccess) {
+          signatureSelected.value = success.signature;
         }
       }
     );
@@ -127,7 +135,12 @@ class IdentitiesController extends BaseController {
   }
 
   void selectIdentity(Identity? newIdentity) {
+    signatureSelected.value = null;
     identitySelected.value = newIdentity;
+
+    if (newIdentity != null) {
+      consumeState(_transformHtmlSignatureInteractor.execute(newIdentity.signatureAsString));
+    }
   }
 
   void goToCreateNewIdentity(BuildContext context) async {
