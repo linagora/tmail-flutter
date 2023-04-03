@@ -34,4 +34,9 @@ class IdentityRepositoryImpl extends IdentityRepository {
   Future<bool> editIdentity(Session session, AccountId accountId, EditIdentityRequest editIdentityRequest) {
     return _dataSource.editIdentity(session, accountId, editIdentityRequest);
   }
+
+  @override
+  Future<String> transformHtmlSignature(String signature) {
+    return _dataSource.transformHtmlSignature(signature);
+  }
 }

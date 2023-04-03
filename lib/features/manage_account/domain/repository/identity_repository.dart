@@ -14,4 +14,6 @@ abstract class IdentityRepository {
   Future<bool> deleteIdentity(Session session, AccountId accountId, IdentityId identityId);
 
   Future<bool> editIdentity(Session session, AccountId accountId, EditIdentityRequest editIdentityRequest);
+
+  Future<String> transformHtmlSignature(String signature);
 }
