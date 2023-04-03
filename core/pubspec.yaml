@@ -55,7 +55,7 @@ dependencies:
 
   http: 0.13.5
 
-  pointer_interceptor: 0.9.3+4
+  pointer_interceptor: 0.9.1
 
   flutter_keyboard_visibility: 5.4.0
 
