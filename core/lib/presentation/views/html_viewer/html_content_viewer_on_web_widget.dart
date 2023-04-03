@@ -120,16 +120,16 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
            let textContent = e.target.textContent;
            console.log("handleOnClickLink: " + link);
            console.log("handleOnClickLink: " + textContent);
-           if (link && isValidUrl(link)) {
+           if (link && isValidMailtoLink(link)) {
               window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: OpenLink", "url": "" + link}), "*");
               e.preventDefault();
-           } else if (textContent && isValidUrl(textContent)) {
+           } else if (textContent && isValidMailtoLink(textContent)) {
               window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: OpenLink", "url": "" + textContent}), "*");
               e.preventDefault();
            }
         }
         
-        function isValidUrl(string) {
+        function isValidMailtoLink(string) {
           let url;
           
           try {
@@ -138,7 +138,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
             return false;  
           }
         
-          return url.protocol === "http:" || url.protocol === "https:" || url.protocol === "mailto:";
+          return url.protocol === "mailto:";
         }
       </script>
     ''';
@@ -232,8 +232,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
               final urlString = link as String;
               if (urlString.startsWith('mailto:')) {
                 widget.mailtoDelegate?.call(Uri.parse(urlString));
-              } else {
-                html.window.open(urlString, '_blank');
               }
             }
           }
