@@ -4,9 +4,9 @@ import 'package:core/presentation/utils/html_transformer/dom/blockcode_transform
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/sigature_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -59,12 +59,11 @@ class IdentityDataSourceImpl extends IdentityDataSource {
       final signatureUnescape = await HtmlTransform(signature).transformToHtml(
         transformConfiguration: TransformConfiguration.create(customDomTransformers: [
           const RemoveScriptTransformer(),
-          const SignatureTransformer(),
           const BlockQuotedTransformer(),
           const BlockCodeTransformer(),
           const AddTargetBlankInTagATransformer(),
           const ImageTransformer(),
-          const AddTooltipLinkTransformer()
+          if (BuildUtils.isWeb) const AddTooltipLinkTransformer()
         ]));
       return signatureUnescape;
     }).catchError(_exceptionThrower.throwException);

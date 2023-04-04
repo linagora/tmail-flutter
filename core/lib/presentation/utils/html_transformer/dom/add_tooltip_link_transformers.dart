@@ -30,7 +30,11 @@ class AddTooltipLinkTransformer extends DomTransformer {
     if (children.isEmpty && text.isNotEmpty && url != null) {
       final innerHtml = element.innerHtml;
       final tagClass = element.attributes['class'];
-      element.attributes['class'] = '$tagClass $nameClassToolTip';
+      if (tagClass != null) {
+        element.attributes['class'] = '$tagClass $nameClassToolTip';
+      } else {
+        element.attributes['class'] = nameClassToolTip;
+      }
       element.innerHtml = innerHtml + textHasToolTip(url);
     }
   }

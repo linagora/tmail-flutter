@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -146,53 +145,53 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.map((success) async {
-      if (success is GetAllMailboxSuccess) {
-        _handleGetAllMailboxSuccess(success);
-      } else if (success is RefreshChangesAllMailboxSuccess) {
-        _handleRefreshChangesAllMailboxSuccess(success);
-      }
-    });
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllMailboxSuccess) {
+      _handleGetAllMailboxSuccess(success);
+    } else if (success is RefreshChangesAllMailboxSuccess) {
+      _handleRefreshChangesAllMailboxSuccess(success);
+    } else if (success is CreateNewMailboxSuccess) {
+      _createNewMailboxSuccess(success);
+    } else if (success is DeleteMultipleMailboxAllSuccess) {
+      _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
+    } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
+      _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
+    } else if (success is RenameMailboxSuccess) {
+      _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    } else if (success is MoveMailboxSuccess) {
+      _moveMailboxSuccess(success);
+    } else if (success is SubscribeMailboxSuccess) {
+      _handleUnsubscribeMailboxSuccess(success);
+    } else if (success is SubscribeMultipleMailboxAllSuccess) {
+      _handleUnsubscribeMultipleMailboxAllSuccess(success);
+    } else if (success is SubscribeMultipleMailboxHasSomeSuccess) {
+      _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is CreateNewMailboxFailure) {
+      _createNewMailboxFailure(failure);
+    } else if (failure is DeleteMultipleMailboxFailure) {
+      _deleteMailboxFailure(failure);
+    }
   }
 
   @override
   void onDone() {
-    viewState.value.fold(
-      (failure) {
-        if (failure is CreateNewMailboxFailure) {
-          _createNewMailboxFailure(failure);
-        } else if (failure is DeleteMultipleMailboxFailure) {
-          _deleteMailboxFailure(failure);
-        }
-      },
-      (success) async {
-        if (success is GetAllMailboxSuccess) {
-          _initialMailboxVariableStorage();
-          mailboxDashBoardController.getSpamReportBanner();
-        } else if (success is RefreshChangesAllMailboxSuccess) {
-          _initialMailboxVariableStorage(isRefreshChange: true);
-          mailboxDashBoardController.refreshSpamReportBanner();
-        } else if (success is CreateNewMailboxSuccess) {
-          _createNewMailboxSuccess(success);
-        } else if (success is DeleteMultipleMailboxAllSuccess) {
-          _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
-        } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
-          _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
-        } else if (success is RenameMailboxSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MoveMailboxSuccess) {
-          _moveMailboxSuccess(success);
-        } else if (success is SubscribeMailboxSuccess) {
-          _handleUnsubscribeMailboxSuccess(success);
-        } else if (success is SubscribeMultipleMailboxAllSuccess) {
-          _handleUnsubscribeMultipleMailboxAllSuccess(success);
-        } else if (success is SubscribeMultipleMailboxHasSomeSuccess) {
-          _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
-        }
+    super.onDone();
+    viewState.value.fold((failure) => null, (success) {
+      if (success is GetAllMailboxSuccess) {
+        _initialMailboxVariableStorage();
+        mailboxDashBoardController.getSpamReportBanner();
+      } else if (success is RefreshChangesAllMailboxSuccess) {
+        _initialMailboxVariableStorage(isRefreshChange: true);
+        mailboxDashBoardController.refreshSpamReportBanner();
       }
-    );
+    });
   }
 
   void handleScrollEnable() {

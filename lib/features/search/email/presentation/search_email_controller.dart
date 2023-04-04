@@ -134,32 +134,28 @@ class SearchEmailController extends BaseController
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.fold(
-        (failure) {
-          if (failure is SearchEmailFailure) {
-            _searchEmailsFailure(failure);
-          } else if (failure is SearchMoreEmailFailure) {
-            _searchMoreEmailsFailure(failure);
-          }
-        },
-        (success) {
-          if (success is SearchEmailSuccess) {
-            _searchEmailsSuccess(success);
-          } else if (success is SearchingMoreState) {
-            searchMoreState = SearchMoreState.waiting;
-          } else if (success is SearchMoreEmailSuccess) {
-            _searchMoreEmailsSuccess(success);
-          } else if (success is RefreshChangesSearchEmailSuccess) {
-            _refreshChangesSearchEmailsSuccess(success);
-          }
-        }
-    );
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is SearchEmailSuccess) {
+      _searchEmailsSuccess(success);
+    } else if (success is SearchingMoreState) {
+      searchMoreState = SearchMoreState.waiting;
+    } else if (success is SearchMoreEmailSuccess) {
+      _searchMoreEmailsSuccess(success);
+    } else if (success is RefreshChangesSearchEmailSuccess) {
+      _refreshChangesSearchEmailsSuccess(success);
+    }
   }
 
   @override
-  void onDone() {}
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is SearchEmailFailure) {
+      _searchEmailsFailure(failure);
+    } else if (failure is SearchMoreEmailFailure) {
+      _searchMoreEmailsFailure(failure);
+    }
+  }
 
   void _initializeDebounceTimeTextSearchChange() {
     _deBouncerTime = Debouncer<String>(

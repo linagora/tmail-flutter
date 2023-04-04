@@ -357,7 +357,4 @@ class AdvancedFilterController extends BaseController {
     _unregisterWorkerListener();
     super.onClose();
   }
-
-  @override
-  void onDone() {}
 }

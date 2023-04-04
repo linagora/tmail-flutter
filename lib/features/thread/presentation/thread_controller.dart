@@ -146,50 +146,47 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.fold(
-      (failure) {
-        if (failure is SearchEmailFailure) {
-          canSearchMore = false;
-          mailboxDashBoardController.emailsInCurrentMailbox.clear();
-        } else if (failure is SearchMoreEmailFailure || failure is LoadMoreEmailsFailure) {
-          _isLoadingMore = false;
-        } else if (failure is GetEmailByIdFailure) {
-          openingEmail.value = false;
-          _navigationRouter = null;
-          pushAndPop(AppRoutes.unknownRoutePage);
-        }
-      },
-      (success) {
-        if (success is GetAllEmailSuccess) {
-          _getAllEmailSuccess(success);
-        } else if (success is RefreshChangesAllEmailSuccess) {
-          _refreshChangesAllEmailSuccess(success);
-        } else if (success is LoadMoreEmailsSuccess) {
-          _loadMoreEmailsSuccess(success);
-        } else if (success is SearchEmailSuccess) {
-          _searchEmailsSuccess(success);
-        } else if (success is SearchMoreEmailSuccess) {
-          _searchMoreEmailsSuccess(success);
-        } else if (success is SearchingMoreState || success is LoadingMoreState) {
-          _isLoadingMore = true;
-        } else if (success is GetEmailByIdLoading) {
-          openingEmail.value = true;
-        } else if (success is GetEmailByIdSuccess) {
-          openingEmail.value = false;
-          _openEmailDetailView(success.email);
-        }
-      }
-    );
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllEmailSuccess) {
+      _getAllEmailSuccess(success);
+    } else if (success is RefreshChangesAllEmailSuccess) {
+      _refreshChangesAllEmailSuccess(success);
+    } else if (success is LoadMoreEmailsSuccess) {
+      _loadMoreEmailsSuccess(success);
+    } else if (success is SearchEmailSuccess) {
+      _searchEmailsSuccess(success);
+    } else if (success is SearchMoreEmailSuccess) {
+      _searchMoreEmailsSuccess(success);
+    } else if (success is SearchingMoreState || success is LoadingMoreState) {
+      _isLoadingMore = true;
+    } else if (success is GetEmailByIdLoading) {
+      openingEmail.value = true;
+    } else if (success is GetEmailByIdSuccess) {
+      openingEmail.value = false;
+      _openEmailDetailView(success.email);
+    }
   }
 
   @override
-  void onDone() {}
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is SearchEmailFailure) {
+      canSearchMore = false;
+      mailboxDashBoardController.emailsInCurrentMailbox.clear();
+    } else if (failure is SearchMoreEmailFailure || failure is LoadMoreEmailsFailure) {
+      _isLoadingMore = false;
+    } else if (failure is GetEmailByIdFailure) {
+      openingEmail.value = false;
+      _navigationRouter = null;
+      pushAndPop(AppRoutes.unknownRoutePage);
+    }
+  }
 
   @override
-  void onError(error) {
-    _handleErrorGetAllOrRefreshChangesEmail(error);
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    super.handleErrorViewState(error, stackTrace);
+    _handleErrorGetAllOrRefreshChangesEmail(error, stackTrace);
   }
 
   void _registerObxStreamListener() {
@@ -337,13 +334,13 @@ class ThreadController extends BaseController with EmailActionController {
     _searchEmail();
   }
 
-  void _handleErrorGetAllOrRefreshChangesEmail(dynamic error) async {
+  void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
     logError('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
       await cachingManager.clearEmailCache();
       _getAllEmailAction();
     } else {
-      super.onError(error);
+      super.onError(error, stackTrace);
     }
   }
 

@@ -77,21 +77,17 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) {},
-      (success) {
-        if (success is GetUserProfileSuccess) {
-          userProfile.value = success.userProfile;
-        } else if (success is GetAllVacationSuccess) {
-          if (success.listVacationResponse.isNotEmpty) {
-            vacationResponse.value = success.listVacationResponse.first;
-          }
-        } else if (success is UpdateVacationSuccess) {
-          _handleUpdateVacationSuccess(success);
-        }
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetUserProfileSuccess) {
+      userProfile.value = success.userProfile;
+    } else if (success is GetAllVacationSuccess) {
+      if (success.listVacationResponse.isNotEmpty) {
+        vacationResponse.value = success.listVacationResponse.first;
       }
-    );
+    } else if (success is UpdateVacationSuccess) {
+      _handleUpdateVacationSuccess(success);
+    }
   }
 
   @override

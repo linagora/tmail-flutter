@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
@@ -17,16 +16,14 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeController extends BaseController {
@@ -37,7 +34,6 @@ class HomeController extends BaseController {
   final CleanupRecentSearchCacheInteractor _cleanupRecentSearchCacheInteractor;
   final CleanupRecentLoginUrlCacheInteractor _cleanupRecentLoginUrlCacheInteractor;
   final CleanupRecentLoginUsernameCacheInteractor _cleanupRecentLoginUsernameCacheInteractor;
-  final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
 
   HomeController(
     this._getAuthenticatedAccountInteractor,
@@ -47,14 +43,12 @@ class HomeController extends BaseController {
     this._cleanupRecentSearchCacheInteractor,
     this._cleanupRecentLoginUrlCacheInteractor,
     this._cleanupRecentLoginUsernameCacheInteractor,
-    this._checkOIDCIsAvailableInteractor,
   );
 
   Account? currentAccount;
 
   @override
   void onInit() {
-    log('HomeController::onInit(): ');
     if (!kIsWeb) {
       _initFlutterDownloader();
       _registerReceivingSharingIntent();
@@ -120,65 +114,23 @@ class HomeController extends BaseController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.fold(_handleFailureViewState, _handleSuccessViewState);
-  }
-
-  @override
-  void onDone() {}
-
-  @override
-  void onError(error) {
-    _clearAllCacheAndCredential();
-  }
-
-  void _handleFailureViewState(Failure failure) async {
-    logError('HomeController::_handleFailureViewState(): ${failure.toString()}');
-    if (failure is CheckOIDCIsAvailableFailure) {
+  void handleFailureViewState(Failure failure) async {
+    super.handleFailureViewState(failure);
+    if (failure is NoAuthenticatedAccountFailure ||
+        failure is GetAuthenticatedAccountFailure ||
+        failure is GetStoredTokenOidcFailure ||
+        failure is GetCredentialFailure) {
       _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
-    } else {
-      _clearAllCacheAndCredential();
     }
   }
 
-  void _handleSuccessViewState(Success success) {
-    log('HomeController::_handleSuccessViewState(): $success');
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
     if (success is GetStoredTokenOidcSuccess) {
       _goToSessionWithTokenOidc(success);
     } else if (success is GetCredentialViewState) {
       _goToSessionWithBasicAuth(success);
-    } else if (success is CheckOIDCIsAvailableSuccess) {
-      _goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
-    }
-  }
-
-  void _clearAllCacheAndCredential() async {
-    await Future.wait([
-      deleteCredentialInteractor.execute(),
-      deleteAuthorityOidcInteractor.execute(),
-      cachingManager.clearAll()
-    ]).then((value) {
-      if (BuildUtils.isWeb) {
-        _checkOIDCIsAvailable();
-      } else {
-        _goToLogin();
-      }
-    });
-  }
-
-  Uri? _parseUri(String? url) => url != null && url.trim().isNotEmpty
-      ? Uri.parse(url.trim())
-      : null;
-
-  void _checkOIDCIsAvailable() async {
-    final baseUri = _parseUri(AppConfig.baseUrl);
-    if (baseUri != null) {
-      consumeState(_checkOIDCIsAvailableInteractor.execute(OIDCRequest(
-          baseUrl: baseUri.toString(),
-          resourceUrl: baseUri.origin)));
-    } else {
-      _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }
   }
 

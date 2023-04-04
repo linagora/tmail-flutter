@@ -3,7 +3,6 @@ import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -35,30 +34,29 @@ abstract class ReloadableController extends BaseController {
   );
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    viewState.value.fold(
-      (failure) {
-        if (failure is GetCredentialFailure) {
-          goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
-        } else if (failure is GetSessionFailure) {
-          _handleGetSessionFailure();
-        } else if (failure is GetStoredTokenOidcFailure) {
-          goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
-        } else if (failure is GetAuthenticatedAccountFailure || failure is NoAuthenticatedAccountFailure) {
-          goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
-        }
-      },
-      (success) {
-        if (success is GetCredentialViewState) {
-          _handleGetCredentialSuccess(success);
-        } else if (success is GetSessionSuccess) {
-          _handleGetSessionSuccess(success);
-        } else if (success is GetStoredTokenOidcSuccess) {
-          _handleGetStoredTokenOIDCSuccess(success);
-        }
-      }
-    );
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is GetCredentialFailure) {
+      goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+    } else if (failure is GetSessionFailure) {
+      _handleGetSessionFailure();
+    } else if (failure is GetStoredTokenOidcFailure) {
+      goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
+    } else if (failure is GetAuthenticatedAccountFailure || failure is NoAuthenticatedAccountFailure) {
+      goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+    }
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetCredentialViewState) {
+      _handleGetCredentialSuccess(success);
+    } else if (success is GetSessionSuccess) {
+      _handleGetSessionSuccess(success);
+    } else if (success is GetStoredTokenOidcSuccess) {
+      _handleGetStoredTokenOIDCSuccess(success);
+    }
   }
 
   /*
@@ -91,7 +89,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _getSessionAction() {
-    consumeState(_getSessionInteractor.execute().asStream());
+    consumeState(_getSessionInteractor.execute());
   }
 
   void _handleGetSessionFailure() async {
