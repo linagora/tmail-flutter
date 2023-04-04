@@ -49,7 +49,7 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
             _buildListIdentityView(context),
             Container(height: 1, color: AppColor.attachmentFileBorderColor),
             Obx(() {
-              if (controller.signatureSelected.value != null) {
+              if (controller.isShowHtmlSignature) {
                 return SignatureBuilder(controller.signatureSelected.value!);
               } else {
                 return _buildLoadingView();
