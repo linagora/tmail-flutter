@@ -8,6 +8,7 @@ abstract class RemoteException with EquatableMixin implements Exception {
   static const internalServerError = 'Internal Server Error';
   static const noNetworkError = 'No network error';
   static const badCredentials = 'Bad credentials';
+  static const socketException = 'Socket exception';
 
   final String? message;
   final int? code;
@@ -31,6 +32,13 @@ class UnknownError extends RemoteException {
 
 class ConnectError extends RemoteException {
   const ConnectError() : super(message: RemoteException.connectError);
+
+  @override
+  List<Object> get props => [];
+}
+
+class SocketError extends RemoteException {
+  const SocketError() : super(message: RemoteException.socketException);
 
   @override
   List<Object> get props => [];

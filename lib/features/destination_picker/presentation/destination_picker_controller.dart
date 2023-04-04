@@ -3,7 +3,6 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -112,42 +111,33 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.map((success) {
-      if (success is GetAllMailboxSuccess) {
-        if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
-          buildTree(
-            success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes,
-            mailboxIdSelected: mailboxIdSelected
-          );
-        } else {
-          buildTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
-        }
-      } else if (success is RefreshChangesAllMailboxSuccess) {
-        refreshTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllMailboxSuccess) {
+      if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
+        buildTree(
+          success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes,
+          mailboxIdSelected: mailboxIdSelected);
+      } else {
+        buildTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
       }
-    });
+    } else if (success is RefreshChangesAllMailboxSuccess) {
+      refreshTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+    } else if (success is SearchMailboxSuccess) {
+      _searchMailboxSuccess(success);
+    } else if (success is CreateNewMailboxSuccess) {
+      _createNewMailboxSuccess(success);
+    }
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-        (failure) {
-          if (failure is SearchMailboxFailure) {
-            _searchMailboxFailure(failure);
-          } else if (failure is CreateNewMailboxFailure) {
-            _createNewMailboxFailure(failure);
-          }
-        },
-        (success) {
-          if (success is SearchMailboxSuccess) {
-            _searchMailboxSuccess(success);
-          } else if (success is CreateNewMailboxSuccess) {
-            _createNewMailboxSuccess(success);
-          }
-        }
-    );
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is SearchMailboxFailure) {
+      _searchMailboxFailure(failure);
+    } else if (failure is CreateNewMailboxFailure) {
+      _createNewMailboxFailure(failure);
+    }
   }
 
   @override

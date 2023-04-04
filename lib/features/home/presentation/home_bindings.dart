@@ -48,7 +48,6 @@ class HomeBindings extends BaseBindings {
         Get.find<CleanupRecentSearchCacheInteractor>(),
         Get.find<CleanupRecentLoginUrlCacheInteractor>(),
         Get.find<CleanupRecentLoginUsernameCacheInteractor>(),
-        Get.find<CheckOIDCIsAvailableInteractor>(),
     ));
   }
 

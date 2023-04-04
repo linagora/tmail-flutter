@@ -1,3 +1,5 @@
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -39,29 +41,29 @@ class SpamReportController extends BaseController {
   );
 
   @override
-  void onDone() {
-     viewState.value.fold(
-      (failure) {
-        if (failure is GetUnreadSpamMailboxFailure || failure is GetSpamMailboxCachedFailure) {
-          _presentationSpamMailbox.value = null;
-        }
-      },
-      (success) {
-        if (success is GetUnreadSpamMailboxSuccess){
-          _presentationSpamMailbox.value = success.unreadSpamMailbox.toPresentationMailbox();
-        } else if (success is StoreLastTimeDismissedSpamReportSuccess) {
-          _presentationSpamMailbox.value = null;
-        } else if (success is GetSpamReportStateSuccess) {
-          _spamReportState.value = success.spamReportState;
-        } else if (success is StoreSpamReportStateSuccess) {
-          _spamReportState.value = success.spamReportState;
-        } else if (success is GetSpamMailboxCachedSuccess) {
-          _presentationSpamMailbox.value = success.spamMailbox.toPresentationMailbox();
-        }
-      },
-    );
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetUnreadSpamMailboxSuccess){
+      _presentationSpamMailbox.value = success.unreadSpamMailbox.toPresentationMailbox();
+    } else if (success is StoreLastTimeDismissedSpamReportSuccess) {
+      _presentationSpamMailbox.value = null;
+    } else if (success is GetSpamReportStateSuccess) {
+      _spamReportState.value = success.spamReportState;
+    } else if (success is StoreSpamReportStateSuccess) {
+      _spamReportState.value = success.spamReportState;
+    } else if (success is GetSpamMailboxCachedSuccess) {
+      _presentationSpamMailbox.value = success.spamMailbox.toPresentationMailbox();
+    }
   }
-  
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is GetUnreadSpamMailboxFailure || failure is GetSpamMailboxCachedFailure) {
+      _presentationSpamMailbox.value = null;
+    }
+  }
+
   void dismissSpamReportAction() {
     if (Get.isRegistered<MailboxDashBoardController>()) {
       final mailboxDashBoardController = Get.find<MailboxDashBoardController>();

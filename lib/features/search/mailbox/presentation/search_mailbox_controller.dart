@@ -7,7 +7,6 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -107,33 +106,24 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(_handleFailureViewState, _handleSuccessViewState);
-  }
-
-  @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.fold((failure) => null, (success) async {
-      if (success is GetAllMailboxSuccess) {
-        currentMailboxState = success.currentMailboxState;
-        buildTree(success.mailboxList);
-      } else if (success is RefreshChangesAllMailboxSuccess) {
-        currentMailboxState = success.currentMailboxState;
-        await refreshTree(success.mailboxList);
-        searchMailboxAction();
-      }
-    });
-  }
-
-  void _handleFailureViewState(Failure failure) {
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
     if (failure is SearchMailboxFailure) {
       _handleSearchMailboxFailure(failure);
     }
   }
 
-  void _handleSuccessViewState(Success success) {
-    if (success is SearchMailboxSuccess) {
+  @override
+  void handleSuccessViewState(Success success) async {
+    super.handleSuccessViewState(success);
+    if (success is GetAllMailboxSuccess) {
+      currentMailboxState = success.currentMailboxState;
+      buildTree(success.mailboxList);
+    } else if (success is RefreshChangesAllMailboxSuccess) {
+      currentMailboxState = success.currentMailboxState;
+      await refreshTree(success.mailboxList);
+      searchMailboxAction();
+    } else if (success is SearchMailboxSuccess) {
       _handleSearchMailboxSuccess(success);
     } else if (success is MarkAsMailboxReadAllSuccess) {
       _refreshMailboxChanges(mailboxState: success.currentMailboxState);

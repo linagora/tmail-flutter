@@ -340,12 +340,8 @@ class UploadController extends BaseController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(_handleFailureViewState, _handleSuccessViewState);
-  }
-
-  void _handleFailureViewState(Failure failure) async {
-    logError('UploadController::_handleFailureViewState():failure: $failure');
+  void handleFailureViewState(Failure failure) async {
+    super.handleFailureViewState(failure);
     if (failure is UploadAttachmentFailure) {
       if (failure.isInline) {
         if (currentContext != null && currentOverlayContext != null) {
@@ -367,8 +363,9 @@ class UploadController extends BaseController {
     }
   }
 
-  void _handleSuccessViewState(Success success) async {
-    log('UploadController::_handleSuccessViewState():success: $success');
+  @override
+  void handleSuccessViewState(Success success) async {
+    super.handleSuccessViewState(success);
     if (success is UploadAttachmentSuccess) {
       if (success.isInline) {
         _uploadingStateInlineFiles.add(success.uploadAttachment.toUploadFileState());

@@ -1,5 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -76,31 +78,32 @@ class ForwardController extends BaseController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) {
-        if (failure is DeleteRecipientInForwardingFailure) {
-          cancelSelectionMode();
-        }
-      },
-      (success) {
-        if (success is GetForwardSuccess) {
-          currentForward.value = success.forward;
-          listRecipientForward.value = currentForward.value!.listRecipientForward;
-        } else if (success is DeleteRecipientInForwardingSuccess) {
-          _handleDeleteRecipientSuccess(success);
-        } else if (success is AddRecipientsInForwardingSuccess) {
-          _handleAddRecipientsSuccess(success);
-        } else if (success is EditLocalCopyInForwardingSuccess) {
-          _handleEditLocalCopySuccess(success);
-        }
-      });
-  }
-
-  @override
   void onReady() {
     _getForward();
     super.onReady();
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetForwardSuccess) {
+      currentForward.value = success.forward;
+      listRecipientForward.value = currentForward.value!.listRecipientForward;
+    } else if (success is DeleteRecipientInForwardingSuccess) {
+      _handleDeleteRecipientSuccess(success);
+    } else if (success is AddRecipientsInForwardingSuccess) {
+      _handleAddRecipientsSuccess(success);
+    } else if (success is EditLocalCopyInForwardingSuccess) {
+      _handleEditLocalCopySuccess(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is DeleteRecipientInForwardingFailure) {
+      cancelSelectionMode();
+    }
   }
 
   void _getForward() {

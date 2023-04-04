@@ -40,9 +40,6 @@ class NetworkConnectionController extends BaseController {
     super.onClose();
   }
 
-  @override
-  void onDone() {}
-
   void _getCurrentNetworkConnectionState() async {
     final currentConnectionResult = await _connectivity.checkConnectivity();
     log('NetworkConnectionController::onReady():_getCurrentNetworkConnectionState: $currentConnectionResult');

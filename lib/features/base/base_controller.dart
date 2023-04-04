@@ -96,6 +96,7 @@ abstract class BaseController extends GetxController
     viewState.value.fold(
       (failure) {
         if (_handleCommonException(failure)) {
+          handleFinallyCommonException();
           return;
         }
         handleFailureViewState(failure);
@@ -113,6 +114,7 @@ abstract class BaseController extends GetxController
   void onError(Object error, StackTrace stackTrace) {
     logError('BaseController::onError():error: $error | stackTrace: $stackTrace');
     if (_handleCommonError(error)) {
+      handleFinallyCommonException();
       return;
     }
     handleErrorViewState(error, stackTrace);
@@ -142,7 +144,6 @@ abstract class BaseController extends GetxController
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).badCredentials);
       }
-
       checkAuthenticationTypeWhenLogout();
       return true;
     }
@@ -151,6 +152,10 @@ abstract class BaseController extends GetxController
   }
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
+
+  void handleFinallyCommonException() {
+    clearState();
+  }
 
   void handleFailureViewState(Failure failure) {
     logError('BaseController::handleFailureViewState(): $failure');
@@ -249,27 +254,18 @@ abstract class BaseController extends GetxController
     }
   }
 
-  bool fcmEnabled(Session? session, AccountId? accountId) {
-    bool fcmEnabled = false;
-    try {
-      requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
-      if (AppConfig.fcmAvailable) {
-        fcmEnabled = true;
-      } else {
-        fcmEnabled = false;
-      }
-    } catch (e) {
-      logError('BaseController::fcmEnabled(): exception: $e');
-    }
-    return fcmEnabled;
-  }
+  bool _isFcmActivated(Session session, AccountId accountId) =>
+    [FirebaseCapability.fcmIdentifier].isSupported(session, accountId) && AppConfig.fcmAvailable;
 
   void goToLogin({LoginArguments? arguments}) {
     pushAndPopAll(AppRoutes.login, arguments: arguments);
   }
 
   void logout(Session? session, AccountId? accountId) {
-    _isFcmEnabled = fcmEnabled(session, accountId);
+    if (session == null || accountId == null) {
+      return;
+    }
+    _isFcmEnabled = _isFcmActivated(session, accountId);
     final authenticationType = authorizationInterceptors.authenticationType;
     if (authenticationType == AuthenticationType.oidc) {
       consumeState(logoutOidcInteractor.execute());

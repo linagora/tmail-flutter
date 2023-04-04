@@ -1,6 +1,7 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
@@ -50,6 +51,23 @@ class SessionController extends ReloadableController {
   }
 
   @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is GetSessionFailure) {
+      _handleSessionFailure(failure);
+      _goToLogin();
+    }
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetSessionSuccess) {
+      _goToMailboxDashBoard(success);
+    }
+  }
+
+  @override
   void handleReloaded(Session session) {
     pushAndPop(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
@@ -57,15 +75,7 @@ class SessionController extends ReloadableController {
   }
 
   void _getSession() async {
-    await _getSessionInteractor.execute()
-      .then((response) => response.fold(
-        (failure) {
-          _handleSessionFailure(failure);
-          _goToLogin();
-        },
-        (success) => success is GetSessionSuccess
-            ? _goToMailboxDashBoard(success)
-            : _goToLogin()));
+    consumeState(_getSessionInteractor.execute());
   }
 
   void _handleSessionFailure(Failure failure) {
@@ -93,7 +103,7 @@ class SessionController extends ReloadableController {
   }
 
   bool _checkUrlError(dynamic sessionException) {
-    return sessionException is ConnectError || sessionException is BadGateway;
+    return sessionException is ConnectError || sessionException is BadGateway || sessionException is SocketError;
   }
 
   void _goToLogin() async {
@@ -121,7 +131,4 @@ class SessionController extends ReloadableController {
       _goToLogin();
     }
   }
-
-  @override
-  void onDone() {}
 }

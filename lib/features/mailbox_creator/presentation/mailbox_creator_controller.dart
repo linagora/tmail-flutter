@@ -70,9 +70,6 @@ class MailboxCreatorController extends BaseController {
   }
 
   @override
-  void onDone() {}
-
-  @override
   void onClose() {
     _disposeWidget();
     super.onClose();
