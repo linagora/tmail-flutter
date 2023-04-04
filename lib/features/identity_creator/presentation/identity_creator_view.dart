@@ -237,7 +237,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           Obx(() => (IdentityInputWithDropListFieldBuilder(
               AppLocalizations.of(context).bcc_to,
               controller.errorBccIdentity.value,
-              controller.inputBccIdentityController)
+              controller.inputBccIdentityController,
+              focusNode: controller.inputBccIdentityFocusNode)
             ..addOnSelectedSuggestionAction((newEmailAddress) {
               controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
               controller.updateBccOfIdentity(newEmailAddress);
@@ -337,7 +338,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   ),
                 ]
               ),
-          )] else ...[
+            ),
+            const SizedBox(height: 35),
+          ] else ...[
             _buildActionBottomDesktop(context)
           ]
         ]),
@@ -346,48 +349,57 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
 
     return GestureDetector(
       onTap: () => controller.clearFocusEditor(context),
-      child: Stack(
-          children: [
-            Column(children: [
+      child: Column(children: [
+        SizedBox(
+          width: double.infinity,
+          child: Stack(
+            children: [
+              Positioned(right: 8, top: 2,
+                child: buildIconWeb(
+                  iconSize: 24,
+                  icon: SvgPicture.asset(
+                    _imagePaths.icComposerClose,
+                    fit: BoxFit.fill,
+                    colorFilter: AppColor.colorDeleteContactIcon.asFilter()
+                  ),
+                  tooltip: AppLocalizations.of(context).close,
+                  onTap: () => controller.closeView(context)),
+              ),
               Padding(
-                  padding: const EdgeInsets.only(top: 14),
+                padding: const EdgeInsets.only(top: 14),
+                child: Align(
+                  alignment: Alignment.center,
                   child: Obx(() {
                     return Text(controller.actionType.value == IdentityActionType.create
-                        ? AppLocalizations.of(context).createNewIdentity.inCaps
-                        : AppLocalizations.of(context).edit_identity.inCaps,
+                      ? AppLocalizations.of(context).createNewIdentity.inCaps
+                      : AppLocalizations.of(context).edit_identity.inCaps,
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black));
-                  })),
-              const SizedBox(height: 8),
-              Expanded(
-                child: BuildUtils.isWeb
-                  ? PointerInterceptor(child: bodyCreatorView)
-                  : KeyboardRichText(
-                      keyBroadToolbar: RichTextKeyboardToolBar(
-                        titleBack: AppLocalizations.of(context).titleFormat,
-                        backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
-                        isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
-                        richTextController: controller.keyboardRichTextController,
-                        titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                        titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                        titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                        titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                      ),
-                      richTextController: controller.keyboardRichTextController,
-                      child: bodyCreatorView),
+                  }),
+                ),
               ),
-            ]),
-            Positioned(top: 2, right: 8,
-                child: buildIconWeb(
-                    iconSize: 24,
-                    icon: SvgPicture.asset(
-                      _imagePaths.icComposerClose,
-                      fit: BoxFit.fill,
-                      colorFilter: AppColor.colorDeleteContactIcon.asFilter()
-                    ),
-                    tooltip: AppLocalizations.of(context).close,
-                    onTap: () => controller.closeView(context)))
-          ]
-      ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: BuildUtils.isWeb
+            ? PointerInterceptor(child: bodyCreatorView)
+            : KeyboardRichText(
+                keyBroadToolbar: RichTextKeyboardToolBar(
+                  titleBack: AppLocalizations.of(context).titleFormat,
+                  backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+                  isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
+                  richTextController: controller.keyboardRichTextController,
+                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
+                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
+                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+                ),
+                richTextController: controller.keyboardRichTextController,
+                paddingChild: EdgeInsets.zero,
+                child: bodyCreatorView),
+        ),
+      ]),
     );
   }
 
@@ -458,14 +470,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         minHeight: controller.htmlEditorMinHeight,
         addDefaultSelectionMenuItems: false,
         initialContent: initialContent ?? '',
-        onCreated: (editorApi) {
-          controller.keyboardRichTextController.onCreateHTMLEditor(
-            editorApi,
-            onEnterKeyDown: controller.onEnterKeyDownOnMobile,
-            onFocus: controller.onFocusHTMLEditorOnMobile,
-            context: context
-          );
-        },
+        onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi),
       ),
     );
   }

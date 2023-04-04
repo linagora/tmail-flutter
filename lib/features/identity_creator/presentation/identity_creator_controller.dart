@@ -2,6 +2,7 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_rx/get_rx.dart';
@@ -63,6 +64,7 @@ class IdentityCreatorController extends BaseController {
   TextEditingController? inputNameIdentityController;
   TextEditingController? inputBccIdentityController;
   FocusNode? inputNameIdentityFocusNode;
+  FocusNode? inputBccIdentityFocusNode;
 
   String? _nameIdentity;
   String? _contentHtmlEditor;
@@ -109,6 +111,7 @@ class IdentityCreatorController extends BaseController {
     inputNameIdentityController = TextEditingController();
     inputBccIdentityController = TextEditingController();
     inputNameIdentityFocusNode = FocusNode();
+    inputBccIdentityFocusNode = FocusNode();
     scrollController = ScrollController();
   }
 
@@ -422,6 +425,7 @@ class IdentityCreatorController extends BaseController {
     if (!BuildUtils.isWeb) {
       keyboardRichTextController.htmlEditorApi?.unfocus();
     }
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     FocusScope.of(context).unfocus();
   }
 
@@ -437,6 +441,8 @@ class IdentityCreatorController extends BaseController {
     keyboardRichTextController.dispose();
     inputNameIdentityFocusNode?.dispose();
     inputNameIdentityFocusNode = null;
+    inputBccIdentityFocusNode?.dispose();
+    inputBccIdentityFocusNode = null;
     inputNameIdentityController?.dispose();
     inputNameIdentityController = null;
     inputBccIdentityController?.dispose();
@@ -444,7 +450,19 @@ class IdentityCreatorController extends BaseController {
     scrollController?.dispose();
   }
 
-  void onFocusHTMLEditorOnMobile() async {
+  void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
+    keyboardRichTextController.htmlEditorApi = editorApi;
+    keyboardRichTextController.onCreateHTMLEditor(
+      editorApi,
+      onEnterKeyDown: _onEnterKeyDownOnMobile,
+      onFocus: _onFocusHTMLEditorOnMobile,
+      context: context
+    );
+  }
+
+  void _onFocusHTMLEditorOnMobile() async {
+    inputBccIdentityFocusNode?.unfocus();
+    inputNameIdentityFocusNode?.unfocus();
     if (scrollController != null) {
       if (htmlKey.currentContext != null) {
         await Scrollable.ensureVisible(htmlKey.currentContext!);
@@ -462,7 +480,7 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void onEnterKeyDownOnMobile() {
+  void _onEnterKeyDownOnMobile() {
     if (scrollController != null && scrollController!.position.pixels < scrollController!.position.maxScrollExtent) {
       scrollController!.animateTo(
         scrollController!.position.pixels + 20,
