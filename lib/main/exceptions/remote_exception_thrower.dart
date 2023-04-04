@@ -15,38 +15,40 @@ class RemoteExceptionThrower extends ExceptionThrower {
   throwException(dynamic error) {
     logError('RemoteExceptionThrower::throwException():error: $error');
     final networkConnectionController = getBinding<NetworkConnectionController>();
-    if (networkConnectionController != null) {
-      if (!networkConnectionController.isNetworkConnectionAvailable()) {
-        throw const NoNetworkError();
-      }
-    }
-
-    if (error is DioError) {
-      switch (error.type) {
-        case DioErrorType.connectionTimeout:
-          throw const ConnectError();
-        default:
-          if (error.response?.statusCode == 502) {
-            throw BadGateway();
-          } else if (error.response?.statusCode == HttpStatus.unauthorized) {
-            throw const BadCredentialsException();
-          } else {
-            throw UnknownError(
-              code: error.response?.statusCode,
-              message: error.response?.statusMessage);
-          }
-      }
-    } else if (error is ErrorMethodResponseException) {
-      final errorResponse = error.errorResponse as ErrorMethodResponse;
-      if (errorResponse is CannotCalculateChangesMethodResponse) {
-        throw CannotCalculateChangesMethodResponseException();
-      } else {
-        throw MethodLevelErrors(
-          errorResponse.type,
-          message: errorResponse.description);
-      }
+    if (networkConnectionController?.isNetworkConnectionAvailable() == false) {
+      logError('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
+      throw const NoNetworkError();
     } else {
-      throw error;
+      if (error is DioError) {
+        logError('RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response}');
+        switch (error.type) {
+          case DioErrorType.connectionTimeout:
+            throw const ConnectError();
+          default:
+            if (error.response?.statusCode == HttpStatus.internalServerError) {
+              throw const InternalServerError();
+            } else if (error.response?.statusCode == HttpStatus.badGateway) {
+              throw BadGateway();
+            } else if (error.response?.statusCode == HttpStatus.unauthorized) {
+              throw const BadCredentialsException();
+            } else {
+              throw UnknownError(
+                code: error.response?.statusCode,
+                message: error.response?.statusMessage);
+            }
+        }
+      } else if (error is ErrorMethodResponseException) {
+        final errorResponse = error.errorResponse as ErrorMethodResponse;
+        if (errorResponse is CannotCalculateChangesMethodResponse) {
+          throw CannotCalculateChangesMethodResponseException();
+        } else {
+          throw MethodLevelErrors(
+            errorResponse.type,
+            message: errorResponse.description);
+        }
+      } else {
+        throw error;
+      }
     }
   }
 }
