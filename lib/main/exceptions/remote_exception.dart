@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.da
 
 abstract class RemoteException with EquatableMixin implements Exception {
   static const connectError = 'Connect error';
+  static const internalServerError = 'Internal Server Error';
   static const noNetworkError = 'No network error';
   static const badCredentials = 'Bad credentials';
 
@@ -30,6 +31,13 @@ class UnknownError extends RemoteException {
 
 class ConnectError extends RemoteException {
   const ConnectError() : super(message: RemoteException.connectError);
+
+  @override
+  List<Object> get props => [];
+}
+
+class InternalServerError extends RemoteException {
+  const InternalServerError() : super(message: RemoteException.internalServerError);
 
   @override
   List<Object> get props => [];
