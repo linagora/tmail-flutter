@@ -1,12 +1,16 @@
 import 'package:contact/contact/model/capability_contact.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/fps_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -70,20 +74,13 @@ abstract class BaseController extends GetxController
   DestroySubscriptionInteractor? _destroySubscriptionInteractor;
 
   final AppToast _appToast = Get.find<AppToast>();
+  final ImagePaths _imagePaths = Get.find<ImagePaths>();
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
-    newStateStream.listen(
-      (state) => onData(state),
-      onError: (error, stackTrace) {
-        logError('BaseController::consumeState():onError:error: $error');
-        logError('BaseController::consumeState():onError:stackTrace: $stackTrace');
-        onError(error);
-      },
-      onDone: () => onDone()
-    );
+    newStateStream.listen(onData, onError: onError, onDone: onDone);
   }
 
   void dispatchState(Either<Failure, Success> newState) {
@@ -101,71 +98,82 @@ abstract class BaseController extends GetxController
         if (_handleCommonException(failure)) {
           return;
         }
-        if (failure is LogoutOidcFailure) {
-          log('BaseController::onData(): $failure');
-          _getSubscriptionLocalAction();
-        } else if (failure is GetFCMSubscriptionLocalFailure) {
-          checkAuthenticationTypeWhenLogout();
-        } else if (failure is DestroySubscriptionFailure) {
-          checkAuthenticationTypeWhenLogout();
-        }
+        handleFailureViewState(failure);
       },
-      (success) {
-        if (success is LogoutOidcSuccess) {
-          log('BaseController::onData(): $success');
-          _getSubscriptionLocalAction();
-        } else if (success is GetFCMSubscriptionLocalSuccess) {
-          final subscriptionId = success.fcmSubscription.subscriptionId;
-          _destroySubscriptionAction(subscriptionId);
-        } else if (success is DestroySubscriptionSuccess) {
-          checkAuthenticationTypeWhenLogout();
-        }
-      }
-    );
+      handleSuccessViewState);
   }
 
   bool _handleCommonException(Failure failure) {
     if (failure is FeatureFailure) {
-      log('BaseController::_handleCommonException(): ${failure.exception}');
-      if (failure.exception is NoNetworkError) {
-        return true;
-      } else if (failure.exception is BadCredentialsException) {
-        if (currentOverlayContext != null && currentContext != null) {
-          _appToast.showToastErrorMessage(
-            currentOverlayContext!,
-            AppLocalizations.of(currentContext!).badCredentials);
-        }
-
-        checkAuthenticationTypeWhenLogout();
-        return true;
-      }
+      return _handleCommonError(failure.exception);
     }
     return false;
   }
 
-  void onError(dynamic error) {
-    if (error is NoNetworkError) {
-      logError('BaseController::onError(): $error');
+  void onError(Object error, StackTrace stackTrace) {
+    logError('BaseController::onError():error: $error | stackTrace: $stackTrace');
+    if (_handleCommonError(error)) {
       return;
     }
+    handleErrorViewState(error, stackTrace);
+  }
 
-    final appToast = Get.find<AppToast>();
+  void onDone() {}
 
-    String messageError = '';
-    if (error is MethodLevelErrors) {
-      messageError = error.message ?? error.type.value;
-    } else {
-      if (currentContext != null) {
-        messageError = AppLocalizations.of(currentContext!).unknownError;
+  bool _handleCommonError(dynamic error) {
+    logError('BaseController::_handleCommonError(): $error');
+    if (error is NoNetworkError || error is ConnectError || error is InternalServerError) {
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).no_internet_connection,
+          actionName: AppLocalizations.of(currentContext!).skip,
+          onActionClick: ToastView.dismiss,
+          leadingSVGIcon: _imagePaths.icNotConnection,
+          backgroundColor: AppColor.textFieldErrorBorderColor,
+          textColor: Colors.white,
+          infinityToast: true,
+        );
       }
+      return true;
+    } else if (error is BadCredentialsException) {
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).badCredentials);
+      }
+
+      checkAuthenticationTypeWhenLogout();
+      return true;
     }
 
-    if (messageError.isNotEmpty && currentContext != null && currentOverlayContext != null) {
-      appToast.showToastErrorMessage(currentOverlayContext!, messageError);
+    return false;
+  }
+
+  void handleErrorViewState(Object error, StackTrace stackTrace) {}
+
+  void handleFailureViewState(Failure failure) {
+    logError('BaseController::handleFailureViewState(): $failure');
+    if (failure is LogoutOidcFailure) {
+      _getSubscriptionLocalAction();
+    } else if (failure is GetFCMSubscriptionLocalFailure) {
+      checkAuthenticationTypeWhenLogout();
+    } else if (failure is DestroySubscriptionFailure) {
+      checkAuthenticationTypeWhenLogout();
     }
   }
 
-  void onDone();
+  void handleSuccessViewState(Success success) {
+    log('BaseController::handleSuccessViewState(): $success');
+    if (success is LogoutOidcSuccess) {
+      _getSubscriptionLocalAction();
+    } else if (success is GetFCMSubscriptionLocalSuccess) {
+      final subscriptionId = success.fcmSubscription.subscriptionId;
+      _destroySubscriptionAction(subscriptionId);
+    } else if (success is DestroySubscriptionSuccess) {
+      checkAuthenticationTypeWhenLogout();
+    }
+  }
 
   void startFpsMeter() {
     FpsManager().start();
