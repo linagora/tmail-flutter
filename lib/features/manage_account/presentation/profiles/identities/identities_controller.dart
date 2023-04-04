@@ -1,6 +1,8 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
@@ -72,29 +74,29 @@ class IdentitiesController extends BaseController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) {
-        if (failure is DeleteIdentityFailure) {
-          _deleteIdentityFailure(failure);
-        }
-      },
-      (success) {
-        if (success is GetAllIdentitiesSuccess) {
-          _handleGetAllIdentitiesSuccess(success);
-        } else if (success is CreateNewIdentitySuccess) {
-          _createNewIdentitySuccess(success);
-        } else if (success is CreateNewDefaultIdentitySuccess) {
-          _createNewDefaultIdentitySuccess(success);
-        } else if (success is DeleteIdentitySuccess) {
-          _deleteIdentitySuccess(success);
-        } else if (success is EditIdentitySuccess) {
-          _editIdentitySuccess(success);
-        } else if (success is TransformHtmlSignatureSuccess) {
-          signatureSelected.value = success.signature;
-        }
-      }
-    );
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllIdentitiesSuccess) {
+      _handleGetAllIdentitiesSuccess(success);
+    } else if (success is CreateNewIdentitySuccess) {
+      _createNewIdentitySuccess(success);
+    } else if (success is CreateNewDefaultIdentitySuccess) {
+      _createNewDefaultIdentitySuccess(success);
+    } else if (success is DeleteIdentitySuccess) {
+      _deleteIdentitySuccess(success);
+    } else if (success is EditIdentitySuccess) {
+      _editIdentitySuccess(success);
+    } else if (success is TransformHtmlSignatureSuccess) {
+      signatureSelected.value = success.signature;
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is DeleteIdentityFailure) {
+      _deleteIdentityFailure(failure);
+    }
   }
 
   void _registerObxStreamListener() {

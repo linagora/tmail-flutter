@@ -1,10 +1,8 @@
 
-import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -116,28 +114,17 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold((failure) {}, (success) {
-      if (success is GetAllRulesSuccess) {
-        log('RulesFilterCreatorController::onDone():GetAllRulesSuccess: ${success.rules}');
-        if (success.rules?.isNotEmpty == true) {
-          _listEmailRule = success.rules!;
-        }
+  void handleSuccessViewState(Success success) async {
+    super.handleSuccessViewState(success);
+    if (success is GetAllMailboxSuccess) {
+      await buildTree(success.mailboxList);
+      _setUpMailboxSelected();
+    } else if (success is GetAllRulesSuccess) {
+      log('RulesFilterCreatorController::handleSuccessViewState():GetAllRulesSuccess: ${success.rules}');
+      if (success.rules?.isNotEmpty == true) {
+        _listEmailRule = success.rules!;
       }
-    });
-  }
-
-  @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.fold(
-      (failure) => null,
-      (success) async {
-        if (success is GetAllMailboxSuccess) {
-          await buildTree(success.mailboxList);
-          _setUpMailboxSelected();
-        }
-      });
+    }
   }
 
   void _getAllRules() {

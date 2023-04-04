@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/session/domain/repository/session_repository.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
@@ -8,12 +9,12 @@ class GetSessionInteractor {
 
   GetSessionInteractor(this.sessionRepository);
 
-  Future<Either<Failure, Success>> execute() async {
+  Stream<Either<Failure, Success>> execute() async* {
     try {
       final session = await sessionRepository.getSession();
-      return Right<Failure, Success>(GetSessionSuccess(session));
+      yield Right<Failure, Success>(GetSessionSuccess(session));
     } catch (e) {
-      return Left<Failure, Success>(GetSessionFailure(e));
+      yield Left<Failure, Success>(GetSessionFailure(e));
     }
   }
 }

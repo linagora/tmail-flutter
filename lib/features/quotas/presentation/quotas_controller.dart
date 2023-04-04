@@ -45,22 +45,6 @@ class QuotasController extends BaseController {
     }
   }
 
-  @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) {
-        if (failure is GetQuotasFailure) {
-          logError('QuotasController::onDone():[GetQuotasFailure]: ${failure.exception}');
-        }
-      },
-      (success) {
-        if (success is GetQuotasSuccess) {
-          _handleGetQuotasSuccess(success);
-        }
-      }
-    );
-  }
-
   void _handleGetQuotasSuccess(GetQuotasSuccess success) {
     try {
       final quotas = success.quotas.firstWhere((e) => e.resourceType == ResourceType.octets);
@@ -85,10 +69,6 @@ class QuotasController extends BaseController {
     }
   }
 
-  void covertBytesToGB() {
-
-  }
-
   void _initWorker() {
     accountIdWorker = ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId && mailboxDashBoardController.sessionCurrent!= null) {
@@ -107,5 +87,13 @@ class QuotasController extends BaseController {
   void onClose() {
     accountIdWorker.call();
     super.onClose();
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetQuotasSuccess) {
+      _handleGetQuotasSuccess(success);
+    }
   }
 }

@@ -1,4 +1,6 @@
 
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -137,19 +139,19 @@ class IdentityCreatorController extends BaseController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-        (failure) {
-          if (failure is GetAllIdentitiesFailure) {
-            _getALlIdentitiesFailure(failure);
-          }
-        },
-        (success) {
-          if (success is GetAllIdentitiesSuccess) {
-            _getALlIdentitiesSuccess(success);
-          }
-        }
-    );
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllIdentitiesSuccess) {
+      _getALlIdentitiesSuccess(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is GetAllIdentitiesFailure) {
+      _getALlIdentitiesFailure(failure);
+    }
   }
 
   void _checkDefaultIdentityIsSupported() {

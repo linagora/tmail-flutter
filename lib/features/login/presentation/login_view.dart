@@ -178,27 +178,23 @@ class LoginView extends BaseLoginView {
     return Container(
       margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
       width: responsiveUtils.getDeviceWidth(context),height: 48,
-      child: AbsorbPointer(
-        absorbing: !controller.networkConnectionController.isNetworkConnectionAvailable(),
-        child: ElevatedButton(
-          key: const Key('nextToCredentialForm'),
-          style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-            backgroundColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) => AppColor.primaryColor.withOpacity(
-                  controller.networkConnectionController.isNetworkConnectionAvailable() ? 1 : 0.5)),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: const BorderSide(width: 0, color: AppColor.primaryColor)
-            ))
-          ),
-          child: Text(AppLocalizations.of(context).next,
-            style: const TextStyle(fontSize: 16, color: Colors.white)
-          ),
-          onPressed: () {
-            loginController.handleNextInUrlInputFormPress();
-          }
+      child: ElevatedButton(
+        key: const Key('nextToCredentialForm'),
+        style: ButtonStyle(
+          foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) => AppColor.primaryColor),
+          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(width: 0, color: AppColor.primaryColor)
+          ))
         ),
+        child: Text(AppLocalizations.of(context).next,
+          style: const TextStyle(fontSize: 16, color: Colors.white)
+        ),
+        onPressed: () {
+          loginController.handleNextInUrlInputFormPress();
+        }
       )
     );
   }

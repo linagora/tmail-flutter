@@ -138,6 +138,44 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     super.onClose();
   }
 
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetEmailContentSuccess) {
+      _getEmailContentSuccess(success);
+    } else if (success is MarkAsEmailReadSuccess) {
+      _markAsEmailReadSuccess(success);
+    } else if (success is ExportAttachmentSuccess) {
+      _exportAttachmentSuccessAction(success);
+    } else if (success is MoveToMailboxSuccess) {
+      _moveToMailboxSuccess(success);
+    } else if (success is MarkAsStarEmailSuccess) {
+      _markAsEmailStarSuccess(success);
+    } else if (success is DownloadAttachmentForWebSuccess) {
+      _downloadAttachmentForWebSuccessAction(success);
+    } else if (success is GetAllIdentitiesSuccess) {
+      _getAllIdentitiesSuccess(success);
+    } else if (success is SendReceiptToSenderSuccess) {
+      _sendReceiptToSenderSuccess(success);
+    } else if (success is CreateNewRuleFilterSuccess) {
+      _createNewRuleFilterSuccess(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is MarkAsEmailReadFailure) {
+      _markAsEmailReadFailure(failure);
+    } else if (failure is DownloadAttachmentsFailure) {
+      _downloadAttachmentsFailure(failure);
+    } else if (failure is ExportAttachmentFailure) {
+      _exportAttachmentFailureAction(failure);
+    } else if (failure is DownloadAttachmentForWebFailure) {
+      _downloadAttachmentForWebFailureAction(failure);
+    }
+  }
+
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
@@ -309,43 +347,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (session != null && accountId != null && baseDownloadUrl != null) {
       consumeState(_getEmailContentInteractor.execute(session, accountId, emailId, baseDownloadUrl));
     }
-  }
-
-  @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) {
-        if (failure is MarkAsEmailReadFailure) {
-          _markAsEmailReadFailure(failure);
-        } else if (failure is DownloadAttachmentsFailure) {
-          _downloadAttachmentsFailure(failure);
-        } else if (failure is ExportAttachmentFailure) {
-          _exportAttachmentFailureAction(failure);
-        } else if (failure is DownloadAttachmentForWebFailure) {
-          _downloadAttachmentForWebFailureAction(failure);
-        }
-      },
-      (success) {
-        if (success is GetEmailContentSuccess) {
-          _getEmailContentSuccess(success);
-        } else if (success is MarkAsEmailReadSuccess) {
-          _markAsEmailReadSuccess(success);
-        } else if (success is ExportAttachmentSuccess) {
-          _exportAttachmentSuccessAction(success);
-        } else if (success is MoveToMailboxSuccess) {
-          _moveToMailboxSuccess(success);
-        } else if (success is MarkAsStarEmailSuccess) {
-          _markAsEmailStarSuccess(success);
-        } else if (success is DownloadAttachmentForWebSuccess) {
-          _downloadAttachmentForWebSuccessAction(success);
-        } else if (success is GetAllIdentitiesSuccess) {
-          _getAllIdentitiesSuccess(success);
-        } else if (success is SendReceiptToSenderSuccess) {
-          _sendReceiptToSenderSuccess(success);
-        } else if (success is CreateNewRuleFilterSuccess) {
-          _createNewRuleFilterSuccess(success);
-        }
-      });
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {

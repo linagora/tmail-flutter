@@ -48,7 +48,6 @@ import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -74,7 +73,6 @@ class LoginController extends ReloadableController {
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
-  final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
 
   LoginController(
     LogoutOidcInteractor logoutOidcInteractor,
@@ -140,54 +138,59 @@ class LoginController extends ReloadableController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    viewState.value.fold(
-      (failure) {
-        if (failure is GetAuthenticationInfoFailure) {
-          getAuthenticatedAccountAction();
-        } else if (failure is CheckOIDCIsAvailableFailure ||
-            failure is GetStoredOidcConfigurationFailure) {
-          _showFormLoginWithCredentialAction();
-        } else if (failure is GetOIDCIsAvailableFailure) {
-          loginState.value = LoginState(Left(LoginSSONotAvailableAction()));
-          _showFormLoginWithCredentialAction();
-        } else if (failure is AuthenticationUserFailure) {
-          _loginFailureAction(failure);
-        } else if (failure is GetOIDCConfigurationFailure ||
-            failure is GetTokenOIDCFailure ||
-            failure is AuthenticateOidcOnBrowserFailure) {
-          loginState.value = LoginState(Left(failure));
-        }
-      },
-      (success) {
-        if (success is GetAuthenticationInfoSuccess) {
-          _getStoredOidcConfiguration();
-        } else if (success is GetStoredOidcConfigurationSuccess) {
-          _getTokenOIDCAction(success.oidcConfiguration);
-        } else if (success is CheckOIDCIsAvailableSuccess) {
-          _showFormLoginWithSSOAction(success);
-        } else if (success is GetOIDCIsAvailableSuccess) {
-          loginState.value = LoginState(Right(success));
-          _oidcResponse = success.oidcResponse;
-          _getOIDCConfiguration();
-        } else if (success is GetOIDCConfigurationSuccess) {
-          _getOIDCConfigurationSuccess(success);
-        } else if (success is GetTokenOIDCSuccess) {
-          _getTokenOIDCSuccess(success);
-        } else if (success is AuthenticationUserSuccess) {
-          _loginSuccessAction(success);
-        } else if (success is GetAuthenticationInfoLoading ||
-            success is CheckOIDCIsAvailableLoading ||
-            success is GetStoredOidcConfigurationLoading ||
-            success is GetOIDCConfigurationLoading ||
-            success is GetTokenOIDCLoading ||
-            success is AuthenticationUserLoading ||
-            success is GetOIDCIsAvailableLoading) {
-          loginState.value = LoginState(Right(LoginLoadingAction()));
-        }
-      }
-    );
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is GetAuthenticationInfoFailure) {
+      getAuthenticatedAccountAction();
+    } else if (failure is CheckOIDCIsAvailableFailure ||
+        failure is GetStoredOidcConfigurationFailure) {
+      _showFormLoginWithCredentialAction();
+    } else if (failure is GetOIDCIsAvailableFailure) {
+      loginState.value = LoginState(Left(LoginSSONotAvailableAction()));
+      _showFormLoginWithCredentialAction();
+    } else if (failure is AuthenticationUserFailure) {
+      _loginFailureAction(failure);
+    } else if (failure is GetOIDCConfigurationFailure ||
+        failure is GetTokenOIDCFailure ||
+        failure is AuthenticateOidcOnBrowserFailure) {
+      loginState.value = LoginState(Left(failure));
+    }
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAuthenticationInfoSuccess) {
+      _getStoredOidcConfiguration();
+    } else if (success is GetStoredOidcConfigurationSuccess) {
+      _getTokenOIDCAction(success.oidcConfiguration);
+    } else if (success is CheckOIDCIsAvailableSuccess) {
+      _showFormLoginWithSSOAction(success);
+    } else if (success is GetOIDCIsAvailableSuccess) {
+      loginState.value = LoginState(Right(success));
+      _oidcResponse = success.oidcResponse;
+      _getOIDCConfiguration();
+    } else if (success is GetOIDCConfigurationSuccess) {
+      _getOIDCConfigurationSuccess(success);
+    } else if (success is GetTokenOIDCSuccess) {
+      _getTokenOIDCSuccess(success);
+    } else if (success is AuthenticationUserSuccess) {
+      _loginSuccessAction(success);
+    } else if (success is GetAuthenticationInfoLoading ||
+        success is CheckOIDCIsAvailableLoading ||
+        success is GetStoredOidcConfigurationLoading ||
+        success is GetOIDCConfigurationLoading ||
+        success is GetTokenOIDCLoading ||
+        success is AuthenticationUserLoading ||
+        success is GetOIDCIsAvailableLoading) {
+      loginState.value = LoginState(Right(LoginLoadingAction()));
+    }
+  }
+
+  @override
+  void handleFinallyCommonException() {
+    super.handleFinallyCommonException();
+    loginState.value = LoginState(Right(LoginInitAction()));
   }
 
   @override
@@ -404,7 +407,4 @@ class LoginController extends ReloadableController {
     urlInputController.clear();
     super.onClose();
   }
-
-  @override
-  void onDone() {}
 }
