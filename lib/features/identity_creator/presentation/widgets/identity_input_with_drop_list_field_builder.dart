@@ -14,6 +14,7 @@ class IdentityInputWithDropListFieldBuilder {
   final String _label;
   final String? _error;
   final TextEditingController? editingController;
+  final FocusNode? focusNode;
 
   OnSelectedSuggestionAction? _onSelectedSuggestionAction;
   OnSuggestionCallbackAction? _onSuggestionCallbackAction;
@@ -23,6 +24,9 @@ class IdentityInputWithDropListFieldBuilder {
     this._label,
     this._error,
     this.editingController,
+    {
+      this.focusNode,
+    }
   );
 
   void addOnSelectedSuggestionAction(OnSelectedSuggestionAction action) {
@@ -46,13 +50,14 @@ class IdentityInputWithDropListFieldBuilder {
       const SizedBox(height: 8),
       TypeAheadFormField<EmailAddress>(
         textFieldConfiguration: TextFieldConfiguration(
-            controller: editingController,
-            textInputAction: TextInputAction.done,
-            decoration: (IdentityInputDecorationBuilder()
-                ..setContentPadding(const EdgeInsets.symmetric(
-                    vertical: BuildUtils.isWeb ? 16 : 12,
-                    horizontal: 12))
-                ..setErrorText(_error))
+          focusNode: focusNode,
+          controller: editingController,
+          textInputAction: TextInputAction.done,
+          decoration: (IdentityInputDecorationBuilder()
+            ..setContentPadding(const EdgeInsets.symmetric(
+              vertical: BuildUtils.isWeb ? 16 : 12,
+              horizontal: 12))
+            ..setErrorText(_error))
               .build()
         ),
         debounceDuration: const Duration(milliseconds: 500),
