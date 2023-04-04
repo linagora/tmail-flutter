@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/status/http_status.dart';
@@ -20,7 +22,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
       throw const NoNetworkError();
     } else {
       if (error is DioError) {
-        logError('RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response}');
+        logError('RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}');
         switch (error.type) {
           case DioErrorType.connectionTimeout:
             throw const ConnectError();
@@ -31,6 +33,8 @@ class RemoteExceptionThrower extends ExceptionThrower {
               throw BadGateway();
             } else if (error.response?.statusCode == HttpStatus.unauthorized) {
               throw const BadCredentialsException();
+            } else if (error.error is SocketException) {
+              throw const SocketError();
             } else {
               throw UnknownError(
                 code: error.response?.statusCode,

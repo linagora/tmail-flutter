@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
@@ -46,25 +47,6 @@ class EmailRulesController extends BaseController {
 
   final listEmailRule = <TMailRule>[].obs;
 
-  EmailRulesController();
-
-  @override
-  void onDone() {
-    viewState.value.fold((failure) {}, (success) {
-      if (success is GetAllRulesSuccess) {
-        if (success.rules?.isNotEmpty == true) {
-          listEmailRule.addAll(success.rules!);
-        }
-      } else if (success is DeleteEmailRuleSuccess) {
-        _handleDeleteEmailRuleSuccess(success);
-      } else if (success is CreateNewRuleFilterSuccess) {
-        _createNewRuleFilterSuccess(success);
-      } else if (success is EditEmailRuleFilterSuccess) {
-        _editEmailRuleFilterSuccess(success);
-      }
-    });
-  }
-
   @override
   void onInit() {
     super.onInit();
@@ -82,6 +64,22 @@ class EmailRulesController extends BaseController {
   void onReady() {
     _getAllRules();
     super.onReady();
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllRulesSuccess) {
+      if (success.rules?.isNotEmpty == true) {
+        listEmailRule.addAll(success.rules!);
+      }
+    } else if (success is DeleteEmailRuleSuccess) {
+      _handleDeleteEmailRuleSuccess(success);
+    } else if (success is CreateNewRuleFilterSuccess) {
+      _createNewRuleFilterSuccess(success);
+    } else if (success is EditEmailRuleFilterSuccess) {
+      _editEmailRuleFilterSuccess(success);
+    }
   }
 
   void goToCreateNewRule(BuildContext context) async {

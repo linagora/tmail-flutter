@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
@@ -66,30 +65,21 @@ class MailboxVisibilityController extends BaseMailboxController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.fold((failure) => null, (success) {
-      if (success is GetAllMailboxSuccess)  {
-        currentMailboxState = success.currentMailboxState;
-        _handleBuildTree(success.mailboxList);
-      } else if (success is RefreshChangesAllMailboxSuccess) {
-        currentMailboxState = success.currentMailboxState;
-        refreshTree(success.mailboxList);
-      }
-    });
-  }
-
-  @override
-  void onDone() {
-    viewState.value.fold((failure) {}, (success) {
-      if (success is SubscribeMailboxSuccess) {
-        _subscribeMailboxSuccess(success);
-      } else if (success is SubscribeMultipleMailboxAllSuccess) {
-        _handleUnsubscribeMultipleMailboxAllSuccess(success);
-      } else if (success is SubscribeMultipleMailboxHasSomeSuccess) {
-        _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
-      }
-    });
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllMailboxSuccess)  {
+      currentMailboxState = success.currentMailboxState;
+      _handleBuildTree(success.mailboxList);
+    } else if (success is RefreshChangesAllMailboxSuccess) {
+      currentMailboxState = success.currentMailboxState;
+      refreshTree(success.mailboxList);
+    } else if (success is SubscribeMailboxSuccess) {
+      _subscribeMailboxSuccess(success);
+    } else if (success is SubscribeMultipleMailboxAllSuccess) {
+      _handleUnsubscribeMultipleMailboxAllSuccess(success);
+    } else if (success is SubscribeMultipleMailboxHasSomeSuccess) {
+      _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
+    }
   }
 
   @override

@@ -266,51 +266,44 @@ class ComposerController extends BaseController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    newState.map((success) async {
-      if (success is GetEmailContentLoading) {
-        emailContentsViewState.value = Right(success);
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetEmailContentLoading) {
+      emailContentsViewState.value = Right(success);
+    } else if (success is LocalFilePickerSuccess) {
+      _pickFileSuccess(success);
+    } else if (success is GetEmailContentSuccess) {
+      _getEmailContentSuccess(success);
+    } else if (success is GetAllIdentitiesSuccess) {
+      _handleGetAllIdentitiesSuccess(success);
+    } else if (success is DownloadImageAsBase64Success) {
+      if (BuildUtils.isWeb) {
+        richTextWebController.insertImage(
+          InlineImage(
+            ImageSource.local,
+            fileInfo: success.fileInfo,
+            cid: success.cid,
+            base64Uri: success.base64Uri));
+      } else {
+        richTextMobileTabletController.insertImage(
+          InlineImage(
+            ImageSource.local,
+            fileInfo: success.fileInfo,
+            cid: success.cid,
+            base64Uri: success.base64Uri));
       }
-    });
+      maxWithEditor = null;
+    }
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) {
-        if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
-          _pickFileFailure(failure);
-        } else if (failure is GetEmailContentFailure) {
-          emailContentsViewState.value = Left(failure);
-        }
-      },
-      (success) {
-        if (success is LocalFilePickerSuccess) {
-          _pickFileSuccess(success);
-        } else if (success is GetEmailContentSuccess) {
-          _getEmailContentSuccess(success);
-        } else if (success is GetAllIdentitiesSuccess) {
-          _handleGetAllIdentitiesSuccess(success);
-        } else if (success is DownloadImageAsBase64Success) {
-          if(kIsWeb) {
-            richTextWebController.insertImage(
-                InlineImage(
-                    ImageSource.local,
-                    fileInfo: success.fileInfo,
-                    cid: success.cid,
-                    base64Uri: success.base64Uri));
-          } else {
-            richTextMobileTabletController.insertImage(
-                InlineImage(
-                    ImageSource.local,
-                    fileInfo: success.fileInfo,
-                    cid: success.cid,
-                    base64Uri: success.base64Uri));
-          }
-          maxWithEditor = null;
-        }
-      });
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
+      _pickFileFailure(failure);
+    } else if (failure is GetEmailContentFailure) {
+      emailContentsViewState.value = Left(failure);
+    }
   }
 
   void _listenWorker() {

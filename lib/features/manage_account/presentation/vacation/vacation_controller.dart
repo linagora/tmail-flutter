@@ -75,17 +75,13 @@ class VacationController extends BaseController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) => null,
-      (success) {
-        if (success is GetAllVacationSuccess) {
-          _handleGetAllVacationSuccess(success);
-        } else if (success is UpdateVacationSuccess) {
-          _handleUpdateVacationSuccess(success);
-        }
-      }
-    );
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is GetAllVacationSuccess) {
+      _handleGetAllVacationSuccess(success);
+    } else if (success is UpdateVacationSuccess) {
+      _handleUpdateVacationSuccess(success);
+    }
   }
 
   void _initWorker() {

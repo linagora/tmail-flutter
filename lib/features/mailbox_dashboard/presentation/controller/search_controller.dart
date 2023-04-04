@@ -304,9 +304,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   @override
-  void onDone() {}
-
-  @override
   void onClose() {
     searchInputController.dispose();
     searchFocus.dispose();

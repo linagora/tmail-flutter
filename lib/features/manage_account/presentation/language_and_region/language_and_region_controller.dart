@@ -1,6 +1,7 @@
 
 import 'dart:ui';
 
+import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -25,14 +26,11 @@ class LanguageAndRegionController extends BaseController {
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-        (failure) => null,
-        (success) {
-            if (success is SaveLanguageSuccess) {
-              LocalizationService.changeLocale(success.localeStored.languageCode);
-            }
-        });
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is SaveLanguageSuccess) {
+      LocalizationService.changeLocale(success.localeStored.languageCode);
+    }
   }
 
   void _setUpSupportedLanguages() {

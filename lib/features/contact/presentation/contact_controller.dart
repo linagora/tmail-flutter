@@ -190,7 +190,4 @@ class ContactController extends BaseController {
       popBack();
     }
   }
-
-  @override
-  void onDone() {}
 }

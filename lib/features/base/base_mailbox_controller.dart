@@ -112,9 +112,9 @@ abstract class BaseMailboxController extends BaseController {
     if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh folderMailboxTree');
       personalMailboxTree.refresh();
-      final _childrenItems = personalMailboxTree.value.root.childrenItems ?? [];
+      final childrenItems = personalMailboxTree.value.root.childrenItems ?? [];
       _triggerScrollWhenExpandMailboxFolder(
-        _childrenItems,
+        childrenItems,
         selectedMailboxNode,
         scrollController);
     }
@@ -122,9 +122,9 @@ abstract class BaseMailboxController extends BaseController {
     if (teamMailboxesTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh teamMailboxesTree');
       teamMailboxesTree.refresh();
-      final _childrenItems = teamMailboxesTree.value.root.childrenItems ?? [];
+      final childrenItems = teamMailboxesTree.value.root.childrenItems ?? [];
       _triggerScrollWhenExpandMailboxFolder(
-          _childrenItems,
+          childrenItems,
           selectedMailboxNode,
           scrollController);
     }
@@ -135,13 +135,13 @@ abstract class BaseMailboxController extends BaseController {
       MailboxNode selectedMailboxNode,
       ScrollController scrollController) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    final _lastItem = childrenItems.last;
+    final lastItem = childrenItems.last;
 
     if (selectedMailboxNode.expandMode == ExpandMode.COLLAPSE) {
       return;
     }
 
-    if (_lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
+    if (lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
       scrollController.animateTo(
           scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 200),

@@ -257,7 +257,7 @@ class FcmMessageController extends FcmBaseController {
 
   void _getSessionAction() {
     if (_getSessionInteractor != null) {
-      consumeState(_getSessionInteractor!.execute().asStream());
+      consumeState(_getSessionInteractor!.execute());
     } else {
       _clearRemoteMessageBackground();
       logError('FcmMessageController::_getSessionAction():_getSessionInteractor is null');

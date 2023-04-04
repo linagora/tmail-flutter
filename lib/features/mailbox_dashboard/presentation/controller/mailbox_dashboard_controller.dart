@@ -80,7 +80,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/da
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
-import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
@@ -121,7 +120,6 @@ class MailboxDashBoardController extends ReloadableController {
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
   final SearchController searchController = Get.find<SearchController>();
   final DownloadController downloadController = Get.find<DownloadController>();
-  final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
 
@@ -252,97 +250,81 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   @override
-  void onData(Either<Failure, Success> newState) {
-    super.onData(newState);
-    viewState.value.fold(
-      (failure) {
-        log('MailboxDashBoardController::onData():failure $failure');
-      },
-      (success) {
-        log('MailboxDashBoardController::onData():success $success');
-        if (success is SendingEmailState) {
-          if (currentOverlayContext != null && currentContext != null) {
-            _appToast.showToastMessage(
-              currentOverlayContext!,
-              AppLocalizations.of(currentContext!).your_email_being_sent,
-              leadingSVGIcon: _imagePaths.icSendToast
-            );
-          }
-        } else if (success is GetEmailStateToRefreshSuccess) {
-          dispatchEmailUIAction(RefreshChangeEmailAction(success.storedState));
-          _deleteEmailStateToRefreshAction();
-        } else if (success is GetMailboxStateToRefreshSuccess) {
-          dispatchMailboxUIAction(RefreshChangeMailboxAction(success.storedState));
-          _deleteMailboxStateToRefreshAction();
-        }
+  void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
+    if (success is SendingEmailState) {
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).your_email_being_sent,
+          leadingSVGIcon: _imagePaths.icSendToast);
       }
-    );
+    } else if (success is GetEmailStateToRefreshSuccess) {
+      dispatchEmailUIAction(RefreshChangeEmailAction(success.storedState));
+      _deleteEmailStateToRefreshAction();
+    } else if (success is GetMailboxStateToRefreshSuccess) {
+      dispatchMailboxUIAction(RefreshChangeMailboxAction(success.storedState));
+      _deleteMailboxStateToRefreshAction();
+    } else if (success is SendEmailSuccess) {
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
+          leadingSVGIcon: _imagePaths.icSendSuccessToast);
+      }
+    } else if (success is SaveEmailAsDraftsSuccess) {
+      _saveEmailAsDraftsSuccess(success);
+    } else if (success is MoveToMailboxSuccess) {
+      _moveToMailboxSuccess(success);
+    } else if (success is DeleteEmailPermanentlySuccess) {
+      _deleteEmailPermanentlySuccess(success);
+    } else if (success is MarkAsMailboxReadAllSuccess ||
+        success is MarkAsMailboxReadHasSomeEmailFailure) {
+      _markAsReadMailboxSuccess(success);
+    } else if (success is GetAllVacationSuccess) {
+      if (success.listVacationResponse.isNotEmpty) {
+        vacationResponse.value = success.listVacationResponse.first;
+      }
+    } else if (success is UpdateVacationSuccess) {
+      _handleUpdateVacationSuccess(success);
+    } else if (success is MarkAsMultipleEmailReadAllSuccess ||
+        success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+      _markAsReadSelectedMultipleEmailSuccess(success);
+    } else if (success is MarkAsStarMultipleEmailAllSuccess ||
+        success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+      _markAsStarMultipleEmailSuccess(success);
+    } else if (success is MoveMultipleEmailToMailboxAllSuccess ||
+        success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+      _moveSelectedMultipleEmailToMailboxSuccess(success);
+    } else if (success is EmptyTrashFolderSuccess) {
+      _emptyTrashFolderSuccess(success);
+    } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess ||
+        success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+      _deleteMultipleEmailsPermanentlySuccess(success);
+    } else if (success is GetAppDashboardConfigurationSuccess) {
+      appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
+    } else if(success is GetEmailByIdSuccess) {
+      _moveToEmailDetailedView(success);
+    }
   }
 
   @override
-  void onDone() {
-    viewState.value.fold(
-      (failure) {
-        if (failure is SendEmailFailure) {
-          _handleSendEmailFailure(failure);
-        } else if (failure is SaveEmailAsDraftsFailure) {
-          _handleSaveEmailAsDraftsFailure(failure);
-        } else if (failure is UpdateEmailDraftsFailure) {
-          _handleUpdateEmailAsDraftsFailure(failure);
-        } else if (failure is RemoveEmailDraftsFailure) {
-          clearState();
-        } else if (failure is MarkAsMailboxReadAllFailure ||
-            failure is MarkAsMailboxReadFailure) {
-          _markAsReadMailboxFailure(failure);
-        } else if (failure is GetEmailByIdFailure) {
-          _handleGetEmailDetailedFailed(failure);
-        }
-      },
-      (success) {
-        if (success is SendEmailSuccess) {
-          if (currentOverlayContext != null && currentContext != null) {
-            _appToast.showToastSuccessMessage(
-              currentOverlayContext!,
-              AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
-              leadingSVGIcon: _imagePaths.icSendSuccessToast);
-          }
-        } else if (success is SaveEmailAsDraftsSuccess) {
-          log('MailboxDashBoardController::onDone(): SaveEmailAsDraftsSuccess');
-          _saveEmailAsDraftsSuccess(success);
-        } else if (success is MoveToMailboxSuccess) {
-          _moveToMailboxSuccess(success);
-        } else if (success is DeleteEmailPermanentlySuccess) {
-          _deleteEmailPermanentlySuccess(success);
-        } else if (success is MarkAsMailboxReadAllSuccess ||
-            success is MarkAsMailboxReadHasSomeEmailFailure) {
-          _markAsReadMailboxSuccess(success);
-        } else if (success is GetAllVacationSuccess) {
-          if (success.listVacationResponse.isNotEmpty) {
-            vacationResponse.value = success.listVacationResponse.first;
-          }
-        } else if (success is UpdateVacationSuccess) {
-          _handleUpdateVacationSuccess(success);
-        } else if (success is MarkAsMultipleEmailReadAllSuccess
-            || success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          _markAsReadSelectedMultipleEmailSuccess(success);
-        } else if (success is MarkAsStarMultipleEmailAllSuccess
-            || success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-          _markAsStarMultipleEmailSuccess(success);
-        } else if (success is MoveMultipleEmailToMailboxAllSuccess
-            || success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-          _moveSelectedMultipleEmailToMailboxSuccess(success);
-        } else if (success is EmptyTrashFolderSuccess) {
-          _emptyTrashFolderSuccess(success);
-        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess
-            || success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-          _deleteMultipleEmailsPermanentlySuccess(success);
-        } else if (success is GetAppDashboardConfigurationSuccess) {
-          appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
-        } else if(success is GetEmailByIdSuccess) {
-          _moveToEmailDetailedView(success);
-        }
-      }
-    );
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is SendEmailFailure) {
+      _handleSendEmailFailure(failure);
+    } else if (failure is SaveEmailAsDraftsFailure) {
+      _handleSaveEmailAsDraftsFailure(failure);
+    } else if (failure is UpdateEmailDraftsFailure) {
+      _handleUpdateEmailAsDraftsFailure(failure);
+    } else if (failure is RemoveEmailDraftsFailure) {
+      clearState();
+    } else if (failure is MarkAsMailboxReadAllFailure ||
+        failure is MarkAsMailboxReadFailure) {
+      _markAsReadMailboxFailure(failure);
+    } else if (failure is GetEmailByIdFailure) {
+      _handleGetEmailDetailedFailed(failure);
+    }
   }
 
   void _registerPendingEmailAddress() {
