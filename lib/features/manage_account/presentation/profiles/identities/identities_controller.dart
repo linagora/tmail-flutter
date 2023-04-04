@@ -53,7 +53,6 @@ class IdentitiesController extends BaseController {
 
   final identitySelected = Rxn<Identity>();
   final signatureSelected = Rxn<String>();
-  final _htmlSignature = Rxn<bool>();
   final listAllIdentities = <Identity>[].obs;
 
   IdentitiesController(
@@ -163,14 +162,9 @@ class IdentitiesController extends BaseController {
               }
             });
       } else {
-        _hideHtmlSignature();
         final newIdentityArguments = await push(
           AppRoutes.identityCreator,
           arguments: arguments);
-
-        if(newIdentityArguments == true) {
-          _showHtmlSignature();
-        }
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
           _createNewIdentityAction(session, accountId, newIdentityArguments);
@@ -199,7 +193,6 @@ class IdentitiesController extends BaseController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).you_have_created_a_new_identity);
     }
-    _showHtmlSignature();
 
     _refreshAllIdentities();
   }
@@ -210,7 +203,6 @@ class IdentitiesController extends BaseController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).you_have_created_a_new_default_identity);
     }
-    _showHtmlSignature();
 
     _refreshAllIdentities();
   }
@@ -295,14 +287,9 @@ class IdentitiesController extends BaseController {
               }
             });
       } else {
-        _hideHtmlSignature();
         final newIdentityArguments = await push(
           AppRoutes.identityCreator,
           arguments: arguments);
-
-        if(newIdentityArguments == true) {
-          _showHtmlSignature();
-        }
 
         if (newIdentityArguments is CreateNewIdentityRequest) {
           _createNewIdentityAction(session, accountId, newIdentityArguments);
@@ -331,7 +318,6 @@ class IdentitiesController extends BaseController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).you_are_changed_your_identity_successfully);
     }
-    _showHtmlSignature();
 
     _refreshAllIdentities();
   }
@@ -339,13 +325,4 @@ class IdentitiesController extends BaseController {
   ImagePaths get imagePaths => _imagePaths;
 
   bool get isSignatureShow => identitySelected.value != null;
-
-  bool get isShowHtmlSignature => _htmlSignature.value ?? true;
-
-  void _hideHtmlSignature() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _htmlSignature.value = false;
-  }
-
-  void _showHtmlSignature() => _htmlSignature.value = true;
 }
