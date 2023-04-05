@@ -133,6 +133,7 @@ class ComposerController extends BaseController {
   final RichTextController keyboardRichTextController = RichTextController();
 
   final ScrollController scrollController = ScrollController();
+  final ScrollController scrollControllerEmailAddress = ScrollController();
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
@@ -213,6 +214,7 @@ class ComposerController extends BaseController {
   void onInit() {
     super.onInit();
     createFocusNodeInput();
+    scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
     _listenWorker();
     if (!BuildUtils.isWeb) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -262,6 +264,8 @@ class ComposerController extends BaseController {
     uploadInlineImageWorker.dispose();
     keyboardRichTextController.dispose();
     scrollController.dispose();
+    scrollControllerEmailAddress.removeListener(_scrollControllerEmailAddressListener);
+    scrollControllerEmailAddress.dispose();
     super.dispose();
   }
 
@@ -326,6 +330,18 @@ class ComposerController extends BaseController {
         _saveComposerCacheOnWebInteractor.execute(draftEmail);
       }
     });
+  }
+
+  void _scrollControllerEmailAddressListener() {
+    if (toEmailAddressController.text.isNotEmpty) {
+      keyToEmailTagEditor.currentState?.closeSuggestionBox();
+    }
+    if (ccEmailAddressController.text.isNotEmpty) {
+      keyCcEmailTagEditor.currentState?.closeSuggestionBox();
+    }
+    if (bccEmailAddressController.text.isNotEmpty) {
+      keyBccEmailTagEditor.currentState?.closeSuggestionBox();
+    }
   }
 
   void createFocusNodeInput() {
