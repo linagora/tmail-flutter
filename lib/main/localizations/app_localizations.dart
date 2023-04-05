@@ -2827,4 +2827,10 @@ class AppLocalizations {
       name: 'mailboxVisibilitySubtitle',
     );
   }
+
+  String get emptyListEmailForward {
+    return Intl.message(
+      'Please input at least one recipient',
+      name: 'emptyListEmailForward');
+  }
 }
