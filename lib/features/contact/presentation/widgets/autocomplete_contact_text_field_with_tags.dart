@@ -21,7 +21,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSuggestionContactCallbackAction = Future<List<EmailAddress>> Function(String query);
 typedef OnAddListContactCallbackAction = Function(List<EmailAddress> listEmailAddress);
-typedef OnExceptionAddListContactCallbackAction = Function();
+typedef OnExceptionAddListContactCallbackAction = Function(bool isListEmpty);
 
 class AutocompleteContactTextFieldWithTags extends StatefulWidget {
 
@@ -49,6 +49,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
+  final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
 
   late List<EmailAddress> listEmailAddress;
 
@@ -70,6 +71,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   @override
   Widget build(BuildContext context) {
     final itemTagEditor = TagEditor<SuggestionEmailAddress>(
+      key: keyToEmailTagEditor,
       length: listEmailAddress.length,
       controller: widget.controller,
       borderRadius: 12,
@@ -278,6 +280,23 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
           color: Colors.white,
           fontWeight: FontWeight.w500))
       ..onPressActionClick(() {
+        if (widget.controller?.text.isNotEmpty == true) {
+          if (!_isDuplicatedRecipient(widget.controller?.text ?? '')) {
+            setState(() {
+              listEmailAddress.add(EmailAddress(null, widget.controller?.text));
+            });
+            _closeSuggestionBox();
+          } else {
+            _closeSuggestionBox();
+            return;
+          }
+        }
+
+        if (listEmailAddress.isEmpty) {
+          widget.onExceptionCallback?.call(true);
+          return;
+        }
+
         if (_isValidAllEmailAddress(listEmailAddress) && _inputFieldIsEmpty()) {
           widget.onAddContactCallback?.call(List.from(listEmailAddress));
           setState(() {
@@ -285,10 +304,15 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
             listEmailAddress.clear();
           });
         } else {
-          widget.onExceptionCallback?.call();
+          widget.onExceptionCallback?.call(false);
         }
       })
       ..text(AppLocalizations.of(context).addRecipientButton, isVertical: false)
     ).build();
+  }
+
+  void _closeSuggestionBox() {
+    keyToEmailTagEditor.currentState?.resetTextField();
+    keyToEmailTagEditor.currentState?.closeSuggestionBox();
   }
 }

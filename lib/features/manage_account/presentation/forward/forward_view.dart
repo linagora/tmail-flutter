@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
 
   ForwardView({Key? key}) : super(key: key);
 
@@ -134,10 +132,8 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
       onAddContactCallback: (listRecipientsSelected) {
         controller.addRecipientAction(context, listRecipientsSelected);
       },
-      onExceptionCallback: () {
-        _appToast.showToastErrorMessage(
-          context,
-          AppLocalizations.of(context).incorrectEmailFormat);
+      onExceptionCallback: (isListEmailEmpty) {
+        controller.handleExceptionCallback(context, isListEmailEmpty);
       },
     );
   }
