@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
@@ -13,6 +14,7 @@ class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
   final ExceptionThrower _exceptionThrower;
 
   SharePreferenceSpamReportDataSourceImpl(this._sharePreferenceSpamReportDataSource, this._exceptionThrower);
+
   @override
   Future<DateTime> getLastTimeDismissedSpamReported() async {
     return Future.sync(() async {
@@ -65,5 +67,10 @@ class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
     return Future.sync(() async {
       return await _sharePreferenceSpamReportDataSource.storeSpamReportState(spamReportState);
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<Mailbox> getSpamMailboxCached() {
+    throw UnimplementedError();
   }
 }
