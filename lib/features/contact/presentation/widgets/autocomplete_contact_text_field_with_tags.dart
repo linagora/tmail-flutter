@@ -280,6 +280,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
           color: Colors.white,
           fontWeight: FontWeight.w500))
       ..onPressActionClick(() {
+        _hideKeyboardForMobile();
         if (widget.controller?.text.isNotEmpty == true) {
           if (!_isDuplicatedRecipient(widget.controller?.text ?? '')) {
             setState(() {
@@ -314,5 +315,11 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   void _closeSuggestionBox() {
     keyToEmailTagEditor.currentState?.resetTextField();
     keyToEmailTagEditor.currentState?.closeSuggestionBox();
+  }
+
+  void _hideKeyboardForMobile() {
+    if (!_responsiveUtils.isDesktop(context)) {
+      FocusScope.of(context).unfocus();
+    }
   }
 }
