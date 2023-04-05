@@ -366,13 +366,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   onTap: () => controller.closeView(context)),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 14),
+                padding: const EdgeInsets.only(top: 14, right: 40, left: 40),
                 child: Align(
                   alignment: Alignment.center,
                   child: Obx(() {
                     return Text(controller.actionType.value == IdentityActionType.create
                       ? AppLocalizations.of(context).createNewIdentity.inCaps
                       : AppLocalizations.of(context).edit_identity.inCaps,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black));
                   }),
                 ),
