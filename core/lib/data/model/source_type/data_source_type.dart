@@ -1,5 +1,6 @@
 
 enum DataSourceType {
   network,
-  local
+  local,
+  cache
 }
