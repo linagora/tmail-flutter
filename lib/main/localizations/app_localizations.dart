@@ -2662,7 +2662,7 @@ class AppLocalizations {
     );
   }
   
-  String countNewSpamEmails(int count,) {
+  String countNewSpamEmails(String count) {
     return Intl.message(
         'You have $count new spam emails!',
         name: 'countNewSpamEmails',

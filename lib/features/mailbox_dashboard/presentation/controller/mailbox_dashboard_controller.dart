@@ -431,13 +431,13 @@ class MailboxDashBoardController extends ReloadableController {
       injectVacationBindings(sessionCurrent, accountId.value);
       injectFCMBindings(sessionCurrent, accountId.value);
       _getVacationResponse();
+      spamReportController.getSpamReportStateAction();
 
       if (!BuildUtils.isWeb && !_notificationManager.isNotificationClickedOnTerminate) {
         _handleClickLocalNotificationOnTerminated();
       } else {
         dispatchRoute(DashboardRoutes.thread);
       }
-      showSpamReportBanner();
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -1195,7 +1195,7 @@ class MailboxDashBoardController extends ReloadableController {
     injectFCMBindings(sessionCurrent, accountId.value);
     injectVacationBindings(sessionCurrent, accountId.value);
     _getVacationResponse();
-    showSpamReportBanner();
+    spamReportController.getSpamReportStateAction();
   }
 
   void _getRouteParameters() {
@@ -1588,9 +1588,17 @@ class MailboxDashBoardController extends ReloadableController {
 
   bool get enableSpamReport => spamReportController.enableSpamReport;
 
-  void showSpamReportBanner() {
+  void getSpamReportBanner() {
+    if (spamReportController.enableSpamReport &&
+        sessionCurrent != null &&
+        accountId.value != null) {
+      spamReportController.getSpamMailboxAction(sessionCurrent!, accountId.value!);
+    }
+  }
+
+  void refreshSpamReportBanner() {
     if (spamReportController.enableSpamReport) {
-      spamReportController.getUnreadSpamMailboxAction(sessionCurrent!, accountId.value!);
+      spamReportController.getSpamMailboxCached();
     }
   }
 
