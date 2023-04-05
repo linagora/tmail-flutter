@@ -302,4 +302,16 @@ class ForwardController extends BaseController {
       }
     );
   }
+
+  void handleExceptionCallback(BuildContext context, bool isListEmailEmpty) {
+    if (isListEmailEmpty) {
+      _appToast.showToastErrorMessage(
+        context,
+        AppLocalizations.of(context).emptyListEmailForward);
+    } else {
+      _appToast.showToastErrorMessage(
+        context,
+        AppLocalizations.of(context).incorrectEmailFormat);
+    }
+  }
 }
