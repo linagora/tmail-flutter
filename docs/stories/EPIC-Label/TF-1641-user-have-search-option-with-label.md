@@ -12,7 +12,7 @@ https://github.com/linagora/tmail-flutter/issues/1638
 ## Definition
 
 - Given that I am a Tmail user and I have logged in successfully
-- I click on Search bar => select advanced option then click on field Mailbox 
+- I click on Search bar => select advanced option 
 - There will be a new search field: Label
 - When I select this field,a popup is displayed
 - On this popup, I can see the list of all current labels
