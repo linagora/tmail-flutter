@@ -541,6 +541,7 @@ class ComposerView extends GetWidget<ComposerController>
     return ConstrainedBox(
         constraints: BoxConstraints(maxHeight: _getMaxHeightEmailAddressWidget(context, constraints)),
         child: SingleChildScrollView(
+          controller: controller.scrollControllerEmailAddress,
           child: Column(
             children: [
               Obx(() => Padding(
