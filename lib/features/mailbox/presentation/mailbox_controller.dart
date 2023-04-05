@@ -170,8 +170,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       (success) async {
         if (success is GetAllMailboxSuccess) {
           _initialMailboxVariableStorage();
+          mailboxDashBoardController.getSpamReportBanner();
         } else if (success is RefreshChangesAllMailboxSuccess) {
           _initialMailboxVariableStorage(isRefreshChange: true);
+          mailboxDashBoardController.refreshSpamReportBanner();
         } else if (success is CreateNewMailboxSuccess) {
           _createNewMailboxSuccess(success);
         } else if (success is DeleteMultipleMailboxAllSuccess) {
@@ -291,7 +293,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
   
   void _refreshMailboxChanges({jmap.State? currentMailboxState}) {
-    mailboxDashBoardController.showSpamReportBanner();
     log('MailboxController::_refreshMailboxChanges(): currentMailboxState: $currentMailboxState');
     final newMailboxState = currentMailboxState ?? this.currentMailboxState;
     log('MailboxController::_refreshMailboxChanges(): newMailboxState: $newMailboxState');
