@@ -130,33 +130,40 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               )
             : null,
           onChanged: onChanged,
-          icon: iconArrowDown ?? SvgPicture.asset(imagePaths.icDropDown),
-          buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radiusButton),
-            border: Border.all(
-              color: AppColor.colorInputBorderCreateMailbox,
-              width: 1,
+          buttonStyleData: ButtonStyleData(
+            height: heightItem,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(radiusButton),
+              border: Border.all(
+                color: AppColor.colorInputBorderCreateMailbox,
+                width: 1,
+              ),
+              color: colorButton,
+            )
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: dropdownMaxHeight ?? 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(radiusButton),
+              color: Colors.white,
             ),
-            color: colorButton,
+            width: dropdownWidth,
+            elevation: 4,
+            offset: const Offset(0.0, -8.0),
+            scrollbarTheme: ScrollbarThemeData(
+              radius: const Radius.circular(40),
+              thickness: MaterialStateProperty.all<double>(6),
+              thumbVisibility: MaterialStateProperty.all<bool>(true),
+            ),
           ),
-          itemHeight: heightItem,
-          buttonHeight: heightItem,
-          selectedItemHighlightColor: supportSelectionIcon
-              ? Colors.white
-              : Colors.black12,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 12),
-          dropdownMaxHeight: dropdownMaxHeight ?? 200,
-          dropdownDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radiusButton),
-            color: Colors.white,
+          iconStyleData: IconStyleData(icon: iconArrowDown ?? SvgPicture.asset(imagePaths.icDropDown)),
+          menuItemStyleData: MenuItemStyleData(
+            height: heightItem,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => supportSelectionIcon ? Colors.white : Colors.black12)
           ),
-          offset: const Offset(0.0, -8.0),
-          dropdownElevation: 4,
-          scrollbarRadius: const Radius.circular(40),
-          scrollbarThickness: 6,
           onMenuStateChange: onMenuStateChange,
-          dropdownWidth: dropdownWidth,
         ),
       ),
     );

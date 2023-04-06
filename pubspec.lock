@@ -356,10 +356,10 @@ packages:
     dependency: "direct main"
     description:
       name: dropdown_button2
-      sha256: "604b87283e251e0e4a0cb1d0fdfa91fd527702b06e80999c4054cecc603e10e7"
+      sha256: "4458d81bfd24207f3d58f66f78097064e02f810f94cf1bc80bf20fe7685ebc80"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.4"
+    version: "2.0.0"
   enough_html_editor:
     dependency: transitive
     description:
@@ -616,7 +616,7 @@ packages:
     source: hosted
     version: "1.1.0"
   flutter_keyboard_visibility:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_keyboard_visibility
       sha256: "86b71bbaffa38e885f5c21b1182408b9be6951fd125432cf6652c636254cef2d"

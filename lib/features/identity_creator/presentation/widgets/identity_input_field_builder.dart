@@ -1,11 +1,13 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_decoration_builder.dart';
 
 typedef OnChangeInputNameAction = Function(String? value);
 
-class IdentityInputFieldBuilder {
+class IdentityInputFieldBuilder extends StatelessWidget {
 
   final String _label;
   final String? _error;
@@ -14,24 +16,22 @@ class IdentityInputFieldBuilder {
   final FocusNode? focusNode;
   final TextInputType? inputType;
   final bool isMandatory;
+  final OnChangeInputNameAction? onChangeInputNameAction;
 
-  OnChangeInputNameAction? onChangeInputNameAction;
-
-  IdentityInputFieldBuilder(
+  const IdentityInputFieldBuilder(
     this._label,
     this._error,
     this.requiredIndicator, {
+    super.key,
     this.isMandatory = false,
     this.editingController,
     this.focusNode,
-    this.inputType
+    this.inputType,
+    this.onChangeInputNameAction
   });
 
-  void addOnChangeInputNameAction(OnChangeInputNameAction action) {
-    onChangeInputNameAction = action;
-  }
-
-  Widget build() {
+  @override
+  Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         isMandatory 

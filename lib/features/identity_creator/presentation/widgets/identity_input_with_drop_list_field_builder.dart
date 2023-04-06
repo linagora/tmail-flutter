@@ -9,44 +9,36 @@ typedef OnSelectedSuggestionAction = Function(EmailAddress? emailAddress);
 typedef OnSuggestionCallbackAction = Function(String? pattern);
 typedef OnChangeInputSuggestionAction = Function(String? pattern);
 
-class IdentityInputWithDropListFieldBuilder {
+class IdentityInputWithDropListFieldBuilder extends StatelessWidget {
 
   final String _label;
   final String? _error;
   final TextEditingController? editingController;
   final FocusNode? focusNode;
+  final OnSelectedSuggestionAction? onSelectedSuggestionAction;
+  final OnSuggestionCallbackAction? onSuggestionCallbackAction;
+  final OnChangeInputSuggestionAction? onChangeInputSuggestionAction;
 
-  OnSelectedSuggestionAction? _onSelectedSuggestionAction;
-  OnSuggestionCallbackAction? _onSuggestionCallbackAction;
-  OnChangeInputSuggestionAction? _onChangeInputSuggestionAction;
-
-  IdentityInputWithDropListFieldBuilder(
+  const IdentityInputWithDropListFieldBuilder(
     this._label,
     this._error,
-    this.editingController,
-    {
-      this.focusNode,
-    }
-  );
+    this.editingController, {
+    super.key,
+    this.focusNode,
+    this.onSelectedSuggestionAction,
+    this.onSuggestionCallbackAction,
+    this.onChangeInputSuggestionAction,
+  });
 
-  void addOnSelectedSuggestionAction(OnSelectedSuggestionAction action) {
-    _onSelectedSuggestionAction = action;
-  }
-
-  void addOnSuggestionCallbackAction(OnSuggestionCallbackAction action) {
-    _onSuggestionCallbackAction = action;
-  }
-
-  void addOnChangeInputSuggestionAction(OnChangeInputSuggestionAction action) {
-    _onChangeInputSuggestionAction = action;
-  }
-
-  Widget build() {
+  @override
+  Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(_label, style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.normal,
-        color: AppColor.colorContentEmail)),
+      Text(
+        _label,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.normal,
+          color: AppColor.colorContentEmail)),
       const SizedBox(height: 8),
       TypeAheadFormField<EmailAddress>(
         textFieldConfiguration: TextFieldConfiguration(
@@ -55,18 +47,18 @@ class IdentityInputWithDropListFieldBuilder {
           textInputAction: TextInputAction.done,
           decoration: (IdentityInputDecorationBuilder()
             ..setContentPadding(const EdgeInsets.symmetric(
-              vertical: BuildUtils.isWeb ? 16 : 12,
-              horizontal: 12))
+                vertical: BuildUtils.isWeb ? 16 : 12,
+                horizontal: 12))
             ..setErrorText(_error))
-              .build()
+          .build()
         ),
         debounceDuration: const Duration(milliseconds: 500),
         suggestionsCallback: (pattern) async {
-          if (_onChangeInputSuggestionAction != null) {
-            _onChangeInputSuggestionAction!(pattern);
+          if (onChangeInputSuggestionAction != null) {
+            onChangeInputSuggestionAction!(pattern);
           }
-          if (_onSuggestionCallbackAction != null) {
-            return _onSuggestionCallbackAction!(pattern);
+          if (onSuggestionCallbackAction != null) {
+            return onSuggestionCallbackAction!(pattern);
           } else {
             return [];
           }
@@ -74,16 +66,16 @@ class IdentityInputWithDropListFieldBuilder {
         itemBuilder: (BuildContext context, emailAddress) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Text(emailAddress.email ?? '',
+            child: Text(
+              emailAddress.email ?? '',
               style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black)),
-          );
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                color: Colors.black)));
         },
         onSuggestionSelected: (emailSelected) {
-          if (_onSelectedSuggestionAction != null) {
-            _onSelectedSuggestionAction!(emailSelected);
+          if (onSelectedSuggestionAction != null) {
+            onSelectedSuggestionAction!(emailSelected);
           }
         },
         suggestionsBoxDecoration: SuggestionsBoxDecoration(
