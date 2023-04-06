@@ -846,20 +846,20 @@ class ComposerView extends GetWidget<ComposerController>
     return Row(
       children: [
         Text(
-            '${AppLocalizations.of(context).attachments} (${filesize(uploadFilesState.totalSize, 0)}):',
-            style: const TextStyle(fontSize: 12, color: AppColor.colorHintEmailAddressInput, fontWeight: FontWeight.normal)),
+          '${AppLocalizations.of(context).attachments} (${filesize(uploadFilesState.totalSize, 0)}):',
+          style: const TextStyle(fontSize: 12, color: AppColor.colorHintEmailAddressInput, fontWeight: FontWeight.normal)),
         const Spacer(),
-        Material(
+        TextButton(
+          onPressed: () => controller.toggleDisplayAttachments(),
+          child: Material(
             type: MaterialType.circle,
             color: Colors.transparent,
-            child: TextButton(
-                child: Text(
-                    expandModeAttachment == ExpandMode.EXPAND
-                        ? AppLocalizations.of(context).hide
-                        : '${AppLocalizations.of(context).showAll} (${uploadFilesState.length})',
-                    style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: AppColor.colorTextButton)),
-                onPressed: () => controller.toggleDisplayAttachments()
-            )
+            child: Text(
+              expandModeAttachment == ExpandMode.EXPAND
+                ? AppLocalizations.of(context).hide
+                : '${AppLocalizations.of(context).showAll} (${uploadFilesState.length})',
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: AppColor.colorTextButton))
+          ),
         )
       ],
     );
