@@ -1192,7 +1192,7 @@ class AppLocalizations {
 
   String get profilesSettingExplanation {
     return Intl.message(
-      'Info about you, and options to manage it',
+      'Info about you, and options to manage it.',
       name: 'profilesSettingExplanation'
     );
   }

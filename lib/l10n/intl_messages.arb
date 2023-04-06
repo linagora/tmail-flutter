@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-03-10T14:00:31.546227",
+  "@@last_modified": "2023-04-06T22:36:07.919763",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1160,7 +1160,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "Info about you, and options to manage it",
+  "profilesSettingExplanation": "Info about you, and options to manage it.",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
