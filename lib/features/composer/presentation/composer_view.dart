@@ -314,16 +314,23 @@ class ComposerView extends GetWidget<ComposerController>
               ),
             )).toList(),
             onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
-            itemPadding: const EdgeInsets.symmetric(horizontal: 8),
-            itemHeight: 55,
-            dropdownMaxHeight: 240,
-            dropdownWidth: 300,
-            dropdownDecoration: BoxDecoration(
+            dropdownStyleData: DropdownStyleData(
+              maxHeight: 240,
+              width: 300,
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.white),
-            dropdownElevation: 4,
-            scrollbarRadius: const Radius.circular(40),
-            scrollbarThickness: 6,
+              elevation: 4,
+              scrollbarTheme: ScrollbarThemeData(
+                radius: const Radius.circular(40),
+                thickness: MaterialStateProperty.all<double>(6),
+                thumbVisibility: MaterialStateProperty.all<bool>(true),
+              ),
+            ),
+            menuItemStyleData: const MenuItemStyleData(
+              height: 55,
+              padding: EdgeInsets.symmetric(horizontal: 8),
+            )
           ),
         ),
         Expanded(child: Padding(

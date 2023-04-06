@@ -47,19 +47,25 @@ class DropDownMenuHeaderStyleWidget extends StatelessWidget {
           customButton: icon,
           onChanged: onChanged,
           onMenuStateChange: onMenuStateChange,
-          itemHeight: heightItem,
-          buttonHeight: heightItem,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 12),
-          dropdownWidth: dropdownWidth,
-          dropdownMaxHeight: 200,
-          dropdownDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.white,
+          buttonStyleData: ButtonStyleData(height: heightItem),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 200,
+            width: dropdownWidth,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white),
+            elevation: 4,
+            offset: const Offset(0.0, -8.0),
+            scrollbarTheme: ScrollbarThemeData(
+              radius: const Radius.circular(40),
+              thickness: MaterialStateProperty.all<double>(6),
+              thumbVisibility: MaterialStateProperty.all<bool>(true),
+            )
           ),
-          offset: const Offset(0.0, -8.0),
-          dropdownElevation: 4,
-          scrollbarRadius: const Radius.circular(40),
-          scrollbarThickness: 6,
+          menuItemStyleData: MenuItemStyleData(
+            height: heightItem,
+            padding: const EdgeInsets.symmetric(horizontal: 12)
+          )
         ),
       ),
     );
