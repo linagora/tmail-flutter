@@ -107,7 +107,7 @@ class MailBoxFolderTileBuilder {
                     child: Row(
                       crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
                         ? CrossAxisAlignment.start
-                        : CrossAxisAlignment.center,
+                        : CrossAxisAlignment.end,
                       children: [
                         _buildLeadingMailboxItem(context),
                         const SizedBox(width: 4),
