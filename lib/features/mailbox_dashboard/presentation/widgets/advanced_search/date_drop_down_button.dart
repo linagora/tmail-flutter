@@ -65,29 +65,36 @@ class DateDropDownButton extends StatelessWidget {
               onReceiveTimeSelected?.call(value);
             }
           },
-          icon: SvgPicture.asset(imagePaths.icDropDown),
-          buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: AppColor.colorInputBorderCreateMailbox,
-              width: 1,
+          buttonStyleData: ButtonStyleData(
+            height: 44,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: AppColor.colorInputBorderCreateMailbox,
+                width: 1),
+              color: AppColor.colorInputBackgroundCreateMailbox)
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.white),
+            elevation: 4,
+            offset: const Offset(0.0, -8.0),
+            scrollbarTheme: ScrollbarThemeData(
+              radius: const Radius.circular(40),
+              thickness: MaterialStateProperty.all<double>(6),
+              thumbVisibility: MaterialStateProperty.all<bool>(true),
             ),
-            color: AppColor.colorInputBackgroundCreateMailbox,
           ),
-          itemHeight: 44,
-          buttonHeight: 44,
-          selectedItemHighlightColor: Colors.white,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 12),
-          dropdownMaxHeight: 200,
-          dropdownDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
+          iconStyleData: IconStyleData(
+            icon: SvgPicture.asset(imagePaths.icDropDown),
           ),
-          offset: const Offset(0.0, -8.0),
-          dropdownElevation: 4,
-          scrollbarRadius: const Radius.circular(40),
-          scrollbarThickness: 6
+          menuItemStyleData: const MenuItemStyleData(
+            height: 44,
+            padding: EdgeInsets.symmetric(horizontal: 12),
+          )
         ),
       ),
     );
