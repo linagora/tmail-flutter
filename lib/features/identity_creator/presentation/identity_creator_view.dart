@@ -1,6 +1,14 @@
-import 'dart:math';
+import 'dart:math' as math;
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/capitalize_extension.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/html_transformer/html_template.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -177,7 +185,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                       decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(16))),
-                      width: max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 650),
+                      width: math.max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 650),
                       height: _responsiveUtils.getSizeScreenHeight(context) * 0.75,
                       child: ClipRRect(
                           borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -197,64 +205,58 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Obx(() => (IdentityInputFieldBuilder(
+          Obx(() => IdentityInputFieldBuilder(
             AppLocalizations.of(context).name,
             controller.errorNameIdentity.value,
-          AppLocalizations.of(context).required,
+            AppLocalizations.of(context).required,
             editingController: controller.inputNameIdentityController,
             focusNode: controller.inputNameIdentityFocusNode,
-            isMandatory: true)
-            ..addOnChangeInputNameAction((value) => controller.updateNameIdentity(context, value)))
-          .build()),
+            isMandatory: true,
+            onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
+          )),
           const SizedBox(height: 24),
           Obx(() {
             if (controller.actionType.value == IdentityActionType.create) {
-              return (IdentityDropListFieldBuilder(
-                  _imagePaths,
-                  AppLocalizations.of(context).email.inCaps,
-                  controller.emailOfIdentity.value,
-                  controller.listEmailAddressDefault)
-                ..addOnSelectEmailAddressDropListAction((emailAddress) =>
-                    controller.updateEmailOfIdentity(emailAddress))
-              ).build();
+              return IdentityDropListFieldBuilder(
+                _imagePaths,
+                AppLocalizations.of(context).email.inCaps,
+                controller.emailOfIdentity.value,
+                controller.listEmailAddressDefault,
+                onSelectItemDropList: controller.updateEmailOfIdentity);
             } else {
               return IdentityFieldNoEditableBuilder(
-                  AppLocalizations.of(context).email.inCaps,
-                  controller.emailOfIdentity.value
-              ).build();
+                AppLocalizations.of(context).email.inCaps,
+                controller.emailOfIdentity.value);
             }
           }),
           const SizedBox(height: 24),
-          Obx(() => (IdentityDropListFieldBuilder(
-              _imagePaths,
-              AppLocalizations.of(context).reply_to,
-              controller.replyToOfIdentity.value,
-              controller.listEmailAddressOfReplyTo)
-            ..addOnSelectEmailAddressDropListAction((newEmailAddress) =>
-                controller.updaterReplyToOfIdentity(newEmailAddress)))
-          .build()),
+          Obx(() => IdentityDropListFieldBuilder(
+            _imagePaths,
+            AppLocalizations.of(context).reply_to,
+            controller.replyToOfIdentity.value,
+            controller.listEmailAddressOfReplyTo,
+            onSelectItemDropList: controller.updaterReplyToOfIdentity
+          )),
           const SizedBox(height: 24),
-          Obx(() => (IdentityInputWithDropListFieldBuilder(
-              AppLocalizations.of(context).bcc_to,
-              controller.errorBccIdentity.value,
-              controller.inputBccIdentityController,
-              focusNode: controller.inputBccIdentityFocusNode)
-            ..addOnSelectedSuggestionAction((newEmailAddress) {
+          Obx(() => IdentityInputWithDropListFieldBuilder(
+            AppLocalizations.of(context).bcc_to,
+            controller.errorBccIdentity.value,
+            controller.inputBccIdentityController,
+            focusNode: controller.inputBccIdentityFocusNode,
+            onSelectedSuggestionAction: (newEmailAddress) {
               controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
               controller.updateBccOfIdentity(newEmailAddress);
-            })
-            ..addOnChangeInputSuggestionAction((pattern) {
+            },
+            onChangeInputSuggestionAction: (pattern) {
               controller.validateInputBccAddress(context, pattern);
               if (pattern == null || pattern.trim().isEmpty) {
                 controller.updateBccOfIdentity(null);
               } else {
                 controller.updateBccOfIdentity(EmailAddress(null, pattern));
               }
-            })
-            ..addOnSuggestionCallbackAction((pattern) =>
-                controller.getSuggestionEmailAddress(pattern)))
-          .build()
-          ),
+            },
+            onSuggestionCallbackAction: controller.getSuggestionEmailAddress
+          )),
           const SizedBox(height: 32),
           Text(AppLocalizations.of(context).signature,
             style: const TextStyle(
@@ -271,78 +273,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             ),
             child: _buildSignatureHtmlTemplate(context),
           ),
-          if (_responsiveUtils.isTablet(context) || _responsiveUtils.isMobile(context))...[
-            Obx(() {
-              if (controller.isDefaultIdentitySupported.isTrue) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 27),
-                  child: SetDefaultIdentityCheckboxBuilder(
-                    imagePaths: _imagePaths,
-                    isCheck: controller.isDefaultIdentity.value,
-                    onCheckboxChanged: controller.onCheckboxChanged
-                  )
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            const SizedBox(height: 24),
-            Container(
-              alignment: Alignment.center,
-              color: Colors.white,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: buildTextButton(
-                      AppLocalizations.of(context).cancel,
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 17,
-                        color: AppColor.colorTextButton,
-                      ),
-                      backgroundColor: AppColor.emailAddressChipColor,
-                      width: 128,
-                      height: 44,
-                      radius: 10,
-                      onTap: () => controller.closeView(context),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Obx(() => controller.viewState.value.fold(
-                      (failure) => buildTextButton(
-                        controller.actionType.value == IdentityActionType.create
-                            ? AppLocalizations.of(context).create
-                            : AppLocalizations.of(context).save,
-                        width: 128,
-                        height: 44,
-                        radius: 10,
-                        onTap: () => controller.createNewIdentity(context)),
-                      (success) {
-                        if (success is GetAllIdentitiesLoading) {
-                          return const Center(
-                              key: Key('create_loading_icon'),
-                              child: CircularProgressIndicator(color: AppColor.primaryColor));
-                        } else {
-                          return buildTextButton(
-                            controller.actionType.value == IdentityActionType.create
-                                ? AppLocalizations.of(context).create
-                                : AppLocalizations.of(context).save,
-                            width: 128,
-                            height: 44,
-                            radius: 10,
-                            onTap: () => controller.createNewIdentity(context));
-                        }
-                      }
-                    )),
-                  ),
-                ]
-              ),
-            ),
-            const SizedBox(height: 35),
-          ] else ...[
-            _buildActionBottomDesktop(context)
-          ]
+          if (_isMobile(context))
+            _buildActionButtonMobile(context)
+          else
+            _buildActionButtonDesktop(context)
         ]),
       ),
     );
@@ -478,20 +412,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
     );
   }
 
-  Widget _buildActionBottomDesktop(BuildContext context) {
+  Widget _buildActionButtonDesktop(BuildContext context) {
     return Row(
       children: [
-        Obx(() {
-          if (controller.isDefaultIdentitySupported.isTrue) {
-            return SetDefaultIdentityCheckboxBuilder(
-              imagePaths: _imagePaths,
-              isCheck: controller.isDefaultIdentity.value,
-              onCheckboxChanged: controller.onCheckboxChanged
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
+        _buildCheckboxIdentityDefault(context),
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(
@@ -508,28 +432,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                     right: AppUtils.isDirectionRTL(context) ? 0 : 12,
                     left: AppUtils.isDirectionRTL(context) ? 12 : 0
                   ),
-                  child: buildTextButton(
-                    AppLocalizations.of(context).cancel,
-                    textStyle: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 17,
-                      color: AppColor.colorTextButton,
-                    ),
-                    backgroundColor: AppColor.emailAddressChipColor,
-                    width: 156,
-                    height: 44,
-                    radius: 10,
-                    onTap: () => controller.closeView(context),
-                  ),
+                  child: _buildCancelButton(context, width: 156),
                 ),
-                buildTextButton(
-                  controller.actionType.value == IdentityActionType.create
-                      ? AppLocalizations.of(context).create
-                      : AppLocalizations.of(context).save,
-                  width: 156,
-                  height: 44,
-                  radius: 10,
-                  onTap: () => controller.createNewIdentity(context)),
+                _buildSaveButton(context, width: 156),
               ],
             ),
           ),
@@ -537,4 +442,80 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       ],
     );
   }
+
+  Widget _buildActionButtonMobile(BuildContext context) {
+    return Column(children: [
+      _buildCheckboxIdentityDefault(context),
+      Container(
+        alignment: Alignment.center,
+        color: Colors.white,
+        padding: const EdgeInsets.only(top: 24, bottom: 35),
+        child: Row(children: [
+          Expanded(child: _buildCancelButton(context)),
+          const SizedBox(width: 12),
+          Expanded(child: _buildSaveButton(context))
+        ]),
+      )
+    ]);
+  }
+
+  Widget _buildCheckboxIdentityDefault(BuildContext context) {
+    return Obx(() {
+      if (controller.isDefaultIdentitySupported.isTrue) {
+        return SetDefaultIdentityCheckboxBuilder(
+          imagePaths: _imagePaths,
+          isCheck: controller.isDefaultIdentity.value,
+          onCheckboxChanged: controller.onCheckboxChanged);
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget _buildCancelButton(BuildContext context, {double? width}) {
+    return buildTextButton(
+      AppLocalizations.of(context).cancel,
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 17,
+        color: AppColor.colorTextButton,
+      ),
+      backgroundColor: AppColor.emailAddressChipColor,
+      width: width ?? 128,
+      height: 44,
+      radius: 10,
+      onTap: () => controller.closeView(context),
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context, {double? width}) {
+    return Obx(() => controller.viewState.value.fold(
+      (failure) => buildTextButton(
+        controller.actionType.value == IdentityActionType.create
+          ? AppLocalizations.of(context).create
+          : AppLocalizations.of(context).save,
+        width: width ?? 128,
+        height: 44,
+        radius: 10,
+        onTap: () => controller.createNewIdentity(context)),
+      (success) {
+        if (success is GetAllIdentitiesLoading) {
+          return const Center(
+            key: Key('create_loading_icon'),
+            child: CircularProgressIndicator(color: AppColor.primaryColor));
+        } else {
+          return buildTextButton(
+            controller.actionType.value == IdentityActionType.create
+              ? AppLocalizations.of(context).create
+              : AppLocalizations.of(context).save,
+            width: width ?? 128,
+            height: 44,
+            radius: 10,
+            onTap: () => controller.createNewIdentity(context));
+        }
+      }
+    ));
+  }
+
+  bool _isMobile(BuildContext context) => _responsiveUtils.isPortraitMobile(context) || _responsiveUtils.isLandscapeMobile(context);
 }

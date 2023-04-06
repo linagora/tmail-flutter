@@ -1,47 +1,50 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:model/extensions/email_address_extension.dart';
 
 typedef OnSelectEmailAddressDropListAction = Function(EmailAddress? emailAddress);
 
-class IdentityDropListFieldBuilder {
+class IdentityDropListFieldBuilder extends StatelessWidget {
 
   final ImagePaths _imagePaths;
   final String _label;
   final EmailAddress? _emailAddressSelected;
   final List<EmailAddress> _listEmailAddress;
+  final OnSelectEmailAddressDropListAction? onSelectItemDropList;
 
-  OnSelectEmailAddressDropListAction? onSelectItemDropList;
-
-  IdentityDropListFieldBuilder(
+  const IdentityDropListFieldBuilder(
     this._imagePaths,
     this._label,
     this._emailAddressSelected,
-    this._listEmailAddress,
-  );
+    this._listEmailAddress, {
+    super.key,
+    this.onSelectItemDropList
+  });
 
-  void addOnSelectEmailAddressDropListAction(OnSelectEmailAddressDropListAction action) {
-    onSelectItemDropList = action;
-  }
-
-  Widget build() {
+  @override
+  Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(_label, style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.normal,
-        color: AppColor.colorContentEmail)),
+      Text(
+        _label,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.normal,
+          color: AppColor.colorContentEmail)),
       const SizedBox(height: 8),
       DropdownButtonHideUnderline(
         child: DropdownButton2<EmailAddress>(
           isExpanded: true,
           hint: Row(
-            children: [
+            children: const [
               Expanded(child: Text(
-                _emailAddressSelected?.email ?? '',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
+                '',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
                 maxLines: 1,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 softWrap: CommonTextStyle.defaultSoftWrap,
@@ -51,7 +54,7 @@ class IdentityDropListFieldBuilder {
           items: _listEmailAddress.map((item) => DropdownMenuItem<EmailAddress>(
             value: item,
             child: Text(
-              item.email ?? '',
+              item.emailAddress,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
               maxLines: 1,
               overflow: CommonTextStyle.defaultTextOverFlow,
@@ -59,24 +62,35 @@ class IdentityDropListFieldBuilder {
             ),
           )).toList(),
           value: _emailAddressSelected,
-          onChanged: (newEmailAddress) => onSelectItemDropList?.call(newEmailAddress),
-          icon: SvgPicture.asset(_imagePaths.icDropDown),
-          buttonPadding: const EdgeInsets.symmetric(horizontal: 12),
-          buttonDecoration: BoxDecoration(
+          onChanged: onSelectItemDropList,
+          buttonStyleData: ButtonStyleData(
+            height: 44,
+            padding: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppColor.colorInputBorderCreateMailbox, width: 0.5),
               color: AppColor.colorInputBackgroundCreateMailbox),
-          itemHeight: 44,
-          buttonHeight: 44,
-          selectedItemHighlightColor: Colors.black12,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 12),
-          dropdownMaxHeight: 200,
-          dropdownDecoration: BoxDecoration(
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 200,
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Colors.white),
-          dropdownElevation: 4,
-          scrollbarRadius: const Radius.circular(40),
-          scrollbarThickness: 6,
+            elevation: 4,
+            scrollbarTheme: ScrollbarThemeData(
+              radius: const Radius.circular(40),
+              thickness: MaterialStateProperty.all<double>(6),
+              thumbVisibility: MaterialStateProperty.all<bool>(true),
+            ),
+          ),
+          iconStyleData: IconStyleData(
+            icon: SvgPicture.asset(_imagePaths.icDropDown),
+            iconSize: 14,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 44,
+            padding: EdgeInsets.symmetric(horizontal: 12),
+          ),
         ),
       )
     ]);
