@@ -210,7 +210,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             controller.errorNameIdentity.value,
             AppLocalizations.of(context).required,
             editingController: controller.inputNameIdentityController,
-            focusNode: controller.inputNameIdentityFocusNode,
+            focusNode: BuildUtils.isWeb ? null : controller.inputNameIdentityFocusNode,
             isMandatory: true,
             onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
           )),
@@ -242,7 +242,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             AppLocalizations.of(context).bcc_to,
             controller.errorBccIdentity.value,
             controller.inputBccIdentityController,
-            focusNode: controller.inputBccIdentityFocusNode,
+            focusNode: BuildUtils.isWeb ? null : controller.inputBccIdentityFocusNode,
             onSelectedSuggestionAction: (newEmailAddress) {
               controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
               controller.updateBccOfIdentity(newEmailAddress);
