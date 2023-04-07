@@ -293,5 +293,4 @@ flutter_native_splash:
 
 cider:
   link_template:
-    tag: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.6 # initial release link template
-    diff: https://github.com/linagora/tmail-flutter/compare/v0.7.1...v0.7.6 # subsequent releases link template
+    tag: https://github.com/linagora/tmail-flutter/releases/tag/v%tag% # initial release link template
