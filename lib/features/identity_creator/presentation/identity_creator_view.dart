@@ -5,6 +5,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/html_template.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/utils/app_logger.dart';
@@ -112,7 +113,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             )
         ),
         tablet: Scaffold(
-            backgroundColor: Colors.black.withAlpha(24),
+            backgroundColor: Colors.black38,
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
               child: Center(child: Card(
@@ -133,7 +134,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             ),
         ),
         tabletLarge: Scaffold(
-            backgroundColor: Colors.black.withAlpha(24),
+            backgroundColor: Colors.black38,
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
               child: Center(child: Card(
@@ -154,7 +155,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             )
         ),
         landscapeTablet: Scaffold(
-            backgroundColor: Colors.black.withAlpha(24),
+            backgroundColor: Colors.black38,
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
               child: Center(child: Card(
@@ -175,7 +176,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             )
         ),
         desktop: Scaffold(
-            backgroundColor: Colors.black.withAlpha(24),
+            backgroundColor: Colors.black38,
             body: GestureDetector(
               onTap: () => controller.clearFocusEditor(context),
               child: Center(child: Card(
@@ -284,40 +285,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
     return GestureDetector(
       onTap: () => controller.clearFocusEditor(context),
       child: Column(children: [
-        SizedBox(
-          width: double.infinity,
-          child: Stack(
-            children: [
-              Positioned(right: 8, top: 2,
-                child: buildIconWeb(
-                  iconSize: 24,
-                  icon: SvgPicture.asset(
-                    _imagePaths.icComposerClose,
-                    fit: BoxFit.fill,
-                    colorFilter: AppColor.colorDeleteContactIcon.asFilter()
-                  ),
-                  tooltip: AppLocalizations.of(context).close,
-                  onTap: () => controller.closeView(context)),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 14, right: 40, left: 40),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Obx(() {
-                    return Text(controller.actionType.value == IdentityActionType.create
-                      ? AppLocalizations.of(context).createNewIdentity.inCaps
-                      : AppLocalizations.of(context).edit_identity.inCaps,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black));
-                  }),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
+        _buildHeaderView(context),
         Expanded(
           child: BuildUtils.isWeb
             ? PointerInterceptor(child: bodyCreatorView)
@@ -336,6 +304,40 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                 paddingChild: EdgeInsets.zero,
                 child: bodyCreatorView),
         ),
+      ]),
+    );
+  }
+
+  Widget _buildHeaderView(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      height: 52,
+      child: Row(children: [
+        const SizedBox(width: 40),
+        Expanded(child: Obx(() {
+          return Text(
+            controller.actionType.value == IdentityActionType.create
+              ? AppLocalizations.of(context).createNewIdentity.inCaps
+              : AppLocalizations.of(context).edit_identity.inCaps,
+            maxLines: 1,
+            textAlign: TextAlign.center,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.black
+            ));
+        })),
+        buildIconWeb(
+          iconSize: 24,
+          icon: SvgPicture.asset(
+            _imagePaths.icComposerClose,
+            fit: BoxFit.fill,
+            colorFilter: AppColor.colorDeleteContactIcon.asFilter()
+          ),
+          tooltip: AppLocalizations.of(context).close,
+          onTap: () => controller.closeView(context)),
       ]),
     );
   }
@@ -420,7 +422,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           child: Padding(
             padding: EdgeInsets.only(
               top: 24.0,
-              bottom: 12.0,
+              bottom: 40.0,
               left: AppUtils.isDirectionRTL(context) ? 0 : 12,
               right: AppUtils.isDirectionRTL(context) ? 12 : 0
             ),
@@ -445,11 +447,13 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
 
   Widget _buildActionButtonMobile(BuildContext context) {
     return Column(children: [
-      _buildCheckboxIdentityDefault(context),
+      Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: _buildCheckboxIdentityDefault(context)),
       Container(
         alignment: Alignment.center,
         color: Colors.white,
-        padding: const EdgeInsets.only(top: 24, bottom: 35),
+        padding: const EdgeInsets.only(top: 24, bottom: 64),
         child: Row(children: [
           Expanded(child: _buildCancelButton(context)),
           const SizedBox(width: 12),
