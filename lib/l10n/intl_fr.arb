@@ -1898,7 +1898,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "Informations vous concernant et options pour les gérer",
+  "profilesSettingExplanation": "Informations vous concernant et options pour les gérer.",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
