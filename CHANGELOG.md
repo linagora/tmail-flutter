@@ -1,4 +1,7 @@
 ## Unreleased
+### Added
+- \#1599 Remove notification when read and delete permanent email
+
 ### Fixed
 - \#1613 When network is down, Tmail shouldn't prompt for a password
 - \#1699 Support hide suggestion when scrolling list email to, cc, bcc.
