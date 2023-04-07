@@ -41,8 +41,6 @@ dependencies:
 
   html: 0.15.1
 
-  fluttertoast: 8.2.1
-
   get: 4.6.5
 
   device_info_plus: 8.1.0
