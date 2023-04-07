@@ -4,6 +4,7 @@
 - \#1699 Support hide suggestion when scrolling list email to, cc, bcc.
 - \#1681 Add a dot at the end of the description
 - \#1687 Set name email and counter displayed in a single line
+- \#1685 Fix hover and click to button show all or hide attachments
 
 ## [0.7.6] - 2023-04-06
 ### Added
