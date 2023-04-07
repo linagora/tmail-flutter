@@ -2,6 +2,7 @@
 ### Fixed
 - \#1613 When network is down, Tmail shouldn't prompt for a password
 - \#1699 Support hide suggestion when scrolling list email to, cc, bcc.
+- \#1681 Add a dot at the end of the description
 
 ## [0.7.6] - 2023-04-06
 ### Added
