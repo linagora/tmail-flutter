@@ -242,7 +242,7 @@ abstract class BaseController extends GetxController
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
         FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
-        FcmMessageController.instance.initializeFromAccountId(accountId);
+        FcmMessageController.instance.initializeFromAccountId(accountId, session);
         if (!BuildUtils.isWeb) {
           LocalNotificationManager.instance.setUp();
         }

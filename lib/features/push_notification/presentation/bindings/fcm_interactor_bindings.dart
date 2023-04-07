@@ -1,9 +1,21 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/data/network/dio_client.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
+import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
+import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
@@ -17,6 +29,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_r
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_remove_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
@@ -42,6 +55,9 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut<FCMDatasource>(() => Get.find<FcmDatasourceImpl>());
     Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
+    Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
+    Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
+    Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
   }
 
   @override
@@ -66,6 +82,16 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => MailboxCacheDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => EmailDataSourceImpl(
+      Get.find<EmailAPI>(),
+      Get.find<RemoteExceptionThrower>()));
+    Get.lazyPut(() => HtmlDataSourceImpl(
+      Get.find<HtmlAnalyzer>(),
+      Get.find<DioClient>(),
+      Get.find<RemoteExceptionThrower>()));
+    Get.lazyPut(() => StateDataSourceImpl(
+      Get.find<StateCacheClient>(),
+      Get.find<CacheExceptionThrower>()));
   }
 
   @override
@@ -73,6 +99,9 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetStoredEmailDeliveryStateInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => StoreEmailDeliveryStateInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetEmailChangesToPushNotificationInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => GetEmailChangesToRemoveNotificationInteractor(
+      Get.find<FCMRepositoryImpl>(),
+      Get.find<EmailRepository>()));
     Get.lazyPut(() => StoreEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => DeleteEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
@@ -89,6 +118,7 @@ class FcmInteractorBindings extends InteractorsBindings {
   @override
   void bindingsRepository() {
     Get.lazyPut<FCMRepository>(() => Get.find<FCMRepositoryImpl>());
+    Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
   }
 
   @override
@@ -104,5 +134,9 @@ class FcmInteractorBindings extends InteractorsBindings {
         DataSourceType.network: Get.find<MailboxDataSource>(),
       },
     ));
+    Get.lazyPut(() => EmailRepositoryImpl(
+      Get.find<EmailDataSource>(),
+      Get.find<HtmlDataSource>(),
+      Get.find<StateDataSource>()));
   }
 }

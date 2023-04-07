@@ -9,6 +9,7 @@ class LocalNotificationConfig {
   static const _channelDescription = 'Team Mail notifications';
   static const notificationTitle = 'Team Mail';
   static const notificationMessage = 'You have new messages';
+  static const int groupNotificationId = 1995;
 
   static const iosInitializationSettings = DarwinInitializationSettings();
 

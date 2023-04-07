@@ -6,8 +6,11 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/list_presentation_mailbox_extension.dart';
@@ -18,10 +21,12 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_st
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_remove_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailboxes_not_put_notifications_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_email_delivery_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_remove_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailboxes_not_put_notifications_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
@@ -44,8 +49,9 @@ class EmailChangeListener extends ChangeListener {
   GetStoredEmailStateInteractor? _getStoredEmailStateInteractor;
   StoreEmailStateToRefreshInteractor? _storeEmailStateToRefreshInteractor;
   GetMailboxesNotPutNotificationsInteractor? _getMailboxesNotPutNotificationsInteractor;
+  GetEmailChangesToRemoveNotificationInteractor? _getEmailChangesToRemoveNotificationInteractor;
 
-  jmap.State? _newState;
+  jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
   Session? _session;
   List<PresentationEmail> _emailsAvailablePushNotification = [];
@@ -59,6 +65,7 @@ class EmailChangeListener extends ChangeListener {
       _getEmailChangesToPushNotificationInteractor = getBinding<GetEmailChangesToPushNotificationInteractor>();
       _storeEmailStateToRefreshInteractor = getBinding<StoreEmailStateToRefreshInteractor>();
       _getMailboxesNotPutNotificationsInteractor = getBinding<GetMailboxesNotPutNotificationsInteractor>();
+      _getEmailChangesToRemoveNotificationInteractor = getBinding<GetEmailChangesToRemoveNotificationInteractor>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -73,10 +80,16 @@ class EmailChangeListener extends ChangeListener {
     log('EmailChangeListener::dispatchActions():actions: $actions');
     for (var action in actions) {
       if (action is SynchronizeEmailOnForegroundAction) {
+        if (FcmUtils.instance.isMobileAndroid) {
+          _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
+        }
         _synchronizeEmailOnForegroundAction(action.newState);
       } else if (action is PushNotificationAction) {
         _pushNotificationAction(action.newState, action.accountId, action.session);
       } else if (action is StoreEmailStateToRefreshAction) {
+        if (FcmUtils.instance.isMobileAndroid) {
+          _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
+        }
         _handleStoreEmailStateToRefreshAction(action.newState);
       }
     }
@@ -90,26 +103,24 @@ class EmailChangeListener extends ChangeListener {
   }
 
   void _pushNotificationAction(jmap.State newState, AccountId accountId, Session? session) {
-    _newState = newState;
+    _newStateEmailDelivery = newState;
     _accountId = accountId;
     _session = session;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
     if (BuildUtils.isWeb) {
-      _storeEmailDeliveryStateAction(_newState!);
+      _storeEmailDeliveryStateAction(_newStateEmailDelivery!);
     } else {
       if (Platform.isAndroid) {
         _getStoredEmailDeliveryState();
       } else if (Platform.isIOS) {
-        _storeEmailDeliveryStateAction(_newState!);
-        _showLocalNotificationForIOS(_newState!, _accountId!);
+        _storeEmailDeliveryStateAction(_newStateEmailDelivery!);
+        _showLocalNotificationForIOS(_newStateEmailDelivery!, _accountId!);
       } else {
         logError('EmailChangeListener::_pushNotificationAction(): NOT SUPPORTED PLATFORM');
       }
     }
   }
-
-
 
   void _getStoredEmailDeliveryState() {
     if (_getStoredEmailDeliveryStateInteractor != null) {
@@ -186,14 +197,14 @@ class EmailChangeListener extends ChangeListener {
   void handleSuccessViewState(Success success) {
     log('EmailChangeListener::_handleSuccessViewState(): $success');
     if (success is GetStoredEmailDeliveryStateSuccess) {
-      if (_newState != success.state) {
+      if (_newStateEmailDelivery != success.state) {
         _getEmailChangesAction(success.state);
       }
     } else if (success is GetStoredEmailStateSuccess) {
       _getEmailChangesAction(success.state);
     } else if (success is GetEmailChangesToPushNotificationSuccess) {
-      if (_newState != null) {
-        _storeEmailDeliveryStateAction(_newState!);
+      if (_newStateEmailDelivery != null) {
+        _storeEmailDeliveryStateAction(_newStateEmailDelivery!);
 
         if (FcmUtils.instance.isMobileAndroid) {
           _handleListEmailToPushNotification(success.emailList);
@@ -203,6 +214,8 @@ class EmailChangeListener extends ChangeListener {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification(
         mailboxIdsNotPutNotifications: success.mailboxes.mailboxIds);
       _handleLocalPushNotification(listEmails);
+    } else if (success is GetEmailChangesToRemoveNotificationSuccess) {
+      _handleRemoveLocalNotification(success.emailIds);
     }
   }
 
@@ -238,5 +251,23 @@ class EmailChangeListener extends ChangeListener {
     } else {
       logError('EmailChangeListener::_handleStoreEmailStateToRefreshAction():_storeEmailStateToRefreshInteractor is null');
     }
+  }
+
+  void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {
+    if (_getEmailChangesToRemoveNotificationInteractor != null && session != null) {
+      consumeState(_getEmailChangesToRemoveNotificationInteractor!.execute(
+        session,
+        accountId,
+        newState,
+        propertiesCreated: Properties({EmailProperty.id, EmailProperty.keywords}),
+        propertiesUpdated: Properties({EmailProperty.keywords}),
+      ));
+    }
+  }
+
+  void _handleRemoveLocalNotification(List<EmailId> emailIds) async {
+    log('EmailChangeListener::_handleRemoveLocalNotification():emailIds: $emailIds');
+    await Future.wait(emailIds.map((emailId) => LocalNotificationManager.instance.removeNotification(emailId.id.value)));
+    LocalNotificationManager.instance.removeGroupPushNotification();
   }
 }
