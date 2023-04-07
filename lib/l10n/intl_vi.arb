@@ -2358,7 +2358,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "Thông tin về bạn và các tùy chọn để quản lý",
+  "profilesSettingExplanation": "Thông tin về bạn và các tùy chọn để quản lý.",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -2740,7 +2740,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Cho phép người nhận mới xem email đã gửi nếu họ không được bao gồm trong chuỗi email ban đầu",
+  "forwardingSettingExplanation": "Cho phép người nhận mới xem email đã gửi nếu họ không được bao gồm trong chuỗi email ban đầu.",
   "@forwardingSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
