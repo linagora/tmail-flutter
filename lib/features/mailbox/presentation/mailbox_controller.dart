@@ -439,7 +439,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     PresentationMailbox presentationMailboxSelected
   ) {
     log('MailboxController::_handleOpenMailbox(): ');
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     mailboxDashBoardController.clearSelectedEmail();
     if (presentationMailboxSelected.id != mailboxDashBoardController.selectedMailbox.value?.id) {

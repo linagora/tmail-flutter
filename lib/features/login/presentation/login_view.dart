@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -13,8 +13,6 @@ import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_de
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LoginView extends BaseLoginView {
-
-  final keyboardUtils = Get.find<KeyboardUtils>();
 
   LoginView({Key? key}) : super(key: key);
 

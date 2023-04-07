@@ -2,6 +2,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -265,7 +266,7 @@ class DestinationPickerController extends BaseMailboxController {
     searchState.value = searchState.value.disableSearchState();
     searchQuery.value = SearchQuery.initial();
     searchInputController?.clear();
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
   }
 
   void clearSearchText() {
@@ -368,7 +369,7 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   void dispatchSelectMailboxDestination(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (mailboxDestination.value == null) {
       _appToast.showToastErrorMessage(
@@ -385,7 +386,7 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   void createNewMailboxAction(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     final nameMailbox = newNameMailbox.value;
     if (nameMailbox != null && nameMailbox.isNotEmpty) {
@@ -408,7 +409,7 @@ class DestinationPickerController extends BaseMailboxController {
 
   void backToDestinationScreen(BuildContext context) {
     nameInputController?.clear();
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
     destinationScreenType.value = DestinationScreenType.destinationPicker;
   }
 
@@ -424,7 +425,7 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   void closeDestinationPicker(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (BuildUtils.isWeb) {
       onDismissDestinationPicker?.call();

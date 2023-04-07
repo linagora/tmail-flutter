@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -248,7 +249,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   void createNewRuleFilter(BuildContext context) async {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     final errorName = _getErrorStringByInputValue(context, _newRuleName);
     if (errorName?.isNotEmpty == true) {
@@ -341,7 +342,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   void closeView(BuildContext context) {
     _clearAll();
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (BuildUtils.isWeb) {
       onDismissRuleFilterCreator?.call();

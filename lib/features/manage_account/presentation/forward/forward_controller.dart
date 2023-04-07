@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -233,7 +234,7 @@ class ForwardController extends BaseController {
   }
 
   void addRecipientAction(BuildContext context, List<EmailAddress> listRecipientsSelected) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     final accountId = accountDashBoardController.accountId.value;
     if (accountId != null) {
