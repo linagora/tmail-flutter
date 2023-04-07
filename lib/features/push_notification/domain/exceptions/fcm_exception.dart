@@ -9,3 +9,5 @@ class NotFoundEmailDeliveryStateException implements Exception {}
 class NotFoundFirebaseSubscriptionException implements Exception {}
 
 class NotFoundSubscriptionException implements Exception {}
+
+class NotFoundEmailStateException implements Exception {}
