@@ -1,3 +1,7 @@
+## Unreleased
+### Fixed
+- \#1613 When network is down, Tmail shouldn't prompt for a password
+
 ## [0.7.6] - 2023-04-06
 ### Added
 - \#1510 right click for app grid item
