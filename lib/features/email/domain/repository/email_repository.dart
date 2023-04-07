@@ -1,14 +1,21 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
+import 'package:core/data/network/download/downloaded_response.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
-import 'package:model/model.dart';
+import 'package:model/account/account_request.dart';
+import 'package:model/download/download_task_id.dart';
+import 'package:model/email/attachment.dart';
+import 'package:model/email/email_content.dart';
+import 'package:model/email/mark_star_action.dart';
+import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -72,7 +79,7 @@ abstract class EmailRepository {
 
   Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId);
 
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId);
+  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail);
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
 
