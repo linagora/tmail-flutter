@@ -1,9 +1,11 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
@@ -25,14 +27,19 @@ class UpdateEmailDraftsInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final newEmailDrafts = await _emailRepository.updateEmailDrafts(session, accountId, newEmail, oldEmailId);
-      yield Right<Failure, Success>(
-        UpdateEmailDraftsSuccess(
-          newEmailDrafts,
-          currentEmailState: currentEmailState,
-          currentMailboxState: currentMailboxState
-        )
-      );
+      final newEmailDrafts = await _emailRepository.updateEmailDrafts(session, accountId, newEmail);
+      final emailDeleted = await _emailRepository.deleteEmailPermanently(session, accountId, oldEmailId);
+      if (emailDeleted) {
+        yield Right<Failure, Success>(
+          UpdateEmailDraftsSuccess(
+            newEmailDrafts,
+            currentEmailState: currentEmailState,
+            currentMailboxState: currentMailboxState
+          )
+        );
+      } else {
+        yield Left<Failure, Success>(UpdateEmailDraftsFailure(CannotDeleteOldEmailException()));
+      }
     } catch (e) {
       yield Left<Failure, Success>(UpdateEmailDraftsFailure(e));
     }

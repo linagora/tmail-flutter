@@ -1,0 +1,2 @@
+
+class CannotDeleteOldEmailException implements Exception {}
