@@ -453,7 +453,6 @@ class IdentityCreatorController extends BaseController {
   }
 
   void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
-    keyboardRichTextController.htmlEditorApi = editorApi;
     keyboardRichTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDownOnMobile,
