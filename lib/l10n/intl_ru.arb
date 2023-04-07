@@ -2662,7 +2662,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "Информация профиля и управление",
+  "profilesSettingExplanation": "Информация профиля и управление.",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
