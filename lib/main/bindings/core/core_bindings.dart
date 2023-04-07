@@ -1,4 +1,9 @@
-import 'package:core/core.dart';
+import 'package:core/data/utils/compress_file_utils.dart';
+import 'package:core/data/utils/device_manager.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/config/app_config_loader.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -14,7 +19,6 @@ class CoreBindings extends Bindings {
     await _bindingSharePreference();
     _bindingAppImagePaths();
     _bindingResponsiveManager();
-    _bindingKeyboardManager();
     _bindingTransformer();
     _bindingToast();
     _bindingDeviceManager();
@@ -32,10 +36,6 @@ class CoreBindings extends Bindings {
 
   Future _bindingSharePreference() async {
     await Get.putAsync(() async => await SharedPreferences.getInstance(), permanent: true);
-  }
-
-  void _bindingKeyboardManager() {
-    Get.put(KeyboardUtils());
   }
 
   void _bindingTransformer() {

@@ -1,10 +1,10 @@
 
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_rx/get_rx.dart';
@@ -17,7 +17,9 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/model.dart';
+import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/identity_extension.dart';
+import 'package:model/user/user_profile.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -426,9 +428,9 @@ class IdentityCreatorController extends BaseController {
   void clearFocusEditor(BuildContext context) {
     if (!BuildUtils.isWeb) {
       keyboardRichTextController.htmlEditorApi?.unfocus();
+      KeyboardUtils.hideSystemKeyboardMobile();
     }
-    SystemChannels.textInput.invokeMethod('TextInput.hide');
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
   }
 
   void closeView(BuildContext context) {

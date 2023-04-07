@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
@@ -282,7 +283,7 @@ class SearchEmailController extends BaseController
   }
 
   void _searchEmailAction(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (session != null && accountId != null) {
       canSearchMore = true;
@@ -665,7 +666,7 @@ class SearchEmailController extends BaseController
     log('SearchEmailController::closeSearchView(): ');
     clearAllTextInputSearchForm();
     clearAllResultSearch();
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
     mailboxDashBoardController.searchController.disableAllSearchEmail();
     mailboxDashBoardController.dispatchMailboxUIAction(SelectMailboxDefaultAction());
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);

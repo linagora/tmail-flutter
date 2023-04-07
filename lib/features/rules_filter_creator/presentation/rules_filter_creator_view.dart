@@ -230,7 +230,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           value: controller.mailboxSelected.value,
                           borderColor: _getBorderColorMailboxSelected(),
                           tapActionCallback: (value) {
-                            FocusScope.of(context).unfocus();
+                            KeyboardUtils.hideKeyboard(context);
                             controller.selectMailbox(context);
                           }))),
                     ])
@@ -390,7 +390,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                 value: controller.mailboxSelected.value,
                                 borderColor: _getBorderColorMailboxSelected(),
                                 tapActionCallback: (value) {
-                                  FocusScope.of(context).unfocus();
+                                  KeyboardUtils.hideKeyboard(context);
                                   controller.selectMailbox(context);
                                 }))),
                           ])
@@ -493,7 +493,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                   return RuleFilterButtonField<rule_condition.Field>(
                                       value: controller.ruleConditionFieldSelected.value,
                                       tapActionCallback: (value) {
-                                        FocusScope.of(context).unfocus();
+                                        KeyboardUtils.hideKeyboard(context);
                                         controller.openContextMenuAction(
                                             context,
                                             _bottomSheetRuleConditionFieldActionTiles(
@@ -508,7 +508,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                     return RuleFilterButtonField<rule_condition.Comparator>(
                                         value: controller.ruleConditionComparatorSelected.value,
                                         tapActionCallback: (value) {
-                                          FocusScope.of(context).unfocus();
+                                          KeyboardUtils.hideKeyboard(context);
                                           controller.openContextMenuAction(
                                               context,
                                               _bottomSheetRuleConditionComparatorActionTiles(
@@ -553,7 +553,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               return RuleFilterButtonField<EmailRuleFilterAction>(
                                 value: controller.emailRuleFilterActionSelected.value,
                                 tapActionCallback: (value) {
-                                  FocusScope.of(context).unfocus();
+                                  KeyboardUtils.hideKeyboard(context);
                                   controller.openContextMenuAction(
                                       context,
                                       _bottomSheetActionRuleFilterActionTiles(
@@ -579,7 +579,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               value: controller.mailboxSelected.value,
                               borderColor: _getBorderColorMailboxSelected(),
                               tapActionCallback: (value) {
-                                FocusScope.of(context).unfocus();
+                                KeyboardUtils.hideKeyboard(context);
                                 controller.selectMailbox(context);
                               }))
                           ])
