@@ -239,7 +239,7 @@ class VacationController extends BaseController {
   }
 
   void saveVacation(BuildContext context) async {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (vacationPresentation.value.isEnabled) {
       final fromDate = vacationPresentation.value.fromDate;
@@ -346,7 +346,7 @@ class VacationController extends BaseController {
     if (!BuildUtils.isWeb) {
       richTextControllerForMobile.htmlEditorApi?.unfocus();
     }
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
   }
 
   void backToUniversalSettings(BuildContext context) {

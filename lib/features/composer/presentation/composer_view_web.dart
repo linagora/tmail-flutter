@@ -1,4 +1,16 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/capitalize_extension.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/html_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/html_transformer/html_template.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/image/avatar_builder.dart';
+import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
@@ -7,7 +19,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:model/model.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:model/email/prefix_email_address.dart';
+import 'package:model/extensions/list_email_content_extension.dart';
+import 'package:model/mailbox/expand_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -29,7 +44,6 @@ class ComposerView extends GetWidget<ComposerController>
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
   final appToast = Get.find<AppToast>();
-  final keyboardUtils = Get.find<KeyboardUtils>();
 
   ComposerView({Key? key}) : super(key: key);
 

@@ -531,7 +531,7 @@ class MailboxDashBoardController extends ReloadableController {
     clearFilterMessageOption();
     searchController.updateFilterEmail(text: SearchQuery(value));
     dispatchAction(StartSearchEmailAction());
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
     if (_searchInsideEmailDetailedViewIsActive(context)) {
       _closeEmailDetailedView();
     }
