@@ -191,11 +191,7 @@ dependencies:
   # flutter_localizations depends on intl 0.17.0
   intl: 0.17.0
 
-  fluttertoast: 8.2.1
-
   super_tag_editor: 0.1.1
-
-  flutter_keyboard_visibility: 5.4.0
 
 dev_dependencies:
   flutter_test:
