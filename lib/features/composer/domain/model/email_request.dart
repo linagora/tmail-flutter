@@ -28,16 +28,3 @@ class EmailRequest with EquatableMixin {
     emailIdDestroyed
   ];
 }
-
-extension EmailRequestExtension on EmailRequest {
-
-  EmailRequest toEmailRequest({Email? newEmail}) {
-    return EmailRequest(
-      newEmail ?? email,
-      submissionCreateId,
-      sentMailboxId: sentMailboxId,
-      identity: identity,
-      emailIdDestroyed: emailIdDestroyed
-    );
-  }
-}
