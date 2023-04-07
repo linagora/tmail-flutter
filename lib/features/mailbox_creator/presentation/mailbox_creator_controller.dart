@@ -134,7 +134,7 @@ class MailboxCreatorController extends BaseController {
   }
 
   void selectMailboxLocation(BuildContext context) async {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (accountId != null) {
       final arguments = DestinationPickerArguments(
@@ -180,7 +180,7 @@ class MailboxCreatorController extends BaseController {
   }
 
   void createNewMailbox(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     final nameMailbox = newNameMailbox.value;
     final nameValidated = getErrorInputNameString(context);
@@ -203,7 +203,7 @@ class MailboxCreatorController extends BaseController {
   }
 
   void closeMailboxCreator(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (BuildUtils.isWeb) {
       onDismissMailboxCreator?.call();

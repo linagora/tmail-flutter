@@ -445,7 +445,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           }, onChangeContent: (String? changed) {
             controller.updateMessageHtmlText(changed);
           }, onFocus: () {
-            FocusScope.of(context).unfocus();
+            KeyboardUtils.hideKeyboard(context);
             Future.delayed(const Duration(milliseconds: 500), () {
               controller.richTextControllerForWeb.editorController.setFocus();
             });

@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
@@ -171,7 +172,7 @@ class ContactController extends BaseController {
   }
 
   void selectContact(BuildContext context, EmailAddress emailAddress) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (BuildUtils.isWeb) {
       onSelectedContactCallback?.call(emailAddress);
@@ -182,7 +183,7 @@ class ContactController extends BaseController {
 
   void closeContactView(BuildContext context) {
     clearAllTextInputSearchForm();
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
 
     if (BuildUtils.isWeb) {
       onDismissContactView?.call();

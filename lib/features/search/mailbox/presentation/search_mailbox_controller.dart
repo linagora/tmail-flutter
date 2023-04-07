@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
@@ -189,7 +190,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void handleSearchButtonPressed(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
     searchMailboxAction();
   }
 
@@ -211,7 +212,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void submitSearchAction(BuildContext context, String query) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
     currentSearchQuery.value = query;
     searchMailboxAction();
   }
@@ -429,7 +430,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void openMailboxAction(BuildContext context, PresentationMailbox mailbox) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
     dashboardController.openMailboxAction(context, mailbox);
 
     if (!responsiveUtils.isWebDesktop(context)) {
@@ -602,7 +603,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void closeSearchView(BuildContext context) {
-    FocusScope.of(context).unfocus();
+    KeyboardUtils.hideKeyboard(context);
     if (BuildUtils.isWeb) {
       dashboardController.searchMailboxActivated.value = false;
       clearAllTextInputSearchForm();
