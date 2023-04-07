@@ -131,8 +131,8 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId) {
-    return emailDataSource.updateEmailDrafts(session, accountId, newEmail, oldEmailId);
+  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail) {
+    return emailDataSource.updateEmailDrafts(session, accountId, newEmail);
   }
 
   @override
