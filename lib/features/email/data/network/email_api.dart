@@ -528,13 +528,11 @@ class EmailAPI with HandleSetErrorMixin {
   Future<Email> updateEmailDrafts(
     Session session,
     AccountId accountId,
-    Email newEmail,
-    EmailId oldEmailId
+    Email newEmail
   ) async {
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addCreate(idCreateMethod, newEmail)
-      ..addDestroy({oldEmailId.id});
+      ..addCreate(idCreateMethod, newEmail);
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
@@ -554,11 +552,10 @@ class EmailAPI with HandleSetErrorMixin {
     );
 
     final emailUpdated = setEmailResponse?.created?[idCreateMethod];
-    final isEmailDestroyedSuccess = setEmailResponse?.destroyed?.contains(oldEmailId.id) ?? false;
     final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
-    if (emailUpdated != null && isEmailDestroyedSuccess && mapErrors.isEmpty) {
+    if (emailUpdated != null && mapErrors.isEmpty) {
       return emailUpdated;
     } else {
       throw SetEmailMethodException(mapErrors);
