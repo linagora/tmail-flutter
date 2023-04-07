@@ -5,6 +5,9 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
@@ -131,6 +134,53 @@ class FCMRepositoryImpl extends FCMRepository {
         .toList();
       log('FCMRepositoryImpl::getMailboxesNotPutNotifications():mailboxesNotPutNotifications: $mailboxesNotPutNotifications');
       return mailboxesNotPutNotifications;
+    }
+  }
+
+  @override
+  Future<List<EmailId>> getEmailChangesToRemoveNotification(
+    Session session,
+    AccountId accountId,
+    jmap.State currentState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  ) async {
+    EmailChangeResponse? emailChangeResponse;
+    bool hasMoreChanges = true;
+    jmap.State? sinceState = currentState;
+
+    while (hasMoreChanges && sinceState != null) {
+      final changesResponse = await _threadDataSource.getChanges(
+        session,
+        accountId,
+        sinceState,
+        propertiesCreated: propertiesCreated,
+        propertiesUpdated: propertiesUpdated
+      );
+
+      hasMoreChanges = changesResponse.hasMoreChanges;
+      sinceState = changesResponse.newStateChanges;
+
+      if (emailChangeResponse != null) {
+        emailChangeResponse.union(changesResponse);
+      } else {
+        emailChangeResponse = changesResponse;
+      }
+    }
+
+    if (emailChangeResponse != null) {
+      final listEmailIdMarkAsRead = emailChangeResponse.updated
+        ?.where((email) => email.keywords?.containsKey(KeyWordIdentifier.emailSeen) == true)
+        .toList()
+        .listEmailIds ?? [];
+      final listEmailIdDestroyed = emailChangeResponse.destroyed ?? [];
+      log('FCMRepositoryImpl::getEmailChangesToRemoveNotification():listEmailIdMarkAsRead: $listEmailIdMarkAsRead | listEmailIdDestroyed: $listEmailIdDestroyed');
+      final allListEmailIdsNeedRemove = listEmailIdMarkAsRead + listEmailIdDestroyed;
+      return allListEmailIdsNeedRemove;
+    } else {
+      return [];
     }
   }
 }

@@ -151,6 +151,10 @@ class LocalNotificationManager {
     );
   }
 
+  Future<void> removeNotification(String id) {
+    return _localNotificationsPlugin.cancel(id.hashCode);
+  }
+
   void groupPushNotification() async {
     if (Platform.isIOS) {
       return;
@@ -170,7 +174,7 @@ class LocalNotificationManager {
       );
 
       await _localNotificationsPlugin.show(
-        1995,
+        LocalNotificationConfig.groupNotificationId,
         null,
         null,
         LocalNotificationConfig.instance.generateNotificationDetails(
@@ -178,6 +182,17 @@ class LocalNotificationManager {
           styleInformation: inboxStyleInformation
         ),
       );
+    }
+  }
+
+  void removeGroupPushNotification() async {
+    final activeNotifications = await _localNotificationsPlugin
+      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+      ?.getActiveNotifications();
+    log('LocalNotificationManager::removeGroupPushNotification():activeNotifications: ${activeNotifications?.length}');
+    if (activeNotifications == null || activeNotifications.length <= 1) {
+      log('LocalNotificationManager::groupPushNotification():canceled');
+      await _localNotificationsPlugin.cancel(LocalNotificationConfig.groupNotificationId);
     }
   }
 

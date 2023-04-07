@@ -16,9 +16,8 @@ class GetEmailChangesToPushNotificationSuccess extends UIState {
 }
 
 class GetEmailChangesToPushNotificationFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetEmailChangesToPushNotificationFailure(this.exception);
+  GetEmailChangesToPushNotificationFailure(exception) : super(exception: exception);
 
   @override
   List<Object> get props => [exception];

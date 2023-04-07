@@ -8,15 +8,17 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 class SynchronizeEmailOnForegroundAction extends FcmStateChangeAction {
 
   final AccountId accountId;
+  final Session? session;
 
   SynchronizeEmailOnForegroundAction(
     TypeName typeName,
     jmap.State newState,
-    this.accountId
+    this.accountId,
+    this.session
   ) : super(typeName, newState);
 
   @override
-  List<Object?> get props => [typeName, newState, accountId];
+  List<Object?> get props => [typeName, newState, accountId, session];
 }
 
 class PushNotificationAction extends FcmStateChangeAction {
@@ -38,15 +40,17 @@ class PushNotificationAction extends FcmStateChangeAction {
 class StoreEmailStateToRefreshAction extends FcmStateChangeAction {
 
   final AccountId accountId;
+  final Session? session;
 
   StoreEmailStateToRefreshAction(
     TypeName typeName,
     jmap.State newState,
-    this.accountId
+    this.accountId,
+    this.session
   ) : super(typeName, newState);
 
   @override
-  List<Object?> get props => [typeName, newState, accountId];
+  List<Object?> get props => [typeName, newState, accountId, session];
 }
 
 class SynchronizeMailboxOnForegroundAction extends FcmStateChangeAction {
