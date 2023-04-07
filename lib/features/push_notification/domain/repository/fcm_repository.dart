@@ -3,6 +3,7 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
@@ -37,4 +38,14 @@ abstract class FCMRepository {
   Future<bool> destroySubscription(String subscriptionId);
 
   Future<List<PresentationMailbox>> getMailboxesNotPutNotifications(Session session, AccountId accountId);
+
+  Future<List<EmailId>> getEmailChangesToRemoveNotification(
+    Session session,
+    AccountId accountId,
+    jmap.State currentState,
+    {
+      Properties? propertiesCreated,
+      Properties? propertiesUpdated
+    }
+  );
 }
