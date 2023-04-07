@@ -7,7 +7,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
 
 class GetEmailChangesToPushNotificationInteractor {
   final FCMRepository _fcmRepository;

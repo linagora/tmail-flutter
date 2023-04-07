@@ -57,8 +57,9 @@ class FcmMessageController extends FcmBaseController {
 
   static FcmMessageController get instance => _instance;
 
-  void initializeFromAccountId(AccountId accountId) {
+  void initializeFromAccountId(AccountId accountId, Session session) {
     _currentAccountId = accountId;
+    _currentSession = session;
     FcmTokenController.instance.initialize();
   }
 
@@ -98,7 +99,7 @@ class FcmMessageController extends FcmBaseController {
     if (_currentAccountId != null) {
       final stateChange = _convertRemoteMessageToStateChange(newRemoteMessage);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!);
+      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, session: _currentSession);
     }
   }
 
@@ -161,9 +162,9 @@ class FcmMessageController extends FcmBaseController {
     final newState = jmap.State(mapTypeState[typeName.value]);
     if (typeName == TypeName.emailType) {
       if (isForeground) {
-        return SynchronizeEmailOnForegroundAction(typeName, newState, accountId);
+        return SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session);
       } else {
-        return StoreEmailStateToRefreshAction(typeName, newState, accountId);
+        return StoreEmailStateToRefreshAction(typeName, newState, accountId, session);
       }
     } else if (typeName == TypeName.emailDelivery) {
       if (!isForeground) {
