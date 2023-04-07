@@ -40,6 +40,10 @@ class SendEmailInteractor {
       );
 
       if (result) {
+        if (emailRequest.emailIdDestroyed != null) {
+          await _emailRepository.deleteEmailPermanently(session, accountId, emailRequest.emailIdDestroyed!);
+        }
+
         yield Right<Failure, Success>(
           SendEmailSuccess(
             currentEmailState: currentEmailState,
