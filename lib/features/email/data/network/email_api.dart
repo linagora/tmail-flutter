@@ -141,9 +141,6 @@ class EmailAPI with HandleSetErrorMixin {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(idCreateMethod, emailNeedsToBeCreated);
 
-    if (emailRequest.emailIdDestroyed != null) {
-      setEmailMethod.addDestroy({emailRequest.emailIdDestroyed!.id});
-    }
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
     final setEmailSubmissionMethod = SetEmailSubmissionMethod(accountId)
