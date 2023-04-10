@@ -431,7 +431,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void openMailboxAction(BuildContext context, PresentationMailbox mailbox) {
     KeyboardUtils.hideKeyboard(context);
-    dashboardController.openMailboxAction(context, mailbox);
+    dashboardController.openMailboxAction(mailbox);
 
     if (!responsiveUtils.isWebDesktop(context)) {
       closeSearchView(context);

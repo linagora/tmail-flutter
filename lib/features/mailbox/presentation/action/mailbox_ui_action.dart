@@ -1,4 +1,5 @@
 
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
@@ -25,4 +26,14 @@ class RefreshChangeMailboxAction extends MailboxUIAction {
 
   @override
   List<Object?> get props => [newState];
+}
+
+class OpenMailboxAction extends MailboxUIAction {
+
+  final PresentationMailbox presentationMailbox;
+
+  OpenMailboxAction(this.presentationMailbox);
+
+  @override
+  List<Object?> get props => [presentationMailbox];
 }
