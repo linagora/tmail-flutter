@@ -129,7 +129,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   @override
   void onReady() {
-    _openMailboxEventController.stream.throttleTime(const Duration(milliseconds: 800)).listen((event) {
+    _openMailboxEventController.stream.debounceTime(const Duration(milliseconds: 500)).listen((event) {
       _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
     _initCollapseMailboxCategories();
@@ -251,8 +251,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is ClearSearchEmailAction) {
         _switchBackToMailboxDefault();
-      } else if (action is OpenMailboxAction) {
-        openMailbox(action.context, action.presentationMailbox);
       }
     });
 
@@ -265,6 +263,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       } else if (action is RefreshChangeMailboxAction) {
         if (action.newState != currentMailboxState) {
           _refreshMailboxChanges();
+        }
+        mailboxDashBoardController.clearMailboxUIAction();
+      } else if (action is OpenMailboxAction) {
+        if (currentContext != null) {
+          openMailbox(currentContext!, action.presentationMailbox);
         }
         mailboxDashBoardController.clearMailboxUIAction();
       }

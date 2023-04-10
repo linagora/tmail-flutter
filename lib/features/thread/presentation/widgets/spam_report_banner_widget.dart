@@ -64,7 +64,7 @@ class SpamReportBannerWidget extends StatelessWidget {
                           context,
                           AppLocalizations.of(context).showDetails,
                           AppColor.primaryColor,
-                          () => spamReportController.openMailbox(context)),
+                          spamReportController.openMailbox),
                     ),
                     const SizedBox(
                       width: 8,

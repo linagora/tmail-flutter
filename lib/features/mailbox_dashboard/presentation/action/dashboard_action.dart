@@ -2,7 +2,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -125,16 +124,6 @@ class SearchEmailByQueryAction extends DashBoardAction {
 
   @override
   List<Object?> get props => [navigationRouter];
-}
-class OpenMailboxAction extends DashBoardAction {
-
-  final BuildContext context;
-  final PresentationMailbox presentationMailbox;
-
-  OpenMailboxAction(this.context, this.presentationMailbox);
-
-  @override
-  List<Object?> get props => [context, presentationMailbox];
 }
 
 class SelectDateRangeToAdvancedSearch extends DashBoardAction {

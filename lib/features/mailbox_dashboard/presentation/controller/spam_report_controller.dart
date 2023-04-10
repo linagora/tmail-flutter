@@ -1,6 +1,5 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -107,10 +106,10 @@ class SpamReportController extends BaseController {
 
   bool get enableSpamReport => _spamReportState.value == SpamReportState.enabled;
 
-  void openMailbox(BuildContext context) {
+  void openMailbox() {
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     _storeLastTimeDismissedSpamReportedAction();
-    mailboxDashBoardController.openMailboxAction(context, _presentationSpamMailbox.value!);
+    mailboxDashBoardController.openMailboxAction(_presentationSpamMailbox.value!);
   }
 
   void storeSpamReportStateAction(SpamReportState spamReportState) {

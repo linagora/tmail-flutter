@@ -72,7 +72,7 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                         fontWeight: FontWeight.w400),
                     backgroundColor: AppColor.colorCreateNewIdentityButton,
                     radius: 10,
-                    onTap: () => spamReportController.openMailbox(context),
+                    onTap: spamReportController.openMailbox,
                   ),
                 ),
               ],
