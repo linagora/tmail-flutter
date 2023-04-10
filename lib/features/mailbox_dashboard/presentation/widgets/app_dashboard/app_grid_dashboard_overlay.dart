@@ -1,5 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/views/list/sliver_grid_delegate_fixed_height.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_applications.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_grid_dashboard_item.dart';
@@ -14,36 +13,38 @@ class AppDashboardOverlay extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Container(
-        width: 342,
-        height: 244,
+        width: _widthAppGrid,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: const [
             BoxShadow(
-              color: AppColor.colorShadowComposer,
-              blurRadius: 32,
+              color: AppColor.colorShadowLayerBottom,
+              blurRadius: 96,
               offset: Offset.zero),
             BoxShadow(
-              color: AppColor.colorDropShadow,
-              blurRadius: 4,
+              color: AppColor.colorShadowLayerTop,
+              blurRadius: 2,
               offset: Offset.zero),
           ]
         ),
-        child: GridView.builder(
-          padding: const EdgeInsets.all(24),
-          itemBuilder: (context, i) {
-            final app = _linagoraApplications.apps[i];
-            return AppGridDashboardItem(app);
-          },
-          primary: true,
-          itemCount: _linagoraApplications.apps.length,
-          gridDelegate: const SliverGridDelegateFixedHeight(
-            height: 98,
-            crossAxisCount: 3,
-          ),
-        ),
+        padding: const EdgeInsets.all(24),
+        child: Wrap(children: _linagoraApplications.apps
+          .map((app) => AppGridDashboardItem(app))
+          .toList()),
       ),
     );
+  }
+
+  double get _widthAppGrid {
+    if (_linagoraApplications.apps.length >= 3) {
+      return 342;
+    } else if (_linagoraApplications.apps.length == 2) {
+      return 244;
+    } else if (_linagoraApplications.apps.length == 1) {
+      return 146;
+    } else {
+      return 0;
+    }
   }
 }
