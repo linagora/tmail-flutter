@@ -1564,8 +1564,8 @@ class MailboxDashBoardController extends ReloadableController {
     emailsInCurrentMailbox.value = newEmailList;
   }
   
-  void openMailboxAction(BuildContext context, PresentationMailbox presentationMailbox) {
-    dispatchAction(OpenMailboxAction(context, presentationMailbox));
+  void openMailboxAction(PresentationMailbox presentationMailbox) {
+    dispatchMailboxUIAction(OpenMailboxAction(presentationMailbox));
   }
 
   bool get enableSpamReport => spamReportController.enableSpamReport;
