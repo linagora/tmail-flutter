@@ -54,7 +54,21 @@
 
 [Back to Summary](#summary)
 
-## Screenshots: https://github.com/linagora/tmail-flutter/issues/1700
+## Screenshots:
+
+![Image](https://user-images.githubusercontent.com/124866146/229365003-93d58c56-84b9-464f-8c3c-0ba8094bc8c9.png)
+
+
+![Image](https://user-images.githubusercontent.com/124866146/229364878-cd75529e-949d-4f69-8f22-93721b94874f.png)
+
+
+![Image](https://user-images.githubusercontent.com/124866146/229364925-e6729d3e-a06f-4cc4-9ec8-ea63d6337a2b.png)
+
+
+![Image](https://user-images.githubusercontent.com/124866146/229364955-c819a54c-d420-4dfb-ad89-8bc859e7d9e9.png)
+
+
+
 None
 
 [Back to Summary](#summary)
