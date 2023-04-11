@@ -806,7 +806,8 @@ class ComposerController extends BaseController {
         identity: identitySelected.value,
         emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
           ? arguments.presentationEmail?.id
-          : null
+          : null,
+        emailActionType: arguments.emailActionType
       );
       final mailboxRequest = outboxMailboxId == null
         ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)

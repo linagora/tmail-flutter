@@ -153,6 +153,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     isSearchEmailRunning,
                     _searchQuery
                   )),
+                  buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
                   if (_presentationEmail.hasAttachment == true)
                     Padding(
                         padding: const EdgeInsets.only(left: 8),
@@ -345,6 +346,11 @@ class EmailTileBuilder with BaseEmailItemTile {
                         ? EmailActionType.unMarkAsStarred
                         : EmailActionType.markAsStarred,
                     _presentationEmail)),
+            buildIconWeb(
+              icon: buildIconAnsweredOrForwarded(presentationEmail: _presentationEmail),
+              tooltip: messageToolTipForAnsweredOrForwarded(context, _presentationEmail),
+              iconPadding: const EdgeInsets.only(right: 12),
+              splashRadius: 1),
             InkWell(
               onTap: () {
                 if (isHoverIcon) {
@@ -382,7 +388,7 @@ class EmailTileBuilder with BaseEmailItemTile {
             Transform(
               transform: Matrix4.translationValues(0.0, 10, 0.0),
               child: const Padding(
-                  padding: EdgeInsets.only(left: 80),
+                  padding: EdgeInsets.only(left: 120),
                   child: Divider(
                       color: AppColor.lineItemListColor,
                       height: 1,
@@ -497,6 +503,7 @@ class EmailTileBuilder with BaseEmailItemTile {
 
   Widget _buildDateTimeForMobileTabletScreen() {
     return Row(children: [
+      buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
       if (_presentationEmail.hasAttachment == true)
         Padding(
             padding: const EdgeInsets.only(left: 8),

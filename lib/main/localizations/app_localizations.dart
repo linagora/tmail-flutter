@@ -2833,4 +2833,22 @@ class AppLocalizations {
       'Please input at least one recipient',
       name: 'emptyListEmailForward');
   }
+
+  String get forwardedMessage {
+    return Intl.message(
+      'Forwarded message',
+      name: 'forwardedMessage');
+  }
+
+  String get repliedMessage {
+    return Intl.message(
+      'Replied message',
+      name: 'repliedMessage');
+  }
+
+  String get repliedAndForwardedMessage {
+    return Intl.message(
+      'Replied and Forwarded message',
+      name: 'repliedAndForwardedMessage');
+  }
 }
