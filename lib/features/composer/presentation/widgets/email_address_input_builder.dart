@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -21,6 +22,7 @@ typedef OnAddEmailAddressTypeAction = void Function(PrefixEmailAddress);
 typedef OnDeleteEmailAddressTypeAction = void Function(PrefixEmailAddress);
 typedef OnShowFullListEmailAddressAction = void Function(PrefixEmailAddress);
 typedef OnFocusEmailAddressChangeAction = void Function(PrefixEmailAddress, bool);
+typedef OnFocusNextAddressAction = void Function();
 
 class EmailAddressInputBuilder {
 
@@ -35,6 +37,7 @@ class EmailAddressInputBuilder {
   final FocusNode? focusNode;
   final bool autoDisposeFocusNode;
   final GlobalKey? keyTagEditor;
+  final FocusNode? nextFocusNode;
 
   List<EmailAddress> listEmailAddress = <EmailAddress>[];
 
@@ -44,6 +47,7 @@ class EmailAddressInputBuilder {
   OnDeleteEmailAddressTypeAction? _onDeleteEmailAddressTypeAction;
   OnShowFullListEmailAddressAction? _onShowFullListEmailAddressAction;
   OnFocusEmailAddressChangeAction? _onFocusEmailAddressChangeAction;
+  OnFocusNextAddressAction? _onFocusNextAddressAction;
 
   Timer? _gapBetweenTagChangedAndFindSuggestion;
   bool lastTagFocused = false;
@@ -72,6 +76,10 @@ class EmailAddressInputBuilder {
     _onFocusEmailAddressChangeAction = onFocusEmailAddressChangeAction;
   }
 
+  void addOnFocusNextAddressAction(OnFocusNextAddressAction onFocusNextAddressAction) {
+    _onFocusNextAddressAction = onFocusNextAddressAction;
+  }
+
   EmailAddressInputBuilder(
     this._context,
     this._imagePaths,
@@ -85,6 +93,7 @@ class EmailAddressInputBuilder {
       this.autoDisposeFocusNode = true,
       this.expandMode = ExpandMode.EXPAND,
       this.keyTagEditor,
+      this.nextFocusNode,
     }
   );
 
@@ -132,6 +141,14 @@ class EmailAddressInputBuilder {
       final newListEmailAddress = _isCollapse ? listEmailAddress.sublist(0, 1) : listEmailAddress;
       return FocusScope(child: Focus(
           onFocusChange: (focus) => _onFocusEmailAddressChangeAction?.call(_prefixEmailAddress, focus),
+          onKey: (focusNode, event) {
+            if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+              nextFocusNode?.requestFocus();
+              _onFocusNextAddressAction?.call();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
           child: TagEditor<SuggestionEmailAddress>(
             key: keyTagEditor,
             length: newListEmailAddress.length,

@@ -12,6 +12,7 @@ import 'package:filesize/filesize.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
@@ -346,7 +347,15 @@ class ComposerController extends BaseController {
 
   void createFocusNodeInput() {
     toAddressFocusNode = FocusNode();
-    subjectEmailInputFocusNode = FocusNode();
+    subjectEmailInputFocusNode = FocusNode(
+      onKey: (focus, event) {
+        if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+          richTextWebController.editorController.setFocus();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      }
+    );
     ccAddressFocusNode = FocusNode();
     bccAddressFocusNode = FocusNode();
 
@@ -1198,9 +1207,11 @@ class ComposerController extends BaseController {
     updateListEmailAddress(prefixEmailAddress, <EmailAddress>[]);
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.cc:
+        ccAddressFocusNode = FocusNode();
         ccEmailAddressController.clear();
         break;
       case PrefixEmailAddress.bcc:
+        bccAddressFocusNode = FocusNode();
         bccEmailAddressController.clear();
         break;
       default:
@@ -1631,5 +1642,27 @@ class ComposerController extends BaseController {
   void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
     Navigator.maybePop(context);
     onEditorFocusChange(true);
+  }
+
+  FocusNode? getNextFocusOfToEmailAddress() {
+    if (listEmailAddressType.contains(PrefixEmailAddress.cc) == true) {
+      return ccAddressFocusNode;
+    } else if (listEmailAddressType.contains(PrefixEmailAddress.bcc) == true) {
+      return bccAddressFocusNode;
+    } else {
+      return subjectEmailInputFocusNode;
+    }
+  }
+
+  FocusNode? getNextFocusOfCcEmailAddress() {
+    if (listEmailAddressType.contains(PrefixEmailAddress.bcc) == true) {
+      return bccAddressFocusNode;
+    } else {
+      return subjectEmailInputFocusNode;
+    }
+  }
+
+  void handleFocusNextAddressAction() {
+    _autoCreateEmailTag();
   }
 }
