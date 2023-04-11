@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -79,13 +78,13 @@ class MailboxView extends GetWidget<MailboxController>
           right: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isDesktop(context) ? 32 : 16 : 0
         ),
         child: Row(children: [
-          (SloganBuilder(arrangedByHorizontal: true)
-            ..setSloganText(AppLocalizations.of(context).app_name)
-            ..setSloganTextAlign(TextAlign.center)
-            ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
-            ..setSizeLogo(24)
-            ..setLogo(_imagePaths.icLogoTMail))
-          .build(),
+          SloganBuilder(
+            sizeLogo: 24,
+            text: AppLocalizations.of(context).app_name,
+            textAlign: TextAlign.center,
+            textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+            logo: _imagePaths.icLogoTMail
+          ),
           Obx(() {
             if (controller.mailboxDashBoardController.appInformation.value != null) {
               return _buildVersionInformation(context, controller.mailboxDashBoardController.appInformation.value!);
@@ -122,7 +121,7 @@ class MailboxView extends GetWidget<MailboxController>
             _buildLoadingView(),
             AppConfig.appGridDashboardAvailable && _responsiveUtils.isWebNotDesktop(context)
               ? Column(children: [
-                  _buildAppGridDashboard(context),
+                  buildAppGridDashboard(context, _responsiveUtils, _imagePaths, controller),
                   const SizedBox(height: 8),
                   const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
                   const SizedBox(height: 8),
@@ -388,91 +387,5 @@ class MailboxView extends GetWidget<MailboxController>
         style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
       ),
     );
-  }
-
-  Widget _buildAppGridDashboard(BuildContext context) {
-    return Column(
-      children: [
-        _buildGoToApplicationsCategory(context, MailboxCategories.appGrid),
-        AnimatedContainer(
-          padding: const EdgeInsets.only(top: 8),
-          duration: const Duration(milliseconds: 400),
-          child: Obx(() {
-            return controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.EXPAND
-              ? _buildAppGridInMailboxView(context)
-              : const Offstage();
-          })
-        )
-    ]);
-  }
-
-  Widget _buildGoToApplicationsCategory(BuildContext context, MailboxCategories categories) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 8,
-        left: _responsiveUtils.isDesktop(context) ? 0 : 36,
-        right: _responsiveUtils.isDesktop(context) ? 0 : 28
-      ),
-      child: Row(
-        children: [
-          buildIconWeb(
-            splashRadius: 5,
-            iconPadding: EdgeInsets.zero,
-            minSize: 12,
-            iconSize: 28,
-            icon: SvgPicture.asset(
-              _imagePaths.icAppDashboard,
-              colorFilter: AppColor.primaryColor.asFilter(),
-              fit: BoxFit.fill
-            ),
-            tooltip: AppLocalizations.of(context).appGridTittle),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: Text(categories.getTitle(context),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColor.colorTextButton,
-                  fontWeight: FontWeight.w500
-                )
-              )
-            )
-          ),
-          buildIconWeb(
-            splashRadius: 5,
-            iconPadding: EdgeInsets.zero,
-            minSize: 12,
-            iconSize: 28,
-            icon: Obx(() => SvgPicture.asset(
-              controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
-                ? _imagePaths.icCollapseFolder
-                : _imagePaths.icExpandFolder,
-              colorFilter: AppColor.primaryColor.asFilter(),
-              fit: BoxFit.fill
-            )),
-            tooltip: AppLocalizations.of(context).appGridTittle,
-            onTap: () => controller.toggleMailboxCategories(categories)
-          ),
-        ]
-      )
-    );
-  }
-
-  Widget _buildAppGridInMailboxView(BuildContext context) {
-    return Obx(() {
-      final linagoraApps = controller.mailboxDashBoardController.appGridDashboardController.linagoraApplications.value;
-      if (linagoraApps != null && linagoraApps.apps.isNotEmpty) {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: linagoraApps.apps.length,
-          itemBuilder: (context, index) {
-            return AppListDashboardItem(linagoraApps.apps[index]);
-          }
-        );
-      }
-      return const SizedBox.shrink();
-    });
   }
 }

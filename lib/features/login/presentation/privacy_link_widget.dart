@@ -21,7 +21,10 @@ class PrivacyLinkWidget extends StatelessWidget {
           fontSize: 14),
         recognizer: TapGestureRecognizer()..onTap = () async {
           if (await canLaunchUrlString(privacyUrlString)) {
-            launchUrlString(privacyUrlString);
+            launchUrlString(
+              privacyUrlString,
+              mode: LaunchMode.externalApplication
+            );
           }
         }
       )

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-04-06T22:36:07.919763",
+  "@@last_modified": "2023-04-12T12:10:00.382074",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2748,6 +2748,12 @@
   },
   "mailboxVisibilitySubtitle": "Show/ hide your mailboxes, including your personal and team mailboxes.",
   "@mailboxVisibilitySubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyListEmailForward": "Please input at least one recipient",
+  "@emptyListEmailForward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
