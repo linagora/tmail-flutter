@@ -65,6 +65,7 @@ class AppToast {
       Color? textActionColor,
       TextStyle? textStyle,
       EdgeInsets? padding,
+      TextAlign? textAlign
     }
   ) {
     final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -151,6 +152,7 @@ class AppToast {
       trailing: trailingWidget,
       leading: leadingWidget,
       padding: padding,
+      textAlign: textAlign,
       toastDuration: infinityToast ? null : 3,
     );
   }

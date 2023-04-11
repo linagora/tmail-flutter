@@ -29,13 +29,13 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                           color: Colors.white,
                           padding: const EdgeInsets.only(top: 16, bottom: 16, left: 16),
                           child: Row(children: [
-                            (SloganBuilder(arrangedByHorizontal: true)
-                                ..setSloganText(AppLocalizations.of(context).app_name)
-                                ..setSloganTextAlign(TextAlign.center)
-                                ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
-                                ..setSizeLogo(24)
-                                ..setLogo(_imagePaths.icLogoTMail))
-                              .build(),
+                            SloganBuilder(
+                              sizeLogo: 24,
+                              text: AppLocalizations.of(context).app_name,
+                              textAlign: TextAlign.center,
+                              textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                              logo: _imagePaths.icLogoTMail
+                            ),
                             Obx(() {
                               if (controller.dashBoardController.appInformation.value != null) {
                                 return Padding(
