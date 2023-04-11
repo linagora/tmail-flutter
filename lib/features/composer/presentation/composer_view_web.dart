@@ -579,13 +579,15 @@ class ComposerView extends GetWidget<ComposerController>
                           focusNode: controller.toAddressFocusNode,
                           autoDisposeFocusNode: false,
                           isInitial: controller.isInitialRecipient.value,
-                          keyTagEditor: controller.keyToEmailTagEditor
+                          keyTagEditor: controller.keyToEmailTagEditor,
+                          nextFocusNode: controller.getNextFocusOfToEmailAddress()
                       )
                       ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                       ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                       ..addOnAddEmailAddressTypeAction((prefixEmailAddress) => controller.addEmailAddressType(prefixEmailAddress))
                       ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                      ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
+                      ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion)
+                      ..addOnFocusNextAddressAction(controller.handleFocusNextAddressAction))
                     .build()
               )),
               Obx(() => controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true
@@ -604,13 +606,16 @@ class ComposerView extends GetWidget<ComposerController>
                             expandMode: controller.ccAddressExpandMode.value,
                             controller: controller.ccEmailAddressController,
                             isInitial: controller.isInitialRecipient.value,
-                            keyTagEditor: controller.keyCcEmailTagEditor
+                            keyTagEditor: controller.keyCcEmailTagEditor,
+                            focusNode: controller.ccAddressFocusNode,
+                            nextFocusNode: controller.getNextFocusOfCcEmailAddress()
                         )
                         ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                         ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                        ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
+                        ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion)
+                        ..addOnFocusNextAddressAction(controller.handleFocusNextAddressAction))
                       .build())
                   : const SizedBox.shrink()
               ),
@@ -630,13 +635,16 @@ class ComposerView extends GetWidget<ComposerController>
                             expandMode: controller.bccAddressExpandMode.value,
                             controller: controller.bccEmailAddressController,
                             isInitial: controller.isInitialRecipient.value,
-                            keyTagEditor: controller.keyBccEmailTagEditor
+                            keyTagEditor: controller.keyBccEmailTagEditor,
+                            focusNode: controller.bccAddressFocusNode,
+                            nextFocusNode: controller.subjectEmailInputFocusNode
                         )
                         ..addOnFocusEmailAddressChangeAction((prefixEmailAddress, focus) => controller.onEmailAddressFocusChange(prefixEmailAddress, focus))
                         ..addOnShowFullListEmailAddressAction((prefixEmailAddress) => controller.showFullEmailAddress(prefixEmailAddress))
                         ..addOnDeleteEmailAddressTypeAction((prefixEmailAddress) => controller.deleteEmailAddressType(prefixEmailAddress))
                         ..addOnUpdateListEmailAddressAction((prefixEmailAddress, listEmailAddress) => controller.updateListEmailAddress(prefixEmailAddress, listEmailAddress))
-                        ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion))
+                        ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion)
+                        ..addOnFocusNextAddressAction(controller.handleFocusNextAddressAction))
                       .build())
                   : const SizedBox.shrink()
               ),
