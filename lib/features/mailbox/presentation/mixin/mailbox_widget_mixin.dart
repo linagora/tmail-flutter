@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_m
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin MailboxWidgetMixin {
@@ -320,5 +321,99 @@ mixin MailboxWidgetMixin {
         )),
       ])
     );
+  }
+
+  Widget buildAppGridDashboard(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+    ImagePaths imagePaths,
+    MailboxController controller
+  ) {
+    return Column(children: [
+      _buildGoToApplicationsCategory(
+        context,
+        responsiveUtils,
+        imagePaths,
+        MailboxCategories.appGrid,
+        controller),
+      AnimatedContainer(
+        padding: const EdgeInsets.only(top: 8),
+        duration: const Duration(milliseconds: 400),
+        child: Obx(() {
+          return controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.EXPAND
+            ? _buildAppGridInMailboxView(context, controller)
+            : const Offstage();
+        })
+      )
+    ]);
+  }
+
+  Widget _buildGoToApplicationsCategory(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+    ImagePaths imagePaths,
+    MailboxCategories categories,
+    MailboxController controller
+  ) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: 8,
+        left: responsiveUtils.isDesktop(context) ? 0 : 36,
+        right: responsiveUtils.isDesktop(context) ? 0 : 28
+      ),
+      child: Row(children: [
+        buildIconWeb(
+          splashRadius: 5,
+          iconPadding: EdgeInsets.zero,
+          minSize: 12,
+          iconSize: 28,
+          icon: SvgPicture.asset(
+            imagePaths.icAppDashboard,
+            colorFilter: AppColor.primaryColor.asFilter(),
+            fit: BoxFit.fill),
+          tooltip: AppLocalizations.of(context).appGridTittle),
+        Expanded(child: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Text(categories.getTitle(context),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+              color: AppColor.colorTextButton,
+              fontWeight: FontWeight.w500
+            )
+          )
+        )),
+        buildIconWeb(
+          icon: Obx(() => SvgPicture.asset(
+            controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
+              ? imagePaths.icCollapseFolder
+              : imagePaths.icExpandFolder,
+            colorFilter: AppColor.primaryColor.asFilter(),
+            fit: BoxFit.fill
+          )),
+          tooltip: AppLocalizations.of(context).appGridTittle,
+          onTap: () => controller.toggleMailboxCategories(categories)
+        )
+      ])
+    );
+  }
+
+  Widget _buildAppGridInMailboxView(BuildContext context, MailboxController controller) {
+    return Obx(() {
+      final linagoraApps = controller.mailboxDashBoardController.appGridDashboardController.linagoraApplications.value;
+      if (linagoraApps != null && linagoraApps.apps.isNotEmpty) {
+        return ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: linagoraApps.apps.length,
+          itemBuilder: (context, index) {
+            return AppListDashboardItem(linagoraApps.apps[index]);
+          }
+        );
+      }
+      return const SizedBox.shrink();
+    });
   }
 }

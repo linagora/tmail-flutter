@@ -8,7 +8,10 @@
     {
       "appName": "LinShare",
       "icon": "ic_linshare_app.png",
-      "appLink": "https://linshare.linagora.com/"
+      "appLink": "https://linshare.linagora.com/",
+      "androidPackageId": "com.linagora.android.linshare",
+      "iosUrlScheme": "linshare.mobile",
+      "iosAppStoreLink": "itms-apps://itunes.apple.com/us/app/linshare/id1534003175"
     },
     {
       "appName": "Inbox",

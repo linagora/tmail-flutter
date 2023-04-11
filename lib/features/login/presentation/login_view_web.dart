@@ -120,43 +120,47 @@ class LoginView extends BaseLoginView {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 24),
-                  child: (SloganBuilder(arrangedByHorizontal: true, )
-                      ..setLogoSVG(imagePaths.icJMAPStandard)
-                      ..setSizeLogo(48.0)
-                      ..setPadding(const EdgeInsets.only(left: 12))
-                      ..setSloganText(AppLocalizations.of(context).jmapStandard)
-                      ..setSloganTextStyle(const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)))
-                    .build()
+                  child: SloganBuilder(
+                    arrangedByHorizontal: true,
+                    logoSVG: imagePaths.icJMAPStandard,
+                    sizeLogo: 48.0,
+                    paddingText: const EdgeInsets.only(left: 12),
+                    text: AppLocalizations.of(context).jmapStandard,
+                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                  )
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: (SloganBuilder(arrangedByHorizontal: true, )
-                      ..setLogoSVG(imagePaths.icEncrypted)
-                      ..setSizeLogo(48.0)
-                      ..setPadding(const EdgeInsets.only(left: 12))
-                      ..setSloganText(AppLocalizations.of(context).encryptedMailbox)
-                      ..setSloganTextStyle(const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)))
-                    .build()
+                  child: SloganBuilder(
+                    arrangedByHorizontal: true,
+                    logoSVG: imagePaths.icEncrypted,
+                    sizeLogo: 48.0,
+                    paddingText: const EdgeInsets.only(left: 12),
+                    text: AppLocalizations.of(context).encryptedMailbox,
+                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                  )
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: (SloganBuilder(arrangedByHorizontal: true, )
-                      ..setLogoSVG(imagePaths.icTeam)
-                      ..setSizeLogo(48.0)
-                      ..setPadding(const EdgeInsets.only(left: 12))
-                      ..setSloganText(AppLocalizations.of(context).manageEmailAsATeam)
-                      ..setSloganTextStyle(const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)))
-                    .build()
+                  child: SloganBuilder(
+                    arrangedByHorizontal: true,
+                    logoSVG: imagePaths.icTeam,
+                    sizeLogo: 48.0,
+                    paddingText: const EdgeInsets.only(left: 12),
+                    text: AppLocalizations.of(context).manageEmailAsATeam,
+                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                  )
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 16),
-                  child: (SloganBuilder(arrangedByHorizontal: true, )
-                      ..setLogoSVG(imagePaths.icIntegration)
-                      ..setSizeLogo(48.0)
-                      ..setPadding(const EdgeInsets.only(left: 12))
-                      ..setSloganText(AppLocalizations.of(context).multipleIntegrations)
-                      ..setSloganTextStyle(const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)))
-                    .build()
+                  child: SloganBuilder(
+                    arrangedByHorizontal: true,
+                    logoSVG: imagePaths.icIntegration,
+                    sizeLogo: 48.0,
+                    paddingText: const EdgeInsets.only(left: 12),
+                    text: AppLocalizations.of(context).multipleIntegrations,
+                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                  )
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 44),
