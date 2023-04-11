@@ -78,6 +78,12 @@ class PresentationEmail with EquatableMixin {
 
   bool get isDraft => keywords?.containsKey(KeyWordIdentifier.emailDraft) == true;
 
+  bool get isAnswered => keywords?.containsKey(KeyWordIdentifier.emailAnswered) == true;
+
+  bool get isForwarded => keywords?.containsKey(KeyWordIdentifier.emailForwarded) == true;
+
+  bool get isAnsweredAndForwarded => isAnswered && isForwarded;
+
   bool get withAttachments => hasAttachment == true;
 
   String get mailboxName {

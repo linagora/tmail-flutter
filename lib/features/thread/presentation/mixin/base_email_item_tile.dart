@@ -14,6 +14,7 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
 typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
@@ -272,6 +273,59 @@ mixin BaseEmailItemTile {
                   ? imagePaths.icSelected
                   : imagePaths.icUnSelected,
               width: 24, height: 24));
+    }
+  }
+
+  Widget buildIconAnsweredOrForwarded({
+    required PresentationEmail presentationEmail,
+    double? width,
+    double? height
+  }) {
+    if (presentationEmail.isAnsweredAndForwarded) {
+      return _iconAnsweredOrForwardedWidget(
+        iconPath:  imagePaths.icReplyAndForward,
+        width: width,
+        height: height
+      );
+    } else if (presentationEmail.isAnswered) {
+      return _iconAnsweredOrForwardedWidget(
+        iconPath: imagePaths.icReply,
+        width: width,
+        height: height
+      );
+    } else if (presentationEmail.isForwarded) {
+      return _iconAnsweredOrForwardedWidget(
+        iconPath: imagePaths.icForwarded,
+        width: width,
+        height: height
+      );
+    } else {
+      return const SizedBox(width: 16, height: 16);
+    }
+  }
+
+  Widget _iconAnsweredOrForwardedWidget({
+    required String iconPath,
+    double? width,
+    double? height
+  }) {
+    return SvgPicture.asset(
+      iconPath,
+      width: width ?? 20,
+      height: height ?? 20,
+      colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+      fit: BoxFit.fill);
+  }
+
+  String? messageToolTipForAnsweredOrForwarded(BuildContext context, PresentationEmail presentationEmail) {
+    if (presentationEmail.isAnsweredAndForwarded) {
+      return AppLocalizations.of(context).repliedAndForwardedMessage;
+    } else if (presentationEmail.isAnswered) {
+      return AppLocalizations.of(context).repliedMessage;
+    } else if (presentationEmail.isForwarded){
+      return AppLocalizations.of(context).forwardedMessage;
+    } else {
+      return null;
     }
   }
 }
