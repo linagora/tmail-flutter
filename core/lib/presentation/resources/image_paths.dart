@@ -177,6 +177,8 @@ class ImagePaths {
   String get icShowMailbox => _getImagePath('ic_show_mailbox.svg');
   String get icMailboxVisibility => _getImagePath('ic_mailbox_visibility.svg');
   String get icToastSuccessMessage => _getImagePath('ic_toast_success_message.svg');
+  String get icForwarded => _getImagePath('ic_forwarded.svg');
+  String get icReplyAndForward => _getImagePath('ic_reply_and_forward.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

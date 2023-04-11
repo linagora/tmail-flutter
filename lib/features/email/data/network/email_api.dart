@@ -159,7 +159,9 @@ class EmailAPI with HandleSetErrorMixin {
             emailRequest.sentMailboxId!.generatePath() : true,
             outboxMailboxId!.generatePath() : null,
             KeyWordIdentifier.emailSeen.generatePath(): true,
-            KeyWordIdentifier.emailDraft.generatePath(): null
+            KeyWordIdentifier.emailDraft.generatePath(): null,
+            KeyWordIdentifier.emailAnswered.generatePath(): emailRequest.isEmailAnswered ? true : null,
+            KeyWordIdentifier.emailForwarded.generatePath(): emailRequest.isEmailForwarded ? true : null
         })
       });
 

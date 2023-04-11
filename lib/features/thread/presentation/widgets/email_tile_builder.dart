@@ -86,6 +86,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                   mailboxContain,
                   isSearchEmailRunning,
                   _searchQuery)),
+                buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
                 if (_presentationEmail.hasAttachment == true)
                   Padding(
                       padding: const EdgeInsets.only(left: 8),
