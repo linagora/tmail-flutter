@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_fold
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailboxView extends GetWidget<MailboxController>
@@ -189,20 +190,25 @@ class MailboxView extends GetWidget<MailboxController>
             return _buildUserInformation(context);
           }),
           _buildLoadingView(),
+          AppConfig.appGridDashboardAvailable
+            ? Column(children: [
+                buildAppGridDashboard(context, _responsiveUtils, _imagePaths, controller),
+                const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+              ])
+            : const SizedBox.shrink(),
+          const SizedBox(height: 8),
           Obx(() {
             if (controller.defaultMailboxIsNotEmpty) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: _buildMailboxCategory(
-                  context,
-                  MailboxCategories.exchange,
-                  controller.defaultRootNode
-                ),
+              return _buildMailboxCategory(
+                context,
+                MailboxCategories.exchange,
+                controller.defaultRootNode
               );
             } else {
               return const SizedBox.shrink();
             }
           }),
+          const SizedBox(height: 8),
           const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
           const SizedBox(height: 12),
           Container(
@@ -247,19 +253,19 @@ class MailboxView extends GetWidget<MailboxController>
                 ]),
               ]),
             ),
-            const SizedBox(height: 8),
-            Obx(() {
-              if (controller.personalMailboxIsNotEmpty) {
-                return _buildMailboxCategory(
-                  context,
-                  MailboxCategories.personalMailboxes,
-                  controller.personalRootNode
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            const SizedBox(height: 8),
+          const SizedBox(height: 8),
+          Obx(() {
+            if (controller.personalMailboxIsNotEmpty) {
+              return _buildMailboxCategory(
+                context,
+                MailboxCategories.personalMailboxes,
+                controller.personalRootNode
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
+          const SizedBox(height: 8),
           Obx(() {
             if (controller.teamMailboxesIsNotEmpty) {
               return _buildMailboxCategory(

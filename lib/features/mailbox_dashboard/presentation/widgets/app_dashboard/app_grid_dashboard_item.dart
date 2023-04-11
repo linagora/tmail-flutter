@@ -24,7 +24,7 @@ class AppGridDashboardItem extends StatelessWidget {
         child: InkWell(
           onTap: _openApp,
           borderRadius: const BorderRadius.all(Radius.circular(16)),
-          hoverColor: AppColor.colorItemSelected,
+          hoverColor: AppColor.colorBgMailboxSelected,
           child: Container(
             width: 98,
             padding: const EdgeInsets.symmetric(vertical: 8),

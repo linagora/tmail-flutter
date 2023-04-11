@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -7,94 +8,110 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnTapCallback = void Function();
 
-class SloganBuilder {
+class SloganBuilder extends StatelessWidget {
 
   final bool arrangedByHorizontal;
+  final String? text;
+  final TextStyle? textStyle;
+  final TextAlign? textAlign;
+  final String? logoSVG;
+  final String? logo;
+  final double? sizeLogo;
+  final OnTapCallback? onTapCallback;
+  final EdgeInsets? paddingText;
+  final EdgeInsets? padding;
+  final bool enableOverflow;
+  final Color? hoverColor;
+  final double? hoverRadius;
 
-  Key? _key;
-  String? _text;
-  TextStyle? _textStyle;
-  TextAlign? _textAlign;
-  String? _logoSVG;
-  String? _logo;
-  double? _sizeLogo;
-  OnTapCallback? _onTapCallback;
-  EdgeInsetsGeometry? _padding;
+  const SloganBuilder({
+    super.key,
+    this.arrangedByHorizontal = true,
+    this.enableOverflow = false,
+    this.text,
+    this.textStyle,
+    this.textAlign,
+    this.logoSVG,
+    this.logo,
+    this.sizeLogo,
+    this.onTapCallback,
+    this.padding,
+    this.paddingText,
+    this.hoverColor,
+    this.hoverRadius
+  });
 
-  SloganBuilder({this.arrangedByHorizontal = false});
-
-  void key(Key key) {
-    _key = key;
-  }
-
-  void setSloganText(String text) {
-    _text = text;
-  }
-
-  void setSloganTextStyle(TextStyle textStyle) {
-    _textStyle = textStyle;
-  }
-
-  void setSloganTextAlign(TextAlign textAlign) {
-    _textAlign = textAlign;
-  }
-
-  void setLogo(String logo) {
-    _logo = logo;
-  }
-
-  void setLogoSVG(String logoSVG) {
-    _logoSVG = logoSVG;
-  }
-
-  void setSizeLogo(double? size) {
-    _sizeLogo = size;
-  }
-
-  void addOnTapCallback(OnTapCallback? onTapCallback) {
-    _onTapCallback = onTapCallback;
-  }
-
-  void setPadding(EdgeInsetsGeometry? padding) {
-    _padding = padding;
-  }
-
-  Widget build() {
+  @override
+  Widget build(BuildContext context) {
     if (!arrangedByHorizontal) {
-      return InkWell(
-        onTap: () => _onTapCallback?.call(),
-        child: Column(children: [
-          _logoApp(),
-          Padding(
-            padding: _padding ?? const EdgeInsets.only(top: 16, left: 16, right: 16),
-            child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTapCallback,
+          hoverColor: hoverColor,
+          borderRadius: BorderRadius.all(Radius.circular(hoverRadius ?? 8)),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: Column(children: [
+              _logoApp(),
+              Padding(
+                padding: paddingText ?? const EdgeInsets.only(top: 16, left: 16, right: 16),
+                child: Text(
+                  text ?? '',
+                  style: textStyle,
+                  textAlign: textAlign,
+                  overflow: enableOverflow ? CommonTextStyle.defaultTextOverFlow : null,
+                  softWrap: enableOverflow ? CommonTextStyle.defaultSoftWrap : null,
+                  maxLines: enableOverflow ? 1 : null,
+                ),
+              ),
+            ]),
           ),
-        ]),
+        ),
       );
     } else {
-      return InkWell(
-        onTap: () => _onTapCallback?.call(),
-        child: Row(children: [
-          _logoApp(),
-          Padding(
-            padding: _padding ?? const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(_text ?? '', key: _key, style: _textStyle, textAlign: _textAlign),
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTapCallback,
+          hoverColor: hoverColor,
+          radius: hoverRadius ?? 8,
+          borderRadius: BorderRadius.all(Radius.circular(hoverRadius ?? 8)),
+          child: Padding(
+            padding: padding ?? EdgeInsets.zero,
+            child: Row(children: [
+              _logoApp(),
+              Padding(
+                padding: paddingText ?? const EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  text ?? '',
+                  style: textStyle,
+                  textAlign: textAlign,
+                  overflow: enableOverflow ? CommonTextStyle.defaultTextOverFlow : null,
+                  softWrap: enableOverflow ? CommonTextStyle.defaultSoftWrap : null,
+                  maxLines: enableOverflow ? 1 : null,
+                ),
+              ),
+            ]),
           ),
-        ]),
+        ),
       );
     }
   }
 
   Widget _logoApp() {
-    if (_logoSVG != null) {
-      return SvgPicture.asset(_logoSVG!, width: _sizeLogo ?? 150, height: _sizeLogo ?? 150);
-    } else if (_logo != null) {
+    if (logoSVG != null) {
+      return SvgPicture.asset(
+        logoSVG!,
+        width: sizeLogo ?? 150,
+        height: sizeLogo ?? 150);
+    } else if (logo != null) {
       return Image(
-          image: AssetImage(_logo!),
-          fit: BoxFit.fill,
-          width: _sizeLogo ?? 150,
-          height: _sizeLogo ?? 150,
-          alignment: Alignment.center);
+        image: AssetImage(logo!),
+        fit: BoxFit.fill,
+        width: sizeLogo ?? 150,
+        height: sizeLogo ?? 150,
+        alignment: Alignment.center);
     }
     return const SizedBox.shrink();
   }

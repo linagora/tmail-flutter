@@ -49,14 +49,14 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                   Container(width: 256, color: Colors.white,
                       padding: SettingsUtils.getPaddingHeaderSetting(context),
                       child: Row(children: [
-                        (SloganBuilder(arrangedByHorizontal: true)
-                          ..setSloganText(AppLocalizations.of(context).app_name)
-                          ..setSloganTextAlign(TextAlign.center)
-                          ..setSloganTextStyle(const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold))
-                          ..setSizeLogo(24)
-                          ..addOnTapCallback(() => controller.backToMailboxDashBoard(context))
-                          ..setLogo(_imagePaths.icLogoTMail))
-                            .build(),
+                        SloganBuilder(
+                          sizeLogo: 24,
+                          text: AppLocalizations.of(context).app_name,
+                          textAlign: TextAlign.center,
+                          textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                          logo: _imagePaths.icLogoTMail,
+                          onTapCallback: () => controller.backToMailboxDashBoard(context),
+                        ),
                         Obx(() {
                           if (controller.appInformation.value != null) {
                             return Padding(padding: const EdgeInsets.only(top: 6),

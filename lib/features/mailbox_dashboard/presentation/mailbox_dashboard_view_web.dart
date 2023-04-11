@@ -69,16 +69,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       alignment: Alignment.center,
                       height: 80,
                       child: Row(children: [
-                        (SloganBuilder(arrangedByHorizontal: true)
-                            ..setSloganText(AppLocalizations.of(context).app_name)
-                            ..setSloganTextAlign(TextAlign.center)
-                            ..setSloganTextStyle(const TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold))
-                            ..setSizeLogo(24)
-                            ..setLogo(imagePaths.icLogoTMail))
-                          .build(),
+                        SloganBuilder(
+                          sizeLogo: 24,
+                          text: AppLocalizations.of(context).app_name,
+                          textAlign: TextAlign.center,
+                          textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                          logo: imagePaths.icLogoTMail
+                        ),
                         Obx(() {
                           if (controller.appInformation.value != null) {
                             return Padding(padding: const EdgeInsets.only(top: 6),

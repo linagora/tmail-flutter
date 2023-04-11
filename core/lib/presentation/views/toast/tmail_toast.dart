@@ -38,6 +38,9 @@ class TMailToast {
   /// defines the padding widget of the toast
   EdgeInsets? padding;
 
+  /// defines the align text of the toast
+  TextAlign? textAlign;
+
   static showToast(
       text,
       BuildContext context, {
@@ -55,6 +58,7 @@ class TMailToast {
         leading,
         width,
         padding,
+        textAlign
       }) {
     assert(text != null);
     ToastView.dismiss();
@@ -70,6 +74,7 @@ class TMailToast {
       leading,
       width,
       padding,
+      textAlign,
       toastDuration: toastDuration,
     );
   }
@@ -96,6 +101,7 @@ class ToastView {
     Widget? leading,
     double? width,
     EdgeInsets? padding,
+    TextAlign? textAlign,
     {int? toastDuration}
   ) async {
     overlayState = Overlay.of(context, rootOverlay: false);
@@ -130,7 +136,8 @@ class ToastView {
                   fontSize: 15,
                   color: Colors.white,
                   fontWeight: FontWeight.normal
-                )
+                ),
+                textAlign: textAlign
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,7 +151,8 @@ class ToastView {
                         fontSize: 15,
                         color: Colors.white,
                         fontWeight: FontWeight.normal
-                      )
+                      ),
+                      textAlign: textAlign
                     )
                   )),
                   if (trailing != null) trailing
