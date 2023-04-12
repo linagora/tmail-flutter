@@ -94,11 +94,13 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
   }
 
   Widget buildInputCredentialForm(BuildContext context) {
-    return Column(
-      children: [
-        buildUserNameInput(context),
-        buildPasswordInput(context)
-      ],
+    return AutofillGroup(
+      child: Column(
+        children: [
+          buildUserNameInput(context),
+          buildPasswordInput(context)
+        ],
+      ),
     );
   }
 
@@ -111,6 +113,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
           controller: loginController.usernameInputController,
           onChanged: (value) => loginController.setUserNameText(value),
           textInputAction: TextInputAction.next,
+          autocorrect: false,
+          autofillHints: [AutofillHints.email],
           keyboardType: TextInputType.emailAddress,
           decoration: (LoginInputDecorationBuilder()
               ..setLabelText(AppLocalizations.of(context).email)
@@ -141,16 +145,21 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 40, right: 24, left: 24),
       child: Container(
-        child: (LoginTextInputBuilder(context, imagePaths)
-            ..setOnSubmitted((value) => loginController.handleLoginPressed())
-            ..passwordInput(true)
-            ..key(const Key('login_password_input'))
-            ..obscureText(true)
-            ..onChange((value) => loginController.setPasswordText(value))
-            ..textInputAction(TextInputAction.done)
-            ..hintText(AppLocalizations.of(context).password)
-            ..setFocusNode(passFocusNode))
-          .build()));
+        child: (LoginTextInputBuilder(
+            context,
+            imagePaths,
+            autocorrect: false,
+            autofillHints: [AutofillHints.password]
+          )
+          ..setOnSubmitted((value) => loginController.handleLoginPressed())
+          ..passwordInput(true)
+          ..key(const Key('login_password_input'))
+          ..obscureText(true)
+          ..onChange(loginController.setPasswordText)
+          ..textInputAction(TextInputAction.done)
+          ..hintText(AppLocalizations.of(context).password)
+          ..setFocusNode(passFocusNode))
+        .build()));
   }
 
   Widget buildLoadingCircularProgress() {

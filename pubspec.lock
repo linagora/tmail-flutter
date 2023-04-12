@@ -772,11 +772,12 @@ packages:
   flutter_typeahead:
     dependency: "direct main"
     description:
-      name: flutter_typeahead
-      sha256: "3f7509bc1d43e245e0bfdc180f206508bc5ab0e0d84ce1b891cb0e4176b7802f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.6"
+      path: "."
+      ref: support-autofillhint
+      resolved-ref: "121707e2c283dae5299dc22974850d65f6c97b83"
+      url: "https://github.com/dab246/flutter_typeahead.git"
+    source: git
+    version: "4.3.7"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
