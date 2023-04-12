@@ -7,6 +7,7 @@ import 'package:core/utils/build_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/password.dart';
@@ -241,6 +242,8 @@ class LoginController extends ReloadableController {
   }
 
   void handleLoginPressed() {
+    TextInput.finishAutofillContext();
+
     _saveRecentLoginUsername();
     log('LoginController::handleLoginPressed(): ${loginFormType.value}');
     if (loginFormType.value == LoginFormType.ssoForm) {

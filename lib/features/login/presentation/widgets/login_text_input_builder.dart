@@ -24,11 +24,19 @@ class LoginTextInputBuilder {
   bool? _passwordInput;
   OnSubmitted? _onSubmitted;
   FocusNode? _focusNode;
-
+  final List<String>? autofillHints;
+  final bool autocorrect;
   final BuildContext context;
   final ImagePaths imagePaths;
 
-  LoginTextInputBuilder(this.context, this.imagePaths);
+  LoginTextInputBuilder(
+    this.context,
+    this.imagePaths,
+    {
+      this.autocorrect = true,
+      this.autofillHints
+    }
+  );
 
   void key(Key key) {
     _key = key;
@@ -119,6 +127,8 @@ class LoginTextInputBuilder {
                   onChanged: (value) => _onTextChanged(value, setState),
                   obscureText: _obscureText ?? false,
                   textInputAction: _textInputAction,
+                  autofillHints: autofillHints,
+                  autocorrect: autocorrect,
                   controller: _textEditingController,
                   cursorColor: AppColor.primaryColor,
                   style: const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16, fontWeight: FontWeight.normal),
