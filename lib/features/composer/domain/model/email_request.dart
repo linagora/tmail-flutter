@@ -32,7 +32,7 @@ class EmailRequest with EquatableMixin {
     emailActionType
   ];
 
-  bool get isEmailAnswered => emailActionType == EmailActionType.reply;
+  bool get isEmailAnswered => emailActionType == EmailActionType.reply || emailActionType == EmailActionType.replyAll;
 
   bool get isEmailForwarded => emailActionType == EmailActionType.forward;
 }
