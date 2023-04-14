@@ -1,6 +1,11 @@
-## Unreleased
+## [0.7.7] - 2023-04-14
 ### Added
 - \#1599 Remove notification when read and delete permanent email
+- \#1100 Display Answered / Forwarded keywords
+- \#1600 No notification for content of Draft, Sent, Outbox, email already seen
+
+### Changed
+- \#1598 Dismiss should mark emails in the spam box as seen
 
 ### Fixed
 - \#1613 When network is down, Tmail shouldn't prompt for a password
@@ -9,6 +14,22 @@
 - \#1687 Set name email and counter displayed in a single line
 - \#1685 Fix hover and click to button show all or hide attachments
 - \#1694 The Cancel/Save button is hidden in IdentityCreatorView
+- \#1688 \[Identity\] \[Crashed\] Tmail UI is broken after user create identity successfully by html style
+- \#1684 \[Identity\] User click on blank area but system redirect user to 404 not found page <weird link>
+- \#1679 \[Identity\] Button 'X' : Sometime it's hidden, sometime it's displayed
+- \#1693 \[Identity\] There are 2 cursors on Create Identity screen
+- \#1667 \[Energy-Economy\] Do not request spam on every email I move
+- \#1698 \[Mailbox\] System not redirect correct url when user double click many times to view email in mailbox
+- \#1677 \[ManageAccount\]\[Fowarding\] Email validation is not working well
+- \#1655 Add a line break after signature in composer
+- \#1665 App grid: Manage 3 apps and less beautifully
+- \#1544 \[UX\] User can not move to another fields by press TAB
+- \#1663 \[Compose\] Use cannot click to compose after system display an error message
+- \#1654 \[SLO\] Redirect to SLO page of the OIDC provider
+- \#1631 \[Notification\] User cannot receive new email notification
+- \#1666 \[COMPOSER\] Keyboard overriding rich text context menu on mobile
+- \#1569 \[BackgroundApp\] Android system keeps showing an app that run at background
+- \#1749 \[Drats\] User cannot save drafts or send email if that email already at drafts mailbox
 
 ## [0.7.6] - 2023-04-06
 ### Added
@@ -50,4 +71,5 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.7.7]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.7
 [0.7.6]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.6
