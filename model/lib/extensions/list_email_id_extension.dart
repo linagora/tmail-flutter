@@ -10,34 +10,44 @@ extension ListEmailIdExtension on List<EmailId> {
   List<Id> toIds() => map((emailId) => emailId.id).toList();
 
   Map<Id, PatchObject> generateMapUpdateObjectMarkAsRead(ReadActions readActions) {
-    final Map<Id, PatchObject> maps = {};
-    forEach((emailId) {
-      maps[emailId.id] = KeyWordIdentifier.emailSeen.generateReadActionPath(readActions);
-    });
-    return maps;
+    return {
+      for (var emailId in this)
+        emailId.id: KeyWordIdentifier.emailSeen.generateReadActionPath(readActions)
+    };
   }
 
   Map<Id, PatchObject> generateMapUpdateObjectMoveToMailbox(MailboxId currentMailboxId, MailboxId destinationMailboxId) {
-    final Map<Id, PatchObject> maps = {};
-    forEach((emailId) {
-      maps[emailId.id] = currentMailboxId.generateMoveToMailboxActionPath(destinationMailboxId);
-    });
-    return maps;
+    return {
+      for (var emailId in this)
+        emailId.id: currentMailboxId.generateMoveToMailboxActionPath(destinationMailboxId)
+    };
   }
 
   Map<Id, PatchObject> generateMapUpdateObjectMarkAsStar(MarkStarAction markStarAction) {
-    final Map<Id, PatchObject> maps = {};
-    forEach((emailId) {
-      maps[emailId.id] = KeyWordIdentifier.emailFlagged.generateMarkStarActionPath(markStarAction);
-    });
-    return maps;
+    return {
+      for (var emailId in this)
+        emailId.id: KeyWordIdentifier.emailFlagged.generateMarkStarActionPath(markStarAction)
+    };
   }
 
   Map<Id, PatchObject> generateMapUpdateObjectMarkAsSpam(MailboxId spamMailboxId) {
-    final Map<Id, PatchObject> maps = {};
-    forEach((emailId) {
-      maps[emailId.id] = spamMailboxId.generateActionPath();
-    });
-    return maps;
+    return {
+      for (var emailId in this)
+        emailId.id: spamMailboxId.generateActionPath()
+    };
+  }
+
+  Map<Id, PatchObject> generateMapUpdateObjectMarkAsAnswered() {
+    return {
+      for (var emailId in this)
+        emailId.id: KeyWordIdentifier.emailAnswered.generateAnsweredActionPath()
+    };
+  }
+
+  Map<Id, PatchObject> generateMapUpdateObjectMarkAsForwarded() {
+    return {
+      for (var emailId in this)
+        emailId.id: KeyWordIdentifier.emailForwarded.generateForwardedActionPath()
+    };
   }
 }

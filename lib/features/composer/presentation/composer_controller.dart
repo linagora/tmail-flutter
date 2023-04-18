@@ -807,15 +807,14 @@ class ComposerController extends BaseController {
 
     if (arguments != null && accountId != null && userProfile != null && session != null) {
       final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
-      final submissionCreateId = Id(_uuid.v1());
       final emailRequest = EmailRequest(
         email,
-        submissionCreateId,
         sentMailboxId: sentMailboxId,
         identity: identitySelected.value,
         emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
           ? arguments.presentationEmail?.id
           : null,
+        emailIdAnsweredOrForwarded: arguments.presentationEmail?.id,
         emailActionType: arguments.emailActionType
       );
       final mailboxRequest = outboxMailboxId == null
