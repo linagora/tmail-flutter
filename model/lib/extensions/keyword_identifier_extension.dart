@@ -19,4 +19,16 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
       generatePath(): markStarAction == MarkStarAction.markStar ? true : null
     });
   }
+
+  PatchObject generateAnsweredActionPath() {
+    return PatchObject({
+      generatePath(): true
+    });
+  }
+
+  PatchObject generateForwardedActionPath() {
+    return PatchObject({
+      generatePath(): true
+    });
+  }
 }
