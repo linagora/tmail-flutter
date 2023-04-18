@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -13,10 +14,12 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/core/reference_prefix.dart';
+import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -141,31 +144,47 @@ class EmailAPI with HandleSetErrorMixin {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(idCreateMethod, emailNeedsToBeCreated);
 
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+    final submissionCreateId = Id(_uuid.v1());
+    final mailFrom = Address(emailNeedsToBeCreated.from?.first.email ?? '');
+    final recipientsList = emailNeedsToBeCreated.getRecipientEmailAddressList()
+      .map((emailAddress) => Address(emailAddress))
+      .toSet();
+    final emailSubmissionId = EmailSubmissionId(ReferenceId(ReferencePrefix.defaultPrefix, submissionCreateId));
+    Map<EmailSubmissionId, PatchObject> mapEmailSubmissionUpdated = {
+      emailSubmissionId: PatchObject({
+        emailRequest.sentMailboxId!.generatePath() : true,
+        outboxMailboxId!.generatePath() : null,
+        KeyWordIdentifier.emailSeen.generatePath(): true,
+        KeyWordIdentifier.emailDraft.generatePath(): null
+      })
+    };
+    final emailSubmission = EmailSubmission(
+      identityId: emailRequest.identity?.id?.id,
+      emailId: EmailId(ReferenceId(ReferencePrefix.defaultPrefix, idCreateMethod)),
+      envelope: Envelope(mailFrom, recipientsList));
 
     final setEmailSubmissionMethod = SetEmailSubmissionMethod(accountId)
-      ..addCreate(
-          emailRequest.submissionCreateId,
-          EmailSubmission(
-              identityId: emailRequest.identity?.id?.id,
-              emailId: EmailId(ReferenceId(ReferencePrefix.defaultPrefix, idCreateMethod)),
-              envelope: Envelope(
-                  Address(emailNeedsToBeCreated.from?.first.email ?? ''),
-                  emailNeedsToBeCreated.getRecipientEmailAddressList().map((emailAddress) => Address(emailAddress)).toSet()
-              )
-          ))
-      ..addOnSuccessUpdateEmail({
-          EmailSubmissionId(ReferenceId(ReferencePrefix.defaultPrefix, emailRequest.submissionCreateId)): PatchObject({
-            emailRequest.sentMailboxId!.generatePath() : true,
-            outboxMailboxId!.generatePath() : null,
-            KeyWordIdentifier.emailSeen.generatePath(): true,
-            KeyWordIdentifier.emailDraft.generatePath(): null,
-            KeyWordIdentifier.emailAnswered.generatePath(): emailRequest.isEmailAnswered ? true : null,
-            KeyWordIdentifier.emailForwarded.generatePath(): emailRequest.isEmailForwarded ? true : null
-        })
-      });
+      ..addCreate(submissionCreateId, emailSubmission)
+      ..addOnSuccessUpdateEmail(mapEmailSubmissionUpdated);
 
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
     final setEmailSubmissionInvocation = requestBuilder.invocation(setEmailSubmissionMethod);
+
+    SetEmailMethod? markAsAnsweredOrForwardedSetMethod;
+    RequestInvocation? markAsAnsweredOrForwardedInvocation;
+    SetEmailResponse? markAsAnsweredOrForwardedSetResponse;
+
+    if (emailRequest.isEmailAnswered) {
+      markAsAnsweredOrForwardedSetMethod = SetEmailMethod(accountId)
+        ..addUpdates([emailRequest.emailIdAnsweredOrForwarded!].generateMapUpdateObjectMarkAsAnswered());
+
+      markAsAnsweredOrForwardedInvocation = requestBuilder.invocation(markAsAnsweredOrForwardedSetMethod);
+    } else if (emailRequest.isEmailForwarded) {
+      markAsAnsweredOrForwardedSetMethod = SetEmailMethod(accountId)
+        ..addUpdates([emailRequest.emailIdAnsweredOrForwarded!].generateMapUpdateObjectMarkAsForwarded());
+
+      markAsAnsweredOrForwardedInvocation = requestBuilder.invocation(markAsAnsweredOrForwardedSetMethod);
+    }
 
     final capabilities = setEmailSubmissionMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -184,11 +203,18 @@ class EmailAPI with HandleSetErrorMixin {
       SetEmailSubmissionResponse.deserialize,
       methodName: setEmailInvocation.methodName);
 
+    if (markAsAnsweredOrForwardedInvocation != null) {
+      markAsAnsweredOrForwardedSetResponse = response.parse<SetEmailResponse>(
+        markAsAnsweredOrForwardedInvocation.methodCallId,
+        SetEmailResponse.deserialize);
+    }
+
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final listEntriesErrors = _handleSetEmailResponse(
-      response: setEmailResponse,
-      submissionResponse: setEmailSubmissionResponse
-    );
+    final listEntriesErrors = _handleSetEmailResponse([
+      setEmailResponse,
+      setEmailSubmissionResponse,
+      markAsAnsweredOrForwardedSetResponse
+    ]);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
     if (emailCreated != null && mapErrors.isEmpty) {
@@ -198,27 +224,18 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  List<MapEntry<Id, SetError>> _handleSetEmailResponse({
-    SetEmailResponse? response,
-    SetEmailSubmissionResponse? submissionResponse
-  }) {
+  List<MapEntry<Id, SetError>> _handleSetEmailResponse(List<SetResponse?> listSetResponse) {
+    final listSetResponseNotNull = listSetResponse.whereNotNull().toList();
+    if (listSetResponseNotNull.isEmpty) {
+      return [];
+    }
+
     final List<MapEntry<Id, SetError>> remainedErrors = [];
-    if (response != null) {
+    for (var response in listSetResponseNotNull) {
       handleSetErrors(
         notDestroyedError: response.notDestroyed,
         notUpdatedError: response.notUpdated,
         notCreatedError: response.notCreated,
-        unCatchErrorHandler: (setErrorEntry) {
-          remainedErrors.add(setErrorEntry);
-          return false;
-        }
-      );
-    }
-    if (submissionResponse != null) {
-      handleSetErrors(
-        notDestroyedError: submissionResponse.notDestroyed,
-        notUpdatedError: submissionResponse.notUpdated,
-        notCreatedError: submissionResponse.notCreated,
         unCatchErrorHandler: (setErrorEntry) {
           remainedErrors.add(setErrorEntry);
           return false;
@@ -428,7 +445,6 @@ class EmailAPI with HandleSetErrorMixin {
     return listEmailIdRequest.where((emailId) => listUpdated.expand((e) => e).toList().contains(emailId.id)).toList();
   }
 
-
   Future<List<Email>> markAsStar(
     Session session,
     AccountId accountId,
@@ -490,7 +506,7 @@ class EmailAPI with HandleSetErrorMixin {
     );
 
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse);
+    final listEntriesErrors = _handleSetEmailResponse([setEmailResponse]);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
     if (emailCreated != null && mapErrors.isEmpty) {
@@ -554,7 +570,7 @@ class EmailAPI with HandleSetErrorMixin {
     );
 
     final emailUpdated = setEmailResponse?.created?[idCreateMethod];
-    final listEntriesErrors = _handleSetEmailResponse(response: setEmailResponse);
+    final listEntriesErrors = _handleSetEmailResponse([setEmailResponse]);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
     if (emailUpdated != null && mapErrors.isEmpty) {
