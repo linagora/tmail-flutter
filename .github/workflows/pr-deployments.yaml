@@ -1,0 +1,69 @@
+on:
+  pull_request:
+    paths:
+      - "**/*.dart"
+
+name: Deploy PR on Github Pages
+
+jobs:
+  deploy:
+    name: Build web version and deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: PR-${{ github.event.pull_request.number }}
+      url: ${{ steps.configure.outputs.URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.7.5"
+          channel: "stable"
+          cache: true
+          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
+          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+
+      - name: Run prebuild
+        run: bash prebuild.sh
+
+      - name: Configure environments
+        id: configure
+        env:
+          FOLDER: ${{ github.event.pull_request.number }}
+        run: |
+          sed -i "s|SERVER_URL=.*|SERVER_URL=https://gateway.upn.integration-open-paas.org/|g" env.file
+          sed -i "s|DOMAIN_REDIRECT_URL=.*|DOMAIN_REDIRECT_URL=https://$GITHUB_REPOSITORY_OWNER.github.io/${GITHUB_REPOSITORY##*/}/$FOLDER|g" env.file
+          echo "URL=https://$GITHUB_REPOSITORY_OWNER.github.io/${GITHUB_REPOSITORY##*/}/$FOLDER" >> $GITHUB_OUTPUT
+
+      - name: Build
+        env:
+          FOLDER: ${{ github.event.pull_request.number }}
+        run: flutter build web --profile --verbose --base-href "/${GITHUB_REPOSITORY##*/}/$FOLDER/"
+
+      - name: Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_dir: ${{ github.event.pull_request.number }}
+          keep_files: true
+          publish_dir: "build/web"
+
+      - name: Find deployment comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          comment-author: "github-actions[bot]"
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: "This PR has been deployed to"
+
+      - name: Create or update deployment comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            This PR has been deployed to ${{ steps.configure.outputs.URL }}.
+          edit-mode: replace
