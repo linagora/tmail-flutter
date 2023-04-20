@@ -1632,6 +1632,7 @@ class ComposerController extends BaseController {
   }
 
   void handleInitHtmlEditorWeb(String initContent) {
+    richTextWebController.editorController.setFullScreen();
     onChangeTextEditorWeb(initContent);
     richTextWebController.setEnableCodeView();
   }
