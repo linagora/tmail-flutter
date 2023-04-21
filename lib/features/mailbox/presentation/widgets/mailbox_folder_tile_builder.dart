@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
@@ -299,7 +300,7 @@ class MailBoxFolderTileBuilder {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          _mailboxNode.item.name?.name ?? '',
+          (_mailboxNode.item.name?.name ?? '').withUnicodeCharacter,
           maxLines: 1,
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
@@ -310,7 +311,7 @@ class MailBoxFolderTileBuilder {
         ),
         if(_mailboxNode.item.isTeamMailboxes)
           Text(
-            _mailboxNode.item.emailTeamMailBoxes ?? '',
+            (_mailboxNode.item.emailTeamMailBoxes ?? '').withUnicodeCharacter,
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
@@ -204,7 +205,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
 
   Widget _buildTitleItem() {
     return Text(
-      widget._presentationMailbox.name?.name ?? '',
+      (widget._presentationMailbox.name?.name ?? '').withUnicodeCharacter,
       maxLines: 1,
       overflow: CommonTextStyle.defaultTextOverFlow,
       softWrap: CommonTextStyle.defaultSoftWrap,
@@ -218,7 +219,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   Widget _buildSubtitleItem() {
     if (widget._presentationMailbox.mailboxPath?.isNotEmpty == true) {
       return Text(
-        widget._presentationMailbox.mailboxPath ?? '',
+        (widget._presentationMailbox.mailboxPath ?? '').withUnicodeCharacter,
         maxLines: 1,
         overflow: CommonTextStyle.defaultTextOverFlow,
         softWrap: CommonTextStyle.defaultSoftWrap,
@@ -230,7 +231,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
       );
     } else if (widget._presentationMailbox.isTeamMailboxes) {
       return Text(
-        widget._presentationMailbox.emailTeamMailBoxes ?? '',
+        (widget._presentationMailbox.emailTeamMailBoxes ?? '').withUnicodeCharacter,
         maxLines: 1,
         softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,
