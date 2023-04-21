@@ -945,7 +945,6 @@ a.note-dropdown-item,a.note-dropdown-item:hover {
 .note-editor.note-airframe .note-editing-area .note-codable,.note-editor.note-frame .note-editing-area .note-codable {
   display: none;
   width: 100%;
-  padding: 10px;
   border: none;
   box-shadow: none;
   font-family: Menlo,Monaco,monospace,sans-serif;

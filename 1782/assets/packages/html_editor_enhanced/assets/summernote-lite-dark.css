@@ -2,7 +2,7 @@
 	background: #121212 !important;
 }
 .panel-heading, .note-toolbar, .note-statusbar {
-	background: #fff !important;
+	display: none;
 }
 input, select, textarea, .CodeMirror, .note-editable, [class^="note-icon-"], .caseConverter-toggle,
 button > b, button > code, button > var, button > kbd, button > samp, button > small, button > ins, button > del, button > p, button > i {
