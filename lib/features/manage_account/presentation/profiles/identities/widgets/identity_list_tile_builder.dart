@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
@@ -65,7 +66,7 @@ class IdentityListTileBuilder extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
                         child: Text(
-                          identity.name ?? '',
+                          (identity.name ?? '').withUnicodeCharacter,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           style: const TextStyle(
@@ -122,7 +123,7 @@ class IdentityListTileBuilder extends StatelessWidget {
             child: SvgPicture.asset(imagePath, width: 15, height: 15))),
         const SizedBox(width: 4),
         Expanded(child: Text(
-          text ?? '',
+          (text ?? '').withUnicodeCharacter,
           style: const TextStyle(
             color: AppColor.colorEmailAddressFull,
             fontWeight: FontWeight.normal,
@@ -150,7 +151,8 @@ class IdentityListTileBuilder extends StatelessWidget {
               decoration: TextDecoration.underline,
               color: AppColor.colorTextButton))),
         const SizedBox(width: 4),
-        Expanded(child: Text(text ?? '',
+        Expanded(child: Text(
+          (text ?? '').withUnicodeCharacter,
           style: const TextStyle(
             color: AppColor.colorEmailAddressFull,
             fontWeight: FontWeight.normal,

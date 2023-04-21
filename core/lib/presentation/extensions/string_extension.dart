@@ -1,4 +1,5 @@
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
 
 extension StringExtension on String {
 
@@ -37,5 +38,12 @@ extension StringExtension on String {
       logError('StringExtension::firstLetterToUpperCase(): $e');
       return '';
     }
+  }
+
+  String get withUnicodeCharacter {
+    return characters
+      .replaceAll(Characters(' '), Characters('\u{00A0}'))
+      .replaceAll(Characters('-'), Characters('\u{2011}'))
+      .toString();
   }
 }
