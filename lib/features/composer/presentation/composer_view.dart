@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
@@ -352,7 +353,7 @@ class ComposerView extends GetWidget<ComposerController>
               left: AppUtils.isDirectionRTL(context) ? 8 : 12
             ),
             child: Text(
-              controller.identitySelected.value?.email ?? '',
+              (controller.identitySelected.value?.email ?? '').withUnicodeCharacter,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.normal, color: AppColor.colorEmailAddressPrefix),
