@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
@@ -59,7 +60,7 @@ class UserInformationWidgetBuilder extends StatelessWidget {
                   top: 10
                 ),
                 child: Text(
-                    _userProfile != null ? '${_userProfile?.email}' : '',
+                    _userProfile != null ? '${_userProfile?.email}'.withUnicodeCharacter : '',
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,

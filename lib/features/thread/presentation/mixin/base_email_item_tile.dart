@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
@@ -39,7 +40,7 @@ mixin BaseEmailItemTile {
               borderRadius: BorderRadius.circular(10),
               color: AppColor.backgroundCounterMailboxColor),
           child: Text(
-            email.mailboxName,
+            email.mailboxName.withUnicodeCharacter,
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
@@ -84,7 +85,7 @@ mixin BaseEmailItemTile {
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          informationSender(email, mailbox),
+          informationSender(email, mailbox).withUnicodeCharacter,
           query?.value ?? '',
           TextStyle(
               fontSize: 15,
@@ -98,7 +99,7 @@ mixin BaseEmailItemTile {
       ).build();
     } else {
       return Text(
-          informationSender(email, mailbox),
+          informationSender(email, mailbox).withUnicodeCharacter,
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
           maxLines: 1,
@@ -118,7 +119,7 @@ mixin BaseEmailItemTile {
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          email.getEmailTitle(),
+          email.getEmailTitle().withUnicodeCharacter,
           query?.value ?? '',
           TextStyle(
               fontSize: 13,
@@ -132,7 +133,7 @@ mixin BaseEmailItemTile {
       ).build();
     } else {
       return Text(
-          email.getEmailTitle(),
+          email.getEmailTitle().withUnicodeCharacter,
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
           maxLines: 1,
@@ -151,7 +152,7 @@ mixin BaseEmailItemTile {
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          email.getPartialContent(),
+          email.getPartialContent().withUnicodeCharacter,
           query?.value ?? '',
           const TextStyle(
               fontSize: 13,
@@ -164,7 +165,7 @@ mixin BaseEmailItemTile {
       ).build();
     } else {
       return Text(
-          email.getPartialContent(),
+          email.getPartialContent().withUnicodeCharacter,
           maxLines: 1,
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
