@@ -450,7 +450,7 @@ class EmailAddressInputBuilder {
       return [];
     }
 
-    return tmailSuggestion;
+    return tmailSuggestion.toSet().toList();
   }
 
   bool _isEmailAddressValid(String emailAddress) => GetUtils.isEmail(emailAddress);
