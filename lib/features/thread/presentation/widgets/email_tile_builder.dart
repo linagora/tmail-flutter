@@ -163,9 +163,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   }
   
   Widget _buildCalendarIcon() {
-    // var name = _presentationEmail.from!.last;
-    var name = "X-MEETING-METHOD" ;
-    if (name == "X-MEETING-METHOD") {
+    if (_presentationEmail.headersName == "X-MEETING-METHOD") {
       return buildIconCalendar(_presentationEmail);
     } else {
       return Container();

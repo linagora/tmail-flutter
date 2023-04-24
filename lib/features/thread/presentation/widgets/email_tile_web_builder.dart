@@ -147,11 +147,19 @@ class EmailTileBuilder with BaseEmailItemTile {
                             width: 9,
                             height: 9,
                             fit: BoxFit.fill)),
-                  Expanded(child: buildInformationSender(
-                    _presentationEmail,
-                    mailboxContain,
-                    isSearchEmailRunning,
-                    _searchQuery
+                  Expanded(child: Row(
+                    children: [
+                      buildInformationSender(
+                        _presentationEmail,
+                        mailboxContain,
+                        isSearchEmailRunning,
+                        _searchQuery
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left:8.0),
+                        child: _buildCalendarIcon(),
+                      )
+                    ],
                   )),
                   buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
                   if (_presentationEmail.hasAttachment == true)
@@ -244,11 +252,19 @@ class EmailTileBuilder with BaseEmailItemTile {
                                 width: 9,
                                 height: 9,
                                 fit: BoxFit.fill)),
-                      Expanded(child: buildInformationSender(
-                        _presentationEmail,
-                        mailboxContain,
-                        isSearchEmailRunning,
-                        _searchQuery
+                      Expanded(child: Row(
+                        children: [
+                          buildInformationSender(
+                            _presentationEmail,
+                            mailboxContain,
+                            isSearchEmailRunning,
+                            _searchQuery
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left:8.0),
+                            child: _buildCalendarIcon(),
+                          )
+                        ],
                       )),
                       if (isHoverItem)
                         const SizedBox(width: 120)
@@ -370,11 +386,19 @@ class EmailTileBuilder with BaseEmailItemTile {
             const SizedBox(width: 10),
             SizedBox(
               width: 160,
-              child: buildInformationSender(
-                _presentationEmail,
-                mailboxContain,
-                isSearchEmailRunning,
-                _searchQuery
+              child: Row(
+                children: [
+                  buildInformationSender(
+                    _presentationEmail,
+                    mailboxContain,
+                    isSearchEmailRunning,
+                    _searchQuery
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left:8.0),
+                    child: _buildCalendarIcon(),
+                  ),
+                ],
               )),
             const SizedBox(width: 24),
             Expanded(child: _buildSubjectAndContent()),
@@ -551,6 +575,14 @@ class EmailTileBuilder with BaseEmailItemTile {
           _presentationEmail,
           iconSize: iconSize ?? 48,
           textStyle: textStyle);
+    }
+  }
+
+   Widget _buildCalendarIcon() {
+    if (_presentationEmail.headersName == "X-MEETING-METHOD") {
+      return buildIconCalendar(_presentationEmail);
+    } else {
+      return Container();
     }
   }
 }
