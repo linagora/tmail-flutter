@@ -337,7 +337,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = this._widget._mailbox_searched_item_builder$_presentationMailbox.name;
       t1 = t1 == null ? _null : t1.name;
-      return A.Text$(t1 == null ? "" : t1, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_cMb, _null, _null, _null);
+      return A.Text$(A.StringExtension_get_withUnicodeCharacter(t1 == null ? "" : t1), _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_cMb, _null, _null, _null);
     },
     _mailbox_searched_item_builder$_buildSubtitleItem$0() {
       var _null = null,
@@ -345,12 +345,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1.mailboxPath,
         t3 = t2 == null;
       if ((t3 ? _null : t2.length !== 0) === true)
-        return A.Text$(t3 ? "" : t2, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_chs1, _null, _null, _null);
+        return A.Text$(A.StringExtension_get_withUnicodeCharacter(t3 ? "" : t2), _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_chs1, _null, _null, _null);
       else {
         t2 = t1.namespace;
         if (!(t2 == null || t2.$eq(0, new A.Namespace("Personal"))) && !t1.hasParentId$0()) {
           t1 = this._widget._mailbox_searched_item_builder$_presentationMailbox.get$emailTeamMailBoxes();
-          return A.Text$(t1 == null ? "" : t1, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_chs1, _null, _null, _null);
+          return A.Text$(A.StringExtension_get_withUnicodeCharacter(t1 == null ? "" : t1), _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_chs1, _null, _null, _null);
         } else
           return C.SizedBox_0_0_null_null;
       }
@@ -449,7 +449,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 77
+    $signature: 76
   };
   B.SearchMailboxView__buildTextFieldSearchInput_closure.prototype = {
     call$1(value) {
@@ -480,13 +480,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t3._as(t2.get(t1)).listMailboxSearched;
       return A.ListView$builder(null, new B.SearchMailboxView__buildMailboxListView__closure(t1), J.get$length$asx(t2.get$value(t2)), null, C.ValueKey_list_mailbox_searched, t4, null, false, C.Axis_1, true);
     },
-    $signature: 247
+    $signature: 276
   };
   B.SearchMailboxView__buildMailboxListView__closure.prototype = {
     call$2(context, index) {
       return new A.LayoutBuilder(new B.SearchMailboxView__buildMailboxListView___closure(this.$this, index), null);
     },
-    $signature: 1472
+    $signature: 1471
   };
   B.SearchMailboxView__buildMailboxListView___closure.prototype = {
     call$2(context, constraints) {
@@ -525,19 +525,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.closeSearchView$1(t2);
       return null;
     },
-    $signature: 134
+    $signature: 154
   };
   B.SearchMailboxView__buildMailboxListView____closure0.prototype = {
     call$2(position, mailbox) {
       return this.$this._openMailboxMenuAction$3$position(this.context, mailbox, position);
     },
-    $signature: 1473
+    $signature: 1472
   };
   B.SearchMailboxView__buildMailboxListView____closure1.prototype = {
     call$1(mailbox) {
       return this.$this._openMailboxMenuAction$2(this.context, mailbox);
     },
-    $signature: 134
+    $signature: 154
   };
   B.SearchMailboxView__listPopupMenuItemAction_closure.prototype = {
     call$1(action) {
@@ -573,7 +573,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return t1.setState$1(new B._MailboxSearchedItemBuilderState__buildMailboxItem__closure(t1, value));
     },
-    $signature: 14
+    $signature: 13
   };
   B._MailboxSearchedItemBuilderState__buildMailboxItem__closure.prototype = {
     call$0() {
@@ -590,7 +590,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = this.$this._widget;
       t3.onClickOpenMenuMailboxAction.call$2(new A.RelativeRect(t1, t2, screenSize._dx - t1, screenSize._dy - t2), t3._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 29
+    $signature: 30
   };
   (function installTearOffs() {
     var _instance_0_u = hunkHelpers._instance_0u;
@@ -627,4 +627,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["z0ULGaw2yE7BZVHRs+T4JNguCc0="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["MSI9+XIa+ZNTiCrobNkNqDseKwc="] = $__dart_deferred_initializers__.current

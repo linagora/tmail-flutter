@@ -2043,7 +2043,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1456
+    $signature: 1455
   };
   B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -2069,7 +2069,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1457
+    $signature: 1456
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -2104,7 +2104,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 26
+    $signature: 27
   };
   B._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -2113,7 +2113,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 26
+    $signature: 27
   };
   B._AnimatedSwitcherState__newEntry_closure.prototype = {
     call$1($status) {
@@ -2146,7 +2146,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1458
+    $signature: 1457
   };
   B.SizeChangedLayoutNotifier_createRenderObject_closure.prototype = {
     call$0() {
@@ -2176,7 +2176,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 306
+    $signature: 250
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -2283,7 +2283,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 112
+    $signature: 110
   };
   B.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -2326,7 +2326,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 306
+    $signature: 250
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1($event) {
@@ -2341,7 +2341,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
       }
     },
-    $signature: 95
+    $signature: 94
   };
   B.TagsEditorState_build_closure0.prototype = {
     call$1(val) {
@@ -2377,19 +2377,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 306
+    $signature: 250
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 548
+    $signature: 547
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 548
+    $signature: 547
   };
   (function aliases() {
     var _ = B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin.prototype;
@@ -2514,4 +2514,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["l/3kTCQxgOs+ZVNraI+VtywoEYc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["umwezcLVjEdBgZNOh8n5+UV8NlM="] = $__dart_deferred_initializers__.current

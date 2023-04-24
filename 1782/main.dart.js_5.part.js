@@ -1769,7 +1769,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t5;
       }
       if (t3)
-        t2 = B.S(t2.email);
+        t2 = B.StringExtension_get_withUnicodeCharacter(B.S(t2.email));
       else
         t2 = "";
       t2 = B.Text$(t2, _null, 1, C.TextOverflow_1, _null, false, D.TextStyle_oHY1, _null, _null, _null);
@@ -1887,7 +1887,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.call$1(new B.RelativeRect(t2, t3, screenSize._dx - t2, screenSize._dy - t3));
       }
     },
-    $signature: 29
+    $signature: 30
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
@@ -1922,7 +1922,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 271
+    $signature: 265
   };
   A._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -2005,7 +2005,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 194
+    $signature: 201
   };
   A._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -2031,7 +2031,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 435
+    $signature: 401
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -2049,7 +2049,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 437
+    $signature: 396
   };
   A.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -2074,7 +2074,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.parent = element;
       return false;
     },
-    $signature: 107
+    $signature: 100
   };
   A.BuildContextPortalLinkScopeExt_getSpecificElementForInheritedWidgetsOfExactType_closure.prototype = {
     call$1(element) {
@@ -2082,7 +2082,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return this.test.call$1(this.T._as(t1));
     },
-    $signature: 136
+    $signature: 135
   };
   A._PortalTargetState_build_closure.prototype = {
     call$2(context, currentVisible) {
@@ -2101,7 +2101,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1._buildModeNormal$3(context, currentVisible, scope);
     },
-    $signature: 1438
+    $signature: 1437
   };
   A._PortalTargetState__buildModeNormal_closure.prototype = {
     call$0() {
@@ -2141,14 +2141,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 92
+    $signature: 99
   };
   A.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 92
+    $signature: 99
   };
   A.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -2289,4 +2289,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["EkL3NC7PsJ27fFhjokz646zvrEI="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["L1sGr0yOityDV449IKZyi1wh6ho="] = $__dart_deferred_initializers__.current
