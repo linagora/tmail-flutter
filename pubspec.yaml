@@ -194,7 +194,7 @@ dependencies:
   # flutter_localizations depends on intl 0.17.0
   intl: 0.17.0
 
-  super_tag_editor: 0.1.1
+  super_tag_editor: 0.1.2
 
   external_app_launcher: 3.1.0
 
@@ -226,6 +226,7 @@ dependency_overrides:
     git:
       url: https://github.com/linagora/enough_html_editor.git
       ref: fix/escaped-html-signature
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
