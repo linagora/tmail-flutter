@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/base/widget/material_text_icon_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_input_tag_item.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
@@ -264,52 +264,47 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   }
 
   Widget _buildAddRecipientButton(BuildContext context, {double? maxWidth}) {
-    return (ButtonBuilder(_imagePaths.icAddIdentity)
-      ..key(const Key('button_add_recipient'))
-      ..decoration(BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: AppColor.colorTextButton))
-      ..paddingIcon(const EdgeInsets.only(right: 8))
-      ..iconColor(Colors.white)
-      ..maxWidth(maxWidth ?? 167)
-      ..size(20)
-      ..radiusSplash(12)
-      ..padding(const EdgeInsets.symmetric(vertical: 12))
-      ..textStyle(const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-          fontWeight: FontWeight.w500))
-      ..onPressActionClick(() {
-        _hideKeyboardForMobile();
-        if (widget.controller?.text.isNotEmpty == true) {
-          if (!_isDuplicatedRecipient(widget.controller?.text ?? '')) {
-            setState(() {
-              listEmailAddress.add(EmailAddress(null, widget.controller?.text));
-            });
-            _closeSuggestionBox();
-          } else {
-            _closeSuggestionBox();
-            return;
-          }
-        }
+    return MaterialTextIconButton(
+      key: const Key('button_add_recipient'),
+      label: AppLocalizations.of(context).addRecipientButton,
+      icon: _imagePaths.icAddIdentity,
+      backgroundColor: AppColor.colorTextButton,
+      labelColor: Colors.white,
+      iconColor: Colors.white,
+      minimumSize: Size(maxWidth ?? 167, 54),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+      onTap: _handleAddRecipientAction
+    );
+  }
 
-        if (listEmailAddress.isEmpty) {
-          widget.onExceptionCallback?.call(true);
-          return;
-        }
+  void _handleAddRecipientAction() {
+    _hideKeyboardForMobile();
+    if (widget.controller?.text.isNotEmpty == true) {
+      if (!_isDuplicatedRecipient(widget.controller?.text ?? '')) {
+        setState(() {
+          listEmailAddress.add(EmailAddress(null, widget.controller?.text));
+        });
+        _closeSuggestionBox();
+      } else {
+        _closeSuggestionBox();
+        return;
+      }
+    }
 
-        if (_isValidAllEmailAddress(listEmailAddress) && _inputFieldIsEmpty()) {
-          widget.onAddContactCallback?.call(List.from(listEmailAddress));
-          setState(() {
-            widget.controller?.clear();
-            listEmailAddress.clear();
-          });
-        } else {
-          widget.onExceptionCallback?.call(false);
-        }
-      })
-      ..text(AppLocalizations.of(context).addRecipientButton, isVertical: false)
-    ).build();
+    if (listEmailAddress.isEmpty) {
+      widget.onExceptionCallback?.call(true);
+      return;
+    }
+
+    if (_isValidAllEmailAddress(listEmailAddress) && _inputFieldIsEmpty()) {
+      widget.onAddContactCallback?.call(List.from(listEmailAddress));
+      setState(() {
+        widget.controller?.clear();
+        listEmailAddress.clear();
+      });
+    } else {
+      widget.onExceptionCallback?.call(false);
+    }
   }
 
   void _closeSuggestionBox() {
