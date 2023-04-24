@@ -7959,14 +7959,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView__buildHtmlEditor_closure.prototype = {
     call$0() {
-      var t1 = this.$this,
+      var t3,
+        t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t2 = this.initContent;
+      t3 = t1.richTextWebController;
+      t3.editorController._evaluateJavascriptWeb$1$data(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: setFullScreen"], type$.String, type$.nullable_Object));
       t1.initTextEditor$1(t2);
       t1._textEditorWeb = t2;
-      t1.richTextWebController.setEnableCodeView$0();
+      t3.setEnableCodeView$0();
       return null;
     },
     $signature: 0
@@ -12545,6 +12548,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       Some_SearchQuery: findType("Some<SearchQuery>"),
       Some_bool: findType("Some<bool>"),
       SpamReportController: findType("SpamReportController"),
+      String: findType("String"),
       TypeAheadFieldQuickSearch_dynamic_dynamic: findType("TypeAheadFieldQuickSearch<@,@>"),
       UTCDate: findType("UTCDate"),
       ValueKey_String: findType("ValueKey<String>"),
@@ -12556,6 +12560,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       bool: findType("bool"),
       dynamic: findType("@"),
       int: findType("int"),
+      nullable_Object: findType("Object?"),
       nullable_PresentationEmail: findType("PresentationEmail?"),
       nullable_PresentationMailbox: findType("PresentationMailbox?"),
       nullable_RenderBox: findType("RenderBox?"),
@@ -12699,4 +12704,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["I6gNWyX/JTaqBMRzASoaYiDS9n4="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["dPhrUOgsv1yuTfSBgiB1ygJDWSA="] = $__dart_deferred_initializers__.current

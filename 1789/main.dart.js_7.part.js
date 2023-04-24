@@ -2235,8 +2235,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if (t3 == null)
           t3 = C.EdgeInsets_0_0_0_0;
         t1.toString;
-        suggestionsListView = A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), J.get$length$asx(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t10), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._highlightedOptionIndex));
-        return A.Positioned$(_null, A.CompositedTransformFollower$(A.TextFieldTapRegion$(!_this.showTop ? suggestionsListView : A.FractionalTranslation$(suggestionsListView, true, C.Offset_0_m1), _null, _null), t2._tag_editor$_layerLink, _this.compositedTransformFollowerOffset, false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, _this.size._dx);
+        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), J.get$length$asx(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t10), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._highlightedOptionIndex)), _null, _null);
+        t1 = !_this.showTop ? suggestionsListView : A.FractionalTranslation$(suggestionsListView, true, C.Offset_0_m1);
+        return A.Positioned$(_null, A.CompositedTransformFollower$(t1, t2._tag_editor$_layerLink, _this.compositedTransformFollowerOffset, false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, _this.size._dx);
       }
       return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
@@ -2514,4 +2515,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["umwezcLVjEdBgZNOh8n5+UV8NlM="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["375xK3oQn9lsU2rw/eE7o5sE2pY="] = $__dart_deferred_initializers__.current

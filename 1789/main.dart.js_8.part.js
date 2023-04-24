@@ -551,7 +551,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _findSuggestions$body$EmailAddressInputBuilder(query) {
       var $async$goto = 0,
         $async$completer = B._makeAsyncAwaitCompleter(type$.List_SuggestionEmailAddress),
-        $async$returnValue, $async$self = this, t1, processedQuery, tmailSuggestion, t2, currentTextOnTextField, $async$temp1, $async$temp2, $async$temp3;
+        $async$returnValue, $async$self = this, t1, processedQuery, t2, tmailSuggestion, currentTextOnTextField, $async$temp1, $async$temp2, $async$temp3;
       var $async$_findSuggestions$1 = B._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return B._asyncRethrow($async$result, $async$completer);
@@ -570,16 +570,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
                 break;
               }
               processedQuery = C.JSString_methods.trim$0(query);
-              if (processedQuery.length === 0) {
+              t1 = processedQuery.length;
+              if (t1 === 0) {
                 $async$returnValue = B._setArrayType([], type$.JSArray_SuggestionEmailAddress);
                 // goto return
                 $async$goto = 1;
                 break;
               }
-              t1 = type$.SuggestionEmailAddress;
-              tmailSuggestion = J.JSArray_JSArray$growable(0, t1);
-              t2 = $async$self._onSuggestionEmailAddress;
-              $async$goto = t2 != null ? 3 : 4;
+              t2 = type$.SuggestionEmailAddress;
+              tmailSuggestion = J.JSArray_JSArray$growable(0, t2);
+              $async$goto = t1 >= 3 && $async$self._onSuggestionEmailAddress != null ? 3 : 4;
               break;
             case 3:
               // then
@@ -587,10 +587,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               $async$temp2 = tmailSuggestion;
               $async$temp3 = J;
               $async$goto = 5;
-              return B._asyncAwait(t2.call$1(processedQuery), $async$_findSuggestions$1);
+              return B._asyncAwait($async$self._onSuggestionEmailAddress.call$1(processedQuery), $async$_findSuggestions$1);
             case 5:
               // returning from await.
-              $async$temp1.addAll$1($async$temp2, $async$temp3.map$1$1$ax($async$result, new A.EmailAddressInputBuilder__findSuggestions_closure($async$self), t1));
+              $async$temp1.addAll$1($async$temp2, $async$temp3.map$1$1$ax($async$result, new A.EmailAddressInputBuilder__findSuggestions_closure($async$self), t2));
             case 4:
               // join
               C.JSArray_methods.addAll$1(tmailSuggestion, $async$self._matchedSuggestionEmailAddress$2(processedQuery, $async$self.listEmailAddress));
@@ -601,7 +601,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
                 $async$goto = 1;
                 break;
               }
-              $async$returnValue = tmailSuggestion;
+              t1 = B.LinkedHashSet_LinkedHashSet$from(tmailSuggestion, B._arrayInstanceType(tmailSuggestion)._precomputed1);
+              $async$returnValue = B.List_List$of(t1, true, B._instanceType(t1)._eval$1("SetMixin.E"));
               // goto return
               $async$goto = 1;
               break;
@@ -1167,4 +1168,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["p1nGcyUUfyKATow9hSAYfy21MJk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["lCEwMlWuDy5hTBCoGl+HlS6WVgQ="] = $__dart_deferred_initializers__.current

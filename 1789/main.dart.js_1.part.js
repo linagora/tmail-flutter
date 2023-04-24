@@ -388,7 +388,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = type$._MaterialStatePropertyWith_Color;
       t2 = A.ButtonStyle$(_null, _null, new A._MaterialStatePropertyWith(new B.BaseLoginView_buildLoginButton_closure(), t2), _null, _null, _null, new A._MaterialStatePropertyWith(new B.BaseLoginView_buildLoginButton_closure0(), t2), _null, _null, _null, _null, _null, _null, _null, _null, new A.MaterialStatePropertyAll(new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_PLF1), type$.MaterialStatePropertyAll_nullable_OutlinedBorder), _null, _null, _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Container$(_null, A.ElevatedButton$(A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null), _null, D.ValueKey_loginSubmitForm, this.loginController.get$handleLoginPressed(), t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsets_24_0_24_16, _null, _null, _null, t1.size._dx);
+      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null), C.Clip_0, _null, D.ValueKey_loginSubmitForm, _null, _null, _null, this.loginController.get$handleLoginPressed(), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsets_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
     buildInputCredentialForm$1(context) {
       return new B.AutofillGroup(A.Column$(A._setArrayType([this.buildUserNameInput$1(context), this.buildPasswordInput$1(context)], type$.JSArray_Widget), C.CrossAxisAlignment_2, null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), null);
@@ -465,7 +465,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = type$._MaterialStatePropertyWith_Color;
       t2 = A.ButtonStyle$(_null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure(), t2), _null, _null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure0(), t2), _null, _null, _null, _null, _null, _null, _null, _null, new A.MaterialStatePropertyAll(new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_PLF1), type$.MaterialStatePropertyAll_nullable_OutlinedBorder), _null, _null, _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Container$(_null, A.ElevatedButton$(A.Text$(A.Intl__message("Single Sign-On", _null, "singleSignOn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null), _null, D.ValueKey_ssoSubmitForm, new B.LoginView__buildSSOButton_closure1(this), t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsets_24_0_24_16, _null, _null, _null, t1.size._dx);
+      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Single Sign-On", _null, "singleSignOn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null), C.Clip_0, _null, D.ValueKey_ssoSubmitForm, _null, _null, _null, new B.LoginView__buildSSOButton_closure1(this), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsets_24_0_24_16, _null, _null, _null, t1.size._dx);
     }
   };
   B.PrivacyLinkWidget.prototype = {
@@ -1092,4 +1092,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["4FmfwTFVQcKMRTTm1MShlWXwWGU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["q6v4/09a/2BGh0RBePWIGkf6Y8Y="] = $__dart_deferred_initializers__.current
