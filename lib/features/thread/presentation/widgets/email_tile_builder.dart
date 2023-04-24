@@ -2,9 +2,11 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/email_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 
@@ -81,11 +83,20 @@ class EmailTileBuilder with BaseEmailItemTile {
                           width: 9,
                           height: 9,
                           fit: BoxFit.fill)),
-                Expanded(child: buildInformationSender(
-                  _presentationEmail,
-                  mailboxContain,
-                  isSearchEmailRunning,
-                  _searchQuery)),
+                Expanded(child: Row(
+                  children: [
+                    buildInformationSender(
+                      _presentationEmail,
+                      mailboxContain,
+                      isSearchEmailRunning,
+                      _searchQuery),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: _buildCalendarIcon(),
+                      ),
+                  ],
+                )),
+                   
                 buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
                 if (_presentationEmail.hasAttachment == true)
                   Padding(
@@ -150,4 +161,18 @@ class EmailTileBuilder with BaseEmailItemTile {
       return buildIconAvatarText(_presentationEmail);
     }
   }
-}
+  
+
+  Widget _buildCalendarIcon() {
+    //var name = _presentationEmail.from!.iterator;
+    var name = "X-MEETING-METHOD" ;
+    if (name == "X-MEETING-METHOD") {
+    if (_presentationEmail.hasRead){
+      return buildIconCalendarHasRead();
+    } else  
+      return buildIconCalendar();
+    } else {
+      return Container();
+    }
+  }
+  }

@@ -146,6 +146,7 @@ class ImagePaths {
   String get icSwitchOff => _getImagePath('ic_switch_off.svg');
   String get icClock => _getImagePath('ic_clock.svg');
   String get icCalendar => _getImagePath('ic_calendar.svg');
+  String get icCalendarNotRead => _getImagePath('ic_calendar_not_read.svg');
   String get icAddEmailForward => _getImagePath('ic_add_email_forwards.svg');
   String get icChevronDownOutline => _getImagePath('ic_chevron_down_outline.svg');
   String get icUndo => _getImagePath('ic_undo.svg');
