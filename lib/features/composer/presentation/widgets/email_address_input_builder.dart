@@ -15,6 +15,7 @@ import 'package:super_tag_editor/widgets/rich_text_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_constants.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
 typedef OnUpdateListEmailAddressAction = void Function(PrefixEmailAddress, List<EmailAddress>);
@@ -437,7 +438,7 @@ class EmailAddressInputBuilder {
     }
 
     final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
-    if (processedQuery.isNotEmpty && _onSuggestionEmailAddress != null) {
+    if (processedQuery.length >= AppConstants.limitCharToStartSearch && _onSuggestionEmailAddress != null) {
       tmailSuggestion.addAll(
         (await _onSuggestionEmailAddress!(processedQuery))
           .map((emailAddress) => _toSuggestionEmailAddress(emailAddress, listEmailAddress)));
