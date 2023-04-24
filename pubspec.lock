@@ -361,11 +361,11 @@ packages:
     source: hosted
     version: "2.0.0"
   enough_html_editor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "."
-      ref: "fix/escaped-html-signature"
-      resolved-ref: ff1a6f33cab442cd59d3d8548f51313ca0274a27
+      ref: email_supported
+      resolved-ref: ed465d707389bbb959ce2898b899fabb9e9608ed
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
