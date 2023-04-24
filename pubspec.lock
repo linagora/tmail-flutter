@@ -1473,10 +1473,10 @@ packages:
     dependency: "direct main"
     description:
       name: super_tag_editor
-      sha256: "0888ef22d5a1485baeb628892de449e03af4b6f901ac7f7c9ddd2f44f6199e22"
+      sha256: f992eab1bad3595148f1a62f98fd981fac814d53682b8414311eca470dbfa768
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.1"
+    version: "0.1.2"
   syncfusion_flutter_core:
     dependency: transitive
     description:
