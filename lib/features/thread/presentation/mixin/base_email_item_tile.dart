@@ -205,21 +205,15 @@ mixin BaseEmailItemTile {
         fit: BoxFit.fill);
   }
 
-  Widget buildIconCalendar() {
+  Widget buildIconCalendar(PresentationEmail email) {
     return SvgPicture.asset(
-        imagePaths.icCalendarNotRead,
+        email.hasRead ? imagePaths.icCalendar 
+        :imagePaths.icCalendarNotRead ,
         width: 16,
         height: 16,
         fit: BoxFit.fill);
   }
-   Widget buildIconCalendarHasRead() {
-    return SvgPicture.asset(
-        imagePaths.icCalendar,
-        width: 16,
-        height: 16,
-        fit: BoxFit.fill);
-  }
-  
+
   Widget buildIconStar() {
     return SvgPicture.asset(
         imagePaths.icStar,

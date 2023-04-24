@@ -48,7 +48,7 @@ class EmailTileBuilder with BaseEmailItemTile {
 
   Widget build() {
     return Material(
-      color: Colors.transparent,
+      color: Color.fromARGB(0, 229, 8, 8),
       child: Column(
         children: [
           ListTile(
@@ -162,15 +162,11 @@ class EmailTileBuilder with BaseEmailItemTile {
     }
   }
   
-
   Widget _buildCalendarIcon() {
-    //var name = _presentationEmail.from!.iterator;
+    // var name = _presentationEmail.from!.last;
     var name = "X-MEETING-METHOD" ;
     if (name == "X-MEETING-METHOD") {
-    if (_presentationEmail.hasRead){
-      return buildIconCalendarHasRead();
-    } else  
-      return buildIconCalendar();
+      return buildIconCalendar(_presentationEmail);
     } else {
       return Container();
     }
