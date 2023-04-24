@@ -6265,7 +6265,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3.push(new A.Padding(D.EdgeInsets_0_0_5_0, A.SvgPicture$asset("assets/images/ic_unread_status.svg", _null, C.BoxFit_0, 9, _null, 9), _null));
       t5 = _this.isSearchEmailRunning;
       t6 = _this._email_tile_web_builder$_searchQuery;
-      t3.push(A.Expanded$(_this.buildInformationSender$4(t4, _this.mailboxContain, t5, t6), 1));
+      t3.push(A.Expanded$(A.Row$(A._setArrayType([_this.buildInformationSender$4(t4, _this.mailboxContain, t5, t6), new A.Padding(C.EdgeInsets_8_0_0_0, _this._buildCalendarIcon$0(), _null)], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), 1));
       t3.push(_this.buildIconAnsweredOrForwarded$3$height$presentationEmail$width(16, t4, 16));
       if (t4.hasAttachment === true)
         t3.push(new A.Padding(C.EdgeInsets_8_0_0_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", _null, C.BoxFit_0, 16, _null, 16), _null));
@@ -6375,6 +6375,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _email_tile_web_builder$_buildAvatarIcon$0() {
       return this._email_tile_web_builder$_buildAvatarIcon$2$iconSize$textStyle(null, null);
+    },
+    _buildCalendarIcon$0() {
+      var _null = null,
+        t1 = this._presentationEmail;
+      if (t1.get$headersName() === "X-MEETING-METHOD")
+        return A.SvgPicture$asset(t1.get$hasRead() ? "assets/images/ic_calendar.svg" : "assets/images/ic_calendar_not_read.svg", _null, C.BoxFit_0, 16, _null, 16);
+      else
+        return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B._EmailTileBuilder_Object_BaseEmailItemTile.prototype = {};
@@ -12142,7 +12150,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4.push(new A.Padding(D.EdgeInsets_0_0_5_0, A.SvgPicture$asset("assets/images/ic_unread_status.svg", _null, C.BoxFit_0, 9, _null, 9), _null));
       t6 = t1.isSearchEmailRunning;
       t7 = t1._email_tile_web_builder$_searchQuery;
-      t4.push(A.Expanded$(t1.buildInformationSender$4(t5, t1.mailboxContain, t6, t7), 1));
+      t4.push(A.Expanded$(A.Row$(A._setArrayType([t1.buildInformationSender$4(t5, t1.mailboxContain, t6, t7), new A.Padding(C.EdgeInsets_8_0_0_0, t1._buildCalendarIcon$0(), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), 1));
       if (t1.isHoverItem)
         t4.push(D.SizedBox_120_null_null_null);
       else {
@@ -12220,7 +12228,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t7 = t1.isSearchEmailRunning;
       t8 = type$.JSArray_Widget;
-      t5 = A._setArrayType([t3, A.buildIconWeb(_null, _null, t4, _null, _null, _null, new B.EmailTileBuilder__buildListTileForDesktop__closure(t1), _null, t5), A.buildIconWeb(_null, _null, t1.buildIconAnsweredOrForwarded$1$presentationEmail(t2), C.EdgeInsets_0_0_12_0, _null, _null, _null, 1, t1.messageToolTipForAnsweredOrForwarded$2(context, t2)), A.InkWell$(false, _null, true, t1._email_tile_web_builder$_buildAvatarIcon$2$iconSize$textStyle(32, D.TextStyle_1Gf4), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.EmailTileBuilder__buildListTileForDesktop__closure0(t1, setState), _null, new B.EmailTileBuilder__buildListTileForDesktop__closure1(t1), _null, _null, _null, _null, _null, _null, _null), C.SizedBox_10_null_null_null, new A.SizedBox(160, _null, t1.buildInformationSender$4(t2, t1.mailboxContain, t7, t1._email_tile_web_builder$_searchQuery), _null), E.SizedBox_24_null_null_null, A.Expanded$(t1._buildSubjectAndContent$0(), 1), C.SizedBox_16_null_null_null], t8);
+      t5 = A._setArrayType([t3, A.buildIconWeb(_null, _null, t4, _null, _null, _null, new B.EmailTileBuilder__buildListTileForDesktop__closure(t1), _null, t5), A.buildIconWeb(_null, _null, t1.buildIconAnsweredOrForwarded$1$presentationEmail(t2), C.EdgeInsets_0_0_12_0, _null, _null, _null, 1, t1.messageToolTipForAnsweredOrForwarded$2(context, t2)), A.InkWell$(false, _null, true, t1._email_tile_web_builder$_buildAvatarIcon$2$iconSize$textStyle(32, D.TextStyle_1Gf4), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.EmailTileBuilder__buildListTileForDesktop__closure0(t1, setState), _null, new B.EmailTileBuilder__buildListTileForDesktop__closure1(t1), _null, _null, _null, _null, _null, _null, _null), C.SizedBox_10_null_null_null, new A.SizedBox(160, _null, A.Row$(A._setArrayType([t1.buildInformationSender$4(t2, t1.mailboxContain, t7, t1._email_tile_web_builder$_searchQuery), new A.Padding(C.EdgeInsets_8_0_0_0, t1._buildCalendarIcon$0(), _null)], t8), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), E.SizedBox_24_null_null_null, A.Expanded$(t1._buildSubjectAndContent$0(), 1), C.SizedBox_16_null_null_null], t8);
       if (t1.isHoverItem)
         t5.push(t1._buildListActionButtonWhenHover$0());
       else {
@@ -12704,4 +12712,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["dPhrUOgsv1yuTfSBgiB1ygJDWSA="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["N18+IG1qIiSrr4Hqj3TnmJAfow4="] = $__dart_deferred_initializers__.current
