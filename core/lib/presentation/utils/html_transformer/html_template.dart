@@ -53,7 +53,7 @@ String generateHtml(String content, {
     </style>
     ${javaScripts ?? ''}
     </head>
-    <body>
+    <body style = "overflow-x: hidden">
     <div class="tmail-content">$content</div>
     </body>
     </html> 
