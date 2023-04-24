@@ -18,7 +18,6 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.transparent,
       margin: const EdgeInsets.all(24),
       child: _responsiveUtils.isWebDesktop(context)
         ? _buildIdentitiesViewWebDesktop(context)
@@ -28,10 +27,9 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
 
   Widget _buildIdentitiesViewMobile(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         IdentitiesHeaderWidget(
-          imagePaths: _imagePaths,
-          responsiveUtils: _responsiveUtils,
           onAddNewIdentityAction: () => controller.goToCreateNewIdentity(context),
         ),
         const SizedBox(height: 12),
@@ -51,8 +49,6 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
         SizedBox(
           width: 224,
           child: IdentitiesHeaderWidget(
-            imagePaths: _imagePaths,
-            responsiveUtils: _responsiveUtils,
             onAddNewIdentityAction: () => controller.goToCreateNewIdentity(context),
           )
         ),
