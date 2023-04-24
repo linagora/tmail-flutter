@@ -1,3 +1,16 @@
+## [0.7.8] - 2023-04-24
+### Added
+- Added workflow to create a deployment on PR
+
+### Fixed
+- \#1711 Fix the label is displayed overlap the button in France, Italian, Russia languages
+- \#1740 Fix double scrollbar in composer web
+- \#1759 Fix reply all do not always include me in recipients
+- \#1763 Fix duplicated email suggestion in the list
+- \#1767 Fix Reply/Forward: original message should be marked, not the sent one
+- \#1778 Fix system not display signature in email which has been sent
+- \#1779 Fix logic of replacing dot in long email
+
 ## [0.7.7] - 2023-04-14
 ### Added
 - \#1599 Remove notification when read and delete permanent email
@@ -71,5 +84,6 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.7.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.8
 [0.7.7]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.7
 [0.7.6]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.6
