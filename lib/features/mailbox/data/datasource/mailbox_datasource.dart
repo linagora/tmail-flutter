@@ -26,7 +26,7 @@ abstract class MailboxDataSource {
 
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState);
 
-  Future<void> update({List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed});
+  Future<void> update(AccountId accountId, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed});
 
   Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
 
