@@ -68,13 +68,15 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<void> update({
+  Future<void> update(
+    AccountId accountId, {
     List<Email>? updated,
     List<Email>? created,
     List<EmailId>? destroyed
   }) {
     return Future.sync(() async {
       return await _emailCacheManager.update(
+        accountId,
         updated: updated,
         created: created,
         destroyed: destroyed);

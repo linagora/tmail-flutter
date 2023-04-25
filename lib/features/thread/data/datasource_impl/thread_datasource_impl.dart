@@ -79,7 +79,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<void> update({List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) {
+  Future<void> update(AccountId accountId, {List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) {
     throw UnimplementedError();
   }
 
