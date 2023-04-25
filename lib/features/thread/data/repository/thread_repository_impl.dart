@@ -81,7 +81,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
 
     if (networkEmailResponse != null) {
-      await _updateEmailCache(newCreated: networkEmailResponse.emailList);
+      await _updateEmailCache(accountId, newCreated: networkEmailResponse.emailList);
     }
 
     if (localEmailResponse.hasState()) {
@@ -138,7 +138,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         filter: filter ?? EmailFilterCondition(inMailbox: mailboxId),
         properties: propertiesCreated,
       );
-      await _updateEmailCache(newCreated: networkEmailResponse.emailList);
+      await _updateEmailCache(accountId, newCreated: networkEmailResponse.emailList);
 
       return networkEmailResponse;
   }
@@ -176,12 +176,14 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
   }
 
-  Future<void> _updateEmailCache({
+  Future<void> _updateEmailCache(
+    AccountId accountId, {
     List<Email>? newUpdated,
     List<Email>? newCreated,
     List<EmailId>? newDestroyed
   }) async {
     await mapDataSource[DataSourceType.local]!.update(
+      accountId,
       updated: newUpdated,
       created: newCreated,
       destroyed: newDestroyed);
@@ -240,7 +242,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   @override
   Stream<EmailsResponse> loadMoreEmails(GetEmailRequest emailRequest) async* {
     final response = await _getAllEmailsWithoutLastEmailId(emailRequest);
-    await _updateEmailCache(newCreated: response.emailList);
+    await _updateEmailCache(emailRequest.accountId, newCreated: response.emailList);
     yield response;
   }
 
@@ -290,7 +292,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       accountId,
       trashMailboxId,
       (listEmailIdDeleted) async {
-        await _updateEmailCache(newDestroyed: listEmailIdDeleted);
+        await _updateEmailCache(accountId, newDestroyed: listEmailIdDeleted);
       },
     );
   }
@@ -342,6 +344,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           'destroyed = ${emailChangeResponse.destroyed?.length}');
 
       await _updateEmailCache(
+          accountId,
           newCreated: emailChangeResponse.created,
           newUpdated: newEmailUpdated,
           newDestroyed: emailChangeResponse.destroyed);
