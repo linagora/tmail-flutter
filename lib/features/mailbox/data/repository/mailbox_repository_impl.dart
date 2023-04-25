@@ -64,6 +64,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
         await Future.wait([
           mapDataSource[DataSourceType.local]!.update(
+              accountId,
               updated: newMailboxUpdated,
               created: changesResponse.created,
               destroyed: changesResponse.destroyed),
@@ -75,7 +76,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
 
       await Future.wait([
-        mapDataSource[DataSourceType.local]!.update(created: mailboxResponse.mailboxes),
+        mapDataSource[DataSourceType.local]!.update(accountId, created: mailboxResponse.mailboxes),
         if (mailboxResponse.state != null)
           stateDataSource.saveState(mailboxResponse.state!.toStateCache(StateType.mailbox)),
       ]);
@@ -135,6 +136,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
       await Future.wait([
         mapDataSource[DataSourceType.local]!.update(
+            accountId,
             updated: newMailboxUpdated,
             created: changesResponse.created,
             destroyed: changesResponse.destroyed),

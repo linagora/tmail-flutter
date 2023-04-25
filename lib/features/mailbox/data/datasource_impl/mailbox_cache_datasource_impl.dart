@@ -40,9 +40,9 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<void> update({List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
+  Future<void> update(AccountId accountId, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
     return Future.sync(() async {
-      return await _mailboxCacheManager.update(updated: updated, created: created, destroyed: destroyed);
+      return await _mailboxCacheManager.update(accountId, updated: updated, created: created, destroyed: destroyed);
     }).catchError(_exceptionThrower.throwException);
   }
 

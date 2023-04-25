@@ -46,7 +46,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<void> update({List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
+  Future<void> update(AccountId accountId, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
     throw UnimplementedError();
   }
 

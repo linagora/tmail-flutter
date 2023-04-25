@@ -55,6 +55,8 @@ export 'extensions/list_email_header_extension.dart';
 export 'extensions/account_extension.dart';
 export 'extensions/list_presentation_mailbox_extension.dart';
 export 'extensions/list_identity_id_extension.dart';
+export 'extensions/email_id_extensions.dart';
+export 'extensions/account_id_extensions.dart';
 // Identity
 export 'identity/identity_request_dto.dart';
 export 'mailbox/expand_mode.dart';

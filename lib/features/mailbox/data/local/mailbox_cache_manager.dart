@@ -1,11 +1,11 @@
 
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
-import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_cache_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/mailbox_cache_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/data/extensions/mailbox_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 
 class MailboxCacheManager {
@@ -20,24 +20,26 @@ class MailboxCacheManager {
     return mailboxList;
   }
 
-  Future<void> update({List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) async {
+  Future<void> update(
+    AccountId accountId, {
+    List<Mailbox>? updated,
+    List<Mailbox>? created,
+    List<MailboxId>? destroyed
+  }) async {
     final mailboxCacheExist = await _mailboxCacheClient.isExistTable();
     if (mailboxCacheExist) {
-      final updatedCacheMailboxes = updated
-          ?.map((mailbox) => mailbox.toMailboxCache()).toList() ?? <MailboxCache>[];
-      final createdCacheMailboxes = created
-          ?.map((mailbox) => mailbox.toMailboxCache()).toList() ?? <MailboxCache>[];
-      final destroyedCacheMailboxes = destroyed
-          ?.map((mailboxId) => mailboxId.id.value).toList() ?? <String>[];
+      final updatedCacheMailboxes = updated?.toMapCache(accountId) ?? {};
+      final createdCacheMailboxes = created?.toMapCache(accountId) ?? {};
+      final destroyedCacheMailboxes = destroyed?.toCacheKeyList(accountId) ?? [];
+
       await Future.wait([
-        _mailboxCacheClient.updateMultipleItem(updatedCacheMailboxes.toMap()),
-        _mailboxCacheClient.insertMultipleItem(createdCacheMailboxes.toMap()),
+        _mailboxCacheClient.updateMultipleItem(updatedCacheMailboxes),
+        _mailboxCacheClient.insertMultipleItem(createdCacheMailboxes),
         _mailboxCacheClient.deleteMultipleItem(destroyedCacheMailboxes)
       ]);
     } else {
-      final createdCacheMailboxes = created
-          ?.map((mailbox) => mailbox.toMailboxCache()).toList() ?? <MailboxCache>[];
-      await _mailboxCacheClient.insertMultipleItem(createdCacheMailboxes.toMap());
+      final createdCacheMailboxes = created?.toMapCache(accountId) ?? {};
+      await _mailboxCacheClient.insertMultipleItem(createdCacheMailboxes);
     }
   }
 
