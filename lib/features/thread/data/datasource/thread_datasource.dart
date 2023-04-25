@@ -36,7 +36,7 @@ abstract class ThreadDataSource {
     }
   );
 
-  Future<List<Email>> getAllEmailCache({MailboxId? inMailboxId, Set<Comparator>? sort, FilterMessageOption? filterOption, UnsignedInt? limit});
+  Future<List<Email>> getAllEmailCache(AccountId accountId, {MailboxId? inMailboxId, Set<Comparator>? sort, FilterMessageOption? filterOption, UnsignedInt? limit});
 
   Future<void> update(AccountId accountId, {List<Email>? updated, List<Email>? created, List<EmailId>? destroyed});
 

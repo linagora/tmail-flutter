@@ -52,7 +52,8 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<Email>> getAllEmailCache({
+  Future<List<Email>> getAllEmailCache(
+    AccountId accountId, {
     MailboxId? inMailboxId,
     Set<Comparator>? sort,
     FilterMessageOption? filterOption,
@@ -60,6 +61,7 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }) {
     return Future.sync(() async {
       return await _emailCacheManager.getAllEmail(
+        accountId,
         inMailboxId: inMailboxId,
         sort: sort,
         filterOption: filterOption ?? FilterMessageOption.all,
