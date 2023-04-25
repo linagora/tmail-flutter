@@ -21,11 +21,11 @@ abstract class FCMRepository {
     }
   );
 
-  Future<bool> storeStateToRefresh(TypeName typeName, jmap.State newState);
+  Future<void> storeStateToRefresh(AccountId accountId, TypeName typeName, jmap.State newState);
 
-  Future<jmap.State> getStateToRefresh(TypeName typeName);
+  Future<jmap.State> getStateToRefresh(AccountId accountId, TypeName typeName);
 
-  Future<bool> deleteStateToRefresh(TypeName typeName);
+  Future<void> deleteStateToRefresh(AccountId accountId, TypeName typeName);
 
   Future<void> storeSubscription(FCMSubscription fcmSubscription);
 
