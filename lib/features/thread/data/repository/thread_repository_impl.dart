@@ -98,7 +98,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       if (networkEmailResponse != null) {
         log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse.state}');
         if (networkEmailResponse.state != null) {
-          await _updateState(networkEmailResponse.state!);
+          await _updateState(accountId, networkEmailResponse.state!);
         }
       }
     }
@@ -191,9 +191,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
       destroyed: newDestroyed);
   }
 
-  Future<void> _updateState(State newState) async {
+  Future<void> _updateState(AccountId accountId, State newState) async {
     log('ThreadRepositoryImpl::_updateState(): [MAIL] $newState');
-    await stateDataSource.saveState(newState.toStateCache(StateType.email));
+    await stateDataSource.saveState(accountId, newState.toStateCache(StateType.email));
   }
 
   @override
@@ -356,7 +356,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           newDestroyed: emailChangeResponse.destroyed);
 
       if (emailChangeResponse.newStateEmail != null) {
-        await _updateState(emailChangeResponse.newStateEmail!);
+        await _updateState(accountId, emailChangeResponse.newStateEmail!);
       }
     }
   }
