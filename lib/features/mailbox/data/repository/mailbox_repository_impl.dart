@@ -69,7 +69,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
               created: changesResponse.created,
               destroyed: changesResponse.destroyed),
           if (changesResponse.newStateMailbox != null)
-            stateDataSource.saveState(changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
+            stateDataSource.saveState(accountId, changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
         ]);
       }
     } else {
@@ -78,7 +78,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       await Future.wait([
         mapDataSource[DataSourceType.local]!.update(accountId, created: mailboxResponse.mailboxes),
         if (mailboxResponse.state != null)
-          stateDataSource.saveState(mailboxResponse.state!.toStateCache(StateType.mailbox)),
+          stateDataSource.saveState(accountId, mailboxResponse.state!.toStateCache(StateType.mailbox)),
       ]);
     }
 
@@ -141,7 +141,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
             created: changesResponse.created,
             destroyed: changesResponse.destroyed),
         if (changesResponse.newStateMailbox != null)
-          stateDataSource.saveState(changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
+          stateDataSource.saveState(accountId, changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
       ]);
     }
 
