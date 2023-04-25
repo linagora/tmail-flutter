@@ -37,9 +37,9 @@ class SpamReportCacheDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<Mailbox> getSpamMailboxCached() {
+  Future<Mailbox> getSpamMailboxCached(AccountId accountId) {
     return Future.sync(() async {
-      return await _mailboxCacheManager.getSpamMailbox();
+      return await _mailboxCacheManager.getSpamMailbox(accountId);
     }).catchError(_exceptionThrower.throwException);
   }
 

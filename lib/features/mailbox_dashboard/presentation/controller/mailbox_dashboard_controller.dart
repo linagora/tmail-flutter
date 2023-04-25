@@ -1579,8 +1579,8 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void refreshSpamReportBanner() {
-    if (spamReportController.enableSpamReport) {
-      spamReportController.getSpamMailboxCached();
+    if (spamReportController.enableSpamReport && accountId.value != null) {
+      spamReportController.getSpamMailboxCached(accountId.value!);
     }
   }
 

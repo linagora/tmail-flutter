@@ -92,8 +92,8 @@ class SpamReportController extends BaseController {
       mailboxFilterCondition: MailboxFilterCondition(role: Role('Spam'))));
   }
 
-  void getSpamMailboxCached() {
-    consumeState(_getSpamMailboxCachedInteractor.execute());
+  void getSpamMailboxCached(AccountId accountId) {
+    consumeState(_getSpamMailboxCachedInteractor.execute(accountId));
   }
 
   void _storeLastTimeDismissedSpamReportedAction() {
