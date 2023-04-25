@@ -75,18 +75,18 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<bool> storeStateToRefresh(TypeName typeName, jmap.State newState) {
-    return _fcmDatasource[DataSourceType.local]!.storeStateToRefresh(typeName, newState);
+  Future<void> storeStateToRefresh(AccountId accountId, TypeName typeName, jmap.State newState) {
+    return _fcmDatasource[DataSourceType.local]!.storeStateToRefresh(accountId, typeName, newState);
   }
 
   @override
-  Future<jmap.State> getStateToRefresh(TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.getStateToRefresh(typeName);
+  Future<jmap.State> getStateToRefresh(AccountId accountId, TypeName typeName) {
+    return _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, typeName);
   }
 
   @override
-  Future<bool> deleteStateToRefresh(TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(typeName);
+  Future<void> deleteStateToRefresh(AccountId accountId, TypeName typeName) {
+    return _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, typeName);
   }
 
   @override
