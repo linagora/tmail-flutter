@@ -85,5 +85,5 @@ abstract class EmailRepository {
 
   Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId);
 
-  Future<jmap.State?> getEmailState();
+  Future<jmap.State?> getEmailState(AccountId accountId);
 }
