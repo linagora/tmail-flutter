@@ -64,9 +64,7 @@ class CachingManager {
 
   Future<void> onUpgradeCache(int oldVersion, int newVersion) async {
     log('CachingManager::onUpgradeCache():oldVersion $oldVersion | newVersion: $newVersion');
-    if (oldVersion == 0 && newVersion >= 1) {
-      await clearData();
-    }
+    await clearData();
     await storeCacheVersion(newVersion);
     return Future.value();
   }
