@@ -90,7 +90,7 @@ class EmailChangeListener extends ChangeListener {
         if (FcmUtils.instance.isMobileAndroid) {
           _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
         }
-        _handleStoreEmailStateToRefreshAction(action.newState);
+        _handleStoreEmailStateToRefreshAction(action.accountId, action.newState);
       }
     }
   }
@@ -109,22 +109,22 @@ class EmailChangeListener extends ChangeListener {
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
     if (BuildUtils.isWeb) {
-      _storeEmailDeliveryStateAction(_newStateEmailDelivery!);
+      _storeEmailDeliveryStateAction(accountId, _newStateEmailDelivery!);
     } else {
       if (Platform.isAndroid) {
-        _getStoredEmailDeliveryState();
+        _getStoredEmailDeliveryState(accountId);
       } else if (Platform.isIOS) {
-        _storeEmailDeliveryStateAction(_newStateEmailDelivery!);
-        _showLocalNotificationForIOS(_newStateEmailDelivery!, _accountId!);
+        _storeEmailDeliveryStateAction(accountId, _newStateEmailDelivery!);
+        _showLocalNotificationForIOS(_newStateEmailDelivery!, accountId);
       } else {
         logError('EmailChangeListener::_pushNotificationAction(): NOT SUPPORTED PLATFORM');
       }
     }
   }
 
-  void _getStoredEmailDeliveryState() {
+  void _getStoredEmailDeliveryState(AccountId accountId) {
     if (_getStoredEmailDeliveryStateInteractor != null) {
-      consumeState(_getStoredEmailDeliveryStateInteractor!.execute());
+      consumeState(_getStoredEmailDeliveryStateInteractor!.execute(accountId));
     }
   }
 
@@ -148,9 +148,9 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _storeEmailDeliveryStateAction(jmap.State state) {
+  void _storeEmailDeliveryStateAction(AccountId accountId, jmap.State state) {
     if (_storeEmailDeliveryStateInteractor != null) {
-      consumeState(_storeEmailDeliveryStateInteractor!.execute(state));
+      consumeState(_storeEmailDeliveryStateInteractor!.execute(accountId, state));
     }
   }
 
@@ -204,7 +204,7 @@ class EmailChangeListener extends ChangeListener {
       _getEmailChangesAction(success.state);
     } else if (success is GetEmailChangesToPushNotificationSuccess) {
       if (_newStateEmailDelivery != null) {
-        _storeEmailDeliveryStateAction(_newStateEmailDelivery!);
+        _storeEmailDeliveryStateAction(success.accountId, _newStateEmailDelivery!);
 
         if (FcmUtils.instance.isMobileAndroid) {
           _handleListEmailToPushNotification(success.emailList);
@@ -244,10 +244,10 @@ class EmailChangeListener extends ChangeListener {
     _emailsAvailablePushNotification.clear();
   }
 
-  void _handleStoreEmailStateToRefreshAction(jmap.State newState) {
+  void _handleStoreEmailStateToRefreshAction(AccountId accountId, jmap.State newState) {
     log('EmailChangeListener::_handleStoreEmailStateToRefreshAction():newState: $newState');
     if (_storeEmailStateToRefreshInteractor != null) {
-      consumeState(_storeEmailStateToRefreshInteractor!.execute(newState));
+      consumeState(_storeEmailStateToRefreshInteractor!.execute(accountId, newState));
     } else {
       logError('EmailChangeListener::_handleStoreEmailStateToRefreshAction():_storeEmailStateToRefreshInteractor is null');
     }
