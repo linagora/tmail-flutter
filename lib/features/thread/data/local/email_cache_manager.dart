@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -6,9 +6,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
-import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
-import 'package:tmail_ui_user/features/thread/data/extensions/list_email_cache_extension.dart';
-import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
@@ -43,28 +42,26 @@ class EmailCacheManager {
     return emailList;
   }
 
-  Future<void> update({List<Email>? updated, List<Email>? created, List<EmailId>? destroyed}) async {
+  Future<void> update(
+    AccountId accountId, {
+    List<Email>? updated,
+    List<Email>? created,
+    List<EmailId>? destroyed
+  }) async {
     final emailCacheExist = await _emailCacheClient.isExistTable();
-    log('EmailCacheManager::update(): emailCacheExist: $emailCacheExist');
     if (emailCacheExist) {
-      final updatedCacheEmails = updated
-        ?.map((email) => email.toEmailCache()).toList() ?? <EmailCache>[];
-      final createdCacheEmails = created
-        ?.map((email) => email.toEmailCache()).toList() ?? <EmailCache>[];
-      final destroyedCacheEmails = destroyed
-        ?.map((emailId) => emailId.id.value).toList() ?? <String>[];
-
-      log('EmailCacheManager::update(): destroyedCacheEmails: ${destroyedCacheEmails.length}');
+      final updatedCacheEmails = updated?.toMapCache(accountId) ?? {};
+      final createdCacheEmails = created?.toMapCache(accountId) ?? {};
+      final destroyedCacheEmails = destroyed?.toCacheKeyList(accountId) ?? [];
 
       await Future.wait([
-        _emailCacheClient.updateMultipleItem(updatedCacheEmails.toMap()),
-        _emailCacheClient.insertMultipleItem(createdCacheEmails.toMap()),
+        _emailCacheClient.updateMultipleItem(updatedCacheEmails),
+        _emailCacheClient.insertMultipleItem(createdCacheEmails),
         _emailCacheClient.deleteMultipleItem(destroyedCacheEmails)
       ]);
     } else {
-      final createdCacheEmails = created
-        ?.map((email) => email.toEmailCache()).toList() ?? <EmailCache>[];
-      await _emailCacheClient.insertMultipleItem(createdCacheEmails.toMap());
+      final createdCacheEmails = created?.toMapCache(accountId) ?? {};
+      await _emailCacheClient.insertMultipleItem(createdCacheEmails);
     }
   }
 
