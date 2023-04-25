@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_address_extension.dart';
@@ -23,5 +24,11 @@ extension EmailExtension on Email {
       replyTo: replyTo?.map((emailAddress) => emailAddress.toEmailAddressHiveCache()).toList(),
       mailboxIds: mailboxIds?.toMapString(),
     );
+  }
+
+  bool belongTo(MailboxId mailboxId) {
+    return mailboxIds != null
+      && mailboxIds!.containsKey(mailboxId)
+      && mailboxIds![mailboxId] == true;
   }
 }
