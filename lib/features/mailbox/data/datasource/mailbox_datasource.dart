@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_m
 abstract class MailboxDataSource {
   Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties});
 
-  Future<List<Mailbox>> getAllMailboxCache();
+  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId);
 
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState);
 
