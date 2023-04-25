@@ -7,7 +7,6 @@ import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_id_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/data/extensions/mailbox_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 
 class MailboxCacheManager {
@@ -42,12 +41,13 @@ class MailboxCacheManager {
       final createdCacheMailboxes = created?.toMapCache(accountId) ?? {};
       await _mailboxCacheClient.insertMultipleItem(createdCacheMailboxes);
     }
+    return Future.value();
   }
 
-  Future<Mailbox> getSpamMailbox() async {
-    final mailboxCachedList = await _mailboxCacheClient.getAll();
+  Future<Mailbox> getSpamMailbox(AccountId accountId) async {
+    final mailboxCachedList = await _mailboxCacheClient.getListByCollectionId(accountId.asString);
     final listSpamMailboxCached = mailboxCachedList
-      .map((mailboxCached) => mailboxCached.toMailbox())
+      .toMailboxList()
       .where((mailbox) => mailbox.role == PresentationMailbox.roleSpam)
       .toList();
 

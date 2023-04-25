@@ -28,5 +28,5 @@ abstract class SpamReportRepository {
 
   Future<void> deleteSpamReportState();
 
-  Future<Mailbox> getSpamMailboxCached();
+  Future<Mailbox> getSpamMailboxCached(AccountId accountId);
 }

@@ -61,7 +61,7 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
   }
 
   @override
-  Future<Mailbox> getSpamMailboxCached() {
-    return mapDataSource[DataSourceType.cache]!.getSpamMailboxCached();
+  Future<Mailbox> getSpamMailboxCached(AccountId accountId) {
+    return mapDataSource[DataSourceType.cache]!.getSpamMailboxCached(accountId);
   }
 }
