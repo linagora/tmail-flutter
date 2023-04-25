@@ -70,7 +70,7 @@ class SharePreferenceSpamReportDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<Mailbox> getSpamMailboxCached() {
+  Future<Mailbox> getSpamMailboxCached(AccountId accountId) {
     throw UnimplementedError();
   }
 }
