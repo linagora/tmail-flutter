@@ -12,7 +12,7 @@ class GetStoredEmailStateInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId) async* {
     try {
-      final state = await _emailRepository.getEmailState();
+      final state = await _emailRepository.getEmailState(accountId);
       if (state != null) {
         yield Right<Failure, Success>(GetStoredEmailStateSuccess(state));
       } else {

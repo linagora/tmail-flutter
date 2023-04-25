@@ -51,7 +51,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           sort: sort,
           limit: limit,
           filterOption: emailFilter?.filterOption),
-      stateDataSource.getState(StateType.email)
+      stateDataSource.getState(accountId, StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
@@ -110,7 +110,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         sort: sort,
         limit: limit,
         filterOption: emailFilter?.filterOption),
-      stateDataSource.getState(StateType.email)
+      stateDataSource.getState(accountId, StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
@@ -224,7 +224,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         sort: sort,
         filterOption: emailFilter?.filterOption
       ),
-      stateDataSource.getState(StateType.email)
+      stateDataSource.getState(accountId, StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
     });

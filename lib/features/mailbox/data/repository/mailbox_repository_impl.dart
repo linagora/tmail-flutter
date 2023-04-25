@@ -40,7 +40,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
   Stream<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async* {
     final localMailboxResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId),
-      stateDataSource.getState(StateType.mailbox)
+      stateDataSource.getState(accountId, StateType.mailbox)
     ]).then((List response) {
       return MailboxResponse(mailboxes: response.first, state: response.last);
     });
@@ -84,7 +84,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
     final newMailboxResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId),
-      stateDataSource.getState(StateType.mailbox)
+      stateDataSource.getState(accountId, StateType.mailbox)
     ]).then((List response) {
       return MailboxResponse(mailboxes: response.first, state: response.last);
     });
@@ -147,7 +147,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
     final newMailboxResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId),
-      stateDataSource.getState(StateType.mailbox)
+      stateDataSource.getState(accountId, StateType.mailbox)
     ]).then((List response) {
       return MailboxResponse(mailboxes: response.first, state: response.last);
     });
@@ -191,8 +191,8 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<State?> getMailboxState() {
-    return stateDataSource.getState(StateType.mailbox);
+  Future<State?> getMailboxState(AccountId accountId) {
+    return stateDataSource.getState(accountId, StateType.mailbox);
   }
 
   @override
