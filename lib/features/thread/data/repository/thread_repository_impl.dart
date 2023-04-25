@@ -46,6 +46,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId}');
     final localEmailResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllEmailCache(
+          accountId,
           inMailboxId: emailFilter?.mailboxId,
           sort: sort,
           limit: limit,
@@ -104,10 +105,11 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     final newEmailResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllEmailCache(
-          inMailboxId: emailFilter?.mailboxId,
-          sort: sort,
-          limit: limit,
-          filterOption: emailFilter?.filterOption),
+        accountId,
+        inMailboxId: emailFilter?.mailboxId,
+        sort: sort,
+        limit: limit,
+        filterOption: emailFilter?.filterOption),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
@@ -216,7 +218,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
     );
 
     final newEmailResponse = await Future.wait([
-      mapDataSource[DataSourceType.local]!.getAllEmailCache(inMailboxId: emailFilter?.mailboxId, sort: sort, filterOption: emailFilter?.filterOption),
+      mapDataSource[DataSourceType.local]!.getAllEmailCache(
+        accountId,
+        inMailboxId: emailFilter?.mailboxId,
+        sort: sort,
+        filterOption: emailFilter?.filterOption
+      ),
       stateDataSource.getState(StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
@@ -306,8 +313,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       Properties? propertiesUpdated,
     }
   ) async {
-    final localEmailList = await mapDataSource[DataSourceType.local]!
-        .getAllEmailCache();
+    final localEmailList = await mapDataSource[DataSourceType.local]!.getAllEmailCache(accountId);
 
     EmailChangeResponse? emailChangeResponse;
     bool hasMoreChanges = true;

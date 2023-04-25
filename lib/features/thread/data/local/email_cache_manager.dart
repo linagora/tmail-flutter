@@ -6,6 +6,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -17,19 +19,19 @@ class EmailCacheManager {
 
   EmailCacheManager(this._emailCacheClient);
 
-  Future<List<Email>> getAllEmail({
+  Future<List<Email>> getAllEmail(
+    AccountId accountId, {
     MailboxId? inMailboxId,
     Set<Comparator>? sort,
     UnsignedInt? limit,
     FilterMessageOption filterOption = FilterMessageOption.all
   }) async {
-    final emailCacheList = inMailboxId != null
-      ? await _emailCacheClient.getListEmailCacheByMailboxId(inMailboxId)
-      : await _emailCacheClient.getAll();
+    final emailCacheList = await _emailCacheClient.getListByCollectionId(accountId.asString);
     final emailList = emailCacheList
-        .map((emailCache) => emailCache.toEmail())
-        .where((email) => filterOption.filterEmail(email))
-        .toList();
+      .toEmailList()
+      .where((email) => _filterEmailByMailbox(email, filterOption, inMailboxId))
+      .toList();
+
     if (sort != null) {
       for (var comparator in sort) {
         emailList.sortBy(comparator);
@@ -40,6 +42,14 @@ class EmailCacheManager {
       return emailList.getRange(0, limit.value.toInt()).toList();
     }
     return emailList;
+  }
+
+  bool _filterEmailByMailbox(Email email, FilterMessageOption option, MailboxId? inMailboxId) {
+    if (inMailboxId != null) {
+      return email.belongTo(inMailboxId) && option.filterEmail(email);
+    } else {
+      return option.filterEmail(email);
+    }
   }
 
   Future<void> update(
