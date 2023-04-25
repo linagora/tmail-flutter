@@ -23,4 +23,6 @@ extension MailboxIdExtension on MailboxId {
       generatePath():  true,
     });
   }
+
+  String get asString => id.value;
 }
