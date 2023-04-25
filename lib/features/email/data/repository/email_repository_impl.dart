@@ -171,7 +171,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<jmap.State?> getEmailState() {
-    return _stateDataSource.getState(StateType.email);
+  Future<jmap.State?> getEmailState(AccountId accountId) {
+    return _stateDataSource.getState(accountId, StateType.email);
   }
 }

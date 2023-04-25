@@ -14,7 +14,7 @@ class MarkAsStarEmailInteractor {
 
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, Email email, MarkStarAction markStarAction) async* {
     try {
-      final currentEmailState = await emailRepository.getEmailState();
+      final currentEmailState = await emailRepository.getEmailState(accountId);
       final result = await emailRepository.markAsStar(session, accountId, [email], markStarAction);
       if (result.isNotEmpty) {
         final updatedEmail = email.updatedEmail(newKeywords: result.first.keywords);

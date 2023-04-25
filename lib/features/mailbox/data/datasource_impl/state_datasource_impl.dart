@@ -18,9 +18,10 @@ class StateDataSourceImpl extends StateDataSource {
   StateDataSourceImpl(this._stateCacheClient, this._exceptionThrower);
 
   @override
-  Future<State?> getState(StateType stateType) {
+  Future<State?> getState(AccountId accountId, StateType stateType) {
     return Future.sync(() async {
-      final stateCache = await _stateCacheClient.getItem(stateType.value);
+      final stateKey = TupleKey(stateType.value, accountId.asString).toString();
+      final stateCache = await _stateCacheClient.getItem(stateKey);
       return stateCache?.toState();
     }).catchError(_exceptionThrower.throwException);
   }

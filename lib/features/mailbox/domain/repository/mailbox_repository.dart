@@ -38,7 +38,7 @@ abstract class MailboxRepository {
 
   Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request);
 
-  Future<State?> getMailboxState();
+  Future<State?> getMailboxState(AccountId accountId);
 
   Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request);
 
