@@ -29,7 +29,7 @@ class GetEmailChangesToRemoveNotificationInteractor {
     try {
       yield Right<Failure, Success>(GetEmailChangesToRemoveNotificationLoading());
 
-      final currentState = await _emailRepository.getEmailState();
+      final currentState = await _emailRepository.getEmailState(accountId);
       log('GetEmailChangesToRemoveNotificationInteractor::execute():currentState: $currentState');
       if (currentState != null) {
         final emailIds = await _fcmRepository.getEmailChangesToRemoveNotification(

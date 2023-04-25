@@ -24,8 +24,8 @@ class MoveMultipleEmailToMailboxInteractor {
       yield Right(LoadingMoveMultipleEmailToMailboxAll());
 
       final listState = await Future.wait([
-        _mailboxRepository.getMailboxState(),
-        _emailRepository.getEmailState(),
+        _mailboxRepository.getMailboxState(accountId),
+        _emailRepository.getEmailState(accountId),
       ], eagerError: true);
 
       final currentMailboxState = listState.first;

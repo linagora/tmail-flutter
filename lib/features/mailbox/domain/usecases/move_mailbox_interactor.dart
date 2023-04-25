@@ -15,7 +15,7 @@ class MoveMailboxInteractor {
     try {
       yield Right<Failure, Success>(LoadingMoveMailbox());
 
-      final currentMailboxState = await _mailboxRepository.getMailboxState();
+      final currentMailboxState = await _mailboxRepository.getMailboxState(accountId);
       final result = await _mailboxRepository.moveMailbox(session, accountId, request);
       if (result) {
         yield Right<Failure, Success>(MoveMailboxSuccess(
