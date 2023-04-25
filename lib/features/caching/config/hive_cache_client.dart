@@ -1,8 +1,10 @@
 
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:hive/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 
 abstract class HiveCacheClient<T> {
 
@@ -72,6 +74,21 @@ abstract class HiveCacheClient<T> {
           ? await openBoxEncryption()
           : await openBox();
       return boxItem.values.toList();
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<List<T>> getListByCollectionId(String collectionId) {
+    return Future.sync(() async {
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
+      return boxItem.toMap()
+        .where((key, value) {
+          final tupleKey = TupleKey.fromString(key as String);
+          return tupleKey.parts.length >= 2 && tupleKey.parts[1] == collectionId;
+        })
+        .values
+        .toList();
     }).catchError((error) {
       throw error;
     });
