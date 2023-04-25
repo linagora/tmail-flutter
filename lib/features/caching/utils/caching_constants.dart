@@ -14,4 +14,6 @@ class CachingConstants {
   static const int RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY = 12;
   static const int RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY = 13;
   static const int FCM_SUBSCRIPTION_HIVE_CACHE_IDENTITY = 14;
+
+  static const String fcmCacheBoxName = 'fcm_cache_box';
 }

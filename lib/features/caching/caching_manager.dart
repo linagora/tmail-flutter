@@ -1,15 +1,14 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/fcm_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
-
-import 'config/hive_cache_config.dart';
 
 class CachingManager {
   final MailboxCacheClient _mailboxCacheClient;
@@ -17,7 +16,7 @@ class CachingManager {
   final EmailCacheClient _emailCacheClient;
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
-  final FCMCacheManager _fcmCacheManager;
+  final FcmCacheClient _fcmCacheClient;
   final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
   final HiveCacheVersionClient _hiveCacheVersionClient;
 
@@ -27,7 +26,7 @@ class CachingManager {
     this._emailCacheClient,
     this._recentSearchCacheClient,
     this._accountCacheClient,
-    this._fcmCacheManager,
+    this._fcmCacheClient,
     this._fcmSubscriptionCacheClient,
     this._hiveCacheVersionClient,
   );
@@ -37,11 +36,22 @@ class CachingManager {
       _stateCacheClient.clearAllData(),
       _mailboxCacheClient.clearAllData(),
       _emailCacheClient.clearAllData(),
-      _recentSearchCacheClient.clearAllData(),
-      _accountCacheClient.clearAllData(),
+      _fcmCacheClient.clearAllData(),
       _fcmSubscriptionCacheClient.clearAllData(),
-      _fcmCacheManager.clearAllStateToRefresh()
-    ]);  
+      _recentSearchCacheClient.clearAllData(),
+      _accountCacheClient.clearAllData()
+    ]);
+  }
+
+  Future<void> clearData() async {
+    await Future.wait([
+      _stateCacheClient.clearAllData(),
+      _mailboxCacheClient.clearAllData(),
+      _emailCacheClient.clearAllData(),
+      _fcmCacheClient.clearAllData(),
+      _fcmSubscriptionCacheClient.clearAllData(),
+      _recentSearchCacheClient.clearAllData()
+    ]);
   }
 
   Future<void> clearEmailCache() async {
@@ -52,23 +62,12 @@ class CachingManager {
     log('CachingManager::clearEmailCache(): success');
   }
 
-  Future<void> clearMailboxCache() async {
-    await Future.wait([
-      _stateCacheClient.deleteItem(StateType.mailbox.value),
-      _mailboxCacheClient.clearAllData(),
-    ]);
-    log('CachingManager::clearMailboxCache(): success');
-  }
-
   Future<void> onUpgradeCache(int oldVersion, int newVersion) async {
     log('CachingManager::onUpgradeCache():oldVersion $oldVersion | newVersion: $newVersion');
     if (oldVersion == 0 && newVersion >= 1) {
-      await Future.wait([
-        clearMailboxCache(),
-        clearEmailCache()
-      ]);
+      await clearData();
     }
-    storeCacheVersion(newVersion);
+    await storeCacheVersion(newVersion);
     return Future.value();
   }
 

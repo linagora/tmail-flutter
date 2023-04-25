@@ -1428,11 +1428,11 @@ class MailboxDashBoardController extends ReloadableController {
     } catch (e) {
       logError('MailboxDashBoardController::_handleRefreshActionWhenBackToApp(): $e');
     }
-    if (_getEmailStateToRefreshInteractor != null) {
-      consumeState(_getEmailStateToRefreshInteractor!.execute());
+    if (_getEmailStateToRefreshInteractor != null && accountId.value != null) {
+      consumeState(_getEmailStateToRefreshInteractor!.execute(accountId.value!));
     }
-    if (_getMailboxStateToRefreshInteractor != null) {
-      consumeState(_getMailboxStateToRefreshInteractor!.execute());
+    if (_getMailboxStateToRefreshInteractor != null && accountId.value != null) {
+      consumeState(_getMailboxStateToRefreshInteractor!.execute(accountId.value!));
     }
   }
 
@@ -1443,8 +1443,8 @@ class MailboxDashBoardController extends ReloadableController {
     } catch (e) {
       logError('MailboxDashBoardController::_deleteEmailStateToRefreshAction(): $e');
     }
-    if (_deleteEmailStateToRefreshInteractor != null) {
-      consumeState(_deleteEmailStateToRefreshInteractor!.execute());
+    if (_deleteEmailStateToRefreshInteractor != null && accountId.value != null) {
+      consumeState(_deleteEmailStateToRefreshInteractor!.execute(accountId.value!));
     }
   }
 
@@ -1455,8 +1455,8 @@ class MailboxDashBoardController extends ReloadableController {
     } catch (e) {
       logError('MailboxDashBoardController::_deleteMailboxStateToRefreshAction(): $e');
     }
-    if (_deleteMailboxStateToRefreshInteractor != null) {
-      consumeState(_deleteMailboxStateToRefreshInteractor!.execute());
+    if (_deleteMailboxStateToRefreshInteractor != null && accountId.value != null) {
+      consumeState(_deleteMailboxStateToRefreshInteractor!.execute(accountId.value!));
     }
   }
 
