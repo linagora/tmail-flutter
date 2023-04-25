@@ -51,7 +51,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<List<Mailbox>> getAllMailboxCache() {
+  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId) {
     throw UnimplementedError();
   }
 

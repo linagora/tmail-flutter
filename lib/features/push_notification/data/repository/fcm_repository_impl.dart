@@ -117,7 +117,7 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<List<PresentationMailbox>> getMailboxesNotPutNotifications(Session session, AccountId accountId) async {
-    final mailboxesCache = await _mapMailboxDataSource[DataSourceType.local]!.getAllMailboxCache();
+    final mailboxesCache = await _mapMailboxDataSource[DataSourceType.local]!.getAllMailboxCache(accountId);
     final mailboxesCacheNotPutNotifications = mailboxesCache
       .map((mailbox) => mailbox.toPresentationMailbox())
       .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)

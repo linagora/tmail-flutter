@@ -47,9 +47,9 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<List<Mailbox>> getAllMailboxCache() {
+  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId) {
     return Future.sync(() async {
-      final listMailboxes = await _mailboxCacheManager.getAllMailbox();
+      final listMailboxes = await _mailboxCacheManager.getAllMailbox(accountId);
       return listMailboxes;
     }).catchError(_exceptionThrower.throwException);
   }
