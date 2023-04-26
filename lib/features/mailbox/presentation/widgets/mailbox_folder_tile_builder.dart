@@ -112,9 +112,8 @@ class MailBoxFolderTileBuilder {
                       children: [
                         _buildLeadingMailboxItem(context),
                         const SizedBox(width: 4),
-                        Expanded(child: _buildTitleFolderItem()),
-                        const SizedBox(width: 8),
-                        _buildTrailingItemForMailboxView(context)
+                        Expanded(child: _buildTitleFolderItem(context)),
+
                     ])
                 ),
               );
@@ -145,10 +144,8 @@ class MailBoxFolderTileBuilder {
                       children: [
                         _buildLeadingMailboxItem(context),
                         const SizedBox(width: 8),
-                        Expanded(child: _buildTitleFolderItem()),
+                        Expanded(child: _buildTitleFolderItem(context)),
                         _buildSelectedIcon(),
-                        const SizedBox(width: 8),
-                        _buildTrailingItemForMailboxView(context)
                     ]),
                   ]
               ),
@@ -175,7 +172,7 @@ class MailBoxFolderTileBuilder {
                   child: Row(children: [
                     _buildLeadingMailboxItem(context),
                     const SizedBox(width: 8),
-                    Expanded(child: _buildTitleFolderItem()),
+                    Expanded(child: _buildTitleFolderItem(context)),
                     _buildSelectedIcon()
                   ])
               ),
@@ -295,19 +292,27 @@ class MailBoxFolderTileBuilder {
     }
   }
 
-  Widget _buildTitleFolderItem() {
+  Widget _buildTitleFolderItem(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          (_mailboxNode.item.name?.name ?? '').withUnicodeCharacter,
-          maxLines: 1,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          style: TextStyle(
-              fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 15,
-              color: _mailboxNode.item.isTeamMailboxes ? Colors.black : AppColor.colorNameEmail,
-              fontWeight: _mailboxNode.item.isTeamMailboxes ? FontWeight.bold : FontWeight.normal),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Text(
+                (_mailboxNode.item.name?.name ?? '').withUnicodeCharacter,
+                maxLines: 1,
+                softWrap: CommonTextStyle.defaultSoftWrap,
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                style: TextStyle(
+                    fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 15,
+                    color: _mailboxNode.item.isTeamMailboxes ? Colors.black : AppColor.colorNameEmail,
+                    fontWeight: _mailboxNode.item.isTeamMailboxes ? FontWeight.bold : FontWeight.normal),
+              ),
+            ),
+            _buildTrailingItemForMailboxView(context)
+          ],
         ),
         if(_mailboxNode.item.isTeamMailboxes)
           Text(
