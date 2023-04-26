@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/gradient_color_avatar_icon.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef DeleteContactCallbackAction = Function(EmailAddress contactDeleted);
 
@@ -84,7 +85,7 @@ class ContactInputTagItem extends StatelessWidget {
     }
   }
 
-  bool _isValidEmailAddress(String value) => value.isEmail;
+  bool _isValidEmailAddress(String value) => value.isEmail || AppUtils.isEmailLocalhost(value);
 
   Color _getTagBackgroundColor() {
     if (lastTagFocused && isLastContact) {
