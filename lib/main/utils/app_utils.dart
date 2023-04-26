@@ -32,4 +32,8 @@ class AppUtils {
   static bool isDirectionRTL(BuildContext context) {
     return intl.Bidi.isRtlLanguage(Localizations.localeOf(context).languageCode);
   }
+
+  static bool isEmailLocalhost(String email) {
+    return  RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@localhost$').hasMatch(email);
+  }
 }

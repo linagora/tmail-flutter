@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_inpu
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnSuggestionContactCallbackAction = Future<List<EmailAddress>> Function(String query);
 typedef OnAddListContactCallbackAction = Function(List<EmailAddress> listEmailAddress);
@@ -256,7 +257,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   }
 
   bool _isValidAllEmailAddress(List<EmailAddress> addedEmailAddress) {
-    return addedEmailAddress.every((addedMail) => addedMail.emailAddress.isEmail);
+    return addedEmailAddress.every((addedMail) => addedMail.emailAddress.isEmail || AppUtils.isEmailLocalhost(addedMail.emailAddress));
   }
 
   bool _inputFieldIsEmpty() {
