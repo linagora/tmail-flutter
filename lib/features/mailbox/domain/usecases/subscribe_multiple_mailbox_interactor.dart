@@ -20,7 +20,7 @@ class SubscribeMultipleMailboxInteractor {
     try {
       yield Right<Failure, Success>(LoadingSubscribeMultipleMailbox());
 
-      final currentMailboxState = await _mailboxRepository.getMailboxState(accountId);
+      final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
       final listResult = await _mailboxRepository.subscribeMultipleMailbox(session, accountId, subscribeRequest);
 
       final matchedSize = listResult.length == subscribeRequest.mailboxIdsSubscribe.length;

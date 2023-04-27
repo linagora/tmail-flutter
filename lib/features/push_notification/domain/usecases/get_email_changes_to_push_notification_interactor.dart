@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
@@ -17,6 +18,7 @@ class GetEmailChangesToPushNotificationInteractor {
   Stream<Either<Failure, Success>> execute(
     Session session,
     AccountId accountId,
+    UserName userName,
     jmap.State currentState,
     {
       Properties? propertiesCreated,
@@ -37,7 +39,7 @@ class GetEmailChangesToPushNotificationInteractor {
         ?.map((email) => email.toPresentationEmail())
         .toList() ?? List.empty();
 
-      yield Right<Failure, Success>(GetEmailChangesToPushNotificationSuccess(accountId, presentationEmailList));
+      yield Right<Failure, Success>(GetEmailChangesToPushNotificationSuccess(accountId, userName, presentationEmailList));
     } catch (e) {
       yield Left<Failure, Success>(GetEmailChangesToPushNotificationFailure(e));
     }

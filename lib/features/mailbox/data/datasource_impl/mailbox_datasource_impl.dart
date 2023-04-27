@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
@@ -46,12 +47,12 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<void> update(AccountId accountId, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
+  Future<void> update(AccountId accountId, UserName userName, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId) {
+  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
 

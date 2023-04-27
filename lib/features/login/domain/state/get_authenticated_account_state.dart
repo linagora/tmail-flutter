@@ -1,6 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:model/account/account.dart';
+import 'package:model/account/personal_account.dart';
 
 class NoAuthenticatedAccountFailure extends FeatureFailure {
 
@@ -11,7 +11,7 @@ class NoAuthenticatedAccountFailure extends FeatureFailure {
 }
 
 class GetAuthenticatedAccountSuccess extends UIState {
-  final Account account;
+  final PersonalAccount account;
 
   GetAuthenticatedAccountSuccess(this.account);
 
@@ -20,9 +20,7 @@ class GetAuthenticatedAccountSuccess extends UIState {
 }
 
 class GetAuthenticatedAccountFailure extends FeatureFailure {
-  final dynamic exception;
-
-  GetAuthenticatedAccountFailure(this.exception);
+  GetAuthenticatedAccountFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];

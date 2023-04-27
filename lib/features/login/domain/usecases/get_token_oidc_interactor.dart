@@ -3,8 +3,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
-import 'package:model/account/account.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
@@ -31,10 +31,10 @@ class GetTokenOIDCInteractor {
           config.scopes);
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUrl),
-        _accountRepository.setCurrentAccount(Account(
-            tokenOIDC.tokenIdHash,
-            AuthenticationType.oidc,
-            isSelected: true)),
+        _accountRepository.setCurrentAccount(PersonalAccount(
+          tokenOIDC.tokenIdHash,
+          AuthenticationType.oidc,
+          isSelected: true)),
         authenticationOIDCRepository.persistTokenOIDC(tokenOIDC),
         authenticationOIDCRepository.persistAuthorityOidc(config.authority),
       ]);

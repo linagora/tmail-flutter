@@ -1,7 +1,7 @@
 
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/map_extensions.dart';
 import 'package:hive/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
@@ -79,19 +79,22 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<List<T>> getListByCollectionId(String collectionId) {
+  Future<List<T>> getListByTupleKey(String accountId, String userName) {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.toMap()
-        .where((key, value) {
-          final tupleKey = TupleKey.fromString(key as String);
-          return tupleKey.parts.length >= 2 && tupleKey.parts[1] == collectionId;
-        })
+        .where((key, value) => _matchedKey(key, accountId, userName))
         .values
         .toList();
     }).catchError((error) {
       throw error;
     });
+  }
+
+  bool _matchedKey(String key, String accountId, String userName) {
+    final keyDecoded = CacheUtils.decodeKey(key);
+    final tupleKey = TupleKey.fromString(keyDecoded);
+    return tupleKey.parts.length >= 3 && tupleKey.parts[1] == accountId && tupleKey.parts[2] == userName;
   }
 
   Future<void> updateItem(String key, T newObject) {

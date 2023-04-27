@@ -3,6 +3,7 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
@@ -21,11 +22,11 @@ abstract class FCMRepository {
     }
   );
 
-  Future<void> storeStateToRefresh(AccountId accountId, TypeName typeName, jmap.State newState);
+  Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState);
 
-  Future<jmap.State> getStateToRefresh(AccountId accountId, TypeName typeName);
+  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName);
 
-  Future<void> deleteStateToRefresh(AccountId accountId, TypeName typeName);
+  Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName);
 
   Future<void> storeSubscription(FCMSubscription fcmSubscription);
 

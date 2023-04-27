@@ -1,6 +1,7 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/password.dart';
-import 'package:model/account/user_name.dart';
 
 class GetCredentialViewState extends UIState {
   final Uri baseUrl;
@@ -14,9 +15,8 @@ class GetCredentialViewState extends UIState {
 }
 
 class GetCredentialFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetCredentialFailure(this.exception);
+  GetCredentialFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];

@@ -22,7 +22,7 @@ class DeleteMultipleMailboxInteractor {
     try {
       yield Right<Failure, Success>(LoadingDeleteMultipleMailboxAll());
 
-      final currentMailboxState = await _mailboxRepository.getMailboxState(accountId);
+      final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
 
       final listResult = await Future.wait(
           mapMailboxIdToDelete.keys.map((mailboxId) {

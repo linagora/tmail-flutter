@@ -405,9 +405,10 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
       sessionCurrent = arguments;
-      accountId.value = sessionCurrent?.accounts.keys.first;
+      final personalAccount = sessionCurrent!.personalAccount;
+      accountId.value = personalAccount.accountId;
       _getUserProfile();
-      updateAuthenticationAccount(sessionCurrent!, accountId.value!);
+      updateAuthenticationAccount(sessionCurrent!, accountId.value!, sessionCurrent!.username);
       injectAutoCompleteBindings(sessionCurrent, accountId.value);
       injectRuleFilterBindings(sessionCurrent, accountId.value);
       injectVacationBindings(sessionCurrent, accountId.value);
@@ -1428,11 +1429,11 @@ class MailboxDashBoardController extends ReloadableController {
     } catch (e) {
       logError('MailboxDashBoardController::_handleRefreshActionWhenBackToApp(): $e');
     }
-    if (_getEmailStateToRefreshInteractor != null && accountId.value != null) {
-      consumeState(_getEmailStateToRefreshInteractor!.execute(accountId.value!));
+    if (_getEmailStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
+      consumeState(_getEmailStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
     }
-    if (_getMailboxStateToRefreshInteractor != null && accountId.value != null) {
-      consumeState(_getMailboxStateToRefreshInteractor!.execute(accountId.value!));
+    if (_getMailboxStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
+      consumeState(_getMailboxStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
     }
   }
 
@@ -1443,8 +1444,8 @@ class MailboxDashBoardController extends ReloadableController {
     } catch (e) {
       logError('MailboxDashBoardController::_deleteEmailStateToRefreshAction(): $e');
     }
-    if (_deleteEmailStateToRefreshInteractor != null && accountId.value != null) {
-      consumeState(_deleteEmailStateToRefreshInteractor!.execute(accountId.value!));
+    if (_deleteEmailStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
+      consumeState(_deleteEmailStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
     }
   }
 
@@ -1455,8 +1456,8 @@ class MailboxDashBoardController extends ReloadableController {
     } catch (e) {
       logError('MailboxDashBoardController::_deleteMailboxStateToRefreshAction(): $e');
     }
-    if (_deleteMailboxStateToRefreshInteractor != null && accountId.value != null) {
-      consumeState(_deleteMailboxStateToRefreshInteractor!.execute(accountId.value!));
+    if (_deleteMailboxStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
+      consumeState(_deleteMailboxStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
     }
   }
 
@@ -1579,8 +1580,8 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void refreshSpamReportBanner() {
-    if (spamReportController.enableSpamReport && accountId.value != null) {
-      spamReportController.getSpamMailboxCached(accountId.value!);
+    if (spamReportController.enableSpamReport && sessionCurrent != null && accountId.value != null) {
+      spamReportController.getSpamMailboxCached(accountId.value!, sessionCurrent!.username);
     }
   }
 
