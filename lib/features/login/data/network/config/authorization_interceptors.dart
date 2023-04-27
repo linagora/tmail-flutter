@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
-import 'package:model/account/account.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token.dart';
@@ -93,13 +93,13 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
         await Future.wait([
           _tokenOidcCacheManager.persistOneTokenOidc(newToken),
           _accountCacheManager.deleteSelectedAccount(_token!.tokenIdHash),
-          _accountCacheManager.setSelectedAccount(Account(
+          _accountCacheManager.setSelectedAccount(PersonalAccount(
             newToken.tokenIdHash,
             AuthenticationType.oidc,
             isSelected: true,
             accountId: accountCurrent.accountId,
-            apiUrl: accountCurrent.apiUrl
-          )),
+            apiUrl: accountCurrent.apiUrl,
+            userName: accountCurrent.userName))
         ]);
 
         log('AuthorizationInterceptors::onError(): refreshToken: $newToken');

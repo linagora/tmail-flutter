@@ -2,6 +2,7 @@ import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
@@ -61,7 +62,7 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
   }
 
   @override
-  Future<Mailbox> getSpamMailboxCached(AccountId accountId) {
-    return mapDataSource[DataSourceType.cache]!.getSpamMailboxCached(accountId);
+  Future<Mailbox> getSpamMailboxCached(AccountId accountId, UserName userName) {
+    return mapDataSource[DataSourceType.cache]!.getSpamMailboxCached(accountId, userName);
   }
 }

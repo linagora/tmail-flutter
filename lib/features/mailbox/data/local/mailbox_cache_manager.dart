@@ -1,5 +1,6 @@
 
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -15,22 +16,23 @@ class MailboxCacheManager {
 
   MailboxCacheManager(this._mailboxCacheClient);
 
-  Future<List<Mailbox>> getAllMailbox(AccountId accountId) async {
-    final mailboxCacheList = await _mailboxCacheClient.getListByCollectionId(accountId.asString);
+  Future<List<Mailbox>> getAllMailbox(AccountId accountId, UserName userName) async {
+    final mailboxCacheList = await _mailboxCacheClient.getListByTupleKey(accountId.asString, userName.value);
     return mailboxCacheList.toMailboxList();
   }
 
   Future<void> update(
-    AccountId accountId, {
+    AccountId accountId,
+    UserName userName, {
     List<Mailbox>? updated,
     List<Mailbox>? created,
     List<MailboxId>? destroyed
   }) async {
     final mailboxCacheExist = await _mailboxCacheClient.isExistTable();
     if (mailboxCacheExist) {
-      final updatedCacheMailboxes = updated?.toMapCache(accountId) ?? {};
-      final createdCacheMailboxes = created?.toMapCache(accountId) ?? {};
-      final destroyedCacheMailboxes = destroyed?.toCacheKeyList(accountId) ?? [];
+      final updatedCacheMailboxes = updated?.toMapCache(accountId, userName) ?? {};
+      final createdCacheMailboxes = created?.toMapCache(accountId, userName) ?? {};
+      final destroyedCacheMailboxes = destroyed?.toCacheKeyList(accountId, userName) ?? [];
 
       await Future.wait([
         _mailboxCacheClient.updateMultipleItem(updatedCacheMailboxes),
@@ -38,14 +40,14 @@ class MailboxCacheManager {
         _mailboxCacheClient.deleteMultipleItem(destroyedCacheMailboxes)
       ]);
     } else {
-      final createdCacheMailboxes = created?.toMapCache(accountId) ?? {};
+      final createdCacheMailboxes = created?.toMapCache(accountId, userName) ?? {};
       await _mailboxCacheClient.insertMultipleItem(createdCacheMailboxes);
     }
     return Future.value();
   }
 
-  Future<Mailbox> getSpamMailbox(AccountId accountId) async {
-    final mailboxCachedList = await _mailboxCacheClient.getListByCollectionId(accountId.asString);
+  Future<Mailbox> getSpamMailbox(AccountId accountId, UserName userName) async {
+    final mailboxCachedList = await _mailboxCacheClient.getListByTupleKey(accountId.asString, userName.value);
     final listSpamMailboxCached = mailboxCachedList
       .toMailboxList()
       .where((mailbox) => mailbox.role == PresentationMailbox.roleSpam)

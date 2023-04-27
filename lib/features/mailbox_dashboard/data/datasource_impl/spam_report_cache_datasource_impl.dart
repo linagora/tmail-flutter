@@ -2,6 +2,7 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
@@ -37,9 +38,9 @@ class SpamReportCacheDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<Mailbox> getSpamMailboxCached(AccountId accountId) {
+  Future<Mailbox> getSpamMailboxCached(AccountId accountId, UserName userName) {
     return Future.sync(() async {
-      return await _mailboxCacheManager.getSpamMailbox(accountId);
+      return await _mailboxCacheManager.getSpamMailbox(accountId, userName);
     }).catchError(_exceptionThrower.throwException);
   }
 

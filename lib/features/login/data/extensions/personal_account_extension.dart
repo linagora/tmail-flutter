@@ -1,15 +1,15 @@
-import 'package:model/account/account.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 
-extension AccountExtensions on Account {
+extension PersonalAccountExtension on PersonalAccount {
   AccountCache toCache() {
     return AccountCache(
       id,
       authenticationType.asString(),
       isSelected: isSelected,
       accountId: accountId?.id.value,
-      apiUrl: apiUrl
-    );
+      apiUrl: apiUrl,
+      userName: userName?.value);
   }
 }

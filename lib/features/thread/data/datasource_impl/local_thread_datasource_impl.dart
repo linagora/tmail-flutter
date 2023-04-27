@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
@@ -53,7 +54,8 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
 
   @override
   Future<List<Email>> getAllEmailCache(
-    AccountId accountId, {
+    AccountId accountId,
+    UserName userName, {
     MailboxId? inMailboxId,
     Set<Comparator>? sort,
     FilterMessageOption? filterOption,
@@ -62,6 +64,7 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     return Future.sync(() async {
       return await _emailCacheManager.getAllEmail(
         accountId,
+        userName,
         inMailboxId: inMailboxId,
         sort: sort,
         filterOption: filterOption ?? FilterMessageOption.all,
@@ -71,7 +74,8 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
 
   @override
   Future<void> update(
-    AccountId accountId, {
+    AccountId accountId,
+    UserName userName, {
     List<Email>? updated,
     List<Email>? created,
     List<EmailId>? destroyed
@@ -79,6 +83,7 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     return Future.sync(() async {
       return await _emailCacheManager.update(
         accountId,
+        userName,
         updated: updated,
         created: created,
         destroyed: destroyed);

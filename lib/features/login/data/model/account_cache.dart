@@ -21,13 +21,17 @@ class AccountCache extends HiveObject with EquatableMixin {
   @HiveField(4)
   final String? apiUrl;
 
+  @HiveField(5)
+  final String? userName;
+
   AccountCache(
     this.id,
     this.authenticationType,
     {
       required this.isSelected,
       this.accountId,
-      this.apiUrl
+      this.apiUrl,
+      this.userName
     }
   );
 
@@ -37,6 +41,7 @@ class AccountCache extends HiveObject with EquatableMixin {
     authenticationType,
     isSelected,
     accountId,
-    apiUrl
+    apiUrl,
+    userName
   ];
 }

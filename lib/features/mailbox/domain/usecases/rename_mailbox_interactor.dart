@@ -15,7 +15,7 @@ class RenameMailboxInteractor {
     try {
       yield Right<Failure, Success>(LoadingRenameMailbox());
 
-      final currentMailboxState = await _mailboxRepository.getMailboxState(accountId);
+      final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
 
       final result = await _mailboxRepository.renameMailbox(session, accountId, request);
       if (result) {
