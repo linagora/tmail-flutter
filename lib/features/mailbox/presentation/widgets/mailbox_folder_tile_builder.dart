@@ -113,7 +113,6 @@ class MailBoxFolderTileBuilder {
                         _buildLeadingMailboxItem(context),
                         const SizedBox(width: 4),
                         Expanded(child: _buildTitleFolderItem(context)),
-
                     ])
                 ),
               );
@@ -172,7 +171,7 @@ class MailBoxFolderTileBuilder {
                   child: Row(children: [
                     _buildLeadingMailboxItem(context),
                     const SizedBox(width: 8),
-                    Expanded(child: _buildTitleFolderItem(context)),
+                    Expanded(child: _buildTitleFolderItem(context, showTrailingItem: false)),
                     _buildSelectedIcon()
                   ])
               ),
@@ -292,7 +291,7 @@ class MailBoxFolderTileBuilder {
     }
   }
 
-  Widget _buildTitleFolderItem(BuildContext context) {
+  Widget _buildTitleFolderItem(BuildContext context, {bool showTrailingItem = true}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -311,7 +310,8 @@ class MailBoxFolderTileBuilder {
                     fontWeight: _mailboxNode.item.isTeamMailboxes ? FontWeight.bold : FontWeight.normal),
               ),
             ),
-            _buildTrailingItemForMailboxView(context)
+            if (showTrailingItem)
+              _buildTrailingItemForMailboxView(context)
           ],
         ),
         if(_mailboxNode.item.isTeamMailboxes)
