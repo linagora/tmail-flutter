@@ -2,6 +2,7 @@ import 'package:fcm/model/firebase_subscription.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
@@ -24,17 +25,17 @@ class FcmDatasourceImpl extends FCMDatasource {
   }
 
   @override
-  Future<bool> deleteStateToRefresh(AccountId accountId, TypeName typeName) {
+  Future<bool> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
     throw UnimplementedError();
   }
 
   @override
-  Future<jmap.State> getStateToRefresh(AccountId accountId, TypeName typeName) {
+  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> storeStateToRefresh(AccountId accountId, TypeName typeName, jmap.State newState) {
+  Future<bool> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState) {
     throw UnimplementedError();
   }
 

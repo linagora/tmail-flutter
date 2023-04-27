@@ -1,9 +1,15 @@
-import 'package:core/core.dart';
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/model.dart';
+import 'package:model/account/personal_account.dart';
+import 'package:model/email/email_content.dart';
+import 'package:model/email/email_content_type.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -45,7 +51,7 @@ class HomeController extends BaseController {
     this._cleanupRecentLoginUsernameCacheInteractor,
   );
 
-  Account? currentAccount;
+  PersonalAccount? currentAccount;
 
   @override
   void onInit() {
@@ -150,11 +156,11 @@ class HomeController extends BaseController {
     _dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
     _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
-      credentialViewState.userName.userName,
+      credentialViewState.userName.value,
       credentialViewState.password.value,
     );
     authorizationIsolateInterceptors.setBasicAuthorization(
-      credentialViewState.userName.userName,
+      credentialViewState.userName.value,
       credentialViewState.password.value,
     );
     pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);

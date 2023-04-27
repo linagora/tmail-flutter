@@ -5,6 +5,7 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/list_email_extension.dart';
@@ -75,18 +76,18 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<void> storeStateToRefresh(AccountId accountId, TypeName typeName, jmap.State newState) {
-    return _fcmDatasource[DataSourceType.local]!.storeStateToRefresh(accountId, typeName, newState);
+  Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState) {
+    return _fcmDatasource[DataSourceType.local]!.storeStateToRefresh(accountId, userName, typeName, newState);
   }
 
   @override
-  Future<jmap.State> getStateToRefresh(AccountId accountId, TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, typeName);
+  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
+    return _fcmDatasource[DataSourceType.local]!.getStateToRefresh(accountId, userName, typeName);
   }
 
   @override
-  Future<void> deleteStateToRefresh(AccountId accountId, TypeName typeName) {
-    return _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, typeName);
+  Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
+    return _fcmDatasource[DataSourceType.local]!.deleteStateToRefresh(accountId, userName, typeName);
   }
 
   @override
@@ -117,7 +118,7 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<List<PresentationMailbox>> getMailboxesNotPutNotifications(Session session, AccountId accountId) async {
-    final mailboxesCache = await _mapMailboxDataSource[DataSourceType.local]!.getAllMailboxCache(accountId);
+    final mailboxesCache = await _mapMailboxDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username);
     final mailboxesCacheNotPutNotifications = mailboxesCache
       .map((mailbox) => mailbox.toPresentationMailbox())
       .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)

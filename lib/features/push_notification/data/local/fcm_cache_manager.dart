@@ -1,5 +1,6 @@
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/fcm_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/subscription_cache_client.dart';
@@ -14,13 +15,13 @@ class FCMCacheManager {
 
   FCMCacheManager(this._fcmCacheClient,this._fcmSubscriptionCacheClient);
 
-  Future<void> storeStateToRefresh(AccountId accountId, TypeName typeName, jmap.State newState) {
-    final stateKeyCache = TupleKey(typeName.value, accountId.asString).toString();
+  Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState) {
+    final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
     return _fcmCacheClient.insertItem(stateKeyCache, newState.value);
   }
 
-  Future<jmap.State> getStateToRefresh(AccountId accountId, TypeName typeName) async {
-    final stateKeyCache = TupleKey(typeName.value, accountId.asString).toString();
+  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
+    final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
     final stateValue = await _fcmCacheClient.getItem(stateKeyCache);
     if (stateValue != null) {
       return jmap.State(stateValue);
@@ -33,8 +34,8 @@ class FCMCacheManager {
     }
   }
 
-  Future<void> deleteStateToRefresh(AccountId accountId, TypeName typeName) {
-    final stateKeyCache = TupleKey(typeName.value, accountId.asString).toString();
+  Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
+    final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
     return _fcmCacheClient.deleteItem(stateKeyCache);
   }
 

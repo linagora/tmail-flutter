@@ -1,5 +1,6 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -20,13 +21,14 @@ class EmailCacheManager {
   EmailCacheManager(this._emailCacheClient);
 
   Future<List<Email>> getAllEmail(
-    AccountId accountId, {
+    AccountId accountId,
+    UserName userName, {
     MailboxId? inMailboxId,
     Set<Comparator>? sort,
     UnsignedInt? limit,
     FilterMessageOption filterOption = FilterMessageOption.all
   }) async {
-    final emailCacheList = await _emailCacheClient.getListByCollectionId(accountId.asString);
+    final emailCacheList = await _emailCacheClient.getListByTupleKey(accountId.asString, userName.value);
     final emailList = emailCacheList
       .toEmailList()
       .where((email) => _filterEmailByMailbox(email, filterOption, inMailboxId))
@@ -53,16 +55,17 @@ class EmailCacheManager {
   }
 
   Future<void> update(
-    AccountId accountId, {
+    AccountId accountId,
+    UserName userName, {
     List<Email>? updated,
     List<Email>? created,
     List<EmailId>? destroyed
   }) async {
     final emailCacheExist = await _emailCacheClient.isExistTable();
     if (emailCacheExist) {
-      final updatedCacheEmails = updated?.toMapCache(accountId) ?? {};
-      final createdCacheEmails = created?.toMapCache(accountId) ?? {};
-      final destroyedCacheEmails = destroyed?.toCacheKeyList(accountId) ?? [];
+      final updatedCacheEmails = updated?.toMapCache(accountId, userName) ?? {};
+      final createdCacheEmails = created?.toMapCache(accountId, userName) ?? {};
+      final destroyedCacheEmails = destroyed?.toCacheKeyList(accountId, userName) ?? [];
 
       await Future.wait([
         _emailCacheClient.updateMultipleItem(updatedCacheEmails),
@@ -70,7 +73,7 @@ class EmailCacheManager {
         _emailCacheClient.deleteMultipleItem(destroyedCacheEmails)
       ]);
     } else {
-      final createdCacheEmails = created?.toMapCache(accountId) ?? {};
+      final createdCacheEmails = created?.toMapCache(accountId, userName) ?? {};
       await _emailCacheClient.insertMultipleItem(createdCacheEmails);
     }
   }

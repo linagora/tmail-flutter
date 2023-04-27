@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
@@ -54,6 +55,7 @@ class EmailChangeListener extends ChangeListener {
   jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
   Session? _session;
+  UserName? _userName;
   List<PresentationEmail> _emailsAvailablePushNotification = [];
 
   EmailChangeListener._internal() {
@@ -85,12 +87,12 @@ class EmailChangeListener extends ChangeListener {
         }
         _synchronizeEmailOnForegroundAction(action.newState);
       } else if (action is PushNotificationAction) {
-        _pushNotificationAction(action.newState, action.accountId, action.session);
+        _pushNotificationAction(action.newState, action.accountId, action.userName, action.session);
       } else if (action is StoreEmailStateToRefreshAction) {
         if (FcmUtils.instance.isMobileAndroid) {
           _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
         }
-        _handleStoreEmailStateToRefreshAction(action.accountId, action.newState);
+        _handleStoreEmailStateToRefreshAction(action.accountId, action.userName, action.newState);
       }
     }
   }
@@ -102,19 +104,20 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _pushNotificationAction(jmap.State newState, AccountId accountId, Session? session) {
+  void _pushNotificationAction(jmap.State newState, AccountId accountId, UserName userName, Session? session) {
     _newStateEmailDelivery = newState;
     _accountId = accountId;
     _session = session;
+    _userName = userName;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
     if (BuildUtils.isWeb) {
-      _storeEmailDeliveryStateAction(accountId, _newStateEmailDelivery!);
+      _storeEmailDeliveryStateAction(accountId, userName, _newStateEmailDelivery!);
     } else {
       if (Platform.isAndroid) {
-        _getStoredEmailDeliveryState(accountId);
+        _getStoredEmailDeliveryState(accountId, userName);
       } else if (Platform.isIOS) {
-        _storeEmailDeliveryStateAction(accountId, _newStateEmailDelivery!);
+        _storeEmailDeliveryStateAction(accountId, userName, _newStateEmailDelivery!);
         _showLocalNotificationForIOS(_newStateEmailDelivery!, accountId);
       } else {
         logError('EmailChangeListener::_pushNotificationAction(): NOT SUPPORTED PLATFORM');
@@ -122,25 +125,29 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _getStoredEmailDeliveryState(AccountId accountId) {
+  void _getStoredEmailDeliveryState(AccountId accountId, UserName userName) {
     if (_getStoredEmailDeliveryStateInteractor != null) {
-      consumeState(_getStoredEmailDeliveryStateInteractor!.execute(accountId));
+      consumeState(_getStoredEmailDeliveryStateInteractor!.execute(accountId, userName));
     }
   }
 
   void _getStoredEmailState() {
-    if (_getStoredEmailStateInteractor != null && _accountId != null) {
-      consumeState(_getStoredEmailStateInteractor!.execute(_accountId!));
+    if (_getStoredEmailStateInteractor != null && _session != null && _accountId != null) {
+      consumeState(_getStoredEmailStateInteractor!.execute(_session!, _accountId!));
     } else {
       logError('EmailChangeListener::_getStoredEmailState(): _getStoredEmailStateInteractor is null');
     }
   }
 
   void _getEmailChangesAction(jmap.State state) {
-    if (_getEmailChangesToPushNotificationInteractor != null && _accountId != null && _session != null) {
+    if (_getEmailChangesToPushNotificationInteractor != null &&
+        _accountId != null &&
+        _session != null &&
+        _userName != null) {
       consumeState(_getEmailChangesToPushNotificationInteractor!.execute(
         _session!,
         _accountId!,
+        _userName!,
         state,
         propertiesCreated: ThreadConstants.propertiesDefault,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
@@ -148,9 +155,9 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _storeEmailDeliveryStateAction(AccountId accountId, jmap.State state) {
+  void _storeEmailDeliveryStateAction(AccountId accountId, UserName userName, jmap.State state) {
     if (_storeEmailDeliveryStateInteractor != null) {
-      consumeState(_storeEmailDeliveryStateInteractor!.execute(accountId, state));
+      consumeState(_storeEmailDeliveryStateInteractor!.execute(accountId, userName, state));
     }
   }
 
@@ -204,7 +211,7 @@ class EmailChangeListener extends ChangeListener {
       _getEmailChangesAction(success.state);
     } else if (success is GetEmailChangesToPushNotificationSuccess) {
       if (_newStateEmailDelivery != null) {
-        _storeEmailDeliveryStateAction(success.accountId, _newStateEmailDelivery!);
+        _storeEmailDeliveryStateAction(success.accountId, success.userName, _newStateEmailDelivery!);
 
         if (FcmUtils.instance.isMobileAndroid) {
           _handleListEmailToPushNotification(success.emailList);
@@ -244,10 +251,10 @@ class EmailChangeListener extends ChangeListener {
     _emailsAvailablePushNotification.clear();
   }
 
-  void _handleStoreEmailStateToRefreshAction(AccountId accountId, jmap.State newState) {
+  void _handleStoreEmailStateToRefreshAction(AccountId accountId, UserName userName, jmap.State newState) {
     log('EmailChangeListener::_handleStoreEmailStateToRefreshAction():newState: $newState');
     if (_storeEmailStateToRefreshInteractor != null) {
-      consumeState(_storeEmailStateToRefreshInteractor!.execute(accountId, newState));
+      consumeState(_storeEmailStateToRefreshInteractor!.execute(accountId, userName, newState));
     } else {
       logError('EmailChangeListener::_handleStoreEmailStateToRefreshAction():_storeEmailStateToRefreshInteractor is null');
     }

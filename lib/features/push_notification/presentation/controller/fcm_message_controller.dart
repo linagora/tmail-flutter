@@ -12,6 +12,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:rxdart/rxdart.dart';
@@ -42,6 +43,7 @@ class FcmMessageController extends FcmBaseController {
 
   AccountId? _currentAccountId;
   Session? _currentSession;
+  UserName? _userName;
   RemoteMessage? _remoteMessageBackground;
 
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
@@ -60,6 +62,7 @@ class FcmMessageController extends FcmBaseController {
   void initializeFromAccountId(AccountId accountId, Session session) {
     _currentAccountId = accountId;
     _currentSession = session;
+    _userName = session.username;
     FcmTokenController.instance.initialize();
   }
 
@@ -96,10 +99,10 @@ class FcmMessageController extends FcmBaseController {
 
   void _handleForegroundMessageAction(RemoteMessage newRemoteMessage) {
     log('FcmMessageController::_handleForegroundMessageAction():remoteMessage: ${newRemoteMessage.data} | _currentAccountId: $_currentAccountId');
-    if (_currentAccountId != null) {
+    if (_currentAccountId != null && _userName != null) {
       final stateChange = _convertRemoteMessageToStateChange(newRemoteMessage);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, session: _currentSession);
+      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, _userName!, session: _currentSession);
     }
   }
 
@@ -116,7 +119,8 @@ class FcmMessageController extends FcmBaseController {
 
   void _mappingTypeStateToAction(
     Map<String, dynamic> mapTypeState,
-    AccountId accountId, {
+    AccountId accountId,
+    UserName userName, {
     bool isForeground = true,
     Session? session
   }) {
@@ -127,7 +131,7 @@ class FcmMessageController extends FcmBaseController {
 
     final listEmailActions = listTypeName
       .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground, session: session))
+      .map((typeName) => toFcmAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
       .whereNotNull()
       .toList();
 
@@ -139,7 +143,7 @@ class FcmMessageController extends FcmBaseController {
 
     final listMailboxActions = listTypeName
       .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => toFcmAction(typeName, accountId, mapTypeState, isForeground))
+      .map((typeName) => toFcmAction(typeName, accountId, userName, mapTypeState, isForeground))
       .whereNotNull()
       .toList();
 
@@ -153,6 +157,7 @@ class FcmMessageController extends FcmBaseController {
   FcmAction? toFcmAction(
     TypeName typeName,
     AccountId accountId,
+    UserName userName,
     Map<String, dynamic> mapTypeState,
     isForeground,
     {
@@ -164,17 +169,17 @@ class FcmMessageController extends FcmBaseController {
       if (isForeground) {
         return SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session);
       } else {
-        return StoreEmailStateToRefreshAction(typeName, newState, accountId, session);
+        return StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
       }
     } else if (typeName == TypeName.emailDelivery) {
       if (!isForeground) {
-        return PushNotificationAction(typeName, newState, session, accountId);
+        return PushNotificationAction(typeName, newState, session, accountId, userName);
       }
     } else if (typeName == TypeName.mailboxType) {
       if (isForeground) {
         return SynchronizeMailboxOnForegroundAction(typeName, newState, accountId);
       } else {
-        return StoreMailboxStateToRefreshAction(typeName, newState, accountId);
+        return StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
       }
     }
     return null;
@@ -219,10 +224,11 @@ class FcmMessageController extends FcmBaseController {
 
   void _handleGetAuthenticatedAccountSuccess(GetAuthenticatedAccountSuccess success) {
     _currentAccountId = success.account.accountId;
+    _userName = success.account.userName;
     if (!FcmUtils.instance.isMobileAndroid) {
       _dynamicUrlInterceptors?.changeBaseUrl(success.account.apiUrl);
     }
-    log('FcmMessageController::_handleGetAuthenticatedAccountSuccess():_currentAccountId: $_currentAccountId');
+    log('FcmMessageController::_handleGetAuthenticatedAccountSuccess():_currentAccountId: $_currentAccountId | _userName: $_userName');
   }
 
   void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
@@ -245,7 +251,7 @@ class FcmMessageController extends FcmBaseController {
     log('FcmMessageController::_handleGetAccountByBasicAuthSuccess():');
     _dynamicUrlInterceptors?.setJmapUrl(credentialViewState.baseUrl.toString());
     _authorizationInterceptors?.setBasicAuthorization(
-      credentialViewState.userName.userName,
+      credentialViewState.userName.value,
       credentialViewState.password.value,
     );
     if (FcmUtils.instance.isMobileAndroid) {
@@ -267,6 +273,7 @@ class FcmMessageController extends FcmBaseController {
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
     _currentSession = success.session;
+    _userName = success.session.username;
     final jmapUrl = _dynamicUrlInterceptors?.jmapUrl;
     final apiUrl = jmapUrl != null
       ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
@@ -283,10 +290,10 @@ class FcmMessageController extends FcmBaseController {
 
   void _pushActionFromRemoteMessageBackground() {
     log('FcmMessageController::_pushActionFromRemoteMessageBackground():_remoteMessageBackground: $_remoteMessageBackground | _currentAccountId: $_currentAccountId | _currentSession: $_currentSession');
-    if (_remoteMessageBackground != null && _currentAccountId != null) {
+    if (_remoteMessageBackground != null && _currentAccountId != null && _userName != null) {
       final stateChange = _convertRemoteMessageToStateChange(_remoteMessageBackground!);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, isForeground: false, session: _currentSession);
+      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, _userName!, isForeground: false, session: _currentSession);
     }
     _clearRemoteMessageBackground();
   }

@@ -6,6 +6,8 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/error_type_handler/account_exception.dart';
+import 'package:model/model.dart';
 import 'package:uri/uri.dart';
 
 extension SessionExtension on Session {
@@ -48,5 +50,19 @@ extension SessionExtension on Session {
       capability = capabilities[identifier] as T;
     }
     return (capability as T);
+  }
+
+  JmapAccount get personalAccount {
+    if (accounts.isNotEmpty) {
+      final listPersonalAccount = accounts.entries
+        .map((entry) => entry.value.toJmapAccount(entry.key))
+        .where((jmapAccount) => jmapAccount.isPersonal)
+        .toList();
+
+      if (listPersonalAccount.isNotEmpty) {
+        return listPersonalAccount.first;
+      }
+    }
+    throw NotFoundPersonalAccountException();
   }
 }

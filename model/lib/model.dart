@@ -1,12 +1,12 @@
 library model;
 
-export 'account/account.dart';
+// Account
+export 'account/personal_account.dart';
 export 'account/account_request.dart';
 export 'account/account_type.dart';
 export 'account/authentication_type.dart';
 export 'account/password.dart';
-// Account
-export 'account/user_name.dart';
+export 'account/jmap_account.dart';
 // AutoComplete
 export 'autocomplete/auto_complete_pattern.dart';
 // Contact
@@ -52,11 +52,12 @@ export 'extensions/user_profile_extension.dart';
 export 'extensions/utc_date_extension.dart';
 export 'extensions/email_filter_condition_extension.dart';
 export 'extensions/list_email_header_extension.dart';
-export 'extensions/account_extension.dart';
+export 'extensions/personal_account_extension.dart';
 export 'extensions/list_presentation_mailbox_extension.dart';
 export 'extensions/list_identity_id_extension.dart';
 export 'extensions/email_id_extensions.dart';
 export 'extensions/account_id_extensions.dart';
+export 'extensions/account_extension.dart';
 // Identity
 export 'identity/identity_request_dto.dart';
 export 'mailbox/expand_mode.dart';

@@ -16,7 +16,7 @@ class SubscribeMailboxInteractor {
     try {
       yield Right<Failure, Success>(LoadingSubscribeMailbox());
 
-      final currentMailboxState = await _mailboxRepository.getMailboxState(accountId);
+      final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
 
       final result = await _mailboxRepository.subscribeMailbox(session, accountId, request);
 

@@ -25,8 +25,8 @@ class SendEmailInteractor {
       yield Right<Failure, Success>(SendingEmailState());
 
       final listState = await Future.wait([
-        _mailboxRepository.getMailboxState(accountId),
-        _emailRepository.getEmailState(accountId),
+        _mailboxRepository.getMailboxState(session, accountId),
+        _emailRepository.getEmailState(session, accountId),
       ], eagerError: true);
 
       final currentMailboxState = listState.first;
