@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
@@ -22,11 +23,11 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_m
 abstract class MailboxDataSource {
   Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties});
 
-  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId);
+  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId, UserName userName);
 
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState);
 
-  Future<void> update(AccountId accountId, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed});
+  Future<void> update(AccountId accountId, UserName userName, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed});
 
   Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
 

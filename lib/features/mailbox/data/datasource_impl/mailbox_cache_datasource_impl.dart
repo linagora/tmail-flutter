@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
@@ -40,16 +41,16 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<void> update(AccountId accountId, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
+  Future<void> update(AccountId accountId, UserName userName, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
     return Future.sync(() async {
-      return await _mailboxCacheManager.update(accountId, updated: updated, created: created, destroyed: destroyed);
+      return await _mailboxCacheManager.update(accountId, userName, updated: updated, created: created, destroyed: destroyed);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId) {
+  Future<List<Mailbox>> getAllMailboxCache(AccountId accountId, UserName userName) {
     return Future.sync(() async {
-      final listMailboxes = await _mailboxCacheManager.getAllMailbox(accountId);
+      final listMailboxes = await _mailboxCacheManager.getAllMailbox(accountId, userName);
       return listMailboxes;
     }).catchError(_exceptionThrower.throwException);
   }

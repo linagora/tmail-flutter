@@ -4,6 +4,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -37,7 +38,7 @@ class MailboxChangeListener extends ChangeListener {
       if (action is SynchronizeMailboxOnForegroundAction) {
         _synchronizeMailboxOnForegroundAction(action.newState);
       } else if (action is StoreMailboxStateToRefreshAction) {
-        _handleStoreMailboxStateToRefreshAction(action.accountId, action.newState);
+        _handleStoreMailboxStateToRefreshAction(action.accountId, action.userName, action.newState);
       }
     }
   }
@@ -59,10 +60,10 @@ class MailboxChangeListener extends ChangeListener {
     }
   }
 
-  void _handleStoreMailboxStateToRefreshAction(AccountId accountId, jmap.State newState) {
+  void _handleStoreMailboxStateToRefreshAction(AccountId accountId, UserName userName, jmap.State newState) {
     log('MailboxChangeListener::_handleStoreMailboxStateToRefreshAction():newState: $newState');
     if (_storeMailboxStateToRefreshInteractor != null) {
-      consumeState(_storeMailboxStateToRefreshInteractor!.execute(accountId, newState));
+      consumeState(_storeMailboxStateToRefreshInteractor!.execute(accountId, userName, newState));
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,7 +63,7 @@ class SharePreferenceSpamReportDataSource extends SpamReportDataSource {
   }
 
   @override
-  Future<Mailbox> getSpamMailboxCached(AccountId accountId) {
+  Future<Mailbox> getSpamMailboxCached(AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
 }

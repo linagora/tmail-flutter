@@ -1,7 +1,15 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:model/account/account_request.dart';
+import 'package:model/account/authentication_type.dart';
+import 'package:model/account/password.dart';
+import 'package:model/account/personal_account.dart';
+import 'package:model/email/attachment.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
@@ -95,13 +103,13 @@ class DownloadAttachmentsInteractor {
       await Future.wait([
         _authenticationOIDCRepository.persistTokenOIDC(newTokenOIDC),
         _accountRepository.deleteCurrentAccount(accountCurrent.id),
-        _accountRepository.setCurrentAccount(Account(
+        _accountRepository.setCurrentAccount(PersonalAccount(
           newTokenOIDC.tokenIdHash,
           AuthenticationType.oidc,
           isSelected: true,
           accountId: accountId,
-          apiUrl: accountCurrent.apiUrl
-        ))
+          apiUrl: accountCurrent.apiUrl,
+          userName: accountCurrent.userName))
       ]);
 
       _authorizationInterceptors.setTokenAndAuthorityOidc(

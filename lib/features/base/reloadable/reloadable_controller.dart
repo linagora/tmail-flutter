@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
@@ -74,11 +76,11 @@ abstract class ReloadableController extends BaseController {
     _dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
     _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
-      credentialViewState.userName.userName,
+      credentialViewState.userName.value,
       credentialViewState.password.value,
     );
     authorizationIsolateInterceptors.setBasicAuthorization(
-      credentialViewState.userName.userName,
+      credentialViewState.userName.value,
       credentialViewState.password.value,
     );
   }
@@ -108,15 +110,17 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
+    final session = success.session;
+    final personalAccount = session.personalAccount;
     final jmapUrl = _dynamicUrlInterceptors.jmapUrl;
     final apiUrl = jmapUrl != null
-      ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
-      : success.session.apiUrl.toString();
+      ? session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
+      : session.apiUrl.toString();
     log('ReloadableController::_handleGetSessionSuccess():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
-      updateAuthenticationAccount(success.session, success.session.accounts.keys.first);
-      handleReloaded(success.session);
+      updateAuthenticationAccount(session, personalAccount.accountId, session.username);
+      handleReloaded(session);
     } else {
       _handleGetSessionFailure();
     }
@@ -149,14 +153,14 @@ abstract class ReloadableController extends BaseController {
     }
   }
 
-  void updateAuthenticationAccount(Session session, AccountId accountId) {
+  void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
     final jmapUrl = _dynamicUrlInterceptors.jmapUrl;
     final apiUrl = jmapUrl != null
       ? session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
       : session.apiUrl.toString();
     log('ReloadableController::updateAuthenticationAccount():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
-      consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl));
+      consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));
     }
   }
 }

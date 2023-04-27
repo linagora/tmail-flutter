@@ -1,6 +1,7 @@
 
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
@@ -18,19 +19,19 @@ class StateDataSourceImpl extends StateDataSource {
   StateDataSourceImpl(this._stateCacheClient, this._exceptionThrower);
 
   @override
-  Future<State?> getState(AccountId accountId, StateType stateType) {
+  Future<State?> getState(AccountId accountId, UserName userName, StateType stateType) {
     return Future.sync(() async {
-      final stateKey = TupleKey(stateType.value, accountId.asString).toString();
+      final stateKey = TupleKey(stateType.value, accountId.asString, userName.value).encodeKey;
       final stateCache = await _stateCacheClient.getItem(stateKey);
       return stateCache?.toState();
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<void> saveState(AccountId accountId, StateCache stateCache) {
+  Future<void> saveState(AccountId accountId, UserName userName, StateCache stateCache) {
     return Future.sync(() async {
       final stateCacheExist = await _stateCacheClient.isExistTable();
-      final stateKey = TupleKey(stateCache.type.value, accountId.asString).toString();
+      final stateKey = TupleKey(stateCache.type.value, accountId.asString, userName.value).encodeKey;
       if (stateCacheExist) {
         return await _stateCacheClient.updateItem(stateKey, stateCache);
       } else {

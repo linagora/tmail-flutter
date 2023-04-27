@@ -21,7 +21,7 @@ class MarkAsStarMultipleEmailInteractor {
     try {
       yield Right(LoadingMarkAsStarMultipleEmailAll());
 
-      final currentEmailState = await _emailRepository.getEmailState(accountId);
+      final currentEmailState = await _emailRepository.getEmailState(session, accountId);
 
       final listEmailNeedMarkStar = emails
           .where((email) => markStarAction == MarkStarAction.unMarkStar ? email.hasStarred : !email.hasStarred)

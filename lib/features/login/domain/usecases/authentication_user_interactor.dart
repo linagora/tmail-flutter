@@ -1,6 +1,11 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
-import 'package:model/model.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/authentication_type.dart';
+import 'package:model/account/password.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
@@ -24,10 +29,9 @@ class AuthenticationInteractor {
       final user = await authenticationRepository.authenticationUser(baseUrl, userName, password);
       await Future.wait([
         credentialRepository.saveBaseUrl(baseUrl),
-        credentialRepository.storeAuthenticationInfo(
-            AuthenticationInfoCache(userName.userName, password.value)),
-        _accountRepository.setCurrentAccount(Account(
-          userName.userName,
+        credentialRepository.storeAuthenticationInfo(AuthenticationInfoCache(userName.value, password.value)),
+        _accountRepository.setCurrentAccount(PersonalAccount(
+          userName.value,
           AuthenticationType.basic,
           isSelected: true
         ))

@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:model/extensions/mailbox_extension.dart';
@@ -92,8 +93,8 @@ class SpamReportController extends BaseController {
       mailboxFilterCondition: MailboxFilterCondition(role: Role('Spam'))));
   }
 
-  void getSpamMailboxCached(AccountId accountId) {
-    consumeState(_getSpamMailboxCachedInteractor.execute(accountId));
+  void getSpamMailboxCached(AccountId accountId, UserName userName) {
+    consumeState(_getSpamMailboxCachedInteractor.execute(accountId, userName));
   }
 
   void _storeLastTimeDismissedSpamReportedAction() {
