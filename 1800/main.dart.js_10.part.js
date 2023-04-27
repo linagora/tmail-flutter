@@ -2182,7 +2182,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600 ? 0 : 24,
         t4 = A._setArrayType([A.Text$(_this.rule.name, _null, _null, _null, _null, _null, B.TextStyle_oHY0, _null, _null, _null), B.Spacer_null], type$.JSArray_Widget);
       if (!(context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600))
-        t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_edit_rule.svg", _null, B.BoxFit_0, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure(_this, context), _null, _null));
+        t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_edit_rule.svg", A.ColorNullableExtension_asFilter(B.Color_4278221567), B.BoxFit_0, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure(_this, context), _null, _null));
       if (!(context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600))
         t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_delete_rule.svg", _null, B.BoxFit_0, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure0(_this, context), _null, _null));
       if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600)
@@ -5701,4 +5701,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["bNf2B98TBiOgzdWwgnpwDCgOVic="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Xea155LfpnN4U8PXnyrT46QWSYM="] = $__dart_deferred_initializers__.current
