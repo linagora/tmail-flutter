@@ -498,7 +498,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   void openEmailDetailedView(PresentationEmail presentationEmail) {
     setSelectedEmail(presentationEmail);
-    dispatchRoute(DashboardRoutes.emailDetailed);
+   // presentationEmail.headersName == "X-MEETING-UID"?
+    dispatchRoute(DashboardRoutes.emailDetailedEvent);
+   // :dispatchRoute(DashboardRoutes.emailDetailed);
     if (BuildUtils.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.updateRouteOnBrowser(
         'Email-${presentationEmail.id?.id.value ?? ''}',

@@ -180,7 +180,9 @@ class ImagePaths {
   String get icToastSuccessMessage => _getImagePath('ic_toast_success_message.svg');
   String get icForwarded => _getImagePath('ic_forwarded.svg');
   String get icReplyAndForward => _getImagePath('ic_reply_and_forward.svg');
-
+  String get icTemplateAddOutline => _getImagePath('ic_template_add_outline.svg');
+  String get icCalendarImage => _getImagePath('ic_calender_image.png');
+  
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
   }
