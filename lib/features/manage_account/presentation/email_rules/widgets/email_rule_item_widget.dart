@@ -39,6 +39,7 @@ class EmailRulesItemWidget extends StatelessWidget {
               icon: SvgPicture.asset(
                 _imagePaths.icEditRule,
                 fit: BoxFit.fill,
+                colorFilter: AppColor.primaryColor.asFilter(),
               ),
               onTap: () {
                 _emailRuleController.editEmailRule(context, rule);

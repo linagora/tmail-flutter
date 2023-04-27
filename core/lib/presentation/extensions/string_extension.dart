@@ -42,7 +42,6 @@ extension StringExtension on String {
 
   String get withUnicodeCharacter {
     return characters
-      .replaceAll(Characters(' '), Characters('\u{00A0}'))
       .replaceAll(Characters('-'), Characters('\u{2011}'))
       .toString();
   }
