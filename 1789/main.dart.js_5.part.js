@@ -638,7 +638,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = minWidth == null ? 0 : minWidth,
         t3 = styleCSS == null ? "" : styleCSS,
         t4 = javaScripts == null ? "" : javaScripts;
-      return '    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n    <style>\n      .tmail-content {\n        min-height: ' + t1 + "px;\n        min-width: " + t2 + "px;\n        overflow: auto;\n      }\n              .tmail-content::-webkit-scrollbar {\n          display: none;\n        }\n        .tmail-content {\n          -ms-overflow-style: none;  /* IE and Edge */\n          scrollbar-width: none;  /* Firefox */\n        }\n      \n      " + t3 + "\n    </style>\n    " + t4 + '\n    </head>\n    <body>\n    <div class="tmail-content">' + $content + "</div>\n    </body>\n    </html> \n  ";
+      return '    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n    <style>\n      .tmail-content {\n        min-height: ' + t1 + "px;\n        min-width: " + t2 + "px;\n        overflow: auto;\n      }\n              .tmail-content::-webkit-scrollbar {\n          display: none;\n        }\n        .tmail-content {\n          -ms-overflow-style: none;  /* IE and Edge */\n          scrollbar-width: none;  /* Firefox */\n        }\n      \n      " + t3 + "\n    </style>\n    " + t4 + '\n    </head>\n    <body style = "overflow-x: hidden">\n    <div class="tmail-content">' + $content + "</div>\n    </body>\n    </html> \n  ";
     },
     buildSVGIconButton(icon, iconColor, iconSize, onTap, onTapDown, padding, tooltip) {
       var _null = null,
@@ -1922,7 +1922,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 265
+    $signature: 236
   };
   A._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -2005,7 +2005,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 201
+    $signature: 213
   };
   A._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -2031,7 +2031,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 401
+    $signature: 432
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -2049,7 +2049,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 396
+    $signature: 431
   };
   A.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -2061,7 +2061,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(result, position) {
       return this.$this.super$RenderProxyBoxMixin$hitTestChildren(result, position);
     },
-    $signature: 21
+    $signature: 20
   };
   A.PortalLinkScope_of_closure.prototype = {
     call$1(scope) {
@@ -2082,7 +2082,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return this.test.call$1(this.T._as(t1));
     },
-    $signature: 135
+    $signature: 150
   };
   A._PortalTargetState_build_closure.prototype = {
     call$2(context, currentVisible) {
@@ -2101,7 +2101,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1._buildModeNormal$3(context, currentVisible, scope);
     },
-    $signature: 1437
+    $signature: 1438
   };
   A._PortalTargetState__buildModeNormal_closure.prototype = {
     call$0() {
@@ -2141,14 +2141,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 99
+    $signature: 92
   };
   A.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 99
+    $signature: 92
   };
   A.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -2289,4 +2289,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["L1sGr0yOityDV449IKZyi1wh6ho="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["cE4NeD5YVpx0VFfNWcrejZQk8lQ="] = $__dart_deferred_initializers__.current
