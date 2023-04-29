@@ -2125,14 +2125,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.contact.email;
         if (t1 == null)
           t1 = "";
-        t2 = A.RegExp_RegExp(string$.______, true, false);
-        t1 = t2._nativeRegExp.test(t1);
+        t2 = A.RegExp_RegExp(string$.______x5c, true, false);
+        t2 = t2._nativeRegExp.test(t1);
+        if (!t2) {
+          t2 = A.RegExp_RegExp(string$.______x22, true, false);
+          t1 = t2._nativeRegExp.test(t1);
+        } else
+          t1 = true;
         return t1 ? D.Color_4292665573 : B.Color_4294967295;
       }
     },
     _contact_input_tag_item$_getTagBorderSide$0() {
       var t1, t2, t3, t4,
-        _s153_ = string$.______;
+        _s153_ = string$.______x5c,
+        _s70_ = string$.______x22;
       if (this.lastTagFocused && this.isLastContact)
         return B.BorderSide_PLF;
       else {
@@ -2140,12 +2146,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1 == null;
         t3 = t2 ? "" : t1;
         t4 = A.RegExp_RegExp(_s153_, true, false);
-        t3 = t4._nativeRegExp.test(t3);
+        t4 = t4._nativeRegExp.test(t3);
+        if (!t4) {
+          t4 = A.RegExp_RegExp(_s70_, true, false);
+          t3 = t4._nativeRegExp.test(t3);
+        } else
+          t3 = true;
         t3 = t3 ? 0 : 1;
         if (t2)
           t1 = "";
         t2 = A.RegExp_RegExp(_s153_, true, false);
-        t1 = t2._nativeRegExp.test(t1);
+        t2 = t2._nativeRegExp.test(t1);
+        if (!t2) {
+          t2 = A.RegExp_RegExp(_s70_, true, false);
+          t1 = t2._nativeRegExp.test(t1);
+        } else
+          t1 = true;
         return new A.BorderSide(t1 ? D.Color_4292665573 : H.Color_4294914887, t3, B.BorderStyle_1, -1);
       }
     }
@@ -2182,7 +2198,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600 ? 0 : 24,
         t4 = A._setArrayType([A.Text$(_this.rule.name, _null, _null, _null, _null, _null, B.TextStyle_oHY0, _null, _null, _null), B.Spacer_null], type$.JSArray_Widget);
       if (!(context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600))
-        t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_edit_rule.svg", _null, B.BoxFit_0, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure(_this, context), _null, _null));
+        t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_edit_rule.svg", A.ColorNullableExtension_asFilter(B.Color_4278221567), B.BoxFit_0, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure(_this, context), _null, _null));
       if (!(context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600))
         t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_delete_rule.svg", _null, B.BoxFit_0, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure0(_this, context), _null, _null));
       if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size._dx < 600)
@@ -3476,12 +3492,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C._AutocompleteContactTextFieldWithTagsState__isValidAllEmailAddress_closure.prototype = {
     call$1(addedMail) {
-      var t2,
-        t1 = addedMail.email;
-      if (t1 == null)
-        t1 = "";
-      t2 = A.RegExp_RegExp(string$.______, true, false);
-      t1 = t2._nativeRegExp.test(t1);
+      var t1 = addedMail.email,
+        t2 = t1 == null,
+        t3 = t2 ? "" : t1,
+        t4 = A.RegExp_RegExp(string$.______x5c, true, false);
+      t3 = t4._nativeRegExp.test(t3);
+      if (!t3) {
+        if (t2)
+          t1 = "";
+        t2 = A.RegExp_RegExp(string$.______x22, true, false);
+        t1 = t2._nativeRegExp.test(t1);
+      } else
+        t1 = true;
       return t1;
     },
     $signature: 81
@@ -5574,7 +5596,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     Info_a: "Info about you, and options to manage it.",
     Sends_: "Sends an automated reply to incoming messages.",
     Show__: "Show/ hide your mailboxes, including your personal and team mailboxes.",
-    ______: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
+    ______x22: '^(([^<>()[\\]\\\\.,;:\\s@"]+(\\.[^<>()[\\]\\\\.,;:\\s@"]+)*)|(".+"))@localhost$',
+    ______x5c: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
   };
   var type$ = (function rtii() {
     var findType = A.findType;
@@ -5701,4 +5724,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["TU6nVu8bMqqH0R6WsQGPRShCBIk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["cmZzlGrfMfkNtqU/5WjOlTaUPO0="] = $__dart_deferred_initializers__.current
