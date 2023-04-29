@@ -51,11 +51,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.backgroundColor = t1;
       this.key = t2;
     },
-    DecorationImage: function DecorationImage(t0, t1, t2) {
-      this.image = t0;
-      this.onError = t1;
-      this.fit = t2;
-    },
     DecorationImagePainter: function DecorationImagePainter(t0, t1) {
       var _ = this;
       _._details = t0;
@@ -311,72 +306,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return B.AnimatedContainer$(t2, new B.BoxConstraints(minDiameter, maxDiameter, minDiameter, maxDiameter), C.C__Linear, new B.BoxDecoration(effectiveBackgroundColor, _null, _null, _null, _null, _null, _null, C.BoxShape_1), C.Duration_200000, _null, _null, _null, _null);
     }
   };
-  A.DecorationImage.prototype = {
-    createPainter$1(onChanged) {
-      return new A.DecorationImagePainter(this, onChanged);
-    },
-    $eq(_, other) {
-      var t1, _this = this;
-      if (other == null)
-        return false;
-      if (_this === other)
-        return true;
-      if (J.get$runtimeType$(other) !== B.getRuntimeType(_this))
-        return false;
-      if (other instanceof A.DecorationImage)
-        if (other.image.$eq(0, _this.image))
-          if (other.fit === _this.fit)
-            if (C.Alignment_0_0.$eq(0, C.Alignment_0_0))
-              t1 = true;
-            else
-              t1 = false;
-          else
-            t1 = false;
-        else
-          t1 = false;
-      else
-        t1 = false;
-      return t1;
-    },
-    get$hashCode(_) {
-      return B.Object_hash(this.image, null, this.fit, C.Alignment_0_0, null, C.ImageRepeat_3, false, 1, 1, C.FilterQuality_1, false, false, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
-    },
-    toString$0(_) {
-      var t1 = B._setArrayType([this.image.toString$0(0)], type$.JSArray_String),
-        t2 = !(this.fit === C.BoxFit_6 && true);
-      if (t2)
-        t1.push(this.fit.toString$0(0));
-      t1.push(C.Alignment_0_0.toString$0(0));
-      t1.push("scale 1");
-      t1.push("opacity 1");
-      t1.push(C.FilterQuality_1.toString$0(0));
-      return "DecorationImage(" + C.JSArray_methods.join$1(t1, ", ") + ")";
-    }
-  };
   A.DecorationImagePainter.prototype = {
     paint$4(canvas, rect, clipPath, configuration) {
-      var t3, t4, t5, listener, _this = this, _null = null,
+      var t2, t3, t4, _this = this,
         t1 = _this._details,
-        newImageStream = t1.image.resolve$1(configuration),
-        t2 = newImageStream._completer;
-      if (t2 == null)
-        t2 = newImageStream;
-      t3 = _this._imageStream;
-      t4 = t3 == null;
-      if (t4)
-        t5 = _null;
-      else {
-        t5 = t3._completer;
-        if (t5 == null)
-          t5 = t3;
-      }
-      if (t2 !== t5) {
-        listener = new B.ImageStreamListener(_this.get$_handleImage(), _null, t1.onError);
-        if (!t4)
-          t3.removeListener$1(0, listener);
-        _this._imageStream = newImageStream;
-        newImageStream.addListener$1(0, listener);
-      }
+        newImageStream = t1.image.resolve$1(configuration);
+      newImageStream.get$key(newImageStream);
+      _this._imageStream = newImageStream;
+      newImageStream.addListener$1(0, new B.ImageStreamListener(_this.get$_handleImage(), null, t1.onError));
       if (_this._image == null)
         return;
       t2 = clipPath != null;
@@ -386,7 +323,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t3 = _this._image;
       t4 = t3.image;
-      B.paintImage(C.Alignment_0_0, canvas, _null, _null, t3.debugLabel, C.FilterQuality_1, t1.fit, false, t4, false, false, 1, rect, C.ImageRepeat_3, t3.scale);
+      B.paintImage(C.Alignment_0_0, canvas, null, null, t3.debugLabel, C.FilterQuality_1, t1.fit, false, t4, false, false, 1, rect, C.ImageRepeat_3, t3.scale);
       if (t2)
         canvas.restore$0(0);
     },
@@ -415,14 +352,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         _this._onChanged.call$0();
     },
     dispose$0() {
-      var _this = this,
-        t1 = _this._imageStream;
-      if (t1 != null)
-        t1.removeListener$1(0, new B.ImageStreamListener(_this.get$_handleImage(), null, _this._details.onError));
-      t1 = _this._image;
+      var t1 = this._image;
       if (t1 != null)
         t1.image.dispose$0();
-      _this._image = null;
+      this._image = null;
     },
     toString$0(_) {
       return "DecorationImagePainter(stream: " + B.S(this._imageStream) + ", image: " + B.S(this._image) + ") for " + this._details.toString$0(0);
@@ -808,13 +741,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new A.ComposerLoadingMixin_buildInlineLoadingView___closure1(), new A.ComposerLoadingMixin_buildInlineLoadingView___closure2(this.$this));
     },
-    $signature: 122
+    $signature: 118
   };
   A.ComposerLoadingMixin_buildInlineLoadingView___closure1.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 32
+    $signature: 34
   };
   A.ComposerLoadingMixin_buildInlineLoadingView___closure2.prototype = {
     call$1(success) {
@@ -822,7 +755,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 53
+    $signature: 54
   };
   A.ComposerLoadingMixin_buildInlineLoadingView__closure0.prototype = {
     call$1(success) {
@@ -832,13 +765,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new A.ComposerLoadingMixin_buildInlineLoadingView___closure(), new A.ComposerLoadingMixin_buildInlineLoadingView___closure0(this.$this));
     },
-    $signature: 53
+    $signature: 54
   };
   A.ComposerLoadingMixin_buildInlineLoadingView___closure.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 32
+    $signature: 34
   };
   A.ComposerLoadingMixin_buildInlineLoadingView___closure0.prototype = {
     call$1(success) {
@@ -846,7 +779,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 53
+    $signature: 54
   };
   A.AttachmentFileComposerBuilder_build_closure.prototype = {
     call$0() {
@@ -899,7 +832,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t1._prefixEmailAddress !== C.PrefixEmailAddress_1 && newListEmailAddress.length === 0;
       return B.FocusScope$(false, B.Focus$(false, _null, F.TagEditor$(t1.autoDisposeFocusNode, t3, _null, _null, t1.controller, _null, C.Duration_150000, _null, t1.get$_findSuggestions(), t1.focusNode, _null, false, D.InputDecoration_Cfr, t1.keyTagEditor, C.TextInputType_5_null_null, t2, 20, new A.EmailAddressInputBuilder__buildTagEditor__closure(t1, setState, context), new A.EmailAddressInputBuilder__buildTagEditor__closure0(t1, setState), new A.EmailAddressInputBuilder__buildTagEditor__closure1(t1, setState), new A.EmailAddressInputBuilder__buildTagEditor__closure2(t1, setState), new A.EmailAddressInputBuilder__buildTagEditor__closure3(t1, setState), _null, true, new A.EmailAddressInputBuilder__buildTagEditor__closure4(t1, setState), _null, _null, C.Color_4294967295, 20, 350, 20, new A.EmailAddressInputBuilder__buildTagEditor__closure5(t1, newListEmailAddress0, setState), 8, C.TextInputAction_2, D.TextStyle_o8I, false, type$.SuggestionEmailAddress), _null, _null, _null, _null, true, _null, new A.EmailAddressInputBuilder__buildTagEditor__closure6(t1), new A.EmailAddressInputBuilder__buildTagEditor__closure7(t1), _null, _null, _null), _null, _null, _null, _null);
     },
-    $signature: 1439
+    $signature: 1438
   };
   A.EmailAddressInputBuilder__buildTagEditor__closure6.prototype = {
     call$1($focus) {
@@ -924,13 +857,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.KeyEventResult_1;
     },
-    $signature: 68
+    $signature: 73
   };
   A.EmailAddressInputBuilder__buildTagEditor__closure0.prototype = {
     call$1(focused) {
       this.setState.call$1(new A.EmailAddressInputBuilder__buildTagEditor___closure4(this.$this, focused));
     },
-    $signature: 54
+    $signature: 53
   };
   A.EmailAddressInputBuilder__buildTagEditor___closure4.prototype = {
     call$0() {
@@ -955,7 +888,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
       }
     },
-    $signature: 548
+    $signature: 542
   };
   A.EmailAddressInputBuilder__buildTagEditor___closure3.prototype = {
     call$0() {
@@ -1009,7 +942,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t9.push(t1._email_address_input_builder$_buildCounter$2(context, t2.length - t4.length));
       return new B.Stack(C.Alignment_1_0, _null, C.StackFit_0, C.Clip_1, t9, _null);
     },
-    $signature: 1441
+    $signature: 1440
   };
   A.EmailAddressInputBuilder__buildTagEditor___closure0.prototype = {
     call$0() {
@@ -1079,7 +1012,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return t2._buildSuggestionItem$8(this.setState, context, tagEditorState, t3, index, $length, highlight, suggestionValid);
       }
     },
-    $signature: 1442
+    $signature: 1441
   };
   A.EmailAddressInputBuilder__buildCounter_closure.prototype = {
     call$0() {
@@ -1114,13 +1047,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return t1._toSuggestionEmailAddress$2(emailAddress, t1.listEmailAddress);
     },
-    $signature: 219
+    $signature: 220
   };
   A.EmailAddressInputBuilder__isDuplicatedRecipient_closure.prototype = {
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 298
+    $signature: 292
   };
   A.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -1129,13 +1062,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 75
+    $signature: 81
   };
   A.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
       return new B.SuggestionEmailAddress(emailAddress, C.SuggestionEmailState_1);
     },
-    $signature: 219
+    $signature: 220
   };
   A.EmailAddressInputBuilder__handleDeleteTagAction_closure.prototype = {
     call$0() {
@@ -1147,13 +1080,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(file) {
       return file.get$fileSize();
     },
-    $signature: 1444
+    $signature: 1443
   };
   A.ListUploadFileStateExtension_get_totalSize_closure0.prototype = {
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 368
+    $signature: 356
   };
   (function installTearOffs() {
     var _instance_2_u = hunkHelpers._instance_2u,
@@ -1171,7 +1104,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(B.Closure0Args, [A.buildTextIcon_closure, A.buildIconWithLowerMenu__closure, A.buildIconWithUpperMenu__closure, A.ComposerLoadingMixin_buildInlineLoadingView_closure, A.AttachmentFileComposerBuilder_build_closure, A.AttachmentFileComposerBuilder_build_closure0, A.AttachmentFileComposerBuilder_build_closure1, A.EmailAddressInputBuilder_build_closure, A.EmailAddressInputBuilder_build_closure0, A.EmailAddressInputBuilder_build_closure1, A.EmailAddressInputBuilder__buildTagEditor___closure4, A.EmailAddressInputBuilder__buildTagEditor__closure, A.EmailAddressInputBuilder__buildTagEditor___closure3, A.EmailAddressInputBuilder__buildTagEditor___closure2, A.EmailAddressInputBuilder__buildTagEditor___closure0, A.EmailAddressInputBuilder__buildTagEditor___closure, A.EmailAddressInputBuilder__buildTagEditor____closure, A.EmailAddressInputBuilder__buildTagEditor___closure1, A.EmailAddressInputBuilder__buildCounter_closure, A.EmailAddressInputBuilder__buildSuggestionItem_closure, A.EmailAddressInputBuilder__buildSuggestionItem__closure, A.EmailAddressInputBuilder__handleDeleteTagAction_closure]);
     _inheritMany(B.Closure, [A.buildIconWithLowerMenu_closure, A.buildIconWithUpperMenu_closure, A.ComposerLoadingMixin_buildInlineLoadingView__closure, A.ComposerLoadingMixin_buildInlineLoadingView___closure1, A.ComposerLoadingMixin_buildInlineLoadingView___closure2, A.ComposerLoadingMixin_buildInlineLoadingView__closure0, A.ComposerLoadingMixin_buildInlineLoadingView___closure, A.ComposerLoadingMixin_buildInlineLoadingView___closure0, A.EmailAddressInputBuilder__buildTagEditor__closure6, A.EmailAddressInputBuilder__buildTagEditor__closure0, A.EmailAddressInputBuilder__buildTagEditor__closure1, A.EmailAddressInputBuilder__buildTagEditor__closure2, A.EmailAddressInputBuilder__buildTagEditor__closure3, A.EmailAddressInputBuilder__buildTagEditor__closure4, A.EmailAddressInputBuilder__findSuggestions_closure, A.EmailAddressInputBuilder__isDuplicatedRecipient_closure, A.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure, A.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0, A.ListUploadFileStateExtension_get_totalSize_closure]);
     _inheritMany(B.StatelessWidget, [A.CircleAvatar, A.RichTextWidget, A._AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin]);
-    _inheritMany(B.Object, [A.DecorationImage, A.DecorationImagePainter, A.ComposerLoadingMixin, A.EmailAddressInputBuilder]);
+    _inheritMany(B.Object, [A.DecorationImagePainter, A.ComposerLoadingMixin, A.EmailAddressInputBuilder]);
     _inherit(A.AttachmentFileComposerBuilder, A._AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin);
     _inheritMany(B.Closure2Args, [A.EmailAddressInputBuilder__buildTagEditor_closure, A.EmailAddressInputBuilder__buildTagEditor__closure7, A.EmailAddressInputBuilder__buildTagEditor__closure5, A.ListUploadFileStateExtension_get_totalSize_closure0]);
     _mixin(A._AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin, B.AppLoaderMixin);
@@ -1185,7 +1118,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     return {
       AppLocalizations: findType("AppLocalizations"),
       ImagePaths: findType("ImagePaths"),
-      JSArray_String: findType("JSArray<String>"),
       JSArray_SuggestionEmailAddress: findType("JSArray<SuggestionEmailAddress>"),
       JSArray_TextSpan: findType("JSArray<TextSpan>"),
       JSArray_Widget: findType("JSArray<Widget>"),
@@ -1236,4 +1168,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["4qwWWwvHuJdx363GGHQhjz9dEFk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["lCEwMlWuDy5hTBCoGl+HlS6WVgQ="] = $__dart_deferred_initializers__.current
