@@ -35,7 +35,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-import '../../email/presentation/email_event_view.dart';
 import 'widgets/app_dashboard/app_grid_dashboard_overlay.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
@@ -139,8 +138,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             return _buildThreadViewForWebDesktop(context);
                           case DashboardRoutes.emailDetailed:
                             return EmailView();
-                          case DashboardRoutes.emailDetailedEvent:
-                            return EmailEventView();
                           default:
                             return const SizedBox.shrink();
                         }
@@ -168,20 +165,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             ],
                           ),
                       );
-                case DashboardRoutes.emailDetailedEvent:
-                  return controller.searchController.isSearchEmailRunning
-                      ? EmailEventView()
-                      : _buildScaffoldHaveDrawer(
-                        body: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                  width: ResponsiveUtils.defaultSizeLeftMenuMobile,
-                                  child: ThreadView()),
-                              Expanded(child: EmailEventView()),
-                            ],
-                          ),
-                      );
                 default:
                   return _buildScaffoldHaveDrawer(
                     body: Row(
@@ -202,8 +185,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   return _buildScaffoldHaveDrawer(body: ThreadView());
                 case DashboardRoutes.emailDetailed:
                   return EmailView();
-                case DashboardRoutes.emailDetailedEvent:
-                  return EmailEventView();
                 case DashboardRoutes.searchEmail:
                   return SearchEmailView();
                 default:

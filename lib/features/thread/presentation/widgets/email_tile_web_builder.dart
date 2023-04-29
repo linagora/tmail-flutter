@@ -5,6 +5,7 @@ import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -578,8 +579,10 @@ class EmailTileBuilder with BaseEmailItemTile {
     }
   }
 
-   Widget _buildCalendarIcon() {
-    if (_presentationEmail.headersName.isEmpty) {
+    Widget _buildCalendarIcon() {
+    String isEvent = "X-MEETING" ;
+    String headerValue = "X-MEETING ";
+   if (headerValue.contains(isEvent) == true ) {
       return buildIconCalendar(_presentationEmail);
     } else {
       return Container();

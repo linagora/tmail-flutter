@@ -5,7 +5,6 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -32,7 +31,6 @@ class PresentationEmail with EquatableMixin {
   final SelectMode selectMode;
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
-  final Set<EmailHeader>? headers;
 
   PresentationEmail({
     this.id,
@@ -53,7 +51,6 @@ class PresentationEmail with EquatableMixin {
     this.selectMode = SelectMode.INACTIVE,
     this.routeWeb,
     this.mailboxContain,
-    this.headers
   });
   
   String getSenderName() {
@@ -92,14 +89,6 @@ class PresentationEmail with EquatableMixin {
   String get mailboxName {
     if (mailboxNames?.isNotEmpty == true) {
       return mailboxNames?.first?.name ?? '';
-    } else {
-      return '';
-    }
-  }
-
-  String get headersName {
-    if (headers?.isNotEmpty == true) {
-      return headers?.first.name ?? '';
     } else {
       return '';
     }

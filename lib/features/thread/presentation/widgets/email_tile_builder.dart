@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/email_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -162,8 +163,10 @@ class EmailTileBuilder with BaseEmailItemTile {
     }
   }
   
-  Widget _buildCalendarIcon() {
-    if (_presentationEmail.headersName == "X-MEETING-METHOD") {
+   Widget _buildCalendarIcon() {
+    String isEvent = "X-MEETING" ;
+    String headerValue = "X-MEETING ";
+   if (headerValue.contains(isEvent) == true ) {
       return buildIconCalendar(_presentationEmail);
     } else {
       return Container();
