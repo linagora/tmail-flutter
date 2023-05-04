@@ -12,7 +12,7 @@
 ## Acceptance Criteria: 
 ```
 GIVEN I'm a Tmail user
-AND There are existed uread emails on my mailbox
+AND There are existed unread emails on my mailbox
 WHEN I swipe left to right on an email rows
 THEN I see the email row is swiped as blue background color belong with "read email icon"
 AND System mark an email as read
@@ -24,16 +24,16 @@ THEN I see the email row is swiped as blue background color belong with "unread 
 AND System mark an email as unread
 
 GIVEN I'm a Tmail user
-AND There are existed emails on my normal folder which not archive folder
+AND There are existed emails on my mailboxes
 WHEN I swipe right to left on an email rows
-THEN I see the email row is swiped as green background color belong with "archive email icon"
-AND System move the email to archive folder with the toast message
+THEN I see the email row is swiped as blue background color belong with "Move email icon"
+AND System display a list mailbox dialog to let user select the email moving desitination
+AND System display a checked icon belong to mailbox in the list which indicate user that email is in what mailbox at the moment
 
 GIVEN I'm a Tmail user
-AND There are existed archived email
-WHEN I swipe right to left or left to right on an email rows
-THEN I see the email row is swiped as blue background color belong with "Inbox icon" and the word "Move to inbox"
-AND System move the archived email to inbox with the toast message
+WHEN I swipe right to left on an email rows
+AND I select one mailbox in the list
+THEN The email is moved with the toast message
 ```
 
 ## Definition
@@ -56,21 +56,24 @@ On thread-view, when I swipe left to right on email which be unread state, I can
 
 **Expected:** User mark an email as unread successfully.
 
-**UC3.  As I am a user, I want to swipe right to left to archive an email
-On thread-view, when I swipe left to right on email which be not in Archive mailbox, I can see:
-**Configs in Swipe Options**: Swipe right to left = Archive
+**UC3.  As I am a user, I want to swipe right to left to move an email
+On thread-view, when I swipe right to left on email in my mailbox, I can see:
+**Configs in Swipe Options**: Swipe right to left = Move email
 
-- The icon indicator this is Archive email
-- The background color is green
+- The icon indicator this is Move email
+- The background color is blue
+- The list of mailboxes will be displayed
+- The checked icon will be displayed which indicator that email is in what mailbox at the moment
 
-**Expected:** System display a toast message. User archived email successfully. This email is moved to Archived mailbox
+**Expected:**  
+I see the email row is swiped as blue background color belong with "Move email icon" 
+AND System display the list of mailboxes wit checked icon belong to mailbox which include that email.
 
-**UC4.  As I am a user, I want to swipe left to right and even if right to left in order to move the archived email to inbox
+**UC4.  As I am a user, I want to swipe right to left in email of my mailboxes
 On thread-view of Archive folder, when I swipe left to right / right to left then the archived email is moved to inbox
 
 **Expected:** 
-I see the email row is swiped as blue background color belong with "Inbox icon" and the word "Move to inbox"
-AND System move the archived email to inbox with the toast message
+This email is moved to selected mailbox. System display a toast message.
 
 
 
@@ -82,9 +85,13 @@ AND System move the archived email to inbox with the toast message
 
 ![image](https://user-images.githubusercontent.com/124866146/235097387-fb616f8f-ff50-4dfe-8e2b-44a5bca3aba4.png)
 
-![image](https://user-images.githubusercontent.com/124866146/235097664-62f968a9-583a-46d7-9853-8493e8211ad7.png)
+![image](https://user-images.githubusercontent.com/124866146/236110914-0b53392a-161a-4f25-85d9-abb06706d82a.png)
 
-![image](https://user-images.githubusercontent.com/124866146/235098010-539660c7-1206-46fc-add5-3dbf15d8933c.png)
+![image](https://user-images.githubusercontent.com/124866146/236111202-a4154949-5512-4287-bc78-d85ad6ad610a.png)
+
+![image](https://user-images.githubusercontent.com/124866146/236111590-6d85c76f-e9ab-4128-ae11-060c3186085f.png)
+
+
 
 
 
