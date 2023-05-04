@@ -939,6 +939,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       case MailboxActions.disableMailbox:
         _unsubscribeMailboxAction(mailbox.id);
         break;
+      case MailboxActions.emptyTrash:
+        emptyTrashAction(context, mailbox.id, mailboxDashBoardController);
+        break;
       default:
         break;
     }

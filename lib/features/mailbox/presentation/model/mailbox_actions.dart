@@ -18,7 +18,8 @@ enum MailboxActions {
   disableSpamReport,
   enableSpamReport,
   disableMailbox,
-  enableMailbox
+  enableMailbox,
+  emptyTrash;
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -58,6 +59,8 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).hideMailBoxes;
       case MailboxActions.enableMailbox:
         return AppLocalizations.of(context).showMailbox;
+      case MailboxActions.emptyTrash:
+        return AppLocalizations.of(context).emptyTrash;
       default:
         return '';
     }
@@ -83,6 +86,8 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icHideMailbox;
       case MailboxActions.enableMailbox:
         return imagePaths.icShowMailbox;
+      case MailboxActions.emptyTrash:
+        return imagePaths.icMailboxTrash;
       default:
         return '';
     }
@@ -152,6 +157,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.move:
       case MailboxActions.rename:
       case MailboxActions.delete:
+      case MailboxActions.emptyTrash:
         return ContextMenuItemState.activated;
       case MailboxActions.markAsRead:
         return mailbox.getCountUnReadEmails().isNotEmpty

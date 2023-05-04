@@ -39,7 +39,9 @@ mixin MailboxWidgetMixin {
       if (mailbox.isSpam)
         _mailboxActionForSpam(spamReportEnabled),
       if (mailbox.getCountUnReadEmails().isNotEmpty)
-        MailboxActions.markAsRead
+        MailboxActions.markAsRead,
+      if (mailbox.isTrash)
+        MailboxActions.emptyTrash
     ];
   }
 
