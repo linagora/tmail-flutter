@@ -69,7 +69,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               borderRadius: const BorderRadius.all(Radius.circular(16)),
               constraints: BoxConstraints(maxWidth: maxWidth)
             ),
-            debounceDuration: const Duration(milliseconds: 500),
+            debounceDuration: const Duration(milliseconds: 300),
             listActionButton: QuickSearchFilter.values,
             actionButtonBuilder: (context, filterAction) {
               if (filterAction is QuickSearchFilter) {
@@ -122,6 +122,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
 
     if (query.isNotEmpty) {
       dashBoardController.searchController.saveRecentSearch(RecentSearch.now(query));
+    }
+
+    if (query.isNotEmpty || dashBoardController.searchController.listFilterOnSuggestionForm.isNotEmpty) {
       dashBoardController.searchEmail(context, query);
     } else {
       dashBoardController.clearSearchEmail();
@@ -179,7 +182,6 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       focusNode: controller.searchFocus,
       textInputAction: TextInputAction.done,
       onSubmitted: (keyword) => _invokeSearchEmailAction(context, keyword.trim()),
-      onChanged: controller.onChangeTextSearch,
       decoration: InputDecoration(
         border: InputBorder.none,
         focusedBorder: InputBorder.none,

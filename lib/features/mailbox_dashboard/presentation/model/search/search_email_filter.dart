@@ -45,7 +45,7 @@ class SearchEmailFilter with EquatableMixin {
             emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
 
   SearchEmailFilter copyWith({
-    Set<String>? from,
+    Option<Set<String>>? fromOption,
     Set<String>? to,
     SearchQuery? text,
     Option<String>? subjectOption,
@@ -58,7 +58,7 @@ class SearchEmailFilter with EquatableMixin {
     Option<UTCDate>? endDateOption,
   }) {
     return SearchEmailFilter(
-      from: from ?? this.from,
+      from: _getOptionParam(fromOption, from),
       to: to ?? this.to,
       text: text ?? this.text,
       subject: _getOptionParam(subjectOption, subject),
