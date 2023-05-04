@@ -86,7 +86,7 @@ class AdvancedFilterController extends BaseController {
     searchController.searchInputController.clear();
     searchController.deactivateAdvancedSearch();
     searchController.isAdvancedSearchViewOpen.toggle();
-    _mailboxDashBoardController.searchEmail(context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
+    _mailboxDashBoardController.searchEmail(context);
   }
 
   void _updateFilterEmailFromAdvancedSearchView() {
@@ -94,7 +94,7 @@ class AdvancedFilterController extends BaseController {
       searchController.updateFilterEmail(text: SearchQuery(hasKeyWordFilterInputController.text));
       searchController.searchInputController.text = hasKeyWordFilterInputController.text;
     } else {
-      searchController.updateFilterEmail(text: SearchQuery(searchController.searchInputController.text));
+      searchController.updateFilterEmail(text: SearchQuery.initial());
     }
 
     if (notKeyWordFilterInputController.text.isNotEmpty) {
@@ -103,12 +103,12 @@ class AdvancedFilterController extends BaseController {
       searchController.updateFilterEmail(notKeyword: {});
     }
 
-    if(lastTextForm.isNotEmpty && !searchController.searchEmailFilter.value.from.contains(lastTextForm.value)){
+    if (lastTextForm.isNotEmpty && !searchController.searchEmailFilter.value.from.contains(lastTextForm.value)){
       searchController.updateFilterEmail(fromOption: Some(searchController.searchEmailFilter.value.from..add(lastTextForm.value)));
       lastTextForm.value = '';
     }
 
-    if(lastTextTo.isNotEmpty &&  !searchController.searchEmailFilter.value.to.contains(lastTextTo.value)){
+    if (lastTextTo.isNotEmpty &&  !searchController.searchEmailFilter.value.to.contains(lastTextTo.value)){
       searchController.updateFilterEmail(
         to: searchController.searchEmailFilter.value.to..add(lastTextTo.value),
       );
@@ -170,8 +170,7 @@ class AdvancedFilterController extends BaseController {
       searchController.updateFilterEmail(beforeOption: const None());
     }
     searchController.isAdvancedSearchViewOpen.toggle();
-    _mailboxDashBoardController.searchEmail(
-        context, StringConvert.writeNullToEmpty(searchEmailFilter.text?.value));
+    _mailboxDashBoardController.searchEmail(context);
   }
 
   void _checkContactPermission() async {
