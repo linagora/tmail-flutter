@@ -80,7 +80,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           if (controller.appInformation.value != null) {
                             return Padding(padding: const EdgeInsets.only(top: 6),
                               child: Text(
-                                'v.${controller.appInformation.value!.version}',
+                                'v${controller.appInformation.value!.version}',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 13,

@@ -529,7 +529,11 @@ class MailboxDashBoardController extends ReloadableController {
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
   void searchEmail(BuildContext context, String value) {
+    log('MailboxDashBoardController::searchEmail():');
     clearFilterMessageOption();
+    if (searchController.listFilterOnSuggestionForm.isNotEmpty) {
+      searchController.applyFilterSuggestionToSearchFilter(userProfile.value);
+    }
     searchController.updateFilterEmail(text: SearchQuery(value));
     dispatchAction(StartSearchEmailAction());
     KeyboardUtils.hideKeyboard(context);
