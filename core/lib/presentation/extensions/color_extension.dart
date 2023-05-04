@@ -57,6 +57,7 @@ extension AppColor on Color {
   static const enableSendEmailButtonColor = Color(0xFF007AFF);
   static const disableSendEmailButtonColor = Color(0xFFA9B4C2);
   static const borderLeftEmailContentColor = Color(0xFFEFEFEF);
+  static const toastWarningBackgroundColor = Color(0xFFFFC107);
   static const toastSuccessBackgroundColor = Color(0xFF4BB34B);
   static const toastErrorBackgroundColor = Color(0xFFE64646);
   static const toastWithActionBackgroundColor = Color(0xFF3F3F3F);

@@ -48,6 +48,25 @@ class AppToast {
     );
   }
 
+  void showToastWarningMessage(
+    BuildContext context,
+    String message,
+    {
+      Color? leadingSVGIconColor,
+      String? leadingSVGIcon,
+    }
+  ) {
+    final imagePaths = Get.find<ImagePaths>();
+    showToastMessage(
+      context,
+      message,
+      backgroundColor: AppColor.toastWarningBackgroundColor,
+      textColor: Colors.white,
+      leadingSVGIconColor: leadingSVGIconColor ?? (leadingSVGIcon == null ? Colors.white : null),
+      leadingSVGIcon: leadingSVGIcon ?? imagePaths.icInfoCircleOutline
+    );
+  }
+
   void showToastMessage(
     BuildContext context,
     String message,

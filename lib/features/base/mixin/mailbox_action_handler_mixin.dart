@@ -1,10 +1,8 @@
 
 import 'package:core/core.dart';
-import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
@@ -47,11 +45,12 @@ mixin MailboxActionHandlerMixin {
 
   void emptyTrashAction(
     BuildContext context,
-    MailboxId mailboxId,
+    PresentationMailbox mailbox,
     MailboxDashBoardController dashboardController
   ) {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final imagePaths = Get.find<ImagePaths>();
+    final appToast = Get.find<AppToast>();
 
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
@@ -59,7 +58,14 @@ mixin MailboxActionHandlerMixin {
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
             popBack();
-            dashboardController.emptyTrashFolderAction(trashFolderId: mailboxId);
+            if (mailbox.countEmails > 0) {
+              dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
+            } else {
+              appToast.showToastWarningMessage(
+                context,
+                AppLocalizations.of(context).noEmailInYourCurrentMailbox
+              );
+            }
         }))
       .show();
     } else {
@@ -78,8 +84,15 @@ mixin MailboxActionHandlerMixin {
               color: AppColor.colorActionDeleteConfirmDialog))
           ..onCloseButtonAction(popBack)
           ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
-            popBack();
-            dashboardController.emptyTrashFolderAction(trashFolderId: mailboxId);
+              popBack();
+              if (mailbox.countEmails > 0) {
+                dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
+              } else {
+                appToast.showToastWarningMessage(
+                  context,
+                  AppLocalizations.of(context).noEmailInYourCurrentMailbox
+                );
+              }
           })
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack))
         .build()));

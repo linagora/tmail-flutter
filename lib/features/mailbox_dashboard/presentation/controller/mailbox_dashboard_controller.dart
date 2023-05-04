@@ -1394,9 +1394,11 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-
-
-  bool get isMailboxTrash => selectedMailbox.value?.isTrash == true;
+  bool get isMailboxTrashValid {
+    return selectedMailbox.value != null
+      && selectedMailbox.value!.isTrash
+      && selectedMailbox.value!.countEmails > 0;
+  }
 
   void emptyTrashAction(BuildContext context) {
     dispatchAction(EmptyTrashAction(context));
