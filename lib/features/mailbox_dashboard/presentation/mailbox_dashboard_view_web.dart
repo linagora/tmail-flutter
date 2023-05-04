@@ -639,15 +639,16 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       .toList();
   }
 
-  bool supportEmptyTrash(BuildContext context) {
-    return controller.isMailboxTrash
-        && !controller.searchController.isSearchActive()
-        && responsiveUtils.isWebDesktop(context);
+  bool _supportEmptyTrash(BuildContext context) {
+    return controller.isMailboxTrashValid
+      && !controller.searchController.isSearchActive()
+      && responsiveUtils.isWebDesktop(context);
   }
 
   Widget _buildEmptyTrashButton(BuildContext context) {
     return Obx(() {
-      if (supportEmptyTrash(context)) {
+      log('MailboxDashBoardView::_buildEmptyTrashButton():');
+      if (_supportEmptyTrash(context)) {
         return Container(
           decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(14)),

@@ -79,6 +79,8 @@ class PresentationMailbox with EquatableMixin {
     return unreadEmails!.value.value <= 999 ? '${unreadEmails!.value.value}' : '999+';
   }
 
+  int get countEmails => totalEmails?.value.value.toInt() ?? 0;
+
   bool get isSpam => role == roleSpam;
   
   bool get isTrash => role == roleTrash;
