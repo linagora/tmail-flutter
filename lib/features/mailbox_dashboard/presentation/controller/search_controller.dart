@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -62,13 +61,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     this._getAllRecentSearchLatestInteractor,
   );
 
-  @override
-  void onInit() {
-    _registerSearchFocusListener();
-    super.onInit();
-  }
-
-  selectOpenAdvanceSearch() {
+  void selectOpenAdvanceSearch() {
     isAdvancedSearchViewOpen.toggle();
   }
 
@@ -90,7 +83,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
         isFilterSelected
           ? searchEmailFilter.value.from.removeWhere((e) => e == userProfile.email)
           : searchEmailFilter.value.from.add(userProfile.email);
-        updateFilterEmail(from: searchEmailFilter.value.from);
+        updateFilterEmail(fromOption: Some(searchEmailFilter.value.from));
         return;
     }
   }
@@ -152,8 +145,37 @@ class SearchController extends BaseController with DateRangePickerMixin {
       : null;
   }
 
+  void applyFilterSuggestionToSearchFilter(UserProfile? userProfile) {
+    final receiveTime = listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
+      ? EmailReceiveTimeType.last7Days
+      : EmailReceiveTimeType.allTime;
+
+    final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment) ? true : false;
+
+    var listFromAddress = searchEmailFilter.value.from;
+    if (userProfile != null) {
+      if (listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
+        listFromAddress.add(userProfile.email);
+      } else {
+        listFromAddress.remove(userProfile.email);
+      }
+    }
+
+    updateFilterEmail(
+      emailReceiveTimeType: receiveTime,
+      hasAttachment: hasAttachment,
+      fromOption: Some(listFromAddress)
+    );
+
+    clearFilterSuggestion();
+  }
+
+  void clearFilterSuggestion() {
+    listFilterOnSuggestionForm.clear();
+  }
+
   void updateFilterEmail({
-    Set<String>? from,
+    Option<Set<String>>? fromOption,
     Set<String>? to,
     SearchQuery? text,
     Option<String>? subjectOption,
@@ -166,7 +188,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<UTCDate>? endDateOption
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
-      from: from,
+      fromOption: fromOption,
       to: to,
       text: text,
       subjectOption: subjectOption,
@@ -179,20 +201,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
       endDateOption: endDateOption,
     );
     searchEmailFilter.refresh();
-  }
-
-  void _registerSearchFocusListener() {
-    searchFocus.addListener(() {
-      final hasFocus = searchFocus.hasFocus;
-      final query = searchEmailFilter.value.text?.value;
-      log('SearchController::_registerSearchFocusListener(): hasFocus: $hasFocus | query: $query');
-      if (!hasFocus && (query == null || query.isEmpty) && advancedSearchIsActivated.isFalse) {
-        updateFilterEmail(text: SearchQuery.initial());
-        searchInputController.clear();
-        clearSearchFilter();
-        searchFocus.unfocus();
-      }
-    });
   }
 
   EmailReceiveTimeType get receiveTimeFiltered => searchEmailFilter.value.emailReceiveTimeType;
@@ -217,29 +225,12 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void clearTextSearch() {
-    updateFilterEmail(text: SearchQuery.initial());
     searchInputController.clear();
     searchFocus.requestFocus();
   }
 
-  void onChangeTextSearch(String value) {
-    updateFilterEmail(text: SearchQuery(value));
-  }
-
   void updateTextSearch(String value) {
     searchInputController.text = value;
-  }
-
-  bool checkQuickSearchFilterSelected(QuickSearchFilter quickSearchFilter, UserProfile userProfile) {
-    switch (quickSearchFilter) {
-      case QuickSearchFilter.hasAttachment:
-        return searchEmailFilter.value.hasAttachment == true;
-      case QuickSearchFilter.last7Days:
-        return true;
-      case QuickSearchFilter.fromMe:
-        return searchEmailFilter.value.from.contains(userProfile.email) &&
-          searchEmailFilter.value.from.length == 1;
-    }
   }
 
   void saveRecentSearch(RecentSearch recentSearch) {

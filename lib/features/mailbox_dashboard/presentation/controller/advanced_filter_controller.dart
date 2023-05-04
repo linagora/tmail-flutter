@@ -104,10 +104,7 @@ class AdvancedFilterController extends BaseController {
     }
 
     if(lastTextForm.isNotEmpty && !searchController.searchEmailFilter.value.from.contains(lastTextForm.value)){
-      searchController.updateFilterEmail(
-        from: searchController.searchEmailFilter.value.from..add(lastTextForm.value),
-      );
-
+      searchController.updateFilterEmail(fromOption: Some(searchController.searchEmailFilter.value.from..add(lastTextForm.value)));
       lastTextForm.value = '';
     }
 
