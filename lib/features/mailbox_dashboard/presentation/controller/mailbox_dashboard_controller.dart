@@ -1076,7 +1076,7 @@ class MailboxDashBoardController extends ReloadableController {
 
     switch(actionType) {
       case DeleteActionType.all:
-        _emptyTrashFolderAction(onCancelSelectionEmail: onCancelSelectionEmail);
+        emptyTrashFolderAction(onCancelSelectionEmail: onCancelSelectionEmail);
         break;
       case DeleteActionType.multiple:
         _deleteMultipleEmailsPermanently(listEmails ?? [], onCancelSelectionEmail: onCancelSelectionEmail);
@@ -1086,10 +1086,10 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _emptyTrashFolderAction({Function? onCancelSelectionEmail}) {
+  void emptyTrashFolderAction({Function? onCancelSelectionEmail, MailboxId? trashFolderId}) {
     onCancelSelectionEmail?.call();
 
-    final trashMailboxId = mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
+    final trashMailboxId = trashFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
     if (sessionCurrent != null && accountId.value != null && trashMailboxId != null) {
       consumeState(_emptyTrashFolderInteractor.execute(sessionCurrent!, accountId.value!, trashMailboxId));
     }

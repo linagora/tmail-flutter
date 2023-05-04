@@ -2851,4 +2851,16 @@ class AppLocalizations {
       'Replied and Forwarded message',
       name: 'repliedAndForwardedMessage');
   }
+
+  String get emptyTrash {
+    return Intl.message(
+      'Empty Trash',
+      name: 'emptyTrash');
+  }
+
+  String get emptyTrashMessageDialog {
+    return Intl.message(
+      'You are about to permanently delete all items in Trash . Do you want to continue?',
+      name: 'emptyTrashMessageDialog');
+  }
 }
