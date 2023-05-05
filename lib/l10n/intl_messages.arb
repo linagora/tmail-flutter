@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-04-12T12:10:00.382074",
+  "@@last_modified": "2023-05-05T18:33:11.589556",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2754,6 +2754,42 @@
   },
   "emptyListEmailForward": "Please input at least one recipient",
   "@emptyListEmailForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardedMessage": "Forwarded message",
+  "@forwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "repliedMessage": "Replied message",
+  "@repliedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "repliedAndForwardedMessage": "Replied and Forwarded message",
+  "@repliedAndForwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrash": "Empty Trash",
+  "@emptyTrash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrashMessageDialog": "You are about to permanently delete all items in Trash . Do you want to continue?",
+  "@emptyTrashMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotSelectThisImage": "Cannot select this image.",
+  "@cannotSelectThisImage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
