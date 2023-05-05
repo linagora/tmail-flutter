@@ -13,7 +13,7 @@ class PendingAttachmentUploadState extends Success {
   PendingAttachmentUploadState(this.uploadId, this.progress, this.total);
 
   @override
-  List<Object?> get props => [progress, total];
+  List<Object?> get props => [uploadId, progress, total];
 }
 
 class UploadingAttachmentUploadState extends Success {
@@ -24,7 +24,7 @@ class UploadingAttachmentUploadState extends Success {
   UploadingAttachmentUploadState(this.uploadId, this.progress, this.total);
 
   @override
-  List<Object?> get props => [progress, total];
+  List<Object?> get props => [uploadId, progress, total];
 }
 
 class SuccessAttachmentUploadState extends Success {

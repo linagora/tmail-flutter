@@ -1457,6 +1457,8 @@ class ComposerController extends BaseController {
   }
 
   void insertImage(BuildContext context, double maxWith) async {
+    clearFocusEditor(context);
+
     if (_responsiveUtils.isMobile(context)) {
       maxWithEditor = maxWith - 40;
     } else {
@@ -1469,6 +1471,10 @@ class ComposerController extends BaseController {
         _insertImageOnWeb(inlineImage);
       } else {
         _insertImageOnMobileAndTablet(inlineImage);
+      }
+    } else {
+      if (context.mounted) {
+        _appToast.showToastErrorMessage(context, AppLocalizations.of(context).cannotSelectThisImage);
       }
     }
   }
