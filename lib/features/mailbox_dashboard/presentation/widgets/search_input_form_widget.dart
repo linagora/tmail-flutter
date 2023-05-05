@@ -118,6 +118,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   void _invokeSearchEmailAction(BuildContext context, String query) {
+    dashBoardController.searchController.searchFocus.unfocus();
     dashBoardController.searchController.enableSearch();
 
     if (query.isNotEmpty) {
