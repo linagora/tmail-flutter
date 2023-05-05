@@ -5192,31 +5192,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.Obx(new B.SearchInputFormWidget_build_closure(this, this.dashBoardController.searchController, context), null);
     },
     _invokeSearchEmailAction$2(context, query) {
-      var t4,
+      var t4, t5,
         t1 = this.dashBoardController,
         t2 = t1.searchController,
-        t3 = t2.searchState;
-      t3.get$value(t3);
-      t3.set$value(0, new A.SearchState(C.SearchStatus_0));
-      t4 = query.length === 0;
-      if (!t4)
+        t3 = t2.searchFocus;
+      t3.unfocus$0();
+      t4 = t2.searchState;
+      t4.get$value(t4);
+      t4.set$value(0, new A.SearchState(C.SearchStatus_0));
+      t5 = query.length === 0;
+      if (!t5)
         t2.consumeState$1(t2._search_controller$_saveRecentSearchInteractor.execute$1(new A.RecentSearch(query, new A.DateTime(Date.now(), false))));
-      if (t4) {
-        t4 = t2.listFilterOnSuggestionForm;
-        t4 = !t4.get$isEmpty(t4);
+      if (t5) {
+        t5 = t2.listFilterOnSuggestionForm;
+        t5 = !t5.get$isEmpty(t5);
       } else
-        t4 = true;
-      if (t4)
+        t5 = true;
+      if (t5)
         t1.searchEmail$2$queryString(context, query);
       else {
-        t4 = new A.ClearSearchEmailAction();
-        A.log(string$.Mailbo + A.getRuntimeType(t4).toString$0(0));
-        t1.dashBoardAction.set$value(0, t4);
+        t5 = new A.ClearSearchEmailAction();
+        A.log(string$.Mailbo + A.getRuntimeType(t5).toString$0(0));
+        t1.dashBoardAction.set$value(0, t5);
         t2.updateFilterEmail$1$text(new A.SearchQuery(""));
         t2.searchInputController.super$ValueNotifier$value(0, C.TextEditingValue_cKo);
-        t2.searchFocus.unfocus$0();
-        t3.get$value(t3);
-        t3.set$value(0, new A.SearchState(C.SearchStatus_1));
+        t3.unfocus$0();
+        t4.get$value(t4);
+        t4.set$value(0, new A.SearchState(C.SearchStatus_1));
       }
     },
     _buildShowAllResultButton$2(context, keyword) {
@@ -6636,7 +6638,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(timer) {
       this.$this._suggestionsBox.resize$0(0);
     },
-    $signature: 167
+    $signature: 168
   };
   B._TypeAheadFieldQuickSearchState__initOverlayEntry_closure.prototype = {
     call$1(context) {
@@ -6682,7 +6684,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Positioned$(_null, A.CompositedTransformFollower$(A.TextFieldTapRegion$(t2 ? suggestionsList : A.FractionalTranslation$(suggestionsList, true, C.Offset_0_m1), _null, _null), t1._layerLink, new A.Offset(0, t3), false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, w);
     },
-    $signature: 511
+    $signature: 512
   };
   B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure.prototype = {
     call$1(selection) {
@@ -7080,7 +7082,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(email) {
       return A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
     },
-    $signature: 292
+    $signature: 291
   };
   B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure0.prototype = {
     call$1(mailbox) {
@@ -7098,7 +7100,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(email) {
       return A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
     },
-    $signature: 292
+    $signature: 291
   };
   B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure0.prototype = {
     call$1(mailbox) {
@@ -7110,7 +7112,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(email) {
       return A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
     },
-    $signature: 292
+    $signature: 291
   };
   B.ListPresentationEmailExtension_isAllSpam_closure0.prototype = {
     call$1(mailbox) {
@@ -7159,7 +7161,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t9 = type$.JSArray_Widget;
       return A.PointerInterceptor$(A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build__closure(t1, context), _null), C.Divider_6xV, new A.Obx(new B.ComposerView_build__closure0(t1, context), _null), new A.Obx(new B.ComposerView_build__closure1(t1), _null), t2, C.Divider_6xV, new A.Padding(C.EdgeInsets_16_0_16_0, t3, _null), C.Divider_6xV, new A.Padding(C.EdgeInsets_16_0_16_0, t4, _null), C.Divider_6xV, A.Expanded$(A.Column$(A._setArrayType([t5, t8, t1.buildInlineLoadingView$1(t7._as(t6.get(t1))), t1._buildEditorForm$1(context)], t9), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t9), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1));
     },
-    $signature: 186
+    $signature: 185
   };
   B.ComposerView_build__closure.prototype = {
     call$0() {
@@ -7268,13 +7270,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this._composer_view_web$_buildBodyForDesktop$2(context, constraints));
     },
-    $signature: 186
+    $signature: 185
   };
   B.ComposerView_build__closure3.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this._composer_view_web$_buildBodyForDesktop$2(context, constraints));
     },
-    $signature: 186
+    $signature: 185
   };
   B.ComposerView_build__closure4.prototype = {
     call$0() {
@@ -7334,13 +7336,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this._composer_view_web$_buildBodyForDesktop$2(context, constraints));
     },
-    $signature: 186
+    $signature: 185
   };
   B.ComposerView_build_closure1.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this._composer_view_web$_buildBodyForDesktop$2(context, constraints));
     },
-    $signature: 186
+    $signature: 185
   };
   B.ComposerView__buildAppBar_closure.prototype = {
     call$0() {
@@ -9408,7 +9410,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t3._as(t2.get(t1)).userProfile;
       return t4.openPopupMenuAction$3(t5, position, t1.popupMenuUserSettingActionTile$4$onLogoutAction$onSettingAction(t5, t2.get$value(t2), new B.MailboxDashBoardView__buildRightHeader____closure(t1), new B.MailboxDashBoardView__buildRightHeader____closure0(t1)));
     },
-    $signature: 301
+    $signature: 300
   };
   B.MailboxDashBoardView__buildRightHeader____closure.prototype = {
     call$0() {
@@ -9569,7 +9571,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = true;
       return t4.openPopupMenuAction$3(t5, position, t1.popupMenuFilterEmailActionTile$4$isSearchEmailRunning(t5, t2, new B.MailboxDashBoardView__buildListButtonTopBar___closure(t1, t5), t3));
     },
-    $signature: 301
+    $signature: 300
   };
   B.MailboxDashBoardView__buildListButtonTopBar___closure.prototype = {
     call$1(option) {
@@ -9582,7 +9584,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.dashBoardAction.set$value(0, t2);
       return null;
     },
-    $signature: 302
+    $signature: 301
   };
   B.MailboxDashBoardView__buildMarkAsMailboxReadLoading_closure.prototype = {
     call$0() {
@@ -9836,7 +9838,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(receiveTime) {
       return A.PopupMenuItem$(A.PopupItemNoIconWidget$(receiveTime.getTitle$1(this.context), this.receiveTimeSelected === receiveTime, 320, new B.MailboxDashBoardView_popupMenuEmailReceiveTimeType__closure(this.onCallBack, receiveTime), "assets/images/ic_filter_selected.svg"), true, 48, null, C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
-    $signature: 272
+    $signature: 271
   };
   B.MailboxDashBoardView_popupMenuEmailReceiveTimeType__closure.prototype = {
     call$0() {
@@ -9847,16 +9849,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView__buildEmptyTrashButton_closure.prototype = {
     call$0() {
-      var t4, t5, t6, t7, t8, t9, t10, t11, t12, _null = null,
-        t1 = this.$this,
-        t2 = this.context,
-        t3 = $.$get$GetWidget__cache();
+      var t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, _null = null;
+      A.log("MailboxDashBoardView::_buildEmptyTrashButton():");
+      t1 = this.$this;
+      t2 = this.context;
+      t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t3 = t3._jsWeakMap;
       t4 = A._instanceType(t1)._eval$1("GetWidget.S");
       t5 = t4._as(t3.get(t1)).selectedMailbox;
-      t5 = t5.get$value(t5);
-      if ((t5 == null ? _null : J.$eq$(t5.role, $.$get$PresentationMailbox_roleTrash())) === true) {
+      if (t5.get$value(t5) != null && J.$eq$(t5.get$value(t5).role, $.$get$PresentationMailbox_roleTrash()) && t5.get$value(t5).get$countEmails() > 0) {
         A.Expando__checkType(t1);
         t3 = t4._as(t3.get(t1)).searchController.searchState;
         if (t3.get$value(t3).searchStatus !== C.SearchStatus_0)
@@ -10428,7 +10430,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleSelectionEmailAction$3(this.context, actionType, listEmails);
     },
-    $signature: 303
+    $signature: 302
   };
   B.SearchEmailView_build_closure1.prototype = {
     call$0() {
@@ -10658,7 +10660,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(timeType) {
       return A.PopupMenuItem$(new B.EmailReceiveTimeActionTileWidget(this.receiveTimeSelected, timeType, this.onCallBack, null), true, 48, null, C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
-    $signature: 272
+    $signature: 271
   };
   B.SearchEmailView__emailReceiveTimeCupertinoActionTile_closure.prototype = {
     call$1(timeType) {
@@ -10855,7 +10857,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.listPresentationEmail;
       return new A.Obx(new B.SearchEmailView__buildListEmailBody__closure(this.$this, context, J.$index$asx(t1.get$value(t1), index)), null);
     },
-    $signature: 214
+    $signature: 212
   };
   B.SearchEmailView__buildListEmailBody__closure.prototype = {
     call$0() {
@@ -11209,7 +11211,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).pressEmailSelectionAction$3(this.context, actionType, selectionEmail);
     },
-    $signature: 303
+    $signature: 302
   };
   B.ThreadView__buildAppBarNormal_closure.prototype = {
     call$0() {
@@ -11255,7 +11257,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).pressEmailSelectionAction$3(this.context, actionType, selectionEmail);
     },
-    $signature: 303
+    $signature: 302
   };
   B.ThreadView__buildAppBarNormal__closure.prototype = {
     call$2(filterMessageOption, position) {
@@ -11282,7 +11284,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).filterMessagesAction$2(this.context, option);
     },
-    $signature: 302
+    $signature: 301
   };
   B.ThreadView__buildFloatingButtonCompose_closure.prototype = {
     call$0() {
@@ -11353,7 +11355,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).filterMessagesAction$2(this.context, option);
     },
-    $signature: 302
+    $signature: 301
   };
   B.ThreadView__buildLoadingView_closure.prototype = {
     call$0() {
@@ -11623,7 +11625,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new B.ThreadView__buildListEmailBody__closure(this.$this, context, this.listPresentationEmail, index), null);
     },
-    $signature: 214
+    $signature: 212
   };
   B.ThreadView__buildListEmailBody__closure.prototype = {
     call$0() {
@@ -11951,7 +11953,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(C.Alignment_0_0, this.$this._app_bar_thread_widget_builder$_buildAppBar$2(context, constraints), C.Clip_0, C.Color_4294967295, _null, _null, _null, 56, D.ValueKey_app_bar_thread_widget, _null, C.EdgeInsets_16_0_16_0, _null, _null, _null);
     },
-    $signature: 246
+    $signature: 261
   };
   B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure.prototype = {
     call$0() {
@@ -12711,4 +12713,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["LMfImDtsnq9sDZtPrBjvuJqrbO4="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["SFqvFFV6qBJ7ou9cxuA/qFMHRWA="] = $__dart_deferred_initializers__.current

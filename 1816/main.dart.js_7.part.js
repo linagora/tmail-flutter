@@ -2104,7 +2104,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 26
+    $signature: 27
   };
   B._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -2113,7 +2113,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 26
+    $signature: 27
   };
   B._AnimatedSwitcherState__newEntry_closure.prototype = {
     call$1($status) {
@@ -2176,7 +2176,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 305
+    $signature: 304
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -2327,7 +2327,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 305
+    $signature: 304
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1($event) {
@@ -2378,7 +2378,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 305
+    $signature: 304
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
@@ -2515,4 +2515,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Q0ypoxiOK137DbVnJSvHPhCJdFQ="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["h++r44VLEjb1TzPJuIE/wfTWXsc="] = $__dart_deferred_initializers__.current
