@@ -44,10 +44,6 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
       {Key? key,
         String? initialValue,
         bool getImmediateSuggestions = false,
-        @Deprecated('Use autovalidateMode parameter which provides more specific '
-            'behavior related to auto validation. '
-            'This feature was deprecated after Flutter v1.19.0.')
-        bool autovalidate = false,
         bool enabled = true,
         AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
         FormFieldSetter<String>? onSaved,
