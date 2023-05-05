@@ -2863,4 +2863,10 @@ class AppLocalizations {
       'You are about to permanently delete all items in Trash . Do you want to continue?',
       name: 'emptyTrashMessageDialog');
   }
+
+  String get cannotSelectThisImage {
+    return Intl.message(
+      'Cannot select this image.',
+      name: 'cannotSelectThisImage');
+  }
 }
