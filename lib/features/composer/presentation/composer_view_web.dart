@@ -818,7 +818,6 @@ class ComposerView extends GetWidget<ComposerController>
           blockQuotedContent: initContent,
           htmlToolbarOptions: const HtmlToolbarOptions(
             toolbarType: ToolbarType.hide,
-            toolbarPosition: ToolbarPosition.custom,
             defaultToolbarButtons: []
           ),
           otherOptions: const OtherOptions(height: 550),
