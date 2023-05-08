@@ -63,6 +63,12 @@ dependencies:
 
   http_parser: 4.0.2
 
+  path_provider: 2.0.13
+
+  external_path: 1.0.3
+
+  path_provider_platform_interface: 2.0.1
+
   # flutter_test from sdk depends on collection 1.17.0
   collection: 1.17.0
 
@@ -71,6 +77,8 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: 2.0.1
+
+  plugin_platform_interface: 2.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
