@@ -1,3 +1,20 @@
+## [0.7.9] - 2023-05-08
+### Added
+- \#1792 Add option 'Empty Trash' in folder menu
+
+### Changed
+- \#1755 Use TupleKey('ObjectId\|AccountId\|UserName') store data to cache
+
+### Fixed
+- \#1385 Fix \[Email rule\] Icon edit and delete might be seen as disable
+- \#1677 Fix \[ManageAccount\]\[Forwarding\] Email validation is not working well
+- \#1687 Fix \[UI\] Unread counter and mailbox name are displayed not in single line
+- \#1735 Fix filters not applied to search
+- \#1743 Fix horizontal scroll bar in Email detail view
+- \#1798 Fix \[Toast\] Error message is displayed behind the keyboard on IOS platform only
+- \#1803 Fix advanced search can't clear 'Have the world'
+- \#1806 Fix impossible to disable used fonts in email composer
+
 ## [0.7.8] - 2023-04-24
 ### Added
 - Added workflow to create a deployment on PR
@@ -84,6 +101,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.7.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.9
 [0.7.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.8
 [0.7.7]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.7
 [0.7.6]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.6
