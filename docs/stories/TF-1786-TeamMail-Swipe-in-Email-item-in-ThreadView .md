@@ -13,13 +13,13 @@
 ```
 GIVEN I'm a Tmail user
 AND There are existed unread emails on my mailbox
-WHEN I swipe left to right on an email rows
+WHEN I swipe left to right on an unread email rows
 THEN I see the email row is swiped as blue background color belong with "read email icon"
 AND System mark an email as read
 
 GIVEN I'm a Tmail user
 AND There are existed read emails on my mailbox
-WHEN I swipe left to right on an email rows
+WHEN I swipe left to right on an read email rows
 THEN I see the email row is swiped as blue background color belong with "unread email icon"
 AND System mark an email as unread
 
@@ -40,7 +40,6 @@ THEN The email is moved with the toast message
 
 **UC1. As I am a user, I want to swipe left to right to mark an email as read without opening this email
 On thread-view, when I swipe left to right on email which be unread state, I can see:
-**Configs in Swipe Options**: Swipe left to right = Read/Unread
 
 - The icon indicator this is unread email
 - The background color is blue 
@@ -49,7 +48,6 @@ On thread-view, when I swipe left to right on email which be unread state, I can
 
 **UC2.  As I am a user, I want to swipe left to right to mark an email as unread without opening this email
 On thread-view, when I swipe left to right on email which be unread state, I can see:
-**Configs in Swipe Options**: Swipe left to right = Read/Unread
 
 - The icon indicator this is read email
 - The background color is blue 
@@ -58,7 +56,6 @@ On thread-view, when I swipe left to right on email which be unread state, I can
 
 **UC3.  As I am a user, I want to swipe right to left to move an email
 On thread-view, when I swipe right to left on email in my mailbox, I can see:
-**Configs in Swipe Options**: Swipe right to left = Move email
 
 - The icon indicator this is Move email
 - The background color is blue
@@ -68,13 +65,7 @@ On thread-view, when I swipe right to left on email in my mailbox, I can see:
 **Expected:**  
 I see the email row is swiped as blue background color belong with "Move email icon" 
 AND System display the list of mailboxes wit checked icon belong to mailbox which include that email.
-
-**UC4.  As I am a user, I want to swipe right to left in email of my mailboxes
-On thread-view of Archive folder, when I swipe left to right / right to left then the archived email is moved to inbox
-
-**Expected:** 
-This email is moved to selected mailbox. System display a toast message.
-
+AND This email is moved to selected mailbox. System display a toast message.
 
 
 [Back to Summary](#summary)
