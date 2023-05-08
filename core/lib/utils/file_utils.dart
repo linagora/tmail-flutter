@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 class FileUtils {
 
-  static Future<String> _getInternalStorageDirPath(
+  Future<String> _getInternalStorageDirPath(
     String nameFile,
     {
       String? folderPath,
@@ -14,25 +14,32 @@ class FileUtils {
     }
   ) async {
     if (!BuildUtils.isWeb) {
+
       String fileDirectory = (await getApplicationDocumentsDirectory()).absolute.path;
 
-
       if (folderPath != null) {
-        fileDirectory = '$fileDirectory.$folderPath';
+        fileDirectory = '$fileDirectory/$folderPath';
       }
 
-      fileDirectory = '$fileDirectory.$nameFile';
+      Directory directory = Directory(fileDirectory);
+
+      if (!await directory.exists()) {
+        await directory.create(recursive: true);
+      }
+
+      fileDirectory = '$fileDirectory/$nameFile';
 
       if (extensionFile != null) {
         fileDirectory = '$fileDirectory.$extensionFile';
       }
+
       return fileDirectory;
     } else {
       throw DeviceNotSupportedException();
     }
   }
 
-  static Future<File> saveToFile(
+  Future<File> saveToFile(
     String nameFile,
     String content,
     {
@@ -46,20 +53,19 @@ class FileUtils {
       extensionFile: extensionFile
     );
 
-    final file = File('$internalStorageDirPath.txt');
+    final file = File(internalStorageDirPath);
     log("FileUtils()::saveToFile: $file");
 
     return await file.writeAsString(content, mode: FileMode.append);
   }
 
-  static Future<String> getFromFile(
+  Future<String> getFromFile(
     String nameFile,
     {
       String? folderPath,
       String? extensionFile
     }
   ) async {
-    String emailContent = '';
 
     final internalStorageDirPath = await _getInternalStorageDirPath(
       nameFile,
@@ -67,8 +73,8 @@ class FileUtils {
       extensionFile: extensionFile
     );
 
-    final file = File('$internalStorageDirPath.txt');
-    emailContent = await file.readAsString();
+    final file = File(internalStorageDirPath);
+    final emailContent = await file.readAsString();
 
     log("FileUtils()::getFromFile: $emailContent");
 
