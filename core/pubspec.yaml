@@ -65,8 +65,6 @@ dependencies:
 
   path_provider: 2.0.13
 
-  external_path: 1.0.3
-
   path_provider_platform_interface: 2.0.1
 
   # flutter_test from sdk depends on collection 1.17.0
