@@ -2873,5 +2873,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "languageArabic": "Arabe",
+  "@languageArabic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "Italien",
+  "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyListEmailForward": "Français",
+  "@emptyListEmailForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "Bad credentials": "Mauvais identifiants",
+  "@Bad credentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
