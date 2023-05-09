@@ -1,6 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:model/oidc/token_oidc.dart';
-import 'package:tmail_ui_user/features/caching/token_oidc_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_cache_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';

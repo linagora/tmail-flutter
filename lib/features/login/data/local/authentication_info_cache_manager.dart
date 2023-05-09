@@ -1,4 +1,4 @@
-import 'package:tmail_ui_user/features/caching/authentication_info_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/authentication_info_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
 
 class AuthenticationInfoCacheManager {

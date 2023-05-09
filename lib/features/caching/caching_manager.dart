@@ -1,13 +1,13 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
-import 'package:tmail_ui_user/features/caching/email_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/fcm_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/hive_cache_version_client.dart';
-import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/subscription_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 
 class CachingManager {
