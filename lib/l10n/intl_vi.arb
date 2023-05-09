@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2021-10-13T22:37:55.795262",
-  "initializing_data": "Khởi tạo",
+  "initializing_data": "Đang khởi tạo dữ liệu...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
@@ -150,7 +150,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "header_email_quoted": "On {sentDate}, from {emailAddress}",
+  "header_email_quoted": "Vào ngày {sentDate}, từ {emailAddress}",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
@@ -168,7 +168,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_forward_email": "Fwd:",
+  "prefix_forward_email": "Chuyển tiếp:",
   "@prefix_forward_email": {
     "type": "text",
     "placeholders_order": [],
@@ -254,7 +254,7 @@
       "count": {}
     }
   },
-  "marked_multiple_item_as_unread": "Marked {count} item as unread",
+  "marked_multiple_item_as_unread": "Đánh dấu {count} email chưa đọc",
   "@marked_multiple_item_as_unread": {
     "type": "text",
     "placeholders_order": [
@@ -264,13 +264,13 @@
       "count": {}
     }
   },
-  "an_error_occurred": "Error! An error occurred. Please try again later.",
+  "an_error_occurred": "Lỗi! Đã xảy ra lỗi. Vui lòng thử lại sau.",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachment_download_failed": "Attachment download failed",
+  "attachment_download_failed": "Tải xuống tệp đính kèm không thành công",
   "@attachment_download_failed": {
     "type": "text",
     "placeholders_order": [],
@@ -298,13 +298,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "user_cancel_download_file": "User cancel download file",
+  "user_cancel_download_file": "Người dùng hủy tải xuống",
   "@user_cancel_download_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "You need to grant files permission to download attachments",
+  "you_need_to_grant_files_permission_to_download_attachments": "Bạn cần được cấp quyền tải xuống tệp đính kèm",
   "@you_need_to_grant_files_permission_to_download_attachments": {
     "type": "text",
     "placeholders_order": [],
@@ -320,25 +320,25 @@
       "count": {}
     }
   },
-  "attach_file_prepare_text": "Preparing to attach file...",
+  "attach_file_prepare_text": "Đang chuẩn bị đính kèm tệp...",
   "@attach_file_prepare_text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "can_not_upload_this_file_as_attachments": "Can not upload this file as attachments",
+  "can_not_upload_this_file_as_attachments": "Không thể tải tệp này lên dưới dạng tệp đính kèm",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "Attachments uploaded successfully",
+  "attachments_uploaded_successfully": "Tệp đính kèm đã được tải lên thành công",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pick_attachments": "Pick attachments",
+  "pick_attachments": "Chọn tệp đính kèm",
   "@pick_attachments": {
     "type": "text",
     "placeholders_order": [],
@@ -356,7 +356,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_mailbox": "Moved to {destinationMailboxPath}",
+  "moved_to_mailbox": "Đã di chuyển tới {destinationMailboxPath}",
   "@moved_to_mailbox": {
     "type": "text",
     "placeholders_order": [
@@ -378,7 +378,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_star_multiple_item": "Marked star {count} item",
+  "marked_star_multiple_item": "Đã gắn sao {count} mục",
   "@marked_star_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -388,7 +388,7 @@
       "count": {}
     }
   },
-  "marked_unstar_multiple_item": "Marked unstar {count} item",
+  "marked_unstar_multiple_item": "Đã gỡ sao {count} mục",
   "@marked_unstar_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -398,25 +398,25 @@
       "count": {}
     }
   },
-  "search_mail": "Search mail",
+  "search_mail": "Tìm kiếm thư",
   "@search_mail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_suggestion_search": "Search for",
+  "prefix_suggestion_search": "Tìm kiếm",
   "@prefix_suggestion_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "No emails are matching your search",
+  "no_emails_matching_your_search": "Không có email phù hợp với tìm kiếm của bạn",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "results": "Results",
+  "results": "Kết quả",
   "@results": {
     "type": "text",
     "placeholders_order": [],
@@ -1968,7 +1968,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteAllRecipientForward": "Bạn có muốn xoá tất cả email?",
+  "messageConfirmationDialogDeleteAllRecipientForward": "Bạn có chắc chắn muốn xóa những người nhận đó không? Thao tác này sẽ xóa họ khỏi danh sách.",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
     "type": "text",
     "placeholders_order": [],
@@ -2170,7 +2170,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "foreground": "Foreground",
+  "foreground": "Vấn đề xung quanh",
   "@foreground": {
     "type": "text",
     "placeholders_order": [],
@@ -2194,7 +2194,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleForeground": "Foreground",
+  "titleForeground": "Vấn đề xung quanh",
   "@titleForeground": {
     "type": "text",
     "placeholders_order": [],
@@ -2260,7 +2260,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Giữ bản sao",
+  "keepLocalCopyForwardLabel": "Lưu bản sao của email vào inbox",
   "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
@@ -2522,7 +2522,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageSendReceiptSuccess": "Đã gửi xác nhận đọc",
+  "toastMessageSendReceiptSuccess": "Xác nhận đã đọc được gửi.",
   "@toastMessageSendReceiptSuccess": {
     "type": "text",
     "placeholders_order": [],
@@ -2814,7 +2814,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Không thể lưu tin nhắn của bạn vào mục nháp, vì vượt quá giới hạn dung lượng",
+  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Không thể lưu tin nhắn của bạn dưới dạng bản nháp vì nó vượt quá giới hạn dung lượng.",
   "@saveEmailAsDraftFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
@@ -2882,6 +2882,24 @@
   },
   "Bad credentials": "Thông tin đăng nhập không chính xác",
   "@Bad credentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageArabic": "Tiếng Ả Rập",
+  "@languageArabic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "Tiếng Ý",
+  "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyListEmailForward": "Vui lòng nhập ít nhất một người nhận",
+  "@emptyListEmailForward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
