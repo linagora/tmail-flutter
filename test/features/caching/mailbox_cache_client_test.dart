@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
-import 'package:tmail_ui_user/features/caching/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/mailbox_extension.dart';
 
 import '../../fixtures/mailbox_fixtures.dart';

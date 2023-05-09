@@ -1,4 +1,4 @@
-import 'package:tmail_ui_user/features/caching/recent_login_username_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/login_username_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/model/recent_login_username_cache.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/list_recent_login_username_extension.dart';
