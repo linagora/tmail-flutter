@@ -1,4 +1,4 @@
-import 'package:tmail_ui_user/features/caching/encryption_key_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/encryption_key_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/model/encryption_key_cache.dart';
 
 class EncryptionKeyCacheManager {

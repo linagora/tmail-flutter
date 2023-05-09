@@ -1,6 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:model/account/personal_account.dart';
-import 'package:tmail_ui_user/features/caching/account_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/account_cache_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/personal_account_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';

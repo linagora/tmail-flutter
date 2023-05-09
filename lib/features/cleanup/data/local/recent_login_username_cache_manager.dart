@@ -1,5 +1,5 @@
 
-import 'package:tmail_ui_user/features/caching/recent_login_username_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_username_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/login/data/model/recent_login_username_cache.dart';
 
