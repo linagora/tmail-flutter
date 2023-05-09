@@ -1,8 +1,8 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/caching/recent_login_url_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/recent_login_username_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
@@ -17,7 +17,6 @@ import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.da
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
@@ -49,7 +48,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 

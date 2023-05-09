@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/caching/state_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';

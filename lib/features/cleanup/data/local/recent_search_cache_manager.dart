@@ -1,5 +1,5 @@
 
-import 'package:tmail_ui_user/features/caching/recent_search_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/recent_search_cache.dart';
 
