@@ -14,6 +14,9 @@ class CachingConstants {
   static const int RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY = 12;
   static const int RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY = 13;
   static const int FCM_SUBSCRIPTION_HIVE_CACHE_IDENTITY = 14;
+  static const int ATTACHMENT_HIVE_CACHE_ID = 15;
+  static const int EMAIL_HEADER_HIVE_CACHE_ID = 16;
+  static const int DETAILED_EMAIL_HIVE_CACHE_ID = 17;
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
 }

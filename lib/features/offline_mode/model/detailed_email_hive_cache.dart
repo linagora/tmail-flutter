@@ -1,0 +1,45 @@
+
+import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/email_header_hive_cache.dart';
+
+import 'attachment_hive_cache.dart';
+
+part 'detailed_email_hive_cache.g.dart';
+
+@HiveType(typeId: CachingConstants.DETAILED_EMAIL_HIVE_CACHE_ID)
+class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
+
+  @HiveField(0)
+  final String emailId;
+
+  @HiveField(1)
+  final DateTime timeSaved;
+
+  @HiveField(2)
+  final List<AttachmentHiveCache>? attachments;
+
+  @HiveField(3)
+  final String? emailContentPath;
+
+  @HiveField(4)
+  final List<EmailHeaderHiveCache>? headers;
+
+  DetailedEmailHiveCache({
+    required this.emailId,
+    required this.timeSaved,
+    this.attachments,
+    this.emailContentPath,
+    this.headers
+  });
+
+  @override
+  List<Object?> get props => [
+    emailId,
+    timeSaved,
+    attachments,
+    emailContentPath,
+    headers
+  ];
+}
