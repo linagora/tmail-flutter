@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/authentication_info_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/caching/clients/detailed_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/encryption_key_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
@@ -26,6 +27,8 @@ import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -36,6 +39,7 @@ class LocalBindings extends Bindings {
   void dependencies() {
     _bindingException();
     _bindingCaching();
+    _bindingWorkerQueue();
   }
 
   void _bindingCaching() {
@@ -64,6 +68,8 @@ class LocalBindings extends Bindings {
     Get.put(FcmCacheClient());
     Get.put(FCMCacheManager(Get.find<FcmCacheClient>(),Get.find<FCMSubscriptionCacheClient>()));
     Get.put(HiveCacheVersionClient(Get.find<SharedPreferences>(), Get.find<CacheExceptionThrower>()));
+    Get.put(DetailedEmailHiveCacheClient());
+    Get.put(DetailedEmailCacheManager(Get.find<DetailedEmailHiveCacheClient>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
@@ -79,5 +85,9 @@ class LocalBindings extends Bindings {
 
   void _bindingException() {
     Get.put(CacheExceptionThrower());
+  }
+
+  void _bindingWorkerQueue() {
+    Get.put(DetailedEmailCacheWorkerQueue());
   }
 }

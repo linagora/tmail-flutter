@@ -448,22 +448,6 @@ class ComposerController extends BaseController {
     _autoFocusFieldWhenLauncher();
   }
 
-  String? getContentEmail(BuildContext context) {
-    if (composerArguments.value != null) {
-      switch(composerArguments.value!.emailActionType) {
-        case EmailActionType.reply:
-        case EmailActionType.forward:
-        case EmailActionType.replyAll:
-          return getEmailContentQuotedAsHtml(context, composerArguments.value!);
-        case EmailActionType.edit:
-          return getEmailContentDraftsAsHtml();
-        default:
-          return '';
-      }
-    }
-    return '';
-  }
-
   String? _getHeaderEmailQuoted(BuildContext context, ComposerArguments arguments) {
     final presentationEmail = arguments.presentationEmail;
     if (presentationEmail != null) {

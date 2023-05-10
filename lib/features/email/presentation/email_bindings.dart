@@ -1,10 +1,12 @@
 import 'package:core/core.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
@@ -40,6 +42,8 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -90,6 +94,11 @@ class EmailBindings extends BaseBindings {
       Get.find<DioClient>(),
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
+      Get.find<DetailedEmailCacheManager>(),
+      Get.find<DetailedEmailCacheWorkerQueue>(),
+      Get.find<FileUtils>(),
+      Get.find<CacheExceptionThrower>()));
   }
 
   @override
@@ -141,9 +150,12 @@ class EmailBindings extends BaseBindings {
       Get.find<StateDataSource>(),
     ));
     Get.lazyPut(() => EmailRepositoryImpl(
-        Get.find<EmailDataSource>(),
-        Get.find<HtmlDataSource>(),
-        Get.find<StateDataSource>()
+      {
+        DataSourceType.network: Get.find<EmailDataSource>(),
+        DataSourceType.hiveCache: Get.find<EmailHiveCacheDataSourceImpl>()
+      },
+      Get.find<HtmlDataSource>(),
+      Get.find<StateDataSource>()
     ));
     Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
   }

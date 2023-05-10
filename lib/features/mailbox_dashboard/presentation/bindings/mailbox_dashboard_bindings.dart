@@ -1,6 +1,7 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/config/app_config_loader.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
@@ -11,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_inter
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
@@ -92,6 +94,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
@@ -227,6 +231,11 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => SpamReportCacheDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
+      Get.find<DetailedEmailCacheManager>(),
+      Get.find<DetailedEmailCacheWorkerQueue>(),
+      Get.find<FileUtils>(),
+      Get.find<CacheExceptionThrower>()));
   }
 
   @override
@@ -322,9 +331,12 @@ class MailboxDashBoardBindings extends BaseBindings {
   @override
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => EmailRepositoryImpl(
-        Get.find<EmailDataSource>(),
-        Get.find<HtmlDataSource>(),
-        Get.find<StateDataSource>(),
+      {
+        DataSourceType.network: Get.find<EmailDataSource>(),
+        DataSourceType.hiveCache: Get.find<EmailHiveCacheDataSourceImpl>()
+      },
+      Get.find<HtmlDataSource>(),
+      Get.find<StateDataSource>(),
     ));
     Get.lazyPut(() => SearchRepositoryImpl(Get.find<SearchDataSource>()));
     Get.lazyPut(() => ThreadRepositoryImpl(
@@ -348,7 +360,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       {
         DataSourceType.network: Get.find<SpamReportDataSource>(),
         DataSourceType.local: Get.find<SharePreferenceSpamReportDataSourceImpl>(),
-        DataSourceType.cache: Get.find<SpamReportCacheDataSourceImpl>()
+        DataSourceType.hiveCache: Get.find<SpamReportCacheDataSourceImpl>()
       },
     ));
   }

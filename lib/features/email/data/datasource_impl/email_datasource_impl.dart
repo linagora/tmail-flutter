@@ -13,6 +13,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -147,5 +148,10 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.deleteEmailPermanently(session, accountId, emailId);
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+    throw UnimplementedError();
   }
 }

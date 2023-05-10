@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/config/app_config_loader.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,5 +59,6 @@ class CoreBindings extends Bindings {
     Get.put(const Uuid());
     Get.put(CompressFileUtils());
     Get.put(AppConfigLoader());
+    Get.put(FileUtils());
   }
 }
