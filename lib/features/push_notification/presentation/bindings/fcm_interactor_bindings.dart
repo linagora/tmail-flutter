@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_detailed_email_by_id_interator.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -126,6 +127,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetNewReceiveEmailFromNotificationInteractor(
       Get.find<FCMRepositoryImpl>(),
       Get.find<EmailRepository>()));
+    Get.lazyPut(() => GetDetailedEmailByIdInteractor(Get.find<EmailRepository>()));
   }
 
   @override

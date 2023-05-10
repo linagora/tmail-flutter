@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -15,9 +16,13 @@ import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/list_presentation_mailbox_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/notification/notification_payload.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_detailed_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_stored_state_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_detailed_email_by_id_interator.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -54,6 +59,8 @@ class EmailChangeListener extends ChangeListener {
   GetMailboxesNotPutNotificationsInteractor? _getMailboxesNotPutNotificationsInteractor;
   GetEmailChangesToRemoveNotificationInteractor? _getEmailChangesToRemoveNotificationInteractor;
   GetNewReceiveEmailFromNotificationInteractor? _getNewReceiveEmailFromNotificationInteractor;
+  GetDetailedEmailByIdInteractor? _getDetailedEmailByIdInteractor;
+  DynamicUrlInterceptors? _dynamicUrlInterceptors;
 
   jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
@@ -72,6 +79,8 @@ class EmailChangeListener extends ChangeListener {
       _getMailboxesNotPutNotificationsInteractor = getBinding<GetMailboxesNotPutNotificationsInteractor>();
       _getEmailChangesToRemoveNotificationInteractor = getBinding<GetEmailChangesToRemoveNotificationInteractor>();
       _getNewReceiveEmailFromNotificationInteractor = getBinding<GetNewReceiveEmailFromNotificationInteractor>();
+      _getDetailedEmailByIdInteractor = getBinding<GetDetailedEmailByIdInteractor>();
+      _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -229,7 +238,9 @@ class EmailChangeListener extends ChangeListener {
     } else if (success is GetEmailChangesToRemoveNotificationSuccess) {
       _handleRemoveLocalNotification(success.emailIds);
     } else if (success is GetNewReceiveEmailFromNotificationSuccess) {
-      _handleGetNewReceiveEmailFromNotificationSuccess(success.emailIds);
+      _handleGetNewReceiveEmailFromNotificationSuccess(success.session, success.accountId, success.emailIds);
+    } else if (success is GetDetailedEmailByIdSuccess) {
+      _handleGetDetailedEmailByIdActionSuccess(success.presentationEmail, success.detailedEmail);
     }
   }
 
@@ -296,7 +307,28 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleGetNewReceiveEmailFromNotificationSuccess(List<EmailId> emailIds) async {
+  void _handleGetNewReceiveEmailFromNotificationSuccess(Session? session, AccountId accountId, List<EmailId> emailIds) {
     log('EmailChangeListener::_handleGetNewReceiveEmailFromNotificationSuccess():emailIds: $emailIds');
+    for (var emailId in emailIds) {
+      _getDetailedEmailByIdAction(session, accountId, emailId);
+    }
+  }
+
+  void _getDetailedEmailByIdAction(Session? session, AccountId accountId, EmailId emailId) {
+    if (_getDetailedEmailByIdInteractor != null &&
+        _dynamicUrlInterceptors != null &&
+        session != null) {
+      final baseDownloadUrl = session.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors!.jmapUrl);
+      consumeState(_getDetailedEmailByIdInteractor!.execute(
+        session,
+        accountId,
+        emailId,
+        baseDownloadUrl
+      ));
+    }
+  }
+
+  void _handleGetDetailedEmailByIdActionSuccess(PresentationEmail presentationEmail, DetailedEmail detailedEmail) {
+    log('EmailChangeListener::_handleGetDetailedEmailByIdActionSuccess():emailID: ${presentationEmail.id} | Content: ${detailedEmail.htmlEmailContent}');
   }
 }
