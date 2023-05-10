@@ -40,7 +40,6 @@ import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
-import 'package:model/email/email_property.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
@@ -54,10 +53,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uuid/uuid.dart';
 
@@ -77,14 +78,7 @@ class EmailAPI with HandleSetErrorMixin {
 
     final getEmailMethod = GetEmailMethod(accountId)
       ..addIds({emailId.id})
-      ..addProperties(Properties({
-        EmailProperty.bodyValues,
-        EmailProperty.htmlBody,
-        EmailProperty.attachments,
-        EmailProperty.headers,
-        EmailProperty.keywords,
-        EmailProperty.mailboxIds,
-      }))
+      ..addProperties(ThreadConstants.propertiesGetEmailContent)
       ..addFetchHTMLBodyValues(true);
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
@@ -632,5 +626,33 @@ class EmailAPI with HandleSetErrorMixin {
         SetEmailResponse.deserialize);
 
     return setEmailResponse?.destroyed?.contains(emailId.id) == true;
+  }
+
+  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) async {
+    final jmapRequestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addIds({emailId.id})
+      ..addProperties(ThreadConstants.propertiesGetDetailedEmail)
+      ..addFetchHTMLBodyValues(true);
+
+    final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+
+    final capabilities = getEmailMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (jmapRequestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final resultList = result.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize);
+
+    if (resultList?.list.isNotEmpty == true) {
+      return resultList!.list.first;
+    } else {
+      throw NotFoundEmailException();
+    }
   }
 }

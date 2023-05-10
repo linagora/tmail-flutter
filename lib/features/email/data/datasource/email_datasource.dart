@@ -75,4 +75,6 @@ abstract class EmailDataSource {
   Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId);
 
   Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail);
+
+  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId);
 }

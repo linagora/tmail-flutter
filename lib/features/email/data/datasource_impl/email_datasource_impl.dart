@@ -154,4 +154,11 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) {
+    return Future.sync(() async {
+      return await emailAPI.getDetailedEmailById(session, accountId, emailId);
+    }).catchError(_exceptionThrower.throwException);
+  }
 }
