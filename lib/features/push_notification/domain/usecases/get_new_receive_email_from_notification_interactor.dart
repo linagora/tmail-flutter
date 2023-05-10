@@ -16,12 +16,12 @@ class GetNewReceiveEmailFromNotificationInteractor {
 
   GetNewReceiveEmailFromNotificationInteractor(this._fcmRepository, this._emailRepository);
 
-  Stream<Either<Failure, Success>> execute(
-    Session session,
-    AccountId accountId,
-    UserName userName,
-    jmap.State newState
-  ) async* {
+  Stream<Either<Failure, Success>> execute({
+    required Session session,
+    required AccountId accountId,
+    required UserName userName,
+    required jmap.State newState
+  }) async* {
     try {
       yield Right<Failure, Success>(GetNewReceiveEmailFromNotificationLoading());
 
