@@ -25,10 +25,12 @@ import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_e
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_remove_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailboxes_not_put_notifications_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_new_receive_email_from_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_email_delivery_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_push_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_changes_to_remove_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailboxes_not_put_notifications_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_new_receive_email_from_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
@@ -51,6 +53,7 @@ class EmailChangeListener extends ChangeListener {
   StoreEmailStateToRefreshInteractor? _storeEmailStateToRefreshInteractor;
   GetMailboxesNotPutNotificationsInteractor? _getMailboxesNotPutNotificationsInteractor;
   GetEmailChangesToRemoveNotificationInteractor? _getEmailChangesToRemoveNotificationInteractor;
+  GetNewReceiveEmailFromNotificationInteractor? _getNewReceiveEmailFromNotificationInteractor;
 
   jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
@@ -68,6 +71,7 @@ class EmailChangeListener extends ChangeListener {
       _storeEmailStateToRefreshInteractor = getBinding<StoreEmailStateToRefreshInteractor>();
       _getMailboxesNotPutNotificationsInteractor = getBinding<GetMailboxesNotPutNotificationsInteractor>();
       _getEmailChangesToRemoveNotificationInteractor = getBinding<GetEmailChangesToRemoveNotificationInteractor>();
+      _getNewReceiveEmailFromNotificationInteractor = getBinding<GetNewReceiveEmailFromNotificationInteractor>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -86,6 +90,7 @@ class EmailChangeListener extends ChangeListener {
           _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
         }
         _synchronizeEmailOnForegroundAction(action.newState);
+        _getNewReceiveEmailFromNotificationAction(action.session, action.accountId, action.newState);
       } else if (action is PushNotificationAction) {
         _pushNotificationAction(action.newState, action.accountId, action.userName, action.session);
       } else if (action is StoreEmailStateToRefreshAction) {
@@ -223,6 +228,8 @@ class EmailChangeListener extends ChangeListener {
       _handleLocalPushNotification(listEmails);
     } else if (success is GetEmailChangesToRemoveNotificationSuccess) {
       _handleRemoveLocalNotification(success.emailIds);
+    } else if (success is GetNewReceiveEmailFromNotificationSuccess) {
+      _handleGetNewReceiveEmailFromNotificationSuccess(success.emailIds);
     }
   }
 
@@ -276,5 +283,20 @@ class EmailChangeListener extends ChangeListener {
     log('EmailChangeListener::_handleRemoveLocalNotification():emailIds: $emailIds');
     await Future.wait(emailIds.map((emailId) => LocalNotificationManager.instance.removeNotification(emailId.id.value)));
     LocalNotificationManager.instance.removeGroupPushNotification();
+  }
+
+  void _getNewReceiveEmailFromNotificationAction(Session? session, AccountId accountId, jmap.State newState) {
+    if (_getNewReceiveEmailFromNotificationInteractor != null && session != null) {
+      consumeState(_getNewReceiveEmailFromNotificationInteractor!.execute(
+        session: session,
+        accountId: accountId,
+        userName: session.username,
+        newState: newState
+      ));
+    }
+  }
+
+  void _handleGetNewReceiveEmailFromNotificationSuccess(List<EmailId> emailIds) async {
+    log('EmailChangeListener::_handleGetNewReceiveEmailFromNotificationSuccess():emailIds: $emailIds');
   }
 }
