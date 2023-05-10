@@ -2,5 +2,5 @@
 enum DataSourceType {
   network,
   local,
-  cache
+  hiveCache;
 }
