@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailboxes_not_put_notifications_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_new_receive_email_from_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_token_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
@@ -122,6 +123,9 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetFCMSubscriptionLocalInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => DestroySubscriptionInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetMailboxesNotPutNotificationsInteractor(Get.find<FCMRepositoryImpl>()));
+    Get.lazyPut(() => GetNewReceiveEmailFromNotificationInteractor(
+      Get.find<FCMRepositoryImpl>(),
+      Get.find<EmailRepository>()));
   }
 
   @override
