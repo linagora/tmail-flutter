@@ -15,16 +15,16 @@ class DetailedEmailCacheManager {
 
   DetailedEmailCacheManager(this._cacheClient);
 
-  Future<DetailedEmailHiveCache> handleStoreDetailedEmailToCache(
+  Future<DetailedEmailHiveCache> handleStoreDetailedEmail(
     AccountId accountId,
     UserName userName,
     DetailedEmailHiveCache detailedEmailCache
   ) async {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
 
-    if (listDetailedEmails.length >= CachingConstants.maxNumberRecentEmails) {
+    if (listDetailedEmails.length >= CachingConstants.maxNumberNewEmailsForOffline) {
       final latestEmail = listDetailedEmails.last;
-      log('DetailedEmailCacheManager::handleStoreDetailedEmailToCache():latestEmail: $latestEmail');
+      log('DetailedEmailCacheManager::handleStoreDetailedEmail():latestEmail: $latestEmail');
       await removeDetailedEmail(accountId, userName, latestEmail.emailId);
     }
     await insertDetailedEmail(accountId, userName, detailedEmailCache);
@@ -38,7 +38,7 @@ class DetailedEmailCacheManager {
     DetailedEmailHiveCache detailedEmailCache
   ) {
     final keyCache = TupleKey(detailedEmailCache.emailId, accountId.asString, userName.value).encodeKey;
-    log('DetailedEmailCacheManager::storeDetailedEmail(): $keyCache');
+    log('DetailedEmailCacheManager::insertDetailedEmail(): $keyCache');
     return _cacheClient.insertItem(keyCache, detailedEmailCache);
   }
 
