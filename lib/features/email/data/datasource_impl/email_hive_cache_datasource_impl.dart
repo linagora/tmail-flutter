@@ -28,18 +28,22 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/worker/hive_task.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
-  final DetailedEmailCacheManager _emailCacheManager;
+  final DetailedEmailCacheManager _detailedEmailCacheManager;
   final DetailedEmailCacheWorkerQueue _cacheWorkerQueue;
+  final EmailCacheManager _emailCacheManager;
   final FileUtils _fileUtils;
   final ExceptionThrower _exceptionThrower;
 
   EmailHiveCacheDataSourceImpl(
-    this._emailCacheManager,
+    this._detailedEmailCacheManager,
     this._cacheWorkerQueue,
+    this._emailCacheManager,
     this._fileUtils,
     this._exceptionThrower
   );
@@ -105,7 +109,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+  Future<void> storeDetailedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
     return Future.sync(() async {
       final task = HiveTask(
         runnable: () async {
@@ -118,7 +122,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
           log('EmailHiveCacheDataSourceImpl::storeDetailedEmailToCache():fileSavedPath: ${fileSaved.path}');
           final detailedEmailSaved = detailedEmail.fromEmailContentPath(fileSaved.path);
 
-          final detailedEmailCache = await _emailCacheManager.handleStoreDetailedEmailToCache(
+          final detailedEmailCache = await _detailedEmailCacheManager.handleStoreDetailedEmail(
             accountId,
             session.username,
             detailedEmailSaved.toHiveCache());
@@ -137,5 +141,12 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   @override
   Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> storeEmail(Session session, AccountId accountId, Email email) {
+    return Future.sync(() async {
+      return await _emailCacheManager.storeEmail(accountId, session.username, email.toEmailCache());
+    }).catchError(_exceptionThrower.throwException);
   }
 }

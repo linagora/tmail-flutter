@@ -91,4 +91,6 @@ abstract class EmailRepository {
   Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
   Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId);
+
+  Future<void> storeEmailToCache(Session session, AccountId accountId, Email email);
 }

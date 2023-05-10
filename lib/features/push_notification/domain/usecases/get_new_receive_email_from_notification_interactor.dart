@@ -32,7 +32,7 @@ class GetNewReceiveEmailFromNotificationInteractor {
           accountId,
           currentState);
 
-        yield Right<Failure, Success>(GetNewReceiveEmailFromNotificationSuccess(accountId, session, listEmailIds));
+        yield Right<Failure, Success>(GetNewReceiveEmailFromNotificationSuccess(accountId, session, listEmailIds.toSet()));
       } else {
         yield Left<Failure, Success>(GetNewReceiveEmailFromNotificationFailure(EmailStateNoChangeException()));
       }
