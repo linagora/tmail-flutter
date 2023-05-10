@@ -20,4 +20,6 @@ class CachingConstants {
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
   static const String detailedEmailCacheBoxName = 'detailed_email_cache_box';
+
+  static const int maxNumberRecentEmails = 10;
 }
