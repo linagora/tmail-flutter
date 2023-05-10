@@ -8,12 +8,14 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/extensions/fcm_subscription_extensions.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
@@ -182,6 +184,36 @@ class FCMRepositoryImpl extends FCMRepository {
       return allListEmailIdsNeedRemove;
     } else {
       return [];
+    }
+  }
+
+  @override
+  Future<List<EmailId>> getNewReceiveEmailFromNotification(Session session, AccountId accountId, jmap.State currentState) async {
+    EmailChangeResponse? emailChangeResponse;
+    bool hasMoreChanges = true;
+    jmap.State? sinceState = currentState;
+
+    while (hasMoreChanges && sinceState != null) {
+      final changesResponse = await _threadDataSource.getChanges(
+        session,
+        accountId,
+        sinceState,
+        propertiesCreated: Properties({EmailProperty.id}));
+
+      hasMoreChanges = changesResponse.hasMoreChanges;
+      sinceState = changesResponse.newStateChanges;
+
+      if (emailChangeResponse != null) {
+        emailChangeResponse.union(changesResponse);
+      } else {
+        emailChangeResponse = changesResponse;
+      }
+    }
+
+    if (emailChangeResponse?.created?.isNotEmpty == true) {
+      return emailChangeResponse!.created!.listEmailIds;
+    } else {
+      throw NotFoundNewReceiveEmailException();
     }
   }
 }
