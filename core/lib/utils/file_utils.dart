@@ -6,13 +6,11 @@ import 'package:path_provider/path_provider.dart';
 
 class FileUtils {
 
-  Future<String> _getInternalStorageDirPath(
-    String nameFile,
-    {
-      String? folderPath,
-      String? extensionFile
-    }
-  ) async {
+  Future<String> _getInternalStorageDirPath({
+    required String nameFile,
+    String? folderPath,
+    String? extensionFile
+  }) async {
     if (!BuildUtils.isWeb) {
 
       String fileDirectory = (await getApplicationDocumentsDirectory()).absolute.path;
@@ -39,16 +37,14 @@ class FileUtils {
     }
   }
 
-  Future<File> saveToFile(
-    String nameFile,
-    String content,
-    {
-      String? folderPath,
-      String? extensionFile
-    }) async {
-
+  Future<File> saveToFile({
+    required String nameFile,
+    required String content,
+    String? folderPath,
+    String? extensionFile
+  }) async {
     final internalStorageDirPath = await _getInternalStorageDirPath(
-      nameFile,
+      nameFile: nameFile,
       folderPath: folderPath,
       extensionFile: extensionFile
     );
@@ -59,16 +55,13 @@ class FileUtils {
     return await file.writeAsString(content, mode: FileMode.append);
   }
 
-  Future<String> getFromFile(
-    String nameFile,
-    {
-      String? folderPath,
-      String? extensionFile
-    }
-  ) async {
-
+  Future<String> getFromFile({
+    required String nameFile,
+    String? folderPath,
+    String? extensionFile
+  }) async {
     final internalStorageDirPath = await _getInternalStorageDirPath(
-      nameFile,
+      nameFile: nameFile,
       folderPath: folderPath,
       extensionFile: extensionFile
     );
@@ -79,5 +72,19 @@ class FileUtils {
     log("FileUtils()::getFromFile: $emailContent");
 
     return emailContent;
+  }
+}
+
+enum ExtensionType {
+  text,
+  json;
+
+  String get value {
+    switch(this) {
+      case ExtensionType.text:
+        return 'txt';
+      case ExtensionType.json:
+        return 'json';
+    }
   }
 }

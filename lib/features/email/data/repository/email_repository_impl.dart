@@ -2,17 +2,26 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:core/core.dart';
+import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/data/network/download/downloaded_response.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/model.dart';
+import 'package:model/account/account_request.dart';
+import 'package:model/download/download_task_id.dart';
+import 'package:model/email/attachment.dart';
+import 'package:model/email/email_content.dart';
+import 'package:model/email/mark_star_action.dart';
+import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -21,7 +30,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 
 class EmailRepositoryImpl extends EmailRepository {
 
-  final EmailDataSource emailDataSource;
+  final Map<DataSourceType, EmailDataSource> emailDataSource;
   final HtmlDataSource _htmlDataSource;
   final StateDataSource _stateDataSource;
 
@@ -33,7 +42,7 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) {
-    return emailDataSource.getEmailContent(session ,accountId, emailId);
+    return emailDataSource[DataSourceType.network]!.getEmailContent(session ,accountId, emailId);
   }
 
   @override
@@ -43,7 +52,7 @@ class EmailRepositoryImpl extends EmailRepository {
     EmailRequest emailRequest,
     {CreateNewMailboxRequest? mailboxRequest}
   ) {
-    return emailDataSource.sendEmail(session, accountId, emailRequest, mailboxRequest: mailboxRequest);
+    return emailDataSource[DataSourceType.network]!.sendEmail(session, accountId, emailRequest, mailboxRequest: mailboxRequest);
   }
 
   @override
@@ -53,7 +62,7 @@ class EmailRepositoryImpl extends EmailRepository {
     List<Email> emails,
     ReadActions readActions
   ) {
-    return emailDataSource.markAsRead(session, accountId, emails, readActions);
+    return emailDataSource[DataSourceType.network]!.markAsRead(session, accountId, emails, readActions);
   }
 
   @override
@@ -63,7 +72,7 @@ class EmailRepositoryImpl extends EmailRepository {
       String baseDownloadUrl,
       AccountRequest accountRequest
   ) {
-    return emailDataSource.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
+    return emailDataSource[DataSourceType.network]!.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
   }
 
   @override
@@ -74,7 +83,7 @@ class EmailRepositoryImpl extends EmailRepository {
       AccountRequest accountRequest,
       CancelToken cancelToken
   ) {
-    return emailDataSource.exportAttachment(
+    return emailDataSource[DataSourceType.network]!.exportAttachment(
       attachment,
       accountId,
       baseDownloadUrl,
@@ -84,7 +93,7 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<List<EmailId>> moveToMailbox(Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
-    return emailDataSource.moveToMailbox(session, accountId, moveRequest);
+    return emailDataSource[DataSourceType.network]!.moveToMailbox(session, accountId, moveRequest);
   }
 
   @override
@@ -94,7 +103,7 @@ class EmailRepositoryImpl extends EmailRepository {
     List<Email> emails,
     MarkStarAction markStarAction
   ) {
-    return emailDataSource.markAsStar(session, accountId, emails, markStarAction);
+    return emailDataSource[DataSourceType.network]!.markAsStar(session, accountId, emails, markStarAction);
   }
 
   @override
@@ -122,17 +131,17 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email) {
-    return emailDataSource.saveEmailAsDrafts(session, accountId, email);
+    return emailDataSource[DataSourceType.network]!.saveEmailAsDrafts(session, accountId, email);
   }
 
   @override
   Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId) {
-    return emailDataSource.removeEmailDrafts(session, accountId, emailId);
+    return emailDataSource[DataSourceType.network]!.removeEmailDrafts(session, accountId, emailId);
   }
 
   @override
   Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail) {
-    return emailDataSource.updateEmailDrafts(session, accountId, newEmail);
+    return emailDataSource[DataSourceType.network]!.updateEmailDrafts(session, accountId, newEmail);
   }
 
   @override
@@ -144,7 +153,7 @@ class EmailRepositoryImpl extends EmailRepository {
       AccountRequest accountRequest,
       StreamController<Either<Failure, Success>> onReceiveController
   ) {
-    return emailDataSource.downloadAttachmentForWeb(
+    return emailDataSource[DataSourceType.network]!.downloadAttachmentForWeb(
         taskId,
         attachment,
         accountId,
@@ -155,12 +164,12 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds) {
-    return emailDataSource.deleteMultipleEmailsPermanently(session, accountId, emailIds);
+    return emailDataSource[DataSourceType.network]!.deleteMultipleEmailsPermanently(session, accountId, emailIds);
   }
 
   @override
   Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId) {
-    return emailDataSource.deleteEmailPermanently(session, accountId, emailId);
+    return emailDataSource[DataSourceType.network]!.deleteEmailPermanently(session, accountId, emailId);
   }
 
   @override
@@ -173,5 +182,10 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<jmap.State?> getEmailState(Session session, AccountId accountId) {
     return _stateDataSource.getState(accountId, session.username, StateType.email);
+  }
+
+  @override
+  Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+    return emailDataSource[DataSourceType.hiveCache]!.storeDetailedEmailToCache(session, accountId, detailedEmail);
   }
 }

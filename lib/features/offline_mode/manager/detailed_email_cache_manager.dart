@@ -15,7 +15,7 @@ class DetailedEmailCacheManager {
 
   DetailedEmailCacheManager(this._cacheClient);
 
-  Future<void> handleStoreDetailedEmailToCache(
+  Future<DetailedEmailHiveCache> handleStoreDetailedEmailToCache(
     AccountId accountId,
     UserName userName,
     DetailedEmailHiveCache detailedEmailCache
@@ -27,8 +27,9 @@ class DetailedEmailCacheManager {
       log('DetailedEmailCacheManager::handleStoreDetailedEmailToCache():latestEmail: $latestEmail');
       await removeDetailedEmail(accountId, userName, latestEmail.emailId);
     }
+    await insertDetailedEmail(accountId, userName, detailedEmailCache);
 
-    return insertDetailedEmail(accountId, userName, detailedEmailCache);
+    return detailedEmailCache;
   }
 
   Future<void> insertDetailedEmail(

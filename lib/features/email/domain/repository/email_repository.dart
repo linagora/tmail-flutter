@@ -17,6 +17,7 @@ import 'package:model/email/email_content.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
@@ -86,4 +87,6 @@ abstract class EmailRepository {
   Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId);
 
   Future<jmap.State?> getEmailState(Session session, AccountId accountId);
+
+  Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail);
 }

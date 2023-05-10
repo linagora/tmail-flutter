@@ -1,4 +1,6 @@
 
+import 'package:tmail_ui_user/main/utils/app_constants.dart';
+
 class CachingConstants {
   static const int MAILBOX_CACHE_IDENTIFY = 1;
   static const int MAILBOX_RIGHTS_CACHE_IDENTIFY = 2;
@@ -22,4 +24,7 @@ class CachingConstants {
   static const String detailedEmailCacheBoxName = 'detailed_email_cache_box';
 
   static const int maxNumberRecentEmails = 10;
+
+  static const String appFolderName = AppConstants.applicationName;
+  static const String emailContentFolderName = 'EmailContent';
 }
