@@ -49,4 +49,6 @@ abstract class FCMRepository {
       Properties? propertiesUpdated
     }
   );
+
+  Future<List<EmailId>> getNewReceiveEmailFromNotification(Session session, AccountId accountId, jmap.State currentState);
 }
