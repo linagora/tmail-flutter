@@ -234,6 +234,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<DetailedEmailCacheManager>(),
       Get.find<DetailedEmailCacheWorkerQueue>(),
+      Get.find<EmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
   }

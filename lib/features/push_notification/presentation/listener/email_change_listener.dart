@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/email/domain/state/get_detailed_email_by_
 import 'package:tmail_ui_user/features/email/domain/state/get_stored_state_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_detailed_email_by_id_interator.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_detailed_email_to_cache_interator.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
@@ -61,6 +62,7 @@ class EmailChangeListener extends ChangeListener {
   GetNewReceiveEmailFromNotificationInteractor? _getNewReceiveEmailFromNotificationInteractor;
   GetDetailedEmailByIdInteractor? _getDetailedEmailByIdInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
+  StoreDetailedEmailToCacheInteractor? _storeDetailedEmailToCacheInteractor;
 
   jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
@@ -81,6 +83,7 @@ class EmailChangeListener extends ChangeListener {
       _getNewReceiveEmailFromNotificationInteractor = getBinding<GetNewReceiveEmailFromNotificationInteractor>();
       _getDetailedEmailByIdInteractor = getBinding<GetDetailedEmailByIdInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
+      _storeDetailedEmailToCacheInteractor = getBinding<StoreDetailedEmailToCacheInteractor>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -99,7 +102,9 @@ class EmailChangeListener extends ChangeListener {
           _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
         }
         _synchronizeEmailOnForegroundAction(action.newState);
-        _getNewReceiveEmailFromNotificationAction(action.session, action.accountId, action.newState);
+        if (!BuildUtils.isWeb) {
+          _getNewReceiveEmailFromNotificationAction(action.session, action.accountId, action.newState);
+        }
       } else if (action is PushNotificationAction) {
         _pushNotificationAction(action.newState, action.accountId, action.userName, action.session);
       } else if (action is StoreEmailStateToRefreshAction) {
@@ -240,7 +245,11 @@ class EmailChangeListener extends ChangeListener {
     } else if (success is GetNewReceiveEmailFromNotificationSuccess) {
       _handleGetNewReceiveEmailFromNotificationSuccess(success.session, success.accountId, success.emailIds);
     } else if (success is GetDetailedEmailByIdSuccess) {
-      _handleGetDetailedEmailByIdActionSuccess(success.presentationEmail, success.detailedEmail);
+      _handleGetDetailedEmailByIdActionSuccess(
+        success.session,
+        success.accountId,
+        success.email,
+        success.detailedEmail);
     }
   }
 
@@ -307,7 +316,7 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleGetNewReceiveEmailFromNotificationSuccess(Session? session, AccountId accountId, List<EmailId> emailIds) {
+  void _handleGetNewReceiveEmailFromNotificationSuccess(Session? session, AccountId accountId, Set<EmailId> emailIds) {
     log('EmailChangeListener::_handleGetNewReceiveEmailFromNotificationSuccess():emailIds: $emailIds');
     for (var emailId in emailIds) {
       _getDetailedEmailByIdAction(session, accountId, emailId);
@@ -328,7 +337,20 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleGetDetailedEmailByIdActionSuccess(PresentationEmail presentationEmail, DetailedEmail detailedEmail) {
-    log('EmailChangeListener::_handleGetDetailedEmailByIdActionSuccess():emailID: ${presentationEmail.id} | Content: ${detailedEmail.htmlEmailContent}');
+  void _handleGetDetailedEmailByIdActionSuccess(
+    Session session,
+    AccountId accountId,
+    Email email,
+    DetailedEmail detailedEmail
+  ) {
+    log('EmailChangeListener::_handleGetDetailedEmailByIdActionSuccess():emailId: ${email.id}');
+    if (_storeDetailedEmailToCacheInteractor != null) {
+      consumeState(_storeDetailedEmailToCacheInteractor!.execute(
+        session,
+        accountId,
+        email,
+        detailedEmail
+      ));
+    }
   }
 }

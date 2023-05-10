@@ -4,7 +4,6 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/extensions/list_email_content_extension.dart';
@@ -31,13 +30,18 @@ class GetDetailedEmailByIdInteractor {
 
       final parsedEmail = await _parsingEmailToDetailedEmail(accountId, email, baseDownloadUrl);
 
-      yield Right<Failure, Success>(GetDetailedEmailByIdSuccess(parsedEmail.value1, parsedEmail.value2));
+      yield Right<Failure, Success>(GetDetailedEmailByIdSuccess(
+        parsedEmail.value1,
+        parsedEmail.value2,
+        accountId,
+        session,
+      ));
     } catch (e) {
       yield Left<Failure, Success>(GetDetailedEmailByIdFailure(e));
     }
   }
 
-  Future<Tuple2<PresentationEmail, DetailedEmail>> _parsingEmailToDetailedEmail(
+  Future<Tuple2<Email, DetailedEmail>> _parsingEmailToDetailedEmail(
     AccountId accountId,
     Email email,
     String? baseDownloadUrl
@@ -56,8 +60,7 @@ class GetDetailedEmailByIdInteractor {
     }
 
     final detailedEmail = email.toDetailedEmail(htmlEmailContent: htmlEmailContent);
-    final presentationEmail = email.toPresentationEmail();
 
-    return Tuple2(presentationEmail, detailedEmail);
+    return Tuple2(email, detailedEmail);
   }
 }

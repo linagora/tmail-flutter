@@ -151,7 +151,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+  Future<void> storeDetailedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
     throw UnimplementedError();
   }
 
@@ -160,5 +160,10 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.getDetailedEmailById(session, accountId, emailId);
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> storeEmail(Session session, AccountId accountId, Email email) {
+    throw UnimplementedError();
   }
 }

@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_detailed_email_by_id_interator.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_detailed_email_to_cache_interator.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -49,6 +50,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_m
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_subscription_interator.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
+import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -101,6 +103,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<DetailedEmailCacheManager>(),
       Get.find<DetailedEmailCacheWorkerQueue>(),
+      Get.find<EmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
   }
@@ -128,6 +131,7 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<FCMRepositoryImpl>(),
       Get.find<EmailRepository>()));
     Get.lazyPut(() => GetDetailedEmailByIdInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => StoreDetailedEmailToCacheInteractor(Get.find<EmailRepository>()));
   }
 
   @override
