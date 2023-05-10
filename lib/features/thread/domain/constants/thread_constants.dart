@@ -37,4 +37,34 @@ class ThreadConstants {
     EmailProperty.hasAttachment,
     EmailProperty.mailboxIds,
   });
+
+  static final propertiesGetEmailContent = Properties({
+    EmailProperty.bodyValues,
+    EmailProperty.htmlBody,
+    EmailProperty.attachments,
+    EmailProperty.headers,
+    EmailProperty.keywords,
+    EmailProperty.mailboxIds
+  });
+
+  static final propertiesGetDetailedEmail = Properties({
+    EmailProperty.id,
+    EmailProperty.subject,
+    EmailProperty.from,
+    EmailProperty.to,
+    EmailProperty.cc,
+    EmailProperty.bcc,
+    EmailProperty.keywords,
+    EmailProperty.size,
+    EmailProperty.receivedAt,
+    EmailProperty.sentAt,
+    EmailProperty.preview,
+    EmailProperty.hasAttachment,
+    EmailProperty.replyTo,
+    EmailProperty.mailboxIds,
+    EmailProperty.bodyValues,
+    EmailProperty.htmlBody,
+    EmailProperty.attachments,
+    EmailProperty.headers
+  });
 }

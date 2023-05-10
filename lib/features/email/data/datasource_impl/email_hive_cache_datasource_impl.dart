@@ -133,4 +133,9 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) {
+    throw UnimplementedError();
+  }
 }
