@@ -79,4 +79,6 @@ abstract class EmailDataSource {
   Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId);
 
   Future<void> storeEmail(Session session, AccountId accountId, Email email);
+
+  Future<void> storeOpenedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail);
 }

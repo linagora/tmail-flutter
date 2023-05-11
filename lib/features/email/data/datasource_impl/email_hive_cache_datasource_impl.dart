@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/worker/hive_task.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
@@ -36,6 +37,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
   final DetailedEmailCacheManager _detailedEmailCacheManager;
   final DetailedEmailCacheWorkerQueue _cacheWorkerQueue;
+  final OpenedEmailCacheWorkerQueue _openedEmailCacheWorkerQueue;
   final EmailCacheManager _emailCacheManager;
   final FileUtils _fileUtils;
   final ExceptionThrower _exceptionThrower;
@@ -43,6 +45,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   EmailHiveCacheDataSourceImpl(
     this._detailedEmailCacheManager,
     this._cacheWorkerQueue,
+    this._openedEmailCacheWorkerQueue,
     this._emailCacheManager,
     this._fileUtils,
     this._exceptionThrower
@@ -147,6 +150,29 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<void> storeEmail(Session session, AccountId accountId, Email email) {
     return Future.sync(() async {
       return await _emailCacheManager.storeEmail(accountId, session.username, email.toEmailCache());
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> storeOpenedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+    return Future.sync(() async {
+      final task = HiveTask(
+          runnable: () async {
+            final fileSaved = await _fileUtils.saveToFile(
+              nameFile: detailedEmail.emailId.asString,
+              content: detailedEmail.htmlEmailContent ?? '',
+              folderPath: detailedEmail.folderPath,
+              extensionFile: ExtensionType.text.value
+            );
+            log('EmailHiveCacheDataSourceImpl::storeOpenedEmailToCache():fileSavedPath: ${fileSaved.path}');
+            final detailedEmailSaved = detailedEmail.fromEmailContentPath(fileSaved.path);
+
+            await _detailedEmailCacheManager.storeOpenedEmail(
+              accountId,
+              session.username,
+              detailedEmailSaved);
+          });
+      return await _openedEmailCacheWorkerQueue.addTask(task);
     }).catchError(_exceptionThrower.throwException);
   }
 }
