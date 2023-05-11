@@ -21,6 +21,7 @@ import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
@@ -409,13 +410,16 @@ class EmailView extends GetWidget<SingleEmailController> {
         return Container(
             height: 60,
             color: Colors.transparent,
-            child: ListView.builder(
+            child: ScrollConfiguration(
+              behavior: CustomScrollBehavior(),
+              child: ListView.builder(
                 key: const Key('list_attachment_minimize_in_email'),
                 shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
+                controller: controller.scrollControllerAttachment,
                 itemCount: attachments.length,
-                itemBuilder: (context, index) => AttachmentFileTileBuilder(
+                itemBuilder: (context, index) =>
+                  AttachmentFileTileBuilder(
                     attachments[index],
                     onDownloadAttachmentFileActionClick: (attachment) {
                       if (BuildUtils.isWeb) {
@@ -423,7 +427,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                       } else {
                         controller.exportAttachment(context, attachment);
                       }
-                    })
+                    }
+                  )
+              ),
             )
         );
       }
