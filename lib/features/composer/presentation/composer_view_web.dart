@@ -25,6 +25,7 @@ import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/composer_loading_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
@@ -853,7 +854,6 @@ class ComposerView extends GetWidget<ComposerController>
                   controller.expandModeAttachments.value)),
           Padding(
               padding: EdgeInsets.only(
-                  bottom: 8,
                   left: responsiveUtils.isMobile(context) ? 16 : 10,
                   right: responsiveUtils.isMobile(context) ? 16 : 10),
               child: _buildAttachmentsList(
@@ -905,21 +905,23 @@ class ComposerView extends GetWidget<ComposerController>
           alignment: Alignment.centerLeft,
           child: SizedBox(
             height: 60,
-            child: ListView.builder(
-              key: const Key('list_attachment_minimize'),
-              shrinkWrap: true,
-              physics: const ClampingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemCount: uploadFilesState.length,
-              itemBuilder: (context, index) => AttachmentFileComposerBuilder(
-                uploadFilesState[index],
-                itemMargin: EdgeInsets.only(
-                  right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                  left: AppUtils.isDirectionRTL(context) ? 8 : 0
-                ),
-                maxWidth: _getMaxWidthItemListAttachment(context, constraints),
-                onDeleteAttachmentAction: (attachment) =>
-                    controller.deleteAttachmentUploaded(attachment.uploadTaskId))
+            child: ScrollConfiguration(
+              behavior: CustomScrollBehavior(),
+              child: ListView.builder(
+                key: const Key('list_attachment_minimize'),
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                controller: controller.scrollControllerAttachment,
+                itemCount: uploadFilesState.length,
+                itemBuilder: (context, index) => AttachmentFileComposerBuilder(
+                  uploadFilesState[index],
+                  itemMargin: EdgeInsets.only(
+                    right: AppUtils.isDirectionRTL(context) ? 0 : 8,
+                    left: AppUtils.isDirectionRTL(context) ? 8 : 0
+                  ),
+                  maxWidth: _getMaxWidthItemListAttachment(context, constraints),
+                  onDeleteAttachmentAction: (attachment) => controller.deleteAttachmentUploaded(attachment.uploadTaskId))
+              ),
             )
           )
         );
