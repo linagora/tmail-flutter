@@ -619,7 +619,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (currentMailbox != null && accountId != null) {
-      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail, session);
+      final arguments = DestinationPickerArguments(
+        accountId,
+        MailboxActions.moveEmail,
+        session,
+        mailboxIdSelected: currentMailbox.mailboxId
+      );
       if (BuildUtils.isWeb) {
         showDialogDestinationPicker(
             context: context,

@@ -750,7 +750,8 @@ class MailboxDashBoardController extends ReloadableController {
       final arguments = DestinationPickerArguments(
         accountId.value!,
         MailboxActions.moveEmail,
-        sessionCurrent);
+        sessionCurrent,
+        mailboxIdSelected: currentMailbox.mailboxId);
 
       if (BuildUtils.isWeb) {
         showDialogDestinationPicker(
