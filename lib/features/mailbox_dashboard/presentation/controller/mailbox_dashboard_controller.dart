@@ -1308,10 +1308,18 @@ class MailboxDashBoardController extends ReloadableController {
     searchController.addFilterToSuggestionForm(filter);
   }
 
-  Future<List<PresentationEmail>> quickSearchEmails() => searchController.quickSearchEmails(
-    session: sessionCurrent!,
-    accountId: accountId.value!
-  );
+  Future<List<PresentationEmail>> quickSearchEmails(String query) async {
+    if (sessionCurrent != null && accountId.value != null && userProfile.value != null) {
+      return searchController.quickSearchEmails(
+        session: sessionCurrent!,
+        accountId: accountId.value!,
+        userProfile: userProfile.value!,
+        query: query
+      );
+    } else {
+      return [];
+    }
+  }
 
   void addDownloadTask(DownloadTaskState task) {
     downloadController.addDownloadTask(task);
