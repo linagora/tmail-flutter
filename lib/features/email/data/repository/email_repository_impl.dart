@@ -198,4 +198,9 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<void> storeEmailToCache(Session session, AccountId accountId, Email email) {
     return emailDataSource[DataSourceType.hiveCache]!.storeEmail(session, accountId, email);
   }
+
+  @override
+  Future<void> storeOpenedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+    throw UnimplementedError();
+  }
 }
