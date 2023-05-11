@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/fcm_datasource_impl.dart';
@@ -103,6 +104,7 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<DetailedEmailCacheManager>(),
+      Get.find<OpenedEmailCacheManager>(),
       Get.find<DetailedEmailCacheWorkerQueue>(),
       Get.find<OpenedEmailCacheWorkerQueue>(),
       Get.find<EmailCacheManager>(),

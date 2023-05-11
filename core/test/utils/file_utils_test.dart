@@ -30,7 +30,7 @@ void main() {
       /// Create a temporary file that will be deleted after `getFromFile` is done
       final file = await FileUtils().saveToFile(nameFile: fileName, content: fileContent);
 
-      final htmlString = await FileUtils().getFromFile(nameFile: fileName);
+      final htmlString = await FileUtils().getContentFromFile(nameFile: fileName);
 
       expect(htmlString.isNotEmpty, equals(true));
 

@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_st
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_to_cache_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
@@ -44,6 +45,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -55,15 +57,16 @@ class EmailBindings extends BaseBindings {
   void bindingsController() {
     Get.put(EmailSupervisorController());
     Get.put(SingleEmailController(
-        Get.find<GetEmailContentInteractor>(),
-        Get.find<MarkAsEmailReadInteractor>(),
-        Get.find<DownloadAttachmentsInteractor>(),
-        Get.find<DeviceManager>(),
-        Get.find<ExportAttachmentInteractor>(),
-        Get.find<MoveToMailboxInteractor>(),
-        Get.find<MarkAsStarEmailInteractor>(),
-        Get.find<DownloadAttachmentForWebInteractor>(),
-        Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<GetEmailContentInteractor>(),
+      Get.find<MarkAsEmailReadInteractor>(),
+      Get.find<DownloadAttachmentsInteractor>(),
+      Get.find<DeviceManager>(),
+      Get.find<ExportAttachmentInteractor>(),
+      Get.find<MoveToMailboxInteractor>(),
+      Get.find<MarkAsStarEmailInteractor>(),
+      Get.find<DownloadAttachmentForWebInteractor>(),
+      Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<StoreOpenedEmailToCacheInteractor>()
     ));
   }
 
@@ -98,6 +101,7 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<DetailedEmailCacheManager>(),
+      Get.find<OpenedEmailCacheManager>(),
       Get.find<DetailedEmailCacheWorkerQueue>(),
       Get.find<OpenedEmailCacheWorkerQueue>(),
       Get.find<EmailCacheManager>(),
@@ -134,6 +138,7 @@ class EmailBindings extends BaseBindings {
       Get.find<AccountRepository>(),
       Get.find<AuthenticationOIDCRepository>()));
     Get.lazyPut(() => GetStoredEmailStateInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => StoreOpenedEmailToCacheInteractor(Get.find<EmailRepository>()));
     IdentityInteractorsBindings().dependencies();
   }
 

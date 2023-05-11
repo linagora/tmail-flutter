@@ -72,6 +72,7 @@ extension EmailExtension on Email {
       replyTo: replyTo,
       mailboxIds: mailboxIds,
       selectMode: selectMode,
+      emailHeader: headers?.toList()
     );
   }
 
