@@ -125,7 +125,11 @@ mixin EmailActionController on ViewAsDialogActionMixin {
     final session = mailboxDashBoardController.sessionCurrent;
 
     if (mailboxContain != null && accountId != null) {
-      final arguments = DestinationPickerArguments(accountId, MailboxActions.moveEmail, session);
+      final arguments = DestinationPickerArguments(
+        accountId,
+        MailboxActions.moveEmail,
+        session,
+        mailboxIdSelected: mailboxContain.mailboxId);
 
       if (BuildUtils.isWeb) {
         showDialogDestinationPicker(

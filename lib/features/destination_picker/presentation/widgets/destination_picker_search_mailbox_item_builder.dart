@@ -76,7 +76,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
   }
 
   void _onTapMailboxAction() {
-    if (onClickOpenMailboxAction != null) {
+    if (!_isSelectActionNoValid && onClickOpenMailboxAction != null) {
       onClickOpenMailboxAction?.call(_presentationMailbox);
     }
   }
@@ -134,16 +134,14 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
   }
 
   Widget _buildSelectedIcon(BuildContext context) {
-    if (_presentationMailbox.id == mailboxIdAlreadySelected &&
-        (mailboxActions == MailboxActions.select ||
-        mailboxActions == MailboxActions.create)) {
+    if (_isSelectActionNoValid) {
       return Padding(
         padding: EdgeInsets.only(
           right: AppUtils.isDirectionRTL(context) ? 0 : 8,
           left: AppUtils.isDirectionRTL(context) ? 8 : 0,
         ),
         child: SvgPicture.asset(
-          _imagePaths.icFilterSelected,
+          _imagePaths.icSelectedSB,
           width: 20,
           height: 20,
           fit: BoxFit.fill
@@ -153,4 +151,11 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
       return const SizedBox.shrink();
     }
   }
+
+  bool get _isSelectActionNoValid => _presentationMailbox.id == mailboxIdAlreadySelected &&
+    (
+      mailboxActions == MailboxActions.select ||
+      mailboxActions == MailboxActions.create ||
+      mailboxActions == MailboxActions.moveEmail
+    );
 }

@@ -160,7 +160,9 @@ class MailBoxFolderTileBuilder {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: () => _onOpenMailboxFolderClick?.call(_mailboxNode),
+              onTap: () => !_isSelectActionNoValid
+                ? _onOpenMailboxFolderClick?.call(_mailboxNode)
+                : null,
               customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
               hoverColor: AppColor.colorMailboxHovered,
               child: Container(
@@ -172,7 +174,8 @@ class MailBoxFolderTileBuilder {
                     _buildLeadingMailboxItem(context),
                     const SizedBox(width: 8),
                     Expanded(child: _buildTitleFolderItem(context, showTrailingItem: false)),
-                    _buildSelectedIcon()
+                    _buildSelectedIcon(),
+                    const SizedBox(width: 8),
                   ])
               ),
             ),
@@ -400,17 +403,22 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildSelectedIcon() {
-    if (_mailboxNode.item.id == mailboxIdAlreadySelected &&
-        mailboxDisplayed == MailboxDisplayed.destinationPicker &&
-        (mailboxActions == MailboxActions.select ||
-        mailboxActions == MailboxActions.create)) {
+    if (_isSelectActionNoValid) {
       return SvgPicture.asset(
-          _imagePaths.icFilterSelected,
-          width: 20,
-          height: 20,
-          fit: BoxFit.fill);
+        _imagePaths.icSelectedSB,
+        width: 20,
+        height: 20,
+        fit: BoxFit.fill);
     } else {
       return const SizedBox.shrink();
     }
   }
+
+  bool get _isSelectActionNoValid => _mailboxNode.item.id == mailboxIdAlreadySelected &&
+    mailboxDisplayed == MailboxDisplayed.destinationPicker &&
+    (
+      mailboxActions == MailboxActions.select ||
+      mailboxActions == MailboxActions.create ||
+      mailboxActions == MailboxActions.moveEmail
+    );
 }
