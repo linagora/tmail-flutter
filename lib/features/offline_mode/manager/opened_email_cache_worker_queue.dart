@@ -3,5 +3,5 @@ import 'package:tmail_ui_user/features/offline_mode/worker/hive_worker_queue.dar
 class OpenedEmailCacheWorkerQueue extends WorkerQueue {
 
   @override
-  String get workerName => 'OpenedEmailCache';
+  String get workerName => 'OpenedEmailCacheQueue';
 }

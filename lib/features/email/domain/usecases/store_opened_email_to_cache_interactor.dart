@@ -18,11 +18,11 @@ class StoreOpenedEmailToCacheInteractor {
     DetailedEmail detailedEmail
   ) async* {
     try {
-      yield Right<Failure, Success>(StoreOpenedEmailToCacheLoading());
-      await _emailRepository.storeOpenedEmailToCache(session, accountId, detailedEmail);
-      yield Right<Failure, Success>(StoreOpenedEmailToCacheSuccess());
+      yield Right<Failure, Success>(StoreOpenedEmailLoading());
+      await _emailRepository.storeOpenedEmail(session, accountId, detailedEmail);
+      yield Right<Failure, Success>(StoreOpenedEmailSuccess());
     } catch (e) {
-      yield Left<Failure, Success>(StoreOpenedEmailToCacheFailure(e));
+      yield Left<Failure, Success>(StoreOpenedEmailFailure(e));
     }
   }
 }
