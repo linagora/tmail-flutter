@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
-import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
-import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -99,7 +98,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
   Future<List<PresentationEmail>> quickSearchEmails({
     required Session session,
     required AccountId accountId,
-    UserProfile? userProfile
+    required String query,
+    required UserProfile userProfile,
   }) async {
     return await _quickSearchEmailInteractor.execute(
       session,
@@ -108,7 +108,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       sort: <Comparator>{}..add(
         EmailComparator(EmailComparatorProperty.receivedAt)
           ..setIsAscending(false)),
-      filter: _mappingToFilterOnSuggestionForm(userProfile),
+      filter: _mappingToFilterOnSuggestionForm(userProfile: userProfile, query: query),
       properties: ThreadConstants.propertiesQuickSearch
     ).then((result) => result.fold(
       (failure) => <PresentationEmail>[],
@@ -118,11 +118,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
     ));
   }
 
-  Filter? _mappingToFilterOnSuggestionForm(UserProfile? userProfile) {
-    final searchText = searchEmailFilter.value.text?.value.trim();
-
+  Filter? _mappingToFilterOnSuggestionForm({required String query, required UserProfile userProfile}) {
+    log('SearchController::_mappingToFilterOnSuggestionForm():query: $query');
     final filterCondition = EmailFilterCondition(
-      text: searchText?.isNotEmpty == true ? searchText : null,
+      text: query.isNotEmpty == true ? query : null,
       after: listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
         ? EmailReceiveTimeType.last7Days.toOldestUTCDate()
         : null,
@@ -131,17 +130,14 @@ class SearchController extends BaseController with DateRangePickerMixin {
         : null,
       hasAttachment: listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)
         ? true
+        : null,
+      from: listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)
+        ? userProfile.email
         : null
     );
 
-    final listEmailCondition = {
-      if (filterCondition.hasCondition) filterCondition,
-      if (listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe) && userProfile != null)
-        LogicFilterOperator(Operator.AND, {EmailFilterCondition(from: userProfile.email)})
-    };
-
-    return listEmailCondition.isNotEmpty
-      ? LogicFilterOperator(Operator.AND, listEmailCondition)
+    return filterCondition.hasCondition
+      ? filterCondition
       : null;
   }
 
