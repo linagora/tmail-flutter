@@ -23,4 +23,5 @@ class CachingConstants {
   static const String emailContentFolderName = 'email_content';
 
   static const int maxNumberNewEmailsForOffline = 10;
+  static const int maxNumberOpenedEmailsForOffline = 30;
 }
