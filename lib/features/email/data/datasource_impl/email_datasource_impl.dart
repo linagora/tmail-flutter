@@ -168,7 +168,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storeOpenedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+  Future<void> storeOpenedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
     throw UnimplementedError();
   }
 }

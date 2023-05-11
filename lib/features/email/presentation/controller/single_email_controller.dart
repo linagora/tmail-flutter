@@ -26,6 +26,8 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_to_cache_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -91,6 +93,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final StoreOpenedEmailToCacheInteractor _storeOpenedEmailToCacheInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -123,6 +126,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._markAsStarEmailInteractor,
     this._downloadAttachmentForWebInteractor,
     this._getAllIdentitiesInteractor,
+    this._storeOpenedEmailToCacheInteractor
   );
 
   @override
@@ -366,6 +370,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       emailContents.value = success.emailContentsDisplayed;
       initialEmailContents = success.emailContents;
       attachments.value = success.attachments;
+
+      if (!BuildUtils.isWeb) {
+        final detailedEmail = DetailedEmail(
+          emailId: currentEmail!.id!,
+          attachments: attachments,
+          headers: currentEmail?.emailHeader,
+          htmlEmailContent: emailContents.asHtmlString
+        );
+
+        _storeOpenedEmailToCache(
+          mailboxDashBoardController.sessionCurrent,
+          mailboxDashBoardController.accountId.value,
+          detailedEmail
+        );
+      }
 
       final isShowMessageReadReceipt = success.emailCurrent
           ?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
@@ -1184,5 +1203,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       closeEmailView(context);
     }
     return false;
+  }
+
+  void _storeOpenedEmailToCache(Session? session, AccountId? accountId, DetailedEmail detailedEmail) async {
+    if (session != null && accountId != null) {
+      consumeState(_storeOpenedEmailToCacheInteractor.execute(session, accountId, detailedEmail));
+    }
   }
 }
