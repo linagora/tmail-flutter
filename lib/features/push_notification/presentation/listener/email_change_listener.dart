@@ -107,6 +107,10 @@ class EmailChangeListener extends ChangeListener {
         }
       } else if (action is PushNotificationAction) {
         _pushNotificationAction(action.newState, action.accountId, action.userName, action.session);
+
+        if (FcmUtils.instance.isMobileAndroid) {
+          _getNewReceiveEmailFromNotificationAction(action.session, action.accountId, action.newState);
+        }
       } else if (action is StoreEmailStateToRefreshAction) {
         if (FcmUtils.instance.isMobileAndroid) {
           _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
