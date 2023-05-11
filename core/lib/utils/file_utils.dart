@@ -55,7 +55,7 @@ class FileUtils {
     return await file.writeAsString(content, mode: FileMode.append);
   }
 
-  Future<String> getFromFile({
+  Future<String> getContentFromFile({
     required String nameFile,
     String? folderPath,
     String? extensionFile
@@ -72,6 +72,20 @@ class FileUtils {
     log("FileUtils()::getFromFile: $emailContent");
 
     return emailContent;
+  }
+
+  Future<bool> isFileExisted({
+    required String nameFile,
+    String? folderPath,
+    String? extensionFile
+  }) async {
+    final internalStorageDirPath = await _getInternalStorageDirPath(
+      nameFile: nameFile,
+      folderPath: folderPath,
+      extensionFile: extensionFile
+    );
+
+    return File(internalStorageDirPath).exists();
   }
 }
 

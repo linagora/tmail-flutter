@@ -1,12 +1,13 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-class StoreOpenedEmailToCacheLoading extends UIState {}
+class StoreOpenedEmailLoading extends UIState {}
 
-class StoreOpenedEmailToCacheSuccess extends UIState {}
+class StoreOpenedEmailSuccess extends UIState {}
 
-class StoreOpenedEmailToCacheFailure extends FeatureFailure {
+class StoreOpenedEmailFailure extends FeatureFailure {
 
-  StoreOpenedEmailToCacheFailure(dynamic exception) : super(exception: exception);
+  StoreOpenedEmailFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];
