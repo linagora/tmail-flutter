@@ -109,7 +109,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             fetchRecentActionCallback: controller.getAllRecentSearchAction,
             itemRecentBuilder: (context, recent) => RecentSearchItemTileWidget(recent),
             onRecentSelected: (recent) => _invokeSelectRecentItem(context, recent),
-            suggestionsCallback: (pattern) => dashBoardController.quickSearchEmails(),
+            suggestionsCallback: dashBoardController.quickSearchEmails,
             itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(email, dashBoardController.selectedMailbox.value),
             onSuggestionSelected: (presentationEmail) => _invokeSelectSuggestionItem(context, presentationEmail))
         ),
