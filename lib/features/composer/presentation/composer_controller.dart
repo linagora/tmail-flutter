@@ -135,6 +135,7 @@ class ComposerController extends BaseController {
 
   final ScrollController scrollController = ScrollController();
   final ScrollController scrollControllerEmailAddress = ScrollController();
+  final ScrollController scrollControllerAttachment = ScrollController();
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
@@ -267,6 +268,7 @@ class ComposerController extends BaseController {
     scrollController.dispose();
     scrollControllerEmailAddress.removeListener(_scrollControllerEmailAddressListener);
     scrollControllerEmailAddress.dispose();
+    scrollControllerAttachment.dispose();
     super.dispose();
   }
 
