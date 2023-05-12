@@ -25,11 +25,11 @@ https://github.com/linagora/tmail-flutter/issues/1719
       + When I select Custom range, a Date picker will be displayed that allow me to select From date and To date.
       + The date range is not limited 
    - Subject: a text field 
-   - Recipient: I can input name/email address, the system will display a suggestion list of matched emails. I can select from the list or input the recipient mannually 
-   - Sender:  I can input name/email address, the system will display a suggestion list of matched emails. I can select from the list or input the recipient mannually
+   - Recipients: I can input name/email address, the system will display a suggestion list of matched emails. I can select from the list or input the recipients mannually 
+   - Senders:  I can input name/email address, the system will display a suggestion list of matched emails. I can select from the list or input the senders mannually
    - Has attachment: a Checkbox. If it is checked, the system will find and restore email which contains attachments
 - After input conditions, I click button Restore, the system will search for matched messages in in deleted vault. 
-- When the search is in progress, there will be a loading status will message :"Recovery is in progress and might take time. Please wait a few minutes." And a Cancel button. If I click Cancel, the restoring process stops immediately
+- When the search is in progress, there will be a toast message :"Recovery is in progress and might take time. Please wait a few minutes." 
 - When the search is completed, the system will restore 5 (configurable by system) first messages in the result to a new system folder:"Restored messages"
 - In this new system folder, I can see the list of recovered deleted messages:
    - With the folder, I can do actions :"Open in new tab"/"Mark as read"
@@ -43,7 +43,7 @@ https://github.com/linagora/tmail-flutter/issues/1719
 
 ![Group 792](https://github.com/linagora/tmail-flutter/assets/68209176/9e18ec72-f21b-48af-aa10-ddb807179fdc)
 
-![Group 793](https://github.com/linagora/tmail-flutter/assets/68209176/aad227c9-eef8-4c4f-8108-f2f0dfab2f10)
+![Group 797](https://github.com/linagora/tmail-flutter/assets/68209176/27d26826-3c35-4ecd-a850-91d8419ae02e)
 
 ![Group 794 (1)](https://github.com/linagora/tmail-flutter/assets/68209176/da4cece1-ec33-4c65-9a66-bc0d00e6af99)
 
