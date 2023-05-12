@@ -29,8 +29,8 @@ https://github.com/linagora/tmail-flutter/issues/1719
    - Sender:  I can input name/email address, the system will display a suggestion list of matched emails. I can select from the list or input the sender mannually. I can input only 1 sender.
    - Has attachment: a Checkbox. If it is checked, the system will find and restore email which contains attachments
 - After input conditions, I click button Restore, the system will search for matched messages in in deleted vault. 
-- When the search is in progress, there will be a progess bar with a message :"Recovery is in progress and might take time. Please wait a few minutes."  If I click Cancel button, the restoring process stops immediately. When I click on Close button, the popup is close but the recovery is still in progress. 
-- When the search is completed, the system will restore 5 (configurable by system) first messages in the result to a new system folder:"Restored messages". There will be a toast message: "Restore deleted messages successfully".
+- When the recovery is in progress, there will be a progess bar with a message :"Recovery is in progress and might take time. Please wait a few minutes."  If I click Cancel button, the restoring process stops immediately. When I click on Close button, the popup is close but the recovery is still in progress. 
+- When the recovery is completed, the system will restore 5 (configurable by system) first messages in the result to a new system folder:"Restored messages". There will be a toast message: "Restore deleted messages successfully".
 - In this new system folder, I can see the list of recovered deleted messages:
    - With the folder, I can do actions :"Open in new tab"/"Mark as read"
    - With the emails, I can do actions: Spam/Unspam, Star/Unstar, Read/Unread, Move, Delete, Open in a new tab, Create a new rule with this email .
