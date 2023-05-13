@@ -1,1 +1,20 @@
-{}
+{
+  "initializing_data": "Memuat data...",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "login_text_slogan": "Pesan Tim",
+  "@login_text_slogan": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyListEmailForward": "Silakan masukkan penerima pesan",
+  "@emptyListEmailForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}
