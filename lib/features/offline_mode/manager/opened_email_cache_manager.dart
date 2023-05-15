@@ -2,6 +2,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
@@ -67,9 +68,9 @@ class OpenedEmailCacheManager {
       DetailedEmail detailedEmail
   ) async {
     final emailContentPathExists = await _isFileExisted(detailedEmail);
-    final detailedEmailCacheExists = await _isDetailEmailExistedInCache(accountId, userName, detailedEmail);
+    final detailedEmailCacheExists = await getDetailEmailExistedInCache(accountId, userName, detailedEmail.emailId);
 
-    return emailContentPathExists == true && detailedEmailCacheExists;
+    return emailContentPathExists == true && detailedEmailCacheExists != null;
   }
 
   Future<bool?> _isFileExisted(DetailedEmail detailedEmail) async {
@@ -81,14 +82,15 @@ class OpenedEmailCacheManager {
     return fileSaved;
   }
 
-  Future<bool> _isDetailEmailExistedInCache(
-      AccountId accountId,
-      UserName userName,
-      DetailedEmail detailedEmail
+  Future<DetailedEmailHiveCache?> getDetailEmailExistedInCache(
+    AccountId accountId,
+    UserName userName,
+    EmailId emailId
   ) async {
-    final keyCache = TupleKey(detailedEmail.emailId.asString, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
     final detailedEmailCache = await _cacheClient.getItem(keyCache);
     log('OpenedEmailCacheManager::_getDetailedEmailCache():_getDetailedEmailCache: $detailedEmailCache');
-    return detailedEmailCache != null;
+    return detailedEmailCache;
   }
+
 }

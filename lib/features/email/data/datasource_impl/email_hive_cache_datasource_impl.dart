@@ -19,9 +19,11 @@ import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_extension.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -161,7 +163,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
       final task = HiveTask(
           runnable: () async {
 
-            final detailedEmailExisted = await _openedEmailCacheManager.isOpenedDetailEmailCached(accountId, session.username,detailedEmail);
+            final detailedEmailExisted = await _openedEmailCacheManager.isOpenedDetailEmailCached(accountId, session.username, detailedEmail);
             log('EmailHiveCacheDataSourceImpl::storeOpenedEmail():detailedEmailExisted: $detailedEmailExisted');
 
             if (detailedEmailExisted) {
@@ -184,6 +186,20 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
               detailedEmailSaved);
           });
       return _openedEmailCacheWorkerQueue.addTask(task);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
+    return Future.sync(() async {
+      final detailedEmailHiveCache = await _openedEmailCacheManager.getDetailEmailExistedInCache(accountId, session.username, emailId);
+
+      final emailContent = await _fileUtils.getContentFromFile(
+          nameFile: emailId.asString,
+          folderPath: CachingConstants.emailContentFolderName
+      );
+
+      return detailedEmailHiveCache?.toDetailedEmailWithContent(emailContent);
     }).catchError(_exceptionThrower.throwException);
   }
 }
