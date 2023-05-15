@@ -5,11 +5,11 @@ set -e
 set -x
 
 cd core
-#flutter pub get
+flutter pub get
 
 ## Install necessary pods
-#cd ../ios
-#flutter pub get && pod install
+# cd ../ios
+# flutter pub get && pod install
 
 cd ../model
 flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
