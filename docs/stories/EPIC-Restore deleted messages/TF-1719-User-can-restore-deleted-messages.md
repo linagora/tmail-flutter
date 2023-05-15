@@ -29,8 +29,8 @@ https://github.com/linagora/tmail-flutter/issues/1719
    - Sender:  I can input name/email address, the system will display a suggestion list of matched emails. I can select from the list or input the sender mannually. I can input only 1 sender.
    - Has attachment: a Checkbox. If it is checked, the system will find and restore email which contains attachments
 - After input conditions, I click button Restore, the system will search for matched messages in in deleted vault. 
-- When the recovery is in progress, there will be a progess bar with a message :"Recovery is in progress and might take time. Please wait a few minutes."  If I click Cancel button, the restoring process stops immediately. When I click on Close button, the popup is close but the recovery is still in progress. 
-- When the recovery is completed, the system will restore 5 (configurable by system) first messages in the result to a new system folder:"Restored messages". There will be a toast message: "Restore deleted messages successfully".
+- When the recovery is in progress, there will be a progess bar running at top of screen that does not block user's actions. User can continue using Tmail while the recovery process is runing. 
+- When the recovery is completed, the system will restore 5 (configurable by system) first messages in the result to a new system folder:"Recovered messages". There will be a toast message: "Recover deleted messages successfully". And an Open button. When I click this button, I am redirected to the folder Restored message 
 - In this new system folder, I can see the list of recovered deleted messages:
    - With the folder, I can do actions :"Open in new tab"/"Mark as read"
    - With the emails, I can do actions: Spam/Unspam, Star/Unstar, Read/Unread, Move, Delete, Open in a new tab, Create a new rule with this email .
@@ -39,13 +39,13 @@ https://github.com/linagora/tmail-flutter/issues/1719
 
 ## Screenshots
 
-![Group 791](https://github.com/linagora/tmail-flutter/assets/68209176/6335f01f-22f1-4e08-ac16-ad9f58040983)
+![Group 791 (2)](https://github.com/linagora/tmail-flutter/assets/68209176/20d9de2c-e183-4fe4-89b6-1adacedd2cc4)
 
-![Group 792 (1)](https://github.com/linagora/tmail-flutter/assets/68209176/9274a92c-1e22-4a94-b407-4c0f139c1e35)
+![Group 792 (3)](https://github.com/linagora/tmail-flutter/assets/68209176/d8d3cd22-5392-49fa-8b8c-249d782f2d6c)
 
-![Group 797 (2)](https://github.com/linagora/tmail-flutter/assets/68209176/8f8cdc7f-6f08-40c7-880f-dc29ecb66f81)
+![Group 806](https://github.com/linagora/tmail-flutter/assets/68209176/f5b0b8fd-db61-44c8-a523-aa96200417f1)
 
-![Group 799](https://github.com/linagora/tmail-flutter/assets/68209176/3cbfc742-2c8c-4097-99cc-0593dd9b337f)
+![Group 807](https://github.com/linagora/tmail-flutter/assets/68209176/d7a65e38-e399-4719-a97d-6eee4a972ad3)
 
 
 [Back to Summary](#summary)
