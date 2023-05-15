@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:model/email/presentation_email.dart';
 
 import 'mailbox_fixtures.dart';
 
@@ -69,5 +70,40 @@ class EmailFixtures {
       keywords: {KeyWordIdentifier.emailSeen : true},
       mailboxIds: {MailboxFixtures.inboxMailbox.id! : true},
       to: {EmailAddress("DatVu", "tdvu@yahoo.com")},
+  );
+
+  static final presentationEmailWithFromIsNotNull = PresentationEmail(
+      id: EmailId(Id("382312d0-fa5c-11eb-b647-2fef1ee98e0d")),
+      preview: "Have a from and to address",
+      hasAttachment: false,
+      subject: "test avatar",
+      from: {EmailAddress("DatVu", "tdvu@linagora.com")},
+      sentAt: UTCDate(DateTime.parse("2021-08-11T04:25:34Z")),
+      receivedAt: UTCDate(DateTime.parse("2021-08-11T04:25:55Z")),
+      keywords: {KeyWordIdentifier.emailSeen : true},
+      mailboxIds: {MailboxFixtures.inboxMailbox.id! : true},
+  );
+
+  static final presentationEmailWithFromIsNull = PresentationEmail(
+      id: EmailId(Id("382312d0-fa5c-11eb-b647-2fef1ee98f9d")),
+      preview: "Not have a from and to address",
+      hasAttachment: false,
+      subject: "test avatar",
+      sentAt: UTCDate(DateTime.parse("2021-08-11T04:25:34Z")),
+      receivedAt: UTCDate(DateTime.parse("2021-08-11T04:25:55Z")),
+      keywords: {KeyWordIdentifier.emailSeen : true},
+      mailboxIds: {MailboxFixtures.inboxMailbox.id! : true}
+  );
+
+  static final presentationEmailWithFromIsEmpty = PresentationEmail(
+      id: EmailId(Id("382312d0-fa5c-11eb-b647-2fef1ee98f9e")),
+      preview: "Not have a from and to address",
+      hasAttachment: false,
+      subject: "test avatar",
+      from: {},
+      sentAt: UTCDate(DateTime.parse("2021-08-11T04:25:34Z")),
+      receivedAt: UTCDate(DateTime.parse("2021-08-11T04:25:55Z")),
+      keywords: {KeyWordIdentifier.emailSeen : true},
+      mailboxIds: {MailboxFixtures.inboxMailbox.id! : true}
   );
 }
