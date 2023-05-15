@@ -73,6 +73,22 @@ class PresentationEmail with EquatableMixin {
     }
   }
 
+  String get firstEmailAddressInFrom {
+    if (from?.isNotEmpty == true) {
+      return from!.first.emailAddress;
+    } else {
+      return '';
+    }
+  }
+
+  EmailAddress? get firstFromAddress {
+    if (from?.isNotEmpty == true) {
+      return from!.first;
+    } else {
+      return null;
+    }
+  }
+
   String getAvatarText() {
     if (getSenderName().isNotEmpty) {
       return getSenderName().firstLetterToUpperCase;

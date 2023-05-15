@@ -455,7 +455,8 @@ class EmailView extends GetWidget<SingleEmailController> {
     return <Widget>[
       _markAsEmailUnreadAction(context, email),
       _markAsEmailSpamOrUnSpamAction(context, email),
-      _quickCreatingRuleAction(context, email),
+      if (email.from?.isNotEmpty == true)
+        _quickCreatingRuleAction(context, email),
     ];
   }
 
@@ -568,7 +569,8 @@ class EmailView extends GetWidget<SingleEmailController> {
     return [
       _markAsEmailUnreadPopupItemAction(context, email),
       _markAsEmailSpamOrUnSpamPopupItemAction(context, email, mailboxContain),
-      _quickCreatingRulePopupItemAction(context, email)
+      if (email.from?.isNotEmpty == true)
+        _quickCreatingRulePopupItemAction(context, email)
     ];
   }
 
