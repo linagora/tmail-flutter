@@ -205,7 +205,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<DetailedEmail> getOpenedEmail(Session session, AccountId accountId) {
+  Future<DetailedEmail> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
     throw UnimplementedError();
   }
 }
