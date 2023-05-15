@@ -195,7 +195,7 @@ class EmailChangeListener extends ChangeListener {
       id: presentationEmail.id?.id.value ?? '',
       title: presentationEmail.subject ?? '',
       message: presentationEmail.preview,
-      emailAddress: presentationEmail.from?.first,
+      emailAddress: presentationEmail.firstFromAddress,
       payload: notificationPayload.encodeToString,
     );
   }

@@ -1459,7 +1459,7 @@ class ComposerController extends BaseController {
     final arguments = composerArguments.value;
     if (arguments != null) {
       if (arguments.emailActionType == EmailActionType.editDraft) {
-        return arguments.presentationEmail?.from?.first.emailAddress ?? '';
+        return arguments.presentationEmail?.firstEmailAddressInFrom ?? '';
       } else {
         return mailboxDashBoardController.userProfile.value?.email ?? '';
       }
