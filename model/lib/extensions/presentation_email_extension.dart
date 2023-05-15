@@ -19,7 +19,11 @@ import 'package:model/mailbox/select_mode.dart';
 extension PresentationEmailExtension on PresentationEmail {
 
   List<Color> get avatarColors {
-    return from?.first.avatarColors ?? AppColor.mapGradientColor.first;
+    if (from?.isNotEmpty == true) {
+      return from!.first.avatarColors;
+    } else {
+      return AppColor.mapGradientColor.first;
+    }
   }
 
   int numberOfAllEmailAddress() => to.numberEmailAddress() + cc.numberEmailAddress() + bcc.numberEmailAddress();
