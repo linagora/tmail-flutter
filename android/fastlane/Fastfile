@@ -20,7 +20,7 @@ default_platform(:android)
 platform :android do
   desc "Build development version"
   lane :dev do
-    sh "flutter build apk --verbose --release --dart-define=SERVER_URL=$SERVER_URL"
+    sh "flutter build apk --verbose --debug --dart-define=SERVER_URL=$SERVER_URL"
   end
 
   desc "Build and deploy release version"

@@ -1,5 +1,10 @@
 on:
-  workflow_call:
+  pull_request:
+    paths-ignore:
+      - ".github/**"
+      - "docs"
+      - "Jenkinsfile"
+      - "**/*.md"
 
 name: Analyze and test
 
@@ -56,22 +61,3 @@ jobs:
         with:
           name: test-reports
           path: test-report*.json
-
-  report:
-    runs-on: ubuntu-latest
-    if: success() || failure() # Always upload report
-    needs:
-      - analyze-test
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: test-reports
-
-      - uses: dorny/test-reporter@v1
-        with:
-          name: Flutter Tests
-          path: "*.json"
-          reporter: flutter-json
-          only-summary: "true"
