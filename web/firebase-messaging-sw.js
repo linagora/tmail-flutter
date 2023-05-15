@@ -1,6 +1,6 @@
 importScripts("https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging-compat.js");
-
+// Initialize the Firebase app in the service worker by passing in the messagingSenderId.
 firebase.initializeApp({
     apiKey: "...",
     authDomain: "...",
@@ -10,3 +10,5 @@ firebase.initializeApp({
     messagingSenderId: "...",
     appId: "...",
 });
+// Retrieve an instance of Firebase Messaging so that it can handle background messages.
+const messaging = firebase.messaging();
