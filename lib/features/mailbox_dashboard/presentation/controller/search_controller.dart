@@ -217,6 +217,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   void disableSimpleSearch() {
     updateFilterEmail(text: SearchQuery.initial());
     _clearAllTextInputSimpleSearch();
+    deactivateSimpleSearch();
     hideSimpleSearchFormView();
   }
 
