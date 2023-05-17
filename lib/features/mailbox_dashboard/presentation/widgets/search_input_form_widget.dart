@@ -126,6 +126,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     }
 
     if (query.isNotEmpty || dashBoardController.searchController.listFilterOnSuggestionForm.isNotEmpty) {
+      dashBoardController.searchController.applyFilterSuggestionToSearchFilter(dashBoardController.userProfile.value);
       dashBoardController.searchEmail(context, queryString: query);
     } else {
       dashBoardController.clearSearchEmail();
@@ -142,8 +143,11 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   void _invokeSelectRecentItem(BuildContext context, RecentSearch recent) {
-    dashBoardController.searchController.enableSearch();
     dashBoardController.searchController.searchInputController.text = recent.value;
+    dashBoardController.searchController.searchFocus.unfocus();
+    dashBoardController.searchController.enableSearch();
+
+    dashBoardController.searchController.applyFilterSuggestionToSearchFilter(dashBoardController.userProfile.value);
     dashBoardController.searchEmail(context, queryString: recent.value);
   }
 
