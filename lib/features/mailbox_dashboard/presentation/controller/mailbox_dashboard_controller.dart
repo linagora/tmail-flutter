@@ -531,9 +531,7 @@ class MailboxDashBoardController extends ReloadableController {
   void searchEmail(BuildContext context, {String? queryString}) {
     log('MailboxDashBoardController::searchEmail():');
     clearFilterMessageOption();
-    if (searchController.listFilterOnSuggestionForm.isNotEmpty) {
-      searchController.applyFilterSuggestionToSearchFilter(userProfile.value);
-    }
+    searchController.clearFilterSuggestion();
     if (queryString?.isNotEmpty == true) {
       searchController.updateFilterEmail(text: SearchQuery(queryString!));
     }
