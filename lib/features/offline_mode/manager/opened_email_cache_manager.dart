@@ -21,9 +21,9 @@ class OpenedEmailCacheManager {
   OpenedEmailCacheManager(this._cacheClient, this._fileUtils);
 
   Future<void> insertDetailedEmail(
-      AccountId accountId,
-      UserName userName,
-      DetailedEmailHiveCache detailedEmailCache
+    AccountId accountId,
+    UserName userName,
+    DetailedEmailHiveCache detailedEmailCache
   ) {
     final keyCache = TupleKey(detailedEmailCache.emailId, accountId.asString, userName.value).encodeKey;
     log('OpenedEmailCacheManager::insertDetailedEmail(): $keyCache');
@@ -31,9 +31,9 @@ class OpenedEmailCacheManager {
   }
 
   Future<void> removeDetailedEmail(
-      AccountId accountId,
-      UserName userName,
-      String emailId
+    AccountId accountId,
+    UserName userName,
+    String emailId
   ) {
     final keyCache = TupleKey(emailId, accountId.asString, userName.value).encodeKey;
     log('OpenedEmailCacheManager::removeDetailedEmail(): $keyCache');
@@ -48,35 +48,40 @@ class OpenedEmailCacheManager {
   }
 
   Future<void> storeOpenedEmail(
-      AccountId accountId,
-      UserName userName,
-      DetailedEmail detailedEmail
+    AccountId accountId,
+    UserName userName,
+    DetailedEmail detailedEmail
   ) async {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
 
     if (listDetailedEmails.length >= CachingConstants.maxNumberOpenedEmailsForOffline) {
-      final latestEmail = listDetailedEmails.last;
-      log('OpenedEmailCacheManager::handleStoreDetailedEmail():latestEmail: $latestEmail');
-      await removeDetailedEmail(accountId, userName, latestEmail.emailId);
+      final lastElementsListEmail = listDetailedEmails.sublist(CachingConstants.maxNumberOpenedEmailsForOffline, listDetailedEmails.length);
+      for (var email in lastElementsListEmail) {
+        log('OpenedEmailCacheManager::handleStoreDetailedEmail():latestEmail: $email');
+        if (email.emailContentPath != null) {
+          await _deleteFileExisted(email.emailContentPath!);
+        }
+        await removeDetailedEmail(accountId, userName, email.emailId);
+      }
     }
     await insertDetailedEmail(accountId, userName, detailedEmail.toHiveCache());
   }
 
   Future<bool> isOpenedDetailEmailCached(
-      AccountId accountId,
-      UserName userName,
-      DetailedEmail detailedEmail
+    AccountId accountId,
+    UserName userName,
+    EmailId emailId
   ) async {
-    final emailContentPathExists = await _isFileExisted(detailedEmail);
-    final detailedEmailCacheExists = await getDetailEmailExistedInCache(accountId, userName, detailedEmail.emailId);
+    final emailContentPathExists = await _isFileExisted(emailId);
+    final detailedEmailCacheExists = await getDetailEmailExistedInCache(accountId, userName, emailId);
 
     return emailContentPathExists == true && detailedEmailCacheExists != null;
   }
 
-  Future<bool?> _isFileExisted(DetailedEmail detailedEmail) async {
+  Future<bool?> _isFileExisted(EmailId emailId) async {
     final fileSaved = await _fileUtils.isFileExisted(
-      nameFile: detailedEmail.emailId.asString,
-      folderPath: detailedEmail.folderPath,
+      nameFile: emailId.asString,
+      folderPath: CachingConstants.openedEmailContentFolderNamee,
     );
     log('OpenedEmailCacheManager::_getDetailedEmailCache():_getEmailContentPath: $fileSaved');
     return fileSaved;
@@ -93,4 +98,7 @@ class OpenedEmailCacheManager {
     return detailedEmailCache;
   }
 
+  Future<void> _deleteFileExisted(String pathFile) async {
+    await _fileUtils.deleteFile(pathFile);
+  }
 }

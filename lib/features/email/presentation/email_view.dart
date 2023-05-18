@@ -18,7 +18,6 @@ import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
-import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
@@ -441,20 +440,20 @@ class EmailView extends GetWidget<SingleEmailController> {
       return const SizedBox.shrink();
     }
     return Obx(() {
-      if (controller.emailContents.isNotEmpty) {
-        final allEmailContents = controller.emailContents.asHtmlString;
+      if (controller.emailContents.value != null) {
+        final allEmailContents = controller.emailContents.value;
 
         if (BuildUtils.isWeb) {
           return HtmlContentViewerOnWeb(
               widthContent: constraints.maxWidth,
               heightContent: responsiveUtils.getSizeScreenHeight(context),
-              contentHtml: allEmailContents,
+              contentHtml: allEmailContents ?? "",
               controller: HtmlViewerControllerForWeb(),
               mailtoDelegate: (uri) => controller.openMailToLink(uri));
         } else {
           return HtmlContentViewer(
             heightContent: responsiveUtils.getSizeScreenHeight(context),
-            contentHtml: allEmailContents,
+            contentHtml: allEmailContents ?? "",
             mailtoDelegate: (uri) async => controller.openMailToLink(uri),
             onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
             onWebViewLoaded: (isScrollPageViewActivated) {
