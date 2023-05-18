@@ -17,6 +17,7 @@ class ThreadConstants {
     EmailProperty.sentAt,
     EmailProperty.preview,
     EmailProperty.hasAttachment,
+    EmailProperty.headers,
     EmailProperty.replyTo,
     EmailProperty.mailboxIds,
   });
@@ -35,7 +36,7 @@ class ThreadConstants {
     EmailProperty.sentAt,
     EmailProperty.preview,
     EmailProperty.hasAttachment,
-    EmailProperty.mailboxIds,
+    EmailProperty.mailboxIds
   });
 
   static final propertiesGetEmailContent = Properties({
