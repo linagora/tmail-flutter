@@ -22,7 +22,7 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Padding(
-          padding: const EdgeInsets.only(top: 4, bottom: 16),
+          padding: const EdgeInsets.only(top: 4, bottom: 16, right: 22),
           child: Container(
             constraints: BoxConstraints(
               maxHeight: _getHeightOverlay(context, responsiveUtils),

@@ -40,7 +40,7 @@ class DateDropDownButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: AppColor.colorInputBorderCreateMailbox,
-                width: 1,
+                width: 0.5,
               ),
               color: AppColor.colorInputBackgroundCreateMailbox
             ),

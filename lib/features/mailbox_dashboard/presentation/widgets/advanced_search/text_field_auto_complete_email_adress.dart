@@ -140,7 +140,7 @@ class _TextFieldAutoCompleteEmailAddressState
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: AppColor.loginTextFieldBackgroundColor,
+                    fillColor: Colors.white,
                     contentPadding: const EdgeInsets.only(
                       right: 8,
                       left: 12,
@@ -150,7 +150,7 @@ class _TextFieldAutoCompleteEmailAddressState
                         Radius.circular(10),
                       ),
                       borderSide: BorderSide(
-                        width: 0.5,
+                        width: 1,
                         color: AppColor.colorInputBorderCreateMailbox,
                       ),
                     ),
@@ -158,10 +158,14 @@ class _TextFieldAutoCompleteEmailAddressState
                       borderRadius: BorderRadius.all(
                         Radius.circular(10),
                       ),
+                      borderSide: BorderSide(
+                        width: 1,
+                        color: AppColor.colorInputBorderCreateMailbox,
+                      ),
                     ),
                     hintText: widget.advancedSearchFilterField.getHintText(context),
                     hintStyle: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       color: AppColor.colorHintSearchBar,
                     ),
                     prefixIconConstraints: BoxConstraints(maxWidth: _distanceToField * 0.74),
@@ -177,10 +181,14 @@ class _TextFieldAutoCompleteEmailAddressState
                         : null,
                   ),
                   onChanged: (value) {
-                    onChanged?.call(value);
+                    if (value.trim().isNotEmpty) {
+                      onChanged?.call(value);
+                    }
                   },
                   onSubmitted: (tag) {
-                    onSubmitted?.call(tag);
+                    if (tag.trim().isNotEmpty) {
+                      onSubmitted?.call(tag);
+                    }
                   },
                 ),
               );
