@@ -362,23 +362,27 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         onTap: onTap,
         decoration: InputDecoration(
           filled: true,
-          fillColor: AppColor.loginTextFieldBackgroundColor,
+          fillColor: isSelectFormList ? AppColor.colorItemSelected : Colors.white,
           contentPadding: const EdgeInsets.only(
             right: 8,
             left: 12,
           ),
-          enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
+          enabledBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
             borderSide: BorderSide(
-              width: 0.5,
+              width: isSelectFormList ? 0.5 : 1,
               color: AppColor.colorInputBorderCreateMailbox,
             ),
           ),
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
+          border: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(
               Radius.circular(10),
+            ),
+            borderSide: BorderSide(
+              width: isSelectFormList ? 0.5 : 1,
+              color: AppColor.colorInputBorderCreateMailbox,
             ),
           ),
           hintText: advancedSearchFilterField.getHintText(context),
