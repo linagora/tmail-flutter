@@ -55,96 +55,99 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         ResponsiveWidget(
             responsiveUtils: responsiveUtils,
             desktop: Scaffold(
-              body: Container(
-                color: AppColor.colorBgDesktop,
-                child: Column(children: [
-                  Row(children: [
-                    Container(
-                      width: ResponsiveUtils.defaultSizeMenu,
-                      color: Colors.white,
-                      padding: EdgeInsets.only(
-                        left: AppUtils.isDirectionRTL(context) ? 0 : 28,
-                        right: AppUtils.isDirectionRTL(context) ? 28 : 0,
-                      ),
-                      alignment: Alignment.center,
-                      height: 80,
-                      child: Row(children: [
-                        SloganBuilder(
-                          sizeLogo: 24,
-                          text: AppLocalizations.of(context).app_name,
-                          textAlign: TextAlign.center,
-                          textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                          logo: imagePaths.icLogoTMail
-                        ),
-                        Obx(() {
-                          if (controller.appInformation.value != null) {
-                            return Padding(padding: const EdgeInsets.only(top: 6),
-                              child: Text(
-                                'v${controller.appInformation.value!.version}',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: AppColor.colorContentEmail,
-                                  fontWeight: FontWeight.w500),
-                              ));
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                      ])
-                    ),
-                    Expanded(child: Container(
-                      color: Colors.white,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.only(
-                        right: AppUtils.isDirectionRTL(context) ? 0 : 10,
-                        left: AppUtils.isDirectionRTL(context) ? 10 : 0,
-                      ),
-                      height: 80,
-                      child: _buildRightHeader(context)))
-                  ]),
-                  Expanded(child: Row(children: [
-                    Column(children: [
-                      _buildComposerButton(context),
-                      Expanded(child: SizedBox(
+              body: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Container(
+                  color: AppColor.colorBgDesktop,
+                  child: Column(children: [
+                    Row(children: [
+                      Container(
                         width: ResponsiveUtils.defaultSizeMenu,
-                        child: Obx(() {
-                          if (controller.searchMailboxActivated.isTrue) {
-                            return const SearchMailboxView(
-                              backgroundColor: AppColor.colorBgDesktop
-                            );
-                          } else {
-                            return MailboxView();
-                          }
-                        })
-                      ))
-                    ]),
-                    Expanded(child: Column(children: [
-                      const SpamReportBannerWebWidget(),
-                      _buildEmptyTrashButton(context),
-                      QuotasWarningBannerWidget(
-                        margin: EdgeInsets.only(
-                          right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                          left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                          top: 8
+                        color: Colors.white,
+                        padding: EdgeInsets.only(
+                          left: AppUtils.isDirectionRTL(context) ? 0 : 28,
+                          right: AppUtils.isDirectionRTL(context) ? 28 : 0,
                         ),
+                        alignment: Alignment.center,
+                        height: 80,
+                        child: Row(children: [
+                          SloganBuilder(
+                            sizeLogo: 24,
+                            text: AppLocalizations.of(context).app_name,
+                            textAlign: TextAlign.center,
+                            textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                            logo: imagePaths.icLogoTMail
+                          ),
+                          Obx(() {
+                            if (controller.appInformation.value != null) {
+                              return Padding(padding: const EdgeInsets.only(top: 6),
+                                child: Text(
+                                  'v${controller.appInformation.value!.version}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColor.colorContentEmail,
+                                    fontWeight: FontWeight.w500),
+                                ));
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                        ])
                       ),
-                      _buildVacationNotificationMessage(context),
-                      _buildListButtonQuickSearchFilter(context),
-                      _buildMarkAsMailboxReadLoading(context),
-                      Expanded(child: Obx(() {
-                        switch(controller.dashboardRoute.value) {
-                          case DashboardRoutes.thread:
-                            return _buildThreadViewForWebDesktop(context);
-                          case DashboardRoutes.emailDetailed:
-                            return EmailView();
-                          default:
-                            return const SizedBox.shrink();
-                        }
-                      }))
+                      Expanded(child: Container(
+                        color: Colors.white,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(
+                          right: AppUtils.isDirectionRTL(context) ? 0 : 10,
+                          left: AppUtils.isDirectionRTL(context) ? 10 : 0,
+                        ),
+                        height: 80,
+                        child: _buildRightHeader(context)))
+                    ]),
+                    Expanded(child: Row(children: [
+                      Column(children: [
+                        _buildComposerButton(context),
+                        Expanded(child: SizedBox(
+                          width: ResponsiveUtils.defaultSizeMenu,
+                          child: Obx(() {
+                            if (controller.searchMailboxActivated.isTrue) {
+                              return const SearchMailboxView(
+                                backgroundColor: AppColor.colorBgDesktop
+                              );
+                            } else {
+                              return MailboxView();
+                            }
+                          })
+                        ))
+                      ]),
+                      Expanded(child: Column(children: [
+                        const SpamReportBannerWebWidget(),
+                        _buildEmptyTrashButton(context),
+                        QuotasWarningBannerWidget(
+                          margin: EdgeInsets.only(
+                            right: AppUtils.isDirectionRTL(context) ? 0 : 16,
+                            left: AppUtils.isDirectionRTL(context) ? 16 : 0,
+                            top: 8
+                          ),
+                        ),
+                        _buildVacationNotificationMessage(context),
+                        _buildListButtonQuickSearchFilter(context),
+                        _buildMarkAsMailboxReadLoading(context),
+                        Expanded(child: Obx(() {
+                          switch(controller.dashboardRoute.value) {
+                            case DashboardRoutes.thread:
+                              return _buildThreadViewForWebDesktop(context);
+                            case DashboardRoutes.emailDetailed:
+                              return EmailView();
+                            default:
+                              return const SizedBox.shrink();
+                          }
+                        }))
+                      ]))
                     ]))
-                  ]))
-                ]),
+                  ]),
+                ),
               ),
             ),
             tabletLarge: Obx(() {
