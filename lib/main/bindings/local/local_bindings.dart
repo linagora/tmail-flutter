@@ -73,7 +73,7 @@ class LocalBindings extends Bindings {
     Get.put(FCMCacheManager(Get.find<FcmCacheClient>(),Get.find<FCMSubscriptionCacheClient>()));
     Get.put(HiveCacheVersionClient(Get.find<SharedPreferences>(), Get.find<CacheExceptionThrower>()));
     Get.put(DetailedEmailHiveCacheClient());
-    Get.put(DetailedEmailCacheManager(Get.find<DetailedEmailHiveCacheClient>()));
+    Get.put(DetailedEmailCacheManager(Get.find<DetailedEmailHiveCacheClient>(), Get.find<FileUtils>()));
     Get.put(OpenedEmailHiveCacheClient());
     Get.put(OpenedEmailCacheManager(Get.find<OpenedEmailHiveCacheClient>(), Get.find<FileUtils>()));
     Get.put(CachingManager(

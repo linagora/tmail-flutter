@@ -205,7 +205,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<DetailedEmail> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
-    throw UnimplementedError();
+  Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
+    return emailDataSource[DataSourceType.hiveCache]!.getOpenedEmail(session, accountId, emailId);
   }
 }

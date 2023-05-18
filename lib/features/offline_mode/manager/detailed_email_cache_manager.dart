@@ -1,5 +1,6 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -12,8 +13,9 @@ import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_ca
 class DetailedEmailCacheManager {
 
   final DetailedEmailHiveCacheClient _cacheClient;
+  final FileUtils _fileUtils;
 
-  DetailedEmailCacheManager(this._cacheClient);
+  DetailedEmailCacheManager(this._cacheClient, this._fileUtils);
 
   Future<DetailedEmailHiveCache> handleStoreDetailedEmail(
     AccountId accountId,
@@ -23,9 +25,14 @@ class DetailedEmailCacheManager {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
 
     if (listDetailedEmails.length >= CachingConstants.maxNumberNewEmailsForOffline) {
-      final latestEmail = listDetailedEmails.last;
-      log('DetailedEmailCacheManager::handleStoreDetailedEmail():latestEmail: $latestEmail');
-      await removeDetailedEmail(accountId, userName, latestEmail.emailId);
+      final lastElementsListEmail = listDetailedEmails.sublist(CachingConstants.maxNumberNewEmailsForOffline, listDetailedEmails.length);
+      for (var email in lastElementsListEmail) {
+        log('DetailedEmailCacheManager::handleStoreDetailedEmail():latestEmail: $email');
+        if (email.emailContentPath != null) {
+          await _deleteFileExisted(email.emailContentPath!);
+        }
+        await removeDetailedEmail(accountId, userName, email.emailId);
+      }
     }
     await insertDetailedEmail(accountId, userName, detailedEmailCache);
 
@@ -57,5 +64,9 @@ class DetailedEmailCacheManager {
     detailedEmailCacheList.sortByLatestTime();
     log('DetailedEmailCacheManager::getAllDetailedEmails():SIZE: ${detailedEmailCacheList.length}');
     return detailedEmailCacheList;
+  }
+
+  Future<void> _deleteFileExisted(String pathFile) async {
+    await _fileUtils.deleteFile(pathFile);
   }
 }

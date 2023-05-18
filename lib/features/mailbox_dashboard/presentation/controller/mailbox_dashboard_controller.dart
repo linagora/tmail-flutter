@@ -240,7 +240,7 @@ class MailboxDashBoardController extends ReloadableController {
                 cc: success.composerCache.cc,
                 bcc: success.composerCache.bcc,
               ),
-              emailContents: success.composerCache.emailContentList,
+              emailContents: success.composerCache.emailContentList.asHtmlString,
             );
             openComposerOverlay(composerArguments);
           }
@@ -350,7 +350,7 @@ class MailboxDashBoardController extends ReloadableController {
           _emailReceiveManager.clearPendingEmailContent();
           final arguments = ComposerArguments(
             emailActionType: EmailActionType.edit,
-            emailContents: [emailContent],
+            emailContents: [emailContent].asHtmlString,
             mailboxRole: selectedMailbox.value?.role);
           goToComposer(arguments);
           }
