@@ -492,6 +492,7 @@ class EmailTileBuilder with BaseEmailItemTile {
         isSearchEmailRunning,
         _presentationEmail
       ),
+      _buildCalenderIcon(_presentationEmail),
       if (_presentationEmail.hasAttachment == true)
         Padding(
             padding: const EdgeInsets.only(left: 8),
@@ -505,6 +506,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   Widget _buildDateTimeForMobileTabletScreen() {
     return Row(children: [
       buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
+      _buildCalenderIcon(_presentationEmail),
       if (_presentationEmail.hasAttachment == true)
         Padding(
             padding: const EdgeInsets.only(left: 8),
