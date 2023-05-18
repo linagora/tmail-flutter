@@ -154,6 +154,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     _searchQuery
                   )),
                   buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
+                  _buildCalenderIcon(_presentationEmail),
                   if (_presentationEmail.hasAttachment == true)
                     Padding(
                         padding: const EdgeInsets.only(left: 8),
@@ -551,6 +552,17 @@ class EmailTileBuilder with BaseEmailItemTile {
           _presentationEmail,
           iconSize: iconSize ?? 48,
           textStyle: textStyle);
+    }
+  }
+
+    Widget _buildCalenderIcon(PresentationEmail email) {
+    String mainString = email.emailHeader.toString();
+    String substring = "null";
+
+    if (mainString.contains(substring)) {
+      return buildIconCalendar( email);
+    } else {
+      return const SizedBox.shrink();
     }
   }
 }
