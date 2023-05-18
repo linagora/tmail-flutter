@@ -124,7 +124,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
           final fileSaved = await _fileUtils.saveToFile(
             nameFile: detailedEmail.emailId.asString,
             content: detailedEmail.htmlEmailContent ?? '',
-            folderPath: detailedEmail.folderPath
+            folderPath: detailedEmail.newEmailFolderPath
           );
           log('EmailHiveCacheDataSourceImpl::storeDetailedEmailToCache():fileSavedPath: ${fileSaved.path}');
           final detailedEmailSaved = detailedEmail.fromEmailContentPath(fileSaved.path);
@@ -163,7 +163,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
       final task = HiveTask(
           runnable: () async {
 
-            final detailedEmailExisted = await _openedEmailCacheManager.isOpenedDetailEmailCached(accountId, session.username, detailedEmail);
+            final detailedEmailExisted = await _openedEmailCacheManager.isOpenedDetailEmailCached(accountId, session.username, detailedEmail.emailId);
             log('EmailHiveCacheDataSourceImpl::storeOpenedEmail():detailedEmailExisted: $detailedEmailExisted');
 
             if (detailedEmailExisted) {
@@ -173,7 +173,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
             final fileSaved = await _fileUtils.saveToFile(
               nameFile: detailedEmail.emailId.asString,
               content: detailedEmail.htmlEmailContent ?? '',
-              folderPath: detailedEmail.folderPath
+              folderPath: detailedEmail.openedEmailFolderPath
             );
 
             log('EmailHiveCacheDataSourceImpl::storeOpenedEmail():fileSavedPath: ${fileSaved.path}');
@@ -196,7 +196,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
       final emailContent = await _fileUtils.getContentFromFile(
           nameFile: emailId.asString,
-          folderPath: CachingConstants.emailContentFolderName
+          folderPath: CachingConstants.openedEmailContentFolderNamee
       );
 
       return detailedEmailHiveCache?.toDetailedEmailWithContent(emailContent);

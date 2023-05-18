@@ -100,11 +100,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
-  final emailContents = <EmailContent>[].obs;
+  final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
   EmailId? _currentEmailId;
   Identity? _identitySelected;
-  List<EmailContent>? initialEmailContents;
+  String? initialEmailContents;
 
   final ScrollController scrollControllerAttachment = ScrollController();
 
@@ -150,6 +150,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     super.handleSuccessViewState(success);
     if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
+    } else if (success is GetEmailContentFromCacheSuccess) {
+      _getEmailContentOffLineSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
       _markAsEmailReadSuccess(success);
     } else if (success is ExportAttachmentSuccess) {
@@ -356,6 +358,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
+  void _getEmailContentOffLineSuccess(GetEmailContentFromCacheSuccess success) {
+    emailContents.value = success.emailContentString;
+    attachments.value = success.attachments;
+    initialEmailContents = success.emailContentString;
+  }
+
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     if(emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
       emailSupervisorController.popFirstEmailQueue();
@@ -370,8 +378,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     ));
 
     if (success.emailCurrent?.id == currentEmail?.id) {
-      emailContents.value = success.emailContentsDisplayed;
-      initialEmailContents = success.emailContents;
+      emailContents.value = success.emailContentsDisplayed.asHtmlString;
+      initialEmailContents = success.emailContents.asHtmlString;
       attachments.value = success.attachments;
 
       if (!BuildUtils.isWeb) {
@@ -379,7 +387,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           emailId: currentEmail!.id!,
           attachments: attachments,
           headers: currentEmail?.emailHeader,
-          htmlEmailContent: emailContents.asHtmlString
+          htmlEmailContent: emailContents.value
         );
 
         _storeOpenedEmailToCache(
@@ -414,8 +422,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _resetToOriginalValue() {
     attachmentsExpandMode.value = ExpandMode.COLLAPSE;
     emailAddressExpandMode.value = ExpandMode.COLLAPSE;
-    emailContents.clear();
-    initialEmailContents?.clear();
+    emailContents.value = null;
+    initialEmailContents = null;
     attachments.clear();
   }
 
@@ -1133,7 +1141,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
           emailContents: initialEmailContents,
           attachments: emailActionType == EmailActionType.forward ? attachments : null,
-          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
+          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role
+      );
 
       mailboxDashBoardController.goToComposer(arguments);
     }

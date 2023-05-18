@@ -26,6 +26,22 @@ class GetEmailContentSuccess extends UIState {
   ];
 }
 
+class GetEmailContentFromCacheSuccess extends UIState {
+  final String emailContentString;
+  final List<Attachment> attachments;
+
+  GetEmailContentFromCacheSuccess(
+    this.emailContentString,
+    this.attachments,
+  );
+
+  @override
+  List<Object?> get props => [
+    emailContentString,
+    attachments,
+  ];
+}
+
 class GetEmailContentFailure extends FeatureFailure {
   final dynamic exception;
 
