@@ -24,79 +24,81 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildSuggestionFilterField(
-          listTagSelected: controller.searchEmailFilter.from,
-          context: context,
-          advancedSearchFilterField: AdvancedSearchFilterField.form,
-          listTagInitial: controller.searchEmailFilter.from,
-          currentFocusNode: controller.focusManager.fromFieldFocusNode,
-          nextFocusNode: controller.focusManager.toFieldFocusNode
-        ),
-        _buildSuggestionFilterField(
-          listTagSelected: controller.searchEmailFilter.to,
-          context: context,
-          advancedSearchFilterField: AdvancedSearchFilterField.to,
-          listTagInitial: controller.searchEmailFilter.to,
-          currentFocusNode: controller.focusManager.toFieldFocusNode,
-          nextFocusNode: controller.focusManager.subjectFieldFocusNode
-        ),
-        _buildFilterField(
-          textEditingController: controller.subjectFilterInputController,
-          context: context,
-          advancedSearchFilterField: AdvancedSearchFilterField.subject,
-          currentFocusNode: controller.focusManager.subjectFieldFocusNode,
-          nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode
-        ),
-        _buildFilterField(
-          textEditingController: controller.hasKeyWordFilterInputController,
-          context: context,
-          advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
-          currentFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
-          nextFocusNode: controller.focusManager.notKeywordFieldFocusNode
-        ),
-        _buildFilterField(
-          textEditingController: controller.notKeyWordFilterInputController,
-          context: context,
-          advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
-          currentFocusNode: controller.focusManager.notKeywordFieldFocusNode,
-          nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
-        ),
-        _buildFilterField(
-            textEditingController: controller.mailBoxFilterInputController,
+    return FocusTraversalGroup(
+      child: Column(
+        children: [
+          _buildSuggestionFilterField(
+            listTagSelected: controller.searchEmailFilter.from,
             context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
-            isSelectFormList: true,
-            currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
-            nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
-            mouseCursor: SystemMouseCursors.click,
-            onTap: () => controller.selectedMailBox(context)),
-        Row(children: [
-         Expanded(child: _buildFilterField(
-           context: context,
-           advancedSearchFilterField: AdvancedSearchFilterField.date,
-           isSelectFormList: true,
-           onTap: () {
-             openContextMenuAction(
-               context,
-               _buildEmailReceiveTimeTypeActionTiles(context),
-             );
-           },
-         )),
-          const SizedBox(width: 10),
-          buildIconWeb(
-              icon: SvgPicture.asset(
-                  _imagePaths.icCalendarSB,
-                  width: 24,
-                  height: 24,
-                  fit: BoxFit.fill),
-              tooltip: AppLocalizations.of(context).selectDate,
-              iconPadding: EdgeInsets.zero,
-              onTap: () => controller.selectDateRange(context)),
-        ]),
-        AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
-      ],
+            advancedSearchFilterField: AdvancedSearchFilterField.form,
+            listTagInitial: controller.searchEmailFilter.from,
+            currentFocusNode: controller.focusManager.fromFieldFocusNode,
+            nextFocusNode: controller.focusManager.toFieldFocusNode
+          ),
+          _buildSuggestionFilterField(
+            listTagSelected: controller.searchEmailFilter.to,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.to,
+            listTagInitial: controller.searchEmailFilter.to,
+            currentFocusNode: controller.focusManager.toFieldFocusNode,
+            nextFocusNode: controller.focusManager.subjectFieldFocusNode
+          ),
+          _buildFilterField(
+            textEditingController: controller.subjectFilterInputController,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.subject,
+            currentFocusNode: controller.focusManager.subjectFieldFocusNode,
+            nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode
+          ),
+          _buildFilterField(
+            textEditingController: controller.hasKeyWordFilterInputController,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
+            currentFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
+            nextFocusNode: controller.focusManager.notKeywordFieldFocusNode
+          ),
+          _buildFilterField(
+            textEditingController: controller.notKeyWordFilterInputController,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
+            currentFocusNode: controller.focusManager.notKeywordFieldFocusNode,
+            nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
+          ),
+          _buildFilterField(
+              textEditingController: controller.mailBoxFilterInputController,
+              context: context,
+              advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
+              isSelectFormList: true,
+              currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
+              nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
+              mouseCursor: SystemMouseCursors.click,
+              onTap: () => controller.selectedMailBox(context)),
+          Row(children: [
+           Expanded(child: _buildFilterField(
+             context: context,
+             advancedSearchFilterField: AdvancedSearchFilterField.date,
+             isSelectFormList: true,
+             onTap: () {
+               openContextMenuAction(
+                 context,
+                 _buildEmailReceiveTimeTypeActionTiles(context),
+               );
+             },
+           )),
+            const SizedBox(width: 10),
+            buildIconWeb(
+                icon: SvgPicture.asset(
+                    _imagePaths.icCalendarSB,
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.fill),
+                tooltip: AppLocalizations.of(context).selectDate,
+                iconPadding: EdgeInsets.zero,
+                onTap: () => controller.selectDateRange(context)),
+          ]),
+          AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
+        ],
+      ),
     );
   }
 
@@ -358,8 +360,15 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         controller: textEditingController,
         readOnly: isSelectFormList,
         mouseCursor: mouseCursor,
-        textInputAction: TextInputAction.next,
+        textInputAction: isSelectFormList ? TextInputAction.done : TextInputAction.next,
         onTap: onTap,
+        onSubmitted: (value) {
+          if (isSelectFormList) {
+            onTap?.call();
+          } else {
+            FocusScope.of(context).unfocus();
+          }
+        },
         decoration: InputDecoration(
           filled: true,
           fillColor: isSelectFormList ? AppColor.colorItemSelected : Colors.white,
