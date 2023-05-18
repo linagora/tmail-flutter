@@ -5213,15 +5213,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5 = !t5.get$isEmpty(t5);
       } else
         t5 = true;
-      if (t5)
+      if (t5) {
+        t3 = t1.userProfile;
+        t2.applyFilterSuggestionToSearchFilter$1(t3.get$value(t3));
         t1.searchEmail$2$queryString(context, query);
-      else {
+      } else {
         t5 = new A.ClearSearchEmailAction();
         A.log(string$.Mailbo + A.getRuntimeType(t5).toString$0(0));
         t1.dashBoardAction.set$value(0, t5);
         t2.updateFilterEmail$1$text(new A.SearchQuery(""));
         t2.searchInputController.super$ValueNotifier$value(0, C.TextEditingValue_cKo);
         t3.unfocus$0();
+        t2.simpleSearchIsActivated.set$value(0, false);
         t4.get$value(t4);
         t4.set$value(0, new A.SearchState(C.SearchStatus_1));
       }
@@ -8455,17 +8458,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailView__buildEmailContent_closure.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, t4, allEmailContents,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).emailContents;
-      if (!t4.get$isEmpty(t4)) {
+      t4 = t4.get$value(t4);
+      t4 = t4 == null ? null : J.get$length$asx(t4) !== 0;
+      if (t4 === true) {
         A.Expando__checkType(t1);
-        t1 = F.HtmlContentViewerOnWeb$(true, A.ListEmailContentExtension_get_asHtmlString(t3._as(t2.get(t1)).emailContents), new F.HtmlViewerControllerForWeb(), this.context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dy, new B.EmailView__buildEmailContent__closure(t1), this.constraints.maxWidth);
-        return t1;
+        t2 = t3._as(t2.get(t1)).emailContents;
+        allEmailContents = t2.get$value(t2);
+        t2 = this.context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data;
+        t3 = allEmailContents == null ? "" : allEmailContents;
+        return F.HtmlContentViewerOnWeb$(true, t3, new F.HtmlViewerControllerForWeb(), t2.size._dy, new B.EmailView__buildEmailContent__closure(t1), this.constraints.maxWidth);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -10125,13 +10133,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_build__closure6.prototype = {
     call$1(recent) {
-      var t1 = this.$this.dashBoardController,
+      var t4,
+        t1 = this.$this.dashBoardController,
         t2 = t1.searchController,
-        t3 = t2.searchState;
-      t3.get$value(t3);
-      t3.set$value(0, new A.SearchState(C.SearchStatus_0));
-      t3 = recent.value;
+        t3 = recent.value;
       t2.searchInputController.set$text(0, t3);
+      t2.searchFocus.unfocus$0();
+      t4 = t2.searchState;
+      t4.get$value(t4);
+      t4.set$value(0, new A.SearchState(C.SearchStatus_0));
+      t4 = t1.userProfile;
+      t2.applyFilterSuggestionToSearchFilter$1(t4.get$value(t4));
       t1.searchEmail$2$queryString(this.context, t3);
       return null;
     },
@@ -12710,4 +12722,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["SPvVFWXDizVvgb2KYllKH1cDR6g="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["YC6DBJCSqr5tBDFX5bK+BjULPEM="] = $__dart_deferred_initializers__.current
