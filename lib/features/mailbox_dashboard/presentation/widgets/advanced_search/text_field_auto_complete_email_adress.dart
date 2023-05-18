@@ -188,6 +188,9 @@ class _TextFieldAutoCompleteEmailAddressState
                   onSubmitted: (tag) {
                     if (tag.trim().isNotEmpty) {
                       onSubmitted?.call(tag);
+                      fn.requestFocus();
+                    } else {
+                      FocusScope.of(context).unfocus();
                     }
                   },
                 ),
