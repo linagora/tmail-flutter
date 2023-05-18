@@ -55,6 +55,16 @@ class FileUtils {
     return await file.writeAsString(content, mode: FileMode.append);
   }
 
+  Future<void> deleteFile(String filePath) async {
+    final file = File(filePath);
+    if (await file.exists()) {
+      await file.delete();
+      log("FileUtils()::deleteFile: $file");
+    } else {
+      log("FileUtils()::deleteFile: File does not exist");
+    }
+  }
+
   Future<String> getContentFromFile({
     required String nameFile,
     String? folderPath,

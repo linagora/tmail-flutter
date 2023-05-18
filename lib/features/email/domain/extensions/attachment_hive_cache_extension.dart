@@ -8,13 +8,13 @@ import 'package:tmail_ui_user/features/offline_mode/model/attachment_hive_cache.
 extension AttachmentExtension on AttachmentHiveCache {
   Attachment toAttachment() {
     return Attachment(
-        partId: PartId(partId!),
-        blobId: Id(blobId!),
-        size: UnsignedInt(size!),
-        name: name,
-        type: MediaType.parse(type!),
-        cid: cid,
-        disposition: disposition?.toContentDisposition(),
+      partId: partId != null ? PartId(partId!) : null,
+      blobId: blobId != null ? Id(blobId!) : null,
+      size: size != null ? UnsignedInt(size!) : null,
+      name: name,
+      type: type != null ? MediaType.parse(type!) : null,
+      cid: cid,
+      disposition: disposition?.toContentDisposition(),
     );
   }
 }

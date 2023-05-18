@@ -140,7 +140,7 @@ class ComposerController extends BaseController {
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
   String? _initTextEditor;
-  List<EmailContent>? _emailContents;
+  String? _emailContents;
   double? maxWithEditor;
   late Worker uploadInlineImageWorker;
 
@@ -281,6 +281,8 @@ class ComposerController extends BaseController {
       _pickFileSuccess(success);
     } else if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
+    } else if (success is GetEmailContentFromCacheSuccess) {
+      _getEmailContentOffLineSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is DownloadImageAsBase64Success) {
@@ -595,7 +597,7 @@ class ComposerController extends BaseController {
     log('ComposerController::getEmailContentQuotedAsHtml(): headerEmailQuoted: $headerEmailQuoted');
     final headerEmailQuotedAsHtml = headerEmailQuoted != null ? headerEmailQuoted.addBlockTag('cite') : '';
 
-    final trustAsHtml = arguments.emailContents?.asHtmlString ?? '';
+    final trustAsHtml = arguments.emailContents ?? '';
     final emailQuotedHtml = '${HtmlExtension.editorStartTags}$headerEmailQuotedAsHtml${trustAsHtml.addBlockQuoteTag()}';
 
     return emailQuotedHtml;
@@ -1108,8 +1110,7 @@ class ComposerController extends BaseController {
     }
 
     if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty) {
-      _emailContents = arguments.emailContents;
-      emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], null));
+      emailContentsViewState.value = Right(GetEmailContentFromCacheSuccess(arguments.emailContents!, []));
     } else {
       final session = mailboxDashBoardController.sessionCurrent;
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
@@ -1128,6 +1129,16 @@ class ComposerController extends BaseController {
     }
   }
 
+  void _getEmailContentOffLineSuccess(GetEmailContentFromCacheSuccess success) {
+    if (success.attachments.isNotEmpty) {
+      initialAttachments = success.attachments;
+      uploadController.initializeUploadAttachments(
+          success.attachments.listAttachmentsDisplayedOutSide);
+    }
+    emailContentsViewState.value = Right(success);
+    _emailContents = success.emailContentString;
+  }
+
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     if (success.attachments.isNotEmpty) {
       initialAttachments = success.attachments;
@@ -1135,10 +1146,10 @@ class ComposerController extends BaseController {
           success.attachments.listAttachmentsDisplayedOutSide);
     }
     emailContentsViewState.value = Right(success);
-    _emailContents = success.emailContents;
+    _emailContents = success.emailContents.asHtmlString;
   }
 
-  String? getEmailContentDraftsAsHtml() => _emailContents?.asHtmlString;
+  String? getEmailContentDraftsAsHtml() => _emailContents;
 
   String getEmailAddressSender() {
     final arguments = composerArguments.value;

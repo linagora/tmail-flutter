@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 class ComposerArguments extends RouterArguments {
   final EmailActionType emailActionType;
   final PresentationEmail? presentationEmail;
-  final List<EmailContent>? emailContents;
+  final String? emailContents;
   final List<SharedMediaFile>? listSharedMediaFile;
   final EmailAddress? emailAddress;
   final List<Attachment>? attachments;

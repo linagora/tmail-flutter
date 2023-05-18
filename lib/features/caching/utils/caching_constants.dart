@@ -20,7 +20,8 @@ class CachingConstants {
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
   static const String detailedEmailCacheBoxName = 'detailed_email_cache_box';
-  static const String emailContentFolderName = 'email_content';
+  static const String newEmailContentFolderName = 'new_email';
+  static const String openedEmailContentFolderNamee = 'opened_email';
   static const String openedEmailCacheBoxName = 'opened_email_cache_box';
 
   static const int maxNumberNewEmailsForOffline = 10;
