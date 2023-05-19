@@ -5658,11 +5658,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Text$(t1, _null, 1, C.TextOverflow_1, _null, false, A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null);
     },
     buildIconCalendar$1(email) {
-      var _null = null;
-      if (email.get$hasRead())
-        return A.SvgPicture$asset("assets/images/ic_calendar.svg", _null, C.BoxFit_0, 16, _null, 16);
-      else
-        return A.SvgPicture$asset("assets/images/ic_calendar_sb.svg", _null, C.BoxFit_0, 16, _null, 16);
+      return A.SvgPicture$asset(email.get$hasRead() ? "assets/images/ic_calendar_hasread.svg" : "assets/images/ic_calendar_unread.svg", null, C.BoxFit_0, 16, null, 16);
     },
     buildIconAvatarSelection$4$iconSize$textStyle(context, email, iconSize, textStyle) {
       var _null = null,
@@ -6294,13 +6290,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = _this._email_tile_web_builder$_searchQuery;
       t3.push(A.Expanded$(_this.buildInformationSender$4(t4, _this.mailboxContain, t5, t6), 1));
       t3.push(_this.buildIconAnsweredOrForwarded$3$height$presentationEmail$width(16, t4, 16));
-      t3.push(_this._buildCalenderIcon$1(t4));
       if (t4.hasAttachment === true)
         t3.push(new A.Padding(C.EdgeInsets_8_0_0_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", _null, C.BoxFit_0, 16, _null, 16), _null));
       t3.push(new A.Padding(D.EdgeInsets_8_0_4_0, _this.buildDateTime$2(_this._email_tile_web_builder$_context, t4), _null));
       t3.push(A.SvgPicture$asset("assets/images/ic_chevron.svg", _null, C.BoxFit_0, 16, _null, 16));
       t3 = A.Row$(t3, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
-      t7 = A._setArrayType([A.Expanded$(_this.buildEmailTitle$3(t4, t5, t6), 1), _this.buildMailboxContain$2(t5, t4)], t2);
+      t7 = A._setArrayType([new A.Padding(C.EdgeInsets_0_0_8_0, _this.buildIconCalendar$1(t4), _null), A.Expanded$(_this.buildEmailTitle$3(t4, t5, t6), 1), _this.buildMailboxContain$2(t5, t4)], t2);
       if (t4.get$hasStarred())
         t7.push(new A.Padding(C.EdgeInsets_8_0_0_0, A.SvgPicture$asset("assets/images/ic_star.svg", _null, C.BoxFit_0, 15, _null, 15), _null));
       t1 = A._setArrayType([A.InkWell$(false, _null, true, A.Row$(A._setArrayType([t1, A.Expanded$(A.Column$(A._setArrayType([t3, C.SizedBox_null_8_null_null, A.Row$(t7, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, _null), C.SizedBox_null_8_null_null, A.Row$(A._setArrayType([A.Expanded$(_this.buildEmailPartialContent$3(t4, t5, t6), 1)], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null)], t2), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t2), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.EmailTileBuilder__buildListTile_closure0(_this), new B.EmailTileBuilder__buildListTile_closure1(_this), _null, _null, _null, _null, _null, _null, _null)], t2);
@@ -6403,12 +6398,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _email_tile_web_builder$_buildAvatarIcon$0() {
       return this._email_tile_web_builder$_buildAvatarIcon$2$iconSize$textStyle(null, null);
-    },
-    _buildCalenderIcon$1(email) {
-      if (C.JSString_methods.contains$1(J.toString$0$(email.emailHeader), "null"))
-        return this.buildIconCalendar$1(email);
-      else
-        return C.SizedBox_0_0_null_null;
     }
   };
   B._EmailTileBuilder_Object_BaseEmailItemTile.prototype = {};
@@ -12183,7 +12172,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1.isHoverItem)
         t4.push(D.SizedBox_120_null_null_null);
       else {
-        t8 = A._setArrayType([t1.buildIconAnsweredOrForwarded$3$height$presentationEmail$width(16, t5, 16), t1._buildCalenderIcon$1(t5)], t3);
+        t8 = A._setArrayType([t1.buildIconAnsweredOrForwarded$3$height$presentationEmail$width(16, t5, 16)], t3);
         if (t5.hasAttachment === true)
           t8.push(new A.Padding(C.EdgeInsets_8_0_0_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", _null, C.BoxFit_0, 16, _null, 16), _null));
         t8.push(new A.Padding(D.EdgeInsets_8_0_4_0, t1.buildDateTime$2(t1._email_tile_web_builder$_context, t5), _null));
@@ -12191,7 +12180,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4.push(A.Row$(t8, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
       }
       t4 = A.Row$(t4, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
-      t8 = A._setArrayType([A.Expanded$(t1.buildEmailTitle$3(t5, t6, t7), 1), t1.buildMailboxContain$2(t6, t5)], t3);
+      t8 = A._setArrayType([new A.Padding(C.EdgeInsets_0_0_8_0, t1.buildIconCalendar$1(t5), _null), A.Expanded$(t1.buildEmailTitle$3(t5, t6, t7), 1), t1.buildMailboxContain$2(t6, t5)], t3);
       if (t5.get$hasStarred())
         t8.push(new A.Padding(C.EdgeInsets_8_0_0_0, A.SvgPicture$asset("assets/images/ic_star.svg", _null, C.BoxFit_0, 15, _null, 15), _null));
       t4 = A._setArrayType([A.Column$(A._setArrayType([t4, C.SizedBox_null_8_null_null, A.Row$(t8, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, _null), C.SizedBox_null_8_null_null, A.Row$(A._setArrayType([A.Expanded$(t1.buildEmailPartialContent$3(t5, t6, t7), 1)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null)], t3), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1)], t3);
@@ -12261,7 +12250,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1.isHoverItem)
         t5.push(t1._buildListActionButtonWhenHover$0());
       else {
-        t3 = A._setArrayType([t1.buildMailboxContain$2(t7, t2), t1._buildCalenderIcon$1(t2)], t8);
+        t3 = A._setArrayType([t1.buildMailboxContain$2(t7, t2)], t8);
         if (t2.hasAttachment === true)
           t3.push(new A.Padding(C.EdgeInsets_8_0_0_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", _null, C.BoxFit_0, 16, _null, 16), _null));
         t3.push(new A.Padding(D.EdgeInsets_8_0_20_0, t1.buildDateTime$2(t6, t2), _null));
@@ -12382,13 +12371,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.EmailTileBuilder__buildSubjectAndContent_closure.prototype = {
     call$2(context, constraints) {
       var _null = null,
-        t1 = A._setArrayType([], type$.JSArray_Widget),
-        t2 = this.$this,
-        t3 = t2._presentationEmail;
-      if (t3.getEmailTitle$0().length !== 0)
-        t1.push(A.Container$(_null, t2.buildEmailTitle$3(t3, t2.isSearchEmailRunning, t2._email_tile_web_builder$_searchQuery), C.Clip_0, _null, new A.BoxConstraints(0, constraints.maxWidth / 2, 0, 1 / 0), _null, _null, _null, _null, _null, C.EdgeInsets_0_0_12_0, _null, _null, _null));
-      t1.push(A.Expanded$(A.Container$(_null, t2.buildEmailPartialContent$3(t3, t2.isSearchEmailRunning, t2._email_tile_web_builder$_searchQuery), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1));
-      return A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+        t1 = this.$this,
+        t2 = t1._presentationEmail,
+        t3 = A._setArrayType([new A.Padding(C.EdgeInsets_0_0_8_0, t1.buildIconCalendar$1(t2), _null)], type$.JSArray_Widget);
+      if (t2.getEmailTitle$0().length !== 0)
+        t3.push(A.Container$(_null, t1.buildEmailTitle$3(t2, t1.isSearchEmailRunning, t1._email_tile_web_builder$_searchQuery), C.Clip_0, _null, new A.BoxConstraints(0, constraints.maxWidth / 2, 0, 1 / 0), _null, _null, _null, _null, _null, C.EdgeInsets_0_0_12_0, _null, _null, _null));
+      t3.push(A.Expanded$(A.Container$(_null, t1.buildEmailPartialContent$3(t2, t1.isSearchEmailRunning, t1._email_tile_web_builder$_searchQuery), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1));
+      return A.Row$(t3, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
     $signature: 431
   };
@@ -12740,4 +12729,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["9Hc+lnmXo7sW3nV4/gS144Tbch0="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["c9dM5XGRNP6e2Q5lnN4pj5DBtnQ="] = $__dart_deferred_initializers__.current
