@@ -1333,16 +1333,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return D.EdgeInsets_12_24_12_24;
     }
   },
-  B, A, D, J, F, I, H, E, G;
+  B, A, D, J, I, H, E, F, G;
   C = hunkHelpers.updateHolder(holdersList[6], C);
   B = holdersList[2];
   A = holdersList[0];
   D = holdersList[18];
   J = holdersList[1];
-  F = holdersList[16];
   I = holdersList[10];
   H = holdersList[15];
   E = holdersList[8];
+  F = holdersList[16];
   G = holdersList[17];
   C.FadingEdgeScrollView.prototype = {
     createState$0() {
@@ -1875,7 +1875,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t4, t5, t6, t7, t8, t9, t10, t11, t12, _this = this, _null = null,
         t1 = _this.enabledBorder,
         t2 = t1 == null,
-        t3 = t2 ? B.OutlineInputBorder_WtG0 : t1;
+        t3 = t2 ? D.OutlineInputBorder_WtG0 : t1;
       if (t2)
         t1 = D.OutlineInputBorder_EjN0;
       t2 = _this.errorBorder;
@@ -1888,7 +1888,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = _this.hintText;
       t8 = _this.hintStyle;
       if (t8 == null)
-        t8 = F.TextStyle_g3y1;
+        t8 = B.TextStyle_g3y1;
       t9 = _this.contentPadding;
       if (t9 == null)
         t9 = B.EdgeInsets_12_12_12_12;
@@ -5694,6 +5694,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.OutlineInputBorder_0Qn0 = new A.OutlineInputBorder(4, B.BorderRadius_tLn7, D.BorderSide_rtf0);
     D.BorderSide_PLF3 = new A.BorderSide(B.Color_4278221567, 0.5, B.BorderStyle_1, -1);
     D.OutlineInputBorder_EjN0 = new A.OutlineInputBorder(4, B.BorderRadius_tLn7, D.BorderSide_PLF3);
+    D.BorderSide_tAf2 = new A.BorderSide(B.Color_520093696, 0.5, B.BorderStyle_1, -1);
+    D.OutlineInputBorder_WtG0 = new A.OutlineInputBorder(4, B.BorderRadius_tLn7, D.BorderSide_tAf2);
     D.Padding_B9R = new A.Padding(B.EdgeInsets_0_16_0_16, B.Divider_ebE, null);
     D.Padding_V0W = new A.Padding(B.EdgeInsets_0_0_16_0, D.Icon_Ymy, null);
     D.RoundedRectangleBorder_27D5 = new A.RoundedRectangleBorder(G.BorderRadius_tLn1, B.BorderSide_8xm);
@@ -5724,4 +5726,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Llok04Xmt87v5HwnLoKmoyOk5go="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["nrWFFLoKs2S5kR/8myW95SHIe8M="] = $__dart_deferred_initializers__.current

@@ -2278,7 +2278,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.PageStorageKey_mailbox_list = new B.PageStorageKey("mailbox_list", B.findType("PageStorageKey<String>"));
     D.PopupMenuDivider_null = new A.PopupMenuDivider(null);
     D.SizedBox_24_null_null_null = new B.SizedBox(24, null, null, null);
-    D.TextStyle_g3y1 = new B.TextStyle(true, C.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv = new B.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv3 = new B.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_kmC0 = new B.TextStyle(true, C.Color_4278221567, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -2289,4 +2288,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["FG76sKyqa1H1ShqqN47z6iswvqI="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["9JWmwUCMb3rmFlUnlidVBktHkKQ="] = $__dart_deferred_initializers__.current
