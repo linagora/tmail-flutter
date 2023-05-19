@@ -74,7 +74,7 @@ class EmailTileBuilder with BaseEmailItemTile {
             title: Row(
               children: [
                 if (!_presentationEmail.hasRead)
-                  Padding(
+                Padding(
                       padding: const EdgeInsets.only(right: 5),
                       child: SvgPicture.asset(
                           imagePaths.icUnreadStatus,
@@ -87,9 +87,6 @@ class EmailTileBuilder with BaseEmailItemTile {
                   isSearchEmailRunning,
                   _searchQuery)),
                 buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
-                Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: _buildCalenderIcon(_presentationEmail)),
                 if (_presentationEmail.hasAttachment == true)
                 Padding(
                       padding: const EdgeInsets.only(left: 8),
@@ -109,6 +106,10 @@ class EmailTileBuilder with BaseEmailItemTile {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: buildIconCalendar(_presentationEmail),
+                        ),
                         Expanded(child: buildEmailTitle(
                           _presentationEmail,
                           isSearchEmailRunning,
@@ -144,17 +145,6 @@ class EmailTileBuilder with BaseEmailItemTile {
         ],
       ),
     );
-  }
-
-  Widget _buildCalenderIcon(PresentationEmail email) {
-    String mainString = email.emailHeader.toString();
-    String substring = "null";
-
-    if (mainString.contains(substring)) {
-      return buildIconCalendar( email);
-    } else {
-      return const SizedBox.shrink();
-    }
   }
 
   Widget _buildAvatarIcon() {
