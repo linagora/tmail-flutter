@@ -198,6 +198,8 @@ dependencies:
 
   external_app_launcher: 3.1.0
 
+  workmanager: 0.5.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
