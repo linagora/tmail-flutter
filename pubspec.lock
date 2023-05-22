@@ -1131,10 +1131,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_platform_interface
-      sha256: "57585299a729335f1298b43245842678cb9f43a6310351b18fb577d6e33165ec"
+      sha256: c2af5a8a6369992d915f8933dfc23172071001359d17896e83db8be57db8a397
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.1"
   path_provider_windows:
     dependency: transitive
     description:
@@ -1717,6 +1717,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.3"
+  workmanager:
+    dependency: "direct main"
+    description:
+      name: workmanager
+      sha256: e0be7e35d644643f164ee45d2ce14414f0e0fdde19456aa66065f35a0b1d2ea1
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
   xdg_directories:
     dependency: transitive
     description:
