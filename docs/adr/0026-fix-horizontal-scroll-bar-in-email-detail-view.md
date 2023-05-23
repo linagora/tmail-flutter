@@ -1,4 +1,4 @@
-# 25. Hide Horizontal scroll bar in Email detail view
+# 26. Hide Horizontal scroll bar in Email detail view
 
 Date: 2023-04-24
 
