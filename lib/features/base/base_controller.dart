@@ -56,9 +56,7 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 abstract class BaseController extends GetxController
-    with MessageDialogActionMixin,
-        PopupContextMenuActionMixin,
-        ViewAsDialogActionMixin {
+    with MessageDialogActionMixin, PopupContextMenuActionMixin, ViewAsDialogActionMixin {
 
   final CachingManager cachingManager = Get.find<CachingManager>();
   final languageCacheManager = Get.find<LanguageCacheManager>();

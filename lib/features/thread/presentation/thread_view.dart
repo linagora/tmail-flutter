@@ -30,9 +30,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class ThreadView extends GetWidget<ThreadController>
-  with AppLoaderMixin,
-    FilterEmailPopupMenuMixin,
-    PopupMenuWidgetMixin {
+  with AppLoaderMixin, FilterEmailPopupMenuMixin, PopupMenuWidgetMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();

@@ -9,10 +9,10 @@ part 'email_header_hive_cache.g.dart';
 class EmailHeaderHiveCache extends HiveObject with EquatableMixin {
 
   @HiveField(0)
-  final String name;
+  final String? name;
 
   @HiveField(1)
-  final String value;
+  final String? value;
 
   EmailHeaderHiveCache({required this.name, required this.value});
 
