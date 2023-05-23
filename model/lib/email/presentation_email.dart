@@ -56,6 +56,14 @@ class PresentationEmail with EquatableMixin {
     this.emailHeader
   });
 
+  String getemailHeadername() {
+    if (emailHeader?.isNotEmpty == true) {
+      return emailHeader?.first?.name ?? '';
+    } else {
+      return '';
+    }
+  }
+
   String getSenderName() {
     if (from?.isNotEmpty == true) {
       return from?.first.asString() ?? '';

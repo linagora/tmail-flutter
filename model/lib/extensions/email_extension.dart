@@ -51,7 +51,8 @@ extension EmailExtension on Email {
         htmlBody: htmlBody,
         bodyValues: bodyValues,
         headerUserAgent: headerUserAgent,
-        attachments: attachments
+        attachments: attachments,
+        headers: headers
     );
   }
 
@@ -92,6 +93,7 @@ extension EmailExtension on Email {
       bcc: updatedProperties.contain(EmailProperty.bcc) ? newEmail.bcc : bcc,
       replyTo: updatedProperties.contain(EmailProperty.replyTo) ? newEmail.replyTo : replyTo,
       mailboxIds: updatedProperties.contain(EmailProperty.mailboxIds) ? newEmail.mailboxIds : mailboxIds,
+      headers: updatedProperties.contain(EmailProperty.headers) ? newEmail.headers : headers,
     );
   }
 

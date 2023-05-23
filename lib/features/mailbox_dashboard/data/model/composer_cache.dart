@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/http/converter/email/email_body_value_converter.dart';
 import 'package:jmap_dart_client/http/converter/email/email_mailbox_ids_converter.dart';
@@ -6,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/extensions/media_type_extension.dart';
@@ -23,6 +26,8 @@ class ComposerCache with EquatableMixin {
   final Set<EmailBodyPart>? textBody;
   final Set<EmailBodyPart>? htmlBody;
   final Map<PartId, EmailBodyValue>? bodyValues;
+  final List<EmailHeader>? emailHeader;
+
 
   ComposerCache(
       this.id,
@@ -37,6 +42,7 @@ class ComposerCache with EquatableMixin {
         this.textBody,
         this.htmlBody,
         this.bodyValues,
+        this.emailHeader,
       });
 
   factory ComposerCache.fromJson(Map<String, dynamic> json) {
@@ -52,6 +58,7 @@ class ComposerCache with EquatableMixin {
       replyTo: (json['replyTo'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
       textBody: (json['textBody'] as List<dynamic>?)?.map((json) => EmailBodyPart.fromJson(json)).toSet(),
       htmlBody: (json['htmlBody'] as List<dynamic>?)?.map((json) => EmailBodyPart.fromJson(json)).toSet(),
+      emailHeader: (json['headers'] as List<dynamic>?)?.map((json) => EmailHeader.fromJson(json)).toList(),
     );
   }
 

@@ -239,6 +239,7 @@ class MailboxDashBoardController extends ReloadableController {
                 to: success.composerCache.to,
                 cc: success.composerCache.cc,
                 bcc: success.composerCache.bcc,
+                emailHeader: success.composerCache.emailHeader,
               ),
               emailContents: success.composerCache.emailContentList,
             );

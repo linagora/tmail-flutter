@@ -199,11 +199,19 @@ mixin BaseEmailItemTile {
   }
 
   Widget buildIconCalendar(PresentationEmail email) {
-    return SvgPicture.asset(
-        email.hasRead == true ? imagePaths.icCalendarHasread:imagePaths.icCalendarUnread,
-        width: 16,
-        height: 16,
-        fit: BoxFit.fill);
+    if (email.hasRead == true){
+      return SvgPicture.asset(
+          imagePaths.icCalendarHasread,
+          width: 16,
+          height: 16,
+          fit: BoxFit.fill);
+    }else{
+      return SvgPicture.asset(
+          imagePaths.icCalendarUnread,
+          width: 16,
+          height: 16,
+          fit: BoxFit.fill);
+    }
   }
 
   Widget buildIconAttachment() {
