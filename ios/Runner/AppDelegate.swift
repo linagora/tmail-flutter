@@ -3,23 +3,32 @@ import Flutter
 import flutter_downloader
 import receive_sharing_intent
 import flutter_local_notifications
+import workmanager
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
+    
+    /// Registers all pubspec-referenced Flutter plugins in the given registry.
+    static func registerPlugins(with registry: FlutterPluginRegistry) {
+        GeneratedPluginRegistrant.register(with: registry)
+    }
+    
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        /// Register the app's plugins in the context of a normal run
+        AppDelegate.registerPlugins(with: self)
         
-        FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
-            GeneratedPluginRegistrant.register(with: registry)
-        }
-
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
         }
         
-        GeneratedPluginRegistrant.register(with: self)
+        UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
+        
+        FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { registry in
+            AppDelegate.registerPlugins(with: registry)
+        }
         
         FlutterDownloaderPlugin.setPluginRegistrantCallback { registry in
             if (!registry.hasPlugin("FlutterDownloaderPlugin")) {
@@ -32,11 +41,17 @@ import flutter_local_notifications
             if url.scheme == "mailto" {
                 if let url = handleEmailAndress(open: url) {
                     let corrected = launchOptions!.map { (key, value) in key != .url ? (key, value) : (key, url) }
-
+                    
                     return sharingIntent.application(application, didFinishLaunchingWithOptions: Dictionary(uniqueKeysWithValues: corrected))
                 }
             }
         }
+        
+        WorkmanagerPlugin.setPluginRegistrantCallback { registry in
+            AppDelegate.registerPlugins(with: registry)
+        }
+        
+        WorkmanagerPlugin.registerTask(withIdentifier: "com.linagora.ios.teammail.sendingQueue")
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
