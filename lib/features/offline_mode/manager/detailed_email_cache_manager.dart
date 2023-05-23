@@ -3,7 +3,8 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/extensions/account_id_extensions.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/clients/detailed_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
@@ -68,5 +69,16 @@ class DetailedEmailCacheManager {
 
   Future<void> _deleteFileExisted(String pathFile) async {
     await _fileUtils.deleteFile(pathFile);
+  }
+
+  Future<DetailedEmailHiveCache?> getDetailEmailExistedInCache(
+    AccountId accountId,
+    UserName userName,
+    EmailId emailId
+  ) async {
+    final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
+    final detailedEmailCache = await _cacheClient.getItem(keyCache);
+    log('DetailedEmailCacheManager::getDetailEmailExistedInCache():Email: $detailedEmailCache');
+    return detailedEmailCache;
   }
 }
