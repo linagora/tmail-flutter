@@ -41,6 +41,7 @@ export 'utils/config/app_config_loader.dart';
 export 'utils/config/app_config_parser.dart';
 export 'utils/config/errors.dart';
 export 'data/utils/compress_file_utils.dart';
+export 'utils/platform_info.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
