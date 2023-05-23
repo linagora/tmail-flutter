@@ -205,7 +205,18 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
-    return emailDataSource[DataSourceType.hiveCache]!.getOpenedEmail(session, accountId, emailId);
+  Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) async {
+    final detailedEmail = await emailDataSource[DataSourceType.hiveCache]!.getDetailedEmail(session, accountId, emailId);
+    final openedEmail = await emailDataSource[DataSourceType.hiveCache]!.getOpenedEmail(session, accountId, emailId);
+    if (detailedEmail != null) {
+      return detailedEmail;
+    } else {
+      return openedEmail;
+    }
+  }
+
+  @override
+  Future<Email?> getEmailFromCache(Session session, AccountId accountId, EmailId emailId) {
+    return emailDataSource[DataSourceType.hiveCache]!.getEmailFromCache(session, accountId, emailId);
   }
 }
