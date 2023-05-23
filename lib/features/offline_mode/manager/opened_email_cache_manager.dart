@@ -73,7 +73,7 @@ class OpenedEmailCacheManager {
     EmailId emailId
   ) async {
     final emailContentPathExists = await _isFileExisted(emailId);
-    final detailedEmailCacheExists = await getDetailEmailExistedInCache(accountId, userName, emailId);
+    final detailedEmailCacheExists = await getOpenedEmailExistedInCache(accountId, userName, emailId);
 
     return emailContentPathExists == true && detailedEmailCacheExists != null;
   }
@@ -81,13 +81,13 @@ class OpenedEmailCacheManager {
   Future<bool?> _isFileExisted(EmailId emailId) async {
     final fileSaved = await _fileUtils.isFileExisted(
       nameFile: emailId.asString,
-      folderPath: CachingConstants.openedEmailContentFolderNamee,
+      folderPath: CachingConstants.openedEmailContentFolderName,
     );
     log('OpenedEmailCacheManager::_getDetailedEmailCache():_getEmailContentPath: $fileSaved');
     return fileSaved;
   }
 
-  Future<DetailedEmailHiveCache?> getDetailEmailExistedInCache(
+  Future<DetailedEmailHiveCache?> getOpenedEmailExistedInCache(
     AccountId accountId,
     UserName userName,
     EmailId emailId
