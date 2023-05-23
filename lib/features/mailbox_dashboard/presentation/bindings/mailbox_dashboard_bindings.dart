@@ -303,7 +303,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetAppDashboardConfigurationInteractor(
         Get.find<AppConfigLoader>()));
     Get.lazyPut(() => GetEmailByIdInteractor(
-      Get.find<ThreadRepository>()));
+      Get.find<ThreadRepository>(),
+      Get.find<EmailRepository>()));
     Get.lazyPut(() => UpdateAuthenticationAccountInteractor(Get.find<AccountRepository>()));
     Get.lazyPut(() => StoreSpamReportInteractor(
       Get.find<SpamReportRepository>()));
