@@ -19,7 +19,7 @@ extension DetailedEmailExtension on DetailedEmail {
 
   String get newEmailFolderPath => CachingConstants.newEmailContentFolderName;
 
-  String get openedEmailFolderPath => CachingConstants.openedEmailContentFolderNamee;
+  String get openedEmailFolderPath => CachingConstants.openedEmailContentFolderName;
 
   DetailedEmail fromEmailContentPath(String path) {
     return DetailedEmail(
