@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/worker/hive_task.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -192,14 +193,49 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   @override
   Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
-      final detailedEmailHiveCache = await _openedEmailCacheManager.getDetailEmailExistedInCache(accountId, session.username, emailId);
+      final openedEmailHiveCache = await _openedEmailCacheManager.getOpenedEmailExistedInCache(accountId, session.username, emailId);
+
+      if (openedEmailHiveCache == null) {
+        return null;
+      }
+
+      log('EmailHiveCacheDataSourceImpl::getOpenedEmail():folderPath: ${openedEmailHiveCache.emailContentPath}');
 
       final emailContent = await _fileUtils.getContentFromFile(
-          nameFile: emailId.asString,
-          folderPath: CachingConstants.openedEmailContentFolderNamee
+        nameFile: emailId.asString,
+        folderPath: CachingConstants.openedEmailContentFolderName
       );
 
-      return detailedEmailHiveCache?.toDetailedEmailWithContent(emailContent);
+      return openedEmailHiveCache.toDetailedEmailWithContent(emailContent);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<DetailedEmail?> getDetailedEmail(Session session, AccountId accountId, EmailId emailId) {
+    return Future.sync(() async {
+      final detailedEmailHiveCache = await _detailedEmailCacheManager.getDetailEmailExistedInCache(accountId, session.username, emailId);
+
+      if (detailedEmailHiveCache == null) {
+        return null;
+      }
+      log('EmailHiveCacheDataSourceImpl::getDetailedEmail():folderPath: ${detailedEmailHiveCache.emailContentPath}');
+
+      final emailContent = await _fileUtils.getContentFromFile(
+        nameFile: emailId.asString,
+        folderPath: CachingConstants.newEmailContentFolderName
+      );
+
+      return detailedEmailHiveCache.toDetailedEmailWithContent(emailContent);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<Email?> getEmailFromCache(Session session, AccountId accountId, EmailId emailId) {
+    return Future.sync(() async {
+      log('EmailHiveCacheDataSourceImpl::getEmailFromCache():emailId: ${emailId.asString}');
+      final email = await _emailCacheManager.getEmailFromCache(accountId, session.username, emailId);
+      log('EmailHiveCacheDataSourceImpl::getEmailFromCache():emailId: $email');
+      return email?.toEmail();
     }).catchError(_exceptionThrower.throwException);
   }
 }

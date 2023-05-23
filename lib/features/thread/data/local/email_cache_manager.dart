@@ -96,4 +96,9 @@ class EmailCacheManager {
     final keyCache = TupleKey(emailCache.id, accountId.asString, userName.value).encodeKey;
     return _emailCacheClient.insertItem(keyCache, emailCache);
   }
+
+  Future<EmailCache?> getEmailFromCache(AccountId accountId, UserName userName, EmailId emailId) {
+    final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
+    return _emailCacheClient.getItem(keyCache);
+  }
 }
