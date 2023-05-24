@@ -57,8 +57,11 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<T?> getItem(String key) {
+  Future<T?> getItem(String key, {bool needToReopen = false}) {
     return Future.sync(() async {
+      if (needToReopen) {
+        await closeBox();
+      }
       final boxItem = encryption
           ? await openBoxEncryption()
           : await openBox();
@@ -68,8 +71,11 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<List<T>> getAll() {
+  Future<List<T>> getAll({bool needToReopen = false}) {
     return Future.sync(() async {
+      if (needToReopen) {
+        await closeBox();
+      }
       final boxItem = encryption
           ? await openBoxEncryption()
           : await openBox();
@@ -79,8 +85,11 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<List<T>> getListByTupleKey(String accountId, String userName) {
+  Future<List<T>> getListByTupleKey(String accountId, String userName, {bool needToReopen = false}) {
     return Future.sync(() async {
+      if (needToReopen) {
+        await closeBox();
+      }
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.toMap()
         .where((key, value) => _matchedKey(key, accountId, userName))
@@ -173,5 +182,12 @@ abstract class HiveCacheClient<T> {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  Future<void> closeBox() async {
+    if (Hive.isBoxOpen(tableName)) {
+      await Hive.box<T>(tableName).close();
+    }
+    return Future.value();
   }
 }
