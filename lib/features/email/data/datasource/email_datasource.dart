@@ -8,6 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
@@ -15,6 +16,7 @@ import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -87,4 +89,6 @@ abstract class EmailDataSource {
   Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId);
 
   Future<DetailedEmail?> getIncomingEmailedStored(Session session, AccountId accountId, EmailId emailId);
+
+  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
 }
