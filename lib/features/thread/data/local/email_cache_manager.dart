@@ -99,6 +99,6 @@ class EmailCacheManager {
 
   Future<EmailCache?> getEmailFromCache(AccountId accountId, UserName userName, EmailId emailId) {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    return _emailCacheClient.getItem(keyCache);
+    return _emailCacheClient.getItem(keyCache, needToReopen: true);
   }
 }
