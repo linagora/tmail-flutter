@@ -19,8 +19,8 @@ class CachingConstants {
   static const int DETAILED_EMAIL_HIVE_CACHE_ID = 17;
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
-  static const String detailedEmailCacheBoxName = 'detailed_email_cache_box';
-  static const String newEmailContentFolderName = 'new_email';
+  static const String incomingEmailedCacheBoxName = 'incoming_emailed_cache_box';
+  static const String incomingEmailedContentFolderName = 'incoming_emailed';
   static const String openedEmailContentFolderName = 'opened_email';
   static const String openedEmailCacheBoxName = 'opened_email_cache_box';
 

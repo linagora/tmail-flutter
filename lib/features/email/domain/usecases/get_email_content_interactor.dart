@@ -92,10 +92,10 @@ class GetEmailContentInteractor {
         bool draftsEmail = false
       }
   ) async* {
-    log('GetEmailContentInteractor::_getOpenedEmailCache():');
     try {
       final detailedEmail = await emailRepository.getOpenedEmail(session, accountId, emailId);
       if (detailedEmail != null) {
+        log('GetEmailContentInteractor::_tryToGetOpenedEmailCache(): $detailedEmail');
         yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
           detailedEmail.htmlEmailContent ?? "",
           detailedEmail.attachments ?? [],
