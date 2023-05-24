@@ -832,7 +832,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t1._prefixEmailAddress !== C.PrefixEmailAddress_1 && newListEmailAddress.length === 0;
       return B.FocusScope$(false, B.Focus$(false, _null, F.TagEditor$(t1.autoDisposeFocusNode, t3, _null, _null, t1.controller, _null, C.Duration_150000, _null, t1.get$_findSuggestions(), t1.focusNode, _null, false, D.InputDecoration_Cfr, t1.keyTagEditor, C.TextInputType_5_null_null, t2, 20, new A.EmailAddressInputBuilder__buildTagEditor__closure(t1, setState, context), new A.EmailAddressInputBuilder__buildTagEditor__closure0(t1, setState), new A.EmailAddressInputBuilder__buildTagEditor__closure1(t1, setState), new A.EmailAddressInputBuilder__buildTagEditor__closure2(t1, setState), new A.EmailAddressInputBuilder__buildTagEditor__closure3(t1, setState), _null, true, new A.EmailAddressInputBuilder__buildTagEditor__closure4(t1, setState), _null, _null, C.Color_4294967295, 20, 350, 20, new A.EmailAddressInputBuilder__buildTagEditor__closure5(t1, newListEmailAddress0, setState), 8, C.TextInputAction_2, D.TextStyle_o8I, false, type$.SuggestionEmailAddress), _null, _null, _null, _null, true, _null, new A.EmailAddressInputBuilder__buildTagEditor__closure6(t1), new A.EmailAddressInputBuilder__buildTagEditor__closure7(t1), _null, _null, _null), _null, _null, _null, _null);
     },
-    $signature: 1451
+    $signature: 1450
   };
   A.EmailAddressInputBuilder__buildTagEditor__closure6.prototype = {
     call$1($focus) {
@@ -888,7 +888,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
       }
     },
-    $signature: 350
+    $signature: 349
   };
   A.EmailAddressInputBuilder__buildTagEditor___closure3.prototype = {
     call$0() {
@@ -942,7 +942,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t9.push(t1._email_address_input_builder$_buildCounter$2(context, t2.length - t4.length));
       return new B.Stack(C.Alignment_1_0, _null, C.StackFit_0, C.Clip_1, t9, _null);
     },
-    $signature: 1453
+    $signature: 1452
   };
   A.EmailAddressInputBuilder__buildTagEditor___closure0.prototype = {
     call$0() {
@@ -1012,7 +1012,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return t2._buildSuggestionItem$8(this.setState, context, tagEditorState, t3, index, $length, highlight, suggestionValid);
       }
     },
-    $signature: 1454
+    $signature: 1453
   };
   A.EmailAddressInputBuilder__buildCounter_closure.prototype = {
     call$0() {
@@ -1053,7 +1053,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 267
+    $signature: 266
   };
   A.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -1080,13 +1080,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(file) {
       return file.get$fileSize();
     },
-    $signature: 1456
+    $signature: 1455
   };
   A.ListUploadFileStateExtension_get_totalSize_closure0.prototype = {
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 482
+    $signature: 479
   };
   (function installTearOffs() {
     var _instance_2_u = hunkHelpers._instance_2u,
@@ -1168,4 +1168,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["5EwtQeok4/YLAN6CGc9TsUe92Lw="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["SmVsY8lYGPtlw/zZZKE7Ys4Vy2M="] = $__dart_deferred_initializers__.current
