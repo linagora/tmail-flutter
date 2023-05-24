@@ -153,7 +153,7 @@ class EmailAPI with HandleSetErrorMixin {
       })
     };
     final emailSubmission = EmailSubmission(
-      identityId: emailRequest.identity?.id?.id,
+      identityId: emailRequest.identityId?.id,
       emailId: EmailId(ReferenceId(ReferencePrefix.defaultPrefix, idCreateMethod)),
       envelope: Envelope(mailFrom, recipientsList));
 

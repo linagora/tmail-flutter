@@ -796,9 +796,9 @@ class ComposerController extends BaseController {
     if (arguments != null && accountId != null && userProfile != null && session != null) {
       final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
       final emailRequest = EmailRequest(
-        email,
+        email: email,
         sentMailboxId: sentMailboxId,
-        identity: identitySelected.value,
+        identityId: identitySelected.value?.id,
         emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
           ? arguments.presentationEmail?.id
           : null,
