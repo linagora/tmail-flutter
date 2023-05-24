@@ -2074,7 +2074,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.parent = element;
       return false;
     },
-    $signature: 106
+    $signature: 104
   };
   A.BuildContextPortalLinkScopeExt_getSpecificElementForInheritedWidgetsOfExactType_closure.prototype = {
     call$1(element) {
@@ -2141,14 +2141,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 92
+    $signature: 95
   };
   A.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 92
+    $signature: 95
   };
   A.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -2288,4 +2288,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["sdCKusIP9Mvs7oOjT9O+udSRxow="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["pbyh41wE6n1z3cp1beKL871NRAA="] = $__dart_deferred_initializers__.current
