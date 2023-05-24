@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_hi
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
