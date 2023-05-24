@@ -17,12 +17,14 @@ class CachingConstants {
   static const int ATTACHMENT_HIVE_CACHE_ID = 15;
   static const int EMAIL_HEADER_HIVE_CACHE_ID = 16;
   static const int DETAILED_EMAIL_HIVE_CACHE_ID = 17;
+  static const int SENDING_EMAIL_HIVE_CACHE_ID = 18;
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
   static const String incomingEmailedCacheBoxName = 'incoming_emailed_cache_box';
   static const String incomingEmailedContentFolderName = 'incoming_emailed';
   static const String openedEmailContentFolderName = 'opened_email';
   static const String openedEmailCacheBoxName = 'opened_email_cache_box';
+  static const String sendingEmailCacheBoxName = 'sending_email_cache_box';
 
   static const int maxNumberNewEmailsForOffline = 10;
   static const int maxNumberOpenedEmailsForOffline = 30;
