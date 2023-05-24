@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
-import 'package:tmail_ui_user/features/offline_mode/worker/hive_task_state.dart';
+import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task_state.dart';
 
 class HiveTask<A> with EquatableMixin {
   final String? id;
