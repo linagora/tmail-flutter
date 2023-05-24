@@ -6,5 +6,5 @@ import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_ca
 class DetailedEmailHiveCacheClient extends HiveCacheClient<DetailedEmailHiveCache> {
 
   @override
-  String get tableName => CachingConstants.detailedEmailCacheBoxName;
+  String get tableName => CachingConstants.incomingEmailedCacheBoxName;
 }

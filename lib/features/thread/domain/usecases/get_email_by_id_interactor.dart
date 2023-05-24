@@ -66,7 +66,7 @@ class GetEmailByIdInteractor {
   ) async* {
     try {
 
-      final email = await _emailRepository.getEmailFromCache(session, accountId, emailId);
+      final email = await _emailRepository.getEmailStored(session, accountId, emailId);
 
       if (email != null) {
         yield Right<Failure, Success>(GetEmailByIdSuccess(email.toPresentationEmail()));

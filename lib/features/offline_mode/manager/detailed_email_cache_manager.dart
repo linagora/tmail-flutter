@@ -77,7 +77,7 @@ class DetailedEmailCacheManager {
     EmailId emailId
   ) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    final detailedEmailCache = await _cacheClient.getItem(keyCache);
+    final detailedEmailCache = await _cacheClient.getItem(keyCache, needToReopen: true);
     log('DetailedEmailCacheManager::getDetailEmailExistedInCache():Email: $detailedEmailCache');
     return detailedEmailCache;
   }
