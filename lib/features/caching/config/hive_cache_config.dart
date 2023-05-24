@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/recent_searc
 import 'package:tmail_ui_user/features/offline_mode/model/attachment_hive_cache.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/email_header_hive_cache.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
@@ -149,6 +150,10 @@ class HiveCacheConfig {
     registerCacheAdapter<DetailedEmailHiveCache>(
       DetailedEmailHiveCacheAdapter(),
       CachingConstants.DETAILED_EMAIL_HIVE_CACHE_ID
+    );
+    registerCacheAdapter<SendingEmailHiveCache>(
+      SendingEmailHiveCacheAdapter(),
+      CachingConstants.SENDING_EMAIL_HIVE_CACHE_ID
     );
   }
 

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-05-05T18:33:11.589556",
+  "@@last_modified": "2023-05-24T15:03:16.377036",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2790,6 +2790,12 @@
   },
   "cannotSelectThisImage": "Cannot select this image.",
   "@cannotSelectThisImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSavedToTheSendingQueue": "Message has been saved to the sending queue.",
+  "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -12,6 +12,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
@@ -20,7 +21,9 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_hive_cache_extension.dart';
@@ -34,6 +37,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_m
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/worker/hive_task.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -45,6 +49,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   final DetailedEmailCacheWorkerQueue _cacheWorkerQueue;
   final OpenedEmailCacheWorkerQueue _openedEmailCacheWorkerQueue;
   final EmailCacheManager _emailCacheManager;
+  final SendingEmailCacheManager _sendingEmailCacheManager;
   final FileUtils _fileUtils;
   final ExceptionThrower _exceptionThrower;
 
@@ -54,6 +59,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     this._cacheWorkerQueue,
     this._openedEmailCacheWorkerQueue,
     this._emailCacheManager,
+    this._sendingEmailCacheManager,
     this._fileUtils,
     this._exceptionThrower
   );
@@ -237,6 +243,13 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
       final email = await _emailCacheManager.getEmailFromCache(accountId, session.username, emailId);
       log('EmailHiveCacheDataSourceImpl::getEmailFromCache():emailId: $email');
       return email?.toEmail();
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
+    return Future.sync(() async {
+      return await _sendingEmailCacheManager.storeSendingEmail(accountId, userName, sendingEmail.toHiveCache());
     }).catchError(_exceptionThrower.throwException);
   }
 }
