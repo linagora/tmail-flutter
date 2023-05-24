@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/features/offline_mode/worker/hive_task.dart';
+import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
 
 import 'mailbox_state_worker_queue.dart';
 
