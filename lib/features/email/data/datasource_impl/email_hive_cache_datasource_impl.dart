@@ -211,18 +211,19 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<DetailedEmail?> getDetailedEmail(Session session, AccountId accountId, EmailId emailId) {
+  Future<DetailedEmail?> getIncomingEmailedStored(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       final detailedEmailHiveCache = await _detailedEmailCacheManager.getDetailEmailExistedInCache(accountId, session.username, emailId);
 
       if (detailedEmailHiveCache == null) {
         return null;
       }
+
       log('EmailHiveCacheDataSourceImpl::getDetailedEmail():folderPath: ${detailedEmailHiveCache.emailContentPath}');
 
       final emailContent = await _fileUtils.getContentFromFile(
         nameFile: emailId.asString,
-        folderPath: CachingConstants.newEmailContentFolderName
+        folderPath: CachingConstants.incomingEmailedContentFolderName
       );
 
       return detailedEmailHiveCache.toDetailedEmailWithContent(emailContent);
@@ -230,9 +231,8 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email?> getEmailFromCache(Session session, AccountId accountId, EmailId emailId) {
+  Future<Email?> getEmailStored(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
-      log('EmailHiveCacheDataSourceImpl::getEmailFromCache():emailId: ${emailId.asString}');
       final email = await _emailCacheManager.getEmailFromCache(accountId, session.username, emailId);
       log('EmailHiveCacheDataSourceImpl::getEmailFromCache():emailId: $email');
       return email?.toEmail();
