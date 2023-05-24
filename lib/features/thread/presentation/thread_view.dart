@@ -358,18 +358,25 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildEmailItemDraggable(BuildContext context, PresentationEmail presentationEmail) {
-    return Draggable<List<PresentationEmail>>(
-      data: controller.listEmailDrag,
-      feedback: _buildFeedBackWidget(context),
-      childWhenDragging: _buildEmailItemWhenDragging(context, presentationEmail),
-      dragAnchorStrategy: pointerDragAnchorStrategy,
-      onDragStarted: () {
-        controller.calculateDragValue(presentationEmail);
-        controller.onDragMailBox(true);
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onSecondaryTapDown: (details) {
+        // 1. Use empty callback to disable D&D on mouse right button
+        // 2. Call `showMenu` to show context menu
       },
-      onDragEnd: (_) => controller.onDragMailBox(false),
-      onDraggableCanceled: (_,__) => controller.onDragMailBox(false),
-      child: _buildEmailItemNotDraggable(context, presentationEmail)
+      child: Draggable<List<PresentationEmail>>(
+        data: controller.listEmailDrag,
+        feedback: _buildFeedBackWidget(context),
+        childWhenDragging: _buildEmailItemWhenDragging(context, presentationEmail),
+        dragAnchorStrategy: pointerDragAnchorStrategy,
+        onDragStarted: () {
+          controller.calculateDragValue(presentationEmail);
+          controller.onDragMailBox(true);
+        },
+        onDragEnd: (_) => controller.onDragMailBox(false),
+        onDraggableCanceled: (_,__) => controller.onDragMailBox(false),
+        child: _buildEmailItemNotDraggable(context, presentationEmail)
+      ),
     );
   }
 
