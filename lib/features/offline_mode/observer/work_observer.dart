@@ -3,10 +3,11 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/offline_mode/scheduler/work_status.dart';
 
-abstract class WorkObserver<T> {
-  WorkStatus observe(T value);
+abstract class WorkObserver {
+  Future<void> bindDI();
+
+  Future<void> observe(String taskId, Map<String, dynamic> inputData);
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) {
     newStateStream.listen(
@@ -22,7 +23,7 @@ abstract class WorkObserver<T> {
     newState.fold(handleFailureViewState, handleSuccessViewState);
   }
 
-  void handleFailureViewState(Failure failure);
+  void handleFailureViewState(Failure failure) {}
 
-  void handleSuccessViewState(Success success);
+  void handleSuccessViewState(Success success) {}
 }

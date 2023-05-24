@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:tmail_ui_user/features/offline_mode/worker/hive_task.dart';
+import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
 
 abstract class WorkerQueue<A> {
 
