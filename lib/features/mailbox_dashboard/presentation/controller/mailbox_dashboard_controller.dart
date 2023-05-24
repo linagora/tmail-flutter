@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
@@ -24,11 +25,15 @@ import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/extensions/email_requestl_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -80,6 +85,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/da
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
+import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
@@ -110,6 +116,7 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController {
 
@@ -122,6 +129,8 @@ class MailboxDashBoardController extends ReloadableController {
   final DownloadController downloadController = Get.find<DownloadController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
+  final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final Uuid _uuid = Get.find<Uuid>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -136,6 +145,7 @@ class MailboxDashBoardController extends ReloadableController {
   final DeleteMultipleEmailsPermanentlyInteractor _deleteMultipleEmailsPermanentlyInteractor;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
   final SendEmailInteractor _sendEmailInteractor;
+  final StoreSendingEmailInteractor _storeSendingEmailInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -202,7 +212,8 @@ class MailboxDashBoardController extends ReloadableController {
     this._emptyTrashFolderInteractor,
     this._deleteMultipleEmailsPermanentlyInteractor,
     this._getEmailByIdInteractor,
-    this._sendEmailInteractor
+    this._sendEmailInteractor,
+    this._storeSendingEmailInteractor,
   ) : super(
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
@@ -305,6 +316,8 @@ class MailboxDashBoardController extends ReloadableController {
       appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
     } else if(success is GetEmailByIdSuccess) {
       _moveToEmailDetailedView(success);
+    } else if (success is StoreSendingEmailSuccess) {
+      _handleStoreSendingEmailSuccess(success);
     }
   }
 
@@ -1703,12 +1716,41 @@ class MailboxDashBoardController extends ReloadableController {
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest
   ) {
-    consumeState(_sendEmailInteractor.execute(
-      session,
-      accountId,
-      emailRequest,
-      mailboxRequest: mailboxRequest
-    ));
+    if (PlatformInfo.isWeb) {
+      consumeState(_sendEmailInteractor.execute(
+        session,
+        accountId,
+        emailRequest,
+        mailboxRequest: mailboxRequest
+      ));
+    } else {
+      if (networkConnectionController.isNetworkConnectionAvailable()) {
+        consumeState(_sendEmailInteractor.execute(
+          session,
+          accountId,
+          emailRequest,
+          mailboxRequest: mailboxRequest
+        ));
+      } else {
+        final sendingEmail = emailRequest.toSendingEmail(_uuid.v1(), mailboxRequest: mailboxRequest);
+        _storeSendingEmail(accountId, session.username, sendingEmail);
+      }
+    }
+  }
+
+  void _storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
+    log('MailboxDashBoardController::_storeSendingEmail():sendingEmail: $sendingEmail');
+    consumeState(_storeSendingEmailInteractor.execute(accountId, userName, sendingEmail));
+  }
+
+  void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).messageHasBeenSavedToTheSendingQueue,
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: _imagePaths.icEmail);
+    }
   }
   
   @override
