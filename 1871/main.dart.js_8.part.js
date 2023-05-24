@@ -1062,7 +1062,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 80
+    $signature: 74
   };
   A.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
@@ -1168,4 +1168,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["SmVsY8lYGPtlw/zZZKE7Ys4Vy2M="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["DsHIcjxcq/XYT30zPODkSzW24hY="] = $__dart_deferred_initializers__.current
