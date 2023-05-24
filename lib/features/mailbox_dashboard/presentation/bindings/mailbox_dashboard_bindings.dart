@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -98,6 +99,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
@@ -167,7 +169,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmptyTrashFolderInteractor>(),
       Get.find<DeleteMultipleEmailsPermanentlyInteractor>(),
       Get.find<GetEmailByIdInteractor>(),
-      Get.find<SendEmailInteractor>()
+      Get.find<SendEmailInteractor>(),
+      Get.find<StoreSendingEmailInteractor>()
     ));
     Get.put(AdvancedFilterController());
   }
@@ -239,6 +242,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<DetailedEmailCacheWorkerQueue>(),
       Get.find<OpenedEmailCacheWorkerQueue>(),
       Get.find<EmailCacheManager>(),
+      Get.find<SendingEmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
   }
@@ -319,6 +323,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>()
     ));
+    Get.lazyPut(() => StoreSendingEmailInteractor(Get.find<EmailRepository>()));
   }
 
   @override
