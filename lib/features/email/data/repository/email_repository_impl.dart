@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
@@ -19,6 +20,7 @@ import 'package:model/email/email_content.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
@@ -218,5 +220,10 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<Email?> getEmailStored(Session session, AccountId accountId, EmailId emailId) {
     return emailDataSource[DataSourceType.hiveCache]!.getEmailStored(session, accountId, emailId);
+  }
+
+  @override
+  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
+    return emailDataSource[DataSourceType.hiveCache]!.storeSendingEmail(accountId, userName, sendingEmail);
   }
 }

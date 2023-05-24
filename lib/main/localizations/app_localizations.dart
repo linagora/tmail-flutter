@@ -2869,4 +2869,11 @@ class AppLocalizations {
       'Cannot select this image.',
       name: 'cannotSelectThisImage');
   }
+
+  String get messageHasBeenSavedToTheSendingQueue {
+    return Intl.message(
+      'Message has been saved to the sending queue.',
+      name: 'messageHasBeenSavedToTheSendingQueue',
+    );
+  }
 }
