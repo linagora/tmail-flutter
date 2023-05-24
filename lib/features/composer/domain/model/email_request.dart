@@ -11,23 +11,23 @@ class EmailRequest with EquatableMixin {
   final MailboxId? sentMailboxId;
   final EmailId? emailIdDestroyed;
   final EmailId? emailIdAnsweredOrForwarded;
-  final Identity? identity;
-  final EmailActionType? emailActionType;
+  final IdentityId? identityId;
+  final EmailActionType emailActionType;
 
-  EmailRequest(
-    this.email, {
+  EmailRequest({
+    required this.email,
+    required this.emailActionType,
     this.sentMailboxId,
-    this.identity,
+    this.identityId,
     this.emailIdDestroyed,
     this.emailIdAnsweredOrForwarded,
-    this.emailActionType
   });
 
   @override
   List<Object?> get props => [
     email,
     sentMailboxId,
-    identity,
+    identityId,
     emailIdDestroyed,
     emailIdAnsweredOrForwarded,
     emailActionType
