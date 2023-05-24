@@ -201,16 +201,18 @@ mixin BaseEmailItemTile {
   Widget buildIconCalendar(PresentationEmail email) {
     if (email.hasRead == true){
       return SvgPicture.asset(
-          imagePaths.icCalendarHasread,
+          imagePaths.icCalendarEvent,
           width: 16,
           height: 16,
           fit: BoxFit.fill);
     }else{
       return SvgPicture.asset(
-          imagePaths.icCalendarUnread,
+          imagePaths.icCalendarEvent,
+          color: Colors.black,
           width: 16,
           height: 16,
-          fit: BoxFit.fill);
+          fit: BoxFit.fill
+      );
     }
   }
 
