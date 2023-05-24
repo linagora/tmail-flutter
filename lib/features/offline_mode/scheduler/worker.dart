@@ -1,6 +1,7 @@
 
 import 'package:core/utils/platform_info.dart';
 import 'package:equatable/equatable.dart';
+import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
 import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_type.dart';
 
 /// Equivalent to the task or work that needs to be done in the background
@@ -20,7 +21,7 @@ class Worker with EquatableMixin {
   }
 
   Map<String, dynamic> get inputData {
-    data['workerType'] = type;
+    data[WorkManagerConstants.workerTypeKey] = type;
     return data;
   }
 
