@@ -11655,7 +11655,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     $signature: 3
   };
   B.ThreadView__buildEmailItemDraggable_closure2.prototype = {
-    call$1(details) {
+    call$1(_) {
     },
     $signature: 29
   };
@@ -12736,4 +12736,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Jl0SOECNiZp9Uh+yStzxhE4b7t4="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["tfPfGIiVfpte9wo8qp6ock2b8tM="] = $__dart_deferred_initializers__.current
