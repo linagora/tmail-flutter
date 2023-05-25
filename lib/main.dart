@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,8 @@ void main() async {
        MainBindings().dependencies(),
        HiveCacheConfig().setUp(),
        Executor().warmUp(),
-       WorkManagerConfig().initialize(),
+       if (PlatformInfo.isMobile)
+        WorkManagerConfig().initialize(),
        AppUtils.loadEnvFile()
     ]);
     await HiveCacheConfig.initializeEncryptionKey();
