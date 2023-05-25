@@ -360,10 +360,7 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildEmailItemDraggable(BuildContext context, PresentationEmail presentationEmail) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onSecondaryTapDown: (details) {
-        // 1. Use empty callback to disable D&D on mouse right button
-        // 2. Call `showMenu` to show context menu
-      },
+      onSecondaryTapDown: (_) {},
       child: Draggable<List<PresentationEmail>>(
         data: controller.listEmailDrag,
         feedback: _buildFeedBackWidget(context),
