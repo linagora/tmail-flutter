@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -7,6 +9,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
 extension EmailExtension on Email {
+
+  String asString() => jsonEncode(toJson());
 
   bool get hasRead => keywords?.containsKey(KeyWordIdentifier.emailSeen) == true;
 

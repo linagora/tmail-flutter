@@ -35,7 +35,6 @@ import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
-import 'package:tmail_ui_user/features/offline_mode/worker/hive_task.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
