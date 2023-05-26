@@ -17,32 +17,38 @@ class WorkSchedulerController {
   factory WorkSchedulerController() => _instance ??= WorkSchedulerController._();
 
   Future<void> enqueue(WorkRequest workRequest) {
-    if (workRequest is OneTimeWorkRequest) {
-      return Workmanager().registerOneOffTask(
-        workRequest.worker.uniqueId,
-        workRequest.worker.id,
-        tag: workRequest.worker.type.name,
-        initialDelay: workRequest.initialDelay,
-        constraints: workRequest.constraints,
-        backoffPolicy: workRequest.backoffPolicy,
-        backoffPolicyDelay: workRequest.backoffPolicyDelay,
-        outOfQuotaPolicy: workRequest.outOfQuotaPolicy,
-        inputData: workRequest.worker.inputData
-      );
-    } if (workRequest is PeriodicWorkRequest) {
-      return Workmanager().registerPeriodicTask(
-        workRequest.worker.uniqueId,
-        workRequest.worker.id,
-        frequency: workRequest.frequency,
-        tag: workRequest.worker.type.name,
-        initialDelay: workRequest.initialDelay,
-        constraints: workRequest.constraints,
-        backoffPolicy: workRequest.backoffPolicy,
-        backoffPolicyDelay: workRequest.backoffPolicyDelay,
-        outOfQuotaPolicy: workRequest.outOfQuotaPolicy,
-        inputData: workRequest.worker.inputData
-      );
-    } else {
+    try {
+      log('WorkSchedulerController::enqueue():workRequest: $workRequest');
+      if (workRequest is OneTimeWorkRequest) {
+        return Workmanager().registerOneOffTask(
+          workRequest.worker.uniqueId,
+          workRequest.worker.id,
+          tag: workRequest.worker.type.name,
+          initialDelay: workRequest.initialDelay,
+          constraints: workRequest.constraints,
+          backoffPolicy: workRequest.backoffPolicy,
+          backoffPolicyDelay: workRequest.backoffPolicyDelay,
+          outOfQuotaPolicy: workRequest.outOfQuotaPolicy,
+          inputData: workRequest.worker.inputData
+        );
+      } if (workRequest is PeriodicWorkRequest) {
+        return Workmanager().registerPeriodicTask(
+          workRequest.worker.uniqueId,
+          workRequest.worker.id,
+          frequency: workRequest.frequency,
+          tag: workRequest.worker.type.name,
+          initialDelay: workRequest.initialDelay,
+          constraints: workRequest.constraints,
+          backoffPolicy: workRequest.backoffPolicy,
+          backoffPolicyDelay: workRequest.backoffPolicyDelay,
+          outOfQuotaPolicy: workRequest.outOfQuotaPolicy,
+          inputData: workRequest.worker.inputData
+        );
+      } else {
+        return Future.value();
+      }
+    } catch (e) {
+      logError('WorkSchedulerController::enqueue(): EXCEPTION: $e');
       return Future.value();
     }
   }
