@@ -1887,7 +1887,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.call$1(new B.RelativeRect(t2, t3, screenSize._dx - t2, screenSize._dy - t3));
       }
     },
-    $signature: 30
+    $signature: 27
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
@@ -2288,4 +2288,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["/GPaZgii6gY7V8LaMuLCf8aA//Y="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["fZgf4zU6GqBLc3Lx6WUJ7k5BBUo="] = $__dart_deferred_initializers__.current

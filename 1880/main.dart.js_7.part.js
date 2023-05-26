@@ -2104,7 +2104,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 28
+    $signature: 29
   };
   B._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -2113,7 +2113,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 28
+    $signature: 29
   };
   B._AnimatedSwitcherState__newEntry_closure.prototype = {
     call$1($status) {
@@ -2515,4 +2515,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["u86to0GSIEjuf28M/tuymlTdA5o="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["36D0sP08s9kX16789P1tK7GSCUA="] = $__dart_deferred_initializers__.current

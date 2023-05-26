@@ -590,7 +590,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = this.$this._widget;
       t3.onClickOpenMenuMailboxAction.call$2(new A.RelativeRect(t1, t2, screenSize._dx - t1, screenSize._dy - t2), t3._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 30
+    $signature: 27
   };
   (function installTearOffs() {
     var _instance_0_u = hunkHelpers._instance_0u;
@@ -627,4 +627,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["vYfaYO2YTrCxFtc7fnzFjyK130E="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["ljA0NOf3KTF4AqcwKemTBsyiGuY="] = $__dart_deferred_initializers__.current
