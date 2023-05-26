@@ -12,7 +12,7 @@ class SendingEmailHiveCache extends HiveObject with EquatableMixin {
   final String sendingId;
 
   @HiveField(1)
-  final Map<String, dynamic> emailData;
+  final Map<String, dynamic> email;
 
   @HiveField(2)
   final String emailActionType;
@@ -37,7 +37,7 @@ class SendingEmailHiveCache extends HiveObject with EquatableMixin {
 
   SendingEmailHiveCache(
     this.sendingId,
-    this.emailData,
+    this.email,
     this.emailActionType,
     this.sentMailboxId,
     this.emailIdDestroyed,
@@ -50,7 +50,7 @@ class SendingEmailHiveCache extends HiveObject with EquatableMixin {
   @override
   List<Object?> get props => [
     sendingId,
-    emailData,
+    email,
     emailActionType,
     sentMailboxId,
     emailIdDestroyed,

@@ -25,7 +25,7 @@ import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
-import 'package:tmail_ui_user/features/composer/domain/extensions/email_requestl_extension.dart';
+import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -86,6 +86,10 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
+import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
+import 'package:tmail_ui_user/features/offline_mode/controller/work_scheduler_controller.dart';
+import 'package:tmail_ui_user/features/offline_mode/scheduler/one_time_work_request.dart';
+import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_type.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
@@ -117,6 +121,8 @@ import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:uuid/uuid.dart';
+import 'package:tmail_ui_user/features/offline_mode/scheduler/worker.dart' as worker_scheduler;
+import 'package:workmanager/workmanager.dart' as work_manager;
 
 class MailboxDashBoardController extends ReloadableController {
 
@@ -1751,6 +1757,23 @@ class MailboxDashBoardController extends ReloadableController {
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: _imagePaths.icEmail);
     }
+
+    _addSendingEmailToSendingQueue(success.sendingEmail);
+  }
+
+  void _addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
+    log('MailboxDashBoardController::_addSendingEmailToSendingQueue():sendingEmail: $sendingEmail');
+    final worker = worker_scheduler.Worker(
+      sendingEmail.sendingId,
+      WorkerType.sendingEmail,
+      sendingEmail.toJson()
+    );
+    final workRequest = OneTimeWorkRequest(
+      worker,
+      initialDelay: const Duration(milliseconds: WorkManagerConstants.initialDelayTime),
+      constraints: work_manager.Constraints(networkType: work_manager.NetworkType.connected)
+    );
+    await WorkSchedulerController().enqueue(workRequest);
   }
   
   @override

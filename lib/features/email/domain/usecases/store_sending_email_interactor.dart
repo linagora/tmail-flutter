@@ -16,7 +16,7 @@ class StoreSendingEmailInteractor {
     try {
       yield Right<Failure, Success>(StoreSendingEmailLoading());
       await _emailRepository.storeSendingEmail(accountId, userName, sendingEmail);
-      yield Right<Failure, Success>(StoreSendingEmailSuccess());
+      yield Right<Failure, Success>(StoreSendingEmailSuccess(sendingEmail));
     } catch (e) {
       yield Left<Failure, Success>(StoreSendingEmailFailure(e));
     }
