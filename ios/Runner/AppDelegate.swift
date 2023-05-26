@@ -20,6 +20,8 @@ import workmanager
         /// Register the app's plugins in the context of a normal run
         AppDelegate.registerPlugins(with: self)
         
+        UNUserNotificationCenter.current().delegate = self
+        
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
         }
@@ -91,4 +93,9 @@ import workmanager
         return URL(string: "ShareMedia-\(appDomain)://dataUrl=\(sharedKey)#text")
     }
     
+    override func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                         willPresent notification: UNNotification,
+                                         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler(.alert) // shows banner even if app is in foreground
+    }
 }
