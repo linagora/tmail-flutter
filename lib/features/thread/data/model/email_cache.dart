@@ -1,7 +1,9 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/email_header_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
 
 part 'email_cache.g.dart';
@@ -51,6 +53,9 @@ class EmailCache extends HiveObject with EquatableMixin {
   @HiveField(13)
   Map<String, bool>? mailboxIds;
 
+  @HiveField(14)
+  final List<EmailHeaderHiveCache>? emailHeader;
+
   EmailCache(
     this.id,
     {
@@ -67,6 +72,7 @@ class EmailCache extends HiveObject with EquatableMixin {
       this.bcc,
       this.replyTo,
       this.mailboxIds,
+      this.emailHeader,
     }
   );
 
@@ -86,5 +92,6 @@ class EmailCache extends HiveObject with EquatableMixin {
     preview,
     hasAttachment,
     mailboxIds,
+    emailHeader,
   ];
 }
