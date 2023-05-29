@@ -361,6 +361,7 @@ class ThreadView extends GetWidget<ThreadController>
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onSecondaryTapDown: (_) {},
+      onTapDown: (_) {},
       child: Draggable<List<PresentationEmail>>(
         data: controller.listEmailDrag,
         feedback: _buildFeedBackWidget(context),
@@ -447,6 +448,7 @@ class ThreadView extends GetWidget<ThreadController>
     return SizedBox(
       height: 60,
       child: Material(
+        clipBehavior: Clip.hardEdge,
         borderRadius: BorderRadius.circular(10),
         color: AppColor.colorTextButton,
         child: Padding(
