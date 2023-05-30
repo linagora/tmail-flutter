@@ -57,6 +57,7 @@ class SendingEmailObserver extends WorkObserver {
   Future<void> observe(String taskId, Map<String, dynamic> inputData) async {
     log('SendingEmailObserver::observe():taskId: $taskId | inputData: $inputData');
     _sendingEmail = SendingEmail.fromJson(inputData);
+    log('SendingEmailObserver::observe():_sendingEmail: $_sendingEmail');
     _getAuthenticatedAccount();
     return Future.value();
   }
