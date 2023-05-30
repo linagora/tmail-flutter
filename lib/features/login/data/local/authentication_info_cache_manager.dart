@@ -12,8 +12,8 @@ class AuthenticationInfoCacheManager {
         authenticationInfoCache);
   }
 
-  Future<AuthenticationInfoCache?> getAuthenticationInfoStored() {
-    return _authenticationInfoCacheClient.getItem(AuthenticationInfoCache.keyCacheValue);
+  Future<AuthenticationInfoCache?> getAuthenticationInfoStored({bool needToReopen = false}) {
+    return _authenticationInfoCacheClient.getItem(AuthenticationInfoCache.keyCacheValue, needToReopen: needToReopen);
   }
 
   Future<void> removeAuthenticationInfo() {
