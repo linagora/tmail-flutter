@@ -4,6 +4,9 @@ import 'package:model/email/email_property.dart';
 
 class ThreadConstants {
   static final defaultLimit = UnsignedInt(20);
+  static final propertiesHeader = Properties({
+    EmailProperty.headers,
+  });
   static final propertiesDefault = Properties({
     EmailProperty.id,
     EmailProperty.subject,
