@@ -6,7 +6,7 @@ import 'package:model/email/attachment.dart';
 class DetailedEmail with EquatableMixin {
   final EmailId emailId;
   final List<Attachment>? attachments;
-  final List<EmailHeader>? headers;
+  final String? headers;
   final String? htmlEmailContent;
   final String? emailContentPath;
 
