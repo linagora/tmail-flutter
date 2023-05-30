@@ -198,6 +198,24 @@ mixin BaseEmailItemTile {
         fit: BoxFit.fill);
   }
 
+  Widget buildIconCalendar(PresentationEmail email) {
+    if (email.hasRead == true){
+      return SvgPicture.asset(
+          imagePaths.icCalendarEvent,
+          width: 16,
+          height: 16,
+          fit: BoxFit.fill);
+    }else{
+      return SvgPicture.asset(
+          imagePaths.icCalendarEvent,
+          color: Colors.black,
+          width: 16,
+          height: 16,
+          fit: BoxFit.fill
+      );
+    }
+  }
+
   Widget buildIconAttachment() {
     return SvgPicture.asset(
         imagePaths.icAttachment,
