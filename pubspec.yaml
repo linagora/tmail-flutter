@@ -81,11 +81,6 @@ dependencies:
       url: https://github.com/linagora/flutter-date-range-picker.git
       ref: master
 
-  flutter_typeahead:
-    git:
-      url: https://github.com/dab246/flutter_typeahead.git
-      ref: support-autofillhint
-
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.5
 
@@ -200,6 +195,8 @@ dependencies:
 
   workmanager: 0.5.1
 
+  flutter_typeahead: 4.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -223,6 +220,8 @@ dev_dependencies:
 dependency_overrides:
 
   pointer_interceptor: 0.9.1
+
+  flutter_keyboard_visibility: 5.4.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

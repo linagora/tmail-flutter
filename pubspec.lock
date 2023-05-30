@@ -624,13 +624,13 @@ packages:
     source: hosted
     version: "1.1.0"
   flutter_keyboard_visibility:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: flutter_keyboard_visibility
-      sha256: "86b71bbaffa38e885f5c21b1182408b9be6951fd125432cf6652c636254cef2d"
+      sha256: "4983655c26ab5b959252ee204c2fffa4afeb4413cd030455194ec0caa3b8e7cb"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.0"
+    version: "5.4.1"
   flutter_keyboard_visibility_linux:
     dependency: transitive
     description:
@@ -772,12 +772,11 @@ packages:
   flutter_typeahead:
     dependency: "direct main"
     description:
-      path: "."
-      ref: support-autofillhint
-      resolved-ref: "121707e2c283dae5299dc22974850d65f6c97b83"
-      url: "https://github.com/dab246/flutter_typeahead.git"
-    source: git
-    version: "4.3.7"
+      name: flutter_typeahead
+      sha256: f31211a8536f87908c3dcbdb88666e2f4d77f5f06c2b3a48eaad5599969ff32d
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
