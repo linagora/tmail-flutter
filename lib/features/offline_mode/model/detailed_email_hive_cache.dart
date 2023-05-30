@@ -24,7 +24,7 @@ class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
   final String? emailContentPath;
 
   @HiveField(4)
-  final List<EmailHeaderHiveCache>? headers;
+  final String? headers;
 
   DetailedEmailHiveCache({
     required this.emailId,
