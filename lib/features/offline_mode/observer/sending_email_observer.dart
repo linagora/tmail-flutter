@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
@@ -35,7 +36,7 @@ class SendingEmailObserver extends WorkObserver {
   AccountId? _currentAccountId;
   Session? _currentSession;
   UserName? _userName;
-  Map<String, dynamic>? _inputData;
+  SendingEmail? _sendingEmail;
 
   AppToast? _appToast;
   ImagePaths? _imagePaths;
@@ -44,6 +45,7 @@ class SendingEmailObserver extends WorkObserver {
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
+  DeleteSendingEmailInteractor? _deleteSendingEmailInteractor;
 
   static SendingEmailObserver? _instance;
 
@@ -54,7 +56,7 @@ class SendingEmailObserver extends WorkObserver {
   @override
   Future<void> observe(String taskId, Map<String, dynamic> inputData) async {
     log('SendingEmailObserver::observe():taskId: $taskId | inputData: $inputData');
-    _inputData = inputData;
+    _sendingEmail = SendingEmail.fromJson(inputData);
     _getAuthenticatedAccount();
     return Future.value();
   }
@@ -98,12 +100,7 @@ class SendingEmailObserver extends WorkObserver {
     } else if (success is GetCredentialViewState) {
       _handleGetAccountByBasicAuthSuccess(success);
     } else if (success is SendEmailSuccess) {
-      if (currentOverlayContext != null && currentContext != null) {
-        _appToast?.showToastSuccessMessage(
-            currentOverlayContext!,
-            AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
-            leadingSVGIcon: _imagePaths?.icSendSuccessToast);
-      }
+      _handleSendEmailSuccess(success);
     }
   }
 
@@ -116,6 +113,7 @@ class SendingEmailObserver extends WorkObserver {
       _appToast = getBinding<AppToast>();
       _imagePaths = getBinding<ImagePaths>();
       _sendEmailInteractor = getBinding<SendEmailInteractor>();
+      _deleteSendingEmailInteractor = getBinding<DeleteSendingEmailInteractor>();
     } catch (e) {
       logError('SendingEmailObserver::_getInteractorBindings(): ${e.toString()}');
     }
@@ -177,15 +175,14 @@ class SendingEmailObserver extends WorkObserver {
 
   void _sendEmailAction() {
     log('SendingEmailObserver::_sendEmailAction()');
-    if (_sendEmailInteractor != null && _inputData != null && _currentSession != null && _currentAccountId != null) {
-      final sendingEmail = SendingEmail.fromJson(_inputData!);
+    if (_sendEmailInteractor != null && _sendingEmail != null && _currentSession != null && _currentAccountId != null) {
       consumeState(_sendEmailInteractor!.execute(
         _currentSession!,
         _currentAccountId!,
-        sendingEmail.toEmailRequest(),
+        _sendingEmail!.toEmailRequest(),
         mailboxRequest: CreateNewMailboxRequest(
-          sendingEmail.creationIdRequest!,
-          sendingEmail.mailboxNameRequest!,
+          _sendingEmail!.creationIdRequest!,
+          _sendingEmail!.mailboxNameRequest!,
           isSubscribed: true,
         )
       ));
@@ -206,7 +203,29 @@ class SendingEmailObserver extends WorkObserver {
     _getSessionAction();
   }
 
+  void _handleSendEmailSuccess(SendEmailSuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast?.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
+        leadingSVGIcon: _imagePaths?.icSendSuccessToast);
+      _deleteSendingEmailAction();
+    }
+  }
+
+  void _deleteSendingEmailAction() {
+    if (_deleteSendingEmailInteractor != null && _currentSession != null && _currentAccountId != null && _sendingEmail != null) {
+      consumeState(_deleteSendingEmailInteractor!.execute(
+        _currentAccountId!,
+        _currentSession!.username,
+        _sendingEmail!.email.id!,
+      ));
+    } else {
+      logError('SendingEmailObserver::_deleteSendingEmailAction():_deleteSendingEmailInteractor is null');
+    }
+  }
+
   void _clearDataQueue() {
-    _inputData = null;
+    _sendingEmail = null;
   }
 }
