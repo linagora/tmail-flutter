@@ -32,7 +32,7 @@ class PresentationEmail with EquatableMixin {
   final SelectMode selectMode;
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
-  final List<EmailHeader>? emailHeader;
+  final String? emailHeader;
 
   PresentationEmail({
     this.id,
@@ -72,6 +72,8 @@ class PresentationEmail with EquatableMixin {
   }
 
   String getEmailTitle() => subject?.trim() ?? '';
+
+  String getEmailHeader() => emailHeader?.trim() ?? '';
 
   String getPartialContent() => preview?.trim() ?? '';
 
