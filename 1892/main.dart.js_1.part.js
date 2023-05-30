@@ -520,25 +520,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1471
+    $signature: 1470
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1472
+    $signature: 1471
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1473
+    $signature: 1472
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1474
+    $signature: 1473
   };
   B.BaseLoginView_buildLoginMessage_closure.prototype = {
     call$1(failure) {
@@ -571,7 +571,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1475
+    $signature: 1474
   };
   B.BaseLoginView_buildLoginMessage_closure0.prototype = {
     call$1(success) {
@@ -587,31 +587,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
     },
-    $signature: 1476
+    $signature: 1475
   };
   B.BaseLoginView_buildLoginMessage_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1477
+    $signature: 1476
   };
   B.BaseLoginView_buildLoginMessage_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1478
+    $signature: 1477
   };
   B.BaseLoginView_buildLoginButton_closure0.prototype = {
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 14
+    $signature: 13
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 14
+    $signature: 13
   };
   B.BaseLoginView_buildUserNameInput_closure3.prototype = {
     call$1(value) {
@@ -649,7 +649,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 1479
+    $signature: 1478
   };
   B.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(context, loginUsername) {
@@ -669,13 +669,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2._userNameText = t4._change_notifier$_value.text;
       t1.passFocusNode.requestFocus$0();
     },
-    $signature: 1480
+    $signature: 1479
   };
   B.BaseLoginView_buildUserNameInput_closure0.prototype = {
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 405
+    $signature: 360
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -760,7 +760,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return this.$this.buildLoginButton$1(this.context);
     },
-    $signature: 118
+    $signature: 124
   };
   B.LoginView__buildMobileForm___closure2.prototype = {
     call$1(success) {
@@ -781,7 +781,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return this.$this._buildSSOButton$1(this.context);
     },
-    $signature: 118
+    $signature: 124
   };
   B.LoginView__buildMobileForm___closure0.prototype = {
     call$1(success) {
@@ -866,7 +866,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return this.$this.buildLoginButton$1(this.context);
     },
-    $signature: 118
+    $signature: 124
   };
   B.LoginView__buildWebForm___closure2.prototype = {
     call$1(success) {
@@ -887,7 +887,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return this.$this._buildSSOButton$1(this.context);
     },
-    $signature: 118
+    $signature: 124
   };
   B.LoginView__buildWebForm___closure0.prototype = {
     call$1(success) {
@@ -899,13 +899,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 14
+    $signature: 13
   };
   B.LoginView__buildSSOButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 14
+    $signature: 13
   };
   B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
@@ -988,7 +988,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Wrap$(C.WrapAlignment_0, A._setArrayType([t3, new A.Padding(C.EdgeInsets_0_8_0_0, new A.Stack(C.AlignmentDirectional_1_0, _null, C.StackFit_0, C.Clip_1, t6, _null), _null)], t9), C.WrapCrossAlignment_0, t2, C.WrapAlignment_0, 0, 0);
     },
-    $signature: 1481
+    $signature: 1480
   };
   B.LoginTextInputBuilder_build__closure.prototype = {
     call$1(value) {
@@ -1092,4 +1092,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["hpyD/oja2N8BckeGVvb3Q4nXjmY="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["g6H1NPqIWufwEruI+ahQ/+zvg10="] = $__dart_deferred_initializers__.current
