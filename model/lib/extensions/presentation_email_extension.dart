@@ -94,7 +94,8 @@ extension PresentationEmailExtension on PresentationEmail {
         to: to,
         cc: cc,
         bcc: bcc,
-        replyTo: replyTo
+        replyTo: replyTo,
+        header: emailHeader
     );
   }
 
@@ -241,7 +242,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxNames: mailboxNames,
       selectMode: selectMode,
       routeWeb: routeWeb,
-      mailboxContain: mailboxContain
+      mailboxContain: mailboxContain,
+      emailHeader: emailHeader
     );
   }
 
