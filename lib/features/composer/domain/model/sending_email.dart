@@ -1,5 +1,4 @@
-
-import 'package:core/domain/extensions/datetime_extension.dart';
+import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:jmap_dart_client/http/converter/email_id_nullable_converter.dart';
@@ -66,6 +65,28 @@ class SendingEmail with EquatableMixin {
 
   String getCreateTimeAt(String newLocale) {
     return DateFormat(createTime.toPattern(), newLocale).format(createTime);
+  }
+
+  factory SendingEmail.fromJson(Map<String, dynamic> json) {
+
+    return SendingEmail(
+      sendingId: json['sendingId'] as String,
+      email: Email.fromJson(jsonDecode(json['email'])),
+      emailActionType: _getEmailActionType(json['emailActionType'] as String),
+      sentMailboxId: json['sentMailboxId'] != null ? const MailboxIdNullableConverter().fromJson(json['sentMailboxId'] as String?) : null,
+      emailIdDestroyed: json['emailIdDestroyed'] != null ? const EmailIdNullableConverter().fromJson(json['emailIdDestroyed'] as String?) : null,
+      emailIdAnsweredOrForwarded: json['emailIdAnsweredOrForwarded'] != null ? const EmailIdNullableConverter().fromJson(json['emailIdAnsweredOrForwarded'] as String?) : null,
+      identityId: json['identityId'] != null ? const IdentityIdNullableConverter().fromJson(json['identityId'] as String?) : null,
+      mailboxNameRequest: json['mailboxNameRequest'] != null ? MailboxName(json['mailboxNameRequest'] as String) : null,
+      creationIdRequest: json['creationIdRequest'] != null ? const IdNullableConverter().fromJson(json['creationIdRequest'] as String) : null,
+    );
+  }
+
+  static EmailActionType _getEmailActionType(String value) {
+    return EmailActionType.values.firstWhere(
+          (type) => type.toString().split('.').last == value,
+      orElse: () => throw ArgumentError('Invalid email action type: $value'),
+    );
   }
 
   @override
