@@ -93,4 +93,6 @@ abstract class EmailDataSource {
   Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
 
   Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName);
+
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, EmailId emailId);
 }
