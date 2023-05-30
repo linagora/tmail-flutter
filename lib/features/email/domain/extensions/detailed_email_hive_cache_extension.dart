@@ -10,7 +10,7 @@ extension DetailedEmailHiveCacheExtension on DetailedEmailHiveCache {
     return DetailedEmail(
       emailId: EmailId(Id(emailId)),
       attachments: attachments?.toAttachment(),
-      headers: headers?.toListEmailHeader(),
+      headers: headers,
       htmlEmailContent: emailContent,
     );
  }
