@@ -106,6 +106,11 @@ class EmailTileBuilder with BaseEmailItemTile {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (_presentationEmail.emailHeader != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: buildIconCalendar(_presentationEmail),
+                        ),
                         Expanded(child: buildEmailTitle(
                           _presentationEmail,
                           isSearchEmailRunning,

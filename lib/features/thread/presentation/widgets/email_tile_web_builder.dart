@@ -171,6 +171,11 @@ class EmailTileBuilder with BaseEmailItemTile {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    if (_presentationEmail.emailHeader != null)
+                       Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: buildIconCalendar(_presentationEmail),
+                    ),
                     Expanded(child: buildEmailTitle(
                       _presentationEmail,
                       isSearchEmailRunning,
@@ -259,6 +264,11 @@ class EmailTileBuilder with BaseEmailItemTile {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (_presentationEmail.emailHeader != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: buildIconCalendar(_presentationEmail),
+                        ),
                         Expanded(child: buildEmailTitle(
                           _presentationEmail,
                           isSearchEmailRunning,
@@ -518,6 +528,11 @@ class EmailTileBuilder with BaseEmailItemTile {
   Widget _buildSubjectAndContent() {
     return LayoutBuilder(builder: (context, constraints) {
       return Row(children: [
+        if (_presentationEmail.emailHeader != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: buildIconCalendar(_presentationEmail),
+        ),
         if (_presentationEmail.getEmailTitle().isNotEmpty)
             Container(
               constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
