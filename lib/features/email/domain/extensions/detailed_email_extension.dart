@@ -12,7 +12,7 @@ extension DetailedEmailExtension on DetailedEmail {
       emailId: emailId.asString,
       timeSaved: DateTime.now(),
       attachments: attachments?.toHiveCache(),
-      headers: headers?.toHiveCache(),
+      headers: headers,
       emailContentPath: emailContentPath
     );
   }
