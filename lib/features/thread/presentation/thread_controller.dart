@@ -398,7 +398,7 @@ class ThreadController extends BaseController with EmailActionController {
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           mailboxId: _currentMailboxId
         ),
-        propertiesCreated: ThreadConstants.propertiesDefault,
+        propertiesCreated: ThreadConstants.propertiesHeader,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
       ));
     }
