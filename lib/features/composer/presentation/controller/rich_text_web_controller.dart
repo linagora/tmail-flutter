@@ -48,7 +48,7 @@ class RichTextWebController extends BaseRichTextController {
   }
 
   void onEditorSettingsChange(EditorSettings settings) async {
-    log('RichTextWebController::onEditorSettingsChange():');
+    log('RichTextWebController::onEditorSettingsChange():foregroundColor: ${settings.foregroundColor} | backgroundColor: ${settings.backgroundColor}');
     listTextStyleApply.clear();
 
     if (settings.isBold) {
@@ -68,57 +68,44 @@ class RichTextWebController extends BaseRichTextController {
     }
 
     log('RichTextWebController::onEditorSettingsChange(): $listTextStyleApply');
+
+    selectedTextColor.value = settings.foregroundColor;
+    selectedTextBackgroundColor.value = settings.backgroundColor;
+    selectedFontName.value = FontNameType.values.firstWhereOrNull((font) => font.name == settings.fontName) ?? FontNameType.sansSerif;
+
+    if (settings.isAlignCenter) {
+      selectedParagraph.value = ParagraphType.alignCenter;
+    } else if (settings.isAlignJustify) {
+      selectedParagraph.value = ParagraphType.justify;
+    } else if (settings.isAlignLeft) {
+      selectedParagraph.value = ParagraphType.alignLeft;
+    } else if (settings.isAlignRight) {
+      selectedParagraph.value = ParagraphType.alignRight;
+    }
+
+    if (settings.isOl) {
+      selectedOrderList.value = OrderListType.numberedList;
+    } else if (settings.isUl) {
+      selectedOrderList.value = OrderListType.bulletedList;
+    }
   }
 
   void applyRichTextStyle(BuildContext context, RichTextStyleType textStyleType) {
     switch(textStyleType) {
       case RichTextStyleType.textColor:
         openMenuSelectColor(
-            context,
-            selectedTextColor.value,
-            onResetToDefault: () {
-              final colorAsString = Colors.black.toHexTriplet();
-              selectedTextColor.value = Colors.black;
-              editorController.execCommand(
-                  textStyleType.commandAction,
-                  argument: colorAsString);
-              editorController.setFocus();
-            },
-            onSelectColor: (selectedColor) {
-                final newColor = selectedColor ?? Colors.black;
-                final colorAsString = newColor.toHexTriplet();
-                log('RichTextWebController::applyRichTextStyle():selectedTextColor: colorAsString: $colorAsString');
-                selectedTextColor.value = newColor;
-                editorController.execCommand(
-                    textStyleType.commandAction,
-                    argument: colorAsString);
-                editorController.setFocus();
-            }
+          context,
+          selectedTextColor.value,
+          onResetToDefault: () => _applyForegroundColor(Colors.black),
+          onSelectColor: _applyForegroundColor
         );
         break;
       case RichTextStyleType.textBackgroundColor:
         openMenuSelectColor(
-            context,
-            selectedTextBackgroundColor.value,
-            onResetToDefault: () {
-              final colorAsString = Colors.white.toHexTriplet();
-              log('RichTextWebController::applyRichTextStyle():onResetToDefault: colorAsString: $colorAsString');
-              selectedTextBackgroundColor.value = Colors.white;
-              editorController.execCommand(
-                  textStyleType.commandAction,
-                  argument: colorAsString);
-              editorController.setFocus();
-            },
-            onSelectColor: (selectedColor) {
-              final newColor = selectedColor ?? Colors.white;
-              final colorAsString = newColor.toHexTriplet();
-              log('RichTextWebController::applyRichTextStyle():textBackgroundColor: colorAsString: $colorAsString');
-              selectedTextBackgroundColor.value = newColor;
-              editorController.execCommand(
-                  textStyleType.commandAction,
-                  argument: colorAsString);
-              editorController.setFocus();
-            }
+          context,
+          selectedTextBackgroundColor.value,
+          onResetToDefault: () => applyBackgroundColor(Colors.white),
+          onSelectColor: applyBackgroundColor
         );
         break;
       default:
@@ -127,6 +114,24 @@ class RichTextWebController extends BaseRichTextController {
         editorController.setFocus();
         break;
     }
+  }
+
+  void _applyForegroundColor(Color? selectedColor) {
+    final newColor = selectedColor ?? Colors.black;
+    final colorAsString = newColor.toHexTriplet();
+    log('RichTextWebController::_applyForegroundColor():colorAsString: $colorAsString');
+    selectedTextColor.value = newColor;
+    editorController.execCommand(RichTextStyleType.textColor.commandAction, argument: colorAsString);
+    editorController.setFocus();
+  }
+
+  void applyBackgroundColor(Color? selectedColor) {
+    final newColor = selectedColor ?? Colors.white;
+    final colorAsString = newColor.toHexTriplet();
+    log('RichTextWebController::_applyBackgroundColor():colorAsString: $colorAsString');
+    selectedTextBackgroundColor.value = newColor;
+    editorController.execCommand(RichTextStyleType.textBackgroundColor.commandAction, argument: colorAsString);
+    editorController.setFocus();
   }
 
   void _selectTextStyleType(RichTextStyleType textStyleType) {
