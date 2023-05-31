@@ -2946,4 +2946,11 @@ class AppLocalizations {
       name: 'openMailboxMenu'
     );
   }
+
+  String get messageHasBeenSentSuccessfully {
+    return Intl.message(
+      'Message has been sent successfully.',
+      name: 'messageHasBeenSentSuccessfully',
+    );
+  }
 }
