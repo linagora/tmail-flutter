@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:jmap_dart_client/http/converter/email_id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/identities/identity_id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/mailbox_id_nullable_converter.dart';
+import 'package:jmap_dart_client/http/converter/mailbox_name_converter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -73,18 +75,19 @@ class SendingEmail with EquatableMixin {
       sendingId: json['sendingId'] as String,
       email: Email.fromJson(jsonDecode(json['email'])),
       emailActionType: _getEmailActionType(json['emailActionType'] as String),
-      sentMailboxId: json['sentMailboxId'] != null ? const MailboxIdNullableConverter().fromJson(json['sentMailboxId'] as String?) : null,
-      emailIdDestroyed: json['emailIdDestroyed'] != null ? const EmailIdNullableConverter().fromJson(json['emailIdDestroyed'] as String?) : null,
-      emailIdAnsweredOrForwarded: json['emailIdAnsweredOrForwarded'] != null ? const EmailIdNullableConverter().fromJson(json['emailIdAnsweredOrForwarded'] as String?) : null,
-      identityId: json['identityId'] != null ? const IdentityIdNullableConverter().fromJson(json['identityId'] as String?) : null,
-      mailboxNameRequest: json['mailboxNameRequest'] != null ? MailboxName(json['mailboxNameRequest'] as String) : null,
-      creationIdRequest: json['creationIdRequest'] != null ? const IdNullableConverter().fromJson(json['creationIdRequest'] as String) : null,
+      createTime: DateTime.parse(json['createTime'] as String),
+      sentMailboxId: const MailboxIdNullableConverter().fromJson(json['sentMailboxId'] as String?),
+      emailIdDestroyed: const EmailIdNullableConverter().fromJson(json['emailIdDestroyed'] as String?),
+      emailIdAnsweredOrForwarded: const EmailIdNullableConverter().fromJson(json['emailIdAnsweredOrForwarded'] as String?),
+      identityId: const IdentityIdNullableConverter().fromJson(json['identityId'] as String?),
+      mailboxNameRequest: const MailboxNameConverter().fromJson(json['mailboxNameRequest'] as String?),
+      creationIdRequest: const IdNullableConverter().fromJson(json['creationIdRequest'] as String?),
     );
   }
 
   static EmailActionType _getEmailActionType(String value) {
     return EmailActionType.values.firstWhere(
-          (type) => type.toString().split('.').last == value,
+      (type) => type.name == value,
       orElse: () => throw ArgumentError('Invalid email action type: $value'),
     );
   }
