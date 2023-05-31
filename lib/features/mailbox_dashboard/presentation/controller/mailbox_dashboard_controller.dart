@@ -1533,7 +1533,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleMessageFromNotification(String? payload, {bool onForeground = true}) {
     log('MailboxDashBoardController::_handleMessageFromNotification():payload: $payload');
-    if (payload == null) {
+    if (payload == null || payload.isEmpty) {
       dispatchRoute(DashboardRoutes.thread);
       return;
     }

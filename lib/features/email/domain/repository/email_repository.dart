@@ -104,5 +104,5 @@ abstract class EmailRepository {
 
   Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
 
-  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, EmailId emailId);
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId);
 }

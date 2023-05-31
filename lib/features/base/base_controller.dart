@@ -243,9 +243,6 @@ abstract class BaseController extends GetxController
         FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
         FcmMessageController.instance.initializeFromAccountId(accountId, session);
-        if (!BuildUtils.isWeb) {
-          LocalNotificationManager.instance.setUp();
-        }
       } else {
         throw NotSupportFCMException();
       }
