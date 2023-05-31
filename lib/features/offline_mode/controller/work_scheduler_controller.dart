@@ -64,7 +64,7 @@ class WorkSchedulerController {
         final matchedType = WorkerType.values.firstWhereOrNull((type) => type.name == workerType);
 
         if (matchedType != null) {
-          await matchedType.usingObserver().bindDI(completer);
+          await matchedType.usingObserver().bindDI();
           await matchedType.usingObserver().observe(taskName, dataObject, completer);
         }
       }
