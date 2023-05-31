@@ -228,7 +228,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, EmailId emailId) {
-    return emailDataSource[DataSourceType.hiveCache]!.deleteSendingEmail(accountId, userName, emailId);
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) {
+    return emailDataSource[DataSourceType.hiveCache]!.deleteSendingEmail(accountId, userName, sendingId);
   }
 }

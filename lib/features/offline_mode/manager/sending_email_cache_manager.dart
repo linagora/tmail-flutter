@@ -34,9 +34,9 @@ class SendingEmailCacheManager {
   Future<void> deleteSendingEmail(
     AccountId accountId,
     UserName userName,
-    String sendingEmailId
+    String sendingId
   ) {
-    final keyCache = TupleKey(sendingEmailId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(sendingId, accountId.asString, userName.value).encodeKey;
     log('SendingEmailCacheManager::deleteSendingEmail():keyCache: $keyCache');
     return _hiveCacheClient.deleteItem(keyCache);
   }

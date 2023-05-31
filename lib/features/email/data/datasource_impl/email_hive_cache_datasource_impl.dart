@@ -261,11 +261,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     }).catchError(_exceptionThrower.throwException);
   }
 
-
   @override
-  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, EmailId emailId) {
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) {
     return Future.sync(() async {
-      return await _sendingEmailCacheManager.deleteSendingEmail(accountId, userName, emailId.id.value);
+      return await _sendingEmailCacheManager.deleteSendingEmail(accountId, userName, sendingId);
     }).catchError(_exceptionThrower.throwException);
   }
 }
