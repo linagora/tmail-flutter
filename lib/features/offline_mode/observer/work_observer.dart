@@ -1,13 +1,11 @@
-
 import 'dart:async';
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class WorkObserver {
-  Future<void> bindDI(Completer<bool> completer);
+  Future<void> bindDI();
 
   Future<void> observe(String taskId, Map<String, dynamic> inputData, Completer<bool> completer);
 
