@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -6,14 +7,17 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
@@ -37,6 +41,7 @@ class SendingEmailObserver extends WorkObserver {
   Session? _currentSession;
   UserName? _userName;
   SendingEmail? _sendingEmail;
+  EmailId? _emailId;
 
   AppToast? _appToast;
   ImagePaths? _imagePaths;
@@ -47,6 +52,8 @@ class SendingEmailObserver extends WorkObserver {
   GetSessionInteractor? _getSessionInteractor;
   DeleteSendingEmailInteractor? _deleteSendingEmailInteractor;
 
+  Completer<bool>? _completer;
+
   static SendingEmailObserver? _instance;
 
   SendingEmailObserver._();
@@ -54,16 +61,17 @@ class SendingEmailObserver extends WorkObserver {
   factory SendingEmailObserver() => _instance ??= SendingEmailObserver._();
 
   @override
-  Future<void> observe(String taskId, Map<String, dynamic> inputData) async {
+  Future<void> observe(String taskId, Map<String, dynamic> inputData, Completer<bool> completer) async {
     log('SendingEmailObserver::observe():taskId: $taskId | inputData: $inputData');
+    _completer = completer;
     _sendingEmail = SendingEmail.fromJson(inputData);
-    log('SendingEmailObserver::observe():_sendingEmail: $_sendingEmail');
+    _emailId = EmailId(Id(taskId));
+    log('SendingEmailObserver::observe():_sendingEmail: $_sendingEmail | EmailId: $_emailId');
     _getAuthenticatedAccount();
-    return Future.value();
   }
 
   @override
-  Future<void> bindDI() async {
+  Future<void> bindDI(Completer<bool> completer) async {
     return await _initialAppConfig();
   }
 
@@ -102,10 +110,12 @@ class SendingEmailObserver extends WorkObserver {
       _handleGetAccountByBasicAuthSuccess(success);
     } else if (success is SendEmailSuccess) {
       _handleSendEmailSuccess(success);
+    } else if (success is DeleteSendingEmailSuccess) {
+      _handleDeleteSendingEmailSuccess();
     }
   }
 
-  Future<void> _getInteractorBindings() {
+  Future<void> _getInteractorBindings() async {
     try {
       _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
@@ -117,8 +127,9 @@ class SendingEmailObserver extends WorkObserver {
       _deleteSendingEmailInteractor = getBinding<DeleteSendingEmailInteractor>();
     } catch (e) {
       logError('SendingEmailObserver::_getInteractorBindings(): ${e.toString()}');
+      return _completer?.completeError(false);
     }
-    return Future.value(null);
+    return _completer?.complete(true);
   }
 
   void _handleGetAuthenticatedAccountSuccess(GetAuthenticatedAccountSuccess success) {
@@ -139,7 +150,7 @@ class SendingEmailObserver extends WorkObserver {
 
   void _getAuthenticatedAccount() {
     if (_getAuthenticatedAccountInteractor != null) {
-      consumeState(_getAuthenticatedAccountInteractor!.execute(needToReopen: true));
+      consumeState(_getAuthenticatedAccountInteractor!.execute());
     } else {
       _clearDataQueue();
       logError('SendingEmailObserver::_getAuthenticatedAccount():_getAuthenticatedAccountInteractor is null');
@@ -151,8 +162,8 @@ class SendingEmailObserver extends WorkObserver {
     _userName = success.session.username;
     final jmapUrl = _dynamicUrlInterceptors?.jmapUrl;
     final apiUrl = jmapUrl != null
-        ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
-        : success.session.apiUrl.toString();
+      ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
+      : success.session.apiUrl.toString();
     log('SendingEmailObserver::_handleGetSessionSuccess():jmapUrl: $jmapUrl | apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
@@ -176,16 +187,17 @@ class SendingEmailObserver extends WorkObserver {
 
   void _sendEmailAction() {
     log('SendingEmailObserver::_sendEmailAction()');
+
+    final mailboxRequestNotNull = _sendingEmail?.mailboxNameRequest != null && _sendingEmail?.creationIdRequest != null;
+
     if (_sendEmailInteractor != null && _sendingEmail != null && _currentSession != null && _currentAccountId != null) {
       consumeState(_sendEmailInteractor!.execute(
         _currentSession!,
         _currentAccountId!,
         _sendingEmail!.toEmailRequest(),
-        mailboxRequest: CreateNewMailboxRequest(
-          _sendingEmail!.creationIdRequest!,
-          _sendingEmail!.mailboxNameRequest!,
-          isSubscribed: true,
-        )
+        mailboxRequest: mailboxRequestNotNull
+          ? CreateNewMailboxRequest(_sendingEmail!.creationIdRequest!, _sendingEmail!.mailboxNameRequest!)
+          : null
       ));
     } else {
       logError('SendingEmailObserver::_sendEmailAction():_sendEmailInteractor is null');
@@ -204,29 +216,36 @@ class SendingEmailObserver extends WorkObserver {
     _getSessionAction();
   }
 
-  void _handleSendEmailSuccess(SendEmailSuccess success) {
+  void _handleSendEmailSuccess(SendEmailSuccess success) async {
+    log("SendingEmailObserver::_handleSendEmailSuccess()");
+    _deleteSendingEmailAction();
     if (currentOverlayContext != null && currentContext != null) {
       _appToast?.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
+        AppLocalizations.of(currentContext!).messageHasBeenSentSuccessfully,
         leadingSVGIcon: _imagePaths?.icSendSuccessToast);
-      _deleteSendingEmailAction();
     }
   }
 
   void _deleteSendingEmailAction() {
-    if (_deleteSendingEmailInteractor != null && _currentSession != null && _currentAccountId != null && _sendingEmail != null) {
+    if (_deleteSendingEmailInteractor != null && _currentSession != null && _currentAccountId != null && _emailId != null) {
       consumeState(_deleteSendingEmailInteractor!.execute(
         _currentAccountId!,
         _currentSession!.username,
-        _sendingEmail!.email.id!,
+        _emailId!,
       ));
     } else {
       logError('SendingEmailObserver::_deleteSendingEmailAction():_deleteSendingEmailInteractor is null');
     }
   }
 
-  void _clearDataQueue() {
+  void _handleDeleteSendingEmailSuccess() async {
+    log('SendingEmailObserver::_handleDeleteSendingEmailSuccess(): Success');
+    return _completer?.complete(true);
+  }
+
+  void _clearDataQueue() async {
     _sendingEmail = null;
+    return _completer?.completeError(false);
   }
 }
