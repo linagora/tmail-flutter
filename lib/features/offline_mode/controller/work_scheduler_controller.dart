@@ -1,4 +1,4 @@
-
+import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
@@ -54,6 +54,7 @@ class WorkSchedulerController {
   }
 
   Future<bool> handleBackgroundTask(String taskName, Map<String, dynamic>? inputData) async {
+    final completer = Completer<bool>();
     log('WorkSchedulerController::handleBackgroundTask():taskName: $taskName | inputData: $inputData');
     try {
       if (inputData != null && inputData.isNotEmpty) {
@@ -63,14 +64,15 @@ class WorkSchedulerController {
         final matchedType = WorkerType.values.firstWhereOrNull((type) => type.name == workerType);
 
         if (matchedType != null) {
-          await matchedType.usingObserver().bindDI();
-          await matchedType.usingObserver().observe(taskName, dataObject);
+          await matchedType.usingObserver().bindDI(completer);
+          await matchedType.usingObserver().observe(taskName, dataObject, completer);
         }
       }
     } catch (e) {
+      completer.completeError(e);
       logError('WorkSchedulerController::handleBackgroundTask():EXCEPTION: $e');
     }
-    return Future.value(true);
+    return completer.future;
   }
 
   Future<void> cancelByWorkType(WorkerType type) => Workmanager().cancelByTag(type.name);
