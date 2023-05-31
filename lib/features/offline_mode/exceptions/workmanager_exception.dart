@@ -1,0 +1,1 @@
+class SendingEmailFromWorkmanagerException implements Exception {}

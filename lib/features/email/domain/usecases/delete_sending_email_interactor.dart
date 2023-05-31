@@ -12,10 +12,10 @@ class DeleteSendingEmailInteractor {
 
   DeleteSendingEmailInteractor(this._emailRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName, EmailId emailId) async* {
+  Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName, String sendingId) async* {
     try {
       yield Right<Failure, Success>(DeleteSendingEmailLoading());
-      await _emailRepository.deleteSendingEmail(accountId, userName, emailId);
+      await _emailRepository.deleteSendingEmail(accountId, userName, sendingId);
       yield Right<Failure, Success>(DeleteSendingEmailSuccess());
     } catch (e) {
       yield Left<Failure, Success>(DeleteSendingEmailFailure(e));

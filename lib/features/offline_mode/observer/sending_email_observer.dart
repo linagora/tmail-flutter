@@ -1,16 +1,12 @@
 import 'dart:async';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/extensions/uri_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_extension.dart';
@@ -28,11 +24,13 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/biding/sending_email_biding.dart';
+import 'package:tmail_ui_user/features/offline_mode/exceptions/workmanager_exception.dart';
 import 'package:tmail_ui_user/features/offline_mode/observer/work_observer.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SendingEmailObserver extends WorkObserver {
@@ -41,10 +39,7 @@ class SendingEmailObserver extends WorkObserver {
   Session? _currentSession;
   UserName? _userName;
   SendingEmail? _sendingEmail;
-  EmailId? _emailId;
 
-  AppToast? _appToast;
-  ImagePaths? _imagePaths;
   SendEmailInteractor? _sendEmailInteractor;
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
@@ -65,16 +60,14 @@ class SendingEmailObserver extends WorkObserver {
     log('SendingEmailObserver::observe():taskId: $taskId | inputData: $inputData');
     _completer = completer;
     _sendingEmail = SendingEmail.fromJson(inputData);
-    _emailId = EmailId(Id(taskId));
-    log('SendingEmailObserver::observe():_sendingEmail: $_sendingEmail | EmailId: $_emailId');
+    log('SendingEmailObserver::observe():_sendingEmail: $_sendingEmail');
     _getAuthenticatedAccount();
   }
 
   @override
-  Future<void> bindDI(Completer<bool> completer) async {
+  Future<void> bindDI() async {
     return await _initialAppConfig();
   }
-
 
   Future<void> _initialAppConfig() async {
     await Future.wait([
@@ -96,7 +89,6 @@ class SendingEmailObserver extends WorkObserver {
     _clearDataQueue();
     log('SendingEmailObserver::_handleFailureViewState(): $failure');
   }
-
 
   @override
   void handleSuccessViewState(Success success) {
@@ -121,15 +113,12 @@ class SendingEmailObserver extends WorkObserver {
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
       _getSessionInteractor = getBinding<GetSessionInteractor>();
-      _appToast = getBinding<AppToast>();
-      _imagePaths = getBinding<ImagePaths>();
       _sendEmailInteractor = getBinding<SendEmailInteractor>();
       _deleteSendingEmailInteractor = getBinding<DeleteSendingEmailInteractor>();
     } catch (e) {
       logError('SendingEmailObserver::_getInteractorBindings(): ${e.toString()}');
       return _completer?.completeError(false);
     }
-    return _completer?.complete(true);
   }
 
   void _handleGetAuthenticatedAccountSuccess(GetAuthenticatedAccountSuccess success) {
@@ -200,6 +189,7 @@ class SendingEmailObserver extends WorkObserver {
           : null
       ));
     } else {
+      _clearDataQueue();
       logError('SendingEmailObserver::_sendEmailAction():_sendEmailInteractor is null');
     }
   }
@@ -219,33 +209,37 @@ class SendingEmailObserver extends WorkObserver {
   void _handleSendEmailSuccess(SendEmailSuccess success) async {
     log("SendingEmailObserver::_handleSendEmailSuccess()");
     _deleteSendingEmailAction();
-    if (currentOverlayContext != null && currentContext != null) {
-      _appToast?.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).messageHasBeenSentSuccessfully,
-        leadingSVGIcon: _imagePaths?.icSendSuccessToast);
-    }
   }
 
   void _deleteSendingEmailAction() {
-    if (_deleteSendingEmailInteractor != null && _currentSession != null && _currentAccountId != null && _emailId != null) {
+    if (_deleteSendingEmailInteractor != null && _currentSession != null && _currentAccountId != null && _sendingEmail != null) {
       consumeState(_deleteSendingEmailInteractor!.execute(
         _currentAccountId!,
         _currentSession!.username,
-        _emailId!,
+        _sendingEmail!.sendingId,
       ));
     } else {
+      _clearDataQueue();
       logError('SendingEmailObserver::_deleteSendingEmailAction():_deleteSendingEmailInteractor is null');
     }
   }
 
   void _handleDeleteSendingEmailSuccess() async {
     log('SendingEmailObserver::_handleDeleteSendingEmailSuccess(): Success');
+    _showLocalNotification();
     return _completer?.complete(true);
   }
 
   void _clearDataQueue() async {
     _sendingEmail = null;
-    return _completer?.completeError(false);
+    _completer?.completeError(SendingEmailFromWorkmanagerException());
+  }
+
+  void _showLocalNotification() {
+    log('SendingEmailObserver::_showLocalNotification():SendingId: ${_sendingEmail?.sendingId}');
+    LocalNotificationManager.instance.showPushNotification(
+      id: _sendingEmail?.sendingId ?? '',
+      title: LocalNotificationConfig.messageHasBeenSentSuccessfully,
+    );
   }
 }
