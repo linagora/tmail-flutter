@@ -193,4 +193,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
+    throw UnimplementedError();
+  }
 }
