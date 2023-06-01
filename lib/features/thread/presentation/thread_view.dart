@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/compose_floating_button_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
@@ -32,7 +33,8 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 class ThreadView extends GetWidget<ThreadController>
   with AppLoaderMixin,
     FilterEmailPopupMenuMixin,
-    PopupMenuWidgetMixin {
+    PopupMenuWidgetMixin,
+    ComposeFloatingButtonMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -88,7 +90,9 @@ class ThreadView extends GetWidget<ThreadController>
     if (BuildUtils.isWeb) {
       return _responsiveUtils.isTabletLarge(context);
     } else {
-      return _responsiveUtils.isDesktop(context) || _responsiveUtils.isTabletLarge(context);
+      return _responsiveUtils.isDesktop(context) ||
+        _responsiveUtils.isTabletLarge(context) ||
+        _responsiveUtils.isLandscapeTablet(context);
     }
   }
 
@@ -181,33 +185,12 @@ class ThreadView extends GetWidget<ThreadController>
       if (controller.isAllSearchInActive) {
         return Container(
           padding: BuildUtils.isWeb
-              ? EdgeInsets.zero
-              : controller.listEmailSelected.isNotEmpty ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
-          child: Align(
-            alignment: AppUtils.isDirectionRTL(context)
-              ? Alignment.bottomLeft
-              : Alignment.bottomRight,
-            child: ScrollingFloatingButtonAnimated(
-              icon: SvgPicture.asset(_imagePaths.icCompose, width: 20, height: 20, fit: BoxFit.fill),
-              text: Padding(
-                padding: EdgeInsets.only(
-                  right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                  left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                ),
-                child: Text(AppLocalizations.of(context).compose,
-                  overflow: CommonTextStyle.defaultTextOverFlow,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
-                  style: const TextStyle(
-                      color: AppColor.colorTextButton,
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.w500))),
-              onPress: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments()),
-              scrollController: controller.listEmailController,
-              color: Colors.white,
-              elevation: 4.0,
-              width: 140,
-              animateIcon: false
-            )
+            ? EdgeInsets.zero
+            : controller.listEmailSelected.isNotEmpty ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
+          child: buildComposeFloatingButton(
+            context,
+            controller.listEmailController,
+            onTap: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments())
           ),
         );
       } else {
