@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-05-24T15:03:16.377036",
+  "@@last_modified": "2023-06-01T13:42:51.121212",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2796,6 +2796,70 @@
   },
   "messageHasBeenSavedToTheSendingQueue": "Message has been saved to the sending queue.",
   "@messageHasBeenSavedToTheSendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingQueue": "Sending queue",
+  "@sendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueView": "Messages in Sending queue mailbox will be sent or scheduled when online.",
+  "@bannerMessageSendingQueueView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "proceed": "Proceed",
+  "@proceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreInOfflineMode": "You're in offline mode",
+  "@youAreInOfflineMode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailFirst": "Fortunately, you can still",
+  "@messageDialogWhenStoreSendingEmailFirst": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailSecond": " send, reply, or forward ",
+  "@messageDialogWhenStoreSendingEmailSecond": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailThird": "emails. They will be delivered when you connect to the internet. To edit these emails before sending, go to the ",
+  "@messageDialogWhenStoreSendingEmailThird": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailTail": " mailbox.",
+  "@messageDialogWhenStoreSendingEmailTail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleRecipientSendingEmail": "To: {recipients}",
+  "@titleRecipientSendingEmail": {
+    "type": "text",
+    "placeholders_order": [
+      "recipients"
+    ],
+    "placeholders": {
+      "recipients": {}
+    }
+  },
+  "openMailboxMenu": "Open mailbox menu",
+  "@openMailboxMenu": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

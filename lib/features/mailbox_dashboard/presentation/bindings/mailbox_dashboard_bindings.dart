@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/config/app_config_loader.dart';
@@ -103,6 +104,10 @@ import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_bindings.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -128,6 +133,7 @@ class MailboxDashBoardBindings extends BaseBindings {
   @override
   void dependencies() {
     super.dependencies();
+    SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();
     EmailBindings().dependencies();
@@ -170,7 +176,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<DeleteMultipleEmailsPermanentlyInteractor>(),
       Get.find<GetEmailByIdInteractor>(),
       Get.find<SendEmailInteractor>(),
-      Get.find<StoreSendingEmailInteractor>()
+      Get.find<StoreSendingEmailInteractor>(),
+      Get.find<GetAllSendingEmailInteractor>()
     ));
     Get.put(AdvancedFilterController());
   }
@@ -324,6 +331,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MailboxRepository>()
     ));
     Get.lazyPut(() => StoreSendingEmailInteractor(Get.find<EmailRepository>()));
+    SendingQueueInteractorBindings().dependencies();
   }
 
   @override
@@ -382,5 +390,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.delete<SingleEmailController>();
     Get.delete<EmailSupervisorController>();
     Get.delete<DownloadController>();
+    Get.delete<SendingQueueController>();
   }
 }
