@@ -1,4 +1,4 @@
 
 abstract class ExceptionThrower {
-  throwException(dynamic error);
+  throwException(dynamic error, dynamic stackTrace);
 }
