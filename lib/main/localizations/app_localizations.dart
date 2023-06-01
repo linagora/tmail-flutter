@@ -2876,4 +2876,74 @@ class AppLocalizations {
       name: 'messageHasBeenSavedToTheSendingQueue',
     );
   }
+
+  String get sendingQueue {
+    return Intl.message(
+      'Sending queue',
+      name: 'sendingQueue'
+    );
+  }
+
+  String get bannerMessageSendingQueueView {
+    return Intl.message(
+      'Messages in Sending queue mailbox will be sent or scheduled when online.',
+      name: 'bannerMessageSendingQueueView'
+    );
+  }
+
+  String get proceed {
+    return Intl.message(
+      'Proceed',
+      name: 'proceed'
+    );
+  }
+
+  String get youAreInOfflineMode {
+    return Intl.message(
+      'You\'re in offline mode',
+      name: 'youAreInOfflineMode'
+    );
+  }
+
+  String get messageDialogWhenStoreSendingEmailFirst {
+    return Intl.message(
+      'Fortunately, you can still',
+      name: 'messageDialogWhenStoreSendingEmailFirst'
+    );
+  }
+
+  String get messageDialogWhenStoreSendingEmailSecond {
+    return Intl.message(
+      ' send, reply, or forward ',
+      name: 'messageDialogWhenStoreSendingEmailSecond'
+    );
+  }
+
+  String get messageDialogWhenStoreSendingEmailThird {
+    return Intl.message(
+      'emails. They will be delivered when you connect to the internet. To edit these emails before sending, go to the ',
+      name: 'messageDialogWhenStoreSendingEmailThird'
+    );
+  }
+
+  String get messageDialogWhenStoreSendingEmailTail {
+    return Intl.message(
+      ' mailbox.',
+      name: 'messageDialogWhenStoreSendingEmailTail'
+    );
+  }
+
+  String titleRecipientSendingEmail(String recipients) {
+    return Intl.message(
+      'To: $recipients',
+      name: 'titleRecipientSendingEmail',
+      args: [recipients]);
+  }
+
+  String get openMailboxMenu {
+    return Intl.message(
+      'Open mailbox menu',
+      name: 'openMailboxMenu'
+    );
+  }
 }

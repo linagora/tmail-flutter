@@ -25,7 +25,7 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
     final deleteDialogBuilder = ResponsiveWidget(
       responsiveUtils: responsiveUtils, 
       mobile: (_buildDeleteDialog(context)
-          ..aligment(Alignment.bottomCenter)
+          ..alignment(Alignment.bottomCenter)
           ..outsideDialogPadding(const EdgeInsets.only(left: 0, right: 0, bottom: BuildUtils.isWeb ? 42 : 16))
           ..widthDialog(MediaQuery.of(context).size.width - 16)
           ..heightDialog(280))
