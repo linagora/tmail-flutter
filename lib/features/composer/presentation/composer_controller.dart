@@ -59,6 +59,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
+import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -73,6 +74,7 @@ class ComposerController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final richTextMobileTabletController = Get.find<RichTextMobileTabletController>();
+  final networkConnectionController = Get.find<NetworkConnectionController>();
   final _appToast = Get.find<AppToast>();
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -1692,4 +1694,6 @@ class ComposerController extends BaseController {
   void handleFocusNextAddressAction() {
     _autoCreateEmailTag();
   }
+
+  bool get isNetworkConnectionAvailable => networkConnectionController.isNetworkConnectionAvailable();
 }
