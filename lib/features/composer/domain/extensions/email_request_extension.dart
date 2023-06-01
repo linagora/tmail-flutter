@@ -9,6 +9,7 @@ extension EmailRequestExtension on EmailRequest {
       sendingId: sendingId,
       email: email,
       emailActionType: emailActionType,
+      createTime: DateTime.now(),
       sentMailboxId: sentMailboxId,
       emailIdDestroyed: emailIdDestroyed,
       emailIdAnsweredOrForwarded: emailIdAnsweredOrForwarded,
