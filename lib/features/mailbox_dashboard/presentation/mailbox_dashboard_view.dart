@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
@@ -33,7 +34,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       child: Scaffold(
         drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
         body: Obx(() {
-          final bodyView = controller.searchController.isSearchEmailRunning
+          var bodyView = controller.searchController.isSearchEmailRunning
             ? EmailView()
             : bodyLandscapeTablet;
           
@@ -54,6 +55,22 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   mobile: EmailView());
             case DashboardRoutes.searchEmail:
               return SafeArea(child: SearchEmailView());
+            case DashboardRoutes.sendingQueue:
+              bodyView = Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+                    child: _buildScaffoldHaveDrawer(body: const SendingQueueView())),
+                  Expanded(child: EmailView()),
+                ],
+              );
+              return ResponsiveWidget(
+                responsiveUtils: responsiveUtils,
+                desktop: bodyView,
+                tabletLarge: bodyView,
+                landscapeTablet: bodyView,
+                mobile: _buildScaffoldHaveDrawer(body: const SendingQueueView()));
             case DashboardRoutes.waiting:
               return const Center(
                 child: SizedBox(
