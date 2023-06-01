@@ -2,7 +2,7 @@
 self.$__dart_deferred_initializers__ = self.$__dart_deferred_initializers__ || Object.create(null);
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A, B, C;
-  A = holdersList[13];
+  A = holdersList[12];
   B = holdersList[0];
   C = holdersList[2];
   var typesOffset = hunkHelpers.updateTypes([]);
@@ -11,4 +11,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["6rY3srRY0S6V57GpynDBP8gSznk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["viDRhCADSPIpVf2UtOFOgA6UBo0="] = $__dart_deferred_initializers__.current
