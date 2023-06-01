@@ -91,4 +91,6 @@ abstract class EmailDataSource {
   Future<DetailedEmail?> getIncomingEmailedStored(Session session, AccountId accountId, EmailId emailId);
 
   Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
+
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName);
 }
