@@ -11,7 +11,9 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -203,6 +205,19 @@ class MailboxView extends GetWidget<MailboxController>
                 context,
                 MailboxCategories.exchange,
                 controller.defaultRootNode
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
+          Obx(() {
+            if (controller.mailboxDashBoardController.listSendingEmails.isNotEmpty &&
+                PlatformInfo.isMobile &&
+                !controller.isSelectionEnabled()) {
+              return SendingQueueMailboxWidget(
+                listSendingEmails: controller.mailboxDashBoardController.listSendingEmails,
+                onOpenSendingQueueAction: () => controller.openSendingQueueViewAction(context),
+                isSelected: controller.mailboxDashBoardController.dashboardRoute.value == DashboardRoutes.sendingQueue,
               );
             } else {
               return const SizedBox.shrink();

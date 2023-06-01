@@ -200,7 +200,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.accountId, (accountId) {
-      if (accountId is AccountId) {
+      if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
         getAllMailbox(mailboxDashBoardController.sessionCurrent!, accountId);
       }
     });
@@ -441,23 +441,17 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     BuildContext context,
     PresentationMailbox presentationMailboxSelected
   ) {
-    log('MailboxController::_handleOpenMailbox(): ');
+    log('MailboxController::_handleOpenMailbox():MailboxName: ${presentationMailboxSelected.name}');
     KeyboardUtils.hideKeyboard(context);
-
+    mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
     if (presentationMailboxSelected.id != mailboxDashBoardController.selectedMailbox.value?.id) {
       mailboxDashBoardController.clearFilterMessageOption();
     }
     _disableAllSearchEmail();
-
-    mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     _updateSelectedMailboxRouteOnBrowser();
-
-    if (mailboxDashBoardController.isDrawerOpen) {
-      mailboxDashBoardController.closeMailboxMenuDrawer();
-    } else {
-      mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
-    }
+    mailboxDashBoardController.closeMailboxMenuDrawer();
+    mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
   }
 
   void _disableAllSearchEmail() {
@@ -1176,4 +1170,14 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   bool get activeScrollTop => _activeScrollTop.value;
 
   bool get activeScrollBottom => _activeScrollBottom.value;
+
+  void openSendingQueueViewAction(BuildContext context) {
+    KeyboardUtils.hideKeyboard(context);
+    _disableAllSearchEmail();
+    mailboxDashBoardController.clearSelectedEmail();
+    mailboxDashBoardController.clearFilterMessageOption();
+    mailboxDashBoardController.setSelectedMailbox(null);
+    closeMailboxScreen(context);
+    mailboxDashBoardController.dispatchRoute(DashboardRoutes.sendingQueue);
+  }
 }
