@@ -19,8 +19,9 @@ class ConfirmationDialogActionSheetBuilder {
   TextStyle? _styleConfirmButton;
   TextStyle? _styleCancelButton;
   TextStyle? _styleMessage;
+  List<TextSpan>? listTextSpan;
 
-  ConfirmationDialogActionSheetBuilder(this._context);
+  ConfirmationDialogActionSheetBuilder(this._context, {this.listTextSpan});
 
   void onConfirmAction(String confirmText, OnConfirmActionClick onConfirmActionClick) {
     _onConfirmActionClick = onConfirmActionClick;
@@ -54,20 +55,36 @@ class ConfirmationDialogActionSheetBuilder {
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       builder: (context) => PointerInterceptor(child: CupertinoActionSheet(
         actions: [
-          Container(
+          if (_messageText != null && _messageText!.isNotEmpty)
+            Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                color: Colors.white,
+                child: MouseRegion(
+                  cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                  child: CupertinoActionSheetAction(
+                    child: Text(
+                        _messageText ?? '',
+                        textAlign: TextAlign.center,
+                        style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog)),
+                    onPressed: () => {},
+                  ),
+                )
+            )
+          else if (listTextSpan != null)
+            Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
               color: Colors.white,
               child: MouseRegion(
                 cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
                 child: CupertinoActionSheetAction(
-                  child: Text(
-                      _messageText ?? '',
-                      textAlign: TextAlign.center,
-                      style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog)),
+                  child: RichText(text: TextSpan(
+                    style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog),
+                    children: listTextSpan
+                  )),
                   onPressed: () => {},
                 ),
               )
-          ),
+            ),
           Container(
               color: Colors.white,
               child: MouseRegion(
