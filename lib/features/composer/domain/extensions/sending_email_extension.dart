@@ -1,4 +1,5 @@
 
+import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/identity_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
@@ -9,8 +10,9 @@ extension SendingEmailExtension on SendingEmail {
   SendingEmailHiveCache toHiveCache() {
     return SendingEmailHiveCache(
       sendingId,
-      email.toJson(),
+      email.asString(),
       emailActionType.name,
+      createTime,
       sentMailboxId?.asString,
       emailIdDestroyed?.asString,
       emailIdAnsweredOrForwarded?.asString,
