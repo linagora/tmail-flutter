@@ -23,6 +23,7 @@ class ConfirmDialogBuilder {
   TextStyle? _styleTitle;
   TextStyle? _styleContent;
   double? _radiusButton;
+  double? heightButton;
   EdgeInsets? _paddingTitle;
   EdgeInsets? _paddingContent;
   EdgeInsets? _paddingButton;
@@ -34,6 +35,7 @@ class ConfirmDialogBuilder {
   Alignment? _alignment;
   Color? _backgroundColor;
   bool showAsBottomSheet;
+  List<TextSpan>? listTextSpan;
 
   OnConfirmButtonAction? _onConfirmButtonAction;
   OnCancelButtonAction? _onCancelButtonAction;
@@ -41,7 +43,11 @@ class ConfirmDialogBuilder {
 
   ConfirmDialogBuilder(
     this._imagePath,
-    {this.showAsBottomSheet = false}
+    {
+      this.showAsBottomSheet = false,
+      this.listTextSpan,
+      this.heightButton,
+    }
   );
 
   void key(Key key) {
@@ -116,7 +122,7 @@ class ConfirmDialogBuilder {
     _heightDialog = value;
   }
 
-  void aligment(Alignment? alignment) {
+  void alignment(Alignment? alignment) {
     _alignment = alignment;
   }
 
@@ -204,6 +210,19 @@ class ConfirmDialogBuilder {
                     style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
                 ),
               ),
+            )
+          else if (listTextSpan != null)
+            Padding(
+              padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: Center(
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
+                    children: listTextSpan
+                  ),
+                ),
+              ),
             ),
           Padding(
               padding: _paddingButton ?? const EdgeInsets.only(bottom: 16, left: 16, right: 16),
@@ -214,6 +233,7 @@ class ConfirmDialogBuilder {
                           name: _cancelText,
                           bgColor: _colorCancelButton,
                           radius: _radiusButton,
+                          height: heightButton,
                           textStyle: _styleTextCancelButton,
                           action: _onCancelButtonAction)),
                     if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 16),
@@ -222,6 +242,7 @@ class ConfirmDialogBuilder {
                           name: _confirmText,
                           bgColor: _colorConfirmButton,
                           radius: _radiusButton,
+                          height: heightButton,
                           textStyle: _styleTextConfirmButton,
                           action: _onConfirmButtonAction))
                   ]
@@ -231,11 +252,16 @@ class ConfirmDialogBuilder {
   }
 
   Widget _buildButton({
-    String? name, TextStyle? textStyle, Color? bgColor, double? radius, Function? action
+    String? name,
+    TextStyle? textStyle,
+    Color? bgColor,
+    double? radius,
+    double? height,
+    Function? action
   }) {
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: height ?? 48,
       child: ElevatedButton(
         onPressed: () => action?.call(),
         style: ButtonStyle(
