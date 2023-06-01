@@ -21,7 +21,7 @@ class Worker with EquatableMixin {
   }
 
   Map<String, dynamic> get inputData {
-    data[WorkManagerConstants.workerTypeKey] = type.name;
+    data.addAll({WorkManagerConstants.workerTypeKey: type.name});
     return data;
   }
 
