@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/compose_floating_button_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
@@ -33,8 +33,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 class ThreadView extends GetWidget<ThreadController>
   with AppLoaderMixin,
     FilterEmailPopupMenuMixin,
-    PopupMenuWidgetMixin,
-    ComposeFloatingButtonMixin {
+    PopupMenuWidgetMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -187,9 +186,8 @@ class ThreadView extends GetWidget<ThreadController>
           padding: BuildUtils.isWeb
             ? EdgeInsets.zero
             : controller.listEmailSelected.isNotEmpty ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
-          child: buildComposeFloatingButton(
-            context,
-            controller.listEmailController,
+          child: ComposeFloatingButton(
+            scrollController: controller.listEmailController,
             onTap: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments())
           ),
         );

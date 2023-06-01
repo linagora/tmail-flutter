@@ -9,13 +9,19 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-mixin ComposeFloatingButtonMixin {
+class ComposeFloatingButton extends StatelessWidget {
 
-  Widget buildComposeFloatingButton(
-    BuildContext context,
-    ScrollController scrollController,
-    {VoidCallback? onTap}
-  ) {
+  final ScrollController scrollController;
+  final VoidCallback? onTap;
+
+  const ComposeFloatingButton({
+    super.key,
+    required this.scrollController,
+    this.onTap
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final imagePaths = getBinding<ImagePaths>();
 
     return Align(
