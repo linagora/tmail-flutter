@@ -339,7 +339,6 @@ mixin MailboxWidgetMixin {
         MailboxCategories.appGrid,
         controller),
       AnimatedContainer(
-        padding: const EdgeInsets.only(top: 8),
         duration: const Duration(milliseconds: 400),
         child: Obx(() {
           return controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.EXPAND
@@ -358,27 +357,20 @@ mixin MailboxWidgetMixin {
     MailboxController controller
   ) {
     return Padding(
-      padding: EdgeInsets.only(
-        top: 8,
-        left: responsiveUtils.isDesktop(context) ? 0 : 36,
-        right: responsiveUtils.isDesktop(context) ? 0 : 28
-      ),
+      padding: const EdgeInsets.only(left: 32, top: 8, bottom: 8, right: 4),
       child: Row(children: [
-        buildIconWeb(
-          splashRadius: 5,
-          iconPadding: EdgeInsets.zero,
-          minSize: 12,
-          iconSize: 28,
-          icon: SvgPicture.asset(
-            imagePaths.icAppDashboard,
-            colorFilter: AppColor.primaryColor.asFilter(),
-            fit: BoxFit.fill),
-          tooltip: AppLocalizations.of(context).appGridTittle),
+        SvgPicture.asset(
+          imagePaths.icAppDashboard,
+          colorFilter: AppColor.primaryColor.asFilter(),
+          width: 20,
+          height: 20,
+          fit: BoxFit.fill),
         Expanded(child: Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(categories.getTitle(context),
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap,
             style: const TextStyle(
               fontSize: 16,
               color: AppColor.colorTextButton,
@@ -391,7 +383,9 @@ mixin MailboxWidgetMixin {
             controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
               ? imagePaths.icCollapseFolder
               : imagePaths.icExpandFolder,
-            colorFilter: AppColor.primaryColor.asFilter(),
+            colorFilter: controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
+              ? AppColor.colorIconUnSubscribedMailbox.asFilter()
+              : AppColor.primaryColor.asFilter(),
             fit: BoxFit.fill
           )),
           tooltip: AppLocalizations.of(context).appGridTittle,
@@ -408,7 +402,7 @@ mixin MailboxWidgetMixin {
         return ListView.builder(
           shrinkWrap: true,
           primary: false,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
           itemCount: linagoraApps.apps.length,
           itemBuilder: (context, index) {
             return AppListDashboardItem(linagoraApps.apps[index]);
