@@ -179,6 +179,12 @@ class ImagePaths {
   String get icToastSuccessMessage => _getImagePath('ic_toast_success_message.svg');
   String get icForwarded => _getImagePath('ic_forwarded.svg');
   String get icReplyAndForward => _getImagePath('ic_reply_and_forward.svg');
+  String get icMailboxSendingQueue => _getImagePath('ic_mailbox_sending_queue.svg');
+  String get icMailboxOutbox => _getImagePath('ic_mailbox_outbox.svg');
+  String get icAvatarGroup => _getImagePath('ic_avatar_group.svg');
+  String get icAvatarPersonal => _getImagePath('ic_avatar_personal.svg');
+  String get icDialogOfflineMode => _getImagePath('ic_dialog_offline_mode.svg');
+  String get icMenuMailbox => _getImagePath('ic_menu_mailbox.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
