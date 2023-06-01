@@ -175,6 +175,8 @@ extension AppColor on Color {
   static const colorMailboxPath = Color(0xFF818C99);
   static const colorIconUnSubscribedMailbox = Color(0xFFAEB7C2);
   static const colorTitleAUnSubscribedMailbox = Color(0xFF818C99);
+  static const colorTitleSendingItem = Color(0xFF818C99);
+  static const colorBannerMessageSendingQueue = Color(0xFFF7F8FA);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
