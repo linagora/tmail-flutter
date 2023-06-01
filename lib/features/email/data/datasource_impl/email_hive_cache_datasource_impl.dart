@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_hi
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/offline_mode/extensions/list_sending_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
@@ -249,6 +250,14 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
     return Future.sync(() async {
       return await _sendingEmailCacheManager.storeSendingEmail(accountId, userName, sendingEmail.toHiveCache());
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
+    return Future.sync(() async {
+      final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmails(accountId, userName);
+      return sendingEmailsCache.toSendingEmails();
     }).catchError(_exceptionThrower.throwException);
   }
 }
