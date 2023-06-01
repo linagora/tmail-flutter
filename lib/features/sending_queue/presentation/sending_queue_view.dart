@@ -2,7 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/compose_floating_button_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
 import 'package:get/get.dart';
@@ -10,9 +10,7 @@ import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/app_ba
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/banner_message_sending_queue_widget.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/sending_email_tile_widget.dart';
 
-class SendingQueueView extends GetWidget<SendingQueueController>
-    with AppLoaderMixin,
-        ComposeFloatingButtonMixin {
+class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderMixin {
 
   const SendingQueueView({super.key});
 
@@ -33,9 +31,8 @@ class SendingQueueView extends GetWidget<SendingQueueController>
           ),
         ),
       ),
-      floatingActionButton: buildComposeFloatingButton(
-        context,
-        controller.listSendingEmailController,
+      floatingActionButton: ComposeFloatingButton(
+        scrollController: controller.listSendingEmailController,
         onTap: () => controller.dashboardController!.goToComposer(ComposerArguments())
       ),
     );
