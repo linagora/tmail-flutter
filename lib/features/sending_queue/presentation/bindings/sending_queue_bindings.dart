@@ -1,0 +1,15 @@
+
+import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
+
+class SendingQueueBindings extends Bindings {
+
+  @override
+  void dependencies() {
+    _bindingsController();
+  }
+
+  void _bindingsController() {
+    Get.put(SendingQueueController());
+  }
+}
