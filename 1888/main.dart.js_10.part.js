@@ -1340,9 +1340,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   D = holdersList[17];
   J = holdersList[1];
   I = holdersList[10];
-  G = holdersList[15];
+  G = holdersList[16];
   E = holdersList[8];
-  F = holdersList[16];
+  F = holdersList[14];
   H = holdersList[18];
   C.FadingEdgeScrollView.prototype = {
     createState$0() {
@@ -5726,4 +5726,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["2D2xz9PS3ugoW/ZTVtZqAMCy4Cs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["0kZqsM3EtXCi2b7GVOF/xZzAEj4="] = $__dart_deferred_initializers__.current

@@ -273,8 +273,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = holdersList[0];
   C = holdersList[2];
   J = holdersList[1];
-  E = holdersList[15];
-  D = holdersList[14];
+  E = holdersList[16];
+  D = holdersList[15];
   F = holdersList[10];
   A.CircleAvatar.prototype = {
     get$_minDiameter() {
@@ -1168,4 +1168,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["X5GeArxcWjhRY1cIYR0vqWHHcyk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["lmwKkJI7c8f+uWfKfn/Wc5755Cs="] = $__dart_deferred_initializers__.current
