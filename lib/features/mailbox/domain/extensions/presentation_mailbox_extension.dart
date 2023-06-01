@@ -13,6 +13,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
             return imagePaths.icMailboxInbox;
           case 'drafts':
             return imagePaths.icMailboxDrafts;
+          case 'outbox':
+            return imagePaths.icMailboxOutbox;
           case 'archive':
             return imagePaths.icMailboxArchived;
           case 'sent':
@@ -32,6 +34,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
         switch(name!.name.toLowerCase()) {
           case 'inbox':
             return imagePaths.icMailboxInbox;
+          case 'outbox':
+            return imagePaths.icMailboxOutbox;
           case 'drafts':
             return imagePaths.icMailboxDrafts;
           case 'archive':
