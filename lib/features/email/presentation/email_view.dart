@@ -137,7 +137,9 @@ class EmailView extends GetWidget<SingleEmailController> {
     if (BuildUtils.isWeb) {
       return responsiveUtils.isTabletLarge(context);
     } else {
-      return responsiveUtils.isLandscapeTablet(context) || responsiveUtils.isDesktop(context);
+      return responsiveUtils.isLandscapeTablet(context) ||
+        responsiveUtils.isDesktop(context) ||
+        responsiveUtils.isTabletLarge(context);
     }
   }
 

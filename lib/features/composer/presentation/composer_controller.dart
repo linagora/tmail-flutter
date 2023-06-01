@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -390,7 +391,9 @@ class ComposerController extends BaseController {
   }
 
   void _initEmail() {
-    final arguments = kIsWeb ? mailboxDashBoardController.routerArguments : Get.arguments;
+    final arguments = PlatformInfo.isWeb
+      ? mailboxDashBoardController.composerArguments
+      : Get.arguments;
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
       injectAutoCompleteBindings(
@@ -809,14 +812,25 @@ class ComposerController extends BaseController {
         ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)
         : null;
 
-      mailboxDashBoardController.handleSendEmailAction(session, accountId, emailRequest, mailboxRequest);
+      final sendingEmailArguments = SendingEmailArguments(
+        session,
+        accountId,
+        emailRequest,
+        mailboxRequest
+      );
       uploadController.clearInlineFileUploaded();
-    }
 
-    if (BuildUtils.isWeb) {
-      closeComposerWeb();
+      if (PlatformInfo.isWeb) {
+        closeComposerWeb(result: sendingEmailArguments);
+      } else {
+        popBack(result: sendingEmailArguments);
+      }
     } else {
-      popBack();
+      if (PlatformInfo.isWeb) {
+        closeComposerWeb();
+      } else {
+        popBack();
+      }
     }
   }
 
@@ -1170,9 +1184,9 @@ class ComposerController extends BaseController {
     FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  void closeComposerWeb() {
+  void closeComposerWeb({dynamic result}) {
     FocusManager.instance.primaryFocus?.unfocus();
-    mailboxDashBoardController.closeComposerOverlay();
+    mailboxDashBoardController.closeComposerOverlay(result: result);
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) {
