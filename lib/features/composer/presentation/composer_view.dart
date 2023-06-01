@@ -479,8 +479,12 @@ class ComposerView extends GetWidget<ComposerController>
       keyBroadToolbar: RichTextKeyboardToolBar(
         backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
         isLandScapeMode: responsiveUtils.isLandscapeMobile(context),
-        insertAttachment: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)),
-        insertImage: () => controller.insertImage(context, maxWidth),
+        insertAttachment: controller.isNetworkConnectionAvailable
+          ? () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context))
+          : null,
+        insertImage: controller.isNetworkConnectionAvailable
+          ? () => controller.insertImage(context, maxWidth)
+          : null,
         richTextController: controller.keyboardRichTextController,
         titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
         titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
