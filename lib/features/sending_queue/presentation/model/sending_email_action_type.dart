@@ -4,12 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum SendingEmailActionType {
+  edit,
   delete;
 
   String getButtonTitle(BuildContext context) {
     switch(this) {
       case SendingEmailActionType.delete:
         return AppLocalizations.of(context).delete;
+      case SendingEmailActionType.edit:
+        return AppLocalizations.of(context).edit;
     }
   }
 
@@ -17,6 +20,8 @@ enum SendingEmailActionType {
     switch(this) {
       case SendingEmailActionType.delete:
         return 'button_delete_sending_email';
+      case SendingEmailActionType.edit:
+        return 'button_edit_sending_email';
     }
   }
 
@@ -24,6 +29,8 @@ enum SendingEmailActionType {
     switch(this) {
       case SendingEmailActionType.delete:
         return AppColor.colorDeletePermanentlyButton;
+      case SendingEmailActionType.edit:
+        return AppColor.primaryColor;
     }
   }
 
@@ -31,6 +38,8 @@ enum SendingEmailActionType {
     switch(this) {
       case SendingEmailActionType.delete:
         return AppColor.colorDeletePermanentlyButton;
+      case SendingEmailActionType.edit:
+        return AppColor.primaryColor;
     }
   }
 }

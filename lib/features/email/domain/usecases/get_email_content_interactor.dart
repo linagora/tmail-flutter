@@ -8,8 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/extensions/email_extension.dart';
-import 'package:model/extensions/list_attachment_extension.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 
@@ -68,15 +67,15 @@ class GetEmailContentInteractor {
         : newEmailContents;
 
       yield Right<Failure, Success>(GetEmailContentSuccess(
-        newEmailContents,
+        newEmailContents.asHtmlString,
         newEmailContentsDisplayed,
         email.allAttachments,
         email
       ));
     } else if (email.allAttachments.isNotEmpty) {
-      yield Right<Failure, Success>(GetEmailContentSuccess([], [], email.allAttachments, email));
+      yield Right<Failure, Success>(GetEmailContentSuccess("", [], email.allAttachments, email));
     } else if (email.headers?.isNotEmpty == true) {
-      yield Right<Failure, Success>(GetEmailContentSuccess([], [], [], email));
+      yield Right<Failure, Success>(GetEmailContentSuccess("", [], [], email));
     } else {
       yield Left(GetEmailContentFailure(null));
     }

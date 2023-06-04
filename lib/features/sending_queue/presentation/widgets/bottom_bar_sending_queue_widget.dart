@@ -35,6 +35,15 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Expanded(child: (ButtonBuilder(imagePaths.icEdit)
+            ..key(Key(SendingEmailActionType.edit.getButtonKey()))
+            ..iconColor(SendingEmailActionType.edit.getButtonIconColor())
+            ..padding(const EdgeInsets.all(8))
+            ..radiusSplash(8)
+            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.edit.getButtonTitleColor()))
+            ..onPressActionClick(() => onHandleSendingEmailActionType?.call(SendingEmailActionType.edit, listSendingEmails))
+            ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: true)
+          ).build()),
           Expanded(child: (ButtonBuilder(imagePaths.icDeleteComposer)
             ..key(Key(SendingEmailActionType.delete.getButtonKey()))
             ..iconColor(SendingEmailActionType.delete.getButtonIconColor())
