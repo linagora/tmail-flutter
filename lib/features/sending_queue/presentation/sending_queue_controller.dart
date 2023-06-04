@@ -8,10 +8,12 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
@@ -103,6 +105,9 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
       case SendingEmailActionType.delete:
         _deleteSendingEmailAction(context, listSendingEmails);
         break;
+      case SendingEmailActionType.edit:
+        _editSendingEmailAction(listSendingEmails.first);
+        break;
     }
   }
 
@@ -168,6 +173,17 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     }
   }
 
+  void _editSendingEmailAction(SendingEmail sendingEmail) {
+    final arguments = ComposerArguments(
+      emailActionType: EmailActionType.edit,
+      presentationEmail: sendingEmail.presentationEmail,
+      mailboxRole: dashboardController?.selectedMailbox.value?.role,
+      emailContents: sendingEmail.email.subject,
+    );
+
+    dashboardController?.goToComposer(arguments);
+  }
+
   void _handleDeleteSendingEmailFailure() {
     selectionState.value = SelectMode.INACTIVE;
   }
@@ -196,4 +212,55 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     _sendingQueueIsolateManager?.release();
     super.onClose();
   }
+
+  //
+  // void pressEmailAction(
+  //   BuildContext context,
+  //   EmailActionType actionType,
+  //   PresentationEmail selectedEmail,
+  //   {PresentationMailbox? mailboxContain}
+  // ) {
+  //   switch(actionType) {
+  //     case EmailActionType.edit:
+  //       editEmail(selectedEmail);
+  //       break;
+  //     case EmailActionType.selection:
+  //       selectEmail(context, selectedEmail);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+  //
+  // void pressEmailSelectionAction(
+  //   BuildContext context,
+  //   EmailActionType actionType,
+  //   List<PresentationEmail> selectionEmail
+  // ) {
+  //   switch(actionType) {
+  //     case EmailActionType.edit:
+  //       editEmail(selectionEmail.first);
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+
+  // bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
+  //
+  // bool? _isUnSelectedAll() {
+  //   return dashboardController?.sendingEmailsInCurrentMailbox.every((email) => email.selectMode == SelectMode.INACTIVE);
+  // }
+  //
+  // void cancelSelectEmail() {
+  //   final newEmailList  = dashboardController?.sendingEmailsInCurrentMailbox
+  //     .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
+  //     .toList();
+  //   updateEmailList(newEmailList);
+  //   currentSelectMode.value = SelectMode.INACTIVE;
+  //   listEmailSelected.clear();
+  // }
+
+  // List<PresentationEmail> get listEmailSelected => dashboardController?.sendingEmailsInCurrentMailbox.listEmailSelected ?? [];
+
 }

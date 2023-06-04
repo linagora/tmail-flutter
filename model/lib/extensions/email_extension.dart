@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -134,5 +135,32 @@ extension EmailExtension on Email {
       }
     }
     return null;
+  }
+
+  PresentationEmail sendingEmailToPresentationEmail(
+    {
+      SelectMode selectMode = SelectMode.INACTIVE,
+      EmailId? emailId,
+      UTCDate? createAt,
+    }
+  ) {
+    return PresentationEmail(
+        id: emailId ?? id,
+        keywords: keywords,
+        size: size,
+        receivedAt: receivedAt,
+        hasAttachment: hasAttachment,
+        preview: preview,
+        subject: subject,
+        sentAt: createAt ?? sentAt,
+        from: from,
+        to: to,
+        cc: cc,
+        bcc: bcc,
+        replyTo: replyTo,
+        mailboxIds: mailboxIds,
+        selectMode: selectMode,
+        emailHeader: headers?.toList()
+    );
   }
 }
