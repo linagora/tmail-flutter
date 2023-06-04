@@ -5,10 +5,12 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,6 +26,7 @@ class CoreBindings extends Bindings {
     _bindingDeviceManager();
     _bindingReceivingSharingStream();
     _bindingUtils();
+    _bindingIsolate();
   }
 
   void _bindingAppImagePaths() {
@@ -60,5 +63,11 @@ class CoreBindings extends Bindings {
     Get.put(CompressFileUtils());
     Get.put(AppConfigLoader());
     Get.put(FileUtils());
+  }
+
+  void _bindingIsolate() {
+    if (PlatformInfo.isMobile) {
+      Get.put(SendingQueueIsolateManager());
+    }
   }
 }
