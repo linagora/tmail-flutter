@@ -145,22 +145,23 @@ extension EmailExtension on Email {
     }
   ) {
     return PresentationEmail(
-        id: emailId ?? id,
-        keywords: keywords,
-        size: size,
-        receivedAt: receivedAt,
-        hasAttachment: hasAttachment,
-        preview: preview,
-        subject: subject,
-        sentAt: createAt ?? sentAt,
-        from: from,
-        to: to,
-        cc: cc,
-        bcc: bcc,
-        replyTo: replyTo,
-        mailboxIds: mailboxIds,
-        selectMode: selectMode,
-        emailHeader: headers?.toList()
+      id: emailId ?? id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: createAt ?? sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: mailboxIds,
+      selectMode: selectMode,
+      emailHeader: headers?.toList(),
+      bodyValues: bodyValues
     );
   }
 }
