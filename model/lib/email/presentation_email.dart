@@ -7,10 +7,14 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/email_content.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/media_type_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 
@@ -35,6 +39,8 @@ class PresentationEmail with EquatableMixin {
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
   final List<EmailHeader>? emailHeader;
+  final Set<EmailBodyPart>? htmlBody;
+  final Map<PartId, EmailBodyValue>? bodyValues;
 
   PresentationEmail({
     this.id,
@@ -55,7 +61,9 @@ class PresentationEmail with EquatableMixin {
     this.selectMode = SelectMode.INACTIVE,
     this.routeWeb,
     this.mailboxContain,
-    this.emailHeader
+    this.emailHeader,
+    this.htmlBody,
+    this.bodyValues,
   });
 
   String getSenderName() {
@@ -105,6 +113,20 @@ class PresentationEmail with EquatableMixin {
 
   String getCreateTimeAt(String newLocale) {
     return DateFormat(sentAt?.value.toPattern(), newLocale).format(sentAt?.value ?? DateTime.now());
+  }
+
+  List<EmailContent> get emailContentList {
+    final newHtmlBody = htmlBody
+        ?.where((emailBody) => emailBody.partId != null && emailBody.type != null)
+        .toList() ?? <EmailBodyPart>[];
+
+    final mapHtmlBody = { for (var emailBody in newHtmlBody) emailBody.partId! : emailBody.type! };
+
+    final emailContents = bodyValues?.entries
+        .map((entries) => EmailContent(mapHtmlBody[entries.key].toEmailContentType(), entries.value.value))
+        .toList();
+
+    return emailContents ?? [];
   }
 
   @override
