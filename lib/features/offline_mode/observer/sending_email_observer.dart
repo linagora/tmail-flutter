@@ -26,8 +26,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/m
 import 'package:tmail_ui_user/features/offline_mode/biding/sending_email_biding.dart';
 import 'package:tmail_ui_user/features/offline_mode/exceptions/workmanager_exception.dart';
 import 'package:tmail_ui_user/features/offline_mode/observer/work_observer.dart';
+import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_state.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
@@ -46,6 +48,7 @@ class SendingEmailObserver extends WorkObserver {
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
   DeleteSendingEmailInteractor? _deleteSendingEmailInteractor;
+  SendingQueueIsolateManager? _sendingQueueIsolateManager;
 
   Completer<bool>? _completer;
 
@@ -115,9 +118,10 @@ class SendingEmailObserver extends WorkObserver {
       _getSessionInteractor = getBinding<GetSessionInteractor>();
       _sendEmailInteractor = getBinding<SendEmailInteractor>();
       _deleteSendingEmailInteractor = getBinding<DeleteSendingEmailInteractor>();
+      _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
     } catch (e) {
       logError('SendingEmailObserver::_getInteractorBindings(): ${e.toString()}');
-      return _completer?.completeError(false);
+      _completer?.completeError(UnableBindingInWorkManagerException());
     }
   }
 
@@ -227,12 +231,15 @@ class SendingEmailObserver extends WorkObserver {
   void _handleDeleteSendingEmailSuccess() async {
     log('SendingEmailObserver::_handleDeleteSendingEmailSuccess(): Success');
     _showLocalNotification();
-    return _completer?.complete(true);
+    _sendingQueueIsolateManager?.addEvent(WorkerState.success.name);
+    _completer?.complete(true);
   }
 
   void _clearDataQueue() async {
+    log('SendingEmailObserver::_clearDataQueue():');
     _sendingEmail = null;
-    _completer?.completeError(SendingEmailFromWorkmanagerException());
+    _sendingQueueIsolateManager?.addEvent(WorkerState.failed.name);
+    _completer?.completeError(UnableToGetDataFromInWorkManagerException());
   }
 
   void _showLocalNotification() {

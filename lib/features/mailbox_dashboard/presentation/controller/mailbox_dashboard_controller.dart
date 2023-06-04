@@ -443,7 +443,7 @@ class MailboxDashBoardController extends ReloadableController {
       _getVacationResponse();
       spamReportController.getSpamReportStateAction();
       if (PlatformInfo.isMobile) {
-        _getAllSendingEmails();
+        getAllSendingEmails();
       }
       if (!BuildUtils.isWeb && !_notificationManager.isNotificationClickedOnTerminate) {
         _handleClickLocalNotificationOnTerminated();
@@ -1225,7 +1225,7 @@ class MailboxDashBoardController extends ReloadableController {
     _getVacationResponse();
     spamReportController.getSpamReportStateAction();
     if (PlatformInfo.isMobile) {
-      _getAllSendingEmails();
+      getAllSendingEmails();
     }
   }
 
@@ -1830,7 +1830,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
 
     _addSendingEmailToSendingQueue(success.sendingEmail);
-    _getAllSendingEmails();
+    getAllSendingEmails();
   }
 
   void _addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
@@ -1853,12 +1853,13 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _getAllSendingEmails() {
+  void getAllSendingEmails({bool needToReopen = false}) {
     if (accountId.value != null && sessionCurrent != null) {
-      log('MailboxDashBoardController::_getAllSendingEmails():accountId: ${accountId.value} | userName: ${sessionCurrent?.username}');
+      log('MailboxDashBoardController::getAllSendingEmails():accountId: ${accountId.value} | userName: ${sessionCurrent?.username}');
       consumeState(_getAllSendingEmailInteractor.execute(
         accountId.value!,
-        sessionCurrent!.username
+        sessionCurrent!.username,
+        needToReopen: needToReopen
       ));
     }
   }
@@ -1866,6 +1867,15 @@ class MailboxDashBoardController extends ReloadableController {
   void _handleGetAllSendingEmailsSuccess(GetAllSendingEmailSuccess success) {
     log('MailboxDashBoardController::_handleGetAllSendingEmailsSuccess():COUNT: ${success.sendingEmails.length}');
     listSendingEmails.value = success.sendingEmails;
+
+    if (success.sendingEmails.isEmpty && dashboardRoute.value == DashboardRoutes.sendingQueue) {
+      _openDefaultMailbox();
+    }
+  }
+
+  void _openDefaultMailbox() {
+    dispatchRoute(DashboardRoutes.thread);
+    dispatchMailboxUIAction(SelectMailboxDefaultAction());
   }
   
   @override
