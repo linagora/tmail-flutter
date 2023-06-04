@@ -17,5 +17,6 @@ enum EmailActionType {
   selection,
   moveToSpam,
   unSpam,
-  openInNewTab
+  openInNewTab,
+  resend
 }
