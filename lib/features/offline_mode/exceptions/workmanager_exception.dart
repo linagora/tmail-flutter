@@ -1,1 +1,3 @@
-class SendingEmailFromWorkmanagerException implements Exception {}
+class UnableToGetDataFromInWorkManagerException implements Exception {}
+
+class UnableBindingInWorkManagerException implements Exception {}

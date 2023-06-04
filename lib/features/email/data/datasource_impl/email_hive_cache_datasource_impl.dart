@@ -254,9 +254,9 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName, {bool needToReopen = false}) {
     return Future.sync(() async {
-      final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmails(accountId, userName);
+      final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmails(accountId, userName, needToReopen: needToReopen);
       return sendingEmailsCache.toSendingEmails();
     }).catchError(_exceptionThrower.throwException);
   }

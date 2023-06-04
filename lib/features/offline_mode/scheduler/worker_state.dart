@@ -1,0 +1,5 @@
+
+enum WorkerState {
+  success,
+  failed;
+}

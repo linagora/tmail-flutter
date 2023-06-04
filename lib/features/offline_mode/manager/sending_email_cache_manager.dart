@@ -24,8 +24,15 @@ class SendingEmailCacheManager {
     return _hiveCacheClient.insertItem(keyCache, sendingEmailHiveCache);
   }
 
-  Future<List<SendingEmailHiveCache>> getAllSendingEmails(AccountId accountId, UserName userName) async {
-     final sendingEmailsCache = await _hiveCacheClient.getListByTupleKey(accountId.asString, userName.value);
+  Future<List<SendingEmailHiveCache>> getAllSendingEmails(
+    AccountId accountId,
+    UserName userName,
+    {bool needToReopen = false}
+  ) async {
+     final sendingEmailsCache = await _hiveCacheClient.getListByTupleKey(
+       accountId.asString,
+       userName.value,
+       needToReopen: needToReopen);
      log('SendingEmailCacheManager::getAllSendingEmails():COUNT: ${sendingEmailsCache.length}');
      sendingEmailsCache.sortByLatestTime();
      return sendingEmailsCache;
