@@ -1,4 +1,3 @@
-
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/identity_id_extension.dart';

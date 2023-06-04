@@ -21,7 +21,6 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -773,7 +772,7 @@ class ComposerView extends GetWidget<ComposerController>
                   child: loadingWidget,
                 );
               } else if (success is GetEmailContentSuccess) {
-                var contentHtml = success.emailContents.asHtmlString;
+                var contentHtml = success.emailContents;
                 if (contentHtml.isEmpty == true) {
                   contentHtml = HtmlExtension.editorStartTags;
                 }
