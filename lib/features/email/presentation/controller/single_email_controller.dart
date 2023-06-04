@@ -371,7 +371,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
 
     emailSupervisorController.pushEmailQueue(EmailLoaded(
-      success.emailContents.toList(),
+      success.emailContents,
       success.emailContentsDisplayed.toList(),
       success.attachments.toList(),
       success.emailCurrent,
@@ -379,7 +379,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (success.emailCurrent?.id == currentEmail?.id) {
       emailContents.value = success.emailContentsDisplayed.asHtmlString;
-      initialEmailContents = success.emailContents.asHtmlString;
+      initialEmailContents = success.emailContents;
       attachments.value = success.attachments;
 
       if (!BuildUtils.isWeb) {
