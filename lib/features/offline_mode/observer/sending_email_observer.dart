@@ -247,6 +247,7 @@ class SendingEmailObserver extends WorkObserver {
     LocalNotificationManager.instance.showPushNotification(
       id: _sendingEmail?.sendingId ?? '',
       title: LocalNotificationConfig.messageHasBeenSentSuccessfully,
+      message: _sendingEmail?.presentationEmail.preview
     );
   }
 }
