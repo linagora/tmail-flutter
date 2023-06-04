@@ -5,7 +5,7 @@ import 'package:model/model.dart';
 class GetEmailContentLoading extends LoadingState {}
 
 class GetEmailContentSuccess extends UIState {
-  final List<EmailContent> emailContents;
+  final String emailContents;
   final List<EmailContent> emailContentsDisplayed;
   final List<Attachment> attachments;
   final Email? emailCurrent;

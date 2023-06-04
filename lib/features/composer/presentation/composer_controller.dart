@@ -235,7 +235,9 @@ class ComposerController extends BaseController {
   @override
   void onReady() async {
     _initEmail();
-    _getAllIdentities();
+    if (isNetworkConnectionAvailable) {
+      _getAllIdentities();
+    }
     if (!BuildUtils.isWeb) {
       Future.delayed(const Duration(milliseconds: 500), () =>
           _checkContactPermission());
@@ -1125,8 +1127,9 @@ class ComposerController extends BaseController {
       }
     }
 
-    if(arguments.emailContents != null && arguments.emailContents!.isNotEmpty) {
-      emailContentsViewState.value = Right(GetEmailContentFromCacheSuccess(arguments.emailContents!, []));
+    if (arguments.emailContents != null && arguments.emailContents!.isNotEmpty) {
+      _emailContents = arguments.emailContents;
+      emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], arguments.presentationEmail?.toEmail()));
     } else {
       final session = mailboxDashBoardController.sessionCurrent;
       final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
@@ -1162,10 +1165,8 @@ class ComposerController extends BaseController {
           success.attachments.listAttachmentsDisplayedOutSide);
     }
     emailContentsViewState.value = Right(success);
-    _emailContents = success.emailContents.asHtmlString;
+    _emailContents = success.emailContents;
   }
-
-  String? getEmailContentDraftsAsHtml() => _emailContents;
 
   String getEmailAddressSender() {
     final arguments = composerArguments.value;
