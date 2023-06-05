@@ -185,7 +185,6 @@ class ImagePaths {
   String get icAvatarPersonal => _getImagePath('ic_avatar_personal.svg');
   String get icDialogOfflineMode => _getImagePath('ic_dialog_offline_mode.svg');
   String get icMenuMailbox => _getImagePath('ic_menu_mailbox.svg');
-  String get icResendEmail => _getImagePath('ic_resend_email.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

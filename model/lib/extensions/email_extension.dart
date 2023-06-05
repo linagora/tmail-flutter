@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
-import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -141,7 +140,6 @@ extension EmailExtension on Email {
     {
       SelectMode selectMode = SelectMode.INACTIVE,
       EmailId? emailId,
-      UTCDate? createAt,
     }
   ) {
     return PresentationEmail(
@@ -152,7 +150,7 @@ extension EmailExtension on Email {
       hasAttachment: hasAttachment,
       preview: preview,
       subject: subject,
-      sentAt: createAt ?? sentAt,
+      sentAt: sentAt,
       from: from,
       to: to,
       cc: cc,
