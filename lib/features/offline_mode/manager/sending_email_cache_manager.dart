@@ -56,4 +56,14 @@ class SendingEmailCacheManager {
   }
 
   Future<void> clearAllSendingEmails() => _hiveCacheClient.clearAllData();
+
+  Future<void> updateSendingEmail(
+    AccountId accountId,
+    UserName userName,
+    SendingEmailHiveCache sendingEmailHiveCache
+  ) async {
+    final keyCache = TupleKey(sendingEmailHiveCache.sendingId, accountId.asString, userName.value).encodeKey;
+    log('SendingEmailCacheManager::updateSendingEmail():keyCache: $keyCache | sendingEmailHiveCache: $sendingEmailHiveCache');
+    return await _hiveCacheClient.updateItem(keyCache, sendingEmailHiveCache, needToReopen: true);
+  }
 }
