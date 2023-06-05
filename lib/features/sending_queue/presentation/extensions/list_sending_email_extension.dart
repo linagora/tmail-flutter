@@ -14,4 +14,6 @@ extension ListSendingEmailExtension on List<SendingEmail> {
   bool isAllSelected() => every((sendingEmail) => sendingEmail.isSelected);
 
   bool isAllUnSelected() => every((sendingEmail) => !sendingEmail.isSelected);
+
+  List<SendingEmail> listSelected() => where((sendingEmail) => sendingEmail.isSelected).toList();
 }

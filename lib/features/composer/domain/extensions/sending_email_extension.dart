@@ -1,3 +1,4 @@
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/identity_id_extension.dart';
@@ -23,9 +24,9 @@ extension SendingEmailExtension on SendingEmail {
     );
   }
 
-  EmailRequest toEmailRequest() {
+  EmailRequest toEmailRequest({Email? emailEdit}) {
     return EmailRequest(
-      email: email,
+      email: emailEdit ?? email,
       emailActionType: emailActionType,
       sentMailboxId: sentMailboxId,
       emailIdDestroyed: emailIdDestroyed,
