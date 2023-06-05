@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-06-01T13:42:51.121212",
+  "@@last_modified": "2023-06-05T09:10:02.535366",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2860,6 +2860,30 @@
   },
   "openMailboxMenu": "Open mailbox menu",
   "@openMailboxMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSentSuccessfully": "Message has been sent successfully.",
+  "@messageHasBeenSentSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteOfflineEmail": "Delete offline email",
+  "@deleteOfflineEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogDeleteSendingEmail": "Deleting an offline email will erase its content permanently. You won't be able to undo this action or recover the email from the Trash mailbox.",
+  "@messageDialogDeleteSendingEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteSomeOfflineEmailSuccessfully": "Delete some offline email successfully.",
+  "@deleteSomeOfflineEmailSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
