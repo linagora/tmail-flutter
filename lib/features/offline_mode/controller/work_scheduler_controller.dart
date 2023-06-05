@@ -77,7 +77,14 @@ class WorkSchedulerController {
 
   Future<void> cancelByWorkType(WorkerType type) => Workmanager().cancelByTag(type.name);
 
-  Future<void> cancelByUniqueId(String uniqueId) => Workmanager().cancelByUniqueName(uniqueId);
+  Future<void> cancelByUniqueId(String uniqueId) {
+    try {
+      return Workmanager().cancelByUniqueName(uniqueId);
+    } catch (e) {
+      logError('WorkSchedulerController::cancelByUniqueId():EXCEPTION: $e');
+      return Future.value();
+    }
+  }
 
   Future<void> cancelAll() => Workmanager().cancelAll();
 }
