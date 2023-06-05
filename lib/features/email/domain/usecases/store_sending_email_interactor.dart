@@ -12,11 +12,16 @@ class StoreSendingEmailInteractor {
 
   StoreSendingEmailInteractor(this._emailRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName, SendingEmail sendingEmail) async* {
+  Stream<Either<Failure, Success>> execute(
+    AccountId accountId,
+    UserName userName,
+    SendingEmail sendingEmail,
+    bool isUpdateSendingEmail
+  ) async* {
     try {
       yield Right<Failure, Success>(StoreSendingEmailLoading());
-      await _emailRepository.storeSendingEmail(accountId, userName, sendingEmail);
-      yield Right<Failure, Success>(StoreSendingEmailSuccess(sendingEmail));
+      await _emailRepository.storeSendingEmail(accountId, userName, sendingEmail, isUpdateSendingEmail);
+      yield Right<Failure, Success>(StoreSendingEmailSuccess(sendingEmail, isUpdateSendingEmail));
     } catch (e) {
       yield Left<Failure, Success>(StoreSendingEmailFailure(e));
     }

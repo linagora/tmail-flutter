@@ -223,8 +223,17 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
-    return emailDataSource[DataSourceType.hiveCache]!.storeSendingEmail(accountId, userName, sendingEmail);
+  Future<void> storeSendingEmail(
+    AccountId accountId,
+    UserName userName,
+    SendingEmail sendingEmail,
+    bool isUpdateSendingEmail
+  ) async {
+    if (isUpdateSendingEmail) {
+      return await emailDataSource[DataSourceType.hiveCache]!.updateSendingEmail(accountId, userName, sendingEmail);
+    } else {
+      return await emailDataSource[DataSourceType.hiveCache]!.storeSendingEmail(accountId, userName, sendingEmail);
+    }
   }
 
   @override

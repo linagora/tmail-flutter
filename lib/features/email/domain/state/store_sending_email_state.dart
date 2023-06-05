@@ -8,8 +8,9 @@ class StoreSendingEmailLoading extends UIState {}
 class StoreSendingEmailSuccess extends UIState {
 
   final SendingEmail sendingEmail;
+  final bool isUpdateSendingEmail;
 
-  StoreSendingEmailSuccess(this.sendingEmail);
+  StoreSendingEmailSuccess(this.sendingEmail, this.isUpdateSendingEmail);
 
   @override
   List<Object?> get props => [sendingEmail];
