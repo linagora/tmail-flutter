@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/app_bar_sending_queue_widget.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/banner_message_sending_queue_widget.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/bottom_bar_sending_queue_widget.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/sending_email_tile_widget.dart';
 
 class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderMixin {
@@ -18,23 +19,32 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: GestureDetector(
-        onTap: FocusScope.of(context).unfocus,
-        child: SafeArea(
-          child: Column(
-            children: [
-              AppBarSendingQueueWidget(onOpenMailboxMenu: controller.openMailboxMenu),
-              const Divider(color: AppColor.colorDividerComposer, height: 1),
-              const BannerMessageSendingQueueWidget(),
-              Expanded(child: _buildListSendingEmails(context))
-            ]
-          ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Obx(() => AppBarSendingQueueWidget(
+              listSendingEmails: controller.dashboardController!.listSendingEmails,
+              onOpenMailboxMenu: controller.openMailboxMenu,
+              onBackAction: controller.disableSelectionMode,
+              selectMode: controller.selectionState.value,
+            )),
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            const BannerMessageSendingQueueWidget(),
+            Expanded(child: _buildListSendingEmails(context)),
+            Obx(() {
+              if (controller.isAllUnSelected) {
+                return const SizedBox.shrink();
+              } else {
+               return BottomBarSendingQueueWidget(
+                  listSendingEmails: controller.dashboardController!.listSendingEmails,
+                  onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
+                );
+              }
+            }),
+          ]
         ),
       ),
-      floatingActionButton: ComposeFloatingButton(
-        scrollController: controller.listSendingEmailController,
-        onTap: () => controller.dashboardController!.goToComposer(ComposerArguments())
-      ),
+      floatingActionButton: _buildFloatingButtonCompose(),
     );
   }
 
@@ -45,12 +55,36 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
           controller: controller.listSendingEmailController,
           padding: EdgeInsets.zero,
           itemCount: controller.dashboardController!.listSendingEmails.length,
-          itemBuilder: (context, index) => SendingEmailTileWidget(
-            sendingEmail: controller.dashboardController!.listSendingEmails[index]
-          )
+          itemBuilder: (context, index) {
+            return Obx(() => SendingEmailTileWidget(
+              sendingEmail: controller.dashboardController!.listSendingEmails[index],
+              selectMode: controller.selectionState.value,
+              onLongPressAction: controller.handleOnLongPressAction,
+              onSelectAction: controller.toggleSelectionSendingEmail,
+            ));
+          }
         );
       } else {
         return const SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget _buildFloatingButtonCompose() {
+    return Obx(() {
+      if (controller.isAllUnSelected) {
+        return ComposeFloatingButton(
+          scrollController: controller.listSendingEmailController,
+          onTap: () => controller.dashboardController!.goToComposer(ComposerArguments())
+        );
+      } else {
+        return Container(
+          padding: const EdgeInsets.only(bottom: 70),
+          child: ComposeFloatingButton(
+            scrollController: controller.listSendingEmailController,
+            onTap: () => controller.dashboardController!.goToComposer(ComposerArguments())
+          ),
+        );
       }
     });
   }

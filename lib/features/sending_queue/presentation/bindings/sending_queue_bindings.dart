@@ -1,5 +1,6 @@
 
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_multiple_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
 
 class SendingQueueBindings extends Bindings {
@@ -10,6 +11,6 @@ class SendingQueueBindings extends Bindings {
   }
 
   void _bindingsController() {
-    Get.put(SendingQueueController());
+    Get.put(SendingQueueController(Get.find<DeleteMultipleSendingEmailInteractor>()));
   }
 }
