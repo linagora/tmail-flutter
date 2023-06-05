@@ -14,6 +14,8 @@ import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/offline_mode/controller/work_scheduler_controller.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 
 class CachingManager {
   final MailboxCacheClient _mailboxCacheClient;
@@ -27,6 +29,7 @@ class CachingManager {
   final DetailedEmailHiveCacheClient _detailedEmailHiveCacheClient;
   final OpenedEmailHiveCacheClient _openedEmailHiveCacheClient;
   final FileUtils _fileUtils;
+  final SendingEmailCacheManager _sendingEmailCacheManager;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -40,6 +43,7 @@ class CachingManager {
     this._detailedEmailHiveCacheClient,
     this._openedEmailHiveCacheClient,
     this._fileUtils,
+    this._sendingEmailCacheManager,
   );
 
   Future<void> clearAll() async {
@@ -51,8 +55,12 @@ class CachingManager {
       _fcmSubscriptionCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
       _accountCacheClient.clearAllData(),
-      _detailedEmailHiveCacheClient.clearAllData(),
-      _openedEmailHiveCacheClient.clearAllData(),
+      if (PlatformInfo.isMobile)
+        ...[
+          _detailedEmailHiveCacheClient.clearAllData(),
+          _openedEmailHiveCacheClient.clearAllData(),
+          _clearSendingEmailCache(),
+        ]
     ], eagerError: true);
   }
 
@@ -64,8 +72,12 @@ class CachingManager {
       _fcmCacheClient.clearAllData(),
       _fcmSubscriptionCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
-      _detailedEmailHiveCacheClient.clearAllData(),
-      _openedEmailHiveCacheClient.clearAllData(),
+      if (PlatformInfo.isMobile)
+       ...[
+         _detailedEmailHiveCacheClient.clearAllData(),
+         _openedEmailHiveCacheClient.clearAllData(),
+         _clearSendingEmailCache(),
+       ]
     ], eagerError: true);
   }
 
@@ -101,6 +113,18 @@ class CachingManager {
     if (PlatformInfo.isMobile) {
       _fileUtils.removeFolder(CachingConstants.incomingEmailedContentFolderName);
       _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName);
+    }
+  }
+
+  Future<void> _clearSendingEmailCache() async {
+    final listSendingEmails = await _sendingEmailCacheManager.getAllSendingEmails();
+    final sendingIds = listSendingEmails.map((sendingEmail) => sendingEmail.sendingId).toSet().toList();
+    if (sendingIds.isNotEmpty) {
+      await Future.wait(
+        sendingIds.map((sendingId) => WorkSchedulerController().cancelByUniqueId(sendingId)),
+        eagerError: true
+      );
+      await _sendingEmailCacheManager.clearAllSendingEmails();
     }
   }
 }
