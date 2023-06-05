@@ -9,9 +9,18 @@ class SendingEmailArguments extends RouterArguments {
   final AccountId accountId;
   final EmailRequest emailRequest;
   final CreateNewMailboxRequest? mailboxRequest;
+  final bool? isUpdateSendingEmail;
 
-  SendingEmailArguments(this.session, this.accountId, this.emailRequest, this.mailboxRequest);
+  SendingEmailArguments(
+    this.session,
+    this.accountId,
+    this.emailRequest,
+    this.mailboxRequest,
+    {
+      this.isUpdateSendingEmail
+    }
+  );
 
   @override
-  List<Object?> get props => [session, accountId, emailRequest, mailboxRequest];
+  List<Object?> get props => [session, accountId, emailRequest, mailboxRequest, isUpdateSendingEmail];
 }

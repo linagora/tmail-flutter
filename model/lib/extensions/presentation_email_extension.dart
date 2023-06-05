@@ -82,19 +82,21 @@ extension PresentationEmailExtension on PresentationEmail {
 
   Email toEmail() {
     return Email(
-        id: this.id,
-        keywords: keywords,
-        size: size,
-        receivedAt: receivedAt,
-        hasAttachment: hasAttachment,
-        preview: preview,
-        subject: subject,
-        sentAt: sentAt,
-        from: from,
-        to: to,
-        cc: cc,
-        bcc: bcc,
-        replyTo: replyTo
+      id: this.id,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      htmlBody: htmlBody,
+      bodyValues: bodyValues,
     );
   }
 
