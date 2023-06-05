@@ -1,3 +1,7 @@
+## [0.7.11] - 2023-06-05
+### Changed
+- Upgrade version flutter-typeahead
+
 ## [0.7.10] - 2023-06-05
 ### Added
 - Keep N recently opened email in the cache
@@ -113,6 +117,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.7.11]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.11
 [0.7.10]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.10
 [0.7.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.9
 [0.7.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.8
