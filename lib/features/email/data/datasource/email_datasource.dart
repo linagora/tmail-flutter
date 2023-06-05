@@ -92,7 +92,7 @@ abstract class EmailDataSource {
 
   Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
 
-  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName);
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName, {bool needToReopen = false});
 
   Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId);
 }
