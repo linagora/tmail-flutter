@@ -1,1 +1,2196 @@
-{}
+{
+  "Bad credentials": "بيانات اعتماد غير صحيحة.",
+  "@Bad credentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputUrlMessage": "لتسجيل الدخول والوصول إلى رسائلك، يرجى الاتصال بخادم JMAP الخاص بك.",
+  "@loginInputUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unknownError": "حدث خطأ غير معروف، يرجى المحاولة مرة أخرى.",
+  "@unknownError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "encryptedMailbox": "صندوق بريد مشفر",
+  "@encryptedMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_starred": "وضع علامة كمفضلة",
+  "@mark_as_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_unread": "وضع علامة كغير مقروء",
+  "@mark_as_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_to_spam": "نقل إلى البريد المزعج (سبام)",
+  "@move_to_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_multiple_item_as_read": "تم وضع علامة كمقروء لـ {count} عنصر",
+  "@marked_multiple_item_as_read": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "with_attachments": "مع المرفقات",
+  "@with_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "disable_filter_message_toast": "لقد قمت بتعطيل تصفية الرسائل.",
+  "@disable_filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "can_not_upload_this_file_as_attachments": "لا يمكن رفع هذا الملف كمرفقات.",
+  "@can_not_upload_this_file_as_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit": "تعديل",
+  "@edit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spam": "بريد مزعج (سبام)",
+  "@spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "the_feature_is_under_development": "هذه الميزة قيد التطوير.",
+  "@the_feature_is_under_development": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_message_toast": "لقد قمت بوضع علامة على الرسائل بوضعية \"{action}\".",
+  "@marked_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "filter_messages": "تصفية الرسائل",
+  "@filter_messages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "minimize": "تصغير",
+  "@minimize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "more": "المزيد",
+  "@more": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_with_email_address_invalid": "تحقق من صحة عناوين البريد الإلكتروني وحاول مرة أخرى",
+  "@message_dialog_send_email_with_email_address_invalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_trash_dialog_message": "أنت على وشك حذف جميع العناصر في سلة المهملات بشكل نهائي. هل ترغب في المتابعة؟",
+  "@empty_trash_dialog_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_single_message_dialog": "أنت على وشك حذف هذه الرسالة بشكل دائم. هل ترغب في المتابعة؟",
+  "@delete_single_message_dialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_message_forever": "حذف الرسالة بشكل دائم",
+  "@delete_message_forever": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_exceeds_maximum_size": "لا يمكن إرسال الرسالة الخاصة بك لأنها تتجاوز الحجم الأقصى المسموح به والذي يبلغ {maxSize}",
+  "@message_dialog_send_email_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "delete_multiple_messages_dialog": "أنت على وشك حذف {count} عناصر بشكل دائم في صندوق البريد {mailboxName}. هل ترغب في المتابعة؟",
+  "@delete_multiple_messages_dialog": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "mailboxName"
+    ],
+    "placeholders": {
+      "count": {},
+      "mailboxName": {}
+    }
+  },
+  "message_dialog_upload_attachments_exceeds_maximum_size": "لقد وصلت إلى الحد الأقصى لحجم الملف. يُرجى تحميل ملفات بإجمالي حجم أقل من {maxSize}",
+  "@message_dialog_upload_attachments_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "remove_from_spam": "إزالة من الرسائل غير المرغوب فيها (سبام)",
+  "@remove_from_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_as_not_spam": "تم وضع علامة كرسالة غير مرغوب فيها (سبام)",
+  "@marked_as_not_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_have_created_a_new_default_identity": "لقد قمت بإنشاء هوية افتراضية جديدة",
+  "@you_have_created_a_new_default_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "all_identities": "كل الهويات",
+  "@all_identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_failed": "فشل الحذف",
+  "@delete_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "لقد وضعت علامة على {count} الرسائل في \"{mailboxName}\" كمقروءة",
+  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName",
+      "count"
+    ],
+    "placeholders": {
+      "mailboxName": {},
+      "count": {}
+    }
+  },
+  "lastYears": "السنوات الاخيرة",
+  "@lastYears": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last6Months": "آخر 6 أشهر",
+  "@last6Months": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteMailbox": "حذف صندوق البريد",
+  "@deleteMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "html": "Html",
+  "@html": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noPreviewAvailable": "لا تتوفر معاينة",
+  "@noPreviewAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "wrongUrlMessage": "عنوان URL للخادم غير صالح ، يرجى المحاولة مرة أخرى",
+  "@wrongUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allTime": "كل الوقت",
+  "@allTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search": "البحث",
+  "@search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAndClose": "احفظ وأغلق",
+  "@saveAndClose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertImageErrorDuplicate": "الرجاء إدخال صورة أو عنوان URL للصورة ، وليس كلاهما",
+  "@insertImageErrorDuplicate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatStrikethrough": "يتوسطه خط",
+  "@formatStrikethrough": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColor": "اختيار اللون",
+  "@chooseAColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatTextBackgroundColor": "لون خلفية النص",
+  "@formatTextBackgroundColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatBold": "Bold",
+  "@formatBold": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatTextColor": "لون الخط",
+  "@formatTextColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "numberedList": "قائمة مُرقمة",
+  "@numberedList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilter": "إذا تم استيفاء جميع الشروط التالية:",
+  "@conditionTitleRulesFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notContains": "لا يحتوي على",
+  "@notContains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMessage": "نقل الرسالة",
+  "@moveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notExactlyEquals": "لا يساوي بالضبط",
+  "@notExactlyEquals": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressToField": "إلى",
+  "@ruleFilterAddressToField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressCcField": "Cc",
+  "@ruleFilterAddressCcField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newFilterWasCreated": "تم إنشاء فلتر جديد",
+  "@newFilterWasCreated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerRecipients": "المستلمون",
+  "@headerRecipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarding": "إعادة توجيه",
+  "@forwarding": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacation": "أجازة",
+  "@vacation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourFilterHasBeenUpdated": "تم تحديث الفلتر الخاص بك",
+  "@yourFilterHasBeenUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionTitleRulesFilter": "قم بالإجراء التالي:",
+  "@actionTitleRulesFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toMailbox": "إلى صندوق البريد:",
+  "@toMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageAddRecipientsSuccessfully": "تمت إضافة رسائل البريد الإلكتروني من قائمة المستلمين.",
+  "@toastMessageAddRecipientsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressFromField": "من",
+  "@ruleFilterAddressFromField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEnableVacationResponderAutomatically": "سيتم تنشيط المجيب التلقائي في {startDate}",
+  "@messageEnableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "startDate"
+    ],
+    "placeholders": {
+      "startDate": {}
+    }
+  },
+  "hintInputAutocompleteContact": "أدخل الاسم أو عنوان البريد الإلكتروني",
+  "@hintInputAutocompleteContact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startTime": "وقت البدء",
+  "@startTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageArabic": "اللغة العربية",
+  "@languageArabic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "اللغة الايطالية",
+  "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "urlLink": "URL",
+  "@urlLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insert": "إدراج",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertImageErrorFileEmpty": "يرجى إما اختيار صورة أو إدخال عنوان URL للصورة",
+  "@insertImageErrorFileEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resetToDefault": "إعادة التعيين إلى الوضع الافتراضي",
+  "@resetToDefault": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "setColor": "اضبط اللون",
+  "@setColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatItalic": "Italic",
+  "@formatItalic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatUnderline": "تسطير",
+  "@formatUnderline": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "codeView": "عرض التعليمات البرمجية",
+  "@codeView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fontFamily": "Font Family",
+  "@fontFamily": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "indent": "مسافة بادئة",
+  "@indent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "orderList": "قائمة مرتبة",
+  "@orderList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveTo": "الانتقال إلى",
+  "@moveTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailRules": "قواعد البريد الإلكتروني",
+  "@emailRules": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerNameOfRules": "اسم القواعد",
+  "@headerNameOfRules": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editRule": "تعديل القاعدة",
+  "@editRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRule": "حذف القاعدة",
+  "@deleteRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewRule": "أنشئ قاعدة جديدة",
+  "@createNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionValueHintTextInput": "القيمة",
+  "@conditionValueHintTextInput": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recipient": "المتلقي",
+  "@recipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contains": "يتضمن",
+  "@contains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "activated": "مفعل",
+  "@activated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deactivated": "معطل",
+  "@deactivated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startDate": "تاريخ البدء",
+  "@startDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endDate": "تاريخ الانتهاء",
+  "@endDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationStopsAt": "تتوقف العطلة في",
+  "@vacationStopsAt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message": "الرسالة",
+  "@message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintMessageBodyVacation": "رسائل الاجازة",
+  "@hintMessageBodyVacation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noStartTime": "ليس هناك وقت بدء",
+  "@noStartTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEndTime": "ليس هناك وقت انتهاء",
+  "@noEndTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEndDate": "لا يوجد تاريخ انتهاء",
+  "@noEndDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenStartDateVacationIsEmpty": "الرجاء إدخال تاريخ بدء صالح",
+  "@errorMessageWhenStartDateVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenEndDateVacationIsInValid": "يجب أن يكون تاريخ الانتهاء أكبر من تاريخ البدء",
+  "@errorMessageWhenEndDateVacationIsInValid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDisableVacationResponderAutomatically": "توقف المجيب التلقائي في {endDate}",
+  "@messageDisableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "endDate"
+    ],
+    "placeholders": {
+      "endDate": {}
+    }
+  },
+  "messageConfirmationDialogDeleteRecipientForward": "هل تريد حذف البريد الإلكتروني {emailAddress}؟",
+  "@messageConfirmationDialogDeleteRecipientForward": {
+    "type": "text",
+    "placeholders_order": [
+      "emailAddress"
+    ],
+    "placeholders": {
+      "emailAddress": {}
+    }
+  },
+  "toastMessageDeleteRecipientSuccessfully": "تمت إزالة البريد الإلكتروني من قائمة المستلمين.",
+  "@toastMessageDeleteRecipientSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageLocalCopyEnable": "الاحتفاظ بالنسخة المحلية ممكنة.",
+  "@toastMessageLocalCopyEnable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageLocalCopyDisable": "إبقاء النسخة المحلية معطلة.",
+  "@toastMessageLocalCopyDisable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepLocalCopyForwardLabel": "احتفظ بنسخة من البريد الإلكتروني في البريد الوارد",
+  "@keepLocalCopyForwardLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailRuleSettingExplanation": "إنشاء قواعد للتعامل مع الرسائل الواردة. يمكنك اختيار كل من الشرط الذي يؤدي إلى تشغيل القاعدة والإجراءات التي ستتخذها القاعدة.",
+  "@emailRuleSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteEmailRule": "هل تريد حذف القاعدة \"{ruleName}\"؟",
+  "@messageConfirmationDialogDeleteEmailRule": {
+    "type": "text",
+    "placeholders_order": [
+      "ruleName"
+    ],
+    "placeholders": {
+      "ruleName": {}
+    }
+  },
+  "deleteEmailRule": "حذف القاعدة",
+  "@deleteEmailRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastErrorMessageWhenCreateNewRule": "أنت لم تملأ المعلومات بالكامل.",
+  "@toastErrorMessageWhenCreateNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingExplanation": "يرسل رد آلي على الرسائل الواردة.",
+  "@vacationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingToggleButtonAutoReply": "الرد تلقائيًا على الرسائل عند استلامها.",
+  "@vacationSettingToggleButtonAutoReply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endTime": "وقت النهاية",
+  "@endTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSubjectInputVacationSetting": "أدخل الموضوع",
+  "@hintSubjectInputVacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveChanges": "احفظ التغييرات",
+  "@saveChanges": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageIsRequired": "الرسالة مطلوبة",
+  "@messageIsRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email": "البريد الإلكتروني",
+  "@email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "initializing_data": "جاري تهيئة البيانات...",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "login_text_slogan": "Team Mail",
+  "@login_text_slogan": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputCredentialMessage": "أدخِل بيانات الاعتماد الخاصة بك لتسجيل الدخول.",
+  "@loginInputCredentialMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "next": "التالي",
+  "@next": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_https": "//:https",
+  "@prefix_https": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "password": "كلمة المرور",
+  "@password": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "login": "تسجيل الدخول",
+  "@login": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signIn": "تسجيل الدخول",
+  "@signIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredEmail": "البريد الإلكتروني مطلوب",
+  "@requiredEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredPassword": "كلمة المرور مطلوبة",
+  "@requiredPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_folder": "البحث في المجلد",
+  "@search_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_content_email_composer": "ابدأ كتابة رسالتك البريدية هنا.",
+  "@hint_content_email_composer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_reply_email": ":Re",
+  "@prefix_reply_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_read": "وضع علامة كمقروء",
+  "@mark_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "an_error_occurred": "خطأ! حدث خطأ. يرجى المحاولة مرة أخرى في وقت لاحق.",
+  "@an_error_occurred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleHeaderAttachment": "{count} المرفقات ({totalSize}):",
+  "@titleHeaderAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "user_cancel_download_file": "تم إلغاء تنزيل الملف بواسطة المستخدم.",
+  "@user_cancel_download_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread": "غير مقروءة",
+  "@unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "read": "مقروءة",
+  "@read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_mailbox": "سيتم حذف صندوق البريد \"{nameMailbox}\" وجميع المجلدات الفرعية والرسائل التي يحتويها، ولن يكون بإمكانك استعادتها. هل ترغب في المتابعة وحذفه؟",
+  "@message_confirmation_dialog_delete_mailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "rename_mailbox": "إعادة تسمية صندوق البريد",
+  "@rename_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_field_cannot_be_blank": "هذا الحقل لا يمكن أن يكون فارغًا",
+  "@this_field_cannot_be_blank": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes_failure": "فشل حذف صناديق البريد",
+  "@delete_mailboxes_failure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes": "حذف صناديق البريد",
+  "@delete_mailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_message": "رسالة جديدة",
+  "@new_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hide": "إخفاء",
+  "@hide": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send": "إرسال",
+  "@send": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments": "المرفقات",
+  "@attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_all_as_read": "وضع علامة مقروءة على الكل",
+  "@mark_all_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "back": "رجوع",
+  "@back": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attach_file": "إرفاق ملف",
+  "@attach_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "add_recipients": "إضافة المستلمين",
+  "@add_recipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show": "عرض",
+  "@show": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sending_failed": "فشل إرسال الرسالة",
+  "@sending_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_subject": "عنوان فارغ",
+  "@empty_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send_anyway": "إرسال على أي حال",
+  "@send_anyway": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moved_to_trash": "تم نقلها إلى سلة المهملات",
+  "@moved_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection": "لا يوجد اتصال بالإنترنت",
+  "@no_internet_connection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_trash_now": "إفراغ سلة المهملات الآن",
+  "@empty_trash_now": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_delete_all_email_in_trash_button": "سيتم حذف جميع الرسائل في سلة المهملات إذا تجاوزت السعة المحدودة.",
+  "@message_delete_all_email_in_trash_button": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_trash_folder": "تفريغ مجلد البريد المهملات",
+  "@empty_trash_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_all": "حذف الكل",
+  "@delete_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page_name": "Team Mail",
+  "@page_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exchange": "تبادل",
+  "@exchange": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "got_it": "فهمت",
+  "@got_it": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maximum_files_size": "الحجم الأقصى للملفات",
+  "@maximum_files_size": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_message": "نقل الرسالة",
+  "@move_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarded_message": "الرسالة المُعاد توجيها",
+  "@forwarded_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "date": "التاريخ",
+  "@date": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_spam": "وضع علامة كرسالة غير مرغوب فيها (سبام)",
+  "@mark_as_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_as_spam": "تم وضع علامة كرسالة غير مرغوب فيها (سبام)",
+  "@marked_as_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "star": "وضع علامة نجمة",
+  "@star": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signature": "التوقيع",
+  "@signature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "plain_text": "نص عادي",
+  "@plain_text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to": "الرد على",
+  "@reply_to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_to": "Bcc to",
+  "@bcc_to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fromMe": "مني",
+  "@fromMe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recent": "مؤخرًا",
+  "@recent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameOrEmailAddress": "الاسم أو عنوان البريد الإلكتروني",
+  "@nameOrEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterSearchTerm": "أدخل مصطلح البحث",
+  "@enterSearchTerm": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFilter": "أزل الفلتر",
+  "@clearFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "advancedSearch": "البحث المتقدم",
+  "@advancedSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectMailbox": "حدد صندوق البريد",
+  "@selectMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDuplicateTagFilterMail": "لقد أدخلت ذلك بالفعل",
+  "@messageDuplicateTagFilterMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseImage": "اختر صورة",
+  "@chooseImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bulletedList": "قائمة نقطية",
+  "@bulletedList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addNewRule": "أضف القاعدة",
+  "@addNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rulesNameHintTextInput": "أدخل اسم القاعدة",
+  "@rulesNameHintTextInput": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exactlyEquals": "يساوي بالضبط",
+  "@exactlyEquals": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenMessageVacationIsEmpty": "لا يمكن أن يكون نص الرسالة فارغًا",
+  "@errorMessageWhenMessageVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRecipient": "إزالة المستلمين",
+  "@deleteRecipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteAllRecipientForward": "هل أنت متأكد أنك تريد إزالة هؤلاء المستلمين؟ سيؤدي القيام بذلك إلى إزالتها من سلسلة البريد الإلكتروني.",
+  "@messageConfirmationDialogDeleteAllRecipientForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipients": "إضافة المستلمين",
+  "@addRecipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDeleteEmailRuleSuccessfully": "تم إزالة القاعدة.",
+  "@toastMessageDeleteEmailRuleSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requiredUrl": "عنوان الخادم مطلوب",
+  "@requiredUrl": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "jmapBasedMailSolution": "JMAP-based\ncollaborative team mail solution",
+  "@jmapBasedMailSolution": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "jmapStandard": "JMAP standard",
+  "@jmapStandard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageEmailAsATeam": "إدارة البريد الإلكتروني كفريق",
+  "@manageEmailAsATeam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "multipleIntegrations": "تكاملات متعددة",
+  "@multipleIntegrations": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "personalMailboxes": "صناديق البريد الشخصية",
+  "@personalMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_folder": "مجلد جديد",
+  "@new_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_all": "الرد على الجميع",
+  "@reply_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply": "الرد",
+  "@reply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forward": "إعادة توجيه",
+  "@forward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_mail_selected": "لم يتم تحديد أي بريد إلكتروني",
+  "@no_mail_selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "from_email_address_prefix": "من",
+  "@from_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "to_email_address_prefix": "إلى",
+  "@to_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread_email_notification": "جديد",
+  "@unread_email_notification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_email_address_prefix": "Bcc",
+  "@bcc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cc_email_address_prefix": "Cc",
+  "@cc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_text_email_address": "اسم أو عنوان البريد الإلكتروني",
+  "@hint_text_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subject_email": "الموضوع",
+  "@subject_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "header_email_quoted": "في{sentDate}، من {emailAddress}",
+  "@header_email_quoted": {
+    "type": "text",
+    "placeholders_order": [
+      "sentDate",
+      "emailAddress"
+    ],
+    "placeholders": {
+      "sentDate": {},
+      "emailAddress": {}
+    }
+  },
+  "prefix_forward_email": ":Fwd",
+  "@prefix_forward_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "your_email_being_sent": "جاري إرسال رسالتك البريدية...",
+  "@your_email_being_sent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_recipient": "يجب أن يكون لديك على الأقل مستلم واحد لرسالتك البريدية.",
+  "@message_dialog_send_email_without_recipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "count_email_selected": "تم تحديد {count}",
+  "@count_email_selected": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "move_to_trash": "نقل إلى سلة المهملات",
+  "@move_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_multiple_item_as_unread": "تم وضع علامة كغير مقروء لـ {count} عنصر",
+  "@marked_multiple_item_as_unread": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "attachment_download_failed": "فشل تنزيل المرفق",
+  "@attachment_download_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloading_file": "جارٍ تنزيل {fileName}",
+  "@downloading_file": {
+    "type": "text",
+    "placeholders_order": [
+      "fileName"
+    ],
+    "placeholders": {
+      "fileName": {}
+    }
+  },
+  "preparing_to_export": "جارٍ التحضير للتصدير",
+  "@preparing_to_export": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cancel": "إلغاء",
+  "@cancel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_need_to_grant_files_permission_to_download_attachments": "يجب عليك منح إذن لتنزيل المرفقات.",
+  "@you_need_to_grant_files_permission_to_download_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attach_file_prepare_text": "جارٍ التحضير لإرفاق الملف...",
+  "@attach_file_prepare_text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments_uploaded_successfully": "تم تحميل المرفقات بنجاح.",
+  "@attachments_uploaded_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pick_attachments": "اختر المرفقات",
+  "@pick_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "photos_and_videos": "الصور ومقاطع الفيديو",
+  "@photos_and_videos": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "browse": "تصفح",
+  "@browse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moved_to_mailbox": "تم نقلها إلى {destinationMailboxPath}",
+  "@moved_to_mailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationMailboxPath"
+    ],
+    "placeholders": {
+      "destinationMailboxPath": {}
+    }
+  },
+  "undo": "تراجع",
+  "@undo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_star_multiple_item": "تم وضع علامة مفضلة على {count} عنصر",
+  "@marked_star_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "marked_unstar_multiple_item": "تم إزالة علامة المفضلة عن {count} عنصر",
+  "@marked_unstar_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "search_mail": "البحث في البريد الإلكتروني",
+  "@search_mail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_suggestion_search": "البحث عن",
+  "@prefix_suggestion_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_emails_matching_your_search": "لا توجد رسائل تطابق بحثك",
+  "@no_emails_matching_your_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "results": "النتائج",
+  "@results": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_search_emails": "البحث عن رسائل البريد الإلكتروني والملفات",
+  "@hint_search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose": "إنشاء رسالة",
+  "@compose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete": "حذف",
+  "@delete": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move": "نقل",
+  "@move": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "flag": "وضع علامة",
+  "@flag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folders": "المجلدات",
+  "@folders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sign_out": "تسجيل الخروج",
+  "@sign_out": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_search_mailboxes": "البحث في صناديق البريد",
+  "@hint_search_mailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "starred": "المفضلة",
+  "@starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_message_toast": "لقد قمت بتصفية الرسائل حسب \"{filterOption}\".",
+  "@filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "filterOption"
+    ],
+    "placeholders": {
+      "filterOption": {}
+    }
+  },
+  "with_unread": "مع غير المقروءة",
+  "@with_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_starred": "مع المفضلة",
+  "@with_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_has_been_sent_successfully": "تم إرسال الرسالة بنجاح",
+  "@message_has_been_sent_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "done": "تم",
+  "@done": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_mailbox": "صندوق بريد جديد",
+  "@new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "name_of_mailbox_is_required": "اسم صندوق البريد مطلوب",
+  "@name_of_mailbox_is_required": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox_name_cannot_contain_special_characters": "اسم صندوق البريد لا يمكن أن يحتوي على أحرف خاصة",
+  "@mailbox_name_cannot_contain_special_characters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_folder_name_is_already_taken": "اسم هذا المجلد مستخدم بالفعل",
+  "@this_folder_name_is_already_taken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_mailbox_is_created": "تم إنشاء صندوق البريد {nameMailbox}",
+  "@new_mailbox_is_created": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "create_new_mailbox_failure": "فشل إنشاء صندوق البريد الجديد",
+  "@create_new_mailbox_failure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "drafts_saved": "تم حفظ المسودة",
+  "@drafts_saved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discard": "تجاهل",
+  "@discard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "skip": "تخطي",
+  "@skip": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_input_create_new_mailbox": "يرجى إدخال اسم صندوق البريد",
+  "@hint_input_create_new_mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename": "إعادة تسمية",
+  "@rename": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_mailboxes_successfully": "تم حذف صناديق البريد بنجاح",
+  "@delete_mailboxes_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "there_is_already_folder_with_the_same_name": "يوجد بالفعل مجلد بنفس الاسم",
+  "@there_is_already_folder_with_the_same_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_is_not_in_the_correct_format": "عنوان البريد الإلكتروني غير مكتمل بالتنسيق الصحيح",
+  "@email_address_is_not_in_the_correct_format": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preparing_to_save": "جارٍ التحضير للحفظ",
+  "@preparing_to_save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy_email_address": "نسخ عنوان البريد الإلكتروني",
+  "@copy_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose_email": "إنشاء رسالة بريد إلكتروني",
+  "@compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_copied_to_clipboard": "تم نسخ عنوان البريد الإلكتروني إلى الحافظة",
+  "@email_address_copied_to_clipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fullscreen": "ملء الشاشة",
+  "@fullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "close": "إغلاق",
+  "@close": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showAll": "عرض الكل",
+  "@showAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_a_subject": "هل أنت متأكد من إرسال الرسائل بدون موضوع؟",
+  "@message_dialog_send_email_without_a_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "app_name": "Team Mail",
+  "@app_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_emails": "البحث في رسائل البريد الإلكتروني",
+  "@search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select_all": "تحديد الكل",
+  "@select_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "not_starred": "غير المفضلة",
+  "@not_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select": "تحديد",
+  "@select": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "expand": "توسيع",
+  "@expand": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "collapse": "طي",
+  "@collapse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save_to_drafts": "حفظ في المسودة",
+  "@save_to_drafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_compose_email": "ابدأ في كتابة رسالة...",
+  "@hint_compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fix_email_addresses": "قم بتصحيح عناوين البريد الإلكتروني",
+  "@fix_email_addresses": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "your_download_has_started": "بدأ تنزيل الملف",
+  "@your_download_has_started": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toast_message_delete_multiple_email_permanently_success": "تم حذف {count} رسالة بشكل دائم",
+  "@toast_message_delete_multiple_email_permanently_success": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "toast_message_delete_a_email_permanently_success": "تم حذف الرسالة بشكل دائم",
+  "@toast_message_delete_a_email_permanently_success": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_permanently": "حذف بشكل دائم",
+  "@delete_permanently": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_messages_forever": "حذف الرسائل بشكل دائم",
+  "@delete_messages_forever": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toast_message_empty_trash_folder_success": "تم حذف جميع الرسائل بشكل دائم",
+  "@toast_message_empty_trash_folder_success": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "version": "الإصدار",
+  "@version": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "un_star": "إزالة العلامة النجمية",
+  "@un_star": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "un_spam": "إزالة العلامة كرسالة غير مرغوب فيها (سبام)",
+  "@un_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "settings": "الإعدادات",
+  "@settings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manage_account": "إدارة الحساب",
+  "@manage_account": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "profiles": "الملفات الشخصية",
+  "@profiles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "profilesSettingExplanation": "معلومات عنك وخيارات لإدارتها.",
+  "@profilesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identities": "المتطابقات",
+  "@identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "setDefaultIdentity": "تعيين كهوية افتراضية",
+  "@setDefaultIdentity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identitiesSettingExplanation": "حدد الهوية أو عنوان البريد الإلكتروني الذي تريد استخدامه لإرسال بريد إلكتروني",
+  "@identitiesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewIdentity": "خلق هوية جديدة",
+  "@createNewIdentity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_identity": "هوية جديدة",
+  "@new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "name": "الاسم",
+  "@name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "html_template": "Html template",
+  "@html_template": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "create": "إنشاء",
+  "@create": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_have_created_a_new_identity": "لقد قمت بإنشاء هوية جديدة",
+  "@you_have_created_a_new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "default_value": "الافتراضية",
+  "@default_value": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_identity": "حذف الهوية",
+  "@delete_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_identity": "هل أنت متأكد أنك تريد حذف هذه الهوية؟",
+  "@message_confirmation_dialog_delete_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identity_has_been_deleted": "تم حذف الهوية",
+  "@identity_has_been_deleted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit_identity": "تحرير الهوية",
+  "@edit_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_are_changed_your_identity_successfully": "لقد قمت بتغيير هويتك بنجاح",
+  "@you_are_changed_your_identity_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save": "حفظ",
+  "@save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hasAttachment": "لديها مرفق",
+  "@hasAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last7Days": "اخر 7 ايام",
+  "@last7Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showingResultsFor": "عرض النتائج ل:",
+  "@showingResultsFor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last30Days": "آخر 30 يومًا",
+  "@last30Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisEmailAddressInvalid": "عنوان البريد الإلكتروني هذا غير صالح",
+  "@thisEmailAddressInvalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputSSOMessage": "تسجيل الدخول بحساب SSO الخاص بي",
+  "@loginInputSSOMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotVerifySSOConfiguration": "لا يمكن التحقق من تكوين SSO ، يرجى مراجعة مسؤول النظام",
+  "@canNotVerifySSOConfiguration": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotGetToken": "لا يمكن الحصول على رمز ، يرجى مراجعة مسؤول النظام الخاص بك",
+  "@canNotGetToken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMailbox": "نقل صندوق البريد",
+  "@moveMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadSuccess": "لقد وضعت علامة على جميع الرسائل في \"{mailboxName}\" كمقروءة",
+  "@toastMessageMarkAsMailboxReadSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName"
+    ],
+    "placeholders": {
+      "mailboxName": {}
+    }
+  },
+  "allMailboxes": "كل علب البريد",
+  "@allMailboxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "singleSignOn": "علامة واحدة على",
+  "@singleSignOn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ssoNotAvailable": "تسجيل الدخول الأحادي (SSO) غير متاح",
+  "@ssoNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "form": "من",
+  "@form": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subject": "الموضوع",
+  "@subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "to": "إلى",
+  "@to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hasTheWords": "لديه الكلمات",
+  "@hasTheWords": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doesNotHave": "لا يملك",
+  "@doesNotHave": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailbox": "صندوق بريد",
+  "@mailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageAndRegion": "اللغة و المنطقة",
+  "@languageAndRegion": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageAndRegionSubtitle": "قم بتعيين اللغة والمنطقة الزمنية وتنسيق الوقت الذي تستخدمه في TeamMail.",
+  "@languageAndRegionSubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertImage": "إدراج صورة",
+  "@insertImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectFromFile": "اختر من ملف",
+  "@selectFromFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "language": "اللغة",
+  "@language": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "اللغة الإنجليزية",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "اللغة الفيتنامية",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "اللغة الفرنسية",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "اللغة الروسية",
+  "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailUploadingAttachment": "تعذر إرسال رسالتك لأنها تقوم بتحميل المرفق",
+  "@messageDialogSendEmailUploadingAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignRight": "محاذاة إلى اليمين",
+  "@alignRight": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "paragraph": "فقرة",
+  "@paragraph": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "justifyFull": "ضبط كامل",
+  "@justifyFull": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "outdent": "إزالة المسافة البادئة",
+  "@outdent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignLeft": "محاذاة إلى اليسار",
+  "@alignLeft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignCenter": "محاذاة في الوسط",
+  "@alignCenter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingSaved": "تم حفظ إعدادات الإجازة",
+  "@vacationSettingSaved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsEnabled": "تم تمكين المجيب التلقائي الخاص بك.",
+  "@yourVacationResponderIsEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsDisabledSuccessfully": "تم تعطيل المجيب التلقائي بنجاح",
+  "@yourVacationResponderIsDisabledSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endNow": "تنتهي الآن",
+  "@endNow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSetting": "إعداد الإجازة",
+  "@vacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "backToSearchResults": "رجوع إلى نتائج البحث",
+  "@backToSearchResults": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}
