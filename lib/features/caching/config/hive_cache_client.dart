@@ -106,8 +106,11 @@ abstract class HiveCacheClient<T> {
     return tupleKey.parts.length >= 3 && tupleKey.parts[1] == accountId && tupleKey.parts[2] == userName;
   }
 
-  Future<void> updateItem(String key, T newObject) {
+  Future<void> updateItem(String key, T newObject, {bool needToReopen = false}) {
     return Future.sync(() async {
+      if (needToReopen) {
+        await closeBox();
+      }
       final boxItem = encryption
           ? await openBoxEncryption()
           : await openBox();
