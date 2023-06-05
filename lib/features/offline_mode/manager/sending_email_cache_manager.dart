@@ -24,7 +24,7 @@ class SendingEmailCacheManager {
     return _hiveCacheClient.insertItem(keyCache, sendingEmailHiveCache);
   }
 
-  Future<List<SendingEmailHiveCache>> getAllSendingEmails(
+  Future<List<SendingEmailHiveCache>> getAllSendingEmailsByTupleKey(
     AccountId accountId,
     UserName userName,
     {bool needToReopen = false}
@@ -33,7 +33,7 @@ class SendingEmailCacheManager {
        accountId.asString,
        userName.value,
        needToReopen: needToReopen);
-     log('SendingEmailCacheManager::getAllSendingEmails():COUNT: ${sendingEmailsCache.length}');
+     log('SendingEmailCacheManager::getAllSendingEmailsByTupleKey():COUNT: ${sendingEmailsCache.length}');
      sendingEmailsCache.sortByLatestTime();
      return sendingEmailsCache;
   }
@@ -47,4 +47,13 @@ class SendingEmailCacheManager {
     log('SendingEmailCacheManager::deleteSendingEmail():keyCache: $keyCache');
     return _hiveCacheClient.deleteItem(keyCache);
   }
+
+  Future<List<SendingEmailHiveCache>> getAllSendingEmails() async {
+    final sendingEmailsCache = await _hiveCacheClient.getAll(needToReopen: true);
+    log('SendingEmailCacheManager::getAllSendingEmails():COUNT: ${sendingEmailsCache.length}');
+    sendingEmailsCache.sortByLatestTime();
+    return sendingEmailsCache;
+  }
+
+  Future<void> clearAllSendingEmails() => _hiveCacheClient.clearAllData();
 }

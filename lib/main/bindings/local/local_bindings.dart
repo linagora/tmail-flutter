@@ -92,6 +92,7 @@ class LocalBindings extends Bindings {
       Get.find<DetailedEmailHiveCacheClient>(),
       Get.find<OpenedEmailHiveCacheClient>(),
       Get.find<FileUtils>(),
+      Get.find<SendingEmailCacheManager>(),
     ));
     Get.put(SharePreferenceSpamReportDataSource(Get.find<SharedPreferences>()));
   }
