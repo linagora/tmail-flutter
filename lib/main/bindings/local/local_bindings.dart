@@ -88,7 +88,9 @@ class LocalBindings extends Bindings {
       Get.find<AccountCacheClient>(),
       Get.find<FcmCacheClient>(),
       Get.find<FCMSubscriptionCacheClient>(),
-      Get.find<HiveCacheVersionClient>()
+      Get.find<HiveCacheVersionClient>(),
+      Get.find<DetailedEmailHiveCacheClient>(),
+      Get.find<FileUtils>(),
     ));
     Get.put(SharePreferenceSpamReportDataSource(Get.find<SharedPreferences>()));
   }
