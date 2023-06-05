@@ -2953,4 +2953,25 @@ class AppLocalizations {
       name: 'messageHasBeenSentSuccessfully',
     );
   }
+
+  String get deleteOfflineEmail {
+    return Intl.message(
+        'Delete offline email',
+        name: 'deleteOfflineEmail'
+    );
+  }
+
+  String get messageDialogDeleteSendingEmail {
+    return Intl.message(
+      'Deleting an offline email will erase its content permanently. You won\'t be able to undo this action or recover the email from the Trash mailbox.',
+      name: 'messageDialogDeleteSendingEmail'
+    );
+  }
+
+  String get deleteSomeOfflineEmailSuccessfully {
+    return Intl.message(
+      'Delete some offline email successfully.',
+      name: 'deleteSomeOfflineEmailSuccessfully',
+    );
+  }
 }

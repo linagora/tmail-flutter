@@ -6,17 +6,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
-import 'package:model/model.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef OnLongPressSendingEmailItemAction = void Function(SendingEmail);
+typedef OnSelectSendingEmailItemAction = void Function(SendingEmail);
 
 class SendingEmailTileWidget extends StatelessWidget {
 
   final SendingEmail sendingEmail;
+  final SelectMode selectMode;
+  final OnLongPressSendingEmailItemAction? onLongPressAction;
+  final OnSelectSendingEmailItemAction? onSelectAction;
 
   const SendingEmailTileWidget({
     super.key,
-    required this.sendingEmail
+    required this.sendingEmail,
+    required this.selectMode,
+    this.onLongPressAction,
+    this.onSelectAction
   });
 
   @override
@@ -27,6 +36,7 @@ class SendingEmailTileWidget extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => {},
+        onLongPress: () => onLongPressAction?.call(sendingEmail),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -34,14 +44,36 @@ class SendingEmailTileWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  SvgPicture.asset(
-                    sendingEmail.presentationEmail.numberOfAllEmailAddress() == 1
-                      ? imagePath.icAvatarPersonal
-                      : imagePath.icAvatarGroup,
-                    fit: BoxFit.fill,
-                    width: 60,
-                    height: 60,
-                  ),
+                  if (selectMode == SelectMode.ACTIVE)
+                    GestureDetector(
+                      child: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(30))
+                        ),
+                        alignment: Alignment.center,
+                        child: SvgPicture.asset(
+                          sendingEmail.isSelected
+                            ? imagePath.icSelected
+                            : imagePath.icUnSelected,
+                          fit: BoxFit.fill,
+                          width: 24,
+                          height: 24
+                        ),
+                      ),
+                      onTap: () => onSelectAction?.call(sendingEmail),
+                    )
+                  else
+                    SvgPicture.asset(
+                      sendingEmail.presentationEmail.numberOfAllEmailAddress() == 1
+                        ? imagePath.icAvatarPersonal
+                        : imagePath.icAvatarGroup,
+                      fit: BoxFit.fill,
+                      width: 60,
+                      height: 60,
+                    ),
                   const SizedBox(width: 8),
                   Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
