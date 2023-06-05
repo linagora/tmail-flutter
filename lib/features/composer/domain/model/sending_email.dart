@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_extension.dart';
+import 'package:model/mailbox/select_mode.dart';
 
 class SendingEmail with EquatableMixin {
   final String sendingId;
@@ -26,6 +27,7 @@ class SendingEmail with EquatableMixin {
   final MailboxName? mailboxNameRequest;
   final Id? creationIdRequest;
   final DateTime createTime;
+  final SelectMode selectMode;
 
   SendingEmail({
     required this.sendingId,
@@ -37,7 +39,8 @@ class SendingEmail with EquatableMixin {
     this.emailIdAnsweredOrForwarded,
     this.identityId,
     this.mailboxNameRequest,
-    this.creationIdRequest
+    this.creationIdRequest,
+    this.selectMode = SelectMode.INACTIVE
   });
 
   Map<String, dynamic> toJson() {
@@ -70,7 +73,6 @@ class SendingEmail with EquatableMixin {
   }
 
   factory SendingEmail.fromJson(Map<String, dynamic> json) {
-
     return SendingEmail(
       sendingId: json['sendingId'] as String,
       email: Email.fromJson(jsonDecode(json['email'])),
@@ -92,6 +94,8 @@ class SendingEmail with EquatableMixin {
     );
   }
 
+  bool get isSelected => selectMode == SelectMode.ACTIVE;
+
   @override
   List<Object?> get props => [
     sendingId,
@@ -103,6 +107,7 @@ class SendingEmail with EquatableMixin {
     emailIdAnsweredOrForwarded,
     identityId,
     mailboxNameRequest,
-    creationIdRequest
+    creationIdRequest,
+    selectMode
   ];
 }
