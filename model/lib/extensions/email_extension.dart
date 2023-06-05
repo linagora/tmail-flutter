@@ -161,7 +161,8 @@ extension EmailExtension on Email {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       emailHeader: headers?.toList(),
-      bodyValues: bodyValues
+      bodyValues: bodyValues,
+      htmlBody: htmlBody
     );
   }
 }
