@@ -195,7 +195,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName, {bool needToReopen = false}) {
     throw UnimplementedError();
   }
 
