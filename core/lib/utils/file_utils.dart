@@ -1,6 +1,6 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:core/domain/exceptions/download_file_exception.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -97,18 +97,16 @@ class FileUtils {
 
     return File(internalStorageDirPath).exists();
   }
-}
 
-enum ExtensionType {
-  text,
-  json;
-
-  String get value {
-    switch(this) {
-      case ExtensionType.text:
-        return 'txt';
-      case ExtensionType.json:
-        return 'json';
+  void removeFolder(String folderName) async {
+    try {
+      String folderPath = (await getApplicationDocumentsDirectory()).absolute.path;
+      folderPath = '$folderPath/$folderName';
+      log('FileUtils::removeFolder():folderPath: $folderPath');
+      final dir = Directory(folderPath);
+      dir.deleteSync(recursive: true);
+    } catch (e) {
+      logError('FileUtils::removeFolder():EXCEPTION: $e');
     }
   }
 }
