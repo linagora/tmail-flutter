@@ -6,7 +6,6 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/fps_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
@@ -44,7 +43,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -312,6 +310,7 @@ abstract class BaseController extends GetxController
       cachingManager.clearAll(),
       languageCacheManager.removeLanguage(),
     ]);
+    cachingManager.clearAllFileInStorage();
     authorizationInterceptors.clear();
     authorizationIsolateInterceptors.clear();
     if (_isFcmEnabled) {
@@ -328,6 +327,7 @@ abstract class BaseController extends GetxController
       cachingManager.clearAll(),
       languageCacheManager.removeLanguage(),
     ]);
+    cachingManager.clearAllFileInStorage();
     authorizationIsolateInterceptors.clear();
     authorizationInterceptors.clear();
     if (_isFcmEnabled) {
