@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/update_sending_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -332,6 +333,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleStoreSendingEmailSuccess(success);
     } else if (success is GetAllSendingEmailSuccess) {
       _handleGetAllSendingEmailsSuccess(success);
+    } else if (success is UpdateSendingEmailSuccess) {
+      _handleUpdateSendingEmailSuccess(success);
     }
   }
 
@@ -1767,7 +1770,7 @@ class MailboxDashBoardController extends ReloadableController {
         if (currentContext != null && isUpdateSendingEmail == false) {
           _showActionSendingEmail(session, accountId, emailRequest, mailboxRequest);
         } else {
-          _handleStoreSendingEmail(session, accountId, emailRequest, mailboxRequest, isUpdateSendingEmail: isUpdateSendingEmail);
+          _handleUpdateSendingEmail(session, accountId, emailRequest, mailboxRequest);
         }
       }
     } else {
@@ -1785,14 +1788,27 @@ class MailboxDashBoardController extends ReloadableController {
     AccountId accountId,
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest,
-    {bool? isUpdateSendingEmail = false}
   ) {
     final currentEmailId = emailRequest.email.id?.id.value;
     final sendingEmail = emailRequest.toSendingEmail(
         emailRequest.email.id != null ? currentEmailId! : _uuid.v1(),
         mailboxRequest: mailboxRequest
     );
-    _storeSendingEmail(accountId, session.username, sendingEmail, isUpdateSendingEmail: isUpdateSendingEmail);
+    _storeSendingEmail(accountId, session.username, sendingEmail);
+  }
+
+  void _handleUpdateSendingEmail(
+      Session session,
+      AccountId accountId,
+      EmailRequest emailRequest,
+      CreateNewMailboxRequest? mailboxRequest,
+  ) {
+    final currentEmailId = emailRequest.email.id?.id.value;
+    final sendingEmail = emailRequest.toSendingEmail(
+        emailRequest.email.id != null ? currentEmailId! : _uuid.v1(),
+        mailboxRequest: mailboxRequest
+    );
+    _updateSendingEmail(accountId, session.username, sendingEmail);
   }
 
   void _showActionSendingEmail(
@@ -1844,32 +1860,42 @@ class MailboxDashBoardController extends ReloadableController {
     AccountId accountId,
     UserName userName,
     SendingEmail sendingEmail,
-    {bool? isUpdateSendingEmail}
   ) {
     log('MailboxDashBoardController::_storeSendingEmail():sendingEmail: $sendingEmail');
     consumeState(_storeSendingEmailInteractor.execute(
       accountId,
       userName,
-      sendingEmail,
-      isUpdateSendingEmail ?? false));
+      sendingEmail));
+  }
+
+  void _updateSendingEmail(
+    AccountId accountId,
+    UserName userName,
+    SendingEmail sendingEmail
+  ) {
+    log('MailboxDashBoardController::_storeSendingEmail():sendingEmail: $sendingEmail');
+    consumeState(_storeSendingEmailInteractor.execute(
+        accountId,
+        userName,
+        sendingEmail));
   }
 
   void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) async {
-    if (success.isUpdateSendingEmail) {
-      _cancelSendingEmailToSendingQueue(success.sendingEmail);
-      _addSendingEmailToSendingQueue(success.sendingEmail);
-      getAllSendingEmails();
-    } else {
-      _addSendingEmailToSendingQueue(success.sendingEmail);
-      getAllSendingEmails();
-      if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastSuccessMessage(
-            currentOverlayContext!,
-            AppLocalizations.of(currentContext!).messageHasBeenSavedToTheSendingQueue,
-            leadingSVGIconColor: Colors.white,
-            leadingSVGIcon: _imagePaths.icEmail);
-      }
+    _addSendingEmailToSendingQueue(success.sendingEmail);
+    getAllSendingEmails();
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).messageHasBeenSavedToTheSendingQueue,
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: _imagePaths.icEmail);
     }
+  }
+
+  void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
+    _cancelSendingEmailToSendingQueue(success.sendingEmail);
+    _addSendingEmailToSendingQueue(success.sendingEmail);
+    getAllSendingEmails();
   }
 
   void _cancelSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
