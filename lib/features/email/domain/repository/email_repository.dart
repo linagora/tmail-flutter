@@ -102,7 +102,7 @@ abstract class EmailRepository {
 
   Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId);
 
-  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
+  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail, bool isUpdateSendingEmail);
 
   Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId);
 }
