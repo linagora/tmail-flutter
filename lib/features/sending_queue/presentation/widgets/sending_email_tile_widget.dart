@@ -8,24 +8,27 @@ import 'package:get/get.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnLongPressSendingEmailItemAction = void Function(SendingEmail);
-typedef OnSelectSendingEmailItemAction = void Function(SendingEmail);
+typedef OnSelectSendingEmailItemAction = void Function(SendingEmailActionType, SendingEmail);
+typedef OnSelectLeadingSendingEmailItemAction = void Function(SendingEmail);
 
 class SendingEmailTileWidget extends StatelessWidget {
 
   final SendingEmail sendingEmail;
   final SelectMode selectMode;
   final OnLongPressSendingEmailItemAction? onLongPressAction;
-  final OnSelectSendingEmailItemAction? onSelectAction;
-
+  final OnSelectSendingEmailItemAction? onTapAction;
+  final OnSelectLeadingSendingEmailItemAction? onSelectLeadingAction;
   const SendingEmailTileWidget({
     super.key,
     required this.sendingEmail,
     required this.selectMode,
     this.onLongPressAction,
-    this.onSelectAction
+    this.onTapAction,
+    this.onSelectLeadingAction,
   });
 
   @override
@@ -35,7 +38,7 @@ class SendingEmailTileWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => {},
+        onTap: () => onTapAction?.call(SendingEmailActionType.edit ,sendingEmail),
         onLongPress: () => onLongPressAction?.call(sendingEmail),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +66,7 @@ class SendingEmailTileWidget extends StatelessWidget {
                           height: 24
                         ),
                       ),
-                      onTap: () => onSelectAction?.call(sendingEmail),
+                      onTap: () => onSelectLeadingAction?.call(sendingEmail),
                     )
                   else
                     SvgPicture.asset(

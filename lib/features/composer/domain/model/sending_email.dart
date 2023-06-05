@@ -66,7 +66,7 @@ class SendingEmail with EquatableMixin {
     return val;
   }
 
-  PresentationEmail get presentationEmail => email.toPresentationEmail();
+  PresentationEmail get presentationEmail => email.sendingEmailToPresentationEmail();
 
   String getCreateTimeAt(String newLocale) {
     return DateFormat(createTime.toPattern(), newLocale).format(createTime);
