@@ -1,3 +1,15 @@
+## [0.7.10] - 2023-06-05
+### Added
+- Keep N recently opened email in the cache
+- Reading recent emails when on slow network/offline
+- Config work manager on mobile
+
+### Changed
+- Split the test report job for forks
+
+### Fixed
+- Force browsers to re-validate cache before reuse
+
 ## [0.7.9] - 2023-05-08
 ### Added
 - \#1792 Add option 'Empty Trash' in folder menu
@@ -101,6 +113,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.7.10]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.10
 [0.7.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.9
 [0.7.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.8
 [0.7.7]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.7
