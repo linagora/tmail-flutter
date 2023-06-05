@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
@@ -35,6 +36,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   final _appToast = getBinding<AppToast>();
 
   final listSendingEmailController = ScrollController();
+  final listSendingEmailSelected = <SendingEmail>[].obs;
 
   final selectionState = Rx<SelectMode>(SelectMode.INACTIVE);
 
@@ -69,6 +71,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     selectionState.value = newListSendingEmail.isAllUnSelected()
       ? SelectMode.INACTIVE
       : SelectMode.ACTIVE;
+
+    listSendingEmailSelected.value = newListSendingEmail.listSelected();
   }
 
   void toggleSelectionSendingEmail(SendingEmail sendingEmail) {
@@ -78,6 +82,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     selectionState.value = newListSendingEmail.isAllUnSelected()
       ? SelectMode.INACTIVE
       : SelectMode.ACTIVE;
+
+    listSendingEmailSelected.value = newListSendingEmail.listSelected();
   }
 
   bool get isAllUnSelected => dashboardController!.listSendingEmails.isAllUnSelected();
@@ -178,7 +184,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
       emailActionType: EmailActionType.edit,
       presentationEmail: sendingEmail.presentationEmail,
       mailboxRole: dashboardController?.selectedMailbox.value?.role,
-      emailContents: sendingEmail.email.subject,
+      emailContents: sendingEmail.presentationEmail.emailContentList.asHtmlString,
+      sendingEmail: sendingEmail
     );
 
     dashboardController?.goToComposer(arguments);
@@ -212,55 +219,4 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     _sendingQueueIsolateManager?.release();
     super.onClose();
   }
-
-  //
-  // void pressEmailAction(
-  //   BuildContext context,
-  //   EmailActionType actionType,
-  //   PresentationEmail selectedEmail,
-  //   {PresentationMailbox? mailboxContain}
-  // ) {
-  //   switch(actionType) {
-  //     case EmailActionType.edit:
-  //       editEmail(selectedEmail);
-  //       break;
-  //     case EmailActionType.selection:
-  //       selectEmail(context, selectedEmail);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
-  //
-  // void pressEmailSelectionAction(
-  //   BuildContext context,
-  //   EmailActionType actionType,
-  //   List<PresentationEmail> selectionEmail
-  // ) {
-  //   switch(actionType) {
-  //     case EmailActionType.edit:
-  //       editEmail(selectionEmail.first);
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
-
-  // bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
-  //
-  // bool? _isUnSelectedAll() {
-  //   return dashboardController?.sendingEmailsInCurrentMailbox.every((email) => email.selectMode == SelectMode.INACTIVE);
-  // }
-  //
-  // void cancelSelectEmail() {
-  //   final newEmailList  = dashboardController?.sendingEmailsInCurrentMailbox
-  //     .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
-  //     .toList();
-  //   updateEmailList(newEmailList);
-  //   currentSelectMode.value = SelectMode.INACTIVE;
-  //   listEmailSelected.clear();
-  // }
-
-  // List<PresentationEmail> get listEmailSelected => dashboardController?.sendingEmailsInCurrentMailbox.listEmailSelected ?? [];
-
 }

@@ -33,6 +33,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
@@ -235,9 +236,7 @@ class ComposerController extends BaseController {
   @override
   void onReady() async {
     _initEmail();
-    if (isNetworkConnectionAvailable) {
-      _getAllIdentities();
-    }
+    _getAllIdentities();
     if (!BuildUtils.isWeb) {
       Future.delayed(const Duration(milliseconds: 500), () =>
           _checkContactPermission());
@@ -616,7 +615,8 @@ class ComposerController extends BaseController {
       {
         bool asDrafts = false,
         MailboxId? draftMailboxId,
-        MailboxId? outboxMailboxId
+        MailboxId? outboxMailboxId,
+        ComposerArguments? arguments
       }
   ) async {
     Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
@@ -663,7 +663,10 @@ class ComposerController extends BaseController {
 
     final generatePartId = PartId(_uuid.v1());
 
+    final isUpdateSendingEmail = arguments?.sendingEmail != null;
+
     return Email(
+      id: isUpdateSendingEmail ? EmailId(Id(arguments!.sendingEmail!.sendingId))  : null,
       mailboxIds: mailboxIds.isNotEmpty ? mailboxIds : null,
       from: listFromEmailAddress,
       to: listToEmailAddress.toSet(),
@@ -801,17 +804,19 @@ class ComposerController extends BaseController {
     final userProfile = mailboxDashBoardController.userProfile.value;
 
     if (arguments != null && accountId != null && userProfile != null && session != null) {
-      final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
-      final emailRequest = EmailRequest(
-        email: email,
-        sentMailboxId: sentMailboxId,
-        identityId: identitySelected.value?.id,
-        emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
-          ? arguments.presentationEmail?.id
-          : null,
-        emailIdAnsweredOrForwarded: arguments.presentationEmail?.id,
-        emailActionType: arguments.emailActionType
-      );
+      final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId, arguments: arguments);
+      final emailRequest = arguments.sendingEmail != null
+        ? arguments.sendingEmail!.toEmailRequest(emailEdit: email)
+        : EmailRequest(
+            email: email,
+            sentMailboxId: sentMailboxId,
+            identityId: identitySelected.value?.id,
+            emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
+              ? arguments.presentationEmail?.id
+              : null,
+            emailIdAnsweredOrForwarded: arguments.presentationEmail?.id,
+            emailActionType: arguments.emailActionType
+          );
       final mailboxRequest = outboxMailboxId == null
         ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)
         : null;
@@ -820,7 +825,8 @@ class ComposerController extends BaseController {
         session,
         accountId,
         emailRequest,
-        mailboxRequest
+        mailboxRequest,
+        isUpdateSendingEmail: arguments.sendingEmail != null,
       );
       uploadController.clearInlineFileUploaded();
 
@@ -1127,7 +1133,7 @@ class ComposerController extends BaseController {
       }
     }
 
-    if (arguments.emailContents != null && arguments.emailContents!.isNotEmpty) {
+    if (arguments.emailContents != null && arguments.emailContents!.isNotEmpty && arguments.sendingEmail != null) {
       _emailContents = arguments.emailContents;
       emailContentsViewState.value = Right(GetEmailContentSuccess(_emailContents!, [], [], arguments.presentationEmail?.toEmail()));
     } else {

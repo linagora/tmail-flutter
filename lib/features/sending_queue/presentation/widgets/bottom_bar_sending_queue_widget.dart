@@ -5,6 +5,7 @@ import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 
 typedef OnHandleSendingEmailActionType = void Function(SendingEmailActionType, List<SendingEmail>);
@@ -35,15 +36,16 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: (ButtonBuilder(imagePaths.icEdit)
-            ..key(Key(SendingEmailActionType.edit.getButtonKey()))
-            ..iconColor(SendingEmailActionType.edit.getButtonIconColor())
-            ..padding(const EdgeInsets.all(8))
-            ..radiusSplash(8)
-            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.edit.getButtonTitleColor()))
-            ..onPressActionClick(() => onHandleSendingEmailActionType?.call(SendingEmailActionType.edit, listSendingEmails))
-            ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: true)
-          ).build()),
+          if (!listSendingEmails.isAllSelected() || listSendingEmails.length < 2)
+            Expanded(child: (ButtonBuilder(imagePaths.icEdit)
+              ..key(Key(SendingEmailActionType.edit.getButtonKey()))
+              ..iconColor(SendingEmailActionType.edit.getButtonIconColor())
+              ..padding(const EdgeInsets.all(8))
+              ..radiusSplash(8)
+              ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.edit.getButtonTitleColor()))
+              ..onPressActionClick(() => onHandleSendingEmailActionType?.call(SendingEmailActionType.edit, listSendingEmails))
+              ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: true)
+            ).build()),
           Expanded(child: (ButtonBuilder(imagePaths.icDeleteComposer)
             ..key(Key(SendingEmailActionType.delete.getButtonKey()))
             ..iconColor(SendingEmailActionType.delete.getButtonIconColor())

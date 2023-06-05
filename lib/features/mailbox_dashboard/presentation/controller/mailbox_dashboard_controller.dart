@@ -1196,7 +1196,8 @@ class MailboxDashBoardController extends ReloadableController {
         result.session,
         result.accountId,
         result.emailRequest,
-        result.mailboxRequest
+        result.mailboxRequest,
+        isUpdateSendingEmail: result.isUpdateSendingEmail
       );
     }
   }
@@ -1317,7 +1318,8 @@ class MailboxDashBoardController extends ReloadableController {
           result.session,
           result.accountId,
           result.emailRequest,
-          result.mailboxRequest
+          result.mailboxRequest,
+          isUpdateSendingEmail: result.isUpdateSendingEmail ?? false,
         );
       }
     }
@@ -1750,7 +1752,8 @@ class MailboxDashBoardController extends ReloadableController {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    CreateNewMailboxRequest? mailboxRequest
+    CreateNewMailboxRequest? mailboxRequest,
+    {bool? isUpdateSendingEmail = false}
   ) {
     if (PlatformInfo.isMobile) {
       if (networkConnectionController.isNetworkConnectionAvailable()) {
@@ -1761,48 +1764,10 @@ class MailboxDashBoardController extends ReloadableController {
           mailboxRequest: mailboxRequest
         ));
       } else {
-        if (currentContext != null) {
-          showConfirmDialogAction(
-            currentContext!,
-            '',
-            AppLocalizations.of(currentContext!).proceed,
-            onConfirmAction: () {
-              final sendingEmail = emailRequest.toSendingEmail(
-                _uuid.v1(),
-                mailboxRequest: mailboxRequest
-              );
-              _storeSendingEmail(accountId, session.username, sendingEmail);
-            },
-            title: AppLocalizations.of(currentContext!).youAreInOfflineMode,
-            icon: SvgPicture.asset(_imagePaths.icDialogOfflineMode),
-            alignCenter: true,
-            messageStyle: const TextStyle(
-              color: AppColor.colorTitleSendingItem,
-              fontSize: 15,
-              fontWeight: FontWeight.normal
-            ),
-            listTextSpan: [
-              TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailFirst),
-              TextSpan(
-                text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailSecond,
-                style: const TextStyle(
-                  color: AppColor.colorTitleSendingItem,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600
-                ),
-              ),
-              TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailThird),
-              TextSpan(
-                text: AppLocalizations.of(currentContext!).sendingQueue,
-                style: const TextStyle(
-                  color: AppColor.colorTitleSendingItem,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600
-                ),
-              ),
-              TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailTail)
-            ]
-          );
+        if (currentContext != null && isUpdateSendingEmail == false) {
+          _showActionSendingEmail(session, accountId, emailRequest, mailboxRequest);
+        } else {
+          _handleStoreSendingEmail(session, accountId, emailRequest, mailboxRequest, isUpdateSendingEmail: isUpdateSendingEmail);
         }
       }
     } else {
@@ -1815,22 +1780,104 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
-    log('MailboxDashBoardController::_storeSendingEmail():sendingEmail: $sendingEmail');
-    consumeState(_storeSendingEmailInteractor.execute(accountId, userName, sendingEmail));
+  void _handleStoreSendingEmail(
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    CreateNewMailboxRequest? mailboxRequest,
+    {bool? isUpdateSendingEmail = false}
+  ) {
+    final currentEmailId = emailRequest.email.id?.id.value;
+    final sendingEmail = emailRequest.toSendingEmail(
+        emailRequest.email.id != null ? currentEmailId! : _uuid.v1(),
+        mailboxRequest: mailboxRequest
+    );
+    _storeSendingEmail(accountId, session.username, sendingEmail, isUpdateSendingEmail: isUpdateSendingEmail);
   }
 
-  void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) {
-    if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).messageHasBeenSavedToTheSendingQueue,
-        leadingSVGIconColor: Colors.white,
-        leadingSVGIcon: _imagePaths.icEmail);
-    }
+  void _showActionSendingEmail(
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    CreateNewMailboxRequest? mailboxRequest
+  ) {
+    showConfirmDialogAction(
+        currentContext!,
+        '',
+        AppLocalizations.of(currentContext!).proceed,
+        onConfirmAction: () {
+          _handleStoreSendingEmail(session, accountId, emailRequest, mailboxRequest);
+        },
+        title: AppLocalizations.of(currentContext!).youAreInOfflineMode,
+        icon: SvgPicture.asset(_imagePaths.icDialogOfflineMode),
+        alignCenter: true,
+        messageStyle: const TextStyle(
+            color: AppColor.colorTitleSendingItem,
+            fontSize: 15,
+            fontWeight: FontWeight.normal
+        ),
+        listTextSpan: [
+          TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailFirst),
+          TextSpan(
+            text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailSecond,
+            style: const TextStyle(
+                color: AppColor.colorTitleSendingItem,
+                fontSize: 15,
+                fontWeight: FontWeight.w600
+            ),
+          ),
+          TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailThird),
+          TextSpan(
+            text: AppLocalizations.of(currentContext!).sendingQueue,
+            style: const TextStyle(
+                color: AppColor.colorTitleSendingItem,
+                fontSize: 15,
+                fontWeight: FontWeight.w600
+            ),
+          ),
+          TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailTail)
+        ]
+    );
+  }
 
-    _addSendingEmailToSendingQueue(success.sendingEmail);
-    getAllSendingEmails();
+  void _storeSendingEmail(
+    AccountId accountId,
+    UserName userName,
+    SendingEmail sendingEmail,
+    {bool? isUpdateSendingEmail}
+  ) {
+    log('MailboxDashBoardController::_storeSendingEmail():sendingEmail: $sendingEmail');
+    consumeState(_storeSendingEmailInteractor.execute(
+      accountId,
+      userName,
+      sendingEmail,
+      isUpdateSendingEmail ?? false));
+  }
+
+  void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) async {
+    if (success.isUpdateSendingEmail) {
+      _cancelSendingEmailToSendingQueue(success.sendingEmail);
+      _addSendingEmailToSendingQueue(success.sendingEmail);
+      getAllSendingEmails();
+    } else {
+      _addSendingEmailToSendingQueue(success.sendingEmail);
+      getAllSendingEmails();
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastSuccessMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).messageHasBeenSavedToTheSendingQueue,
+            leadingSVGIconColor: Colors.white,
+            leadingSVGIcon: _imagePaths.icEmail);
+      }
+    }
+  }
+
+  void _cancelSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
+    try {
+      await WorkSchedulerController().cancelByUniqueId(sendingEmail.sendingId);
+    } catch (e) {
+      logError('MailboxDashBoardController::_cancelSendingEmailToSendingQueue(): EXCEPTION: $e');
+    }
   }
 
   void _addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {

@@ -22,12 +22,14 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
       body: SafeArea(
         child: Column(
           children: [
-            Obx(() => AppBarSendingQueueWidget(
-              listSendingEmails: controller.dashboardController!.listSendingEmails,
-              onOpenMailboxMenu: controller.openMailboxMenu,
-              onBackAction: controller.disableSelectionMode,
-              selectMode: controller.selectionState.value,
-            )),
+            Obx(() {
+              return AppBarSendingQueueWidget(
+                listSendingEmails: controller.listSendingEmailSelected,
+                onOpenMailboxMenu: controller.openMailboxMenu,
+                onBackAction: controller.disableSelectionMode,
+                selectMode: controller.selectionState.value,
+              );
+            }),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
             const BannerMessageSendingQueueWidget(),
             Expanded(child: _buildListSendingEmails(context)),
@@ -36,7 +38,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
                 return const SizedBox.shrink();
               } else {
                return BottomBarSendingQueueWidget(
-                  listSendingEmails: controller.dashboardController!.listSendingEmails,
+                  listSendingEmails: controller.listSendingEmailSelected,
                   onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
                 );
               }
@@ -60,8 +62,9 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
               sendingEmail: controller.dashboardController!.listSendingEmails[index],
               selectMode: controller.selectionState.value,
               onLongPressAction: controller.handleOnLongPressAction,
-              onSelectAction: controller.toggleSelectionSendingEmail,
-            ));
+              onSelectLeadingAction: controller.toggleSelectionSendingEmail,
+              onTapAction:  (actionType, listSendingEmails) =>
+                controller.handleSendingEmailActionType(context, actionType, [listSendingEmails])));
           }
         );
       } else {
