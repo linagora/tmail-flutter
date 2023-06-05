@@ -1,7 +1,9 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/detailed_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
@@ -23,6 +25,7 @@ class CachingManager {
   final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
   final HiveCacheVersionClient _hiveCacheVersionClient;
   final DetailedEmailHiveCacheClient _detailedEmailHiveCacheClient;
+  final OpenedEmailHiveCacheClient _openedEmailHiveCacheClient;
   final FileUtils _fileUtils;
 
   CachingManager(
@@ -35,6 +38,7 @@ class CachingManager {
     this._fcmSubscriptionCacheClient,
     this._hiveCacheVersionClient,
     this._detailedEmailHiveCacheClient,
+    this._openedEmailHiveCacheClient,
     this._fileUtils,
   );
 
@@ -48,6 +52,7 @@ class CachingManager {
       _recentSearchCacheClient.clearAllData(),
       _accountCacheClient.clearAllData(),
       _detailedEmailHiveCacheClient.clearAllData(),
+      _openedEmailHiveCacheClient.clearAllData(),
     ], eagerError: true);
   }
 
@@ -60,6 +65,7 @@ class CachingManager {
       _fcmSubscriptionCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
       _detailedEmailHiveCacheClient.clearAllData(),
+      _openedEmailHiveCacheClient.clearAllData(),
     ], eagerError: true);
   }
 
@@ -92,6 +98,9 @@ class CachingManager {
   }
 
   void clearAllFileInStorage() {
-    _fileUtils.removeFolder(CachingConstants.incomingEmailedContentFolderName);
+    if (PlatformInfo.isMobile) {
+      _fileUtils.removeFolder(CachingConstants.incomingEmailedContentFolderName);
+      _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName);
+    }
   }
 }
