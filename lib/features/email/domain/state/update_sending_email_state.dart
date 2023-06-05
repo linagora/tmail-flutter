@@ -3,20 +3,20 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 
-class StoreSendingEmailLoading extends UIState {}
+class UpdateSendingEmailLoading extends UIState {}
 
-class StoreSendingEmailSuccess extends UIState {
+class UpdateSendingEmailSuccess extends UIState {
 
   final SendingEmail sendingEmail;
 
-  StoreSendingEmailSuccess(this.sendingEmail);
+  UpdateSendingEmailSuccess(this.sendingEmail);
 
   @override
   List<Object?> get props => [sendingEmail];
 }
 
-class StoreSendingEmailFailure extends FeatureFailure {
-  StoreSendingEmailFailure(dynamic exception) : super(exception: exception);
+class UpdateSendingEmailFailure extends FeatureFailure {
+  UpdateSendingEmailFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];
