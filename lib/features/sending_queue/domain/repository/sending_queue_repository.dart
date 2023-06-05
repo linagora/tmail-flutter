@@ -5,4 +5,6 @@ import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart'
 
 abstract class SendingQueueRepository {
   Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName, {bool needToReopen = false});
+
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId);
 }
