@@ -93,35 +93,34 @@ abstract class BaseController extends GetxController
     viewState.value = newState;
     viewState.value.fold(
       (failure) {
-        if (_handleCommonException(failure)) {
-          handleFinallyCommonException();
-          return;
+        if (failure is FeatureFailure) {
+          final exception = _performFilterExceptionInError(failure.exception);
+          if (exception != null) {
+            handleExceptionAction(exception);
+          } else {
+            handleFailureViewState(failure);
+          }
+        } else {
+          handleFailureViewState(failure);
         }
-        handleFailureViewState(failure);
       },
       handleSuccessViewState);
   }
 
-  bool _handleCommonException(Failure failure) {
-    if (failure is FeatureFailure) {
-      return _handleCommonError(failure.exception);
-    }
-    return false;
-  }
-
   void onError(Object error, StackTrace stackTrace) {
     logError('BaseController::onError():error: $error | stackTrace: $stackTrace');
-    if (_handleCommonError(error)) {
-      handleFinallyCommonException();
-      return;
+    final exception = _performFilterExceptionInError(error);
+    if (exception != null) {
+      handleExceptionAction(exception);
+    } else {
+      handleErrorViewState(error, stackTrace);
     }
-    handleErrorViewState(error, stackTrace);
   }
 
   void onDone() {}
 
-  bool _handleCommonError(dynamic error) {
-    logError('BaseController::_handleCommonError(): $error');
+  Exception? _performFilterExceptionInError(dynamic error) {
+    logError('BaseController::_performFilterExceptionInError(): $error');
     if (error is NoNetworkError || error is ConnectError || error is InternalServerError) {
       if (currentOverlayContext != null && currentContext != null) {
         _appToast.showToastMessage(
@@ -135,46 +134,55 @@ abstract class BaseController extends GetxController
           infinityToast: true,
         );
       }
-      return true;
+      return error;
     } else if (error is BadCredentialsException) {
       if (currentOverlayContext != null && currentContext != null) {
         _appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).badCredentials);
       }
-      checkAuthenticationTypeWhenLogout();
-      return true;
+      performInvokeLogoutAction();
+      return error;
     }
 
-    return false;
+    return null;
   }
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
 
-  void handleFinallyCommonException() {
+  void handleExceptionAction(Exception exception) {
+    log('BaseController::handleExceptionAction():exception: $exception');
     clearState();
   }
 
   void handleFailureViewState(Failure failure) {
     logError('BaseController::handleFailureViewState(): $failure');
     if (failure is LogoutOidcFailure) {
-      _getSubscriptionLocalAction();
+      if (_isFcmEnabled) {
+        _getSubscriptionLocalAction();
+      } else {
+        _logoutOIDCAction();
+      }
     } else if (failure is GetFCMSubscriptionLocalFailure) {
-      checkAuthenticationTypeWhenLogout();
+      performInvokeLogoutAction();
     } else if (failure is DestroySubscriptionFailure) {
-      checkAuthenticationTypeWhenLogout();
+      performInvokeLogoutAction();
     }
   }
 
   void handleSuccessViewState(Success success) {
     log('BaseController::handleSuccessViewState(): $success');
     if (success is LogoutOidcSuccess) {
-      _getSubscriptionLocalAction();
+      if (_isFcmEnabled) {
+        _getSubscriptionLocalAction();
+      } else {
+        _logoutOIDCAction();
+      }
     } else if (success is GetFCMSubscriptionLocalSuccess) {
       final subscriptionId = success.fcmSubscription.subscriptionId;
       _destroySubscriptionAction(subscriptionId);
     } else if (success is DestroySubscriptionSuccess) {
-      checkAuthenticationTypeWhenLogout();
+      performInvokeLogoutAction();
     }
   }
 
@@ -249,6 +257,10 @@ abstract class BaseController extends GetxController
     }
   }
 
+  AuthenticationType get authenticationType => authorizationInterceptors.authenticationType;
+
+  bool get isAuthenticatedWithOidc => authenticationType == AuthenticationType.oidc;
+
   bool _isFcmActivated(Session session, AccountId accountId) =>
     [FirebaseCapability.fcmIdentifier].isSupported(session, accountId) && AppConfig.fcmAvailable;
 
@@ -258,17 +270,18 @@ abstract class BaseController extends GetxController
 
   void logout(Session? session, AccountId? accountId) {
     if (session == null || accountId == null) {
+      logError('BaseController::logout(): Session is $session OR AccountId is $accountId');
+      performInvokeLogoutAction();
       return;
     }
     _isFcmEnabled = _isFcmActivated(session, accountId);
-    final authenticationType = authorizationInterceptors.authenticationType;
-    if (authenticationType == AuthenticationType.oidc) {
+    if (isAuthenticatedWithOidc) {
       consumeState(logoutOidcInteractor.execute());
     } else {
       if (_isFcmEnabled) {
         _getSubscriptionLocalAction();
       } else {
-        logoutAction();
+        _logoutAction();
       }
     }
   }
@@ -278,33 +291,31 @@ abstract class BaseController extends GetxController
       _destroySubscriptionInteractor = Get.find<DestroySubscriptionInteractor>();
       consumeState(_destroySubscriptionInteractor!.execute(subscriptionId));
     } catch(e) {
-      logError('ReloadableController::destroySubscriptionAction(): exception: $e');
-      logoutAction();
+      logError('BaseController::destroySubscriptionAction(): exception: $e');
+      performInvokeLogoutAction();
     }
   }
 
-  Future<void> _getSubscriptionLocalAction() {
+  void _getSubscriptionLocalAction() {
     try {
       _getSubscriptionLocalInteractor = Get.find<GetFCMSubscriptionLocalInteractor>();
       consumeState(_getSubscriptionLocalInteractor!.execute());
     } catch (e) {
-      logError(
-          'ReloadableController::getSubscriptionLocalAction(): exception: $e');
-      logoutAction();
+      logError('BaseController::getSubscriptionLocalAction(): exception: $e');
+      performInvokeLogoutAction();
     }
-    return Future.value();
   }
 
-  void checkAuthenticationTypeWhenLogout() {
-    final authenticationType = authorizationInterceptors.authenticationType;
-    if (authenticationType == AuthenticationType.oidc) {
+  void performInvokeLogoutAction() {
+    if (isAuthenticatedWithOidc) {
       _logoutOIDCAction();
     } else {
-      logoutAction();
+      _logoutAction();
     }
   }
 
-  void logoutAction() async {
+  void _logoutAction() async {
+    log('BaseController::_logoutAction():');
     await Future.wait([
       deleteCredentialInteractor.execute(),
       cachingManager.clearAll(),
@@ -321,7 +332,7 @@ abstract class BaseController extends GetxController
   }
 
   void _logoutOIDCAction() async {
-    log('ReloadableController::_logoutOIDCAction():');
+    log('BaseController::_logoutOIDCAction():');
     await Future.wait([
       deleteAuthorityOidcInteractor.execute(),
       cachingManager.clearAll(),
@@ -334,5 +345,6 @@ abstract class BaseController extends GetxController
       _fcmReceiver.deleteFcmToken();
     }
     await cachingManager.closeHive();
+    goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
 }

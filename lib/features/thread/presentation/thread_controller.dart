@@ -339,8 +339,6 @@ class ThreadController extends BaseController with EmailActionController {
     if (error is CannotCalculateChangesMethodResponseException) {
       await cachingManager.clearEmailCache();
       _getAllEmailAction();
-    } else {
-      super.onError(error, stackTrace);
     }
   }
 

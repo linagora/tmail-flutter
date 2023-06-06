@@ -81,12 +81,11 @@ class CachingManager {
     ], eagerError: true);
   }
 
-  Future<void> clearEmailCache() async {
-    await Future.wait([
+  Future<void> clearEmailCache() {
+    return Future.wait([
       _stateCacheClient.deleteItem(StateType.email.value),
       _emailCacheClient.clearAllData(),
     ], eagerError: true);
-    log('CachingManager::clearEmailCache(): success');
   }
 
   Future<void> onUpgradeCache(int oldVersion, int newVersion) async {
