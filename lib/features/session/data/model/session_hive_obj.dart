@@ -10,12 +10,12 @@ class SessionHiveObj extends HiveObject with EquatableMixin {
   static const String keyValue = 'session';
 
   @HiveField(0)
-  final Map<String, dynamic> values;
+  final String value;
 
   SessionHiveObj({
-    required this.values
+    required this.value
   });
 
   @override
-  List<Object?> get props => [values];
+  List<Object?> get props => [value];
 }
