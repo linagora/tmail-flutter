@@ -1,5 +1,4 @@
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
-import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
@@ -12,6 +11,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
@@ -55,7 +55,6 @@ class SessionController extends ReloadableController {
     super.handleFailureViewState(failure);
     if (failure is GetSessionFailure) {
       _handleSessionFailure(failure);
-      _goToLogin();
     }
   }
 
@@ -96,7 +95,7 @@ class SessionController extends ReloadableController {
       }
 
       logError('SessionController::_handleSessionFailure():errorMessage: $errorMessage');
-      if (errorMessage.isNotEmpty && currentOverlayContext != null && currentContext != null) {
+      if (errorMessage.isNotEmpty && currentOverlayContext != null) {
         _appToast.showToastErrorMessage(currentOverlayContext!, errorMessage);
       }
     }
@@ -106,21 +105,8 @@ class SessionController extends ReloadableController {
     return sessionException is ConnectError || sessionException is BadGateway || sessionException is SocketError;
   }
 
-  void _goToLogin() async {
-    await Future.wait([
-      deleteCredentialInteractor.execute(),
-      deleteAuthorityOidcInteractor.execute(),
-      cachingManager.clearAll()
-    ]);
-    authorizationInterceptors.clear();
-    pushAndPopAll(AppRoutes.login);
-  }
-
   void _goToMailboxDashBoard(GetSessionSuccess success) {
-    final jmapUrl = _dynamicUrlInterceptors.jmapUrl;
-    final apiUrl = jmapUrl != null
-      ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
-      : success.session.apiUrl.toString();
+    final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors.jmapUrl);
     log('SessionController::_goToMailboxDashBoard():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
@@ -128,7 +114,8 @@ class SessionController extends ReloadableController {
         RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
         arguments: success.session);
     } else {
-      _goToLogin();
+      logError('SessionController::_goToMailboxDashBoard(): apiUrl is NULL');
+      performInvokeLogoutAction();
     }
   }
 }
