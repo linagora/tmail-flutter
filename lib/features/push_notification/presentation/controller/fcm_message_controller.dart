@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
-import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -34,6 +33,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/listener/e
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
+import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
@@ -274,11 +274,8 @@ class FcmMessageController extends FcmBaseController {
   void _handleGetSessionSuccess(GetSessionSuccess success) {
     _currentSession = success.session;
     _userName = success.session.username;
-    final jmapUrl = _dynamicUrlInterceptors?.jmapUrl;
-    final apiUrl = jmapUrl != null
-      ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
-      : success.session.apiUrl.toString();
-    log('FcmMessageController::_pushActionFromRemoteMessageBackground():jmapUrl: $jmapUrl | apiUrl: $apiUrl');
+    final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
+    log('FcmMessageController::_pushActionFromRemoteMessageBackground():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
       _pushActionFromRemoteMessageBackground();

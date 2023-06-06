@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
-import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -30,6 +29,7 @@ import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_state.dart'
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
+import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
@@ -153,11 +153,8 @@ class SendingEmailObserver extends WorkObserver {
   void _handleGetSessionSuccess(GetSessionSuccess success) {
     _currentSession = success.session;
     _userName = success.session.username;
-    final jmapUrl = _dynamicUrlInterceptors?.jmapUrl;
-    final apiUrl = jmapUrl != null
-      ? success.session.apiUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl)).toString()
-      : success.session.apiUrl.toString();
-    log('SendingEmailObserver::_handleGetSessionSuccess():jmapUrl: $jmapUrl | apiUrl: $apiUrl');
+    final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
+    log('SendingEmailObserver::_handleGetSessionSuccess():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
       _sendEmailAction();
