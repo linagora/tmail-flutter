@@ -18,7 +18,9 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_inte
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/session/domain/repository/session_repository.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/features/session/domain/usecases/get_stored_session_interactor.dart';
 import 'package:tmail_ui_user/features/session/presentation/session_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -34,6 +36,7 @@ class SessionPageBindings extends BaseBindings {
       Get.find<GetSessionInteractor>(),
       Get.find<AppToast>(),
       Get.find<DynamicUrlInterceptors>(),
+      Get.find<GetStoredSessionInteractor>(),
     ));
   }
 
@@ -68,6 +71,7 @@ class SessionPageBindings extends BaseBindings {
       Get.find<GetStoredTokenOidcInteractor>(),
     ));
     Get.lazyPut(() => UpdateAuthenticationAccountInteractor(Get.find<AccountRepository>()));
+    Get.lazyPut(() => GetStoredSessionInteractor(Get.find<SessionRepository>()));
   }
 
   @override
