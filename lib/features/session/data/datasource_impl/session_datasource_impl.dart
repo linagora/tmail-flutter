@@ -16,4 +16,9 @@ class SessionDataSourceImpl extends SessionDataSource {
       return await _sessionAPI.getSession();
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<void> storeSession(Session session) {
+    throw UnimplementedError();
+  }
 }
