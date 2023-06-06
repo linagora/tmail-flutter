@@ -18,4 +18,9 @@ class SessionRepositoryImpl extends SessionRepository {
   Future<void> storeSession(Session session) {
     return sessionDataSource[DataSourceType.hiveCache]!.storeSession(session);
   }
+
+  @override
+  Future<Session> getStoredSession() {
+    return sessionDataSource[DataSourceType.hiveCache]!.getStoredSession();
+  }
 }
