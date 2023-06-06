@@ -11,9 +11,8 @@ class GetSessionSuccess extends UIState {
 }
 
 class GetSessionFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetSessionFailure(this.exception);
+  GetSessionFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];
