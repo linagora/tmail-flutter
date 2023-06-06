@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -32,4 +33,12 @@ extension SessionExtensions on Session {
   }
 
   SessionHiveObj toHiveObj() => SessionHiveObj(values: toJson());
+
+  String getQualifiedApiUrl({String? baseUrl}) {
+    if (baseUrl != null) {
+      return apiUrl.toQualifiedUrl(baseUrl: Uri.parse(baseUrl)).toString();
+    } else {
+      return apiUrl.toString();
+    }
+  }
 }
