@@ -1,0 +1,2 @@
+
+class NotFoundSessionHiveObject implements Exception {}
