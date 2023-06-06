@@ -21,4 +21,9 @@ class SessionDataSourceImpl extends SessionDataSource {
   Future<void> storeSession(Session session) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<Session> getStoredSession() {
+    throw UnimplementedError();
+  }
 }
