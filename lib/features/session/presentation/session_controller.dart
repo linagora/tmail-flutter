@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -13,7 +14,9 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_authenticati
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/features/session/domain/state/get_stored_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/features/session/domain/usecases/get_stored_session_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -25,6 +28,7 @@ class SessionController extends ReloadableController {
   final GetSessionInteractor _getSessionInteractor;
   final AppToast _appToast;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
+  final GetStoredSessionInteractor _getStoredSessionInteractor;
 
   SessionController(
     LogoutOidcInteractor logoutOidcInteractor,
@@ -34,6 +38,7 @@ class SessionController extends ReloadableController {
     this._getSessionInteractor,
     this._appToast,
     this._dynamicUrlInterceptors,
+    this._getStoredSessionInteractor,
   ) : super(
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
@@ -62,7 +67,17 @@ class SessionController extends ReloadableController {
   void handleSuccessViewState(Success success) {
     super.handleSuccessViewState(success);
     if (success is GetSessionSuccess) {
-      _goToMailboxDashBoard(success);
+      _goToMailboxDashBoard(success.session);
+    } else if (success is GetStoredSessionSuccess) {
+      _goToMailboxDashBoard(success.session);
+    }
+  }
+
+  @override
+  void handleExceptionAction(Exception exception) {
+    super.handleExceptionAction(exception);
+    if (PlatformInfo.isMobile && exception is NoNetworkError) {
+      _handleGetStoredSession();
     }
   }
 
@@ -105,17 +120,22 @@ class SessionController extends ReloadableController {
     return sessionException is ConnectError || sessionException is BadGateway || sessionException is SocketError;
   }
 
-  void _goToMailboxDashBoard(GetSessionSuccess success) {
-    final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors.jmapUrl);
+  void _goToMailboxDashBoard(Session session) {
+    final apiUrl = session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors.jmapUrl);
     log('SessionController::_goToMailboxDashBoard():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
       pushAndPop(
         RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
-        arguments: success.session);
+        arguments: session);
     } else {
       logError('SessionController::_goToMailboxDashBoard(): apiUrl is NULL');
       performInvokeLogoutAction();
     }
+  }
+
+  void _handleGetStoredSession() {
+    log('SessionController::_handleGetStoredSession():');
+    consumeState(_getStoredSessionInteractor.execute());
   }
 }
