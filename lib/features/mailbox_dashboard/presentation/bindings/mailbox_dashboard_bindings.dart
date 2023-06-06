@@ -108,6 +108,8 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sen
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
+import 'package:tmail_ui_user/features/session/domain/repository/session_repository.dart';
+import 'package:tmail_ui_user/features/session/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -177,7 +179,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetEmailByIdInteractor>(),
       Get.find<SendEmailInteractor>(),
       Get.find<StoreSendingEmailInteractor>(),
-      Get.find<GetAllSendingEmailInteractor>()
+      Get.find<GetAllSendingEmailInteractor>(),
+      Get.find<StoreSessionInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -332,6 +335,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     ));
     Get.lazyPut(() => StoreSendingEmailInteractor(Get.find<EmailRepository>()));
     SendingQueueInteractorBindings().dependencies();
+    Get.lazyPut(() => StoreSessionInteractor(Get.find<SessionRepository>()));
   }
 
   @override
