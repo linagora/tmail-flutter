@@ -1,6 +1,6 @@
-import 'package:core/core.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
@@ -25,10 +25,11 @@ void main() async {
        MainBindings().dependencies(),
        HiveCacheConfig().setUp(),
        Executor().warmUp(),
-       if (PlatformInfo.isMobile) ... [
-         WorkManagerConfig().initialize(),
-         LocalNotificationManager.instance.setUp(),
-       ],
+       if (PlatformInfo.isMobile)
+         ... [
+           WorkManagerConfig().initialize(),
+           LocalNotificationManager.instance.setUp(),
+         ],
        AppUtils.loadEnvFile()
     ]);
     await HiveCacheConfig.initializeEncryptionKey();
