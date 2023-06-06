@@ -4,4 +4,6 @@ abstract class SessionDataSource {
   Future<Session> getSession();
 
   Future<void> storeSession(Session session);
+
+  Future<Session> getStoredSession();
 }
