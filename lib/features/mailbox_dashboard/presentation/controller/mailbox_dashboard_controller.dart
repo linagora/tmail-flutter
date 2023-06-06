@@ -102,6 +102,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/notificati
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/session/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -156,6 +157,7 @@ class MailboxDashBoardController extends ReloadableController {
   final SendEmailInteractor _sendEmailInteractor;
   final StoreSendingEmailInteractor _storeSendingEmailInteractor;
   final GetAllSendingEmailInteractor _getAllSendingEmailInteractor;
+  final StoreSessionInteractor _storeSessionInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -227,6 +229,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._sendEmailInteractor,
     this._storeSendingEmailInteractor,
     this._getAllSendingEmailInteractor,
+    this._storeSessionInteractor,
   ) : super(
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
@@ -447,6 +450,7 @@ class MailboxDashBoardController extends ReloadableController {
       spamReportController.getSpamReportStateAction();
       if (PlatformInfo.isMobile) {
         getAllSendingEmails();
+        _storeSessionAction(sessionCurrent!);
       }
       if (!BuildUtils.isWeb && !_notificationManager.isNotificationClickedOnTerminate) {
         _handleClickLocalNotificationOnTerminated();
@@ -1230,6 +1234,7 @@ class MailboxDashBoardController extends ReloadableController {
     spamReportController.getSpamReportStateAction();
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
+      _storeSessionAction(sessionCurrent!);
     }
   }
 
@@ -1949,6 +1954,10 @@ class MailboxDashBoardController extends ReloadableController {
   void _openDefaultMailbox() {
     dispatchRoute(DashboardRoutes.thread);
     dispatchMailboxUIAction(SelectMailboxDefaultAction());
+  }
+
+  void _storeSessionAction(Session session) {
+    consumeState(_storeSessionInteractor.execute(session));
   }
   
   @override
