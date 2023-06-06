@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_cl
 import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
@@ -80,6 +81,7 @@ class LocalBindings extends Bindings {
     Get.put(OpenedEmailCacheManager(Get.find<OpenedEmailHiveCacheClient>(), Get.find<FileUtils>()));
     Get.put(SendingEmailHiveCacheClient());
     Get.put(SendingEmailCacheManager(Get.find<SendingEmailHiveCacheClient>()));
+    Get.put(SessionHiveCacheClient());
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
