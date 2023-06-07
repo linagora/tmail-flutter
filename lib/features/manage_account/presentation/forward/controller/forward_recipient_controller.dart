@@ -81,10 +81,6 @@ class ForwardRecipientController {
     }
   }
 
-  void updateListRecipient(List<EmailAddress> listEmailAddress) {
-    listRecipients.value = listEmailAddress;
-  }
-
   void clearAll() {
     inputRecipientController.clear();
     listRecipients.clear();
