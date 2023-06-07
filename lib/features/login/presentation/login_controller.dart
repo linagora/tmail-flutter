@@ -189,8 +189,8 @@ class LoginController extends ReloadableController {
   }
 
   @override
-  void handleExceptionAction(Exception exception) {
-    super.handleExceptionAction(exception);
+  void handleExceptionAction({Failure? failure, Exception? exception}) {
+    super.handleExceptionAction(failure: failure, exception: exception);
     loginState.value = LoginState(Right(LoginInitAction()));
   }
 
