@@ -74,9 +74,9 @@ class SessionController extends ReloadableController {
   }
 
   @override
-  void handleExceptionAction(Exception exception) {
-    super.handleExceptionAction(exception);
-    if (PlatformInfo.isMobile && exception is NoNetworkError) {
+  void handleExceptionAction({Failure? failure, Exception? exception}) {
+    super.handleExceptionAction(failure: failure, exception: exception);
+    if (PlatformInfo.isMobile && failure is GetSessionFailure && exception is NoNetworkError) {
       _handleGetStoredSession();
     }
   }

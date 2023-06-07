@@ -96,7 +96,7 @@ abstract class BaseController extends GetxController
         if (failure is FeatureFailure) {
           final exception = _performFilterExceptionInError(failure.exception);
           if (exception != null) {
-            handleExceptionAction(exception);
+            handleExceptionAction(failure: failure, exception: exception);
           } else {
             handleFailureViewState(failure);
           }
@@ -111,7 +111,7 @@ abstract class BaseController extends GetxController
     logError('BaseController::onError():error: $error | stackTrace: $stackTrace');
     final exception = _performFilterExceptionInError(error);
     if (exception != null) {
-      handleExceptionAction(exception);
+      handleExceptionAction(exception: exception);
     } else {
       handleErrorViewState(error, stackTrace);
     }
@@ -150,8 +150,8 @@ abstract class BaseController extends GetxController
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
 
-  void handleExceptionAction(Exception exception) {
-    log('BaseController::handleExceptionAction():exception: $exception');
+  void handleExceptionAction({Failure? failure, Exception? exception}) {
+    log('BaseController::handleExceptionAction():failure: $failure | exception: $exception');
   }
 
   void handleFailureViewState(Failure failure) {
