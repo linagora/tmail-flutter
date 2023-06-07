@@ -18,7 +18,6 @@ class MaterialTextIconButton extends StatelessWidget {
   final Color? iconColor;
   final Color? backgroundColor;
   final TextStyle? labelStyle;
-  final EdgeInsets? padding;
 
   const MaterialTextIconButton({
     Key? key,
@@ -31,7 +30,6 @@ class MaterialTextIconButton extends StatelessWidget {
     this.labelColor,
     this.iconColor,
     this.backgroundColor,
-    this.padding,
     this.labelStyle,
     this.minimumSize
   }) : super(key: key);
@@ -59,9 +57,8 @@ class MaterialTextIconButton extends StatelessWidget {
         foregroundColor: labelColor ?? AppColor.colorTextButton,
         backgroundColor: backgroundColor ?? AppColor.colorCreateNewIdentityButton,
         elevation: 0,
-        padding: padding,
+        minimumSize: minimumSize,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
-        minimumSize: minimumSize
       )
     );
   }
