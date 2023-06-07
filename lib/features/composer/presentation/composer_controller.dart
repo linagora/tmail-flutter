@@ -1703,4 +1703,6 @@ class ComposerController extends BaseController {
   }
 
   bool get isNetworkConnectionAvailable => networkConnectionController.isNetworkConnectionAvailable();
+
+  UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
 }
