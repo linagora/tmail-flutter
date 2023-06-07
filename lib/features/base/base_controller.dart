@@ -152,7 +152,6 @@ abstract class BaseController extends GetxController
 
   void handleExceptionAction(Exception exception) {
     log('BaseController::handleExceptionAction():exception: $exception');
-    clearState();
   }
 
   void handleFailureViewState(Failure failure) {
