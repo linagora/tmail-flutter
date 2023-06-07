@@ -42,7 +42,6 @@ class IdentitiesHeaderWidget extends StatelessWidget {
           label: AppLocalizations.of(context).createNewIdentity,
           icon: imagePaths.icAddIdentity,
           iconSize: 28,
-          padding: const EdgeInsets.all(16),
           minimumSize: const Size(double.infinity, 44),
           onTap: onAddNewIdentityAction
         )

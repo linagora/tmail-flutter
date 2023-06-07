@@ -44,7 +44,10 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                 if (!_responsiveUtils.isWebDesktop(context))
                   _buildTitleHeader(context),
                 _buildKeepLocalSwitchButton(context),
-                _buildAddRecipientsFormWidget(context),
+                Obx(() => controller.currentForward.value != null
+                  ? _buildAddRecipientsFormWidget(context)
+                  : const SizedBox.shrink()
+                ),
                 _buildLoadingView(),
                 Obx(() {
                   if (controller.listRecipientForward.isNotEmpty) {
