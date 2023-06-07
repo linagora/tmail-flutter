@@ -189,6 +189,12 @@ class ThreadController extends BaseController with EmailActionController {
     _handleErrorGetAllOrRefreshChangesEmail(error, stackTrace);
   }
 
+  @override
+  void handleExceptionAction(Exception exception) {
+    super.handleExceptionAction(exception);
+    clearState();
+  }
+
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
       if (mailbox is PresentationMailbox) {
