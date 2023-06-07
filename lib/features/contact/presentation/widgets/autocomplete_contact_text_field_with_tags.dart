@@ -7,6 +7,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -272,8 +273,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       backgroundColor: AppColor.colorTextButton,
       labelColor: Colors.white,
       iconColor: Colors.white,
-      minimumSize: Size(maxWidth ?? 167, 54),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+      minimumSize: Size(maxWidth ?? 167, PlatformInfo.isMobile ? 44 : 54),
       onTap: _handleAddRecipientAction
     );
   }
