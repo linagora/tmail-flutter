@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/app_bar_sending_queue_widget.dart';
@@ -32,7 +33,13 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
               );
             }),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
-            const BannerMessageSendingQueueWidget(),
+            Obx(() {
+              if (!controller.dashboardController!.listSendingEmails.isAllNotReadySendingState()) {
+                return const BannerMessageSendingQueueWidget();
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
             Expanded(child: _buildListSendingEmails(context)),
             Obx(() {
               if (controller.isAllUnSelected) {
