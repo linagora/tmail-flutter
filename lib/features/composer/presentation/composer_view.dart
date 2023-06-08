@@ -774,9 +774,9 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   int _getMaxItemRowListAttachment(BuildContext context, BoxConstraints constraints) {
-    if (constraints.maxWidth < responsiveUtils.minTabletWidth) {
+    if (constraints.maxWidth < ResponsiveUtils.minTabletWidth) {
       return 2;
-    } else if (constraints.maxWidth < responsiveUtils.minTabletLargeWidth) {
+    } else if (constraints.maxWidth < ResponsiveUtils.minTabletLargeWidth) {
       return 3;
     } else {
       return 4;
