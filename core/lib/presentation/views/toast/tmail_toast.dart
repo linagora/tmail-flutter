@@ -5,62 +5,25 @@ import 'package:core/presentation/views/toast/toast_position.dart';
 import 'package:flutter/material.dart';
 
 class TMailToast {
-  /// text of type [String] display on toast
-  String? text;
-
-  /// defines the duration of time toast display over screen
-  int? toastDuration;
-
-  /// defines the position of toast over the screen
-  ToastPosition? toastPosition;
-
-  /// defines the background color of the toast
-  Color? backgroundColor;
-
-  /// defines the test style of the toast text
-  TextStyle? textStyle;
-
-  /// defines the border radius of the toast
-  double? toastBorderRadius;
-
-  /// defines the border of the toast
-  Border? border;
-
-  /// defines the trailing widget of the toast
-  Widget? trailing;
-
-  /// defines the leading widget of the toast
-  Widget? leading;
-
-  /// defines the size width widget of the toast
-  double? width;
-
-  /// defines the padding widget of the toast
-  EdgeInsets? padding;
-
-  /// defines the align text of the toast
-  TextAlign? textAlign;
-
   static showToast(
-      text,
-      BuildContext context, {
-        toastDuration,
-        toastPosition,
-        backgroundColor,
-        textStyle = const TextStyle(
-          fontSize: 15,
-          color: Colors.white,
-          fontWeight: FontWeight.normal
-        ),
-        toastBorderRadius = 10.0,
-        border,
-        trailing,
-        leading,
-        width,
-        padding,
-        textAlign
-      }) {
-    assert(text != null);
+    String text,
+    BuildContext context, {
+    Duration? toastDuration,
+    ToastPosition? toastPosition,
+    Color? backgroundColor,
+    TextStyle textStyle = const TextStyle(
+      fontSize: 15,
+      color: Colors.white,
+      fontWeight: FontWeight.normal
+    ),
+    double toastBorderRadius = 10.0,
+    Border? border,
+    Widget? trailing,
+    Widget? leading,
+    double maxWidth = 424,
+    EdgeInsets? padding,
+    TextAlign? textAlign
+  }) {
     ToastView.dismiss();
     ToastView.createView(
       text,
@@ -72,7 +35,7 @@ class TMailToast {
       border,
       trailing,
       leading,
-      width,
+      maxWidth,
       padding,
       textAlign,
       toastDuration: toastDuration,
@@ -99,18 +62,17 @@ class ToastView {
     Border? border,
     Widget? trailing,
     Widget? leading,
-    double? width,
+    double maxWidth,
     EdgeInsets? padding,
     TextAlign? textAlign,
-    {int? toastDuration}
+    {Duration? toastDuration}
   ) async {
     overlayState = Overlay.of(context, rootOverlay: false);
-
     final Widget child = Center(
       child: Material(
         color: Colors.transparent,
         child: Container(
-          width: width,
+          constraints: BoxConstraints(maxWidth: maxWidth),
           decoration: BoxDecoration(
             color: backgroundColor ?? Colors.white,
             borderRadius: BorderRadius.circular(toastBorderRadius),
@@ -126,8 +88,7 @@ class ToastView {
                 offset: Offset.zero),
             ]
           ),
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: padding ?? const EdgeInsets.all(12),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: trailing == null && leading == null
             ? Text(
                 text,
@@ -140,21 +101,39 @@ class ToastView {
                 textAlign: textAlign
               )
             : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   if (leading != null) leading,
-                  Expanded(child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      text,
-                      style: textStyle ?? const TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                        fontWeight: FontWeight.normal
+                  if (trailing != null)
+                    Expanded(child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        text,
+                        style: textStyle ?? const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal
+                        ),
+                        textAlign: textAlign
+                      )
+                    ))
+                  else
+                    Container(
+                      constraints: BoxConstraints(maxWidth: _getMaxWidthTitleByLeadingTrailingSize(
+                        currentMaxWidth: maxWidth,
+                        leading: leading
+                      )),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        text,
+                        style: textStyle ?? const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal
+                        ),
+                        textAlign: textAlign
                       ),
-                      textAlign: textAlign
-                    )
-                  )),
+                    ),
                   if (trailing != null) trailing
                 ],
               ),
@@ -166,7 +145,7 @@ class ToastView {
     _overlayEntry = OverlayEntry(builder: (context) =>
       _showWidgetBasedOnPosition(
         toastDuration != null
-          ? ToastCard(child, Duration(seconds: toastDuration))
+          ? ToastCard(child, toastDuration)
           : child,
         toastPosition,
       )
@@ -175,9 +154,16 @@ class ToastView {
     _isVisible = true;
     overlayState!.insert(_overlayEntry!);
     if (toastDuration != null) {
-      await Future.delayed(Duration(seconds: toastDuration));
+      await Future.delayed(toastDuration);
       await dismiss();
     }
+  }
+
+  static double _getMaxWidthTitleByLeadingTrailingSize({
+    required double currentMaxWidth,
+    Widget? leading
+  }) {
+    return leading == null ? currentMaxWidth : currentMaxWidth - 90;
   }
 
   static Positioned _showWidgetBasedOnPosition(
@@ -186,11 +172,11 @@ class ToastView {
   ) {
     switch (toastPosition) {
       case ToastPosition.BOTTOM:
-        return Positioned(bottom: 60, left: 18, right: 18, child: child);
+        return Positioned(bottom: 80, left: 18, right: 18, child: child);
       case ToastPosition.BOTTOM_LEFT:
-        return Positioned(bottom: 60, left: 18, child: child);
+        return Positioned(bottom: 80, left: 18, child: child);
       case ToastPosition.BOTTOM_RIGHT:
-        return Positioned(bottom: 60, right: 18, child: child);
+        return Positioned(bottom: 80, right: 18, child: child);
       case ToastPosition.CENTER:
         return Positioned(top: 60, bottom: 60, left: 18, right: 18, child: child);
       case ToastPosition.CENTER_LEFT:
