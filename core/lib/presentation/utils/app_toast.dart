@@ -15,7 +15,8 @@ class AppToast {
     String message,
     {
       Color? leadingSVGIconColor,
-      String? leadingSVGIcon
+      String? leadingSVGIcon,
+      Duration? duration,
     }
   ) {
     final imagePaths = Get.find<ImagePaths>();
@@ -25,7 +26,8 @@ class AppToast {
       backgroundColor: AppColor.toastErrorBackgroundColor,
       textColor: Colors.white,
       leadingSVGIconColor: leadingSVGIconColor ?? (leadingSVGIcon == null ? Colors.white : null),
-      leadingSVGIcon: leadingSVGIcon ?? imagePaths.icNotConnection
+      leadingSVGIcon: leadingSVGIcon ?? imagePaths.icNotConnection,
+      duration: duration
     );
   }
 
@@ -35,6 +37,7 @@ class AppToast {
     {
       Color? leadingSVGIconColor,
       String? leadingSVGIcon,
+      Duration? duration,
     }
   ) {
     final imagePaths = Get.find<ImagePaths>();
@@ -44,7 +47,8 @@ class AppToast {
       backgroundColor: AppColor.toastSuccessBackgroundColor,
       textColor: Colors.white,
       leadingSVGIconColor: leadingSVGIconColor ?? (leadingSVGIcon == null ? Colors.white : null),
-      leadingSVGIcon: leadingSVGIcon ?? imagePaths.icToastSuccessMessage
+      leadingSVGIcon: leadingSVGIcon ?? imagePaths.icToastSuccessMessage,
+      duration: duration
     );
   }
 
@@ -54,6 +58,7 @@ class AppToast {
     {
       Color? leadingSVGIconColor,
       String? leadingSVGIcon,
+      Duration? duration,
     }
   ) {
     final imagePaths = Get.find<ImagePaths>();
@@ -63,7 +68,8 @@ class AppToast {
       backgroundColor: AppColor.toastWarningBackgroundColor,
       textColor: Colors.white,
       leadingSVGIconColor: leadingSVGIconColor ?? (leadingSVGIcon == null ? Colors.white : null),
-      leadingSVGIcon: leadingSVGIcon ?? imagePaths.icInfoCircleOutline
+      leadingSVGIcon: leadingSVGIcon ?? imagePaths.icInfoCircleOutline,
+      duration: duration
     );
   }
 
@@ -84,7 +90,8 @@ class AppToast {
       Color? textActionColor,
       TextStyle? textStyle,
       EdgeInsets? padding,
-      TextAlign? textAlign
+      TextAlign? textAlign,
+      Duration? duration,
     }
   ) {
     final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -160,7 +167,7 @@ class AppToast {
     TMailToast.showToast(
       message,
       context,
-      width: maxWidth ?? responsiveUtils.getMaxWidthToast(context),
+      maxWidth: maxWidth ?? responsiveUtils.getMaxWidthToast(context),
       toastPosition: ToastPosition.BOTTOM,
       textStyle: textStyle ?? TextStyle(
         fontSize: 15,
@@ -172,7 +179,9 @@ class AppToast {
       leading: leadingWidget,
       padding: padding,
       textAlign: textAlign,
-      toastDuration: infinityToast ? null : 3,
+      toastDuration: infinityToast
+        ? null
+        : (duration ?? const Duration(seconds: 3)),
     );
   }
 }

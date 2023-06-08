@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-06-08T15:15:04.969556",
+  "@@last_modified": "2023-06-08T16:53:26.593398",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2896,6 +2896,12 @@
   },
   "error": "Error",
   "@error": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "connectedToTheInternet": "Connected to the internet",
+  "@connectedToTheInternet": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
