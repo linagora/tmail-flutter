@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-06-05T09:10:02.535366",
+  "@@last_modified": "2023-06-08T15:15:04.969556",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2884,6 +2884,18 @@
   },
   "deleteSomeOfflineEmailSuccessfully": "Delete some offline email successfully.",
   "@deleteSomeOfflineEmailSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delivering": "Delivering",
+  "@delivering": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "error": "Error",
+  "@error": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

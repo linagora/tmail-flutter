@@ -2974,4 +2974,18 @@ class AppLocalizations {
       name: 'deleteSomeOfflineEmailSuccessfully',
     );
   }
+
+  String get delivering {
+    return Intl.message(
+      'Delivering',
+      name: 'delivering',
+    );
+  }
+
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+    );
+  }
 }
