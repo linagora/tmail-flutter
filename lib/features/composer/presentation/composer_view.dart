@@ -300,71 +300,73 @@ class ComposerView extends GetWidget<ComposerController>
               color: AppColor.colorHintEmailAddressInput
             )
           ),
-          const SizedBox(width: 12),
           if (controller.listIdentities.isNotEmpty)
-            DropdownButtonHideUnderline(child: DropdownButton2<Identity>(
-              isExpanded: true,
-              customButton: SvgPicture.asset(imagePaths.icEditIdentity),
-              items: controller.listIdentities.map((item) => DropdownMenuItem<Identity>(
-                value: item,
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: DropdownButtonHideUnderline(child: DropdownButton2<Identity>(
+                isExpanded: true,
+                customButton: SvgPicture.asset(imagePaths.icEditIdentity),
+                items: controller.listIdentities.map((item) => DropdownMenuItem<Identity>(
+                  value: item,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: item == controller.identitySelected.value
+                        ? AppColor.colorBgMenuItemDropDownSelected
+                        : Colors.transparent
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          item.name ?? '',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black
+                          ),
+                          maxLines: 1,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                        ),
+                        Text(
+                          item.email ?? '',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.normal,
+                            color: AppColor.colorHintSearchBar
+                          ),
+                          maxLines: 1,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                        )
+                      ]
+                    ),
+                  ),
+                )).toList(),
+                onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
+                dropdownStyleData: DropdownStyleData(
+                  maxHeight: 240,
+                  width: 300,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: item == controller.identitySelected.value
-                      ? AppColor.colorBgMenuItemDropDownSelected
-                      : Colors.transparent
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        item.name ?? '',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black
-                        ),
-                        maxLines: 1,
-                        overflow: CommonTextStyle.defaultTextOverFlow,
-                        softWrap: CommonTextStyle.defaultSoftWrap,
-                      ),
-                      Text(
-                        item.email ?? '',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.normal,
-                          color: AppColor.colorHintSearchBar
-                        ),
-                        maxLines: 1,
-                        overflow: CommonTextStyle.defaultTextOverFlow,
-                        softWrap: CommonTextStyle.defaultSoftWrap,
-                      )
-                    ]
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white),
+                  elevation: 4,
+                  scrollbarTheme: ScrollbarThemeData(
+                    radius: const Radius.circular(40),
+                    thickness: MaterialStateProperty.all<double>(6),
+                    thumbVisibility: MaterialStateProperty.all<bool>(true),
                   ),
                 ),
-              )).toList(),
-              onChanged: (newIdentity) => controller.selectIdentity(newIdentity),
-              dropdownStyleData: DropdownStyleData(
-                maxHeight: 240,
-                width: 300,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white),
-                elevation: 4,
-                scrollbarTheme: ScrollbarThemeData(
-                  radius: const Radius.circular(40),
-                  thickness: MaterialStateProperty.all<double>(6),
-                  thumbVisibility: MaterialStateProperty.all<bool>(true),
-                ),
-              ),
-              menuItemStyleData: const MenuItemStyleData(
-                  height: 55,
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                )
-            )),
+                menuItemStyleData: const MenuItemStyleData(
+                    height: 55,
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                  )
+              )),
+            ),
           Expanded(child: Padding(
             padding: EdgeInsets.only(
               right: AppUtils.isDirectionRTL(context) ? 12 : 8,
