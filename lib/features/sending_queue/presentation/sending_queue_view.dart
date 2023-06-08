@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
@@ -53,20 +54,21 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
   Widget _buildListSendingEmails(BuildContext context) {
     return Obx(() {
       if (controller.dashboardController!.listSendingEmails.isNotEmpty) {
-        return ListView.builder(
-          controller: controller.listSendingEmailController,
-          padding: EdgeInsets.zero,
-          itemCount: controller.dashboardController!.listSendingEmails.length,
-          itemBuilder: (context, index) {
-            return Obx(() => SendingEmailTileWidget(
-              sendingEmail: controller.dashboardController!.listSendingEmails[index],
-              selectMode: controller.selectionState.value,
-              onLongPressAction: controller.handleOnLongPressAction,
-              onSelectLeadingAction: controller.toggleSelectionSendingEmail,
-              onTapAction:  (actionType, listSendingEmails) =>
-                controller.handleSendingEmailActionType(context, actionType, [listSendingEmails])));
-          }
-        );
+        return LayoutBuilder(builder: (context, constraints) {
+          log('SendingQueueView::_buildListSendingEmails(): MAX_WIDTH: ${constraints.maxWidth}');
+          return ListView.builder(
+            controller: controller.listSendingEmailController,
+            itemCount: controller.dashboardController!.listSendingEmails.length,
+            itemBuilder: (context, index) {
+              return Obx(() => SendingEmailTileWidget(
+                sendingEmail: controller.dashboardController!.listSendingEmails[index],
+                selectMode: controller.selectionState.value,
+                onLongPressAction: controller.handleOnLongPressAction,
+                onSelectLeadingAction: controller.toggleSelectionSendingEmail,
+                onTapAction:  (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, [listSendingEmails])));
+            }
+          );
+        });
       } else {
         return const SizedBox.shrink();
       }
