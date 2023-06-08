@@ -2988,4 +2988,11 @@ class AppLocalizations {
       name: 'error',
     );
   }
+
+  String get connectedToTheInternet {
+    return Intl.message(
+      'Connected to the internet',
+      name: 'connectedToTheInternet'
+    );
+  }
 }
