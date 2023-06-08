@@ -20,7 +20,8 @@ extension SendingEmailExtension on SendingEmail {
       emailIdAnsweredOrForwarded?.asString,
       identityId?.asString,
       mailboxNameRequest?.name,
-      creationIdRequest?.value
+      creationIdRequest?.value,
+      sendingState.name,
     );
   }
 
@@ -47,6 +48,7 @@ extension SendingEmailExtension on SendingEmail {
       identityId: identityId,
       mailboxNameRequest: mailboxNameRequest,
       creationIdRequest: creationIdRequest,
+      sendingState: sendingState,
       selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE
     );
   }
@@ -63,6 +65,7 @@ extension SendingEmailExtension on SendingEmail {
       identityId: identityId,
       mailboxNameRequest: mailboxNameRequest,
       creationIdRequest: creationIdRequest,
+      sendingState: sendingState,
       selectMode: SelectMode.INACTIVE
     );
   }
