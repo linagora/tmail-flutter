@@ -15,6 +15,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 
 class SendingEmail with EquatableMixin {
   final String sendingId;
@@ -28,6 +29,7 @@ class SendingEmail with EquatableMixin {
   final Id? creationIdRequest;
   final DateTime createTime;
   final SelectMode selectMode;
+  final SendingState sendingState;
 
   SendingEmail({
     required this.sendingId,
@@ -40,7 +42,8 @@ class SendingEmail with EquatableMixin {
     this.identityId,
     this.mailboxNameRequest,
     this.creationIdRequest,
-    this.selectMode = SelectMode.INACTIVE
+    this.selectMode = SelectMode.INACTIVE,
+    this.sendingState = SendingState.ready
   });
 
   Map<String, dynamic> toJson() {
@@ -96,6 +99,10 @@ class SendingEmail with EquatableMixin {
 
   bool get isSelected => selectMode == SelectMode.ACTIVE;
 
+  bool get isDelivering => sendingState == SendingState.delivering;
+
+  bool get isReady => sendingState == SendingState.ready;
+
   @override
   List<Object?> get props => [
     sendingId,
@@ -108,6 +115,7 @@ class SendingEmail with EquatableMixin {
     identityId,
     mailboxNameRequest,
     creationIdRequest,
-    selectMode
+    selectMode,
+    sendingState,
   ];
 }

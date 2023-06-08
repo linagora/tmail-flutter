@@ -182,9 +182,13 @@ class ImagePaths {
   String get icMailboxSendingQueue => _getImagePath('ic_mailbox_sending_queue.svg');
   String get icMailboxOutbox => _getImagePath('ic_mailbox_outbox.svg');
   String get icAvatarGroup => _getImagePath('ic_avatar_group.svg');
+  String get icAvatarGroupDelivering => _getImagePath('ic_avatar_group_delivering.svg');
   String get icAvatarPersonal => _getImagePath('ic_avatar_personal.svg');
+  String get icAvatarPersonalDelivering => _getImagePath('ic_avatar_personal_delivering.svg');
   String get icDialogOfflineMode => _getImagePath('ic_dialog_offline_mode.svg');
   String get icMenuMailbox => _getImagePath('ic_menu_mailbox.svg');
+  String get icDelivering => _getImagePath('ic_delivering.svg');
+  String get icError => _getImagePath('ic_error.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

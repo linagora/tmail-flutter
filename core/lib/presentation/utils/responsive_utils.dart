@@ -8,20 +8,20 @@ class ResponsiveUtils {
   static const double defaultSizeDrawer = 320;
   static const double defaultSizeMenu = 256;
 
-  final int heightShortest = 600;
+  static const int heightShortest = 600;
 
-  final int minDesktopWidth = 1200;
-  final int minTabletWidth = 600;
-  final int minTabletLargeWidth = 900;
+  static const int minDesktopWidth = 1200;
+  static const int minTabletWidth = 600;
+  static const int minTabletLargeWidth = 900;
 
-  final double _loginTextFieldWidthSmallScreen = 280.0;
-  final double _loginTextFieldWidthLargeScreen = 320.0;
-  final double _loginButtonWidth = 240.0;
+  static const double _loginTextFieldWidthSmallScreen = 280.0;
+  static const double _loginTextFieldWidthLargeScreen = 320.0;
+  static const double _loginButtonWidth = 240.0;
 
-  final double tabletHorizontalMargin = 120.0;
-  final double tabletVerticalMargin = 200.0;
-  final double desktopVerticalMargin = 120.0;
-  final double desktopHorizontalMargin = 200.0;
+  static const double tabletHorizontalMargin = 120.0;
+  static const double tabletVerticalMargin = 200.0;
+  static const double desktopVerticalMargin = 120.0;
+  static const double desktopHorizontalMargin = 200.0;
 
   bool isScreenWithShortestSide(BuildContext context) => context.mediaQueryShortestSide < minTabletWidth;
 
@@ -116,4 +116,6 @@ class ResponsiveUtils {
           isDesktop(context));
     }
   }
+
+  static bool isMatchedMobileWidth(double width) => width < minTabletWidth;
 }
