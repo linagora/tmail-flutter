@@ -12,10 +12,7 @@ abstract class WorkObserver {
   void consumeState(Stream<Either<Failure, Success>> newStateStream) {
     newStateStream.listen(
       _handleStateStream,
-      onError: (error, stackTrace) {
-        logError('WorkObserver::consumeState():onError:error: $error');
-        logError('WorkObserver::consumeState():onError:stackTrace: $stackTrace');
-      }
+      onError: handleOnError
     );
   }
 
@@ -26,4 +23,8 @@ abstract class WorkObserver {
   void handleFailureViewState(Failure failure) {}
 
   void handleSuccessViewState(Success success) {}
+
+  void handleOnError(Object? error, StackTrace stackTrace) {
+    logError('WorkObserver::handleOnError():error: $error | stackTrace: $stackTrace');
+  }
 }

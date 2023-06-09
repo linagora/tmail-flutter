@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-06-08T16:53:26.593398",
+  "@@last_modified": "2023-06-09T10:30:29.843203",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2882,8 +2882,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteSomeOfflineEmailSuccessfully": "Delete some offline email successfully.",
-  "@deleteSomeOfflineEmailSuccessfully": {
+  "messageHaveBeenDeletedSuccessfully": "Messages have been deleted successfully",
+  "@messageHaveBeenDeletedSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

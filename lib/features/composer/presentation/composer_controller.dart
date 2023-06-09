@@ -33,7 +33,6 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
@@ -49,7 +48,6 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -61,6 +59,9 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -615,8 +616,7 @@ class ComposerController extends BaseController {
       {
         bool asDrafts = false,
         MailboxId? draftMailboxId,
-        MailboxId? outboxMailboxId,
-        ComposerArguments? arguments
+        MailboxId? outboxMailboxId
       }
   ) async {
     Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
@@ -663,10 +663,7 @@ class ComposerController extends BaseController {
 
     final generatePartId = PartId(_uuid.v1());
 
-    final isUpdateSendingEmail = arguments?.sendingEmail != null;
-
     return Email(
-      id: isUpdateSendingEmail ? EmailId(Id(arguments!.sendingEmail!.sendingId))  : null,
       mailboxIds: mailboxIds.isNotEmpty ? mailboxIds : null,
       from: listFromEmailAddress,
       to: listToEmailAddress.toSet(),
@@ -804,11 +801,11 @@ class ComposerController extends BaseController {
     final userProfile = mailboxDashBoardController.userProfile.value;
 
     if (arguments != null && accountId != null && userProfile != null && session != null) {
-      final email = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId, arguments: arguments);
+      final createdEmail = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
       final emailRequest = arguments.sendingEmail != null
-        ? arguments.sendingEmail!.toEmailRequest(emailEdit: email)
+        ? arguments.sendingEmail!.toEmailRequest(newEmail: createdEmail)
         : EmailRequest(
-            email: email,
+            email: createdEmail,
             sentMailboxId: sentMailboxId,
             identityId: identitySelected.value?.id,
             emailIdDestroyed: arguments.emailActionType == EmailActionType.edit
@@ -826,7 +823,9 @@ class ComposerController extends BaseController {
         accountId,
         emailRequest,
         mailboxRequest,
-        isUpdateSendingEmail: arguments.sendingEmail != null,
+        sendingEmailActionType: arguments.sendingEmail != null
+          ? SendingEmailActionType.edit
+          : SendingEmailActionType.create,
       );
       uploadController.clearInlineFileUploaded();
 

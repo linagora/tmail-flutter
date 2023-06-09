@@ -2,7 +2,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
 class ComposerArguments extends RouterArguments {

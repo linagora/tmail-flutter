@@ -1,6 +1,6 @@
 
-import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_extension.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 extension ListSendingEmailExtension on List<SendingEmail> {
   List<SendingEmail> toggleSelection({required SendingEmail sendingEmailSelected}) =>
