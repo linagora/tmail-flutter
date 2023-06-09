@@ -1,7 +1,6 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 class SendingQueueUtils {
 
@@ -29,11 +28,11 @@ class SendingQueueUtils {
     }
   }
 
-  static EdgeInsets getPaddingDividerListViewByResponsiveSize(double width, SendingEmail sendingEmail) {
+  static EdgeInsets getPaddingDividerListViewByResponsiveSize(double width) {
     if (ResponsiveUtils.isMatchedMobileWidth(width)) {
-      return EdgeInsets.only(left: 84, right: 8, top: sendingEmail.isReady ? 0 : 8);
+      return const EdgeInsets.only(left: 84, right: 8, top: 8);
     } else {
-      return EdgeInsets.only(left: 100, right: 24, top: sendingEmail.isReady ? 0 : 8);
+      return const EdgeInsets.only(left: 100, right: 24, top: 8);
     }
   }
 }
