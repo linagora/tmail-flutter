@@ -1,9 +1,10 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum SendingEmailActionType {
+  create,
   edit,
   delete;
 
@@ -13,6 +14,8 @@ enum SendingEmailActionType {
         return AppLocalizations.of(context).delete;
       case SendingEmailActionType.edit:
         return AppLocalizations.of(context).edit;
+      case SendingEmailActionType.create:
+        return '';
     }
   }
 
@@ -22,6 +25,8 @@ enum SendingEmailActionType {
         return 'button_delete_sending_email';
       case SendingEmailActionType.edit:
         return 'button_edit_sending_email';
+      case SendingEmailActionType.create:
+        return '';
     }
   }
 
@@ -31,6 +36,8 @@ enum SendingEmailActionType {
         return AppColor.colorDeletePermanentlyButton;
       case SendingEmailActionType.edit:
         return AppColor.primaryColor;
+      case SendingEmailActionType.create:
+        return Colors.transparent;
     }
   }
 
@@ -40,6 +47,8 @@ enum SendingEmailActionType {
         return AppColor.colorDeletePermanentlyButton;
       case SendingEmailActionType.edit:
         return AppColor.primaryColor;
+      case SendingEmailActionType.create:
+        return Colors.transparent;
     }
   }
 }

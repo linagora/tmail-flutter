@@ -13,10 +13,11 @@ import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_state.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/controller/work_scheduler_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/delete_multiple_sending_email_state.dart';
@@ -31,6 +32,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   final DeleteMultipleSendingEmailInteractor _deleteMultipleSendingEmailInteractor;
 
   final dashboardController = getBinding<MailboxDashBoardController>();
+  final _networkConnectionController = getBinding<NetworkConnectionController>();
   final _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
   final _imagePaths = getBinding<ImagePaths>();
   final _appToast = getBinding<AppToast>();
@@ -112,9 +114,11 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
         _deleteSendingEmailAction(context, listSendingEmails);
         break;
       case SendingEmailActionType.edit:
-        if (dashboardController?.networkConnectionController.isNetworkConnectionAvailable() == false) {
+        if (_networkConnectionController?.isNetworkConnectionAvailable() == false) {
           _editSendingEmailAction(listSendingEmails.first);
         }
+        break;
+      case SendingEmailActionType.create:
         break;
     }
   }
@@ -174,7 +178,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
       _appToast!.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).deleteSomeOfflineEmailSuccessfully
+        AppLocalizations.of(currentContext!).messageHaveBeenDeletedSuccessfully
       );
 
       _refreshSendingQueue();
@@ -182,6 +186,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void _editSendingEmailAction(SendingEmail sendingEmail) {
+    disableSelectionMode();
+
     final arguments = ComposerArguments(
       emailActionType: EmailActionType.edit,
       presentationEmail: sendingEmail.presentationEmail,

@@ -131,24 +131,35 @@ class LocalNotificationManager {
     required String title,
     String? message,
     EmailAddress? emailAddress,
-    String? payload
+    String? payload,
+    bool isInboxStyle = true
   }) async {
-    final inboxStyleInformation = InboxStyleInformation(
-      [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
-      htmlFormatLines: true,
-      contentTitle: title,
-      htmlFormatContentTitle: true,
-      summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
-      htmlFormatSummaryText: true,
-    );
+    if (isInboxStyle) {
+      final inboxStyleInformation = InboxStyleInformation(
+        [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
+        htmlFormatLines: true,
+        contentTitle: title,
+        htmlFormatContentTitle: true,
+        summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
+        htmlFormatSummaryText: true,
+      );
 
-    await _localNotificationsPlugin.show(
-      id.hashCode,
-      title,
-      message,
-      LocalNotificationConfig.instance.generateNotificationDetails(styleInformation: inboxStyleInformation),
-      payload: payload
-    );
+      await _localNotificationsPlugin.show(
+        id.hashCode,
+        title,
+        message,
+        LocalNotificationConfig.instance.generateNotificationDetails(styleInformation: inboxStyleInformation),
+        payload: payload
+      );
+    } else {
+      await _localNotificationsPlugin.show(
+        id.hashCode,
+        title,
+        message,
+        LocalNotificationConfig.instance.generateNotificationDetails(),
+        payload: payload
+      );
+    }
   }
 
   Future<void> removeNotification(String id) {

@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_sending_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
+import 'package:tmail_ui_user/features/sending_queue/data/exceptions/sending_queue_exceptions.dart';
 
 class SendingEmailCacheManager {
 
@@ -14,14 +15,21 @@ class SendingEmailCacheManager {
 
   SendingEmailCacheManager(this._hiveCacheClient);
 
-  Future<void> storeSendingEmail(
+  Future<SendingEmailHiveCache> storeSendingEmail(
     AccountId accountId,
     UserName userName,
     SendingEmailHiveCache sendingEmailHiveCache
-  ) {
+  ) async {
     final keyCache = TupleKey(sendingEmailHiveCache.sendingId, accountId.asString, userName.value).encodeKey;
     log('SendingEmailCacheManager::storeSendingEmail():keyCache: $keyCache | sendingEmailHiveCache: $sendingEmailHiveCache');
-    return _hiveCacheClient.insertItem(keyCache, sendingEmailHiveCache);
+    await _hiveCacheClient.insertItem(keyCache, sendingEmailHiveCache);
+    final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
+    if (newSendingEmailHiveCache != null) {
+      log('SendingEmailCacheManager::storeSendingEmail():sendingId: ${newSendingEmailHiveCache.sendingId} | sendingState: ${newSendingEmailHiveCache.sendingState}');
+      return newSendingEmailHiveCache;
+    } else {
+      throw NotFoundSendingEmailHiveObject();
+    }
   }
 
   Future<List<SendingEmailHiveCache>> getAllSendingEmailsByTupleKey(
@@ -41,15 +49,21 @@ class SendingEmailCacheManager {
   Future<void> deleteSendingEmail(
     AccountId accountId,
     UserName userName,
-    String sendingId
-  ) {
+    String sendingId,
+    {bool needToReopen = false}
+  ) async {
     final keyCache = TupleKey(sendingId, accountId.asString, userName.value).encodeKey;
     log('SendingEmailCacheManager::deleteSendingEmail():keyCache: $keyCache');
-    return _hiveCacheClient.deleteItem(keyCache);
+    await _hiveCacheClient.deleteItem(keyCache, needToReopen: needToReopen);
+    final storedSendingEmail = await _hiveCacheClient.getItem(keyCache);
+    if (storedSendingEmail != null) {
+      log('SendingEmailCacheManager::deleteSendingEmail():sendingId: ${storedSendingEmail.sendingId}');
+      throw ExistSendingEmailHiveObject();
+    }
   }
 
-  Future<List<SendingEmailHiveCache>> getAllSendingEmails() async {
-    final sendingEmailsCache = await _hiveCacheClient.getAll(needToReopen: true);
+  Future<List<SendingEmailHiveCache>> getAllSendingEmails({bool needToReopen = false}) async {
+    final sendingEmailsCache = await _hiveCacheClient.getAll(needToReopen: needToReopen);
     log('SendingEmailCacheManager::getAllSendingEmails():COUNT: ${sendingEmailsCache.length}');
     sendingEmailsCache.sortByLatestTime();
     return sendingEmailsCache;
@@ -57,13 +71,21 @@ class SendingEmailCacheManager {
 
   Future<void> clearAllSendingEmails() => _hiveCacheClient.clearAllData();
 
-  Future<void> updateSendingEmail(
+  Future<SendingEmailHiveCache> updateSendingEmail(
     AccountId accountId,
     UserName userName,
-    SendingEmailHiveCache sendingEmailHiveCache
+    SendingEmailHiveCache sendingEmailHiveCache,
+    {bool needToReopen = false}
   ) async {
     final keyCache = TupleKey(sendingEmailHiveCache.sendingId, accountId.asString, userName.value).encodeKey;
     log('SendingEmailCacheManager::updateSendingEmail():keyCache: $keyCache | sendingEmailHiveCache: $sendingEmailHiveCache');
-    return await _hiveCacheClient.updateItem(keyCache, sendingEmailHiveCache, needToReopen: true);
+    await _hiveCacheClient.updateItem(keyCache, sendingEmailHiveCache, needToReopen: needToReopen);
+    final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
+    if (newSendingEmailHiveCache != null) {
+      log('SendingEmailCacheManager::updateSendingEmail():sendingId: ${newSendingEmailHiveCache.sendingId} | sendingState: ${newSendingEmailHiveCache.sendingState}');
+      return newSendingEmailHiveCache;
+    } else {
+      throw NotFoundSendingEmailHiveObject();
+    }
   }
 }

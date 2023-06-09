@@ -21,9 +21,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
-import 'package:tmail_ui_user/features/composer/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_hive_cache_extension.dart';
@@ -31,11 +29,14 @@ import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_sending_email_hive_cache_extension.dart';
+import 'package:tmail_ui_user/features/offline_mode/extensions/sending_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
@@ -247,9 +248,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
+  Future<SendingEmail> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
     return Future.sync(() async {
-      return await _sendingEmailCacheManager.storeSendingEmail(accountId, userName, sendingEmail.toHiveCache());
+      final sendingEmailsCache = await _sendingEmailCacheManager.storeSendingEmail(accountId, userName, sendingEmail.toHiveCache());
+      return sendingEmailsCache.toSendingEmail();
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -262,16 +264,17 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) {
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId, {bool needToReopen = false}) {
     return Future.sync(() async {
-      return await _sendingEmailCacheManager.deleteSendingEmail(accountId, userName, sendingId);
+      return await _sendingEmailCacheManager.deleteSendingEmail(accountId, userName, sendingId, needToReopen: needToReopen);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<void> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
+  Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail, {bool needToReopen = false}) {
     return Future.sync(() async {
-      return await _sendingEmailCacheManager.updateSendingEmail(accountId, userName, sendingEmail.toHiveCache());
+      final sendingEmailsCache = await _sendingEmailCacheManager.updateSendingEmail(accountId, userName, newSendingEmail.toHiveCache(), needToReopen: needToReopen);
+      return sendingEmailsCache.toSendingEmail();
     }).catchError(_exceptionThrower.throwException);
   }
 }
