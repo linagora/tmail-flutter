@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/config/app_config_loader.dart';
@@ -10,7 +9,6 @@ import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -105,6 +103,8 @@ import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller_bin
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
@@ -179,6 +179,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetEmailByIdInteractor>(),
       Get.find<SendEmailInteractor>(),
       Get.find<StoreSendingEmailInteractor>(),
+      Get.find<UpdateSendingEmailInteractor>(),
       Get.find<GetAllSendingEmailInteractor>(),
       Get.find<StoreSessionInteractor>(),
     ));
@@ -333,7 +334,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>()
     ));
-    Get.lazyPut(() => StoreSendingEmailInteractor(Get.find<EmailRepository>()));
     SendingQueueInteractorBindings().dependencies();
     Get.lazyPut(() => StoreSessionInteractor(Get.find<SessionRepository>()));
   }

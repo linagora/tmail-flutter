@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';

@@ -8,8 +8,9 @@ import 'package:jmap_dart_client/http/converter/mailbox_id_nullable_converter.da
 import 'package:jmap_dart_client/http/converter/mailbox_name_converter.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 extension SendingEmailHiveCacheExtension on SendingEmailHiveCache {
 
@@ -24,7 +25,8 @@ extension SendingEmailHiveCacheExtension on SendingEmailHiveCache {
       emailIdAnsweredOrForwarded: const EmailIdNullableConverter().fromJson(emailIdAnsweredOrForwarded),
       identityId: const IdentityIdNullableConverter().fromJson(identityId),
       mailboxNameRequest: const MailboxNameConverter().fromJson(mailboxNameRequest),
-      creationIdRequest: const IdNullableConverter().fromJson(creationIdRequest)
+      creationIdRequest: const IdNullableConverter().fromJson(creationIdRequest),
+      sendingState: SendingState.values.firstWhere((value) => value.name == sendingState)
     );
   }
 }

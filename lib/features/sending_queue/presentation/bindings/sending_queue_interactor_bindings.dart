@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cac
 import 'package:tmail_ui_user/features/sending_queue/data/repository/sending_queue_repository_impl.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/repository/sending_queue_repository.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_multiple_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_single_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
@@ -13,6 +14,8 @@ import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 
@@ -36,9 +39,12 @@ class SendingQueueInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsInteractor() {
+    Get.lazyPut(() => StoreSendingEmailInteractor(Get.find<SendingQueueRepository>()));
     Get.lazyPut(() => GetAllSendingEmailInteractor(Get.find<SendingQueueRepository>()));
     Get.lazyPut(() => DeleteSingleSendingEmailInteractor(Get.find<SendingQueueRepository>()));
     Get.lazyPut(() => DeleteMultipleSendingEmailInteractor(Get.find<DeleteSingleSendingEmailInteractor>()));
+    Get.lazyPut(() => DeleteSendingEmailInteractor(Get.find<SendingQueueRepository>()));
+    Get.lazyPut(() => UpdateSendingEmailInteractor(Get.find<SendingQueueRepository>()));
   }
 
   @override

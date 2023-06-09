@@ -5,8 +5,9 @@ import 'package:model/extensions/identity_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 extension SendingEmailExtension on SendingEmail {
   SendingEmailHiveCache toHiveCache() {
@@ -25,14 +26,15 @@ extension SendingEmailExtension on SendingEmail {
     );
   }
 
-  EmailRequest toEmailRequest({Email? emailEdit}) {
+  EmailRequest toEmailRequest({Email? newEmail}) {
     return EmailRequest(
-      email: emailEdit ?? email,
+      email: newEmail ?? email,
       emailActionType: emailActionType,
       sentMailboxId: sentMailboxId,
       emailIdDestroyed: emailIdDestroyed,
       emailIdAnsweredOrForwarded: emailIdAnsweredOrForwarded,
-      identityId: identityId
+      identityId: identityId,
+      storedSendingId: sendingId
     );
   }
 
@@ -67,6 +69,23 @@ extension SendingEmailExtension on SendingEmail {
       creationIdRequest: creationIdRequest,
       sendingState: sendingState,
       selectMode: SelectMode.INACTIVE
+    );
+  }
+
+  SendingEmail updatingSendingState(SendingState newState) {
+    return SendingEmail(
+      sendingId: sendingId,
+      email: email,
+      emailActionType: emailActionType,
+      createTime: createTime,
+      sentMailboxId: sentMailboxId,
+      emailIdDestroyed: emailIdDestroyed,
+      emailIdAnsweredOrForwarded: emailIdAnsweredOrForwarded,
+      identityId: identityId,
+      mailboxNameRequest: mailboxNameRequest,
+      creationIdRequest: creationIdRequest,
+      sendingState: newState,
+      selectMode: selectMode
     );
   }
 }

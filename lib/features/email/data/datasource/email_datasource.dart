@@ -16,10 +16,10 @@ import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 abstract class EmailDataSource {
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId);
@@ -90,9 +90,9 @@ abstract class EmailDataSource {
 
   Future<DetailedEmail?> getIncomingEmailedStored(Session session, AccountId accountId, EmailId emailId);
 
-  Future<void> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
+  Future<SendingEmail> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
 
-  Future<void> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
+  Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail);
 
   Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName);
 
