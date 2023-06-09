@@ -60,7 +60,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
       final workState = WorkerState.values.firstWhereOrNull((state) => state.name == event);
       log('SendingQueueController::_handleSendingQueueEvent():workState: $workState');
       if (workState != null) {
-        _refreshSendingQueue(needToReopen: true);
+        refreshSendingQueue(needToReopen: true);
       }
     }
   }
@@ -87,7 +87,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   bool get isConnectedNetwork => _networkConnectionController?.isNetworkConnectionAvailable() == true;
 
-  void _refreshSendingQueue({bool needToReopen = false}) {
+  void refreshSendingQueue({bool needToReopen = false}) {
     dashboardController!.getAllSendingEmails(needToReopen: needToReopen);
   }
 
@@ -178,7 +178,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
         AppLocalizations.of(currentContext!).messageHaveBeenDeletedSuccessfully
       );
 
-      _refreshSendingQueue();
+      refreshSendingQueue();
     }
   }
 
