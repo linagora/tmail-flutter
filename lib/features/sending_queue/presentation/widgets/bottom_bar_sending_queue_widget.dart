@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,6 +27,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagePaths = Get.find<ImagePaths>();
+    final responsiveUtils = Get.find<ResponsiveUtils>();
 
     return Container(
       decoration: const BoxDecoration(
@@ -49,7 +51,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
                 onHandleSendingEmailActionType?.call(SendingEmailActionType.edit, listSendingEmailSelected);
               }
             })
-            ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: true)
+            ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: responsiveUtils.isPortraitMobile(context))
           ).build()),
           Expanded(child: (ButtonBuilder(imagePaths.icDeleteComposer)
             ..key(Key(SendingEmailActionType.delete.getButtonKey()))
@@ -58,7 +60,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
             ..radiusSplash(8)
             ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.delete.getButtonTitleColor(ButtonState.enabled)))
             ..onPressActionClick(() => onHandleSendingEmailActionType?.call(SendingEmailActionType.delete, listSendingEmailSelected))
-            ..text(SendingEmailActionType.delete.getButtonTitle(context), isVertical: true)
+            ..text(SendingEmailActionType.delete.getButtonTitle(context), isVertical: responsiveUtils.isPortraitMobile(context))
           ).build())
         ],
       ),
