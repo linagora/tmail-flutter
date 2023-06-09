@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
@@ -26,7 +25,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
           children: [
             Obx(() {
               return AppBarSendingQueueWidget(
-                listSendingEmails: controller.listSendingEmailSelected,
+                listSendingEmailSelected: controller.dashboardController!.listSendingEmails.listSelected(),
                 onOpenMailboxMenu: controller.openMailboxMenu,
                 onBackAction: controller.disableSelectionMode,
                 selectMode: controller.selectionState.value,
@@ -46,7 +45,8 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
                 return const SizedBox.shrink();
               } else {
                return BottomBarSendingQueueWidget(
-                  listSendingEmails: controller.listSendingEmailSelected,
+                  listSendingEmailSelected: controller.dashboardController!.listSendingEmails.listSelected(),
+                  isConnectedNetwork: controller.isConnectedNetwork,
                   onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
                 );
               }
@@ -60,22 +60,24 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
 
   Widget _buildListSendingEmails(BuildContext context) {
     return Obx(() {
-      if (controller.dashboardController!.listSendingEmails.isNotEmpty) {
-        return LayoutBuilder(builder: (context, constraints) {
-          log('SendingQueueView::_buildListSendingEmails(): MAX_WIDTH: ${constraints.maxWidth}');
-          return ListView.builder(
-            controller: controller.listSendingEmailController,
-            itemCount: controller.dashboardController!.listSendingEmails.length,
-            itemBuilder: (context, index) {
-              return Obx(() => SendingEmailTileWidget(
-                sendingEmail: controller.dashboardController!.listSendingEmails[index],
-                selectMode: controller.selectionState.value,
-                onLongPressAction: controller.handleOnLongPressAction,
-                onSelectLeadingAction: controller.toggleSelectionSendingEmail,
-                onTapAction:  (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, [listSendingEmails])));
-            }
-          );
-        });
+      final listSendingEmails = controller.dashboardController!.listSendingEmails;
+      if (listSendingEmails.isNotEmpty) {
+        return ListView.builder(
+          controller: controller.listSendingEmailController,
+          itemCount: listSendingEmails.length,
+          itemBuilder: (context, index) {
+            return SendingEmailTileWidget(
+              sendingEmail: listSendingEmails[index],
+              selectMode: controller.selectionState.value,
+              onLongPressAction: controller.handleOnLongPressAction,
+              onSelectLeadingAction: controller.toggleSelectionSendingEmail,
+              onTapAction: (actionType, sendingEmail) {
+                if (!controller.isConnectedNetwork && sendingEmail.isReady) {
+                  controller.handleSendingEmailActionType(context, actionType, [sendingEmail]);
+                }
+              });
+          }
+        );
       } else {
         return const SizedBox.shrink();
       }

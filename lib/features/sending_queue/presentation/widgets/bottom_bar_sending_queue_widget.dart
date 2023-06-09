@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/button_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
@@ -12,13 +13,15 @@ typedef OnHandleSendingEmailActionType = void Function(SendingEmailActionType, L
 
 class BottomBarSendingQueueWidget extends StatelessWidget {
 
-  final List<SendingEmail> listSendingEmails;
+  final List<SendingEmail> listSendingEmailSelected;
   final OnHandleSendingEmailActionType? onHandleSendingEmailActionType;
+  final bool isConnectedNetwork;
 
   const BottomBarSendingQueueWidget({
     super.key,
-    required this.listSendingEmails,
+    required this.listSendingEmailSelected,
     this.onHandleSendingEmailActionType,
+    this.isConnectedNetwork = true
   });
 
   @override
@@ -36,27 +39,40 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (!listSendingEmails.isAllSelected() || listSendingEmails.length < 2)
-            Expanded(child: (ButtonBuilder(imagePaths.icEdit)
-              ..key(Key(SendingEmailActionType.edit.getButtonKey()))
-              ..iconColor(SendingEmailActionType.edit.getButtonIconColor())
-              ..padding(const EdgeInsets.all(8))
-              ..radiusSplash(8)
-              ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.edit.getButtonTitleColor()))
-              ..onPressActionClick(() => onHandleSendingEmailActionType?.call(SendingEmailActionType.edit, listSendingEmails))
-              ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: true)
-            ).build()),
-          Expanded(child: (ButtonBuilder(imagePaths.icDeleteComposer)
-            ..key(Key(SendingEmailActionType.delete.getButtonKey()))
-            ..iconColor(SendingEmailActionType.delete.getButtonIconColor())
+          Expanded(child: (ButtonBuilder(imagePaths.icEdit)
+            ..key(Key(SendingEmailActionType.edit.getButtonKey()))
+            ..iconColor(SendingEmailActionType.edit.getButtonIconColor(_isEditable ? ButtonState.enabled : ButtonState.disabled))
             ..padding(const EdgeInsets.all(8))
             ..radiusSplash(8)
-            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.delete.getButtonTitleColor()))
-            ..onPressActionClick(() => onHandleSendingEmailActionType?.call(SendingEmailActionType.delete, listSendingEmails))
+            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.edit.getButtonTitleColor(_isEditable ? ButtonState.enabled : ButtonState.disabled)))
+            ..onPressActionClick(() {
+              if (_isEditable) {
+                onHandleSendingEmailActionType?.call(SendingEmailActionType.edit, listSendingEmailSelected);
+              }
+            })
+            ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: true)
+          ).build()),
+          Expanded(child: (ButtonBuilder(imagePaths.icDeleteComposer)
+            ..key(Key(SendingEmailActionType.delete.getButtonKey()))
+            ..iconColor(SendingEmailActionType.delete.getButtonIconColor(_isCanBeDeleted ? ButtonState.enabled : ButtonState.disabled))
+            ..padding(const EdgeInsets.all(8))
+            ..radiusSplash(8)
+            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.delete.getButtonTitleColor(_isCanBeDeleted ? ButtonState.enabled : ButtonState.disabled)))
+            ..onPressActionClick(() {
+              if (_isCanBeDeleted) {
+                onHandleSendingEmailActionType?.call(SendingEmailActionType.delete, listSendingEmailSelected);
+              }
+            })
             ..text(SendingEmailActionType.delete.getButtonTitle(context), isVertical: true)
           ).build())
         ],
       ),
     );
   }
+
+  bool get _isEditable => !isConnectedNetwork &&
+    listSendingEmailSelected.length == 1 &&
+    listSendingEmailSelected.first.isReady;
+
+  bool get _isCanBeDeleted => listSendingEmailSelected.isAllNotDeliveringSendingState();
 }

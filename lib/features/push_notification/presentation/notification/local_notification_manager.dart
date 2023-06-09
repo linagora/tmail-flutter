@@ -156,7 +156,7 @@ class LocalNotificationManager {
         id.hashCode,
         title,
         message,
-        LocalNotificationConfig.instance.generateNotificationDetails(),
+        LocalNotificationConfig.instance.generateNotificationDetails(styleInformation: const DefaultStyleInformation(true, true)),
         payload: payload
       );
     }
