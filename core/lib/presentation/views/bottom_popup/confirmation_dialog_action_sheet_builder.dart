@@ -49,8 +49,8 @@ class ConfirmationDialogActionSheetBuilder {
     _styleCancelButton = style;
   }
 
-  void show() {
-    showCupertinoModalPopup(
+  void show() async {
+    await showCupertinoModalPopup(
       context: _context,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       builder: (context) => PointerInterceptor(child: CupertinoActionSheet(
