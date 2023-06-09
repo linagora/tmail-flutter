@@ -97,9 +97,7 @@ class SendingEmailTileWidget extends StatelessWidget {
                             maxLines: 1,
                             style: TextStyle(
                               fontSize: 15,
-                              color: sendingEmail.isDelivering
-                                ? AppColor.colorDeliveringState
-                                : Colors.black,
+                              color: sendingEmail.sendingState.getTitleSendingEmailItemColor(),
                               fontWeight: FontWeight.w600
                             )
                           )),
@@ -122,14 +120,12 @@ class SendingEmailTileWidget extends StatelessWidget {
                               overflow: CommonTextStyle.defaultTextOverFlow,
                               style: TextStyle(
                                 fontSize: 13,
-                                color: sendingEmail.isDelivering
-                                  ? AppColor.colorDeliveringState
-                                  : Colors.black,
+                                color: sendingEmail.sendingState.getTitleSendingEmailItemColor(),
                                 fontWeight: FontWeight.normal
                               )
                             )
                           ),
-                          if (!sendingEmail.isReady && !ResponsiveUtils.isMatchedMobileWidth(constraints.maxWidth))
+                          if (!ResponsiveUtils.isMatchedMobileWidth(constraints.maxWidth))
                             Container(
                               margin: const EdgeInsets.only(left: 8),
                               width: 120,
@@ -153,13 +149,11 @@ class SendingEmailTileWidget extends StatelessWidget {
                           maxLines: 1,
                           style: TextStyle(
                             fontSize: 13,
-                            color: sendingEmail.isDelivering
-                              ? AppColor.colorDeliveringState
-                              : AppColor.colorTitleSendingItem,
+                            color: sendingEmail.sendingState.getSubTitleSendingEmailItemColor(),
                             fontWeight: FontWeight.normal
                           )
                         ),
-                        if (!sendingEmail.isReady && ResponsiveUtils.isMatchedMobileWidth(constraints.maxWidth))
+                        if (ResponsiveUtils.isMatchedMobileWidth(constraints.maxWidth))
                           Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: SendingStateWidget(sendingState: sendingEmail.sendingState))
@@ -168,7 +162,7 @@ class SendingEmailTileWidget extends StatelessWidget {
                 ]),
               ),
               Padding(
-                padding: SendingQueueUtils.getPaddingDividerListViewByResponsiveSize(constraints.maxWidth, sendingEmail),
+                padding: SendingQueueUtils.getPaddingDividerListViewByResponsiveSize(constraints.maxWidth),
                 child: const Divider(
                   color: AppColor.lineItemListColor,
                   height: 1,

@@ -13,11 +13,14 @@ import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
-import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_state.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending_email_state.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/controller/work_scheduler_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/delete_multiple_sending_email_state.dart';
@@ -30,6 +33,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class SendingQueueController extends BaseController with MessageDialogActionMixin {
 
   final DeleteMultipleSendingEmailInteractor _deleteMultipleSendingEmailInteractor;
+  final UpdateSendingEmailInteractor _updateSendingEmailInteractor;
 
   final dashboardController = getBinding<MailboxDashBoardController>();
   final _networkConnectionController = getBinding<NetworkConnectionController>();
@@ -41,7 +45,10 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   final selectionState = Rx<SelectMode>(SelectMode.INACTIVE);
 
-  SendingQueueController(this._deleteMultipleSendingEmailInteractor);
+  SendingQueueController(
+    this._deleteMultipleSendingEmailInteractor,
+    this._updateSendingEmailInteractor,
+  );
 
   @override
   void onInit() {
@@ -56,12 +63,36 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   void _handleSendingQueueEvent(Object? event) {
     log('SendingQueueController::_handleSendingQueueEvent():event: $event');
-    if (event is String) {
-      final workState = WorkerState.values.firstWhereOrNull((state) => state.name == event);
-      log('SendingQueueController::_handleSendingQueueEvent():workState: $workState');
-      if (workState != null) {
-        refreshSendingQueue(needToReopen: true);
+    try {
+      if (event is String) {
+        final tupleKey = TupleKey.fromString(event);
+        final sendingId = tupleKey.parts[0];
+        final sendingState = SendingState.values.firstWhereOrNull((state) => state.name == tupleKey.parts[1]);
+        log('SendingQueueController::_handleSendingQueueEvent():sendingId: $sendingId | sendingState: $sendingState');
+
+        if (sendingState != null) {
+          switch(sendingState) {
+            case SendingState.waiting:
+              _handleSendingStateRunningEvent(sendingId);
+              break;
+            case SendingState.running:
+            case SendingState.success:
+            case SendingState.error:
+              refreshSendingQueue(needToReopen: true);
+              break;
+          }
+        }
       }
+    } catch (e) {
+      logError('SendingQueueController::_handleSendingQueueEvent(): EXCEPTION: $e');
+    }
+  }
+
+  void _handleSendingStateRunningEvent(String sendingId) {
+    log('SendingQueueController::_handleSendingStateRunningEvent():sendingId: $sendingId');
+    final matchedSendingEmail = dashboardController!.listSendingEmails.firstWhereOrNull((sendingEmail) => sendingEmail.sendingId == sendingId);
+    if (matchedSendingEmail != null) {
+      _updateSendingEmailAction(matchedSendingEmail);
     }
   }
 
@@ -200,12 +231,27 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     selectionState.value = SelectMode.INACTIVE;
   }
 
+  void _updateSendingEmailAction(SendingEmail newSendingEmail) {
+    final accountId = dashboardController!.accountId.value;
+    final session = dashboardController!.sessionCurrent;
+    if (accountId != null && session != null) {
+      consumeState(_updateSendingEmailInteractor.execute(
+        accountId,
+        session.username,
+        newSendingEmail,
+        needToReopen: true
+      ));
+    }
+  }
+
   @override
   void handleSuccessViewState(Success success) {
     super.handleSuccessViewState(success);
     if (success is DeleteMultipleSendingEmailAllSuccess ||
         success is DeleteMultipleSendingEmailHasSomeSuccess) {
       _handleDeleteSendingEmailSuccess();
+    } else if (success is UpdateSendingEmailSuccess) {
+      refreshSendingQueue(needToReopen: true);
     }
   }
 
