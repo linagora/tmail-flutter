@@ -43,7 +43,7 @@ class SendingEmail with EquatableMixin {
     this.mailboxNameRequest,
     this.creationIdRequest,
     this.selectMode = SelectMode.INACTIVE,
-    this.sendingState = SendingState.ready
+    this.sendingState = SendingState.waiting
   });
 
   Map<String, dynamic> toJson() {
@@ -99,9 +99,7 @@ class SendingEmail with EquatableMixin {
 
   bool get isSelected => selectMode == SelectMode.ACTIVE;
 
-  bool get isDelivering => sendingState == SendingState.delivering;
-
-  bool get isReady => sendingState == SendingState.ready;
+  bool get isWaiting => sendingState == SendingState.waiting;
 
   @override
   List<Object?> get props => [

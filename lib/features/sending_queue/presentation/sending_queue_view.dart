@@ -34,7 +34,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
             }),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
             Obx(() {
-              if (!controller.dashboardController!.listSendingEmails.isAllNotReadySendingState()) {
+              if (!controller.isConnectedNetwork) {
                 return const BannerMessageSendingQueueWidget();
               } else {
                 return const SizedBox.shrink();
@@ -87,7 +87,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
               onLongPressAction: controller.handleOnLongPressAction,
               onSelectLeadingAction: controller.toggleSelectionSendingEmail,
               onTapAction: (actionType, sendingEmail) {
-                if (!controller.isConnectedNetwork && sendingEmail.isReady) {
+                if (!controller.isConnectedNetwork && sendingEmail.isWaiting) {
                   controller.handleSendingEmailActionType(context, actionType, [sendingEmail]);
                 }
               });
