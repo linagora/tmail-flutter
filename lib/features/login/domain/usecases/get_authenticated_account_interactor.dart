@@ -20,7 +20,7 @@ class GetAuthenticatedAccountInteractor {
     this._getStoredTokenOidcInteractor
   );
 
-  Stream<Either<Failure, Success>> execute({bool needToReopen = false}) async* {
+  Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right<Failure, Success>(LoadingState());
       final account = await _accountRepository.getCurrentAccount();
@@ -29,7 +29,7 @@ class GetAuthenticatedAccountInteractor {
       if (account.authenticationType == AuthenticationType.oidc) {
         yield* _getStoredTokenOidcInteractor.execute(account.id);
       } else {
-        yield await _getCredentialInteractor.execute(needToReopen: needToReopen);
+        yield await _getCredentialInteractor.execute();
       }
     } catch (e) {
       logError('GetAuthenticatedAccountInteractor::execute(): $e');
