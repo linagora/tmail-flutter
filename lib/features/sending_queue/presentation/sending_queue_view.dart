@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -60,10 +61,24 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
 
   Widget _buildListSendingEmails(BuildContext context) {
     return Obx(() {
+      if (controller.selectionState.value == SelectMode.INACTIVE) {
+        return RefreshIndicator(
+          color: AppColor.primaryColor,
+          onRefresh: () async => controller.refreshSendingQueue(needToReopen: true),
+          child: _buildListViewItemSendingEmails());
+      } else {
+        return _buildListViewItemSendingEmails();
+      }
+    });
+  }
+
+  Widget _buildListViewItemSendingEmails() {
+    return Obx(() {
       final listSendingEmails = controller.dashboardController!.listSendingEmails;
       if (listSendingEmails.isNotEmpty) {
         return ListView.builder(
           controller: controller.listSendingEmailController,
+          physics: const AlwaysScrollableScrollPhysics(), // Trigger Refresh To pull
           itemCount: listSendingEmails.length,
           itemBuilder: (context, index) {
             return SendingEmailTileWidget(
