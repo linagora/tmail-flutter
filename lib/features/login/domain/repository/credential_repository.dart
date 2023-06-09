@@ -9,7 +9,7 @@ abstract class CredentialRepository {
 
   Future<void> storeAuthenticationInfo(AuthenticationInfoCache authenticationInfoCache);
 
-  Future<AuthenticationInfoCache?> getAuthenticationInfoStored({bool needToReopen = false});
+  Future<AuthenticationInfoCache?> getAuthenticationInfoStored();
 
   Future<void> removeAuthenticationInfo();
 }
