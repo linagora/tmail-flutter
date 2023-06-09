@@ -163,7 +163,7 @@ class ToastView {
     required double currentMaxWidth,
     Widget? leading
   }) {
-    return leading == null ? currentMaxWidth : currentMaxWidth - 90;
+    return leading == null ? currentMaxWidth : currentMaxWidth - 100;
   }
 
   static Positioned _showWidgetBasedOnPosition(
