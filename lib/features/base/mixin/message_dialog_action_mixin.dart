@@ -28,12 +28,12 @@ mixin MessageDialogActionMixin {
         Color? actionButtonColor,
         Color? cancelButtonColor,
       }
-  ) {
+  ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final imagePaths = Get.find<ImagePaths>();
 
     if (alignCenter) {
-      showDialog(
+      await showDialog(
         context: context,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
         builder: (BuildContext context) => PointerInterceptor(
@@ -63,7 +63,7 @@ mixin MessageDialogActionMixin {
     } else {
       if (responsiveUtils.isMobile(context)) {
         if (showAsBottomSheet) {
-          showModalBottomSheet(
+          await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -107,7 +107,7 @@ mixin MessageDialogActionMixin {
             })).show();
         }
       } else {
-        showDialog(
+        await showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(
