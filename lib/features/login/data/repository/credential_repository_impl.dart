@@ -36,8 +36,8 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<AuthenticationInfoCache?> getAuthenticationInfoStored({bool needToReopen = false}) {
-    return _authenticationInfoCacheManager.getAuthenticationInfoStored(needToReopen: needToReopen);
+  Future<AuthenticationInfoCache?> getAuthenticationInfoStored() {
+    return _authenticationInfoCacheManager.getAuthenticationInfoStored();
   }
 
   @override
