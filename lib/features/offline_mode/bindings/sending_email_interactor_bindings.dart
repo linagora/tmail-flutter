@@ -14,7 +14,6 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -34,7 +33,7 @@ import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dar
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
-class SendingEmailBindings extends InteractorsBindings {
+class SendEmailInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSource() {
@@ -76,11 +75,7 @@ class SendingEmailBindings extends InteractorsBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => SendEmailInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()
-    ));
-    Get.lazyPut(() => DeleteSendingEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>(), Get.find<MailboxRepository>()));
   }
 
   @override

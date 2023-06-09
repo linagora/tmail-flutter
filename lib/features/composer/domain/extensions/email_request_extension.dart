@@ -1,7 +1,7 @@
 
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 extension EmailRequestExtension on EmailRequest {
   SendingEmail toSendingEmail(String sendingId, {CreateNewMailboxRequest? mailboxRequest}) {
