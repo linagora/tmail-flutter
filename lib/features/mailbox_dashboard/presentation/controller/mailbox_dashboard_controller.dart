@@ -14,7 +14,6 @@ import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
@@ -27,15 +26,11 @@ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dar
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/update_sending_email_state.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -100,8 +95,14 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_ema
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending_email_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -156,6 +157,7 @@ class MailboxDashBoardController extends ReloadableController {
   final GetEmailByIdInteractor _getEmailByIdInteractor;
   final SendEmailInteractor _sendEmailInteractor;
   final StoreSendingEmailInteractor _storeSendingEmailInteractor;
+  final UpdateSendingEmailInteractor _updateSendingEmailInteractor;
   final GetAllSendingEmailInteractor _getAllSendingEmailInteractor;
   final StoreSessionInteractor _storeSessionInteractor;
 
@@ -228,6 +230,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._getEmailByIdInteractor,
     this._sendEmailInteractor,
     this._storeSendingEmailInteractor,
+    this._updateSendingEmailInteractor,
     this._getAllSendingEmailInteractor,
     this._storeSessionInteractor,
   ) : super(
@@ -279,7 +282,7 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void handleSuccessViewState(Success success) {
     super.handleSuccessViewState(success);
-    if (success is SendingEmailState) {
+    if (success is SendEmailLoading) {
       if (currentOverlayContext != null && currentContext != null) {
         _appToast.showToastMessage(
           currentOverlayContext!,
@@ -1204,7 +1207,7 @@ class MailboxDashBoardController extends ReloadableController {
         result.accountId,
         result.emailRequest,
         result.mailboxRequest,
-        isUpdateSendingEmail: result.isUpdateSendingEmail
+        result.sendingEmailActionType
       );
     }
   }
@@ -1327,7 +1330,7 @@ class MailboxDashBoardController extends ReloadableController {
           result.accountId,
           result.emailRequest,
           result.mailboxRequest,
-          isUpdateSendingEmail: result.isUpdateSendingEmail ?? false,
+          result.sendingEmailActionType
         );
       }
     }
@@ -1761,7 +1764,7 @@ class MailboxDashBoardController extends ReloadableController {
     AccountId accountId,
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest,
-    {bool? isUpdateSendingEmail = false}
+    SendingEmailActionType sendingEmailActionType
   ) {
     if (PlatformInfo.isMobile) {
       if (networkConnectionController.isNetworkConnectionAvailable()) {
@@ -1772,11 +1775,13 @@ class MailboxDashBoardController extends ReloadableController {
           mailboxRequest: mailboxRequest
         ));
       } else {
-        if (currentContext != null && isUpdateSendingEmail == false) {
-          _showActionSendingEmail(session, accountId, emailRequest, mailboxRequest);
-        } else {
-          _handleUpdateSendingEmail(session, accountId, emailRequest, mailboxRequest);
-        }
+        _handleSendingEmailWhenNoNetwork(
+          session,
+          accountId,
+          emailRequest,
+          mailboxRequest,
+          sendingEmailActionType
+        );
       }
     } else {
       consumeState(_sendEmailInteractor.execute(
@@ -1788,104 +1793,104 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
+  void _handleSendingEmailWhenNoNetwork(
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    CreateNewMailboxRequest? mailboxRequest,
+    SendingEmailActionType sendingEmailActionType
+  ) {
+    switch(sendingEmailActionType) {
+      case SendingEmailActionType.create:
+        _showConfirmDialogStoreSendingEmail(session, accountId, emailRequest, mailboxRequest);
+        break;
+      case SendingEmailActionType.edit:
+        _handleUpdateSendingEmail(session, accountId, emailRequest, mailboxRequest);
+        break;
+      case SendingEmailActionType.delete:
+        break;
+    }
+  }
+
   void _handleStoreSendingEmail(
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest,
   ) {
-    final currentEmailId = emailRequest.email.id?.id.value;
-    final sendingEmail = emailRequest.toSendingEmail(
-        emailRequest.email.id != null ? currentEmailId! : _uuid.v1(),
-        mailboxRequest: mailboxRequest
-    );
-    _storeSendingEmail(accountId, session.username, sendingEmail);
+    final sendingEmail = emailRequest.toSendingEmail(_uuid.v1(), mailboxRequest: mailboxRequest);
+    consumeState(_storeSendingEmailInteractor.execute(
+      accountId,
+      session.username,
+      sendingEmail
+    ));
   }
 
   void _handleUpdateSendingEmail(
-      Session session,
-      AccountId accountId,
-      EmailRequest emailRequest,
-      CreateNewMailboxRequest? mailboxRequest,
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    CreateNewMailboxRequest? mailboxRequest,
   ) {
-    final currentEmailId = emailRequest.email.id?.id.value;
-    final sendingEmail = emailRequest.toSendingEmail(
-        emailRequest.email.id != null ? currentEmailId! : _uuid.v1(),
-        mailboxRequest: mailboxRequest
-    );
-    _updateSendingEmail(accountId, session.username, sendingEmail);
+    final storedSendingId = emailRequest.storedSendingId;
+    if (storedSendingId != null) {
+      final sendingEmail = emailRequest.toSendingEmail(storedSendingId, mailboxRequest: mailboxRequest);
+      consumeState(_updateSendingEmailInteractor.execute(
+        accountId,
+        session.username,
+        sendingEmail
+      ));
+    } else {
+      logError('MailboxDashBoardController::_handleUpdateSendingEmail(): StoredSendingId is null');
+    }
   }
 
-  void _showActionSendingEmail(
+  void _showConfirmDialogStoreSendingEmail(
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest
   ) {
     showConfirmDialogAction(
-        currentContext!,
-        '',
-        AppLocalizations.of(currentContext!).proceed,
-        onConfirmAction: () {
-          _handleStoreSendingEmail(session, accountId, emailRequest, mailboxRequest);
-        },
-        title: AppLocalizations.of(currentContext!).youAreInOfflineMode,
-        icon: SvgPicture.asset(_imagePaths.icDialogOfflineMode),
-        alignCenter: true,
-        messageStyle: const TextStyle(
+      currentContext!,
+      '',
+      AppLocalizations.of(currentContext!).proceed,
+      onConfirmAction: () {
+        _handleStoreSendingEmail(session, accountId, emailRequest, mailboxRequest);
+      },
+      title: AppLocalizations.of(currentContext!).youAreInOfflineMode,
+      icon: SvgPicture.asset(_imagePaths.icDialogOfflineMode),
+      alignCenter: true,
+      messageStyle: const TextStyle(
+        color: AppColor.colorTitleSendingItem,
+        fontSize: 15,
+        fontWeight: FontWeight.normal
+      ),
+      listTextSpan: [
+        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailFirst),
+        TextSpan(
+          text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailSecond,
+          style: const TextStyle(
             color: AppColor.colorTitleSendingItem,
             fontSize: 15,
-            fontWeight: FontWeight.normal
+            fontWeight: FontWeight.w600
+          ),
         ),
-        listTextSpan: [
-          TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailFirst),
-          TextSpan(
-            text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailSecond,
-            style: const TextStyle(
-                color: AppColor.colorTitleSendingItem,
-                fontSize: 15,
-                fontWeight: FontWeight.w600
-            ),
+        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailThird),
+        TextSpan(
+          text: AppLocalizations.of(currentContext!).sendingQueue,
+          style: const TextStyle(
+            color: AppColor.colorTitleSendingItem,
+            fontSize: 15,
+            fontWeight: FontWeight.w600
           ),
-          TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailThird),
-          TextSpan(
-            text: AppLocalizations.of(currentContext!).sendingQueue,
-            style: const TextStyle(
-                color: AppColor.colorTitleSendingItem,
-                fontSize: 15,
-                fontWeight: FontWeight.w600
-            ),
-          ),
-          TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailTail)
-        ]
+        ),
+        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailTail)
+      ]
     );
   }
 
-  void _storeSendingEmail(
-    AccountId accountId,
-    UserName userName,
-    SendingEmail sendingEmail,
-  ) {
-    log('MailboxDashBoardController::_storeSendingEmail():sendingEmail: $sendingEmail');
-    consumeState(_storeSendingEmailInteractor.execute(
-      accountId,
-      userName,
-      sendingEmail));
-  }
-
-  void _updateSendingEmail(
-    AccountId accountId,
-    UserName userName,
-    SendingEmail sendingEmail
-  ) {
-    log('MailboxDashBoardController::_storeSendingEmail():sendingEmail: $sendingEmail');
-    consumeState(_storeSendingEmailInteractor.execute(
-        accountId,
-        userName,
-        sendingEmail));
-  }
-
-  void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) async {
+  void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) {
     _addSendingEmailToSendingQueue(success.sendingEmail);
     getAllSendingEmails();
     if (currentOverlayContext != null && currentContext != null) {
@@ -1898,17 +1903,9 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
-    _cancelSendingEmailToSendingQueue(success.sendingEmail);
-    _addSendingEmailToSendingQueue(success.sendingEmail);
+    await WorkSchedulerController().cancelByUniqueId(success.newSendingEmail.sendingId);
+    _addSendingEmailToSendingQueue(success.newSendingEmail);
     getAllSendingEmails();
-  }
-
-  void _cancelSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
-    try {
-      await WorkSchedulerController().cancelByUniqueId(sendingEmail.sendingId);
-    } catch (e) {
-      logError('MailboxDashBoardController::_cancelSendingEmailToSendingQueue(): EXCEPTION: $e');
-    }
   }
 
   void _addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {

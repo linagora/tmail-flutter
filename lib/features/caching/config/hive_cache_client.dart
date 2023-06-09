@@ -131,8 +131,12 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<void> deleteItem(String key) {
+  Future<void> deleteItem(String key, {bool needToReopen = false}) {
     return Future.sync(() async {
+      if (needToReopen) {
+        await closeBox();
+      }
+
       final boxItem = encryption
           ? await openBoxEncryption()
           : await openBox();

@@ -22,7 +22,7 @@ class SendEmailInteractor {
     {CreateNewMailboxRequest? mailboxRequest}
   ) async* {
     try {
-      yield Right<Failure, Success>(SendingEmailState());
+      yield Right<Failure, Success>(SendEmailLoading());
 
       final listState = await Future.wait([
         _mailboxRepository.getMailboxState(session, accountId),
