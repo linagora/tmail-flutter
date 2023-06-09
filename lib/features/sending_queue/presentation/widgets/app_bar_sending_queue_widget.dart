@@ -18,11 +18,11 @@ class AppBarSendingQueueWidget extends StatelessWidget {
   final VoidCallback? onBackAction;
   final VoidCallback? onOpenMailboxMenu;
   final SelectMode selectMode;
-  final List<SendingEmail> listSendingEmails;
+  final List<SendingEmail> listSendingEmailSelected;
 
   const AppBarSendingQueueWidget({
     super.key,
-    required this.listSendingEmails,
+    required this.listSendingEmailSelected,
     this.onBackAction,
     this.onOpenMailboxMenu,
     this.selectMode = SelectMode.INACTIVE
@@ -71,7 +71,7 @@ class AppBarSendingQueueWidget extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            listSendingEmails.length.toString(),
+                            listSendingEmailSelected.length.toString(),
                             maxLines: 1,
                             overflow: CommonTextStyle.defaultTextOverFlow,
                             softWrap: CommonTextStyle.defaultSoftWrap,

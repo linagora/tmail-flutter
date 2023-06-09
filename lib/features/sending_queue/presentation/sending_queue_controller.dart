@@ -38,7 +38,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   final _appToast = getBinding<AppToast>();
 
   final listSendingEmailController = ScrollController();
-  final listSendingEmailSelected = <SendingEmail>[].obs;
 
   final selectionState = Rx<SelectMode>(SelectMode.INACTIVE);
 
@@ -73,8 +72,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     selectionState.value = newListSendingEmail.isAllUnSelected()
       ? SelectMode.INACTIVE
       : SelectMode.ACTIVE;
-
-    listSendingEmailSelected.value = newListSendingEmail.listSelected();
   }
 
   void toggleSelectionSendingEmail(SendingEmail sendingEmail) {
@@ -84,11 +81,11 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     selectionState.value = newListSendingEmail.isAllUnSelected()
       ? SelectMode.INACTIVE
       : SelectMode.ACTIVE;
-
-    listSendingEmailSelected.value = newListSendingEmail.listSelected();
   }
 
   bool get isAllUnSelected => dashboardController!.listSendingEmails.isAllUnSelected();
+
+  bool get isConnectedNetwork => _networkConnectionController?.isNetworkConnectionAvailable() == true;
 
   void _refreshSendingQueue({bool needToReopen = false}) {
     dashboardController!.getAllSendingEmails(needToReopen: needToReopen);
@@ -114,7 +111,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
         _deleteSendingEmailAction(context, listSendingEmails);
         break;
       case SendingEmailActionType.edit:
-        if (_networkConnectionController?.isNetworkConnectionAvailable() == false) {
+        if (!isConnectedNetwork) {
           _editSendingEmailAction(listSendingEmails.first);
         }
         break;
