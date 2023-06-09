@@ -45,7 +45,7 @@ class SendingEmailTileWidget extends StatelessWidget {
       return Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => onTapAction?.call(SendingEmailActionType.edit ,sendingEmail),
+          onTap: () => onTapAction?.call(SendingEmailActionType.edit, sendingEmail),
           onLongPress: () => onLongPressAction?.call(sendingEmail),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
