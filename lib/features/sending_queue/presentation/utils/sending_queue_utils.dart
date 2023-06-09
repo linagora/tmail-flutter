@@ -1,7 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 class SendingQueueUtils {
 

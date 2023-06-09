@@ -2968,10 +2968,10 @@ class AppLocalizations {
     );
   }
 
-  String get deleteSomeOfflineEmailSuccessfully {
+  String get messageHaveBeenDeletedSuccessfully {
     return Intl.message(
-      'Delete some offline email successfully.',
-      name: 'deleteSomeOfflineEmailSuccessfully',
+      'Messages have been deleted successfully',
+      name: 'messageHaveBeenDeletedSuccessfully',
     );
   }
 
