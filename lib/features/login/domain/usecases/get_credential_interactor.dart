@@ -15,10 +15,10 @@ class GetCredentialInteractor {
 
   GetCredentialInteractor(this.credentialRepository);
 
-  Future<Either<Failure, Success>> execute({bool needToReopen = false}) async {
+  Future<Either<Failure, Success>> execute() async {
     try {
       final baseUrl = await credentialRepository.getBaseUrl();
-      final authenticationInfo = await credentialRepository.getAuthenticationInfoStored(needToReopen: needToReopen);
+      final authenticationInfo = await credentialRepository.getAuthenticationInfoStored();
       if (isCredentialValid(baseUrl) && authenticationInfo != null) {
         return Right(GetCredentialViewState(
           baseUrl,
