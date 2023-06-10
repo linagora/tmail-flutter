@@ -195,7 +195,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName, {bool needToReopen = false}) {
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
 
@@ -206,6 +206,16 @@ class EmailDataSourceImpl extends EmailDataSource {
 
   @override
   Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<SendingEmail>> updateMultipleSendingEmail(AccountId accountId, UserName userName, List<SendingEmail> newSendingEmails) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<SendingEmail>> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds) {
     throw UnimplementedError();
   }
 }

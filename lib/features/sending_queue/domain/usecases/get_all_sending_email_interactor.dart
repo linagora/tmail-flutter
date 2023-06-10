@@ -11,10 +11,10 @@ class GetAllSendingEmailInteractor {
 
   GetAllSendingEmailInteractor(this._sendingQueueRepository);
 
-  Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName, {bool needToReopen = false}) async* {
+  Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName) async* {
     try {
       yield Right<Failure, Success>(GetAllSendingEmailLoading());
-      final sendingEmails = await _sendingQueueRepository.getAllSendingEmails(accountId, userName, needToReopen: needToReopen);
+      final sendingEmails = await _sendingQueueRepository.getAllSendingEmails(accountId, userName);
       yield Right<Failure, Success>(GetAllSendingEmailSuccess(sendingEmails));
     } catch (e) {
       yield Left<Failure, Success>(GetAllSendingEmailFailure(e));
