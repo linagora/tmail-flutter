@@ -64,7 +64,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
       if (controller.selectionState.value == SelectMode.INACTIVE) {
         return RefreshIndicator(
           color: AppColor.primaryColor,
-          onRefresh: () async => controller.refreshSendingQueue(needToReopen: true),
+          onRefresh: () async => controller.refreshSendingQueue(),
           child: _buildListViewItemSendingEmails());
       } else {
         return _buildListViewItemSendingEmails();

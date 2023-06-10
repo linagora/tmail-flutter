@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 
 typedef OnHandleSendingEmailActionType = void Function(SendingEmailActionType, List<SendingEmail>);
@@ -53,6 +54,19 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
             })
             ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: responsiveUtils.isPortraitMobile(context))
           ).build()),
+          Expanded(child: (ButtonBuilder(imagePaths.icRefresh)
+            ..key(Key(SendingEmailActionType.resend.getButtonKey()))
+            ..iconColor(SendingEmailActionType.resend.getButtonIconColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled))
+            ..padding(const EdgeInsets.all(8))
+            ..radiusSplash(8)
+            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.resend.getButtonTitleColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled)))
+            ..onPressActionClick(() {
+              if (_isCanResend) {
+                onHandleSendingEmailActionType?.call(SendingEmailActionType.resend, listSendingEmailSelected);
+              }
+            })
+            ..text(SendingEmailActionType.resend.getButtonTitle(context), isVertical: responsiveUtils.isPortraitMobile(context))
+          ).build()),
           Expanded(child: (ButtonBuilder(imagePaths.icDeleteComposer)
             ..key(Key(SendingEmailActionType.delete.getButtonKey()))
             ..iconColor(SendingEmailActionType.delete.getButtonIconColor(ButtonState.enabled))
@@ -70,4 +84,6 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
   bool get _isEditable => !isConnectedNetwork &&
     listSendingEmailSelected.length == 1 &&
     listSendingEmailSelected.first.isWaiting;
+
+  bool get _isCanResend => listSendingEmailSelected.isAllSendingStateError();
 }
