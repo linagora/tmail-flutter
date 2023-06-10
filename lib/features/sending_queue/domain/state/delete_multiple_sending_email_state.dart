@@ -4,16 +4,13 @@ import 'package:core/presentation/state/success.dart';
 
 class DeleteMultipleSendingEmailLoading extends UIState {}
 
-class DeleteMultipleSendingEmailAllSuccess extends UIState {}
+class DeleteMultipleSendingEmailSuccess extends UIState {
+  final List<String> sendingIds;
 
-class DeleteMultipleSendingEmailHasSomeSuccess extends UIState {}
-
-class DeleteMultipleSendingEmailAllFailure extends FeatureFailure {
-
-  DeleteMultipleSendingEmailAllFailure(dynamic exception) : super(exception: exception);
+  DeleteMultipleSendingEmailSuccess(this.sendingIds);
 
   @override
-  List<Object?> get props => [exception];
+  List<Object?> get props => [sendingIds];
 }
 
 class DeleteMultipleSendingEmailFailure extends FeatureFailure {
