@@ -11,22 +11,32 @@ class SendingQueueRepositoryImpl extends SendingQueueRepository {
   SendingQueueRepositoryImpl(this._emailHiveCacheDataSourceImpl);
 
   @override
-  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName, {bool needToReopen = false}) {
-    return _emailHiveCacheDataSourceImpl.getAllSendingEmails(accountId, userName, needToReopen: needToReopen);
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
+    return _emailHiveCacheDataSourceImpl.getAllSendingEmails(accountId, userName);
   }
 
   @override
-  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId, {bool needToReopen = false}) {
-    return _emailHiveCacheDataSourceImpl.deleteSendingEmail(accountId, userName, sendingId, needToReopen: needToReopen);
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) {
+    return _emailHiveCacheDataSourceImpl.deleteSendingEmail(accountId, userName, sendingId);
   }
 
   @override
-  Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail, {bool needToReopen = false}) {
-    return _emailHiveCacheDataSourceImpl.updateSendingEmail(accountId, userName, newSendingEmail, needToReopen: needToReopen);
+  Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail) {
+    return _emailHiveCacheDataSourceImpl.updateSendingEmail(accountId, userName, newSendingEmail);
   }
 
   @override
   Future<SendingEmail> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail) {
     return _emailHiveCacheDataSourceImpl.storeSendingEmail(accountId, userName, sendingEmail);
+  }
+
+  @override
+  Future<List<SendingEmail>> updateMultipleSendingEmail(AccountId accountId, UserName userName, List<SendingEmail> newSendingEmails) {
+    return _emailHiveCacheDataSourceImpl.updateMultipleSendingEmail(accountId, userName, newSendingEmails);
+  }
+
+  @override
+  Future<void> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds) {
+    return _emailHiveCacheDataSourceImpl.deleteMultipleSendingEmail(accountId, userName, sendingIds);
   }
 }

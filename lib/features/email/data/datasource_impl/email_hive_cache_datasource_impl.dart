@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
@@ -256,25 +257,40 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName, {bool needToReopen = false}) {
+  Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
     return Future.sync(() async {
-      final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmailsByTupleKey(accountId, userName, needToReopen: needToReopen);
+      final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmailsByTupleKey(accountId, userName);
       return sendingEmailsCache.toSendingEmails();
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId, {bool needToReopen = false}) {
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) {
     return Future.sync(() async {
-      return await _sendingEmailCacheManager.deleteSendingEmail(accountId, userName, sendingId, needToReopen: needToReopen);
+      return await _sendingEmailCacheManager.deleteSendingEmail(accountId, userName, sendingId);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail, {bool needToReopen = false}) {
+  Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail) {
     return Future.sync(() async {
-      final sendingEmailsCache = await _sendingEmailCacheManager.updateSendingEmail(accountId, userName, newSendingEmail.toHiveCache(), needToReopen: needToReopen);
+      final sendingEmailsCache = await _sendingEmailCacheManager.updateSendingEmail(accountId, userName, newSendingEmail.toHiveCache());
       return sendingEmailsCache.toSendingEmail();
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<SendingEmail>> updateMultipleSendingEmail(AccountId accountId, UserName userName, List<SendingEmail> newSendingEmails) {
+    return Future.sync(() async {
+      final listSendingEmailsCache = await _sendingEmailCacheManager.updateMultipleSendingEmail(accountId, userName, newSendingEmails.toHiveCache());
+      return listSendingEmailsCache.toSendingEmails();
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds) {
+    return Future.sync(() async {
+      return await _sendingEmailCacheManager.deleteMultipleSendingEmail(accountId, userName, sendingIds);
     }).catchError(_exceptionThrower.throwException);
   }
 }
