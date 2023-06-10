@@ -4,6 +4,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/detailed_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
@@ -30,6 +31,7 @@ class CachingManager {
   final OpenedEmailHiveCacheClient _openedEmailHiveCacheClient;
   final FileUtils _fileUtils;
   final SendingEmailCacheManager _sendingEmailCacheManager;
+  final SessionHiveCacheClient _sessionHiveCacheClient;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -44,6 +46,7 @@ class CachingManager {
     this._openedEmailHiveCacheClient,
     this._fileUtils,
     this._sendingEmailCacheManager,
+    this._sessionHiveCacheClient,
   );
 
   Future<void> clearAll() async {
@@ -57,6 +60,7 @@ class CachingManager {
       _accountCacheClient.clearAllData(),
       if (PlatformInfo.isMobile)
         ...[
+          _sessionHiveCacheClient.clearAllData(),
           _detailedEmailHiveCacheClient.clearAllData(),
           _openedEmailHiveCacheClient.clearAllData(),
           _clearSendingEmailCache(),
