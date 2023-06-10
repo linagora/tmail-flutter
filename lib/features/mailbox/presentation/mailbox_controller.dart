@@ -744,10 +744,15 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     final inboxMailbox = findMailboxNodeByRole(PresentationMailbox.roleInbox);
     mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
     _updateSelectedMailboxRouteOnBrowser();
-    mailboxListScrollController.animateTo(
-        0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.fastOutSlowIn);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if(mailboxListScrollController.hasClients){
+        mailboxListScrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.fastOutSlowIn);
+      }
+    });
   }
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
