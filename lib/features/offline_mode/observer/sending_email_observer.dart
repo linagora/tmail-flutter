@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/bindings/sending_email_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/exceptions/workmanager_exception.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/offline_mode/observer/work_observer.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
@@ -53,6 +54,7 @@ class SendingEmailObserver extends WorkObserver {
   DeleteSendingEmailInteractor? _deleteSendingEmailInteractor;
   SendingQueueIsolateManager? _sendingQueueIsolateManager;
   UpdateSendingEmailInteractor? _updateSendingEmailInteractor;
+  SendingEmailCacheManager? _sendingEmailCacheManager;
 
   Completer<bool>? _completer;
 
@@ -64,7 +66,6 @@ class SendingEmailObserver extends WorkObserver {
 
   @override
   Future<void> observe(String taskId, Map<String, dynamic> inputData, Completer<bool> completer) async {
-    log('SendingEmailObserver::observe():taskId: $taskId | inputData: $inputData');
     _completer = completer;
     _sendingEmail = SendingEmail.fromJson(inputData);
     log('SendingEmailObserver::observe():_sendingEmail: $_sendingEmail');
@@ -85,14 +86,20 @@ class SendingEmailObserver extends WorkObserver {
       SendEmailInteractorBindings().dependencies();
     });
 
-    return await _getInteractorBindings();
+    await _getInteractorBindings();
+
+    await _sendingEmailCacheManager?.closeSendingEmailHiveCacheBox();
+
+    return Future.value();
   }
 
   @override
   void handleFailureViewState(Failure failure) {
     log('SendingEmailObserver::_handleFailureViewState(): $failure');
-    if (failure is SendEmailFailure || failure is DeleteSendingEmailFailure) {
-      _updateStoredSendingEmail(SendingState.error);
+    if (failure is SendEmailFailure) {
+      _handleSendEmailFailure(failure);
+    } else if (failure is DeleteSendingEmailFailure) {
+      _handleDeleteSendingEmailFailure(failure);
     } else if (failure is GetAuthenticatedAccountFailure ||
         failure is NoAuthenticatedAccountFailure ||
         failure is GetSessionFailure ||
@@ -115,7 +122,7 @@ class SendingEmailObserver extends WorkObserver {
     } else if (success is SendEmailSuccess) {
       _handleSendEmailSuccess(success);
     } else if (success is DeleteSendingEmailSuccess) {
-      _handleDeleteSendingEmailSuccess();
+      _handleDeleteSendingEmailSuccess(success);
     } else if (success is UpdateSendingEmailSuccess) {
       _handleUpdateStoredSendingEmailSuccess(success);
     }
@@ -137,6 +144,7 @@ class SendingEmailObserver extends WorkObserver {
       _deleteSendingEmailInteractor = getBinding<DeleteSendingEmailInteractor>();
       _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
       _updateSendingEmailInteractor = getBinding<UpdateSendingEmailInteractor>();
+      _sendingEmailCacheManager = getBinding<SendingEmailCacheManager>();
     } catch (e) {
       logError('SendingEmailObserver::_getInteractorBindings(): ${e.toString()}');
       _handleTaskFailureInWorkManager();
@@ -153,19 +161,11 @@ class SendingEmailObserver extends WorkObserver {
   }
 
   void _getAuthenticatedAccount() {
-    if (_getAuthenticatedAccountInteractor != null) {
-      consumeState(_getAuthenticatedAccountInteractor!.execute());
-    } else {
-      _handleTaskFailureInWorkManager();
-    }
+    consumeState(_getAuthenticatedAccountInteractor!.execute());
   }
 
   void _getSessionAction() {
-    if (_getSessionInteractor != null) {
-      consumeState(_getSessionInteractor!.execute());
-    } else {
-      _handleTaskFailureInWorkManager();
-    }
+    consumeState(_getSessionInteractor!.execute());
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) async {
@@ -174,13 +174,7 @@ class SendingEmailObserver extends WorkObserver {
     final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
-
-      _updateStoredSendingEmail(SendingState.running);
-
-      await Future.delayed(
-        const Duration(milliseconds: 2000),
-        _sendEmailAction
-      );
+      _sendEmailAction();
     } else {
       _handleTaskFailureInWorkManager();
     }
@@ -197,26 +191,32 @@ class SendingEmailObserver extends WorkObserver {
   }
 
   void _sendEmailAction() {
-    if (_sendEmailInteractor != null && _isDataParameterNotNull) {
-      final mailboxRequest = _sendingEmail!.mailboxNameRequest != null && _sendingEmail!.creationIdRequest != null
-          ? CreateNewMailboxRequest(_sendingEmail!.creationIdRequest!, _sendingEmail!.mailboxNameRequest!)
-          : null;
-      consumeState(_sendEmailInteractor!.execute(
+    consumeState(
+      _sendEmailInteractor!.execute(
         _currentSession!,
         _currentAccountId!,
         _sendingEmail!.toEmailRequest(),
-        mailboxRequest: mailboxRequest
-      ));
+        mailboxRequest: _getMailboxRequest()
+      )
+    );
+  }
+
+  CreateNewMailboxRequest? _getMailboxRequest() {
+    if (_sendingEmail!.mailboxNameRequest != null &&
+        _sendingEmail!.creationIdRequest != null) {
+      return CreateNewMailboxRequest(
+        _sendingEmail!.creationIdRequest!,
+        _sendingEmail!.mailboxNameRequest!);
     } else {
-      _updateStoredSendingEmail(SendingState.error);
+      return null;
     }
   }
 
   void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
     _dynamicUrlInterceptors?.setJmapUrl(storedTokenOidcSuccess.baseUrl.toString());
     _authorizationInterceptors?.setTokenAndAuthorityOidc(
-        newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
-        newConfig: storedTokenOidcSuccess.oidcConfiguration
+      newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
+      newConfig: storedTokenOidcSuccess.oidcConfiguration
     );
     _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
     _getSessionAction();
@@ -224,26 +224,29 @@ class SendingEmailObserver extends WorkObserver {
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {
     _showLocalNotification();
-    _deleteSendingEmailAction();
+    _updateStoredSendingEmail(SendingState.success);
+  }
+
+  void _handleSendEmailFailure(SendEmailFailure failure) {
+    _updateStoredSendingEmail(SendingState.error);
   }
 
   void _deleteSendingEmailAction() {
-    log('SendingEmailObserver::_deleteSendingEmailAction():');
-    if (_deleteSendingEmailInteractor != null && _isDataParameterNotNull) {
-      consumeState(_deleteSendingEmailInteractor!.execute(
+    consumeState(
+      _deleteSendingEmailInteractor!.execute(
         _currentAccountId!,
         _currentSession!.username,
-        _sendingEmail!.sendingId,
-        needToReopen: true
-      ));
-    } else {
-      log('SendingEmailObserver::_deleteSendingEmailAction(): NOT CALLED');
-      _updateStoredSendingEmail(SendingState.error);
-    }
+        _sendingEmail!.sendingId
+      )
+    );
   }
 
-  void _handleDeleteSendingEmailSuccess() {
+  void _handleDeleteSendingEmailSuccess(DeleteSendingEmailSuccess success) {
     _handleTaskSuccessInWorkManager();
+  }
+
+  void _handleDeleteSendingEmailFailure(DeleteSendingEmailFailure failure) {
+    _handleTaskFailureInWorkManager();
   }
 
   void _showLocalNotification() {
@@ -255,26 +258,26 @@ class SendingEmailObserver extends WorkObserver {
     );
   }
 
-  bool get _isDataParameterNotNull => _currentSession != null && _currentAccountId != null && _sendingEmail != null;
-
   void _updateStoredSendingEmail(SendingState newState) {
     log('SendingEmailObserver::_updateStoredSendingEmail():newState: $newState');
-    if (_updateSendingEmailInteractor != null && _isDataParameterNotNull) {
-      consumeState(_updateSendingEmailInteractor!.execute(
+    consumeState(
+      _updateSendingEmailInteractor!.execute(
         _currentAccountId!,
         _currentSession!.username,
-        _sendingEmail!.updatingSendingState(newState),
-        needToReopen: true
-      ));
-    } else {
-      _handleTaskFailureInWorkManager();
-    }
+        _sendingEmail!.updatingSendingState(newState)
+      )
+    );
   }
 
   void _handleUpdateStoredSendingEmailSuccess(UpdateSendingEmailSuccess success) {
-    _updatingSendingStateToMainUI(
-      sendingState: success.newSendingEmail.sendingState,
-      sendingId: success.newSendingEmail.sendingId);
+    log('SendingEmailObserver::_handleUpdateStoredSendingEmailSuccess(): $success');
+    if (success.newSendingEmail.isSuccess) {
+      _deleteSendingEmailAction();
+    } else {
+      _updatingSendingStateToMainUI(
+        sendingState: success.newSendingEmail.sendingState,
+        sendingId: success.newSendingEmail.sendingId);
+    }
   }
 
   void _handleTaskFailureInWorkManager() async {
