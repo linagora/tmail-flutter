@@ -116,11 +116,11 @@ class CachingManager {
   }
 
   Future<void> _clearSendingEmailCache() async {
-    final listSendingEmails = await _sendingEmailCacheManager.getAllSendingEmails(needToReopen: true);
+    final listSendingEmails = await _sendingEmailCacheManager.getAllSendingEmails();
     final sendingIds = listSendingEmails.map((sendingEmail) => sendingEmail.sendingId).toSet().toList();
     if (sendingIds.isNotEmpty) {
       await Future.wait(
-        sendingIds.map((sendingId) => WorkSchedulerController().cancelByUniqueId(sendingId)),
+        sendingIds.map(WorkSchedulerController().cancelByUniqueId),
         eagerError: true
       );
       await _sendingEmailCacheManager.clearAllSendingEmails();
