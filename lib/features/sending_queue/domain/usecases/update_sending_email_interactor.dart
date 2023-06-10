@@ -15,12 +15,11 @@ class UpdateSendingEmailInteractor {
   Stream<Either<Failure, Success>> execute(
     AccountId accountId,
     UserName userName,
-    SendingEmail newSendingEmail,
-    {bool needToReopen = false}
+    SendingEmail newSendingEmail
   ) async* {
     try {
       yield Right<Failure, Success>(UpdateSendingEmailLoading());
-      final storedSendingEmail = await _sendingQueueRepository.updateSendingEmail(accountId, userName, newSendingEmail, needToReopen: needToReopen);
+      final storedSendingEmail = await _sendingQueueRepository.updateSendingEmail(accountId, userName, newSendingEmail);
       yield Right<Failure, Success>(UpdateSendingEmailSuccess(storedSendingEmail));
     } catch (e) {
       yield Left<Failure, Success>(UpdateSendingEmailFailure(e));

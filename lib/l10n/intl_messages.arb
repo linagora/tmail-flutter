@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-06-09T10:30:29.843203",
+  "@@last_modified": "2023-06-09T22:51:52.101985",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2902,6 +2902,18 @@
   },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resend": "Resend",
+  "@resend": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messagesHaveBeenResent": "Messages have been resent",
+  "@messagesHaveBeenResent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

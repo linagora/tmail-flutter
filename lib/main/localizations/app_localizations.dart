@@ -2995,4 +2995,16 @@ class AppLocalizations {
       name: 'connectedToTheInternet'
     );
   }
+
+  String get resend {
+    return Intl.message(
+      'Resend',
+      name: 'resend');
+  }
+
+  String get messagesHaveBeenResent {
+    return Intl.message(
+      'Messages have been resent',
+      name: 'messagesHaveBeenResent');
+  }
 }
