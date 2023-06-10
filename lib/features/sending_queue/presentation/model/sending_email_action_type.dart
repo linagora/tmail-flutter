@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 enum SendingEmailActionType {
   create,
   edit,
+  resend,
   delete;
 
   String getButtonTitle(BuildContext context) {
@@ -17,6 +18,8 @@ enum SendingEmailActionType {
         return AppLocalizations.of(context).edit;
       case SendingEmailActionType.create:
         return '';
+      case SendingEmailActionType.resend:
+        return AppLocalizations.of(context).resend;
     }
   }
 
@@ -28,6 +31,8 @@ enum SendingEmailActionType {
         return 'button_edit_sending_email';
       case SendingEmailActionType.create:
         return '';
+      case SendingEmailActionType.resend:
+        return 'button_resend_sending_email';
     }
   }
 
@@ -36,6 +41,7 @@ enum SendingEmailActionType {
       case SendingEmailActionType.delete:
         return AppColor.colorDeletePermanentlyButton.withOpacity(buttonState.opacity);
       case SendingEmailActionType.edit:
+      case SendingEmailActionType.resend:
         return AppColor.primaryColor.withOpacity(buttonState.opacity);
       case SendingEmailActionType.create:
         return Colors.transparent.withOpacity(buttonState.opacity);
@@ -47,6 +53,7 @@ enum SendingEmailActionType {
       case SendingEmailActionType.delete:
         return AppColor.colorDeletePermanentlyButton.withOpacity(buttonState.opacity);
       case SendingEmailActionType.edit:
+      case SendingEmailActionType.resend:
         return AppColor.primaryColor.withOpacity(buttonState.opacity);
       case SendingEmailActionType.create:
         return Colors.transparent.withOpacity(buttonState.opacity);

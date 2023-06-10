@@ -21,7 +21,6 @@ class SendingEmailCacheManager {
     SendingEmailHiveCache sendingEmailHiveCache
   ) async {
     final keyCache = TupleKey(sendingEmailHiveCache.sendingId, accountId.asString, userName.value).encodeKey;
-    log('SendingEmailCacheManager::storeSendingEmail():keyCache: $keyCache | sendingEmailHiveCache: $sendingEmailHiveCache');
     await _hiveCacheClient.insertItem(keyCache, sendingEmailHiveCache);
     final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
     if (newSendingEmailHiveCache != null) {
@@ -32,29 +31,15 @@ class SendingEmailCacheManager {
     }
   }
 
-  Future<List<SendingEmailHiveCache>> getAllSendingEmailsByTupleKey(
-    AccountId accountId,
-    UserName userName,
-    {bool needToReopen = false}
-  ) async {
-     final sendingEmailsCache = await _hiveCacheClient.getListByTupleKey(
-       accountId.asString,
-       userName.value,
-       needToReopen: needToReopen);
-     log('SendingEmailCacheManager::getAllSendingEmailsByTupleKey():COUNT: ${sendingEmailsCache.length}');
+  Future<List<SendingEmailHiveCache>> getAllSendingEmailsByTupleKey(AccountId accountId, UserName userName) async {
+     final sendingEmailsCache = await _hiveCacheClient.getListByTupleKey(accountId.asString, userName.value);
      sendingEmailsCache.sortByLatestTime();
      return sendingEmailsCache;
   }
 
-  Future<void> deleteSendingEmail(
-    AccountId accountId,
-    UserName userName,
-    String sendingId,
-    {bool needToReopen = false}
-  ) async {
+  Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) async {
     final keyCache = TupleKey(sendingId, accountId.asString, userName.value).encodeKey;
-    log('SendingEmailCacheManager::deleteSendingEmail():keyCache: $keyCache');
-    await _hiveCacheClient.deleteItem(keyCache, needToReopen: needToReopen);
+    await _hiveCacheClient.deleteItem(keyCache);
     final storedSendingEmail = await _hiveCacheClient.getItem(keyCache);
     if (storedSendingEmail != null) {
       log('SendingEmailCacheManager::deleteSendingEmail():sendingId: ${storedSendingEmail.sendingId}');
@@ -62,9 +47,8 @@ class SendingEmailCacheManager {
     }
   }
 
-  Future<List<SendingEmailHiveCache>> getAllSendingEmails({bool needToReopen = false}) async {
-    final sendingEmailsCache = await _hiveCacheClient.getAll(needToReopen: needToReopen);
-    log('SendingEmailCacheManager::getAllSendingEmails():COUNT: ${sendingEmailsCache.length}');
+  Future<List<SendingEmailHiveCache>> getAllSendingEmails() async {
+    final sendingEmailsCache = await _hiveCacheClient.getAll();
     sendingEmailsCache.sortByLatestTime();
     return sendingEmailsCache;
   }
@@ -74,12 +58,10 @@ class SendingEmailCacheManager {
   Future<SendingEmailHiveCache> updateSendingEmail(
     AccountId accountId,
     UserName userName,
-    SendingEmailHiveCache sendingEmailHiveCache,
-    {bool needToReopen = false}
+    SendingEmailHiveCache sendingEmailHiveCache
   ) async {
     final keyCache = TupleKey(sendingEmailHiveCache.sendingId, accountId.asString, userName.value).encodeKey;
-    log('SendingEmailCacheManager::updateSendingEmail():keyCache: $keyCache | sendingEmailHiveCache: $sendingEmailHiveCache');
-    await _hiveCacheClient.updateItem(keyCache, sendingEmailHiveCache, needToReopen: needToReopen);
+    await _hiveCacheClient.updateItem(keyCache, sendingEmailHiveCache);
     final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
     if (newSendingEmailHiveCache != null) {
       log('SendingEmailCacheManager::updateSendingEmail():sendingId: ${newSendingEmailHiveCache.sendingId} | sendingState: ${newSendingEmailHiveCache.sendingState}');
@@ -88,4 +70,31 @@ class SendingEmailCacheManager {
       throw NotFoundSendingEmailHiveObject();
     }
   }
+
+  Future<List<SendingEmailHiveCache>> updateMultipleSendingEmail(
+    AccountId accountId,
+    UserName userName,
+    List<SendingEmailHiveCache> listSendingEmailHiveCache
+  ) async {
+    final mapSendingEmailCache = {
+      for (var sendingEmailCache in listSendingEmailHiveCache)
+        TupleKey(sendingEmailCache.sendingId, accountId.asString, userName.value).encodeKey: sendingEmailCache
+    };
+    await _hiveCacheClient.updateMultipleItem(mapSendingEmailCache);
+    final newListSendingEmailCache = await _hiveCacheClient.getValuesByListKey(mapSendingEmailCache.keys.toList());
+    log('SendingEmailCacheManager::updateMultipleSendingEmail():newListSendingEmailCache: ${newListSendingEmailCache.map((sendingEmail) => '${sendingEmail.sendingId} | ${sendingEmail.sendingState}').toList()}');
+    return newListSendingEmailCache;
+  }
+
+  Future<void> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds) async {
+    final listTupleKey = sendingIds.map((sendingId) => TupleKey(sendingId, accountId.asString, userName.value).encodeKey).toList();
+    await _hiveCacheClient.deleteMultipleItem(listTupleKey);
+    final newListSendingEmailCache = await _hiveCacheClient.getValuesByListKey(listTupleKey);
+    log('SendingEmailCacheManager::deleteMultipleSendingEmail():newListSendingEmailCache: ${newListSendingEmailCache.map((sendingEmail) => '${sendingEmail.sendingId} | ${sendingEmail.sendingState}').toList()}');
+    if (newListSendingEmailCache.isNotEmpty) {
+      throw ExistSendingEmailHiveObject();
+    }
+  }
+
+  Future<void> closeSendingEmailHiveCacheBox() => _hiveCacheClient.closeBox();
 }

@@ -101,6 +101,10 @@ class SendingEmail with EquatableMixin {
 
   bool get isWaiting => sendingState == SendingState.waiting;
 
+  bool get isError => sendingState == SendingState.error;
+
+  bool get isSuccess => sendingState == SendingState.success;
+
   @override
   List<Object?> get props => [
     sendingId,
