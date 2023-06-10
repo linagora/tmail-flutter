@@ -1808,6 +1808,7 @@ class MailboxDashBoardController extends ReloadableController {
         _handleUpdateSendingEmail(session, accountId, emailRequest, mailboxRequest);
         break;
       case SendingEmailActionType.delete:
+      case SendingEmailActionType.resend:
         break;
     }
   }
@@ -1891,7 +1892,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) {
-    _addSendingEmailToSendingQueue(success.sendingEmail);
+    addSendingEmailToSendingQueue(success.sendingEmail);
     getAllSendingEmails();
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastSuccessMessage(
@@ -1904,12 +1905,12 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
     await WorkSchedulerController().cancelByUniqueId(success.newSendingEmail.sendingId);
-    _addSendingEmailToSendingQueue(success.newSendingEmail);
+    addSendingEmailToSendingQueue(success.newSendingEmail);
     getAllSendingEmails();
   }
 
-  void _addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
-    log('MailboxDashBoardController::_addSendingEmailToSendingQueue():sendingEmail: $sendingEmail');
+  void addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
+    log('MailboxDashBoardController::addSendingEmailToSendingQueue():sendingEmail: $sendingEmail');
     final worker = worker_scheduler.Worker(
       sendingEmail.sendingId,
       WorkerType.sendingEmail,
@@ -1924,23 +1925,22 @@ class MailboxDashBoardController extends ReloadableController {
     try {
       await WorkSchedulerController().enqueue(workRequest);
     } catch (e) {
-      logError('MailboxDashBoardController::_addSendingEmailToSendingQueue(): EXCEPTION: $e');
+      logError('MailboxDashBoardController::addSendingEmailToSendingQueue(): EXCEPTION: $e');
     }
   }
 
-  void getAllSendingEmails({bool needToReopen = false}) {
+  void getAllSendingEmails() {
     if (accountId.value != null && sessionCurrent != null) {
       log('MailboxDashBoardController::getAllSendingEmails():accountId: ${accountId.value} | userName: ${sessionCurrent?.username}');
       consumeState(_getAllSendingEmailInteractor.execute(
         accountId.value!,
-        sessionCurrent!.username,
-        needToReopen: needToReopen
+        sessionCurrent!.username
       ));
     }
   }
 
   void _handleGetAllSendingEmailsSuccess(GetAllSendingEmailSuccess success) {
-    log('MailboxDashBoardController::_handleGetAllSendingEmailsSuccess():COUNT: ${success.sendingEmails.length}');
+    log('MailboxDashBoardController::_handleGetAllSendingEmailsSuccess():LIST_SENDING_EMAIL: $success');
     listSendingEmails.value = success.sendingEmails;
 
     if (success.sendingEmails.isEmpty && dashboardRoute.value == DashboardRoutes.sendingQueue) {
