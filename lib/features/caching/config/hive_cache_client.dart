@@ -71,28 +71,32 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<List<T>> getAll({bool needToReopen = false}) {
+  Future<List<T>> getAll() {
     return Future.sync(() async {
-      if (needToReopen) {
-        await closeBox();
-      }
-      final boxItem = encryption
-          ? await openBoxEncryption()
-          : await openBox();
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.values.toList();
     }).catchError((error) {
       throw error;
     });
   }
 
-  Future<List<T>> getListByTupleKey(String accountId, String userName, {bool needToReopen = false}) {
+  Future<List<T>> getListByTupleKey(String accountId, String userName) {
     return Future.sync(() async {
-      if (needToReopen) {
-        await closeBox();
-      }
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.toMap()
         .where((key, value) => _matchedKey(key, accountId, userName))
+        .values
+        .toList();
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  Future<List<T>> getValuesByListKey(List<String> listKeys) {
+    return Future.sync(() async {
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
+      return boxItem.toMap()
+        .where((key, value) => listKeys.contains(key))
         .values
         .toList();
     }).catchError((error) {
@@ -106,14 +110,9 @@ abstract class HiveCacheClient<T> {
     return tupleKey.parts.length >= 3 && tupleKey.parts[1] == accountId && tupleKey.parts[2] == userName;
   }
 
-  Future<void> updateItem(String key, T newObject, {bool needToReopen = false}) {
+  Future<void> updateItem(String key, T newObject) {
     return Future.sync(() async {
-      if (needToReopen) {
-        await closeBox();
-      }
-      final boxItem = encryption
-          ? await openBoxEncryption()
-          : await openBox();
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.put(key, newObject);
     }).catchError((error) {
       throw error;
@@ -122,24 +121,16 @@ abstract class HiveCacheClient<T> {
 
   Future<void> updateMultipleItem(Map<String, T> mapObject) {
     return Future.sync(() async {
-      final boxItem = encryption
-          ? await openBoxEncryption()
-          : await openBox();
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.putAll(mapObject);
     }).catchError((error) {
       throw error;
     });
   }
 
-  Future<void> deleteItem(String key, {bool needToReopen = false}) {
+  Future<void> deleteItem(String key) {
     return Future.sync(() async {
-      if (needToReopen) {
-        await closeBox();
-      }
-
-      final boxItem = encryption
-          ? await openBoxEncryption()
-          : await openBox();
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.delete(key);
     }).catchError((error) {
       throw error;
