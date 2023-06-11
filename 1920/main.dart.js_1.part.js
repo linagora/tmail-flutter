@@ -675,7 +675,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 351
+    $signature: 352
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -1092,4 +1092,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Q+JHDcQ/P/bCncKXqltfPnOx2rY="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["uR9DzC0v3thqHgilBjFt4Fj2Uk8="] = $__dart_deferred_initializers__.current

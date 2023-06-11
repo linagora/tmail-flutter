@@ -888,7 +888,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
       }
     },
-    $signature: 377
+    $signature: 344
   };
   A.EmailAddressInputBuilder__buildTagEditor___closure3.prototype = {
     call$0() {
@@ -1047,13 +1047,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return t1._toSuggestionEmailAddress$2(emailAddress, t1.listEmailAddress);
     },
-    $signature: 223
+    $signature: 211
   };
   A.EmailAddressInputBuilder__isDuplicatedRecipient_closure.prototype = {
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 268
+    $signature: 257
   };
   A.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -1068,7 +1068,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return new B.SuggestionEmailAddress(emailAddress, C.SuggestionEmailState_1);
     },
-    $signature: 223
+    $signature: 211
   };
   A.EmailAddressInputBuilder__handleDeleteTagAction_closure.prototype = {
     call$0() {
@@ -1086,7 +1086,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 486
+    $signature: 487
   };
   (function installTearOffs() {
     var _instance_2_u = hunkHelpers._instance_2u,
@@ -1168,4 +1168,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["fmaDwHiddiKihhHshR195n7X9rM="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["akw8HU48QisZczB+6VDRifud6RU="] = $__dart_deferred_initializers__.current

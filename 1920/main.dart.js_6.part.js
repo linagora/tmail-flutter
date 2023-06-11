@@ -2176,7 +2176,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 267
+    $signature: 300
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -2327,7 +2327,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 267
+    $signature: 300
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1($event) {
@@ -2378,19 +2378,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 267
+    $signature: 300
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 526
+    $signature: 469
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 526
+    $signature: 469
   };
   (function aliases() {
     var _ = B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin.prototype;
@@ -2515,4 +2515,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["EUtjfXDOzzkFTXEI7OKp51Ntevk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["XfI0f1fgW1UzO07ZFt96NnbHToQ="] = $__dart_deferred_initializers__.current
