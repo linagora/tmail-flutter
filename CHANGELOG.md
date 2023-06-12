@@ -1,3 +1,15 @@
+## [0.8.0] - 2023-06-12
+### Added
+- TF-1786 Write stories for swipe in email item in ThreadView
+- Support Sending emails when offline
+- Support manage the sending queue
+- Support view/modify SendingQueue entries
+
+### Fixed
+- TF-1862 Fix right click on email item in email list view
+- TF-1851 Fix \[COMPOSER\] Selected rich text menu do not match current text status
+- TF-1851 Fix \[COMPOSER\] Need to apply color twice for bold
+
 ## [0.7.11] - 2023-06-05
 ### Changed
 - Upgrade version flutter-typeahead
@@ -117,6 +129,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.8.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.0
 [0.7.11]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.11
 [0.7.10]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.10
 [0.7.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.9
