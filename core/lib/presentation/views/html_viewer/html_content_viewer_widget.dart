@@ -22,6 +22,7 @@ class HtmlContentViewer extends StatefulWidget {
   final double heightContent;
   final OnScrollHorizontalEnd? onScrollHorizontalEnd;
   final OnWebViewLoaded? onWebViewLoaded;
+  final TextDirection? direction;
 
   /// Register this callback if you want a reference to the [InAppWebViewController].
   final void Function(InAppWebViewController controller)? onCreated;
@@ -43,6 +44,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.onScrollHorizontalEnd,
     this.urlLauncherDelegate,
     this.mailtoDelegate,
+    this.direction,
   }) : super(key: key);
 
   @override
@@ -63,14 +65,19 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   void initState() {
     super.initState();
     actualHeight = widget.heightContent;
-    _htmlData = generateHtml(widget.contentHtml);
+    _htmlData = generateHtml(widget.contentHtml, direction: widget.direction);
   }
 
   @override
   void didUpdateWidget(covariant HtmlContentViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.contentHtml != oldWidget.contentHtml) {
-      _htmlData = generateHtml(widget.contentHtml);
+    log('_HtmlContentViewState::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
+    if (widget.contentHtml != oldWidget.contentHtml ||
+        widget.direction != oldWidget.direction) {
+      _htmlData = generateHtml(
+        widget.contentHtml,
+        direction: widget.direction
+      );
     }
   }
 
