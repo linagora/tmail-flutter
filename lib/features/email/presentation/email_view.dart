@@ -447,11 +447,13 @@ class EmailView extends GetWidget<SingleEmailController> {
 
         if (BuildUtils.isWeb) {
           return HtmlContentViewerOnWeb(
-              widthContent: constraints.maxWidth,
-              heightContent: responsiveUtils.getSizeScreenHeight(context),
-              contentHtml: allEmailContents ?? "",
-              controller: HtmlViewerControllerForWeb(),
-              mailtoDelegate: (uri) => controller.openMailToLink(uri));
+            widthContent: constraints.maxWidth,
+            heightContent: responsiveUtils.getSizeScreenHeight(context),
+            contentHtml: allEmailContents ?? "",
+            controller: HtmlViewerControllerForWeb(),
+            mailtoDelegate: (uri) => controller.openMailToLink(uri),
+            direction: AppUtils.getCurrentDirection(context),
+          );
         } else {
           return HtmlContentViewer(
             heightContent: responsiveUtils.getSizeScreenHeight(context),
@@ -462,6 +464,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               log('EmailView::_buildEmailContent(): isScrollPageViewActivated: $isScrollPageViewActivated');
               controller.emailSupervisorController.updateScrollPhysicPageView(isScrollPageViewActivated: isScrollPageViewActivated);
             },
+            direction: AppUtils.getCurrentDirection(context),
           );
         }
       } else {

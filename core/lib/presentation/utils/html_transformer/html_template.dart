@@ -1,4 +1,6 @@
 
+import 'package:flutter/material.dart';
+
 const nameClassToolTip = 'tmail-tooltip';
 
 const tooltipLinkCss = '''
@@ -27,6 +29,7 @@ String generateHtml(String content, {
   String? styleCSS,
   String? javaScripts,
   bool hideScrollBar = true,
+  TextDirection? direction
 }) {
   return '''
     <!DOCTYPE html>
@@ -53,7 +56,7 @@ String generateHtml(String content, {
     </style>
     ${javaScripts ?? ''}
     </head>
-    <body style = "overflow-x: hidden">
+    <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden">
     <div class="tmail-content">$content</div>
     </body>
     </html> 
