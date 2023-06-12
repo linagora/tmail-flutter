@@ -16,6 +16,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final double widthContent;
   final double heightContent;
   final HtmlViewerControllerForWeb controller;
+  final TextDirection? direction;
 
   /// Handler for mailto: links
   final Function(Uri?)? mailtoDelegate;
@@ -31,6 +32,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     required this.controller,
     this.allowResizeToDocumentSize = true,
     this.mailtoDelegate,
+    this.direction,
   }) : super(key: key);
 
   @override
@@ -65,7 +67,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   @override
   void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.contentHtml != oldWidget.contentHtml) {
+    log('_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
+    if (widget.contentHtml != oldWidget.contentHtml ||
+        widget.direction != oldWidget.direction) {
       createdViewId = _getRandString(10);
       widget.controller.viewId = createdViewId;
       _setUpWeb();
@@ -167,7 +171,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       minHeight: minHeight,
       minWidth: minWidth,
       styleCSS: tooltipLinkCss,
-      javaScripts: webViewActionScripts + scriptsDisableZoom);
+      javaScripts: webViewActionScripts + scriptsDisableZoom,
+      direction: widget.direction);
 
     return htmlTemplate;
   }
@@ -276,21 +281,18 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       return Container();
     }
 
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: FutureBuilder<bool>(
-        future: webInit,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return HtmlElementView(
-              key: ValueKey(htmlData),
-              viewType: createdViewId,
-            );
-          } else {
-            return Container();
-          }
+    return FutureBuilder<bool>(
+      future: webInit,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return HtmlElementView(
+            key: ValueKey(htmlData),
+            viewType: createdViewId,
+          );
+        } else {
+          return Container();
         }
-      )
+      }
     );
   }
 }

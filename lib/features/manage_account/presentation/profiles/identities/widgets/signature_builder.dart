@@ -3,6 +3,7 @@ import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.d
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SignatureBuilder extends StatelessWidget {
 
@@ -27,13 +28,13 @@ class SignatureBuilder extends StatelessWidget {
           width: signatureWidth,
           color: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-          child: _buildSignature(signatureWidth, signatureHeight),
+          child: _buildSignature(context, signatureWidth, signatureHeight),
         );
       }
     );
   }
 
-  Widget _buildSignature(double width, double height) {
+  Widget _buildSignature(BuildContext context, double width, double height) {
     if (signatureSelected.isNotEmpty) {
       if (BuildUtils.isWeb) {
         return HtmlContentViewerOnWeb(
@@ -41,12 +42,14 @@ class SignatureBuilder extends StatelessWidget {
           widthContent: width,
           heightContent: height,
           controller: HtmlViewerControllerForWeb(),
-          allowResizeToDocumentSize: false
+          allowResizeToDocumentSize: false,
+          direction: AppUtils.getCurrentDirection(context),
         );
       } else {
         return HtmlContentViewer(
           contentHtml: signatureSelected,
-          heightContent: height
+          heightContent: height,
+          direction: AppUtils.getCurrentDirection(context),
         );
       }
     } else {
