@@ -865,8 +865,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: e056608ac04b471ed2da801794cbae7ee50cf643
+      ref: support_rtl
+      resolved-ref: "4f4896ce1dc23011ad0b0c8d94a680c3fed6b750"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
