@@ -1,5 +1,7 @@
 
 import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 
 class HtmlUtils {
 
@@ -65,4 +67,47 @@ class HtmlUtils {
       yDown = null;                                             
     }
   ''';
+
+  static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
+    if (PlatformInfo.isWeb) {
+      return '''
+        <style>
+          .note-editable {
+            direction: ${direction.name};
+          }
+          
+          blockquote {
+            margin-left: 8px;
+            margin-right: 8px;
+            padding-left: 12px;
+            padding-right: 12px;
+            border-left: 5px solid #eee;
+          }
+          
+          pre {
+            display: block;
+            padding: 10px;
+            margin: 0 0 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #333;
+            word-break: break-all;
+            word-wrap: break-word;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: auto;
+          }
+        </style>
+      ''';
+    } else if (PlatformInfo.isMobile) {
+      return '''
+        #editor {
+          direction: ${direction.name};
+        }
+      ''';
+    } else {
+      return '';
+    }
+  }
 }

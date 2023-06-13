@@ -223,6 +223,11 @@ dependency_overrides:
 
   flutter_keyboard_visibility: 5.4.1
 
+  html_editor_enhanced:
+    git:
+      url: https://github.com/linagora/html-editor-enhanced.git
+      ref: support_rtl
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
