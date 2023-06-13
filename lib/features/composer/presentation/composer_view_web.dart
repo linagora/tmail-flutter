@@ -4,7 +4,6 @@ import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/html_transformer/html_template.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
@@ -18,7 +17,6 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -32,6 +30,7 @@ import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_but
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/email_editor_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
@@ -80,7 +79,10 @@ class ComposerView extends GetWidget<ComposerController>
                           _buildAttachmentsWidget(context),
                           ToolbarRichTextWebBuilder(richTextWebController: controller.richTextWebController),
                           buildInlineLoadingView(controller),
-                          _buildEditorForm(context)
+                          Expanded(child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: _buildEditorForm(context)
+                          ))
                         ]
                     )),
                   ]
@@ -442,7 +444,10 @@ class ComposerView extends GetWidget<ComposerController>
                   _buildAttachmentsWidget(context),
                   ToolbarRichTextWebBuilder(richTextWebController: controller.richTextWebController),
                   buildInlineLoadingView(controller),
-                  _buildEditorForm(context)
+                  Expanded(child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: _buildEditorForm(context)
+                  ))
                 ]
             ))),
         const Divider(color: AppColor.colorDividerComposer, height: 1),
@@ -815,37 +820,10 @@ class ComposerView extends GetWidget<ComposerController>
   }
 
   Widget _buildHtmlEditor(BuildContext context, String initContent) {
-    log('ComposerView::_buildHtmlEditor(): initContent: $initContent');
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: HtmlEditor(
-          key: const Key('composer_editor_web'),
-          controller: controller.richTextWebController.editorController,
-          htmlEditorOptions: const HtmlEditorOptions(
-            shouldEnsureVisible: true,
-            hint: '',
-            darkMode: false,
-            customBodyCssStyle: bodyCssStyleForEditor
-          ),
-          blockQuotedContent: initContent,
-          htmlToolbarOptions: const HtmlToolbarOptions(
-            toolbarType: ToolbarType.hide,
-            defaultToolbarButtons: []
-          ),
-          otherOptions: const OtherOptions(height: 550),
-          callbacks: Callbacks(
-            onBeforeCommand: controller.onChangeTextEditorWeb,
-            onChangeContent: controller.onChangeTextEditorWeb,
-            onInit: () => controller.handleInitHtmlEditorWeb(initContent),
-            onFocus: controller.handleOnFocusHtmlEditorWeb,
-            onBlur: controller.handleOnUnFocusHtmlEditorWeb,
-            onMouseDown: () => controller.handleOnMouseDownHtmlEditorWeb(context),
-            onChangeSelection: controller.richTextWebController.onEditorSettingsChange,
-            onChangeCodeview: controller.onChangeTextEditorWeb
-          ),
-        )
-      )
+    return EmailEditorWidget(
+      controller: controller,
+      content: initContent,
+      direction: AppUtils.getCurrentDirection(context),
     );
   }
 

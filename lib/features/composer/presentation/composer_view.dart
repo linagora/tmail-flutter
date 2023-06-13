@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
@@ -690,6 +691,7 @@ class ComposerView extends GetWidget<ComposerController>
           minHeight: 550,
           addDefaultSelectionMenuItems: false,
           initialContent: initialContent ?? '',
+          customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
           onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi, initialContent)
         ),
       ),
