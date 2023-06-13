@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/util
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class VacationView extends GetWidget<VacationController> with RichTextButtonMixin {
 
@@ -430,10 +432,11 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
       return html_editor_browser.HtmlEditor(
         key: const Key('vacation_message_html_text_editor_web'),
         controller: controller.richTextControllerForWeb.editorController,
-        htmlEditorOptions: const html_editor_browser.HtmlEditorOptions(
-            hint: '',
-            darkMode: false,
-            customBodyCssStyle: bodyCssStyleForEditor),
+        htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
+          hint: '',
+          darkMode: false,
+          customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context))
+        ),
         blockQuotedContent: controller.vacationMessageHtmlText ?? '',
         htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
             toolbarType: html_editor_browser.ToolbarType.hide,
@@ -459,6 +462,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           minHeight: controller.htmlEditorMinHeight,
           addDefaultSelectionMenuItems: false,
           initialContent: controller.vacationMessageHtmlText ?? '',
+          customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
           onCreated: (htmlApi) {
             controller.richTextControllerForMobile.onCreateHTMLEditor(
               htmlApi,

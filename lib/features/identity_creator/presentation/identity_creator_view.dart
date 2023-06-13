@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/html_transformer/html_template.dart';
+import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
@@ -365,10 +365,11 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       child: html_editor_browser.HtmlEditor(
         key: const Key('identity_create_editor_web'),
         controller: controller.richTextWebController.editorController,
-        htmlEditorOptions: const html_editor_browser.HtmlEditorOptions(
+        htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
           hint: '',
           darkMode: false,
-          customBodyCssStyle: bodyCssStyleForEditor),
+          customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
+        ),
         blockQuotedContent: initContent,
         htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
             toolbarType: html_editor_browser.ToolbarType.hide,
@@ -409,6 +410,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         minHeight: controller.htmlEditorMinHeight,
         addDefaultSelectionMenuItems: false,
         initialContent: initialContent ?? '',
+        customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
         onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi),
       ),
     );
