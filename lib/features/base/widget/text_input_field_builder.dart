@@ -1,9 +1,10 @@
 
 import 'package:core/core.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/text_input_decoration_builder.dart';
 
-typedef OnChangeInputAction = Function(String? value);
+typedef OnChangeInputAction = Function(String value);
 
 class TextInputFieldBuilder extends StatelessWidget {
 
@@ -46,24 +47,23 @@ class TextInputFieldBuilder extends StatelessWidget {
                   color: AppColor.colorContentEmail)),
           const SizedBox(height: 8)
         ],
-      (TextFieldBuilder()
-          ..onChange((value) => onChangeInputAction?.call(value))
-          ..textInputAction(TextInputAction.next)
-          ..addController(editingController ?? TextEditingController())
-          ..addFocusNode(focusNode)
-          ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
-          ..keyboardType(inputType ?? TextInputType.text)
-          ..minLines(minLines)
-          ..maxLines(maxLines)
-          ..textDecoration((TextInputDecorationBuilder()
-                ..setContentPadding(const EdgeInsets.symmetric(
-                    vertical: BuildUtils.isWeb ? 16 : 12,
-                    horizontal: 12))
-                ..setHintText(hint)
-                ..setFillColor(backgroundColor)
-                ..setErrorText(error))
-              .build()))
-        .build()
+      TextFieldBuilder(
+        onTextChange: onChangeInputAction,
+        textInputAction: TextInputAction.next,
+        controller: editingController,
+        focusNode: focusNode,
+        textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+        keyboardType: inputType ?? TextInputType.text,
+        textDirection: DirectionUtils.getDirectionByLanguage(context),
+        minLines: minLines,
+        maxLines: maxLines,
+        decoration: (TextInputDecorationBuilder()
+          ..setContentPadding(const EdgeInsets.symmetric(vertical: PlatformInfo.isWeb ? 16 : 12, horizontal: 12))
+          ..setHintText(hint)
+          ..setFillColor(backgroundColor)
+          ..setErrorText(error))
+        .build(),
+      )
     ]);
   }
 }

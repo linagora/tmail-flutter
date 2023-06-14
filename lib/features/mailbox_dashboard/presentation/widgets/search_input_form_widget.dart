@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -186,6 +187,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       controller: controller.searchInputController,
       focusNode: controller.searchFocus,
       textInputAction: TextInputAction.done,
+      textDirection: DirectionUtils.getDirectionByLanguage(context),
       onSubmitted: (keyword) => _invokeSearchEmailAction(context, keyword.trim()),
       decoration: InputDecoration(
         border: InputBorder.none,

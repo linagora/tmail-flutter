@@ -207,6 +207,13 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     _deBouncerTime.value = text;
   }
 
+  void onTextSearchSubmitted(BuildContext context, String text) {
+    final query = text.trim();
+    if (query.isNotEmpty) {
+      submitSearchAction(context, query);
+    }
+  }
+
   void setTextInputSearchForm(String value) {
     textInputSearchController.text = value;
   }

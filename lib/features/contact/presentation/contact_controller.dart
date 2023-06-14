@@ -91,6 +91,10 @@ class ContactController extends BaseController {
     _deBouncerTime.value = text;
   }
 
+  void onSearchTextAction(String text) {
+    _deBouncerTime.value = text;
+  }
+
   void clearAllTextInputSearchForm() {
     textInputSearchController?.clear();
     searchQuery.value = SearchQuery.initial();

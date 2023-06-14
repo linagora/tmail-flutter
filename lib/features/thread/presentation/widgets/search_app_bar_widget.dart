@@ -1,5 +1,9 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -9,93 +13,61 @@ typedef OnClearTextSearchAction = Function();
 typedef OnTextChangeSearchAction = Function(String);
 typedef OnSearchTextAction = Function(String);
 
-class SearchAppBarWidget {
- OnCancelSearchPressed? _onCancelSearchPressed;
- OnTextChangeSearchAction? _onTextChangeSearchAction;
- OnClearTextSearchAction? _onClearTextSearchAction;
- OnSearchTextAction? _onSearchTextAction;
+class SearchAppBarWidget extends StatelessWidget {
 
-  final ImagePaths _imagePaths;
-  final SearchQuery? _searchQuery;
-  final TextEditingController? _searchInputController;
-  final FocusNode? _searchFocusNode;
+  final ImagePaths imagePaths;
+  final SearchQuery? searchQuery;
+  final TextEditingController? searchInputController;
+  final FocusNode? searchFocusNode;
   final List<String>? suggestionSearch;
   final bool hasBackButton;
   final bool hasSearchButton;
+  final double? heightSearchBar;
+  final Decoration? decoration;
+  final EdgeInsets? padding;
+  final EdgeInsets? margin;
+  final String? hintText;
+  final Widget? iconClearText;
+  final OnCancelSearchPressed? onCancelSearchPressed;
+  final OnTextChangeSearchAction? onTextChangeSearchAction;
+  final OnClearTextSearchAction? onClearTextSearchAction;
+  final OnSearchTextAction? onSearchTextAction;
 
-  double? _heightSearchBar;
-  Decoration? _decoration;
-  EdgeInsets? _padding;
-  EdgeInsets? _margin;
-  String? _hintText;
-  Widget? _iconClearText;
+  const SearchAppBarWidget({
+    super.key,
+    required this.imagePaths,
+    required this.hasBackButton,
+    required this.hasSearchButton,
+    this.searchQuery,
+    this.searchInputController,
+    this.searchFocusNode,
+    this.suggestionSearch,
+    this.heightSearchBar,
+    this.decoration,
+    this.padding,
+    this.margin,
+    this.hintText,
+    this.iconClearText,
+    this.onCancelSearchPressed,
+    this.onTextChangeSearchAction,
+    this.onClearTextSearchAction,
+    this.onSearchTextAction
+  });
 
-  SearchAppBarWidget(
-    this._imagePaths,
-    this._searchQuery,
-    this._searchFocusNode,
-    this._searchInputController,
-     {
-       this.hasBackButton = true,
-       this.suggestionSearch,
-       this.hasSearchButton = false,
-     }
-  );
-
-  void addOnCancelSearchPressed(OnCancelSearchPressed onCancelSearchPressed) {
-    _onCancelSearchPressed = onCancelSearchPressed;
-  }
-
-  void addOnTextChangeSearchAction(OnTextChangeSearchAction onTextChangeSearchAction) {
-    _onTextChangeSearchAction = onTextChangeSearchAction;
-  }
-
-  void addOnClearTextSearchAction(OnClearTextSearchAction onClearTextSearchAction) {
-    _onClearTextSearchAction = onClearTextSearchAction;
-  }
-
-  void addOnSearchTextAction(OnSearchTextAction onSearchTextAction) {
-    _onSearchTextAction = onSearchTextAction;
-  }
-
-  void setHeightSearchBar(double heightSearchBar) {
-    _heightSearchBar = heightSearchBar;
-  }
-
-  void addDecoration(Decoration decoration) {
-    _decoration = decoration;
-  }
-
-  void addPadding(EdgeInsets padding) {
-    _padding = padding;
-  }
-
-  void setMargin(EdgeInsets margin) {
-    _margin = margin;
-  }
-
-  void setHintText(String text) {
-    _hintText = text;
-  }
-
-  void addIconClearText(Widget? icon) {
-    _iconClearText = icon;
-  }
-
-  Widget build() {
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      key: const Key('search_app_bar_widget'),
-      height: _heightSearchBar,
-      decoration: _decoration,
-      padding: _padding ?? EdgeInsets.zero,
-      margin: _margin,
+      key: key ?? const Key('search_app_bar_widget'),
+      height: heightSearchBar,
+      decoration: decoration,
+      padding: padding ?? EdgeInsets.zero,
+      margin: margin,
       child: Row(
         children: [
           if (hasBackButton) _buildBackButton(),
           if (hasSearchButton) _buildSearchButton(),
-          Expanded(child: _buildSearchInputForm()),
-          if (suggestionSearch?.isNotEmpty == true
-              || (_searchQuery != null && _searchQuery!.value.isNotEmpty))
+          Expanded(child: _buildSearchInputForm(context)),
+          if (suggestionSearch?.isNotEmpty == true || (searchQuery != null && searchQuery!.value.isNotEmpty))
             _buildClearTextSearchButton(),
         ]
       )
@@ -104,47 +76,48 @@ class SearchAppBarWidget {
 
  Widget _buildBackButton() {
    return buildIconWeb(
-       icon: SvgPicture.asset(
-         _imagePaths.icBack,
-         colorFilter: AppColor.colorTextButton.asFilter(),
-         fit: BoxFit.fill),
-       onTap: () {
-         _searchInputController?.clear();
-         if (_onCancelSearchPressed != null) {
-           _onCancelSearchPressed!();
-         }
-       });
+     icon: SvgPicture.asset(
+       imagePaths.icBack,
+       colorFilter: AppColor.colorTextButton.asFilter(),
+       fit: BoxFit.fill),
+     onTap: () {
+       searchInputController?.clear();
+       if (onCancelSearchPressed != null) {
+         onCancelSearchPressed!();
+       }
+     });
  }
 
  Widget _buildClearTextSearchButton() {
     return buildIconWeb(
-        icon: _iconClearText ?? SvgPicture.asset(_imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
-        onTap: () {
-          _searchInputController?.clear();
-          _onClearTextSearchAction?.call();
-        });
+      icon: iconClearText ?? SvgPicture.asset(imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
+      onTap: () {
+        searchInputController?.clear();
+        onClearTextSearchAction?.call();
+      });
  }
 
-  Widget _buildSearchInputForm() {
-    return (TextFieldBuilder()
-        ..key(const Key('search_input_form'))
-        ..textInputAction(TextInputAction.done)
-        ..onChange((value) => _onTextChangeSearchAction?.call(value))
-        ..onSubmitted((value) => _onSearchTextAction?.call(value))
-        ..cursorColor(AppColor.colorTextButton)
-        ..autoFocus(true)
-        ..addFocusNode(_searchFocusNode)
-        ..textStyle(const TextStyle(color: AppColor.colorNameEmail, fontSize: 17))
-        ..textDecoration(InputDecoration(
-            border: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            contentPadding: EdgeInsets.zero,
-            hintText: _hintText,
-            hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
-            labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)))
-        ..addController(_searchInputController))
-      .build();
+  Widget _buildSearchInputForm(BuildContext context) {
+    return TextFieldBuilder(
+      key: const Key('search_input_form'),
+      textInputAction: TextInputAction.done,
+      onTextChange: onTextChangeSearchAction,
+      onTextSubmitted: onSearchTextAction,
+      cursorColor: AppColor.colorTextButton,
+      textDirection: DirectionUtils.getDirectionByLanguage(context),
+      autoFocus: true,
+      focusNode: searchFocusNode,
+      textStyle: const TextStyle(color: AppColor.colorNameEmail, fontSize: 17),
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        contentPadding: EdgeInsets.zero,
+        hintText: hintText,
+        hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
+        labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)),
+      controller: searchInputController,
+    );
   }
 
  Widget _buildSearchButton() {
@@ -154,10 +127,10 @@ class SearchAppBarWidget {
         minSize: 40,
         iconPadding: EdgeInsets.zero,
         icon: SvgPicture.asset(
-          _imagePaths.icSearchBar,
+          imagePaths.icSearchBar,
           fit: BoxFit.fill
         ),
-        onTap: () => _onSearchTextAction?.call(_searchInputController?.text ?? '')
+        onTap: () => onSearchTextAction?.call(searchInputController?.text ?? '')
       ),
     );
  }
