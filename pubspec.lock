@@ -624,7 +624,7 @@ packages:
     source: hosted
     version: "1.1.0"
   flutter_keyboard_visibility:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: flutter_keyboard_visibility
       sha256: "4983655c26ab5b959252ee204c2fffa4afeb4413cd030455194ec0caa3b8e7cb"
@@ -1471,10 +1471,11 @@ packages:
   super_tag_editor:
     dependency: "direct main"
     description:
-      name: super_tag_editor
-      sha256: f992eab1bad3595148f1a62f98fd981fac814d53682b8414311eca470dbfa768
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: support_rtl
+      resolved-ref: d452d213992158bee12bef299364a4b3cc1fbc2b
+      url: "https://github.com/dab246/super_tag_editor.git"
+    source: git
     version: "0.1.2"
   syncfusion_flutter_core:
     dependency: transitive
