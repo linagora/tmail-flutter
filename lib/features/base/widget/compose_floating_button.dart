@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class ComposeFloatingButton extends StatelessWidget {
 
@@ -25,9 +24,7 @@ class ComposeFloatingButton extends StatelessWidget {
     final imagePaths = getBinding<ImagePaths>();
 
     return Align(
-      alignment: AppUtils.isDirectionRTL(context)
-        ? Alignment.bottomLeft
-        : Alignment.bottomRight,
+      alignment: AlignmentDirectional.bottomEnd,
       child: ScrollingFloatingButtonAnimated(
         icon: SvgPicture.asset(
           imagePaths!.icComposeWeb,
@@ -36,10 +33,7 @@ class ComposeFloatingButton extends StatelessWidget {
           fit: BoxFit.fill
         ),
         text: Padding(
-          padding: EdgeInsets.only(
-            right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-            left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-          ),
+          padding: const EdgeInsetsDirectional.only(end: 16),
           child: Text(AppLocalizations.of(context).compose,
             overflow: CommonTextStyle.defaultTextOverFlow,
             softWrap: CommonTextStyle.defaultSoftWrap,

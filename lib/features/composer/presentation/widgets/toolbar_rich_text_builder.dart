@@ -36,8 +36,8 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
       final opacity = codeViewEnabled ? 0.5 : 1.0;
 
       return Container(
-        padding: padding ?? const EdgeInsets.only(left: 20, top: 8, bottom: 8),
-        alignment: Alignment.centerLeft,
+        padding: padding ?? const EdgeInsetsDirectional.only(start: 20, top: 8, bottom: 8),
+        alignment: AlignmentDirectional.centerStart,
         child: Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             runSpacing: 8,
@@ -93,7 +93,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                         supportSelectionIcon: true)),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 4.0),
+                padding: const EdgeInsetsDirectional.only(end: 4.0),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: buildWrapIconStyleText(
@@ -106,7 +106,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 4.0),
+                padding: const EdgeInsetsDirectional.only(end: 4.0),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: buildWrapIconStyleText(
@@ -121,7 +121,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 4.0),
+                padding: const EdgeInsetsDirectional.only(end: 4.0),
                 child: buildWrapIconStyleText(
                     hasDropdown: false,
                     padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
@@ -166,7 +166,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                     ])),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 4.0),
+                padding: const EdgeInsetsDirectional.only(end: 4.0),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: PopupMenuOverlayWidget(
@@ -190,7 +190,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 4.0),
+                padding: const EdgeInsetsDirectional.only(end: 4.0),
                 child: AbsorbPointer(
                   absorbing: codeViewEnabled,
                   child: PopupMenuOverlayWidget(

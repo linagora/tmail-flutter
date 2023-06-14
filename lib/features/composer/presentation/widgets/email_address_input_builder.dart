@@ -13,6 +13,7 @@ import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_constants.dart';
@@ -30,6 +31,7 @@ class EmailAddressInputBuilder {
   static const _suggestionBoxRadius = 20.0;
   final BuildContext _context;
   final ImagePaths _imagePaths;
+  final ResponsiveUtils _responsiveUtils;
   final ExpandMode expandMode;
   final PrefixEmailAddress _prefixEmailAddress;
   final List<PrefixEmailAddress> _listEmailAddressType;
@@ -77,13 +79,14 @@ class EmailAddressInputBuilder {
     _onFocusEmailAddressChangeAction = onFocusEmailAddressChangeAction;
   }
 
-  void addOnFocusNextAddressAction(OnFocusNextAddressAction onFocusNextAddressAction) {
+  void addOnFocusNextAddressAction(OnFocusNextAddressAction? onFocusNextAddressAction) {
     _onFocusNextAddressAction = onFocusNextAddressAction;
   }
 
   EmailAddressInputBuilder(
     this._context,
     this._imagePaths,
+    this._responsiveUtils,
     this._prefixEmailAddress,
     this.listEmailAddress,
     this._listEmailAddressType,
@@ -99,41 +102,55 @@ class EmailAddressInputBuilder {
   );
 
   Widget build() {
-    return Row(
-      children: [
-        Text('${_prefixEmailAddress.asName(_context)}:',
-          style: const TextStyle(fontSize: 15, color: AppColor.colorHintEmailAddressInput)),
-        const SizedBox(width: 8),
-        Expanded(child: Padding(
-            padding: EdgeInsets.only(right: _listEmailAddressType.length == 2 ? 8 : 8),
-            child: _buildTagEditor())),
-        if (_prefixEmailAddress == PrefixEmailAddress.to)
-          Row(children: [
-            if (!_listEmailAddressType.contains(PrefixEmailAddress.cc))
-              buildTextIcon(AppLocalizations.of(_context).cc_email_address_prefix,
-                padding: const EdgeInsets.all(5),
-                textStyle: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
-                decoration: TextDecoration.underline,
-                color: AppColor.lineItemListColor),
-                onTap: () => _onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc)),
-            if (!_listEmailAddressType.contains(PrefixEmailAddress.bcc))
-              buildTextIcon(AppLocalizations.of(_context).bcc_email_address_prefix,
+    return Padding(
+      padding: _prefixEmailAddress == PrefixEmailAddress.to
+        ? ComposerStyle.getToAddressPadding(_context, _responsiveUtils)
+        : ComposerStyle.getCcBccAddressPadding(_context, _responsiveUtils),
+      child: Row(
+        children: [
+          Text(
+            '${_prefixEmailAddress.asName(_context)}:',
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColor.colorHintEmailAddressInput
+            )
+          ),
+          SizedBox(width: ComposerStyle.getSpace(_context, _responsiveUtils)),
+          Expanded(child: _buildTagEditor()),
+          SizedBox(width: ComposerStyle.getSpace(_context, _responsiveUtils)),
+          if (_prefixEmailAddress == PrefixEmailAddress.to)
+            Row(children: [
+              if (!_listEmailAddressType.contains(PrefixEmailAddress.cc))
+                buildTextIcon(AppLocalizations.of(_context).cc_email_address_prefix,
                   padding: const EdgeInsets.all(5),
                   textStyle: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                      decoration: TextDecoration.underline,
-                      color: AppColor.lineItemListColor),
-                  onTap: () => _onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc)),
-            const SizedBox(width: 10),
-          ]),
-        if (_prefixEmailAddress != PrefixEmailAddress.to)
-          buildIconWeb(
-              icon: SvgPicture.asset(_imagePaths.icCloseComposer, fit: BoxFit.fill),
+                  fontSize: 15,
+                  fontWeight: FontWeight.normal,
+                  decoration: TextDecoration.underline,
+                  color: AppColor.lineItemListColor),
+                  onTap: () => _onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc)),
+              if (!_listEmailAddressType.contains(PrefixEmailAddress.bcc))
+                buildTextIcon(AppLocalizations.of(_context).bcc_email_address_prefix,
+                    padding: const EdgeInsets.all(5),
+                    textStyle: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                        decoration: TextDecoration.underline,
+                        color: AppColor.lineItemListColor),
+                    onTap: () => _onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc)),
+            ])
+          else
+            buildIconWeb(
+              icon: SvgPicture.asset(
+                _imagePaths.icCloseComposer,
+                width: 28,
+                height: 28,
+                fit: BoxFit.fill
+              ),
+              iconPadding: EdgeInsets.zero,
               onTap: () => _onDeleteEmailAddressTypeAction?.call(_prefixEmailAddress))
-      ]
+        ]
+      ),
     );
   }
 
