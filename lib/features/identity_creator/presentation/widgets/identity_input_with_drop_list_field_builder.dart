@@ -1,5 +1,7 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -40,18 +42,16 @@ class IdentityInputWithDropListFieldBuilder extends StatelessWidget {
           fontWeight: FontWeight.normal,
           color: AppColor.colorContentEmail)),
       const SizedBox(height: 8),
-      TypeAheadFormField<EmailAddress>(
-        textFieldConfiguration: TextFieldConfiguration(
-          focusNode: focusNode,
-          controller: editingController,
-          textInputAction: TextInputAction.done,
-          decoration: (IdentityInputDecorationBuilder()
-            ..setContentPadding(const EdgeInsets.symmetric(
-                vertical: BuildUtils.isWeb ? 16 : 12,
-                horizontal: 12))
-            ..setErrorText(_error))
-          .build()
-        ),
+      TypeAheadFormFieldBuilder<EmailAddress>(
+        focusNode: focusNode,
+        controller: editingController,
+        textInputAction: TextInputAction.done,
+        decoration: (IdentityInputDecorationBuilder()
+          ..setContentPadding(const EdgeInsets.symmetric(
+              vertical: PlatformInfo.isWeb ? 16 : 12,
+              horizontal: 12))
+          ..setErrorText(_error))
+        .build(),
         debounceDuration: const Duration(milliseconds: 500),
         suggestionsCallback: (pattern) async {
           if (onChangeInputSuggestionAction != null) {

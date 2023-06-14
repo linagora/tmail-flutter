@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
@@ -106,32 +107,26 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
   Widget buildUserNameInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24, right: 24, left: 24),
-      child: TypeAheadFormField<RecentLoginUsername>(
+      child: TypeAheadFormFieldBuilder<RecentLoginUsername>(
         key: const Key('login_username_input'),
-        textFieldConfiguration: TextFieldConfiguration(
-          controller: loginController.usernameInputController,
-          onChanged: (value) => loginController.setUserNameText(value),
-          textInputAction: TextInputAction.next,
-          autocorrect: false,
-          autofillHints: [AutofillHints.email],
-          keyboardType: TextInputType.emailAddress,
-          decoration: (LoginInputDecorationBuilder()
-              ..setLabelText(AppLocalizations.of(context).email)
-              ..setHintText(AppLocalizations.of(context).email))
-              .build(),
-        ),
+        controller: loginController.usernameInputController,
+        onTextChange: loginController.setUserNameText,
+        textInputAction: TextInputAction.next,
+        autocorrect: false,
+        autofillHints: const [AutofillHints.email],
+        keyboardType: TextInputType.emailAddress,
+        decoration: (LoginInputDecorationBuilder()
+          ..setLabelText(AppLocalizations.of(context).email)
+          ..setHintText(AppLocalizations.of(context).email))
+          .build(),
         debounceDuration: const Duration(milliseconds: 300),
-        suggestionsCallback: (pattern) async {
-          return await loginController.getAllRecentLoginUsernameAction(pattern);
-        },
-        itemBuilder: (context, loginUsername) =>
-            RecentItemTileWidget(loginUsername, imagePath: imagePaths),
+        suggestionsCallback: loginController.getAllRecentLoginUsernameAction,
+        itemBuilder: (context, loginUsername) => RecentItemTileWidget(loginUsername, imagePath: imagePaths),
         onSuggestionSelected: (recentUsername) {
           loginController.setUsername(recentUsername.username);
           passFocusNode.requestFocus();
         },
-        suggestionsBoxDecoration: const SuggestionsBoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(14))),
+        suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
         noItemsFoundBuilder: (context) => const SizedBox(),
         hideOnEmpty: true,
         hideOnError: true,
