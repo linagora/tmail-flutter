@@ -157,7 +157,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(_this)._eval$1("GetWidget.S");
       t4 = B.SearchMailboxUtils_getPaddingAppBar(context, t3._as(t2.get(_this)).responsiveUtils);
-      t4 = A._setArrayType([A.Container$(_null, _this._search_mailbox_view$_buildSearchInputForm$1(context), C.Clip_0, C.Color_0, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null)], type$.JSArray_Widget);
+      t4 = A._setArrayType([A.Container$(_null, _this._buildSearchInputForm$1(context), C.Clip_0, C.Color_0, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null)], type$.JSArray_Widget);
       A.Expando__checkType(_this);
       t3._as(t2.get(_this)).toString;
       t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data;
@@ -170,7 +170,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _search_mailbox_view$_buildLoadingView$0() {
       return new A.Obx(new B.SearchMailboxView__buildLoadingView_closure(this), null);
     },
-    _search_mailbox_view$_buildSearchInputForm$1(context) {
+    _buildSearchInputForm$1(context) {
       var t2, t3, t4, t5, t6, t7, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
@@ -205,23 +205,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Row$(A._setArrayType([t4, A.Expanded$(A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([new A.Padding(t7, A.buildIconWeb(_null, _null, t1, C.EdgeInsets_0_0_0_0, _null, 40, new B.SearchMailboxView__buildSearchInputForm_closure0(_this, context), _null, A.Intl__message("Search", _null, "search", _null, _null)), _null), A.Expanded$(_this._buildTextFieldSearchInput$1(context), 1), new A.Obx(new B.SearchMailboxView__buildSearchInputForm_closure1(_this, context), _null)], t6), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t3, _null, _null, t5, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), 1)], t6), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
     _buildTextFieldSearchInput$1(context) {
-      var t3, _this = this, _null = null,
-        t1 = new A.TextFieldBuilder(),
-        t2 = $.$get$GetWidget__cache();
+      var t2, t3, _this = this, _null = null,
+        t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
-      t2 = t2._jsWeakMap;
-      t3 = A._instanceType(_this)._eval$1("GetWidget.S");
-      t1._onTextChange = t3._as(t2.get(_this)).get$onTextSearchChange();
-      t1._textInputAction = C.TextInputAction_4;
-      t1._autoFocus = true;
+      t1 = t1._jsWeakMap;
+      t2 = A._instanceType(_this)._eval$1("GetWidget.S");
+      t3 = t2._as(t1.get(_this)).get$onTextSearchChange();
       A.Expando__checkType(_this);
-      t1._textController = t3._as(t2.get(_this)).textInputSearchController;
-      t1._text_field_builder$_textStyle = C.TextStyle_oHY6;
-      t1._keyboardType = C.TextInputType_0_null_null;
-      t1._onTextSubmitted = new B.SearchMailboxView__buildTextFieldSearchInput_closure(_this, context);
+      t1 = t2._as(t1.get(_this)).textInputSearchController;
+      t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale;
+      t2 = A.Bidi_isRtlLanguage(t2.get$languageCode(t2)) ? C.TextDirection_0 : C.TextDirection_1;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      t1._inputDecoration = A.InputDecoration$(_null, C._NoInputBorder_uXA, _null, C.EdgeInsets_0_0_0_0, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_chs3, A.Intl__message("Search for mailboxes", _null, "searchForMailboxes", _null, _null), _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
-      return t1.build$0();
+      return A.TextFieldBuilder$(true, t1, C.Color_4278221567, A.InputDecoration$(_null, C._NoInputBorder_uXA, _null, C.EdgeInsets_0_0_0_0, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_chs3, A.Intl__message("Search for mailboxes", _null, "searchForMailboxes", _null, _null), _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextInputType_0_null_null, _null, _null, _null, _null, t3, new B.SearchMailboxView__buildTextFieldSearchInput_closure(_this, context), false, t2, C.TextInputAction_4, C.TextStyle_oHY6);
     },
     _buildMailboxListView$1(context) {
       return new A.Obx(new B.SearchMailboxView__buildMailboxListView_closure(this, context), null);
@@ -397,7 +392,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 34
+    $signature: 33
   };
   B.SearchMailboxView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -406,7 +401,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 49
+    $signature: 52
   };
   B.SearchMailboxView__buildSearchInputForm_closure.prototype = {
     call$0() {
@@ -452,20 +447,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     $signature: 80
   };
   B.SearchMailboxView__buildTextFieldSearchInput_closure.prototype = {
-    call$1(value) {
-      var t1, t2,
-        query = C.JSString_methods.trim$0(value);
-      if (query.length !== 0) {
-        t1 = this.$this;
+    call$1(text) {
+      var query,
+        t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
-        A.Expando__checkType(t1);
-        t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
+      A.Expando__checkType(t1);
+      t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
+      query = C.JSString_methods.trim$0(text);
+      if (query.length !== 0) {
         A.FocusScope_of(this.context).unfocus$0();
         t1.currentSearchQuery.set$value(0, query);
         t1.searchMailboxAction$0();
       }
+      return null;
     },
-    $signature: 8
+    $signature: 10
   };
   B.SearchMailboxView__buildMailboxListView_closure.prototype = {
     call$0() {
@@ -480,13 +476,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t3._as(t2.get(t1)).listMailboxSearched;
       return A.ListView$builder(null, new B.SearchMailboxView__buildMailboxListView__closure(t1), J.get$length$asx(t2.get$value(t2)), null, C.ValueKey_list_mailbox_searched, t4, null, false, C.Axis_1, true);
     },
-    $signature: 248
+    $signature: 285
   };
   B.SearchMailboxView__buildMailboxListView__closure.prototype = {
     call$2(context, index) {
       return new A.LayoutBuilder(new B.SearchMailboxView__buildMailboxListView___closure(this.$this, index), null);
     },
-    $signature: 1497
+    $signature: 1496
   };
   B.SearchMailboxView__buildMailboxListView___closure.prototype = {
     call$2(context, constraints) {
@@ -531,7 +527,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(position, mailbox) {
       return this.$this._openMailboxMenuAction$3$position(this.context, mailbox, position);
     },
-    $signature: 1498
+    $signature: 1497
   };
   B.SearchMailboxView__buildMailboxListView____closure1.prototype = {
     call$1(mailbox) {
@@ -559,14 +555,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(_, __, ___) {
       return this.$this._mailbox_searched_item_builder$_buildMailboxItem$1(this.context);
     },
-    $signature: 312
+    $signature: 313
   };
   B._MailboxSearchedItemBuilderState_build_closure0.prototype = {
     call$1(emails) {
       var t1 = this.$this._widget;
       t1.onDragEmailToMailboxAccepted.call$2(emails, t1._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 311
+    $signature: 312
   };
   B._MailboxSearchedItemBuilderState__buildMailboxItem_closure.prototype = {
     call$1(value) {
@@ -617,7 +613,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     AppLocalizations: A.findType("AppLocalizations"),
     JSArray_Widget: A.findType("JSArray<Widget>"),
     List_PresentationEmail: A.findType("List<PresentationEmail>"),
-    MediaQuery: A.findType("MediaQuery")
+    MediaQuery: A.findType("MediaQuery"),
+    _LocalizationsScope: A.findType("_LocalizationsScope")
   };
   (function constants() {
     D.EdgeInsets_0_0_2_0 = new A.EdgeInsets(0, 0, 2, 0);
@@ -627,4 +624,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["WLbglOKnVTcpeLISDYV/fQ2jaFY="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["UOIFroO+d51Vjynun4eAxUm9c70="] = $__dart_deferred_initializers__.current
