@@ -46,6 +46,7 @@ export 'utils/platform_info.dart';
 // Views
 export 'presentation/views/text/slogan_builder.dart';
 export 'presentation/views/text/text_field_builder.dart';
+export 'presentation/views/text/text_form_field_builder.dart';
 export 'presentation/views/text/input_decoration_builder.dart';
 export 'presentation/views/text/rich_text_builder.dart';
 export 'presentation/views/responsive/responsive_widget.dart';

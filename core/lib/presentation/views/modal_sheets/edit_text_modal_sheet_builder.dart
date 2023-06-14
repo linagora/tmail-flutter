@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/text/text_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -126,10 +127,10 @@ class EditTextModalSheetBuilder {
                           textAlign: TextAlign.center),
                       Padding(
                           padding: const EdgeInsets.only(top: 20),
-                          child: TextFormField(
+                          child: TextFormFieldBuilder(
                             keyboardType: TextInputType.visiblePassword,
-                            onChanged: (value) => _onTextChanged(value, setState),
-                            autofocus: true,
+                            onTextChange: (value) => _onTextChanged(value, setState),
+                            autoFocus: true,
                             controller: _textController,
                             decoration: InputDecoration(
                                 errorText: _error,

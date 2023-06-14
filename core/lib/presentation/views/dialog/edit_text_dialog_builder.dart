@@ -102,10 +102,10 @@ class EditTextDialogBuilder {
                       textAlign: TextAlign.center),
                   Padding(
                       padding: const EdgeInsets.only(top: 20),
-                      child: TextFormField(
+                      child: TextFormFieldBuilder(
                         keyboardType: TextInputType.visiblePassword,
-                        onChanged: (value) => _onTextChanged(value, setState),
-                        autofocus: true,
+                        onTextChange: (value) => _onTextChanged(value, setState),
+                        autoFocus: true,
                         controller: _textController,
                         decoration: InputDecoration(
                             errorText: _error,
