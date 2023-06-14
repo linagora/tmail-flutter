@@ -70,6 +70,9 @@ dependencies:
   # flutter_test from sdk depends on collection 1.17.0
   collection: 1.17.0
 
+  # flutter_localizations depends on intl 0.17.0
+  intl: 0.17.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

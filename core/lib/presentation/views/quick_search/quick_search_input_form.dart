@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
@@ -576,6 +577,7 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
   FocusNode? _focusNode;
   TextEditingController? _textEditingController;
   _SuggestionsBox? _suggestionsBox;
+  late TextDirection _textDirection;
 
   TextEditingController? get _effectiveController =>
       widget.textFieldConfiguration.controller ?? _textEditingController;
@@ -621,6 +623,8 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    _textDirection = widget.textFieldConfiguration.textDirection ?? TextDirection.ltr;
 
     if (widget.textFieldConfiguration.controller == null) {
       _textEditingController = TextEditingController();
@@ -840,7 +844,17 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
                 maxLength: widget.textFieldConfiguration.maxLength,
                 maxLengthEnforcement: widget.textFieldConfiguration.maxLengthEnforcement,
                 obscureText: widget.textFieldConfiguration.obscureText,
-                onChanged: widget.textFieldConfiguration.onChanged,
+                onChanged: (input) {
+                  widget.textFieldConfiguration.onChanged?.call(input);
+                  if (input.isNotEmpty) {
+                    final directionByText = DirectionUtils.getDirectionByEndsText(input);
+                    if (directionByText != _textDirection) {
+                      setState(() {
+                        _textDirection = directionByText;
+                      });
+                    }
+                  }
+                },
                 onSubmitted: widget.textFieldConfiguration.onSubmitted,
                 onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
                 onTap: widget.textFieldConfiguration.onTap,
@@ -851,9 +865,8 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
                 cursorWidth: widget.textFieldConfiguration.cursorWidth,
                 cursorRadius: widget.textFieldConfiguration.cursorRadius,
                 cursorColor: widget.textFieldConfiguration.cursorColor,
-                textDirection: widget.textFieldConfiguration.textDirection,
-                enableInteractiveSelection:
-                widget.textFieldConfiguration.enableInteractiveSelection,
+                textDirection: _textDirection,
+                enableInteractiveSelection: widget.textFieldConfiguration.enableInteractiveSelection,
                 readOnly: widget.hideKeyboard,
               ),
             ),

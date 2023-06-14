@@ -7,6 +7,7 @@ import 'package:core/presentation/views/background/background_widget_builder.dar
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -117,29 +118,21 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               tooltip: AppLocalizations.of(context).back,
               onTap: () => controller.closeSearchView(context)
           ),
-          Expanded(child: (TextFieldBuilder()
-            ..onChange(controller.onTextSearchChange)
-            ..textInputAction(TextInputAction.search)
-            ..addController(controller.textInputSearchController)
-            ..addFocusNode(controller.textInputSearchFocus)
-            ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
-            ..keyboardType(TextInputType.text)
-            ..onSubmitted((value) {
-              final query = value.trim();
-              if (query.isNotEmpty) {
-                controller.saveRecentSearch(RecentSearch.now(query));
-                controller.submitSearchAction(context, query);
-              }
-            })
-            ..maxLines(1)
-            ..textDecoration(InputDecoration(
-                contentPadding: const EdgeInsets.all(12),
-                hintText: AppLocalizations.of(context).search_emails,
-                hintStyle: const TextStyle(
-                    color: AppColor.loginTextFieldHintColor,
-                    fontSize: 16),
-                border: InputBorder.none)))
-              .build()),
+          Expanded(child: TextFieldBuilder(
+            onTextChange: controller.onTextSearchChange,
+            textInputAction: TextInputAction.search,
+            controller: controller.textInputSearchController,
+            focusNode: controller.textInputSearchFocus,
+            textDirection: DirectionUtils.getDirectionByLanguage(context),
+            textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+            keyboardType: TextInputType.text,
+            onTextSubmitted: (text) => controller.onTextSearchSubmitted(context, text),
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.all(12),
+              hintText: AppLocalizations.of(context).search_emails,
+              hintStyle: const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16),
+              border: InputBorder.none),
+          )),
           Obx(() {
             if (controller.currentSearchText.isNotEmpty) {
               return

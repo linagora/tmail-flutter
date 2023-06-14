@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +102,7 @@ class InsertImageDialogBuilder {
                             color: Colors.black,
                             fontWeight: FontWeight.w500)),
                       const SizedBox(height: 10),
-                      TextField(
+                      TextFieldBuilder(
                         controller: _inputUrlController,
                         textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
@@ -110,7 +111,7 @@ class InsertImageDialogBuilder {
                           errorText: validateFailed,
                           errorMaxLines: 2,
                         ),
-                      ),
+                      )
                     ]),
               ),
               actionsPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
