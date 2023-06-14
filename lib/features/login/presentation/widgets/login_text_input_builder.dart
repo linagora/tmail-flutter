@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/text/text_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -122,21 +124,21 @@ class LoginTextInputBuilder {
             child: Stack(
               alignment: AlignmentDirectional.centerEnd,
               children: [
-                TextFormField(
-                  onFieldSubmitted: _onSubmitted,
-                  onChanged: (value) => _onTextChanged(value, setState),
+                TextFormFieldBuilder(
+                  onTextSubmitted: _onSubmitted,
+                  onTextChange: (value) => _onTextChanged(value, setState),
                   obscureText: _obscureText ?? false,
                   textInputAction: _textInputAction,
                   autofillHints: autofillHints,
                   autocorrect: autocorrect,
                   controller: _textEditingController,
-                  cursorColor: AppColor.primaryColor,
-                  style: const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16, fontWeight: FontWeight.normal),
+                  textStyle: const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16, fontWeight: FontWeight.normal),
                   focusNode: _focusNode,
                   decoration: (LoginInputDecorationBuilder()
                       ..setHintText(_hintText)
                       ..setPrefixText(_prefixText)
                       ..setErrorText(_errorText)
+                      ..setContentPadding(const EdgeInsetsDirectional.only(start: 25, top: 15, bottom: 15, end: 40))
                       ..setHintStyle(const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16, fontWeight: FontWeight.normal))
                       ..setPrefixStyle(const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16, fontWeight: FontWeight.normal))
                       ..setErrorTextStyle(const TextStyle(color: AppColor.loginTextFieldErrorBorder, fontSize: 13, fontWeight: FontWeight.normal))
