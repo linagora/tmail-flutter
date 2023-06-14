@@ -1,5 +1,10 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,7 +13,6 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnDeleteAttachmentAction = void Function(UploadFileState fileState);
 
@@ -18,7 +22,7 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
 
   final UploadFileState fileState;
   final double? maxWidth;
-  final EdgeInsets? itemMargin;
+  final EdgeInsetsGeometry? itemMargin;
   final OnDeleteAttachmentAction? onDeleteAttachmentAction;
   final Widget? buttonAction;
 
@@ -52,10 +56,9 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
               hoverColor: AppColor.primaryColor,
               onTap: () {},
               leading: Padding(
-                padding: EdgeInsets.only(
-                  left: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                  right: AppUtils.isDirectionRTL(context) ? 8 : 0,
-                  bottom: BuildUtils.isWeb ? 6 : 14
+                padding: const EdgeInsetsDirectional.only(
+                  start: 8,
+                  bottom: PlatformInfo.isWeb ? 6 : 14
                 ),
                 child: SvgPicture.asset(
                     fileState.getIcon(_imagePaths),
@@ -65,14 +68,11 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
               ),
               title: Transform(
                   transform: Matrix4.translationValues(
-                      AppUtils.isDirectionRTL(context) ? 0.0 : BuildUtils.isWeb ? 0.0 : -8.0,
-                      BuildUtils.isWeb ? -8.0 : -10.0,
-                      0.0),
+                    DirectionUtils.isDirectionRTLByLanguage(context) ? 0.0 : (PlatformInfo.isWeb ? 0.0 : -8.0),
+                    PlatformInfo.isWeb ? -8.0 : -10.0,
+                    0.0),
                   child: Padding(
-                    padding: EdgeInsets.only(
-                      right: AppUtils.isDirectionRTL(context) ? 0 : BuildUtils.isWeb ? 20 : 16,
-                      left: AppUtils.isDirectionRTL(context) ? BuildUtils.isWeb ? 20 : 16 : 0
-                    ),
+                    padding: const EdgeInsetsDirectional.only(end: PlatformInfo.isWeb ? 20 : 16),
                     child: Text(
                       fileState.fileName,
                       maxLines: 1,
@@ -88,9 +88,9 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
               subtitle: fileState.fileSize != 0
                   ? Transform(
                       transform: Matrix4.translationValues(
-                          AppUtils.isDirectionRTL(context) ? 0.0 : BuildUtils.isWeb ? 0.0 : -8.0,
-                          BuildUtils.isWeb ? -8.0 : -10.0,
-                          0.0),
+                        DirectionUtils.isDirectionRTLByLanguage(context) ? 0.0 : PlatformInfo.isWeb ? 0.0 : -8.0,
+                        PlatformInfo.isWeb ? -8.0 : -10.0,
+                        0.0),
                       child: Text(
                           filesize(fileState.fileSize),
                           maxLines: 1,
@@ -102,35 +102,20 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
                               color: AppColor.colorContentEmail)))
                   : null,
             ),
-            if (AppUtils.isDirectionRTL(context))
-              Positioned(
-                left: BuildUtils.isWeb ? -5 : -12,
-                top: BuildUtils.isWeb ? -5 : -12,
-                child: buildIconWeb(
-                  icon: SvgPicture.asset(_imagePaths.icDeleteAttachment, fit: BoxFit.fill),
-                  tooltip: AppLocalizations.of(context).delete,
-                  onTap: () {
-                    if (onDeleteAttachmentAction != null) {
-                      onDeleteAttachmentAction!.call(fileState);
-                    }
+            PositionedDirectional(
+              end: PlatformInfo.isWeb ? -5 : -12,
+              top: PlatformInfo.isWeb ? -5 : -12,
+              child: buildIconWeb(
+                icon: SvgPicture.asset(_imagePaths.icDeleteAttachment, fit: BoxFit.fill),
+                tooltip: AppLocalizations.of(context).delete,
+                onTap: () {
+                  if (onDeleteAttachmentAction != null) {
+                    onDeleteAttachmentAction!.call(fileState);
                   }
-                )
+                }
               )
-            else
-              Positioned(
-                right: BuildUtils.isWeb ? -5 : -12,
-                top: BuildUtils.isWeb ? -5 : -12,
-                child: buildIconWeb(
-                  icon: SvgPicture.asset(_imagePaths.icDeleteAttachment, fit: BoxFit.fill),
-                  tooltip: AppLocalizations.of(context).delete,
-                  onTap: () {
-                    if (onDeleteAttachmentAction != null) {
-                      onDeleteAttachmentAction!.call(fileState);
-                    }
-                  }
-                )
-              ),
-            Align(alignment: Alignment.bottomCenter, child: _progressLoading),
+            ),
+            Align(alignment: AlignmentDirectional.bottomCenter, child: _progressLoading),
           ]),
         )
     );

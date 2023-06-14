@@ -235,12 +235,10 @@ class ComposerController extends BaseController {
   }
 
   @override
-  void onReady() async {
+  void onReady() {
     _initEmail();
-    _getAllIdentities();
     if (!BuildUtils.isWeb) {
-      Future.delayed(const Duration(milliseconds: 500), () =>
-          _checkContactPermission());
+      Future.delayed(const Duration(milliseconds: 500), _checkContactPermission);
     }
     super.onReady();
   }
@@ -392,6 +390,7 @@ class ComposerController extends BaseController {
         _onChangeCursorOnMobile(coordinates, context);
       },
     );
+    _getAllIdentities();
   }
 
   void _initEmail() {
@@ -1397,7 +1396,6 @@ class ComposerController extends BaseController {
     if (newIdentity != null) {
       await _applyIdentityForAllFieldComposer(formerIdentity, newIdentity);
     }
-    return Future.value(null);
   }
 
   bool get _isMobileApp {
@@ -1417,7 +1415,7 @@ class ComposerController extends BaseController {
       }
 
       if (!_isMobileApp) {
-        _removeSignature();
+        await _removeSignature();
       }
     }
     // Add new identity
@@ -1426,10 +1424,8 @@ class ComposerController extends BaseController {
     }
 
     if (!_isMobileApp && newIdentity.signatureAsString.isNotEmpty == true) {
-      _applySignature(newIdentity.signatureAsString.asSignatureHtml());
+      await _applySignature(newIdentity.signatureAsString.asSignatureHtml());
     }
-
-    return Future.value(null);
   }
 
   Future<void> _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
@@ -1458,20 +1454,20 @@ class ComposerController extends BaseController {
     _updateStatusEmailSendButton();
   }
 
-  void _applySignature(String signature) {
+  Future<void> _applySignature(String signature) async {
     if (BuildUtils.isWeb) {
       richTextWebController.editorController.insertSignature(signature);
     } else {
-      htmlEditorApi?.insertSignature(signature);
+      await htmlEditorApi?.insertSignature(signature);
     }
   }
 
-  void _removeSignature() {
+  Future<void> _removeSignature() async {
     log('ComposerController::_removeSignature():');
     if (BuildUtils.isWeb) {
       richTextWebController.editorController.removeSignature();
     } else {
-      htmlEditorApi?.removeSignature();
+      await htmlEditorApi?.removeSignature();
     }
   }
 
@@ -1572,9 +1568,14 @@ class ComposerController extends BaseController {
     }
   }
 
-  void closeComposer() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    popBack();
+  void closeComposer(BuildContext context) {
+    FocusScope.of(context).unfocus();
+
+    if (PlatformInfo.isWeb) {
+      mailboxDashBoardController.closeComposerOverlay();
+    } else {
+      popBack();
+    }
   }
 
   void _onEditorFocusOnMobile() {
@@ -1660,6 +1661,7 @@ class ComposerController extends BaseController {
     richTextWebController.editorController.setFullScreen();
     onChangeTextEditorWeb(initContent);
     richTextWebController.setEnableCodeView();
+    _getAllIdentities();
   }
 
   void handleOnFocusHtmlEditorWeb() {
