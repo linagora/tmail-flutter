@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -135,27 +136,23 @@ class LoginView extends BaseLoginView {
   Widget _buildUrlInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24),
-      child: TypeAheadFormField<RecentLoginUrl>(
-        textFieldConfiguration: TextFieldConfiguration(
-            controller: loginController.urlInputController,
-            textInputAction: TextInputAction.next,
-            keyboardType: TextInputType.url,
-            onSubmitted: (value) => controller.handleNextInUrlInputFormPress(),
-            decoration: (LoginInputDecorationBuilder()
-                ..setLabelText(AppLocalizations.of(context).prefix_https)
-                ..setPrefixText(AppLocalizations.of(context).prefix_https))
-               .build()
-        ),
+      child: TypeAheadFormFieldBuilder<RecentLoginUrl>(
+        controller: loginController.urlInputController,
+        textInputAction: TextInputAction.next,
+        keyboardType: TextInputType.url,
+        onTextSubmitted: (value) => controller.handleNextInUrlInputFormPress(),
+        decoration: (LoginInputDecorationBuilder()
+            ..setLabelText(AppLocalizations.of(context).prefix_https)
+            ..setPrefixText(AppLocalizations.of(context).prefix_https))
+         .build(),
         debounceDuration: const Duration(milliseconds: 300),
         suggestionsCallback: (pattern) async {
           loginController.formatUrl(pattern);
           return loginController.getAllRecentLoginUrlAction(pattern);
         },
-        itemBuilder: (context, loginUrl) =>
-            RecentItemTileWidget(loginUrl, imagePath: imagePaths),
+        itemBuilder: (context, loginUrl) => RecentItemTileWidget(loginUrl, imagePath: imagePaths),
         onSuggestionSelected: (loginUrl) => controller.formatUrl(loginUrl.url),
-        suggestionsBoxDecoration: const SuggestionsBoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(14))),
+        suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
         noItemsFoundBuilder: (context) => const SizedBox(),
         hideOnEmpty: true,
         hideOnError: true,
