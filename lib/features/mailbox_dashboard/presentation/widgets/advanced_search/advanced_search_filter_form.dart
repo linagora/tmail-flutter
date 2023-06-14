@@ -356,13 +356,13 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           nextFocusNode?.requestFocus();
         }
       },
-      child: TextField(
+      child: TextFieldBuilder(
         controller: textEditingController,
         readOnly: isSelectFormList,
         mouseCursor: mouseCursor,
         textInputAction: isSelectFormList ? TextInputAction.done : TextInputAction.next,
         onTap: onTap,
-        onSubmitted: (value) {
+        onTextSubmitted: (value) {
           if (isSelectFormList) {
             onTap?.call();
           } else {

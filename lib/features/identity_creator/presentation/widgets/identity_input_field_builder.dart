@@ -1,7 +1,8 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_decoration_builder.dart';
 
@@ -41,21 +42,20 @@ class IdentityInputFieldBuilder extends StatelessWidget {
             fontWeight: FontWeight.w500,
             color: AppColor.colorContentEmail)),
       const SizedBox(height: 8),
-      (TextFieldBuilder()
-          ..onChange((value) => onChangeInputNameAction?.call(value))
-          ..textInputAction(TextInputAction.next)
-          ..addController(editingController ?? TextEditingController())
-          ..autoFocus(true)
-          ..addFocusNode(focusNode)
-          ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
-          ..keyboardType(inputType ?? TextInputType.text)
-          ..textDecoration((IdentityInputDecorationBuilder()
-                ..setContentPadding(const EdgeInsets.symmetric(
-                    vertical: BuildUtils.isWeb ? 16 : 12,
-                    horizontal: 12))
-                ..setErrorText(_error))
-              .build()))
-        .build()
+      TextFieldBuilder(
+        onTextChange: onChangeInputNameAction,
+        textInputAction: TextInputAction.next,
+        autoFocus: true,
+        textDirection: DirectionUtils.getDirectionByLanguage(context),
+        controller: editingController,
+        focusNode: focusNode,
+        textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+        keyboardType: inputType ?? TextInputType.text,
+        decoration: (IdentityInputDecorationBuilder()
+          ..setContentPadding(const EdgeInsets.symmetric(vertical: PlatformInfo.isWeb ? 16 : 12,horizontal: 12))
+          ..setErrorText(_error))
+        .build(),
+      )
     ]);
   }
 }

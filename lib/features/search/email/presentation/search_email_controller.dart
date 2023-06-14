@@ -642,6 +642,14 @@ class SearchEmailController extends BaseController
     _deBouncerTime.value = text;
   }
 
+  void onTextSearchSubmitted(BuildContext context, String text) {
+    final query = text.trim();
+    if (query.isNotEmpty) {
+      saveRecentSearch(RecentSearch.now(query));
+      submitSearchAction(context, query);
+    }
+  }
+
   void setTextInputSearchForm(String value) {
     textInputSearchController.text = value;
   }

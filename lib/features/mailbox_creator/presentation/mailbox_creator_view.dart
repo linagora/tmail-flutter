@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -112,23 +113,24 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   Widget _buildCreateMailboxNameInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Obx(() => (TextFieldBuilder()
-          ..key(const Key('create_mailbox_name_input'))
-          ..onChange((value) => controller.setNewNameMailbox(value))
-          ..keyboardType(TextInputType.visiblePassword)
-          ..cursorColor(AppColor.colorTextButton)
-          ..addController(controller.nameInputController)
-          ..maxLines(1)
-          ..textStyle(const TextStyle(
-              color: AppColor.colorNameEmail,
-              fontSize: 16,
-              overflow: CommonTextStyle.defaultTextOverFlow))
-          ..addFocusNode(controller.nameInputFocusNode)
-          ..textDecoration((CreateMailboxNameInputDecorationBuilder()
-                ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
-                ..setErrorText(controller.getErrorInputNameString(context)))
-              .build()))
-        .build())
+      child: Obx(() => TextFieldBuilder(
+        key: const Key('create_mailbox_name_input'),
+        onTextChange: controller.setNewNameMailbox,
+        keyboardType: TextInputType.visiblePassword,
+        cursorColor: AppColor.colorTextButton,
+        controller: controller.nameInputController,
+        textDirection: DirectionUtils.getDirectionByLanguage(context),
+        maxLines: 1,
+        textStyle: const TextStyle(
+          color: AppColor.colorNameEmail,
+          fontSize: 16,
+          overflow: CommonTextStyle.defaultTextOverFlow),
+        focusNode: controller.nameInputFocusNode,
+        decoration: (CreateMailboxNameInputDecorationBuilder()
+          ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
+          ..setErrorText(controller.getErrorInputNameString(context)))
+        .build(),
+      ))
     );
   }
 
