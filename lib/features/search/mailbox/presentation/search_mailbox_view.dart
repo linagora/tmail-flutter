@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/modals.dart';
@@ -138,33 +139,28 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   }
 
   Widget _buildTextFieldSearchInput(BuildContext context) {
-    return (TextFieldBuilder()
-      ..onChange(controller.onTextSearchChange)
-      ..textInputAction(TextInputAction.search)
-      ..autoFocus(true)
-      ..addController(controller.textInputSearchController)
-      ..textStyle(const TextStyle(
-          color: Colors.black,
+    return TextFieldBuilder(
+      onTextChange: controller.onTextSearchChange,
+      textInputAction: TextInputAction.search,
+      autoFocus: true,
+      controller: controller.textInputSearchController,
+      textDirection: DirectionUtils.getDirectionByLanguage(context),
+      textStyle: const TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontWeight: FontWeight.normal),
+      keyboardType: TextInputType.text,
+      onTextSubmitted: (text) => controller.onTextSearchSubmitted(context, text),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.zero,
+        hintText: AppLocalizations.of(context).searchForMailboxes,
+        hintStyle: const TextStyle(
+          color: AppColor.loginTextFieldHintColor,
           fontSize: 15,
-          fontWeight: FontWeight.normal))
-      ..keyboardType(TextInputType.text)
-      ..onSubmitted((value) {
-        final query = value.trim();
-        if (query.isNotEmpty) {
-          controller.submitSearchAction(context, query);
-        }
-      })
-      ..maxLines(1)
-      ..textDecoration(InputDecoration(
-          contentPadding: EdgeInsets.zero,
-          hintText: AppLocalizations.of(context).searchForMailboxes,
-          hintStyle: const TextStyle(
-            color: AppColor.loginTextFieldHintColor,
-            fontSize: 15,
-            fontWeight: FontWeight.normal),
-          border: InputBorder.none
-      )
-    )).build();
+          fontWeight: FontWeight.normal),
+        border: InputBorder.none
+      ),
+    );
   }
 
   Widget _buildMailboxListView(BuildContext context) {

@@ -1,6 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/html_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -409,22 +410,21 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
   }
 
   Widget _buildMessagePlainTextEditor(BuildContext context) {
-    return (TextFieldBuilder()
-      ..onChange((value) => controller.updateMessageBody(context, value))
-      ..keyboardType(TextInputType.multiline)
-      ..addController(controller.messageTextController)
-      ..textStyle(const TextStyle(color: Colors.black, fontSize: 16))
-      ..minLines(10)
-      ..maxLines(null)
-      ..textDecoration((TextInputDecorationBuilder()
+    return TextFieldBuilder(
+      onTextChange: (value) => controller.updateMessageBody(context, value),
+      keyboardType: TextInputType.multiline,
+      controller: controller.messageTextController,
+      textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+      textDirection: DirectionUtils.getDirectionByLanguage(context),
+      minLines: 10,
+      maxLines: null,
+      decoration: (TextInputDecorationBuilder()
         ..setContentPadding(const EdgeInsets.all(16))
         ..setHintText(AppLocalizations.of(context).hintMessageBodyVacation)
         ..setFillColor(Colors.white)
-        ..setErrorText(controller.isVacationDeactivated
-            ? null
-            : controller.errorMessageBody.value))
-        .build()))
-      .build();
+        ..setErrorText(controller.isVacationDeactivated ? null : controller.errorMessageBody.value))
+      .build(),
+    );
   }
 
   Widget _buildMessageHtmlTextEditor(BuildContext context) {

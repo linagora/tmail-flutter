@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 abstract class PlatformInfo {
-  static bool get isWeb => kIsWeb;
+  static const bool isWeb = kIsWeb;
   static bool get isLinux => !kIsWeb && Platform.isLinux;
   static bool get isWindows => !kIsWeb && Platform.isWindows;
   static bool get isMacOS => !kIsWeb && Platform.isMacOS;

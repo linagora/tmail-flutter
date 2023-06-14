@@ -1,5 +1,11 @@
 import 'package:collection/collection.dart';
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -66,8 +72,8 @@ class _TextFieldAutoCompleteEmailAddressState
       optionsViewBuilder: (context, onSelected, listEmailAddress) {
         return Container(
           margin: const EdgeInsets.only(
-              top: BuildUtils.isWeb ? 5 : 8,
-              bottom: 16),
+            top: PlatformInfo.isWeb ? 5 : 8,
+            bottom: 16),
           height: _getHeightSuggestionBox(listEmailAddress.length, 65),
           width: maxWidthSuggestionBox,
           alignment: Alignment.topLeft,
@@ -134,7 +140,7 @@ class _TextFieldAutoCompleteEmailAddressState
                     widget.nextFocusNode?.requestFocus();
                   }
                 },
-                child: TextField(
+                child: TextFieldBuilder(
                   controller: tec,
                   focusNode: fn,
                   textInputAction: TextInputAction.next,
@@ -180,12 +186,12 @@ class _TextFieldAutoCompleteEmailAddressState
                     )
                         : null,
                   ),
-                  onChanged: (value) {
+                  onTextChange: (value) {
                     if (value.trim().isNotEmpty) {
                       onChanged?.call(value);
                     }
                   },
-                  onSubmitted: (tag) {
+                  onTextSubmitted: (tag) {
                     if (tag.trim().isNotEmpty) {
                       onSubmitted?.call(tag);
                       fn.requestFocus();
@@ -334,7 +340,7 @@ class _TextFieldAutoCompleteEmailAddressState
   double _getHeightSuggestionBox(int countItem, double heightItem) {
     final maxHeightList = countItem * heightItem;
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return maxHeightList > 250 ? 250 : maxHeightList;
     } else {
       if (_responsiveUtils.isLandscapeMobile(context)) {
@@ -346,7 +352,7 @@ class _TextFieldAutoCompleteEmailAddressState
   }
 
   double get maxWidthSuggestionBox {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (_responsiveUtils.isTabletLarge(context)) {
         return 300;
       } else {

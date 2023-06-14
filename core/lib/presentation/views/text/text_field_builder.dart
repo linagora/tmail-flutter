@@ -1,100 +1,117 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 
-class TextFieldBuilder {
-  Key? _key;
-  ValueChanged<String>? _onTextChange;
-  ValueChanged<String>? _onTextSubmitted;
-  TextStyle? _textStyle;
-  TextInputAction? _textInputAction;
-  InputDecoration? _inputDecoration;
-  bool? _obscureText;
-  int? _maxLines = 1;
-  int? _minLines;
-  TextEditingController? _textController;
-  TextInputType? _keyboardType;
-  Color? _cursorColor;
-  bool? _autoFocus;
-  FocusNode? _focusNode;
+class TextFieldBuilder extends StatefulWidget {
 
-  void key(Key key) {
-    _key = key;
+  final ValueChanged<String>? onTextChange;
+  final ValueChanged<String>? onTextSubmitted;
+  final VoidCallback? onTap;
+  final TextStyle? textStyle;
+  final TextInputAction? textInputAction;
+  final InputDecoration? decoration;
+  final bool obscureText;
+  final int? maxLines;
+  final int? minLines;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
+  final Color cursorColor;
+  final bool autoFocus;
+  final FocusNode? focusNode;
+  final String? fromValue;
+  final Brightness? keyboardAppearance;
+  final bool autocorrect;
+  final TextDirection textDirection;
+  final bool readOnly;
+  final MouseCursor? mouseCursor;
+
+  const TextFieldBuilder({
+    super.key,
+    this.cursorColor = AppColor.primaryColor,
+    this.autocorrect = false,
+    this.obscureText = false,
+    this.autoFocus = false,
+    this.readOnly = false,
+    this.textStyle = const TextStyle(color: AppColor.textFieldTextColor),
+    this.textDirection = TextDirection.ltr,
+    this.textInputAction,
+    this.decoration,
+    this.maxLines,
+    this.minLines,
+    this.controller,
+    this.keyboardType,
+    this.focusNode,
+    this.fromValue,
+    this.keyboardAppearance,
+    this.mouseCursor,
+    this.onTap,
+    this.onTextChange,
+    this.onTextSubmitted,
+  });
+
+  @override
+  State<TextFieldBuilder> createState() => _TextFieldBuilderState();
+}
+
+class _TextFieldBuilderState extends State<TextFieldBuilder> {
+
+  late TextEditingController _controller;
+  late TextDirection _textDirection;
+
+  @override
+  void initState() {
+    if (widget.fromValue != null) {
+      _controller = TextEditingController.fromValue(TextEditingValue(text: widget.fromValue!));
+    } else if (widget.controller != null) {
+      _controller = widget.controller!;
+    } else {
+      _controller = TextEditingController();
+    }
+    _textDirection = widget.textDirection;
+    super.initState();
   }
 
-  void onChange(ValueChanged<String> onChange) {
-    _onTextChange = onChange;
-  }
-
-  void onSubmitted(ValueChanged<String> onSubmitted) {
-    _onTextSubmitted = onSubmitted;
-  }
-
-  void textStyle(TextStyle style) {
-    _textStyle = style;
-  }
-
-  void textInputAction(TextInputAction inputAction) {
-    _textInputAction = inputAction;
-  }
-
-  void textDecoration(InputDecoration inputDecoration) {
-    _inputDecoration = inputDecoration;
-  }
-
-  void obscureText(bool obscureText) {
-    _obscureText = obscureText;
-  }
-
-  void setText(String value) {
-    _textController = TextEditingController.fromValue(TextEditingValue(text: value));
-  }
-
-  void addController(TextEditingController? textEditingController) {
-    _textController = textEditingController;
-  }
-
-  void maxLines(int? value) {
-    _maxLines = value;
-  }
-
-  void minLines(int? value) {
-    _minLines = value;
-  }
-
-  void keyboardType(TextInputType? value) {
-    _keyboardType = value;
-  }
-
-  void cursorColor(Color? color) {
-    _cursorColor = color;
-  }
-
-  void autoFocus(bool autoFocus) {
-    _autoFocus = autoFocus;
-  }
-
-  void addFocusNode(FocusNode? focusNode) {
-    _focusNode = focusNode;
-  }
-
-  TextField build() {
+  @override
+  Widget build(BuildContext context) {
     return TextField(
-      key: _key ?? const Key('TextFieldBuilder'),
-      onChanged: _onTextChange,
-      cursorColor: _cursorColor ?? AppColor.primaryColor,
-      controller: _textController,
-      autocorrect: false,
-      textInputAction: _textInputAction,
-      decoration: _inputDecoration,
-      maxLines: _maxLines,
-      minLines: _minLines,
-      keyboardAppearance: Brightness.light,
-      style: _textStyle ?? const TextStyle(color: AppColor.textFieldTextColor),
-      obscureText: _obscureText ?? false,
-      keyboardType: _keyboardType,
-      onSubmitted: _onTextSubmitted,
-      autofocus: _autoFocus ?? false,
-      focusNode: _focusNode,
+      key: widget.key,
+      controller: _controller,
+      cursorColor: widget.cursorColor,
+      autocorrect: widget.autocorrect,
+      textInputAction: widget.textInputAction,
+      decoration: widget.decoration,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      keyboardAppearance: widget.keyboardAppearance,
+      style: widget.textStyle,
+      obscureText: widget.obscureText,
+      keyboardType: widget.keyboardType,
+      autofocus: widget.autoFocus,
+      focusNode: widget.focusNode,
+      textDirection: _textDirection,
+      readOnly: widget.readOnly,
+      mouseCursor: widget.mouseCursor,
+      onChanged: (value) {
+        widget.onTextChange?.call(value);
+        if (value.isNotEmpty) {
+          final directionByText = DirectionUtils.getDirectionByEndsText(value);
+          if (directionByText != _textDirection) {
+            setState(() {
+              _textDirection = directionByText;
+            });
+          }
+        }
+      },
+      onSubmitted: widget.onTextSubmitted,
+      onTap: widget.onTap,
     );
+  }
+
+  @override
+  void dispose() {
+    if (widget.fromValue == null && widget.controller == null) {
+      _controller.dispose();
+    }
+    super.dispose();
   }
 }

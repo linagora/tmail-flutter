@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/text/text_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
@@ -30,9 +29,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
       padding: const EdgeInsets.only(top: 11, bottom: 36, left: 58, right: 58),
       child: SizedBox(
         width: responsiveUtils.getWidthLoginTextField(context),
-        child: CenterTextBuilder()
-          .key(const Key('login_message'))
-          .text(loginState.viewState.fold(
+        child: Text(
+          loginState.viewState.fold(
             (failure) {
               if (failure is LoginMissUrlAction) {
                 return AppLocalizations.of(context).requiredUrl;
@@ -43,7 +41,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
               } else if (failure is LoginSSONotAvailableAction) {
                 return AppLocalizations.of(context).ssoNotAvailable;
               } else if (failure is GetOIDCConfigurationFailure
-                || failure is LoginCanNotVerifySSOConfigurationAction) {
+                  || failure is LoginCanNotVerifySSOConfigurationAction) {
                 return AppLocalizations.of(context).canNotVerifySSOConfiguration;
               } else if (failure is GetTokenOIDCFailure || failure is LoginCanNotGetTokenAction) {
                 return AppLocalizations.of(context).canNotGetToken;
@@ -58,15 +56,16 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
                 return AppLocalizations.of(context).loginInputSSOMessage;
               }
               return AppLocalizations.of(context).loginInputUrlMessage;
-            }))
-          .textStyle(TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w400,
-            color: loginState.viewState.fold(
-              (failure) => AppColor.textFieldErrorBorderColor,
-              (success) => AppColor.colorNameEmail)))
-          .build()
-      )
+            }),
+        key: const Key('login_message'),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
+          color: loginState.viewState.fold(
+            (failure) => AppColor.textFieldErrorBorderColor,
+            (success) => AppColor.colorNameEmail)),
+      ))
     );
   }
 

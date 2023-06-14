@@ -78,29 +78,29 @@ class ContactView extends GetWidget<ContactController> {
                                 onCloseContactView: () => controller.closeContactView(context))
                         ),
                         const Divider(color: AppColor.colorDividerComposer, height: 1),
-                        (SearchAppBarWidget(
-                              _imagePaths,
-                              controller.searchQuery.value,
-                              controller.textInputSearchFocus,
-                              controller.textInputSearchController,
-                              hasBackButton: false,
-                              hasSearchButton: true)
-                          ..addPadding(EdgeInsets.zero)
-                          ..setHeightSearchBar(44)
-                          ..setMargin(ContactUtils.getPaddingSearchInputForm(context, _responsiveUtils))
-                          ..addDecoration(BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColor.colorBgSearchBar))
-                          ..addIconClearText(SvgPicture.asset(
-                              _imagePaths.icClearTextSearch,
-                              width: 18,
-                              height: 18,
-                              fit: BoxFit.fill))
-                          ..setHintText(AppLocalizations.of(context).hintSearchInputContact)
-                          ..addOnClearTextSearchAction(() => controller.clearAllTextInputSearchForm())
-                          ..addOnTextChangeSearchAction(controller.onTextSearchChange)
-                          ..addOnSearchTextAction((query) => {}))
-                        .build(),
+                        SearchAppBarWidget(
+                          imagePaths: _imagePaths,
+                          searchQuery: controller.searchQuery.value,
+                          searchFocusNode: controller.textInputSearchFocus,
+                          searchInputController :controller.textInputSearchController,
+                          hasBackButton: false,
+                          hasSearchButton: true,
+                          padding: EdgeInsets.zero,
+                          heightSearchBar: 44,
+                          margin: ContactUtils.getPaddingSearchInputForm(context, _responsiveUtils),
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: AppColor.colorBgSearchBar),
+                          iconClearText: SvgPicture.asset(
+                            _imagePaths.icClearTextSearch,
+                            width: 18,
+                            height: 18,
+                            fit: BoxFit.fill),
+                          hintText: AppLocalizations.of(context).hintSearchInputContact,
+                          onClearTextSearchAction: controller.clearAllTextInputSearchForm,
+                          onTextChangeSearchAction: controller.onTextSearchChange,
+                          onSearchTextAction: controller.onSearchTextAction,
+                        ),
                         Expanded(child: Obx(() {
                           if (controller.listContactSearched.isNotEmpty) {
                             return Container(

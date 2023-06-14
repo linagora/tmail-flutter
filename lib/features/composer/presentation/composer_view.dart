@@ -13,6 +13,7 @@ import 'package:core/presentation/views/list/sliver_grid_delegate_fixed_height.d
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
@@ -490,16 +491,17 @@ class ComposerView extends GetWidget<ComposerController>
             )
           )
         ),
-        Expanded(child: (TextFieldBuilder()
-          ..key(const Key('subject_email_input'))
-          ..cursorColor(AppColor.colorTextButton)
-          ..maxLines(responsiveUtils.isMobile(context) ? null : 1)
-          ..addFocusNode(controller.subjectEmailInputFocusNode)
-          ..onChange((value) => controller.setSubjectEmail(value))
-          ..textStyle(const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal))
-          ..textDecoration(const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none))
-          ..addController(controller.subjectEmailInputController))
-        .build())
+        Expanded(child: TextFieldBuilder(
+          key: const Key('subject_email_input'),
+          cursorColor: AppColor.colorTextButton,
+          maxLines: responsiveUtils.isMobile(context) ? null : 1,
+          focusNode: controller.subjectEmailInputFocusNode,
+          textDirection: DirectionUtils.getDirectionByLanguage(context),
+          onTextChange: controller.setSubjectEmail,
+          textStyle: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.normal),
+          decoration: const InputDecoration(contentPadding: EdgeInsets.zero, border: InputBorder.none),
+          controller: controller.subjectEmailInputController,
+        ))
       ]
     );
   }

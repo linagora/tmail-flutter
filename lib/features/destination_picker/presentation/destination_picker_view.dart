@@ -8,6 +8,7 @@ import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -171,23 +172,24 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   Widget _buildCreateMailboxNameInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Obx(() => (TextFieldBuilder()
-        ..key(const Key('create_mailbox_name_input'))
-        ..onChange((value) => controller.setNewNameMailbox(value))
-        ..keyboardType(TextInputType.visiblePassword)
-        ..cursorColor(AppColor.colorTextButton)
-        ..addController(controller.nameInputController)
-        ..maxLines(1)
-        ..textStyle(const TextStyle(
-            color: AppColor.colorNameEmail,
-            fontSize: 16,
-            overflow: CommonTextStyle.defaultTextOverFlow))
-        ..addFocusNode(controller.nameInputFocusNode)
-        ..textDecoration((CreateMailboxNameInputDecorationBuilder()
-            ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
-            ..setErrorText(controller.getErrorInputNameString(context)))
-          .build()))
-      .build())
+      child: Obx(() => TextFieldBuilder(
+        key: const Key('create_mailbox_name_input'),
+        onTextChange: controller.setNewNameMailbox,
+        keyboardType: TextInputType.visiblePassword,
+        cursorColor: AppColor.colorTextButton,
+        controller: controller.nameInputController,
+        textDirection: DirectionUtils.getDirectionByLanguage(context),
+        maxLines: 1,
+        textStyle: const TextStyle(
+          color: AppColor.colorNameEmail,
+          fontSize: 16,
+          overflow: CommonTextStyle.defaultTextOverFlow),
+        focusNode: controller.nameInputFocusNode,
+        decoration: (CreateMailboxNameInputDecorationBuilder()
+          ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
+          ..setErrorText(controller.getErrorInputNameString(context)))
+        .build(),
+      ))
     );
   }
 
@@ -554,25 +556,30 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                     colorFilter: AppColor.colorTextButton.asFilter(),
                     fit: BoxFit.fill),
                   onTap: () => controller.disableSearch(context))),
-              Expanded(child: (SearchAppBarWidget(
-                      _imagePaths,
-                      controller.searchQuery.value,
-                      controller.searchFocus,
-                      controller.searchInputController,
-                      hasBackButton: false,
-                      hasSearchButton: true)
-                  ..addPadding(EdgeInsets.zero)
-                  ..setMargin(EdgeInsets.only(
-                      right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                      left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                  ))
-                  ..addDecoration(BoxDecoration(borderRadius: BorderRadius.circular(12), color: AppColor.colorBgSearchBar))
-                  ..addIconClearText(SvgPicture.asset(_imagePaths.icClearTextSearch, width: 18, height: 18, fit: BoxFit.fill))
-                  ..setHintText(AppLocalizations.of(context).hint_search_mailboxes)
-                  ..addOnClearTextSearchAction(() => controller.clearSearchText())
-                  ..addOnTextChangeSearchAction((query) => controller.searchMailbox(query))
-                  ..addOnSearchTextAction((query) => controller.searchMailbox(query)))
-                .build())
+              Expanded(child: SearchAppBarWidget(
+                imagePaths: _imagePaths,
+                searchQuery: controller.searchQuery.value,
+                searchFocusNode: controller.searchFocus,
+                searchInputController: controller.searchInputController,
+                hasBackButton: false,
+                hasSearchButton: true,
+                padding: EdgeInsets.zero,
+                margin: EdgeInsets.only(
+                  right: DirectionUtils.isDirectionRTLByLanguage(context) ? 0 : 16,
+                  left: DirectionUtils.isDirectionRTLByLanguage(context) ? 16 : 0),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  color: AppColor.colorBgSearchBar),
+                iconClearText: SvgPicture.asset(
+                  _imagePaths.icClearTextSearch,
+                  width: 18,
+                  height: 18,
+                  fit: BoxFit.fill),
+                hintText: AppLocalizations.of(context).hint_search_mailboxes,
+                onClearTextSearchAction: controller.clearSearchText,
+                onTextChangeSearchAction: controller.searchMailbox,
+                onSearchTextAction: controller.searchMailbox,
+              ))
             ]
         )
     );
