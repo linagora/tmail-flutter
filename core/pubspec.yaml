@@ -55,7 +55,7 @@ dependencies:
 
   pointer_interceptor: 0.9.1
 
-  flutter_keyboard_visibility: 5.4.0
+  flutter_keyboard_visibility: 5.4.1
 
   flex_color_picker: 3.2.0
 
@@ -84,10 +84,6 @@ dev_dependencies:
   plugin_platform_interface: 2.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
-dependency_overrides:
-
-  flutter_keyboard_visibility: 5.4.1
 
 flutter:
   # The following line ensures that the Material Icons font is
