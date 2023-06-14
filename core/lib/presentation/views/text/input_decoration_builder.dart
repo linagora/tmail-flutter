@@ -7,7 +7,7 @@ abstract class InputDecorationBuilder {
   TextStyle? labelStyle;
   String? hintText;
   TextStyle? hintStyle;
-  EdgeInsets? contentPadding;
+  EdgeInsetsGeometry? contentPadding;
   OutlineInputBorder? enabledBorder;
   OutlineInputBorder? errorBorder;
   OutlineInputBorder? focusBorder;
@@ -43,7 +43,7 @@ abstract class InputDecorationBuilder {
     hintStyle = newHintStyle;
   }
 
-  void setContentPadding(EdgeInsets? newContentPadding) {
+  void setContentPadding(EdgeInsetsGeometry? newContentPadding) {
     contentPadding = newContentPadding;
   }
 
