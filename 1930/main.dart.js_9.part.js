@@ -2,14 +2,14 @@
 self.$__dart_deferred_initializers__ = self.$__dart_deferred_initializers__ || Object.create(null);
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var B, C, A;
-  B = holdersList[18];
+  B = holdersList[26];
   C = holdersList[0];
   A = holdersList[2];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
-    B.BorderRadius_tLn1 = new C.BorderRadius(A.Radius_5_5, A.Radius_5_5, A.Radius_5_5, A.Radius_5_5);
+    B.BorderRadius_tLn6 = new C.BorderRadius(A.Radius_5_5, A.Radius_5_5, A.Radius_5_5, A.Radius_5_5);
     B.EdgeInsets_32_16_32_16 = new C.EdgeInsets(32, 16, 32, 16);
   })();
 };
 
-$__dart_deferred_initializers__["/69lYBLfpCKAoxuvGQ3RMDIta4Q="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["JGxymozj+FCqk8PR9k4EBTkczK4="] = $__dart_deferred_initializers__.current
