@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Precompile tmail flutter
-RUN bash prebuild.sh && flutter build web --profile
+RUN bash prebuild.sh && flutter build web --release
 
 # Stage 2 - Create the run-time image
 FROM nginx:mainline
