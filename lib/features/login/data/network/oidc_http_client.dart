@@ -6,12 +6,13 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
-import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/response/oidc_discovery_response.dart';
+import 'package:model/oidc/response/oidc_response.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class OIDCHttpClient {
 
@@ -45,7 +46,7 @@ class OIDCHttpClient {
     return OIDCConfiguration(
       authority: oidcResponse.links[0].href.toString(),
       clientId: OIDCConstant.clientId,
-      scopes: OIDCConstant.oidcScope
+      scopes: AppConfig.oidcScopes
     );
   }
 
