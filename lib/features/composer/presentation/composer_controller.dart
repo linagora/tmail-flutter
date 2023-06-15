@@ -1185,10 +1185,11 @@ class ComposerController extends BaseController {
   }
 
   void clearFocusEditor(BuildContext context) {
-    if (!kIsWeb) {
+    if (PlatformInfo.isMobile) {
       htmlEditorApi?.unfocus();
+      KeyboardUtils.hideSystemKeyboardMobile();
     }
-    FocusManager.instance.primaryFocus?.unfocus();
+    FocusScope.of(context).unfocus();
   }
 
   void closeComposerWeb({dynamic result}) {
