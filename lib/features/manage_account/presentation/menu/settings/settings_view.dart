@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -136,7 +137,7 @@ class SettingsView extends GetWidget<SettingsController> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 SvgPicture.asset(
-                  AppUtils.isDirectionRTL(context)
+                  DirectionUtils.isDirectionRTLByLanguage(context)
                     ? _imagePaths.icCollapseFolder
                     : _imagePaths.icBack,
                   colorFilter: AppColor.colorTextButton.asFilter(),
