@@ -58,8 +58,6 @@ class NetworkConnectionController extends BaseController {
         _setNetworkConnectivityState(result);
         if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {
           _showToastLostConnection();
-        } else if (isNetworkConnectionAvailable()) {
-          _showToastConnectedToTheNetwork();
         } else {
           ToastView.dismiss();
         }
@@ -93,20 +91,6 @@ class NetworkConnectionController extends BaseController {
         backgroundColor: AppColor.textFieldErrorBorderColor,
         textColor: Colors.white,
         infinityToast: true,
-      );
-    }
-  }
-
-  void _showToastConnectedToTheNetwork() {
-    if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).connectedToTheInternet,
-        leadingSVGIcon: _imagePaths.icConnectedInternet,
-        backgroundColor: AppColor.primaryColor,
-        textColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-        duration: const Duration(seconds: 5)
       );
     }
   }
