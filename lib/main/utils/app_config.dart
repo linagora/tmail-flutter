@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 
 class AppConfig {
   static String get baseUrl => dotenv.get('SERVER_URL', fallback: '');
@@ -28,4 +29,18 @@ class AppConfig {
   static String appFCMConfigurationPath = "configurations/env.fcm";
 
   static String get fcmVapidPublicKeyWeb => dotenv.get('FIREBASE_WEB_VAPID_PUBLIC_KEY', fallback: '');
+
+  static List<String> get oidcScopes {
+    try {
+      final envScopes = dotenv.get('OIDC_SCOPES', fallback: '');
+
+      if (envScopes.isNotEmpty) {
+        return envScopes.split(',');
+      }
+
+      return OIDCConstant.oidcScope;
+    } catch (e) {
+      return OIDCConstant.oidcScope;
+    }
+  }
 }

@@ -3,6 +3,7 @@ import 'package:model/oidc/oidc_configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class OidcConfigurationCacheManager {
   final SharedPreferences _sharedPreferences;
@@ -17,7 +18,7 @@ class OidcConfigurationCacheManager {
       return OIDCConfiguration(
           authority: authority,
           clientId: OIDCConstant.clientId,
-          scopes: OIDCConstant.oidcScope);
+          scopes: AppConfig.oidcScopes);
     }
   }
 
