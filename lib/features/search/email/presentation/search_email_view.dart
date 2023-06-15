@@ -31,7 +31,6 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_sta
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SearchEmailView extends GetWidget<SearchEmailController>
     with AppLoaderMixin {
@@ -111,7 +110,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         children: [
           buildIconWeb(
               icon: SvgPicture.asset(
-                AppUtils.isDirectionRTL(context) ? _imagePaths.icCollapseFolder : _imagePaths.icBack,
+                DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icCollapseFolder : _imagePaths.icBack,
                 colorFilter: AppColor.colorTextButton.asFilter(),
                 fit: BoxFit.fill
               ),

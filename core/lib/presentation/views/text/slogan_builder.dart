@@ -18,8 +18,8 @@ class SloganBuilder extends StatelessWidget {
   final String? logo;
   final double? sizeLogo;
   final OnTapCallback? onTapCallback;
-  final EdgeInsets? paddingText;
-  final EdgeInsets? padding;
+  final EdgeInsetsGeometry? paddingText;
+  final EdgeInsetsGeometry? padding;
   final bool enableOverflow;
   final Color? hoverColor;
   final double? hoverRadius;
@@ -55,7 +55,7 @@ class SloganBuilder extends StatelessWidget {
             child: Column(children: [
               _logoApp(),
               Padding(
-                padding: paddingText ?? const EdgeInsets.only(top: 16, left: 16, right: 16),
+                padding: paddingText ?? const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
                 child: Text(
                   text ?? '',
                   style: textStyle,
