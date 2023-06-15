@@ -353,28 +353,6 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
     const double maxHeightItem = 60;
     if (expandMode == ExpandMode.EXPAND) {
       if (PlatformInfo.isWeb) {
-        return const SizedBox.shrink();
-      } else {
-        return LayoutBuilder(builder: (context, constraints) {
-          return GridView.builder(
-            key: const Key('list_attachment_full'),
-            primary: false,
-            shrinkWrap: true,
-            itemCount: uploadFilesState.length,
-            gridDelegate: SliverGridDelegateFixedHeight(
-              height: maxHeightItem,
-              crossAxisCount: ComposerStyle.getMaxItemRowListAttachment(context, constraints),
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0),
-            itemBuilder: (context, index) => AttachmentFileComposerBuilder(
-              uploadFilesState[index],
-              onDeleteAttachmentAction: (attachment) => controller.deleteAttachmentUploaded(attachment.uploadTaskId)
-            )
-          );
-        });
-      }
-    } else {
-      if (PlatformInfo.isWeb) {
         return LayoutBuilder(builder: (context, constraints) {
           return Align(
             alignment: AlignmentDirectional.centerStart,
@@ -399,6 +377,28 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
             )
           );
         });
+      } else {
+        return LayoutBuilder(builder: (context, constraints) {
+          return GridView.builder(
+            key: const Key('list_attachment_full'),
+            primary: false,
+            shrinkWrap: true,
+            itemCount: uploadFilesState.length,
+            gridDelegate: SliverGridDelegateFixedHeight(
+              height: maxHeightItem,
+              crossAxisCount: ComposerStyle.getMaxItemRowListAttachment(context, constraints),
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0),
+            itemBuilder: (context, index) => AttachmentFileComposerBuilder(
+              uploadFilesState[index],
+              onDeleteAttachmentAction: (attachment) => controller.deleteAttachmentUploaded(attachment.uploadTaskId)
+            )
+          );
+        });
+      }
+    } else {
+      if (PlatformInfo.isWeb) {
+        return const SizedBox.shrink();
       } else {
         return LayoutBuilder(builder: (context, constraints) {
           return Align(
