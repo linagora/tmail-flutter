@@ -1,3 +1,10 @@
+## Unreleased
+### Fixed
+- Fix select font style always default when changed
+- Fix attachments not show when click ShowAll button
+- Fix alignment delete button in attachment item file of email view in RTL mode
+- Hide keyboard when open choose attachment dialog on mobile
+
 ## [0.8.1] - 2023-06-15
 ### Added
 - Support RTL mode
