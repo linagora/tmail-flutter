@@ -7,5 +7,5 @@ class OIDCConstant {
   static const keyAuthorityOidc = 'KEY_AUTHORITY_OIDC';
   static const authResponseKey = "auth_info";
 
-  static String get clientId => BuildUtils.isWeb ? AppConfig.webOidcClientId : mobileOidcClientId;
+  static String get clientId => PlatformInfo.isWeb ? AppConfig.webOidcClientId : mobileOidcClientId;
 }

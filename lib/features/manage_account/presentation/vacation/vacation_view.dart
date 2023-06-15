@@ -32,7 +32,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
 
   @override
   Widget build(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _buildVacationFormView(context);
     } else {
       return KeyboardRichText(
@@ -394,7 +394,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
           child: Column(children: [
             _buildMessageHtmlTextEditor(context),
-            if (BuildUtils.isWeb)
+            if (PlatformInfo.isWeb)
               Center(child: Obx(() {
                 return PointerInterceptor(
                   child: buildToolbarRichTextForWeb(
@@ -428,7 +428,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
   }
 
   Widget _buildMessageHtmlTextEditor(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return html_editor_browser.HtmlEditor(
         key: const Key('vacation_message_html_text_editor_web'),
         controller: controller.richTextControllerForWeb.editorController,

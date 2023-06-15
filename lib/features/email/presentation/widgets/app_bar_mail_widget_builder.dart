@@ -92,7 +92,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
   }
 
   bool _supportDisplayMailboxNameTitle(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _responsiveUtils.isDesktop(context) ||
           _responsiveUtils.isMobile(context) ||
           _responsiveUtils.isTablet(context) ||
@@ -141,8 +141,8 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                 colorFilter: mailboxContain?.isTrash == false
                   ? AppColor.colorTextButton.asFilter()
                   : AppColor.colorDeletePermanentlyButton.asFilter(),
-                width: BuildUtils.isWeb ? 18 : 20,
-                height: BuildUtils.isWeb ? 18 : 20,
+                width: PlatformInfo.isWeb ? 18 : 20,
+                height: PlatformInfo.isWeb ? 18 : 20,
                 fit: BoxFit.fill),
             tooltip: mailboxContain?.isTrash == false
                 ? AppLocalizations.of(context).move_to_trash

@@ -7,7 +7,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:model/email/attachment.dart';
@@ -33,7 +33,7 @@ class FileUploader {
       Uri uploadUri,
       {CancelToken? cancelToken}
   ) async {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _handleUploadAttachmentActionOnWeb(
           uploadId,
           onSendController,

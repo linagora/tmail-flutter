@@ -2,7 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,7 +36,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: BuildUtils.isWeb
+        child: PlatformInfo.isWeb
           ? PointerInterceptor(child: _buildSearchBody(context))
           : SafeArea(child: _buildSearchBody(context)),
       ),

@@ -8,7 +8,7 @@ import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_w
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +80,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   EdgeInsets _getMarginEmailView(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (responsiveUtils.isDesktop(context)) {
         return EdgeInsets.only(
           left: AppUtils.isDirectionRTL(context) ? 16 : 0,
@@ -134,7 +134,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   bool _supportVerticalDivider(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return responsiveUtils.isTabletLarge(context);
     } else {
       return responsiveUtils.isLandscapeTablet(context) ||
@@ -181,7 +181,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               _popupMenuEmailActionTile(context, email));
         }
       },
-      optionsWidget: BuildUtils.isWeb && controller.emailSupervisorController.supportedPageView.isTrue
+      optionsWidget: PlatformInfo.isWeb && controller.emailSupervisorController.supportedPageView.isTrue
         ? _buildNavigatorPageViewWidgets(context)
         : null,
     ));
@@ -225,7 +225,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   Widget _buildEmailBody(BuildContext context, PresentationEmail email) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _buildEmailMessage(context, email);
     } else {
       return SingleChildScrollView(
@@ -256,8 +256,8 @@ class EmailView extends GetWidget<SingleEmailController> {
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: SelectableText(
           email.getEmailTitle(),
-          maxLines: BuildUtils.isWeb ? 2 : null,
-          minLines: BuildUtils.isWeb ? 1 : null,
+          maxLines: PlatformInfo.isWeb ? 2 : null,
+          minLines: PlatformInfo.isWeb ? 1 : null,
           cursorColor: AppColor.colorTextButton,
           style: const TextStyle(
               fontSize: 20,
@@ -280,7 +280,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             ),
             _buildLoadingView(),
             _buildAttachments(context),
-            if (BuildUtils.isWeb)
+            if (PlatformInfo.isWeb)
               Expanded(child: Padding(
                 padding: EdgeInsets.only(
                   left: AppUtils.isDirectionRTL(context) ? 0 : 16,
@@ -400,7 +400,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             .map((attachment) => AttachmentFileTileBuilder(
               attachment,
               onDownloadAttachmentFileActionClick: (attachment) {
-                if (BuildUtils.isWeb) {
+                if (PlatformInfo.isWeb) {
                   controller.downloadAttachmentForWeb(context, attachment);
                 } else {
                   controller.exportAttachment(context, attachment);
@@ -423,7 +423,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   AttachmentFileTileBuilder(
                     attachments[index],
                     onDownloadAttachmentFileActionClick: (attachment) {
-                      if (BuildUtils.isWeb) {
+                      if (PlatformInfo.isWeb) {
                         controller.downloadAttachmentForWeb(context, attachment);
                       } else {
                         controller.exportAttachment(context, attachment);
@@ -445,7 +445,7 @@ class EmailView extends GetWidget<SingleEmailController> {
       if (controller.emailContents.value != null) {
         final allEmailContents = controller.emailContents.value;
 
-        if (BuildUtils.isWeb) {
+        if (PlatformInfo.isWeb) {
           return HtmlContentViewerOnWeb(
             widthContent: constraints.maxWidth,
             heightContent: responsiveUtils.getSizeScreenHeight(context),

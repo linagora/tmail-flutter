@@ -170,7 +170,7 @@ class ComposerController extends BaseController {
   Future<String> _getEmailBodyText(BuildContext context, {
     bool changedEmail = false
   }) async {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       var contentHtml = '';
       if (_responsiveUtils.isWebDesktop(context) &&
           screenDisplayMode.value == ScreenDisplayMode.minimize) {
@@ -223,7 +223,7 @@ class ComposerController extends BaseController {
     createFocusNodeInput();
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
     _listenWorker();
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         await FkUserAgent.init();
       });
@@ -237,7 +237,7 @@ class ComposerController extends BaseController {
   @override
   void onReady() {
     _initEmail();
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       Future.delayed(const Duration(milliseconds: 500), _checkContactPermission);
     }
     super.onReady();
@@ -246,7 +246,7 @@ class ComposerController extends BaseController {
   @override
   void onClose() {
     _initTextEditor = null;
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       FkUserAgent.release();
     }
     super.onClose();
@@ -289,7 +289,7 @@ class ComposerController extends BaseController {
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is DownloadImageAsBase64Success) {
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         richTextWebController.insertImage(
           InlineImage(
             ImageSource.local,
@@ -369,7 +369,7 @@ class ComposerController extends BaseController {
     subjectEmailInputFocusNode?.addListener(() {
       log('ComposerController::createFocusNodeInput():subjectEmailInputFocusNode: ${subjectEmailInputFocusNode?.hasFocus}');
       if (subjectEmailInputFocusNode?.hasFocus == true) {
-        if (!BuildUtils.isWeb) {
+        if (PlatformInfo.isMobile) {
           htmlEditorApi?.unfocus();
         }
         _collapseAllRecipient();
@@ -430,7 +430,7 @@ class ComposerController extends BaseController {
       uploadController.initializeUploadAttachments(
           arguments.attachments!.listAttachmentsDisplayedOutSide);
     }
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       expandModeAttachments.value = ExpandMode.EXPAND;
     }
   }
@@ -1043,7 +1043,7 @@ class ComposerController extends BaseController {
       }
     }
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       mailboxDashBoardController.closeComposerOverlay();
     } else {
       if (canPop) popBack();
@@ -1379,11 +1379,11 @@ class ComposerController extends BaseController {
           break;
       }
       _closeSuggestionBox();
-      if (!BuildUtils.isWeb) {
+      if (PlatformInfo.isMobile) {
         htmlEditorApi?.unfocus();
       }
     } else {
-      if (!BuildUtils.isWeb) {
+      if (PlatformInfo.isMobile) {
         _collapseAllRecipient();
         _autoCreateEmailTag();
       }
@@ -1399,7 +1399,7 @@ class ComposerController extends BaseController {
   }
 
   bool get _isMobileApp {
-    return !BuildUtils.isWeb
+    return PlatformInfo.isMobile
       && currentContext != null
       && (_responsiveUtils.isLandscapeMobile(currentContext!) || _responsiveUtils.isPortraitMobile(currentContext!));
   }
@@ -1455,7 +1455,7 @@ class ComposerController extends BaseController {
   }
 
   Future<void> _applySignature(String signature) async {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       richTextWebController.editorController.insertSignature(signature);
     } else {
       await htmlEditorApi?.insertSignature(signature);
@@ -1464,7 +1464,7 @@ class ComposerController extends BaseController {
 
   Future<void> _removeSignature() async {
     log('ComposerController::_removeSignature():');
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       richTextWebController.editorController.removeSignature();
     } else {
       await htmlEditorApi?.removeSignature();
@@ -1482,7 +1482,7 @@ class ComposerController extends BaseController {
     final inlineImage = await _selectFromFile();
     log('ComposerController::insertImage(): $inlineImage');
     if (inlineImage != null) {
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         _insertImageOnWeb(inlineImage);
       } else {
         _insertImageOnMobileAndTablet(inlineImage);
@@ -1497,13 +1497,13 @@ class ComposerController extends BaseController {
   Future<InlineImage?> _selectFromFile() async {
     final filePickerResult = await FilePicker.platform.pickFiles(
         type: FileType.image,
-        withData: !BuildUtils.isWeb,
-        withReadStream: BuildUtils.isWeb);
+        withData: PlatformInfo.isMobile,
+        withReadStream: PlatformInfo.isWeb);
     final platformFile = filePickerResult?.files.single;
     if (platformFile != null) {
       final fileSelected = FileInfo(
           platformFile.name,
-          BuildUtils.isWeb ? '' : platformFile.path ?? '',
+          PlatformInfo.isWeb ? '' : platformFile.path ?? '',
           platformFile.size,
           bytes: platformFile.bytes,
           readStream: platformFile.readStream);
@@ -1649,7 +1649,7 @@ class ComposerController extends BaseController {
       toAddressFocusNode?.requestFocus();
     } else if (subjectEmailInputController.text.isEmpty) {
       subjectEmailInputFocusNode?.requestFocus();
-    } else if (BuildUtils.isWeb) {
+    } else if (PlatformInfo.isWeb) {
       Future.delayed(
         const Duration(milliseconds: 500),
         richTextWebController.editorController.setFocus

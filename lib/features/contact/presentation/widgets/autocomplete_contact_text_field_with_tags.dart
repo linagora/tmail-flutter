@@ -6,7 +6,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -87,7 +86,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.done,
       hasAddButton: false,
-      tagSpacing: BuildUtils.isWeb ? 12 : 8,
+      tagSpacing: PlatformInfo.isWeb ? 12 : 8,
       autofocus: false,
       minTextFieldWidth: 20,
       debounceDuration: const Duration(milliseconds: 150),

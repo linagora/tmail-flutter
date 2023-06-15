@@ -1,7 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/text/input_decoration_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class ContactInputDecorationBuilder extends InputDecorationBuilder {
@@ -43,7 +43,7 @@ class ContactInputDecorationBuilder extends InputDecorationBuilder {
         fontWeight: FontWeight.w500,
         fontSize: 16),
       contentPadding: const EdgeInsets.symmetric(
-        vertical: BuildUtils.isWeb ? 16 : 12,
+        vertical: PlatformInfo.isWeb ? 16 : 12,
         horizontal: 12),
       errorText: errorText,
       errorStyle: errorTextStyle ?? const TextStyle(

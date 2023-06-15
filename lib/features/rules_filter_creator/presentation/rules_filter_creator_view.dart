@@ -47,7 +47,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
       child: ResponsiveWidget(
           responsiveUtils: _responsiveUtils,
           mobile: Scaffold(
-              backgroundColor: BuildUtils.isWeb
+              backgroundColor: PlatformInfo.isWeb
                   ? Colors.black.withAlpha(24)
                   : Colors.black38,
               body: GestureDetector(
@@ -62,7 +62,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(16)),
                       color: Colors.white),
-                    margin: const EdgeInsets.only(top: BuildUtils.isWeb ? 70 : 0),
+                    margin: const EdgeInsets.only(top: PlatformInfo.isWeb ? 70 : 0),
                     child: ClipRRect(
                         borderRadius: const  BorderRadius.only(
                             topLeft: Radius.circular(16),

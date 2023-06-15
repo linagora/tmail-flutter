@@ -3,7 +3,7 @@ import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_instance/get_instance.dart';
@@ -168,7 +168,7 @@ class IdentityCreatorController extends BaseController {
 
     if (identity?.signatureAsString.isNotEmpty == true) {
       updateContentHtmlEditor(arguments?.identity?.signatureAsString ?? '');
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         signatureHtmlEditorController.setText(arguments?.identity?.signatureAsString ?? '');
       }
     }
@@ -296,7 +296,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   Future<String?> _getSignatureHtmlText() async {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return signatureHtmlEditorController.getText();
     } else {
       return keyboardRichTextController.htmlEditorApi?.getText();
@@ -318,7 +318,7 @@ class IdentityCreatorController extends BaseController {
       return;
     }
 
-    final signatureHtmlText = BuildUtils.isWeb
+    final signatureHtmlText = PlatformInfo.isWeb
         ? contentHtmlEditor
         : await _getSignatureHtmlText();
     final bccAddress = bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
@@ -349,7 +349,7 @@ class IdentityCreatorController extends BaseController {
         isDefaultIdentity: isDefaultIdentity.value
       );
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         onCreatedIdentityCallback?.call(identityRequest);
       } else {
         popBack(result: identityRequest);
@@ -360,7 +360,7 @@ class IdentityCreatorController extends BaseController {
           identityRequest: newIdentity.toIdentityRequest(),
           isDefaultIdentity: isDefaultIdentity.value);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         onCreatedIdentityCallback?.call(identityRequest);
       } else {
         popBack(result: identityRequest);
@@ -426,7 +426,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   void clearFocusEditor(BuildContext context) {
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       keyboardRichTextController.htmlEditorApi?.unfocus();
       KeyboardUtils.hideSystemKeyboardMobile();
     }
@@ -434,7 +434,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   void closeView(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       onDismissIdentityCreator?.call();
     } else {
       popBack();

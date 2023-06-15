@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/text/slogan_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/get_core.dart';
@@ -35,7 +35,7 @@ class AppListDashboardItem extends StatelessWidget {
   }
 
   void _openApp(BuildContext context, LinagoraApp app) async {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (await launcher.canLaunchUrl(app.appUri)) {
         await launcher.launchUrl(app.appUri);
       }

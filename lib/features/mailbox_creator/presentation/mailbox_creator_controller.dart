@@ -143,7 +143,7 @@ class MailboxCreatorController extends BaseController {
           _session,
           mailboxIdSelected: selectedMailbox.value?.id);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogDestinationPicker(
             context: context,
             arguments: arguments,
@@ -194,7 +194,7 @@ class MailboxCreatorController extends BaseController {
           MailboxName(nameMailbox),
           mailboxLocation: selectedMailbox.value);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         onCreatedMailboxCallback?.call(newMailboxArguments);
       } else {
         popBack(result: newMailboxArguments);
@@ -205,7 +205,7 @@ class MailboxCreatorController extends BaseController {
   void closeMailboxCreator(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       onDismissMailboxCreator?.call();
     } else {
       popBack();

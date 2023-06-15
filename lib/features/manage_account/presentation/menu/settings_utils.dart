@@ -1,6 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -32,7 +32,7 @@ class SettingsUtils {
   }
 
   static EdgeInsets getMarginViewForSettingDetails(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (responsiveUtils.isDesktop(context)) {
         return const EdgeInsets.all(16);
       } else if (responsiveUtils.isTabletLarge(context) ||

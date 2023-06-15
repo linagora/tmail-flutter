@@ -7,7 +7,7 @@ import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -73,7 +73,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           borderOnForeground: false,
           color: Colors.transparent,
           child: SafeArea(
-            top: !BuildUtils.isWeb && _responsiveUtils.isPortraitMobile(context),
+            top: PlatformInfo.isMobile && _responsiveUtils.isPortraitMobile(context),
             bottom: false,
             left: false,
             right: false,
@@ -104,8 +104,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                             child: SafeArea(
                               top: false,
                               bottom: false,
-                              left: !BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context),
-                              right: !BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context),
+                              left: PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context),
+                              right: PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context),
                               child: Column(children: [
                                 Obx(() => TopBarDestinationPickerBuilder(
                                   controller.mailboxAction.value,
@@ -371,12 +371,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           return TreeViewChild(
             context,
             key: const Key('children_tree_mailbox_child'),
-            isDirectionRTL: AppUtils.isDirectionRTL(context),
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-            paddingChild: EdgeInsets.only(
-              left: AppUtils.isDirectionRTL(context) ? 0 : 14,
-              right: AppUtils.isDirectionRTL(context) ? 14 : 0,
-            ),
+            paddingChild: const EdgeInsetsDirectional.only(start: 14),
             parent: (MailBoxFolderTileBuilder(
                     context,
                     _imagePaths,
@@ -468,8 +464,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             child: Row(children: [
               SvgPicture.asset(
                 _imagePaths.icFolderMailbox,
-                width: BuildUtils.isWeb ? 20 : 24,
-                height: BuildUtils.isWeb ? 20 : 24,
+                width: PlatformInfo.isWeb ? 20 : 24,
+                height: PlatformInfo.isWeb ? 20 : 24,
                 fit: BoxFit.fill
               ),
               const SizedBox(width: 8),
@@ -586,7 +582,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   BorderRadius _getRadiusDestinationPicker(BuildContext context) {
-    if (!BuildUtils.isWeb && _responsiveUtils.isLandscapeMobile(context)) {
+    if (PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context)) {
       return BorderRadius.zero;
     } else if (_responsiveUtils.isMobile(context)) {
       return const BorderRadius.only(
@@ -598,7 +594,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   double _getWidthDestinationPicker(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (_responsiveUtils.isMobile(context)) {
         return double.infinity;
       } else {
@@ -615,7 +611,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   double _getHeightDestinationPicker(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (_responsiveUtils.isMobile(context)) {
         return double.infinity;
       } else {
@@ -641,7 +637,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   EdgeInsets _getMarginDestinationPicker(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (_responsiveUtils.isMobile(context)) {
         return EdgeInsets.zero;
       } else {

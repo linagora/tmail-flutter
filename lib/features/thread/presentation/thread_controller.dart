@@ -3,7 +3,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -694,7 +694,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _updateSearchRouteOnBrowser() {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       final route = RouteUtils.generateRouteBrowser(
         AppRoutes.dashboard,
         NavigationRouter(
@@ -922,7 +922,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   PresentationEmail generateEmailByPlatform(PresentationEmail currentEmail) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       final route = RouteUtils.generateRouteBrowser(
         AppRoutes.dashboard,
         NavigationRouter(

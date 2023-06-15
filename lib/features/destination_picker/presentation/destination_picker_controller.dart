@@ -3,7 +3,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -378,7 +378,7 @@ class DestinationPickerController extends BaseMailboxController {
       return;
     }
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       onSelectedMailboxCallback?.call(mailboxDestination.value);
     } else {
       popBack(result: mailboxDestination.value);
@@ -427,7 +427,7 @@ class DestinationPickerController extends BaseMailboxController {
   void closeDestinationPicker(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       onDismissDestinationPicker?.call();
     } else {
       popBack();

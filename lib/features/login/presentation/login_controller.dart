@@ -3,7 +3,7 @@ import 'package:core/presentation/extensions/url_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -127,7 +127,7 @@ class LoginController extends ReloadableController {
   @override
   void onReady() {
     super.onReady();
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       final arguments = Get.arguments;
       if (arguments is LoginArguments) {
         loginFormType.value = arguments.loginFormType;
@@ -215,7 +215,7 @@ class LoginController extends ReloadableController {
   }
 
   void _checkOIDCIsAvailable() {
-    final baseUri = BuildUtils.isWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
+    final baseUri = PlatformInfo.isWeb ? _parseUri(AppConfig.baseUrl) : _parseUri(_urlText);
     if (baseUri == null) {
       loginState.value = LoginState(Left(LoginMissUrlAction()));
     } else {
@@ -286,7 +286,7 @@ class LoginController extends ReloadableController {
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
     log('LoginController::_getOIDCConfigurationSuccess():success: $success');
     loginState.value = LoginState(Right(success));
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       _authenticateOidcOnBrowserAction(success.oidcConfiguration);
     } else {
       _getTokenOIDCAction(success.oidcConfiguration);
@@ -323,8 +323,8 @@ class LoginController extends ReloadableController {
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
     log('LoginController::_getTokenOIDCSuccess(): ${success.tokenOIDC.toString()}');
     loginState.value = LoginState(Right(success));
-    _dynamicUrlInterceptors.setJmapUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
-    _dynamicUrlInterceptors.changeBaseUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.setJmapUrl(PlatformInfo.isWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.changeBaseUrl(PlatformInfo.isWeb ? AppConfig.baseUrl : _urlText);
     authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
@@ -340,8 +340,8 @@ class LoginController extends ReloadableController {
 
   void _loginSuccessAction(AuthenticationUserSuccess success) {
     loginState.value = LoginState(Right(success));
-    _dynamicUrlInterceptors.setJmapUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
-    _dynamicUrlInterceptors.changeBaseUrl(BuildUtils.isWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.setJmapUrl(PlatformInfo.isWeb ? AppConfig.baseUrl : _urlText);
+    _dynamicUrlInterceptors.changeBaseUrl(PlatformInfo.isWeb ? AppConfig.baseUrl : _urlText);
     authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
@@ -361,7 +361,7 @@ class LoginController extends ReloadableController {
   }
 
   void _saveRecentLoginUrl() {
-    if (_urlText?.isNotEmpty == true && !BuildUtils.isWeb) {
+    if (_urlText?.isNotEmpty == true && PlatformInfo.isMobile) {
       final recentLoginUrl = RecentLoginUrl.now(_urlText!);
       log('LoginController::_saveRecentLoginUrl(): $recentLoginUrl');
       consumeState(_saveLoginUrlOnMobileInteractor.execute(recentLoginUrl));
@@ -386,7 +386,7 @@ class LoginController extends ReloadableController {
   }
 
   void _saveRecentLoginUsername() {
-    if(BuildUtils.isWeb || _userNameText == null || _userNameText!.isEmpty || !_userNameText!.isEmail) {
+    if(PlatformInfo.isWeb || _userNameText == null || _userNameText!.isEmpty || !_userNameText!.isEmail) {
       return ;
     }
     final recentLoginUsername = RecentLoginUsername.now(_userNameText!);
