@@ -1,11 +1,11 @@
 
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class SearchEmailUtils {
   static EdgeInsets getPaddingAppBar(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(horizontal: 16);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -17,7 +17,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingSearchSuggestionList(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
+    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
     } else {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
@@ -25,7 +25,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingShowAllResultButton(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
+    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
     } else {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
@@ -33,7 +33,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingSearchRecentTitle(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
+    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 8);
     } else {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
@@ -41,7 +41,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingListRecentSearch(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
+    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
     } else {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
@@ -49,7 +49,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingSearchFilterButton(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
+    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
       return const EdgeInsets.all(12);
     } else {
       return const EdgeInsets.symmetric(vertical: 12, horizontal: 16);
@@ -57,7 +57,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getMarginSearchFilterButton(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
+    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
       return const EdgeInsets.symmetric(horizontal: 20);
     } else {
       return EdgeInsets.zero;
@@ -65,7 +65,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingSearchResultList(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.only(left: 10);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -77,7 +77,7 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingDividerSearchResultList(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(horizontal: 16);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {

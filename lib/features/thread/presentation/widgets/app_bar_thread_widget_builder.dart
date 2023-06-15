@@ -56,7 +56,7 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
   }
 
   Widget _buildAppBar(BuildContext context, BoxConstraints constraints) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _selectMode == SelectMode.INACTIVE
           ? _buildBodyAppBarForWeb(context)
           : _buildBodyAppBarForWebSelection(context);
@@ -400,7 +400,7 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
   }
 
   double _getXTranslationValues(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _responsiveUtils.isWebDesktop(context) ? -2.0 : -16.0;
     } else {
       return _responsiveUtils.isTabletLarge(context) ? 0.0 : -16.0;

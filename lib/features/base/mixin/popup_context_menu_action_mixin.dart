@@ -1,5 +1,7 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/bottom_popup/cupertino_action_sheet_builder.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -26,7 +28,7 @@ mixin PopupContextMenuActionMixin {
 
   Widget buildCancelButton(BuildContext context) {
     return MouseRegion(
-      cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+      cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
       child: CupertinoActionSheetAction(
         child: Text(
             AppLocalizations.of(context).cancel,

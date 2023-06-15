@@ -4,7 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/focused_menu.dart';
@@ -51,7 +51,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
 
   @override
   Widget build(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return DragTarget<List<PresentationEmail>>(
         builder: (_, __, ___) => _buildMailboxItem(context),
         onAccept: (emails) {
@@ -64,7 +64,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   Widget _buildMailboxItem(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return InkWell(
         onTap: _onTapMailboxAction,
         onHover: (value) => setState(() => isHoverItem = value),

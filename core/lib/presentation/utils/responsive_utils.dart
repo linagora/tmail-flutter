@@ -1,4 +1,4 @@
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -82,7 +82,7 @@ class ResponsiveUtils {
   }
 
   bool hasLeftMenuDrawerActive(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return isMobile(context) ||
           isTablet(context) ||
           isTabletLarge(context);
@@ -92,13 +92,13 @@ class ResponsiveUtils {
   }
 
   bool isWebDesktop(BuildContext context) =>
-      BuildUtils.isWeb && isDesktop(context);
+      PlatformInfo.isWeb && isDesktop(context);
 
   bool isWebNotDesktop(BuildContext context) =>
-      BuildUtils.isWeb && !isDesktop(context);
+      PlatformInfo.isWeb && !isDesktop(context);
 
   bool mailboxDashboardOnlyHasEmailView(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return isMobile(context) || isTablet(context);
     } else {
       return isPortraitMobile(context) ||
@@ -108,7 +108,7 @@ class ResponsiveUtils {
   }
 
   bool landscapeTabletSupported(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return isTabletLarge(context);
     } else {
       return !isLandscapeMobile(context) && (isLandscapeTablet(context) ||

@@ -3,7 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -223,7 +223,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
           MailboxActions.selectForRuleAction,
           _session);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogDestinationPicker(
             context: context,
             arguments: arguments,
@@ -306,7 +306,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         _listEmailRule ?? [],
         newTMailRule);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         onCreatedRuleFilterCallback?.call(ruleFilterRequest);
       } else {
         popBack(result: ruleFilterRequest);
@@ -316,7 +316,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         _listEmailRule?.withIds ?? [],
         newTMailRule);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         onCreatedRuleFilterCallback?.call(ruleFilterRequest);
       } else {
         popBack(result: ruleFilterRequest);
@@ -344,7 +344,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     _clearAll();
     KeyboardUtils.hideKeyboard(context);
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       onDismissRuleFilterCreator?.call();
     } else {
       popBack();

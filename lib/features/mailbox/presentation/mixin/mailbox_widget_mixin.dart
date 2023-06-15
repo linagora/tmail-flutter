@@ -4,7 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -34,7 +34,7 @@ mixin MailboxWidgetMixin {
   ) {
 
     return [
-      if (BuildUtils.isWeb)
+      if (PlatformInfo.isWeb)
         MailboxActions.openInNewTab,
       if (mailbox.isSpam)
         _mailboxActionForSpam(spamReportEnabled),
@@ -47,7 +47,7 @@ mixin MailboxWidgetMixin {
 
   List<MailboxActions> _listActionForPersonalMailbox(PresentationMailbox mailbox) {
     return [
-      if (BuildUtils.isWeb && mailbox.isSubscribedMailbox)
+      if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
       if (mailbox.getCountUnReadEmails().isNotEmpty)
         MailboxActions.markAsRead,
@@ -63,7 +63,7 @@ mixin MailboxWidgetMixin {
 
   List<MailboxActions> _listActionForTeamMailbox(PresentationMailbox mailbox) {
     return [
-      if (BuildUtils.isWeb && mailbox.isSubscribedMailbox)
+      if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
       if (mailbox.getCountUnReadEmails().isNotEmpty)
         MailboxActions.markAsRead,

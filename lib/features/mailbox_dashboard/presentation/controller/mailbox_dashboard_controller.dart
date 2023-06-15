@@ -455,7 +455,7 @@ class MailboxDashBoardController extends ReloadableController {
         getAllSendingEmails();
         _storeSessionAction(sessionCurrent!);
       }
-      if (!BuildUtils.isWeb && !_notificationManager.isNotificationClickedOnTerminate) {
+      if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
         _handleClickLocalNotificationOnTerminated();
       } else {
         dispatchRoute(DashboardRoutes.thread);
@@ -539,7 +539,7 @@ class MailboxDashBoardController extends ReloadableController {
   void openEmailDetailedView(PresentationEmail presentationEmail) {
     setSelectedEmail(presentationEmail);
     dispatchRoute(DashboardRoutes.emailDetailed);
-    if (BuildUtils.isWeb && presentationEmail.routeWeb != null) {
+    if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.updateRouteOnBrowser(
         'Email-${presentationEmail.id?.id.value ?? ''}',
         presentationEmail.routeWeb!
@@ -585,7 +585,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   bool _searchInsideEmailDetailedViewIsActive(BuildContext context) {
-    return BuildUtils.isWeb
+    return PlatformInfo.isWeb
         && _responsiveUtils.isDesktop(context)
         && dashboardRoute.value == DashboardRoutes.emailDetailed;
   }
@@ -792,7 +792,7 @@ class MailboxDashBoardController extends ReloadableController {
         sessionCurrent,
         mailboxIdSelected: currentMailbox.mailboxId);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogDestinationPicker(
             context: context,
             arguments: arguments,
@@ -1625,7 +1625,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void handleOnForegroundGained() {
     log('MailboxDashBoardController::handleOnForegroundGained():');
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       _updateTheme();
     }
     refreshActionWhenBackToApp();

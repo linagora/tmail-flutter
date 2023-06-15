@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -29,7 +29,7 @@ class GetEmailByIdInteractor {
   ) async* {
     try {
       yield Right<Failure, Success>(GetEmailByIdLoading());
-      if (!BuildUtils.isWeb) {
+      if (PlatformInfo.isMobile) {
         yield* _tryToGetEmailFromCache(session, accountId, emailId, properties: properties);
       } else {
         yield* _getEmailByIdFromServer(session, accountId, emailId, properties: properties);

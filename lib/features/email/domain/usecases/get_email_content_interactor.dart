@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -30,7 +30,7 @@ class GetEmailContentInteractor {
     try {
       yield Right<Failure, Success>(GetEmailContentLoading());
 
-      if (!BuildUtils.isWeb) {
+      if (PlatformInfo.isMobile) {
         yield* _tryToGetOpenedEmailCache(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
       } else {
         yield* _getContentEmailFromServer(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
@@ -62,7 +62,7 @@ class GetEmailContentInteractor {
         draftsEmail: draftsEmail
       );
 
-      final newEmailContentsDisplayed = BuildUtils.isWeb && !composeEmail
+      final newEmailContentsDisplayed = PlatformInfo.isWeb && !composeEmail
         ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
         : newEmailContents;
 

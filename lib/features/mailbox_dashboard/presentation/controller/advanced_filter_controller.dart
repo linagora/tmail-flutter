@@ -64,7 +64,7 @@ class AdvancedFilterController extends BaseController {
 
   @override
   void onReady() {
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       Future.delayed(
           const Duration(milliseconds: 500),
           () => _checkContactPermission());
@@ -136,7 +136,7 @@ class AdvancedFilterController extends BaseController {
           session,
           mailboxIdSelected: searchController.searchEmailFilter.value.mailbox?.id);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogDestinationPicker(
             context: context,
             arguments: arguments,

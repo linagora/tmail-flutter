@@ -6,7 +6,5 @@ abstract class BuildUtils {
 
   static const bool isReleaseMode = kReleaseMode;
 
-  static const bool isWeb = kIsWeb;
-
   static const bool isProfileMode = kProfileMode;
 }

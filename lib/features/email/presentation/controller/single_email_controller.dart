@@ -382,7 +382,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       initialEmailContents = success.emailContents;
       attachments.value = success.attachments;
 
-      if (!BuildUtils.isWeb) {
+      if (PlatformInfo.isMobile) {
         final detailedEmail = DetailedEmail(
           emailId: currentEmail!.id!,
           attachments: attachments,
@@ -655,7 +655,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         session,
         mailboxIdSelected: currentMailbox.mailboxId
       );
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogDestinationPicker(
             context: context,
             arguments: arguments,
@@ -1117,7 +1117,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _updateRouteOnBrowser() {
     log('SingleEmailController::_updateRouteOnBrowser(): isSearchEmailRunning: ${mailboxDashBoardController.searchController.isSearchEmailRunning}');
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       final selectedMailboxId = mailboxDashBoardController.selectedMailbox.value?.id;
       final route = RouteUtils.generateRouteBrowser(
         AppRoutes.dashboard,
@@ -1159,7 +1159,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         session,
         emailAddress: emailAddress);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogRuleFilterCreator(
           context: context,
           arguments: arguments,
@@ -1216,7 +1216,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       closeEmailView(context);
     }
     return false;

@@ -409,7 +409,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   NavigationRouter? get navigationRouter => mailboxDashBoardController.navigationRouter;
 
-  bool get isHasDataFromRoute => BuildUtils.isWeb && navigationRouter != null;
+  bool get isHasDataFromRoute => PlatformInfo.isWeb && navigationRouter != null;
 
   MailboxId? get mailboxIdFromNavigationRouter => navigationRouter?.mailboxId;
 
@@ -477,7 +477,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         teamMailboxesTree.value,
         mailboxDashBoardController.sessionCurrent!);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogMailboxCreator(
             context: context,
             arguments: arguments,
@@ -532,7 +532,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void openSearchViewAction(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       SearchMailboxBindings().dependencies();
       mailboxDashBoardController.searchMailboxActivated.value = true;
     } else {
@@ -962,7 +962,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _updateSelectedMailboxRouteOnBrowser() {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       final selectedMailboxId = selectedMailbox?.id;
       final route = RouteUtils.generateRouteBrowser(
         AppRoutes.dashboard,

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -41,7 +41,7 @@ class MailboxIsolateWorker {
     int totalEmailUnread,
     StreamController<Either<Failure, Success>> onProgressController
   ) async {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _handleMarkAsMailboxReadActionOnWeb(
         session,
         accountId,

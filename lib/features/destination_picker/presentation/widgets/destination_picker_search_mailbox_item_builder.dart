@@ -2,7 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -84,8 +84,8 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
   Widget _buildMailboxIcon() {
     return SvgPicture.asset(
       _presentationMailbox.getMailboxIcon(_imagePaths),
-      width: BuildUtils.isWeb ? 20 : 24,
-      height: BuildUtils.isWeb ? 20 : 24,
+      width: PlatformInfo.isWeb ? 20 : 24,
+      height: PlatformInfo.isWeb ? 20 : 24,
       fit: BoxFit.fill
     );
   }

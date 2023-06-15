@@ -1,5 +1,5 @@
 
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
@@ -41,7 +41,7 @@ extension ListPresentationEmailExtensions on List<PresentationEmail> {
     bool isSearchEmailRunning = false,
     SearchQuery? searchQuery,
   }) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       final route = RouteUtils.generateRouteBrowser(
         AppRoutes.dashboard,
         NavigationRouter(

@@ -1,5 +1,6 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -60,7 +61,7 @@ class ConfirmationDialogActionSheetBuilder {
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 color: Colors.white,
                 child: MouseRegion(
-                  cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                  cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
                   child: CupertinoActionSheetAction(
                     child: Text(
                         _messageText ?? '',
@@ -75,7 +76,7 @@ class ConfirmationDialogActionSheetBuilder {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
               color: Colors.white,
               child: MouseRegion(
-                cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
                 child: CupertinoActionSheetAction(
                   child: RichText(text: TextSpan(
                     style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog),
@@ -88,7 +89,7 @@ class ConfirmationDialogActionSheetBuilder {
           Container(
               color: Colors.white,
               child: MouseRegion(
-                cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
                 child: CupertinoActionSheetAction(
                   child: Text(
                       _confirmText ?? '',
@@ -99,7 +100,7 @@ class ConfirmationDialogActionSheetBuilder {
           ),
         ],
         cancelButton: MouseRegion(
-          cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+          cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
           child: CupertinoActionSheetAction(
             child: Text(
                 _cancelText ?? '',
