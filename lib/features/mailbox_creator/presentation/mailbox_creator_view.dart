@@ -181,7 +181,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                 IconButton(
                     color: AppColor.primaryColor,
                     icon: SvgPicture.asset(
-                        _imagePaths.icCollapseFolder,
+                        DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
                         colorFilter: AppColor.colorCollapseMailbox.asFilter(),
                         fit: BoxFit.fill),
                     onPressed: () => controller.selectMailboxLocation(context))

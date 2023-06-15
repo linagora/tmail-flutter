@@ -22,14 +22,14 @@ class AppListDashboardItem extends StatelessWidget {
     final imagePaths = Get.find<ImagePaths>();
     return SloganBuilder(
       sizeLogo: 32,
-      paddingText: const EdgeInsets.only(left: 12),
+      paddingText: const EdgeInsetsDirectional.only(start: 12),
       text: app.appName,
       textAlign: TextAlign.center,
       textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorNameEmail),
       logo: !app.iconName.endsWith('svg') ? imagePaths.getConfigurationImagePath(app.iconName) : null,
       logoSVG: app.iconName.endsWith('svg') ? imagePaths.getConfigurationImagePath(app.iconName) : null,
       onTapCallback: () => _openApp(context, app),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 20),
       hoverColor: AppColor.colorBgMailboxSelected
     );
   }

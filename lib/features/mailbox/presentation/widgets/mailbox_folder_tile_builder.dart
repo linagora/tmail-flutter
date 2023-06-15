@@ -4,7 +4,8 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -18,7 +19,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displa
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailBoxFolderTileBuilder {
 
@@ -94,7 +94,7 @@ class MailBoxFolderTileBuilder {
 
   Widget _buildMailboxItem(BuildContext context) {
     if (mailboxDisplayed == MailboxDisplayed.mailbox) {
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         return StatefulBuilder(
             builder: (context, setState) {
               return InkWell(
@@ -194,7 +194,7 @@ class MailBoxFolderTileBuilder {
             icon: SvgPicture.asset(
               _mailboxNode.expandMode == ExpandMode.EXPAND
                 ? _imagePaths.icExpandFolder
-                : _imagePaths.icCollapseFolder,
+                : DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
               colorFilter: _mailboxNode.item.allowedToDisplay
                 ? AppColor.primaryColor.asFilter()
                 : AppColor.colorIconUnSubscribedMailbox.asFilter(),
@@ -213,7 +213,7 @@ class MailBoxFolderTileBuilder {
         const SizedBox(width: 32),
       Transform(
         transform: Matrix4.translationValues(
-          AppUtils.isDirectionRTL(context) ? 0.0 : -4.0,
+          DirectionUtils.isDirectionRTLByLanguage(context) ? 0.0 : -4.0,
           0.0,
           0.0
         ),
@@ -223,16 +223,13 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildTrailingItemForMailboxView(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (isHoverItem) {
         return _buildMenuIcon(context);
       } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
           && _mailboxNode.item.matchCountingRules()) {
         return Padding(
-          padding: EdgeInsets.only(
-            right: AppUtils.isDirectionRTL(context) ? 0 : 10,
-            left: AppUtils.isDirectionRTL(context) ? 10 : 0,
-          ),
+          padding: const EdgeInsetsDirectional.only(start: 10),
           child: _buildCounter(),
         );
       } else {
@@ -241,10 +238,7 @@ class MailBoxFolderTileBuilder {
     } else {
       if (_mailboxNode.hasChildren()) {
         return Padding(
-          padding: EdgeInsets.only(
-            right: AppUtils.isDirectionRTL(context) ? 0 : 12,
-            left: AppUtils.isDirectionRTL(context) ? 12 : 0,
-          ),
+          padding: const EdgeInsetsDirectional.only(start: 12),
           child: Row(
             children: [
               if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
@@ -256,10 +250,7 @@ class MailBoxFolderTileBuilder {
       } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
         && _mailboxNode.item.matchCountingRules()) {
           return Padding(
-            padding: EdgeInsets.only(
-              right: AppUtils.isDirectionRTL(context) ? 0 : 12,
-              left: AppUtils.isDirectionRTL(context) ? 12 : 0,
-            ),
+            padding: const EdgeInsetsDirectional.only(start: 12),
             child: _buildCounter(),
           );
       } else {
@@ -269,7 +260,7 @@ class MailBoxFolderTileBuilder {
   }
 
   Widget _buildLeadingIcon() {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _buildLeadingIconTeamMailboxes();
     } else {
       return allSelectMode == SelectMode.ACTIVE
@@ -346,17 +337,14 @@ class MailBoxFolderTileBuilder {
 
   Widget _buildMailboxIcon() {
     return SvgPicture.asset(_mailboxNode.item.getMailboxIcon(_imagePaths),
-        width: BuildUtils.isWeb ? 20 : 24,
-        height: BuildUtils.isWeb ? 20 : 24,
+        width: PlatformInfo.isWeb ? 20 : 24,
+        height: PlatformInfo.isWeb ? 20 : 24,
         fit: BoxFit.fill);
   }
 
   Widget _buildMenuIcon(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-        left: AppUtils.isDirectionRTL(context) ? 8 : 0,
-      ),
+      padding: const EdgeInsetsDirectional.only(start: 8),
       child: InkWell(
           onTapDown: (detail) {
             final screenSize = MediaQuery.of(_context).size;
@@ -384,8 +372,8 @@ class MailBoxFolderTileBuilder {
         _mailboxNode.selectMode == SelectMode.ACTIVE
             ? _imagePaths.icSelected
             : _imagePaths.icUnSelected,
-        width: BuildUtils.isWeb ? 20 : 24,
-        height: BuildUtils.isWeb ? 20 : 24,
+        width: PlatformInfo.isWeb ? 20 : 24,
+        height: PlatformInfo.isWeb ? 20 : 24,
         fit: BoxFit.fill)
     );
   }

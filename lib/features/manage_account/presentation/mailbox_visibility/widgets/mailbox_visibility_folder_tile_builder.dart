@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -62,7 +63,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
             icon: SvgPicture.asset(
               _mailboxNode.expandMode == ExpandMode.EXPAND
                 ? _imagePaths.icExpandFolder
-                : _imagePaths.icCollapseFolder,
+                : DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
               colorFilter: _mailboxNode.item.allowedToDisplay
                 ? AppColor.primaryColor.asFilter()
                 : AppColor.colorIconUnSubscribedMailbox.asFilter(),

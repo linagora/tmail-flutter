@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -11,7 +12,6 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class AppBarSendingQueueWidget extends StatelessWidget {
 
@@ -65,7 +65,7 @@ class AppBarSendingQueueWidget extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SvgPicture.asset(
-                            AppUtils.isDirectionRTL(context) ? imagePaths.icCollapseFolder : imagePaths.icBack,
+                            DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icCollapseFolder : imagePaths.icBack,
                             colorFilter: AppColor.colorTextButton.asFilter(),
                             fit: BoxFit.fill
                           ),
