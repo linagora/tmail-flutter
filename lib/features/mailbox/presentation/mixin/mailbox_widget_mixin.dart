@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -300,7 +301,7 @@ mixin MailboxWidgetMixin {
             icon: SvgPicture.asset(
               expandMode == ExpandMode.EXPAND
                 ? imagePaths.icExpandFolder
-                : imagePaths.icCollapseFolder,
+                : DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icBack : imagePaths.icCollapseFolder,
               colorFilter: AppColor.primaryColor.asFilter(),
               fit: BoxFit.fill
             ),
@@ -345,7 +346,8 @@ mixin MailboxWidgetMixin {
             ? _buildAppGridInMailboxView(context, controller)
             : const Offstage();
         })
-      )
+      ),
+      const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
     ]);
   }
 
@@ -357,7 +359,7 @@ mixin MailboxWidgetMixin {
     MailboxController controller
   ) {
     return Padding(
-      padding: const EdgeInsets.only(left: 32, top: 8, bottom: 8, right: 4),
+      padding: const EdgeInsetsDirectional.only(start: 32, bottom: 8, end: 4),
       child: Row(children: [
         SvgPicture.asset(
           imagePaths.icAppDashboard,
@@ -381,7 +383,7 @@ mixin MailboxWidgetMixin {
         buildIconWeb(
           icon: Obx(() => SvgPicture.asset(
             controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
-              ? imagePaths.icCollapseFolder
+              ? DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icBack : imagePaths.icCollapseFolder
               : imagePaths.icExpandFolder,
             colorFilter: controller.mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value == ExpandMode.COLLAPSE
               ? AppColor.colorIconUnSubscribedMailbox.asFilter()
@@ -402,7 +404,7 @@ mixin MailboxWidgetMixin {
         return ListView.builder(
           shrinkWrap: true,
           primary: false,
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+          padding: const EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 8),
           itemCount: linagoraApps.apps.length,
           itemBuilder: (context, index) {
             return AppListDashboardItem(linagoraApps.apps[index]);

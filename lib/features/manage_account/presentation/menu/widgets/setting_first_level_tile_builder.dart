@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -85,7 +86,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
              left: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
            ),
            icon: SvgPicture.asset(
-             AppUtils.isDirectionRTL(context) ? _imagePath.icBack : _imagePath.icCollapseFolder,
+             DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePath.icBack : _imagePath.icCollapseFolder,
              fit: BoxFit.fill,
              colorFilter: AppColor.colorCollapseMailbox.asFilter()),
            onPressed: clickAction
