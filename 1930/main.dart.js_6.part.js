@@ -398,7 +398,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     TagsEditorState: function TagsEditorState(t0, t1, t2, t3, t4) {
       var _ = this;
-      _.__TagsEditorState__textFieldController_A = $;
+      _.__TagsEditorState__textDirection_A = _.__TagsEditorState__textFieldController_A = $;
       _._previousText = "";
       _._tag_editor$_isFocused = false;
       _.__TagsEditorState__focusNodeKeyboard_A = _.__TagsEditorState__focusNode_A = $;
@@ -445,10 +445,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     TagsEditorState__scrollToVisible__closure: function TagsEditorState__scrollToVisible__closure(t0) {
       this.$this = t0;
     },
+    TagsEditorState_build_closure0: function TagsEditorState_build_closure0(t0) {
+      this.$this = t0;
+    },
     TagsEditorState_build_closure: function TagsEditorState_build_closure(t0) {
       this.$this = t0;
     },
-    TagsEditorState_build_closure0: function TagsEditorState_build_closure0(t0) {
+    TagsEditorState_build__closure0: function TagsEditorState_build__closure0(t0, t1) {
+      this.$this = t0;
+      this.directionByText = t1;
+    },
+    TagsEditorState_build_closure1: function TagsEditorState_build_closure1(t0) {
       this.$this = t0;
     },
     TagsEditorState_build__closure: function TagsEditorState_build__closure(t0) {
@@ -1617,6 +1624,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.super$State$initState();
       t1 = _this._widget.controller;
       _this.__TagsEditorState__textFieldController_A = t1;
+      _this.__TagsEditorState__textDirection_A = C.TextDirection_1;
       t1 = A.FocusNode$(true, _null, true, true, _null, _null, false);
       t1.addListener$1(0, _this.get$_onFocusKeyboardChanged());
       _this.__TagsEditorState__focusNodeKeyboard_A = t1;
@@ -1876,7 +1884,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A._asyncStartSync($async$_onKeyboardBackspaceListener$0, $async$completer);
     },
     build$1(context) {
-      var t3, t4, t5, t6, t7, t8, _list, t9, index, t10, t11, t12, t13, t14, t15, t16, tagEditorArea, _this = this, _null = null,
+      var t3, t4, t5, t6, t7, t8, _list, t9, index, t10, t11, t12, t13, t14, t15, t16, t17, tagEditorArea, _this = this, _null = null,
         t1 = _this._widget,
         decoration = t1.inputDecoration,
         t2 = t1.padding;
@@ -1922,10 +1930,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t14 = t10.keyboardType;
       t15 = t10.textInputAction;
       t16 = t10.cursorColor;
-      t8.push(A.LayoutId$(A.RawKeyboardListener$(false, A.TextField$(false, C.List_empty0, t10.autofocus, _null, A.text_field_TextField__defaultContextMenuBuilder$closure(), t13, t16, _null, _null, 2, decoration, true, _null, true, true, false, t12, _null, _null, _null, t14, _null, _null, 1, _null, _null, false, "\u2022", _this.get$_onTextFieldChange(), _null, _this.get$_tag_editor$_onSubmitted(), _null, _null, false, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null, _null, _null, _null, t11, C.TextAlign_4, _null, C.TextCapitalization_30, _null, t15, _null), t9, new B.TagsEditorState_build_closure(_this)), "text_field"));
+      t17 = _this.__TagsEditorState__textDirection_A;
+      t17 === $ && A.throwUnnamedLateFieldNI();
+      t8.push(A.LayoutId$(A.RawKeyboardListener$(false, A.TextField$(false, C.List_empty0, t10.autofocus, _null, A.text_field_TextField__defaultContextMenuBuilder$closure(), t13, t16, _null, _null, 2, decoration, true, _null, true, true, false, t12, _null, _null, _null, t14, _null, _null, 1, _null, _null, false, "\u2022", new B.TagsEditorState_build_closure(_this), _null, _this.get$_tag_editor$_onSubmitted(), _null, _null, false, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null, _null, _null, _null, t11, C.TextAlign_4, _null, C.TextCapitalization_30, t17, t15, _null), t9, new B.TagsEditorState_build_closure0(_this)), "text_field"));
       tagEditorArea = A.Container$(_null, new B.TagLayout(new B.TagEditorLayoutDelegate(t6, t7, t1, C.Size_0_0), t8, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t5, _null, t4, t3, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t2, _null, _null, _null);
       _this._widget.toString;
-      return new A.NotificationListener(new B.TagsEditorState_build_closure0(_this), new B.SizeChangedLayoutNotifier(A.Column$(A._setArrayType([tagEditorArea, new A.CompositedTransformTarget(_this._tag_editor$_layerLink, A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, type$.NotificationListener_SizeChangedLayoutNotification);
+      return new A.NotificationListener(new B.TagsEditorState_build_closure1(_this), new B.SizeChangedLayoutNotifier(A.Column$(A._setArrayType([tagEditorArea, new A.CompositedTransformTarget(_this._tag_editor$_layerLink, A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, type$.NotificationListener_SizeChangedLayoutNotification);
     }
   };
   B.TagEditorLayoutDelegate.prototype = {
@@ -2043,7 +2053,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1480
+    $signature: 1481
   };
   B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -2069,7 +2079,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1481
+    $signature: 1482
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -2146,7 +2156,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1482
+    $signature: 1483
   };
   B.SizeChangedLayoutNotifier_createRenderObject_closure.prototype = {
     call$0() {
@@ -2176,7 +2186,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 230
+    $signature: 270
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -2284,7 +2294,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 95
+    $signature: 99
   };
   B.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -2327,9 +2337,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 230
+    $signature: 270
   };
-  B.TagsEditorState_build_closure.prototype = {
+  B.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
       var t1 = $event instanceof A.RawKeyDownEvent;
       if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294967304))
@@ -2342,9 +2352,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
       }
     },
-    $signature: 94
+    $signature: 92
   };
-  B.TagsEditorState_build_closure0.prototype = {
+  B.TagsEditorState_build_closure.prototype = {
+    call$1(value) {
+      var directionByText, t2,
+        t1 = this.$this;
+      t1.get$_onTextFieldChange().call$1(value);
+      if (value.length !== 0) {
+        directionByText = A.Bidi_endsWithRtl(value) ? C.TextDirection_0 : C.TextDirection_1;
+        t2 = t1.__TagsEditorState__textDirection_A;
+        t2 === $ && A.throwUnnamedLateFieldNI();
+        if (directionByText !== t2)
+          t1.setState$1(new B.TagsEditorState_build__closure0(t1, directionByText));
+      }
+    },
+    $signature: 8
+  };
+  B.TagsEditorState_build__closure0.prototype = {
+    call$0() {
+      this.$this.__TagsEditorState__textDirection_A = this.directionByText;
+    },
+    $signature: 0
+  };
+  B.TagsEditorState_build_closure1.prototype = {
     call$1(val) {
       $.WidgetsBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B.TagsEditorState_build__closure(this.$this));
       return true;
@@ -2378,19 +2409,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 230
+    $signature: 270
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 491
+    $signature: 437
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 491
+    $signature: 437
   };
   (function aliases() {
     var _ = B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin.prototype;
@@ -2428,7 +2459,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(A.State0, [B.__RawChipState_State_MaterialStateMixin, B.__AnimatedSwitcherState_State_TickerProviderStateMixin, B.TagsEditorState]);
     _inherit(B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin, B.__RawChipState_State_MaterialStateMixin);
     _inherit(B._RawChipState, B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin);
-    _inheritMany(A.Closure0Args, [B._RawChipState__handleTapDown_closure, B._RawChipState__handleTapCancel_closure, B._RawChipState__handleTap_closure, B._RawChipState_didUpdateWidget_closure, B._RawChipState_didUpdateWidget_closure0, B._AnimatedSwitcherState__newEntry__closure, B.SizeChangedLayoutNotifier_createRenderObject_closure, B.TagsEditorState__onFocusChanged_closure, B.TagsEditorState__onSearchChanged_closure, B.TagsEditorState__scrollToVisible_closure]);
+    _inheritMany(A.Closure0Args, [B._RawChipState__handleTapDown_closure, B._RawChipState__handleTapCancel_closure, B._RawChipState__handleTap_closure, B._RawChipState_didUpdateWidget_closure, B._RawChipState_didUpdateWidget_closure0, B._AnimatedSwitcherState__newEntry__closure, B.SizeChangedLayoutNotifier_createRenderObject_closure, B.TagsEditorState__onFocusChanged_closure, B.TagsEditorState__onSearchChanged_closure, B.TagsEditorState__scrollToVisible_closure, B.TagsEditorState_build__closure0]);
     _inheritMany(A.Closure2Args, [B._RawChipState_build_closure, B._RenderChipRedirectingHitDetection_hitTest_closure, B._RenderChip_hitTest_closure, B._RenderChip_performLayout_centerLayout, B._RenderChip__paintAvatar_paintWithOverlay, B._RenderChip__paintChild_closure, B.TagsEditorState__createOverlayEntry__closure, B.TagsEditorState__createOverlayEntry___closure, B.TagEditorLayoutDelegate__isOverflow_closure, B.TagEditorLayoutDelegate_performLayout_closure]);
     _inheritMany(A.SingleChildRenderObjectWidget, [B._ChipRedirectingHitDetectionWidget, B.SizeChangedLayoutNotifier]);
     _inherit(B._RenderChipRedirectingHitDetection, A.RenderConstrainedBox);
@@ -2440,7 +2471,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B._RenderChip, B.__RenderChip_RenderBox_SlottedContainerRenderObjectMixin);
     _inherit(B._UnconstrainedInkSplashFactory, A.InteractiveInkFeatureFactory);
     _inherit(B._AnimatedSwitcherState, B.__AnimatedSwitcherState_State_TickerProviderStateMixin);
-    _inheritMany(A.Closure, [B._AnimatedSwitcherState__newEntry_closure, B._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure, B._AnimatedSwitcherState_build_closure, B.TagsEditorState__initializeSuggestionBox_closure, B.TagsEditorState__createOverlayEntry_closure, B.TagsEditorState__scrollToVisible__closure, B.TagsEditorState_build_closure, B.TagsEditorState_build_closure0, B.TagsEditorState_build__closure]);
+    _inheritMany(A.Closure, [B._AnimatedSwitcherState__newEntry_closure, B._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure, B._AnimatedSwitcherState_build_closure, B.TagsEditorState__initializeSuggestionBox_closure, B.TagsEditorState__createOverlayEntry_closure, B.TagsEditorState__scrollToVisible__closure, B.TagsEditorState_build_closure0, B.TagsEditorState_build_closure, B.TagsEditorState_build_closure1, B.TagsEditorState_build__closure]);
     _inherit(B.SizeChangedLayoutNotification, A.LayoutChangedNotification);
     _inherit(B._RenderSizeChangedWithCallback, A.RenderProxyBox);
     _inherit(B.TagEditorLayoutDelegate, A.MultiChildLayoutDelegate);
@@ -2508,6 +2539,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D._ChipSlot_1 = new B._ChipSlot(1, "avatar");
     D._ChipSlot_2 = new B._ChipSlot(2, "deleteIcon");
     D.List_LlV = A._setArrayType(makeConstList([D._ChipSlot_0, D._ChipSlot_1, D._ChipSlot_2]), A.findType("JSArray<_ChipSlot>"));
+    D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
   })();
   (function lazyInitializers() {
     var _lazyFinal = hunkHelpers.lazyFinal;
@@ -2515,4 +2547,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["rCOHb2azwHpCmu+k01pkeL7dIUs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["tiY+Ul1oV960tka+YTpKzJ9k25M="] = $__dart_deferred_initializers__.current

@@ -1342,7 +1342,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   I = holdersList[10];
   G = holdersList[16];
   E = holdersList[8];
-  F = holdersList[14];
+  F = holdersList[15];
   H = holdersList[18];
   C.FadingEdgeScrollView.prototype = {
     createState$0() {
@@ -2617,7 +2617,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
         t1.push(A.buildIconWeb(_null, _null, t3, B.EdgeInsets_0_0_0_0, _null, 12, new C.MailBoxVisibilityFolderTileBuilder__buildLeadingMailboxItem_closure(this), 12, t4));
       } else
-        t1.push(F.SizedBox_24_null_null_null);
+        t1.push(G.SizedBox_24_null_null_null);
       t3 = t2.item;
       t4 = t3.namespace;
       if (!(!(t4 == null || t4.$eq(0, new A.Namespace(_s8_))) && !t3.hasParentId$0())) {
@@ -3129,7 +3129,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       it.SchedulerBinding__postFrameCallbacks.push(t1.get$_postFrameCallback());
       it.WidgetsBinding__observers.push(t1);
     },
-    $signature: 1469
+    $signature: 1470
   };
   C._FadingEdgeScrollViewState__postFrameCallback_closure.prototype = {
     call$0() {
@@ -3217,7 +3217,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7.toString;
       return new A.LinearGradient(t4, t3, B.TileMode_0, t5, t2, null).createShader$2$textDirection(0, t6, t7.textDirection);
     },
-    $signature: 1470
+    $signature: 1471
   };
   C._RadioState__widgetFillColor_closure.prototype = {
     call$1(states) {
@@ -3227,7 +3227,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._widget.activeColor;
       return null;
     },
-    $signature: 299
+    $signature: 241
   };
   C._RadioState_build_closure.prototype = {
     call$1(states) {
@@ -3288,7 +3288,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure4(t1, focused));
     },
-    $signature: 55
+    $signature: 57
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure4.prototype = {
     call$0() {
@@ -3321,7 +3321,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t1._autocomplete_contact_text_field_with_tags$_isDuplicatedRecipient$1(t2 == null ? "" : t2))
         t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure3(t1, item));
     },
-    $signature: 500
+    $signature: 417
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure3.prototype = {
     call$0() {
@@ -3345,7 +3345,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t1._autocomplete_contact_text_field_with_tags$_isDuplicatedRecipient$1(value))
         t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure2(t1, value));
     },
-    $signature: 10
+    $signature: 8
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure2.prototype = {
     call$0() {
@@ -3380,7 +3380,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build___closure(t1, contact));
     },
-    $signature: 214
+    $signature: 203
   };
   C._AutocompleteContactTextFieldWithTagsState_build___closure.prototype = {
     call$0() {
@@ -3397,7 +3397,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure1(t1, value));
       t1._autocomplete_contact_text_field_with_tags$_gapBetweenTagChangedAndFindSuggestion = A.Timer_Timer(B.Duration_1000000, t1.get$_autocomplete_contact_text_field_with_tags$_handleGapBetweenTagChangedAndFindSuggestion());
     },
-    $signature: 10
+    $signature: 8
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure1.prototype = {
     call$0() {
@@ -3420,7 +3420,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(_null, new A.ContactSuggestionBoxItem(suggestionEmailAddress, new C._AutocompleteContactTextFieldWithTagsState_build__closure0(this.$this, tagEditorState), _null, B.RoundedRectangleBorder_27D3, _null), B.Clip_0, _null, _null, _null, _null, _null, _null, _null, B.EdgeInsets_12_0_12_0, _null, _null, _null);
     },
-    $signature: 1471
+    $signature: 1472
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure0.prototype = {
     call$1(contact) {
@@ -3430,7 +3430,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.closeSuggestionBox$0();
       t1.resetTextField$0();
     },
-    $signature: 214
+    $signature: 203
   };
   C._AutocompleteContactTextFieldWithTagsState_build___closure0.prototype = {
     call$0() {
@@ -3452,7 +3452,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 277
+    $signature: 263
   };
   C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure.prototype = {
     call$1(emailAddress) {
@@ -3461,7 +3461,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 === $ && A.throwUnnamedLateFieldNI();
       return t1._autocomplete_contact_text_field_with_tags$_toSuggestionEmailAddress$2(emailAddress, t2);
     },
-    $signature: 201
+    $signature: 223
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -3470,13 +3470,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return B.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 74
+    $signature: 78
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
       return new A.SuggestionEmailAddress(emailAddress, B.SuggestionEmailState_1);
     },
-    $signature: 201
+    $signature: 223
   };
   C._AutocompleteContactTextFieldWithTagsState__isValidAllEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -3494,7 +3494,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = true;
       return t1;
     },
-    $signature: 74
+    $signature: 78
   };
   C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure.prototype = {
     call$0() {
@@ -3554,13 +3554,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 33
+    $signature: 34
   };
   C.EmailRulesView__buildLoadingView__closure0.prototype = {
     call$1(success) {
       return success instanceof A.LoadingState ? new A.Padding(D.EdgeInsets_0_0_0_24, B.Center_Jxw, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 52
+    $signature: 49
   };
   C.EmailRulesItemWidget_build_closure.prototype = {
     call$0() {
@@ -3611,7 +3611,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t3._as(t2.get(t1)).listEmailRule;
       return A.ListView$separated(null, new C.ListEmailRulesWidget_build__closure(t1), J.get$length$asx(t2.get$value(t2)), B.ScrollViewKeyboardDismissBehavior_0, B.EdgeInsets_0_0_0_0, false, false, B.Axis_1, new C.ListEmailRulesWidget_build__closure0(t1), true);
     },
-    $signature: 285
+    $signature: 256
   };
   C.ListEmailRulesWidget_build__closure.prototype = {
     call$2(context, index) {
@@ -3649,7 +3649,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 95
+    $signature: 99
   };
   C.ForwardView_build_closure.prototype = {
     call$0() {
@@ -3724,13 +3724,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 33
+    $signature: 34
   };
   C.ForwardView__buildLoadingView__closure0.prototype = {
     call$1(success) {
       return success instanceof A.LoadingState ? new A.Padding(B.EdgeInsets_24_24_24_24, B.Center_Jxw, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 52
+    $signature: 49
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure.prototype = {
     call$1(listRecipientsSelected) {
@@ -3745,7 +3745,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1472
+    $signature: 1473
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
     call$1(isListEmailEmpty) {
@@ -3766,7 +3766,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.showToastErrorMessage$2(t2, A.Intl__message("Incorrect email format", _null, "incorrectEmailFormat", _null, _null));
       }
     },
-    $signature: 55
+    $signature: 57
   };
   C.EmailForwardItemWidget_build_closure0.prototype = {
     call$0() {
@@ -3845,7 +3845,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "";
       t1.deleteRecipients$2(this.context, t2);
     },
-    $signature: 1473
+    $signature: 1474
   };
   C.ListEmailForwardsWidget__buildTitleHeader_closure.prototype = {
     call$0() {
@@ -3897,7 +3897,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildDeleteAllButton$1(_this.context));
       return A.Container$(_null, A.Row$(t2, B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_0, _null, _null, _null, 44, _null, _null, B.EdgeInsets_0_0_12_0, _null, _null, 1 / 0);
     },
-    $signature: 279
+    $signature: 261
   };
   C.ListEmailForwardsWidget__buildDeleteAllButton_closure.prototype = {
     call$0() {
@@ -3928,7 +3928,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 /= 2;
       return A.ResponsiveWidget$(A.Column$(A._setArrayType([A.Text$(A.Intl__message(_s8_, _null, _s8_0, _null, _null), _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null), B.SizedBox_null_8_null_null, new A.SizedBox(t3, _null, t1._buildLanguageMenu$2(context, t3), _null)], t4), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, t5, t1._change_language_button_widget$_responsiveUtils, _null, _null);
     },
-    $signature: 1474
+    $signature: 1475
   };
   C.ChangeLanguageButtonWidget__buildLanguageMenu_closure.prototype = {
     call$0() {
@@ -3994,13 +3994,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 33
+    $signature: 34
   };
   C.MailboxVisibilityView__buildLoadingView__closure0.prototype = {
     call$1(success) {
       return success instanceof A.LoadingState || success instanceof A.LoadingBuildTreeMailboxVisibility ? new A.Padding(B.EdgeInsets_0_16_0_0, B.Center_Jxw, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 52
+    $signature: 49
   };
   C.MailboxVisibilityView__buildListMailbox_closure.prototype = {
     call$0() {
@@ -4085,7 +4085,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1;
     },
-    $signature: 284
+    $signature: 257
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure.prototype = {
     call$1(mailboxNode) {
@@ -4099,7 +4099,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 56
+    $signature: 58
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure0.prototype = {
     call$1(mailboxNode) {
@@ -4113,7 +4113,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 56
+    $signature: 58
   };
   C.MailBoxVisibilityFolderTileBuilder_build_closure.prototype = {
     call$0() {
@@ -4176,7 +4176,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 80
+    $signature: 84
   };
   C.ManageAccountDashBoardView_build_closure1.prototype = {
     call$0() {
@@ -4375,7 +4375,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 80
+    $signature: 84
   };
   C.ManageAccountMenuView_build_closure0.prototype = {
     call$0() {
@@ -4415,7 +4415,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new C.ManageAccountMenuView_build___closure(this.$this, index), null);
     },
-    $signature: 203
+    $signature: 205
   };
   C.ManageAccountMenuView_build___closure.prototype = {
     call$0() {
@@ -4469,7 +4469,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = A.Bidi_isRtlLanguage(t1.get$languageCode(t1)) ? 16 : 0;
       return new A.Padding(t3, new E.UserInformationWidgetBuilder(t2._imagePaths, t4, _null, new A.EdgeInsets(t6, 0, t1, 0), _null, _null), _null);
     },
-    $signature: 86
+    $signature: 94
   };
   C.SettingsFirstLevelView_build_closure.prototype = {
     call$0() {
@@ -4498,7 +4498,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 132
+    $signature: 164
   };
   C.SettingsFirstLevelView_build__closure1.prototype = {
     call$0() {
@@ -4527,7 +4527,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 132
+    $signature: 164
   };
   C.SettingsFirstLevelView_build__closure0.prototype = {
     call$0() {
@@ -4556,7 +4556,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 132
+    $signature: 164
   };
   C.SettingsFirstLevelView_build__closure.prototype = {
     call$0() {
@@ -4796,7 +4796,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return t1;
     },
-    $signature: 1475
+    $signature: 1476
   };
   C.IdentitiesView__buildIdentitiesViewMobile_closure.prototype = {
     call$0() {
@@ -4830,7 +4830,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildListIdentityView$1(t5));
       return A.Column$(t2, B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     },
-    $signature: 1476
+    $signature: 1477
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure.prototype = {
     call$0() {
@@ -4861,7 +4861,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(t3._buildListIdentityView$1(t5), 1));
       return A.Row$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 378
+    $signature: 336
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure.prototype = {
     call$0() {
@@ -4903,13 +4903,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(identitySelected) {
       return this.$this.controller.goToEditIdentity$2(this.context, identitySelected);
     },
-    $signature: 437
+    $signature: 491
   };
   C.IdentitiesRadioListBuilder__buildListIdentityView___closure0.prototype = {
     call$1(identitySelected) {
       return this.$this.controller.openConfirmationDialogDeleteIdentityAction$2(this.context, identitySelected);
     },
-    $signature: 437
+    $signature: 491
   };
   C.IdentitiesRadioListBuilder__buildLoadingView_closure.prototype = {
     call$0() {
@@ -4922,7 +4922,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 33
+    $signature: 34
   };
   C.IdentitiesRadioListBuilder__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -4931,7 +4931,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 52
+    $signature: 49
   };
   C.IdentityListTileBuilder_build_closure1.prototype = {
     call$0() {
@@ -4964,7 +4964,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.clampDouble(1 / 0, constraints.minHeight, constraints.maxHeight);
       return A.Container$(_null, this.$this._buildSignature$3(context, signatureWidth, 256), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, D.EdgeInsets_8_16_8_16, _null, _null, signatureWidth);
     },
-    $signature: 258
+    $signature: 280
   };
   C.VacationView__buildVacationFormView_closure5.prototype = {
     call$0() {
@@ -4984,7 +4984,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).vacationPresentation;
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2.get$value(t2).status !== B.VacationResponderStatus_0 ? "assets/images/ic_switch_off.svg" : "assets/images/ic_switch_on.svg", _null, B.BoxFit_0, 24, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView__buildVacationFormView__closure8(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 402
+    $signature: 490
   };
   C.VacationView__buildVacationFormView__closure8.prototype = {
     call$0() {
@@ -5090,12 +5090,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         } else
           t2 = false;
         A.Localizations_of(t6, B.Type_AppLocalizations_swi, t8).toString;
-        t10 = A.Row$(A._setArrayType([t9, F.SizedBox_24_null_null_null, A.Expanded$(C.BorderButtonField$(B.Color_4294112245, A.Intl__message(_s13_, _null, _s11_, _null, _null), t2, t7, B.SystemMouseCursor_text, new C.VacationView__buildVacationFormView__closure7(t1, t6), t10, type$.TimeOfDay), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+        t10 = A.Row$(A._setArrayType([t9, G.SizedBox_24_null_null_null, A.Expanded$(C.BorderButtonField$(B.Color_4294112245, A.Intl__message(_s13_, _null, _s11_, _null, _null), t2, t7, B.SystemMouseCursor_text, new C.VacationView__buildVacationFormView__closure7(t1, t6), t10, type$.TimeOfDay), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
         t1 = t10;
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(t1, _null, t5));
     },
-    $signature: 151
+    $signature: 127
   };
   C.VacationView__buildVacationFormView__closure4.prototype = {
     call$1(value) {
@@ -5149,7 +5149,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Row$(A._setArrayType([new A.Obx(new C.VacationView__buildVacationFormView__closure3(t1), _null), B.SizedBox_16_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Vacation stops at", _null, "vacationStopsAt", _null, _null), _null, _null, _null, _null, _null, B.TextStyle_oHY0, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null, t2));
     },
-    $signature: 151
+    $signature: 127
   };
   C.VacationView__buildVacationFormView__closure3.prototype = {
     call$0() {
@@ -5160,7 +5160,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).vacationPresentation;
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2.get$value(t2).vacationStopEnabled ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg", _null, B.BoxFit_0, 24, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView__buildVacationFormView___closure(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 402
+    $signature: 490
   };
   C.VacationView__buildVacationFormView___closure.prototype = {
     call$0() {
@@ -5266,12 +5266,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         } else
           t2 = false;
         A.Localizations_of(t6, B.Type_AppLocalizations_swi, t8).toString;
-        t10 = A.Row$(A._setArrayType([t9, F.SizedBox_24_null_null_null, A.Expanded$(C.BorderButtonField$(B.Color_4294112245, A.Intl__message(_s11_0, _null, _s9_0, _null, _null), t2, t7, B.SystemMouseCursor_text, new C.VacationView__buildVacationFormView__closure2(t1, t6), t10, type$.TimeOfDay), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+        t10 = A.Row$(A._setArrayType([t9, G.SizedBox_24_null_null_null, A.Expanded$(C.BorderButtonField$(B.Color_4294112245, A.Intl__message(_s11_0, _null, _s9_0, _null, _null), t2, t7, B.SystemMouseCursor_text, new C.VacationView__buildVacationFormView__closure2(t1, t6), t10, type$.TimeOfDay), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
         t1 = t10;
       }
       return A.AbsorbPointer$(!t4, A.Opacity$(t1, _null, t5));
     },
-    $signature: 151
+    $signature: 127
   };
   C.VacationView__buildVacationFormView__closure.prototype = {
     call$1(value) {
@@ -5350,12 +5350,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(t5, B.Type_AppLocalizations_swi, t7).toString;
         t7 = A.Intl__message(_s13_, _null, _s31_, _null, _null);
         A.Expando__checkType(t1);
-        t6 = A.Row$(A._setArrayType([A.Expanded$(A.Opacity$(C.TextInputFieldBuilder$(t3._as(t2.get(t1)).subjectTextController, t7, t8), _null, t6), 1), F.SizedBox_24_null_null_null, D.Expanded_EsU], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+        t6 = A.Row$(A._setArrayType([A.Expanded$(A.Opacity$(C.TextInputFieldBuilder$(t3._as(t2.get(t1)).subjectTextController, t7, t8), _null, t6), 1), G.SizedBox_24_null_null_null, D.Expanded_EsU], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
         t1 = t6;
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, t1);
     },
-    $signature: 151
+    $signature: 127
   };
   C.VacationView__buildVacationFormView_closure4.prototype = {
     call$0() {
@@ -5375,7 +5375,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = type$.JSArray_Widget;
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Column$(A._setArrayType([A.Row$(A._setArrayType([A.Expanded$(A.Text$(A.Intl__message("Message", _null, "message", _null, _null), _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null), 1), t1._buildVacationMessageTypeButton$2(t3, B.VacationMessageType_0), t1._buildVacationMessageTypeButton$2(t3, D.VacationMessageType_1)], t5), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.SizedBox_null_8_null_null, t1._buildMessageTextEditor$1(t3)], t5), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, t2));
     },
-    $signature: 151
+    $signature: 127
   };
   C.VacationView__buildListButtonAction_closure.prototype = {
     call$0() {
@@ -5463,7 +5463,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.PointerInterceptor$(A.Container$(B.Alignment_0_0, parentRichTextButton._readLocal$0(), B.Clip_0, B.Color_0, _null, _null, _null, 50, _null, _null, _null, _null, _null, _null));
     },
-    $signature: 1479
+    $signature: 1480
   };
   C.VacationView__buildMessagePlainTextEditor_closure.prototype = {
     call$1(value) {
@@ -5474,7 +5474,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.errorMessageBody.set$value(0, t1._getErrorStringByInputValue$2(this.context, value));
       return null;
     },
-    $signature: 10
+    $signature: 8
   };
   C.VacationView__buildMessageHtmlTextEditor_closure0.prototype = {
     call$1(settings) {
@@ -5483,7 +5483,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1))._richTextControllerForWeb.onEditorSettingsChange$1(settings);
     },
-    $signature: 278
+    $signature: 262
   };
   C.VacationView__buildMessageHtmlTextEditor_closure.prototype = {
     call$1(changed) {
@@ -5723,4 +5723,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["kpZgSn9Yvc1PRGgDPhuasmPi3lI="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["9eHPXOeY1tAcpnGtD6JsXNCe9Wc="] = $__dart_deferred_initializers__.current
