@@ -66,7 +66,7 @@ class AppPages {
             () => manage_account_dashboard.ManageAccountDashBoardView()),
         binding: ManageAccountDashBoardBindings()),
     unknownRoutePage,
-    if (!BuildUtils.isWeb)
+    if (PlatformInfo.isMobile)
       ...[
         GetPage(
             name: AppRoutes.composer,

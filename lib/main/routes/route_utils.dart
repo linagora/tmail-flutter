@@ -2,7 +2,7 @@
 import 'package:core/data/model/query/query_parameter.dart';
 import 'package:core/data/network/config/service_path.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -19,7 +19,7 @@ abstract class RouteUtils {
 
   static String generateNavigationRoute(String route, NavigationRouter router) {
     ServicePath servicePath = ServicePath(route);
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (router.emailId != null) {
         servicePath = servicePath.withPathParameter(router.emailId!.id.value);
       }

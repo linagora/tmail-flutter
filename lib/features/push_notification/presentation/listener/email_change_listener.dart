@@ -5,7 +5,7 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -102,7 +102,7 @@ class EmailChangeListener extends ChangeListener {
           _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
         }
         _synchronizeEmailOnForegroundAction(action.newState);
-        if (!BuildUtils.isWeb) {
+        if (PlatformInfo.isMobile) {
           _getNewReceiveEmailFromNotificationAction(action.session, action.accountId, action.newState);
         }
       } else if (action is PushNotificationAction) {
@@ -134,7 +134,7 @@ class EmailChangeListener extends ChangeListener {
     _userName = userName;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       _storeEmailDeliveryStateAction(accountId, userName, _newStateEmailDelivery!);
     } else {
       if (Platform.isAndroid) {

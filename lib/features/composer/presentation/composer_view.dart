@@ -127,7 +127,9 @@ class ComposerView extends BaseComposerView {
                             buildDivider(),
                             Expanded(child: _buildBodyTablet(context)),
                             buildDivider(),
-                            buildBottomBar(context),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.symmetric(vertical: 16),
+                              child: buildBottomBar(context)),
                           ])
                         )
                       )

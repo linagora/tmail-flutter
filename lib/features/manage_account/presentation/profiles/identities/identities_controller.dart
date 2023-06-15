@@ -6,7 +6,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -152,7 +152,7 @@ class IdentitiesController extends BaseController {
     if (accountId != null && session != null && userProfile != null) {
       final arguments = IdentityCreatorArguments(accountId, session, userProfile);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogIdentityCreator(
             context: context,
             arguments: arguments,
@@ -277,7 +277,7 @@ class IdentitiesController extends BaseController {
           identity: identity,
           actionType: IdentityActionType.edit);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogIdentityCreator(
             context: context,
             arguments: arguments,

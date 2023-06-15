@@ -1,11 +1,11 @@
 
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class ContactUtils {
   static EdgeInsets getPaddingAppBar(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(horizontal: 16);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -17,7 +17,7 @@ class ContactUtils {
   }
 
   static EdgeInsets getPaddingSearchInputForm(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -29,7 +29,7 @@ class ContactUtils {
   }
 
   static EdgeInsets getPaddingSearchResultList(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -41,7 +41,7 @@ class ContactUtils {
   }
 
   static EdgeInsets getPaddingDividerSearchResultList(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(horizontal: 16);
     } else {
       if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -53,7 +53,7 @@ class ContactUtils {
   }
 
   static bool supportAppBarTopBorder(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (BuildUtils.isWeb || responsiveUtils.isLandscapeMobile(context)) {
+    if (PlatformInfo.isWeb || responsiveUtils.isLandscapeMobile(context)) {
       return false;
     }
     return true;

@@ -6,7 +6,7 @@ import 'package:core/presentation/utils/html_transformer/dom/image_transformers.
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -63,7 +63,7 @@ class IdentityDataSourceImpl extends IdentityDataSource {
           const BlockCodeTransformer(),
           const AddTargetBlankInTagATransformer(),
           const ImageTransformer(),
-          if (BuildUtils.isWeb) const AddTooltipLinkTransformer()
+          if (PlatformInfo.isWeb) const AddTooltipLinkTransformer()
         ]));
       return signatureUnescape;
     }).catchError(_exceptionThrower.throwException);

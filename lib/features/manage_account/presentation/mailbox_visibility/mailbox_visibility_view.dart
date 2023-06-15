@@ -16,7 +16,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visib
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/utils/mailbox_visibility_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_header_widget.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
   with AppLoaderMixin,
@@ -138,11 +137,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
             context,
             key: const Key('children_tree_mailbox_child'),
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-            isDirectionRTL: AppUtils.isDirectionRTL(context),
-            paddingChild: EdgeInsets.only(
-              left: AppUtils.isDirectionRTL(context) ? 0 : 10,
-              right: AppUtils.isDirectionRTL(context) ? 10 : 0,
-            ),
+            paddingChild: const EdgeInsetsDirectional.only(start: 10),
             parent: MailBoxVisibilityFolderTileBuilder(
               _imagePaths,
               mailboxNode,

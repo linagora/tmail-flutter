@@ -1,12 +1,12 @@
 
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 extension OidcConfigurationExtensions on OIDCConfiguration {
 
   String get redirectUrl {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (AppConfig.domainRedirectUrl.endsWith('/')) {
         return AppConfig.domainRedirectUrl + loginRedirectOidcWeb;
       } else {
@@ -18,7 +18,7 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
   }
 
   String get logoutRedirectUrl {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (AppConfig.domainRedirectUrl.endsWith('/')) {
         return AppConfig.domainRedirectUrl + logoutRedirectOidcWeb;
       } else {

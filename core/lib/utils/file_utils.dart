@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtils {
@@ -11,7 +11,7 @@ class FileUtils {
     String? folderPath,
     String? extensionFile
   }) async {
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
 
       String fileDirectory = (await getApplicationDocumentsDirectory()).absolute.path;
 

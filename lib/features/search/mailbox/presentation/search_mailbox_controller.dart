@@ -7,7 +7,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -614,7 +614,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void closeSearchView(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       dashboardController.searchMailboxActivated.value = false;
       clearAllTextInputSearchForm();
       SearchMailboxBindings().disposeBindings();

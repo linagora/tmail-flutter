@@ -1,7 +1,7 @@
 
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -63,7 +63,7 @@ class ContactController extends BaseController {
       }
       injectAutoCompleteBindings(_session, _accountId);
     }
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       Future.delayed(
         const Duration(milliseconds: 500),
         () => _checkContactPermission());
@@ -178,7 +178,7 @@ class ContactController extends BaseController {
   void selectContact(BuildContext context, EmailAddress emailAddress) {
     KeyboardUtils.hideKeyboard(context);
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       onSelectedContactCallback?.call(emailAddress);
     } else {
       popBack(result: emailAddress);
@@ -189,7 +189,7 @@ class ContactController extends BaseController {
     clearAllTextInputSearchForm();
     KeyboardUtils.hideKeyboard(context);
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       onDismissContactView?.call();
     } else {
       popBack();
