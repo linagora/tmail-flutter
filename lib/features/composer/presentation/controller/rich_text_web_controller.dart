@@ -71,7 +71,6 @@ class RichTextWebController extends BaseRichTextController {
 
     selectedTextColor.value = settings.foregroundColor;
     selectedTextBackgroundColor.value = settings.backgroundColor;
-    selectedFontName.value = FontNameType.values.firstWhereOrNull((font) => font.name == settings.fontName) ?? FontNameType.sansSerif;
 
     if (settings.isAlignCenter) {
       selectedParagraph.value = ParagraphType.alignCenter;
