@@ -1,3 +1,13 @@
+## [0.8.1] - 2023-06-15
+### Added
+- Support RTL mode
+- Dockerfile - Add new stage for minify js file
+- \[Docs\] Configure OIDC
+- Support configuration for OIDC scopes
+
+### Fixed
+- Fix disable connected network toast notification
+
 ## [0.8.0] - 2023-06-12
 ### Added
 - TF-1786 Write stories for swipe in email item in ThreadView
@@ -129,6 +139,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.8.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.1
 [0.8.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.0
 [0.7.11]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.11
 [0.7.10]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.10
