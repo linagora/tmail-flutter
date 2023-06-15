@@ -227,7 +227,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 17
+    $signature: 18
   };
   B.ComposerView__buildComposerViewForMobile_closure0.prototype = {
     call$0() {
@@ -345,7 +345,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 17
+    $signature: 18
   };
   B.ComposerView__buildComposerViewForTablet_closure0.prototype = {
     call$0() {
@@ -530,7 +530,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).removeFocusAllInputEditorHeader$0();
     },
-    $signature: 25
+    $signature: 26
   };
   B.ComposerView__buildHtmlEditor_closure.prototype = {
     call$1(editorApi) {
@@ -578,4 +578,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Bj2uAtsTltdRlvFB5i8Adl+Rtcs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["PGo5rlh/EeKTSKqL1nSD1MQqqEY="] = $__dart_deferred_initializers__.current

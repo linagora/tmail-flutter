@@ -599,13 +599,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 15
+    $signature: 16
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 15
+    $signature: 16
   };
   B.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(context, loginUsername) {
@@ -695,7 +695,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 34
+    $signature: 35
   };
   B.LoginView__buildMobileForm___closure4.prototype = {
     call$1(success) {
@@ -801,7 +801,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 34
+    $signature: 35
   };
   B.LoginView__buildWebForm___closure4.prototype = {
     call$1(success) {
@@ -855,13 +855,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 15
+    $signature: 16
   };
   B.LoginView__buildSSOButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 15
+    $signature: 16
   };
   B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
@@ -1051,4 +1051,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["s6uOyNJE8DcvSNcmISMnDPOpIY8="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["oEZQumF813w6aDXUIVml5QjUtBI="] = $__dart_deferred_initializers__.current

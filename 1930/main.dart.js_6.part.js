@@ -2059,13 +2059,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(result, position) {
       return this.$this.RenderObjectWithChildMixin__child.hitTest$2$position(result, this.offset);
     },
-    $signature: 22
+    $signature: 23
   };
   B._RenderChip_hitTest_closure.prototype = {
     call$2(result, position) {
       return this.hitTestChild.hitTest$2$position(result, this.center);
     },
-    $signature: 22
+    $signature: 23
   };
   B._RenderChip_performLayout_centerLayout.prototype = {
     call$2(boxSize, x) {
@@ -2114,7 +2114,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 29
+    $signature: 30
   };
   B._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -2123,7 +2123,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 29
+    $signature: 30
   };
   B._AnimatedSwitcherState__newEntry_closure.prototype = {
     call$1($status) {
@@ -2134,7 +2134,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.controller.dispose$0();
       }
     },
-    $signature: 23
+    $signature: 24
   };
   B._AnimatedSwitcherState__newEntry__closure.prototype = {
     call$0() {
@@ -2220,7 +2220,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 24
+    $signature: 25
   };
   B.TagsEditorState__createOverlayEntry__closure.prototype = {
     call$2(context, snapshot) {
@@ -2548,4 +2548,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["rn6taEqpIKNM5a1P3NZFb9KUlpU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["IiF9uM1pRnGs7xvKKQ/xpZHWdq8="] = $__dart_deferred_initializers__.current
