@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -41,7 +42,7 @@ class HiveCacheConfig {
     if (databasePath != null) {
       Hive.init(databasePath);
     } else {
-      if (!GetPlatform.isWeb) {
+      if (PlatformInfo.isMobile) {
         Directory directory = await path_provider.getApplicationDocumentsDirectory();
         Hive.init(directory.path);
       }

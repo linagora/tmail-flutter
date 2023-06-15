@@ -3,7 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -50,8 +50,8 @@ class SettingsView extends GetWidget<SettingsController> {
               if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
                 return VacationNotificationMessageWidget(
                     margin: const EdgeInsets.only(
-                        left: BuildUtils.isWeb ? 24 : 16,
-                        right: BuildUtils.isWeb ? 24 : 16,
+                        left: PlatformInfo.isWeb ? 24 : 16,
+                        right: PlatformInfo.isWeb ? 24 : 16,
                         top: 16),
                     fromAccountDashBoard: true,
                     vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
@@ -64,8 +64,8 @@ class SettingsView extends GetWidget<SettingsController> {
                   && controller.manageAccountDashboardController.inVacationSettings()) {
                 return VacationNotificationMessageWidget(
                   margin: const EdgeInsets.only(
-                    left: BuildUtils.isWeb ? 24 : 16,
-                    right: BuildUtils.isWeb ? 24 : 16,
+                    left: PlatformInfo.isWeb ? 24 : 16,
+                    right: PlatformInfo.isWeb ? 24 : 16,
                     top: 16),
                   fromAccountDashBoard: true,
                   vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,

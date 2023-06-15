@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -31,7 +31,7 @@ class ThreadIsolateWorker {
     MailboxId mailboxId,
     Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   ) async {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _emptyTrashFolderOnWeb(session, accountId, mailboxId, updateDestroyedEmailCache);
     } else {
       final result = await _isolateExecutor.execute(

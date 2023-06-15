@@ -3,7 +3,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
@@ -483,7 +483,7 @@ class SearchEmailController extends BaseController
         mailboxDashBoardController.sessionCurrent,
         mailboxIdSelected: mailbox?.id);
 
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       showDialogDestinationPicker(
           context: context,
           arguments: arguments,
@@ -526,7 +526,7 @@ class SearchEmailController extends BaseController
       final listContactSelected = simpleSearchFilter.value.getContactApplied(prefixEmailAddress);
       final arguments = ContactArguments(accountId!, session!, listContactSelected);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogContactView(
             context: context,
             arguments: arguments,

@@ -1,6 +1,6 @@
 
 import 'package:core/presentation/views/bottom_popup/cupertino_action_sheet_no_icon_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -32,7 +32,7 @@ class EmailReceiveTimeCupertinoActionSheetActionBuilder
     return Container(
       color: bgColor ?? Colors.white,
       child: MouseRegion(
-        cursor: BuildUtils.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+        cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
         child: CupertinoActionSheetAction(
           key: key,
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [

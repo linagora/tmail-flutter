@@ -118,7 +118,7 @@ class VacationController extends BaseController {
     messageTextController.text = newVacation.messagePlainText ?? '';
     subjectTextController.text = newVacation.subject ?? '';
     updateMessageHtmlText(newVacation.messageHtmlText ?? '');
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       _richTextControllerForWeb.editorController.setText(newVacation.messageHtmlText ?? '');
     } else {
       richTextControllerForMobile.htmlEditorApi?.setText(newVacation.messageHtmlText ?? '');
@@ -264,7 +264,7 @@ class VacationController extends BaseController {
       }
 
       final messagePlainText = messageTextController.text;
-      final messageHtmlText = (BuildUtils.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
+      final messageHtmlText = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
       if (messagePlainText.isEmpty && messageHtmlText.isEmpty && context.mounted) {
         if (currentOverlayContext != null && currentContext != null) {
           _appToast.showToastErrorMessage(
@@ -322,7 +322,7 @@ class VacationController extends BaseController {
   void updateMessageHtmlText(String? text) => _vacationMessageHtmlText = text;
 
   Future<String>? _getMessageHtmlText() {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _richTextControllerForWeb.editorController.getText();
     } else {
       return richTextControllerForMobile.htmlEditorApi?.getText();
@@ -330,7 +330,7 @@ class VacationController extends BaseController {
   }
 
   void selectVacationMessageType(BuildContext context, VacationMessageType newMessageType) {
-    if (newMessageType == VacationMessageType.plainText && !BuildUtils.isWeb) {
+    if (newMessageType == VacationMessageType.plainText && PlatformInfo.isMobile) {
       _storeMessageHtmlTextOnMobile();
     }
     clearFocusEditor(context);
@@ -343,7 +343,7 @@ class VacationController extends BaseController {
   }
 
   void clearFocusEditor(BuildContext context) {
-    if (!BuildUtils.isWeb) {
+    if (PlatformInfo.isMobile) {
       richTextControllerForMobile.htmlEditorApi?.unfocus();
     }
     KeyboardUtils.hideKeyboard(context);

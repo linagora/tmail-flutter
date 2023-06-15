@@ -9,7 +9,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -63,7 +63,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           borderOnForeground: false,
           color: Colors.transparent,
           child: SafeArea(
-            top: !BuildUtils.isWeb,
+            top: PlatformInfo.isMobile,
             bottom: false,
             left: false,
             right: false,
@@ -211,7 +211,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             controller.errorNameIdentity.value,
             AppLocalizations.of(context).required,
             editingController: controller.inputNameIdentityController,
-            focusNode: BuildUtils.isWeb ? null : controller.inputNameIdentityFocusNode,
+            focusNode: PlatformInfo.isWeb ? null : controller.inputNameIdentityFocusNode,
             isMandatory: true,
             onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
           )),
@@ -243,7 +243,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             AppLocalizations.of(context).bcc_to,
             controller.errorBccIdentity.value,
             controller.inputBccIdentityController,
-            focusNode: BuildUtils.isWeb ? null : controller.inputBccIdentityFocusNode,
+            focusNode: PlatformInfo.isWeb ? null : controller.inputBccIdentityFocusNode,
             onSelectedSuggestionAction: (newEmailAddress) {
               controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
               controller.updateBccOfIdentity(newEmailAddress);
@@ -287,7 +287,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
       child: Column(children: [
         _buildHeaderView(context),
         Expanded(
-          child: BuildUtils.isWeb
+          child: PlatformInfo.isWeb
             ? PointerInterceptor(child: bodyCreatorView)
             : KeyboardRichText(
                 keyBroadToolbar: RichTextKeyboardToolBar(
@@ -343,13 +343,13 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
   }
 
   Widget _buildSignatureHtmlTemplate(BuildContext context) {
-    final htmlEditor = BuildUtils.isWeb 
+    final htmlEditor = PlatformInfo.isWeb 
         ? _buildHtmlEditorWeb(context, controller.contentHtmlEditor ?? '')
         : _buildHtmlEditor(context, initialContent: controller.contentHtmlEditor ?? '');
 
     return Column(
       children: [
-        if(BuildUtils.isWeb)
+        if(PlatformInfo.isWeb)
           ToolbarRichTextWebBuilder(
             richTextWebController: controller.richTextWebController,
             padding: const EdgeInsets.only(top: 22, bottom: 8.0, left: 24, right: 12)),

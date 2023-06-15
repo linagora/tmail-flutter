@@ -1,8 +1,12 @@
 
 import 'dart:convert';
 
-import 'package:core/core.dart';
+import 'package:core/data/network/dio_client.dart';
+import 'package:core/data/utils/compress_file_utils.dart';
+import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
@@ -59,7 +63,7 @@ class ImageTransformer extends DomTransformer {
           options: Options(responseType: ResponseType.bytes));
 
       if (responseData != null) {
-        if (BuildUtils.isWeb) {
+        if (PlatformInfo.isWeb) {
           return encodeToBase64Uri(responseData);
         } else {
           final bytesCompressed = await compressFileUtils.compressBytesDataImage(responseData);

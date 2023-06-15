@@ -86,7 +86,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   bool supportVerticalDivider(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _responsiveUtils.isTabletLarge(context);
     } else {
       return _responsiveUtils.isDesktop(context) ||
@@ -101,7 +101,7 @@ class ThreadView extends GetWidget<ThreadController>
       padding: EdgeInsets.symmetric(
         horizontal: 16,
         vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
-      margin: const EdgeInsets.only(bottom: !BuildUtils.isWeb ? 16 : 0),
+      margin: EdgeInsets.only(bottom: PlatformInfo.isMobile ? 16 : 0),
       child: SearchBarView(_imagePaths,
         hintTextSearch: AppLocalizations.of(context).search_emails,
         onOpenSearchViewAction: controller.goToSearchView));
@@ -124,7 +124,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
     return Obx(() {
-      if ((!BuildUtils.isWeb || (BuildUtils.isWeb && controller.isSelectionEnabled()
+      if ((PlatformInfo.isMobile || (PlatformInfo.isWeb && controller.isSelectionEnabled()
             && controller.isSearchActive() && !_responsiveUtils.isDesktop(context)))
           && controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected.isNotEmpty) {
         return BottomBarThreadSelectionWidget(
@@ -183,7 +183,7 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() {
       if (controller.isAllSearchInActive) {
         return Container(
-          padding: BuildUtils.isWeb
+          padding: PlatformInfo.isWeb
             ? EdgeInsets.zero
             : controller.listEmailSelected.isNotEmpty ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
           child: ComposeFloatingButton(
@@ -266,7 +266,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   Widget _buildListEmail(BuildContext context) {
     return Container(
-      margin: BuildUtils.isWeb && _responsiveUtils.isDesktop(context)
+      margin: PlatformInfo.isWeb && _responsiveUtils.isDesktop(context)
           ? const EdgeInsets.symmetric(horizontal: 4)
           : EdgeInsets.zero,
       alignment: Alignment.center,
@@ -463,7 +463,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   double? _getItemExtent(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
      return _responsiveUtils.isDesktop(context) ? 52 : 95;
     } else {
       return null;

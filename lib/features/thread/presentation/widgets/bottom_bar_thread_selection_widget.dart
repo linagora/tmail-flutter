@@ -2,7 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/button_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -164,7 +164,7 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
   }
 
   bool _isMailboxDashboardSplitView(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _responsiveUtils.isTabletLarge(context);
     } else {
       return _responsiveUtils.isLandscapeTablet(context) ||

@@ -6,7 +6,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/background/background_widget_builder.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -440,7 +440,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   double? _getItemExtent(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       return _responsiveUtils.isDesktop(context) ? 52 : 95;
     } else {
       return null;

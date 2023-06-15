@@ -1,4 +1,4 @@
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -27,7 +27,7 @@ class AppUtils {
     );
   }
 
-  static String? get fcmVapidPublicKey => BuildUtils.isWeb ? AppConfig.fcmVapidPublicKeyWeb : null;
+  static String? get fcmVapidPublicKey => PlatformInfo.isWeb ? AppConfig.fcmVapidPublicKeyWeb : null;
 
   static bool isDirectionRTL(BuildContext context) {
     return intl.Bidi.isRtlLanguage(Localizations.localeOf(context).languageCode);

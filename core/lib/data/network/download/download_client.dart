@@ -6,7 +6,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/utils/compress_file_utils.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -55,7 +55,7 @@ class DownloadClient {
         return null;
       }
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         final base64Uri = encodeToBase64Uri({
           'bytesData': bytesData,
           'mimeType': 'image/$fileExtension',

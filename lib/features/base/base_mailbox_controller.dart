@@ -5,7 +5,7 @@ import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/presentation/views/dialog/edit_text_dialog_builder.dart';
 import 'package:core/presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -378,7 +378,7 @@ abstract class BaseMailboxController extends BaseController {
         mailboxIdSelected: mailboxSelected.id
       );
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogDestinationPicker(
           context: context,
           arguments: arguments,

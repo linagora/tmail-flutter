@@ -7,13 +7,13 @@ typedef OnTapMaterialTextButton = Function();
 class MaterialTextButton extends StatelessWidget {
 
   final String label;
-  final OnTapMaterialTextButton onTap;
+  final OnTapMaterialTextButton? onTap;
   final double borderRadius;
   final Color? labelColor;
   final double labelSize;
   final FontWeight? labelWeight;
   final TextStyle? customStyle;
-  final EdgeInsets? padding;
+  final EdgeInsetsGeometry? padding;
   final TextOverflow? overflow;
   final bool? softWrap;
 

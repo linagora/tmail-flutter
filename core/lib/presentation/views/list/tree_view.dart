@@ -57,8 +57,7 @@ class TreeViewChild {
   final Widget parent;
   final List<Widget> children;
   final VoidCallback? onTap;
-  final EdgeInsets? paddingChild;
-  final bool isDirectionRTL;
+  final EdgeInsetsGeometry? paddingChild;
 
   TreeViewChild(
     this.context,
@@ -68,7 +67,6 @@ class TreeViewChild {
       this.isExpanded,
       this.onTap,
       this.paddingChild,
-      this.isDirectionRTL = false,
       Key? key,
     }
   );
@@ -92,10 +90,7 @@ class TreeViewChild {
                 mainAxisSize: MainAxisSize.min,
                 children: children
                   .map((child) => Padding(
-                    padding: paddingChild ?? EdgeInsets.only(
-                      left: isDirectionRTL ? 0 : 20,
-                      right: isDirectionRTL ? 20 : 0,
-                    ),
+                    padding: paddingChild ?? const EdgeInsetsDirectional.only(start: 20),
                     child: child
                   ))
                   .toList()

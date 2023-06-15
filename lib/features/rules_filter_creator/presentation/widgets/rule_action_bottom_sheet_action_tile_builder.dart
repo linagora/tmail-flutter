@@ -33,7 +33,7 @@ class RuleActionSheetActionTileBuilder
     return Container(
       color: bgColor ?? Colors.white,
       child: MouseRegion(
-        cursor: BuildUtils.isWeb
+        cursor: PlatformInfo.isWeb
             ? MaterialStateMouseCursor.clickable
             : MouseCursor.defer,
         child: CupertinoActionSheetAction(

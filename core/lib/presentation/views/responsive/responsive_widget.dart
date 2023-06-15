@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class ResponsiveWidget extends StatelessWidget {
@@ -24,7 +25,7 @@ class ResponsiveWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (BuildUtils.isWeb) {
+    if (PlatformInfo.isWeb) {
       if (responsiveUtils.isMobile(context)) {
         return mobile;
       }

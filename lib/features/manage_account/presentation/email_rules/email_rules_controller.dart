@@ -6,7 +6,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -88,7 +88,7 @@ class EmailRulesController extends BaseController {
     if (accountId != null && session != null) {
       final arguments = RulesFilterCreatorArguments(accountId, session);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogRuleFilterCreator(
             context: context,
             arguments: arguments,
@@ -140,7 +140,7 @@ class EmailRulesController extends BaseController {
         actionType: CreatorActionType.edit,
         tMailRule: rule);
 
-      if (BuildUtils.isWeb) {
+      if (PlatformInfo.isWeb) {
         showDialogRuleFilterCreator(
             context: context,
             arguments: arguments,
