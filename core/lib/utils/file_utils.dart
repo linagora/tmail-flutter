@@ -11,7 +11,7 @@ class FileUtils {
     String? folderPath,
     String? extensionFile
   }) async {
-    if (PlatformInfo.isMobile) {
+    if (!PlatformInfo.isWeb) {
 
       String fileDirectory = (await getApplicationDocumentsDirectory()).absolute.path;
 
