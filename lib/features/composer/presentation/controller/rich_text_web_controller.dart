@@ -47,8 +47,16 @@ class RichTextWebController extends BaseRichTextController {
     });
   }
 
-  void onEditorSettingsChange(EditorSettings settings) async {
-    log('RichTextWebController::onEditorSettingsChange():foregroundColor: ${settings.foregroundColor} | backgroundColor: ${settings.backgroundColor}');
+  void onEditorSettingsChange(EditorSettings settings) {
+    _updateTextStyle(settings);
+    _updateFontName(settings);
+    _updateTextColor(settings);
+    _updateBackgroundTextColor(settings);
+    _updateOrderList(settings);
+    _updateParagraph(settings);
+  }
+
+  void _updateTextStyle(EditorSettings settings) {
     listTextStyleApply.clear();
 
     if (settings.isBold) {
@@ -67,11 +75,35 @@ class RichTextWebController extends BaseRichTextController {
       listTextStyleApply.add(RichTextStyleType.strikeThrough);
     }
 
-    log('RichTextWebController::onEditorSettingsChange(): $listTextStyleApply');
+    log('RichTextWebController::_updateTextStyle(): $listTextStyleApply');
+  }
 
+  void _updateFontName(EditorSettings settings) {
+    log('RichTextWebController::_updateFontName():fontName: ${settings.fontName}');
+    final matchedFontName = FontNameType.values.firstWhereOrNull((fontName) => fontName.value == settings.fontName);
+    log('RichTextWebController::_updateFontName():matchedFontName: $matchedFontName');
+    if (matchedFontName != null) {
+      selectedFontName.value = matchedFontName;
+    }
+  }
+
+  void _updateTextColor(EditorSettings settings) {
     selectedTextColor.value = settings.foregroundColor;
-    selectedTextBackgroundColor.value = settings.backgroundColor;
+  }
 
+  void _updateBackgroundTextColor(EditorSettings settings) {
+    selectedTextBackgroundColor.value = settings.backgroundColor;
+  }
+
+  void _updateOrderList(EditorSettings settings) {
+    if (settings.isOl) {
+      selectedOrderList.value = OrderListType.numberedList;
+    } else if (settings.isUl) {
+      selectedOrderList.value = OrderListType.bulletedList;
+    }
+  }
+
+  void _updateParagraph(EditorSettings settings) {
     if (settings.isAlignCenter) {
       selectedParagraph.value = ParagraphType.alignCenter;
     } else if (settings.isAlignJustify) {
@@ -80,12 +112,6 @@ class RichTextWebController extends BaseRichTextController {
       selectedParagraph.value = ParagraphType.alignLeft;
     } else if (settings.isAlignRight) {
       selectedParagraph.value = ParagraphType.alignRight;
-    }
-
-    if (settings.isOl) {
-      selectedOrderList.value = OrderListType.numberedList;
-    } else if (settings.isUl) {
-      selectedOrderList.value = OrderListType.bulletedList;
     }
   }
 
@@ -157,8 +183,8 @@ class RichTextWebController extends BaseRichTextController {
     final fontSelected = newFont ?? FontNameType.sansSerif;
     selectedFontName.value = fontSelected;
     editorController.execCommand(
-        RichTextStyleType.fontName.commandAction,
-        argument: fontSelected.fontFamily);
+      RichTextStyleType.fontName.commandAction,
+      argument: fontSelected.value);
     editorController.setFocus();
   }
 
