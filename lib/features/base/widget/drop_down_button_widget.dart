@@ -174,7 +174,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
       return item.name ?? '';
     }
     if (item is FontNameType) {
-      return item.fontFamily;
+      return item.title;
     }
     if (item is rich_text_composer.SafeFont) {
       return item.name;
