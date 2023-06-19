@@ -302,9 +302,10 @@ class ThreadView extends GetWidget<ThreadController>
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
         if (scrollInfo is ScrollEndNotification
-            && !controller.isLoadingMore
+            && !controller.loadingMoreStatus.isRunning
             && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent
         ) {
+          log('ThreadView::_buildListEmailBody(): CALL LOAD MORE');
           if (controller.isSearchActive() || controller.searchController.advancedSearchIsActivated.isTrue) {
             controller.searchMoreEmails();
           } else {
