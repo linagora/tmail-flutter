@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/dismissible_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
@@ -324,7 +325,9 @@ class ThreadView extends GetWidget<ThreadController>
           key: const PageStorageKey('list_presentation_email_in_threads'),
           itemExtent: _getItemExtent(context),
           itemCount: listPresentationEmail.length,
-          itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index]))
+          itemBuilder: (context, index) => Obx(() => DismissibleWidget(item: listPresentationEmail[index],
+          onDismissed: (DismissDirection direction) {  },
+          child: _buildEmailItem(context, listPresentationEmail[index])))
         ),
       )
     );
