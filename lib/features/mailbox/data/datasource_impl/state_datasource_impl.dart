@@ -21,7 +21,7 @@ class StateDataSourceImpl extends StateDataSource {
   @override
   Future<State?> getState(AccountId accountId, UserName userName, StateType stateType) {
     return Future.sync(() async {
-      final stateKey = TupleKey(stateType.value, accountId.asString, userName.value).encodeKey;
+      final stateKey = TupleKey(stateType.name, accountId.asString, userName.value).encodeKey;
       final stateCache = await _stateCacheClient.getItem(stateKey);
       return stateCache?.toState();
     }).catchError(_exceptionThrower.throwException);
@@ -31,7 +31,7 @@ class StateDataSourceImpl extends StateDataSource {
   Future<void> saveState(AccountId accountId, UserName userName, StateCache stateCache) {
     return Future.sync(() async {
       final stateCacheExist = await _stateCacheClient.isExistTable();
-      final stateKey = TupleKey(stateCache.type.value, accountId.asString, userName.value).encodeKey;
+      final stateKey = TupleKey(stateCache.type.name, accountId.asString, userName.value).encodeKey;
       if (stateCacheExist) {
         return await _stateCacheClient.updateItem(stateKey, stateCache);
       } else {

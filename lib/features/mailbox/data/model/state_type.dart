@@ -1,5 +1,9 @@
 
 import 'package:hive/hive.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/extensions/account_id_extensions.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 
 part 'state_type.g.dart';
@@ -11,16 +15,9 @@ enum StateType {
   mailbox,
 
   @HiveField(1)
-  email
-}
+  email;
 
-extension StateTypeExtension on StateType {
-  String get value {
-    switch(this) {
-      case StateType.mailbox:
-        return 'mailbox';
-      case StateType.email:
-        return 'email';
-    }
+  String getTupleKeyStored(AccountId accountId, UserName userName) {
+    return TupleKey(name, accountId.asString, userName.value).encodeKey;
   }
 }
