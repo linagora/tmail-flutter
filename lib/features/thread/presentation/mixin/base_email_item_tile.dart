@@ -25,6 +25,39 @@ mixin BaseEmailItemTile {
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
+  Widget buildIconAvatarSwipe({
+    double? iconSize,
+    TextStyle? textStyle
+  }) {
+    return Container(
+      width: iconSize ?? 56,
+      height: iconSize ?? 56,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular((iconSize ?? 56) * 0.5),
+          border: Border.all(color: Colors.transparent),
+          color: AppColor.colorSpamReportBox
+      ),
+      child: SvgPicture.asset(
+          imagePaths.icEmailOpen,
+          width: 24,
+          height: 24,
+          fit: BoxFit.fill),
+    );
+  }
+
+  Widget buildTitleTileSwipe(String? text){
+    return Text(
+        text??"",
+        maxLines: 1,
+        style: TextStyle(
+            fontSize: 15,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            color: AppColor.colorTextButton,
+            fontWeight: FontWeight.w600)
+    );
+  }
+
   Widget buildMailboxContain(
     bool isSearchEmailRunning,
     PresentationEmail email
