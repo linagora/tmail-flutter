@@ -1,6 +1,8 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/detailed_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
@@ -85,9 +87,16 @@ class CachingManager {
     ], eagerError: true);
   }
 
-  Future<void> clearEmailCache() {
+  Future<void> clearEmailCacheAndStateCacheByTupleKey(AccountId accountId, Session session) {
     return Future.wait([
-      _stateCacheClient.deleteItem(StateType.email.value),
+      _stateCacheClient.deleteItem(StateType.email.getTupleKeyStored(accountId, session.username)),
+      _emailCacheClient.clearAllData(),
+    ], eagerError: true);
+  }
+
+  Future<void> clearEmailCacheAndAllStateCache() {
+    return Future.wait([
+      _stateCacheClient.clearAllData(),
       _emailCacheClient.clearAllData(),
     ], eagerError: true);
   }
