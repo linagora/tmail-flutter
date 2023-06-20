@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.d
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_base_controller.dart';
@@ -50,6 +51,7 @@ class FcmMessageController extends FcmBaseController {
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
+  NewEmailCacheManager? _newEmailCacheManager;
 
   FcmMessageController._internal() {
     _listenFcmStream();
@@ -197,7 +199,9 @@ class FcmMessageController extends FcmBaseController {
       FcmInteractorBindings().dependencies();
     });
 
-    return await _getInteractorBindings();
+    await _getInteractorBindings();
+
+    await _newEmailCacheManager?.closeNewEmailHiveCacheBox();
   }
 
   Future<void> _getInteractorBindings() {
@@ -206,6 +210,7 @@ class FcmMessageController extends FcmBaseController {
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
       _getSessionInteractor = getBinding<GetSessionInteractor>();
+      _newEmailCacheManager = getBinding<NewEmailCacheManager>();
       FcmTokenController.instance.initialize();
     } catch (e) {
       logError('FcmMessageController::_getBindings(): ${e.toString()}');

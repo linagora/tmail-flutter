@@ -44,8 +44,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
@@ -100,7 +100,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<NewEmailCacheManager>(),
       Get.find<OpenedEmailCacheManager>(),
-      Get.find<DetailedEmailCacheWorkerQueue>(),
+      Get.find<NewEmailCacheWorkerQueue>(),
       Get.find<OpenedEmailCacheWorkerQueue>(),
       Get.find<EmailCacheManager>(),
       Get.find<SendingEmailCacheManager>(),
