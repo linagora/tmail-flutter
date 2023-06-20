@@ -1,4 +1,5 @@
 
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -24,20 +25,19 @@ class NewEmailCacheManager {
     DetailedEmailHiveCache detailedEmailCache
   ) async {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
-
+    log('NewEmailCacheManager::storeDetailedNewEmail():listDetailedEmails: $listDetailedEmails');
     if (listDetailedEmails.length >= CachingConstants.maxNumberNewEmailsForOffline) {
-      final lastElementsListEmail = listDetailedEmails.sublist(
-        CachingConstants.maxNumberNewEmailsForOffline - 1,
-        listDetailedEmails.length);
+      final lastElementsListEmail = listDetailedEmails.sublist(CachingConstants.maxNumberNewEmailsForOffline - 1);
       for (var email in lastElementsListEmail) {
         if (email.emailContentPath != null) {
           await _deleteFileExisted(email.emailContentPath!);
         }
         await removeDetailedEmail(accountId, userName, email.emailId);
       }
+      log('NewEmailCacheManager::storeDetailedNewEmail(): DELETE COMPLETED');
     }
     await insertDetailedEmail(accountId, userName, detailedEmailCache);
-
+    log('NewEmailCacheManager::storeDetailedNewEmail(): INSERT COMPLETED');
     return detailedEmailCache;
   }
 
@@ -82,4 +82,6 @@ class NewEmailCacheManager {
       throw NotFoundStoredNewEmailException();
     }
   }
+
+  Future<void> closeNewEmailHiveCacheBox() => _cacheClient.closeBox();
 }

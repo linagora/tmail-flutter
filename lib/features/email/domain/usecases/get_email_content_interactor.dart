@@ -97,6 +97,7 @@ class GetEmailContentInteractor {
     }
   ) async* {
     try {
+      log('GetEmailContentInteractor::_getStoredOpenedEmail(): CALLED');
       final detailedEmail = await emailRepository.getStoredOpenedEmail(session, accountId, emailId);
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         emailContent: detailedEmail.htmlEmailContent ?? "",
@@ -130,6 +131,7 @@ class GetEmailContentInteractor {
     }
   ) async* {
     try {
+      log('GetEmailContentInteractor::_getStoredNewEmail():CALLED');
       final detailedEmail = await emailRepository.getStoredNewEmail(session, accountId, emailId);
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         emailContent: detailedEmail.htmlEmailContent ?? "",

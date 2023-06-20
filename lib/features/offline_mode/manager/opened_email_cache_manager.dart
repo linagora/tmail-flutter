@@ -54,9 +54,7 @@ class OpenedEmailCacheManager {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
 
     if (listDetailedEmails.length >= CachingConstants.maxNumberOpenedEmailsForOffline) {
-      final lastElementsListEmail = listDetailedEmails.sublist(
-        CachingConstants.maxNumberOpenedEmailsForOffline - 1,
-        listDetailedEmails.length);
+      final lastElementsListEmail = listDetailedEmails.sublist(CachingConstants.maxNumberOpenedEmailsForOffline - 1);
       for (var email in lastElementsListEmail) {
         if (email.emailContentPath != null) {
           await _deleteFileExisted(email.emailContentPath!);
