@@ -31,8 +31,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_sending_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/sending_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
@@ -49,7 +49,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
   final NewEmailCacheManager _newEmailCacheManager;
   final OpenedEmailCacheManager _openedEmailCacheManager;
-  final DetailedEmailCacheWorkerQueue _cacheWorkerQueue;
+  final NewEmailCacheWorkerQueue _newEmailCacheWorkerQueue;
   final OpenedEmailCacheWorkerQueue _openedEmailCacheWorkerQueue;
   final EmailCacheManager _emailCacheManager;
   final SendingEmailCacheManager _sendingEmailCacheManager;
@@ -59,7 +59,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   EmailHiveCacheDataSourceImpl(
     this._newEmailCacheManager,
     this._openedEmailCacheManager,
-    this._cacheWorkerQueue,
+    this._newEmailCacheWorkerQueue,
     this._openedEmailCacheWorkerQueue,
     this._emailCacheManager,
     this._sendingEmailCacheManager,
@@ -131,6 +131,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
     return Future.sync(() async {
       final task = HiveTask(
+        id: detailedEmail.emailId.asString,
         runnable: () async {
           final fileSaved = await _fileUtils.saveToFile(
             nameFile: detailedEmail.emailId.asString,
@@ -139,15 +140,16 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
           );
 
           final detailedEmailSaved = detailedEmail.fromEmailContentPath(fileSaved.path);
+          final detailedEmailCacheSaved = detailedEmailSaved.toHiveCache();
 
           final detailedEmailCache = await _newEmailCacheManager.storeDetailedNewEmail(
             accountId,
             session.username,
-            detailedEmailSaved.toHiveCache());
+            detailedEmailCacheSaved);
 
           return detailedEmailCache;
         });
-      return _cacheWorkerQueue.addTask(task);
+      return _newEmailCacheWorkerQueue.addTask(task);
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -172,6 +174,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<void> storeOpenedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
     return Future.sync(() async {
       final task = HiveTask(
+        id: detailedEmail.emailId.asString,
         runnable: () async {
           final fileSaved = await _fileUtils.saveToFile(
             nameFile: detailedEmail.emailId.asString,

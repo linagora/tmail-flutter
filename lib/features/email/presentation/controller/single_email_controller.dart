@@ -347,7 +347,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (emailLoaded != null) {
       dispatchState(Right<Failure, Success>(GetEmailContentLoading()));
-      await Future.delayed(const Duration(milliseconds: 300));
       consumeState(Stream.value(Right<Failure, Success>(
         GetEmailContentSuccess(
           emailContent: emailLoaded.emailContent,
@@ -407,6 +406,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (PlatformInfo.isMobile) {
         final detailedEmail = DetailedEmail(
           emailId: currentEmail!.id!,
+          createdTime: DateTime.now(),
           attachments: attachments,
           headers: currentEmail?.emailHeader?.toSet(),
           keywords: currentEmail?.keywords,

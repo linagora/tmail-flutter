@@ -11,9 +11,11 @@ class DetailedEmail with EquatableMixin {
   final Map<KeyWordIdentifier, bool>? keywords;
   final String? htmlEmailContent;
   final String? emailContentPath;
+  final DateTime createdTime;
 
   DetailedEmail({
     required this.emailId,
+    required this.createdTime,
     this.attachments,
     this.headers,
     this.keywords,
@@ -24,6 +26,7 @@ class DetailedEmail with EquatableMixin {
   @override
   List<Object?> get props => [
     emailId,
+    createdTime,
     attachments,
     headers,
     keywords,

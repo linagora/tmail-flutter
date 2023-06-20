@@ -11,7 +11,7 @@ extension DetailedEmailExtension on DetailedEmail {
   DetailedEmailHiveCache toHiveCache() {
     return DetailedEmailHiveCache(
       emailId: emailId.asString,
-      timeSaved: DateTime.now(),
+      timeSaved: createdTime,
       attachments: attachments?.toHiveCache(),
       headers: headers?.toList().toHiveCache(),
       keywords: keywords?.toMapString(),
@@ -26,6 +26,7 @@ extension DetailedEmailExtension on DetailedEmail {
   DetailedEmail fromEmailContentPath(String path) {
     return DetailedEmail(
       emailId: emailId,
+      createdTime: createdTime,
       attachments: attachments,
       headers: headers,
       keywords: keywords,

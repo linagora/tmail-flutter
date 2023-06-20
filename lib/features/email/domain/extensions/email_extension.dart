@@ -7,6 +7,7 @@ extension EmailExtension on Email {
   DetailedEmail toDetailedEmail({String? htmlEmailContent}) {
     return DetailedEmail(
       emailId: id!,
+      createdTime: DateTime.now(),
       attachments: allAttachments,
       headers: headers,
       keywords: keywords,
