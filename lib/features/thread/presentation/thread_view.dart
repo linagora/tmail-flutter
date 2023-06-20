@@ -325,7 +325,7 @@ class ThreadView extends GetWidget<ThreadController>
           key: const PageStorageKey('list_presentation_email_in_threads'),
           itemExtent: _getItemExtent(context),
           itemCount: listPresentationEmail.length,
-          itemBuilder: (context, index) => Obx(() => DismissibleWidget(item: listPresentationEmail[index],
+          itemBuilder: (context, index) => Obx(() => DismissibleWidget(textLeft:"Marke as read",item: listPresentationEmail[index],
           onDismissed: (DismissDirection direction) {  },
           child: _buildEmailItem(context, listPresentationEmail[index])))
         ),
