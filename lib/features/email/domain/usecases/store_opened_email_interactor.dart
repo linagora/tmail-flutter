@@ -36,8 +36,7 @@ class StoreOpenedEmailInteractor {
 
   Future<bool> _isOpenedEmailAlreadyStored(Session session, AccountId accountId, DetailedEmail detailedEmail) async {
     try {
-      final storedOpenEmail = await _emailRepository.getStoredOpenedEmail(session, accountId, detailedEmail.emailId);
-      log('StoreOpenedEmailInteractor::isOpenedEmailAlreadyStored():storedOpenEmail: $storedOpenEmail');
+      await _emailRepository.getStoredOpenedEmail(session, accountId, detailedEmail.emailId);
       return true;
     } catch (err) {
       logError('StoreOpenedEmailInteractor::isOpenedEmailAlreadyStored():EXCEPTION: $err');
