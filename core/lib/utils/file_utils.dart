@@ -52,7 +52,7 @@ class FileUtils {
     final file = File(internalStorageDirPath);
     log("FileUtils()::saveToFile: $file");
 
-    return await file.writeAsString(content, mode: FileMode.append);
+    return await file.writeAsString(content, mode: FileMode.write);
   }
 
   Future<void> deleteFile(String filePath) async {
