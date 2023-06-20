@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -30,11 +29,12 @@ class GetEmailByIdInteractor {
     try {
       yield Right<Failure, Success>(GetEmailByIdLoading());
       if (PlatformInfo.isMobile) {
-        yield* _tryToGetEmailFromCache(session, accountId, emailId, properties: properties);
+        yield* _getStoredEmail(session, accountId, emailId, properties: properties);
       } else {
         yield* _getEmailByIdFromServer(session, accountId, emailId, properties: properties);
       }
     } catch (e) {
+      logError('GetEmailByIdInteractor::execute():EXCEPTION: $e');
       yield Left<Failure, Success>(GetEmailByIdFailure(e));
     }
   }
@@ -51,12 +51,13 @@ class GetEmailByIdInteractor {
       final email = await _threadRepository.getEmailById(session, accountId, emailId, properties: properties);
       yield Right<Failure, Success>(GetEmailByIdSuccess(email));
     } catch (e) {
+      logError('GetEmailByIdInteractor::_getEmailByIdFromServer():EXCEPTION: $e');
       yield Left<Failure, Success>(GetEmailByIdFailure(e));
     }
 
   }
 
-  Stream<Either<Failure, Success>> _tryToGetEmailFromCache(
+  Stream<Either<Failure, Success>> _getStoredEmail(
     Session session,
     AccountId accountId,
     EmailId emailId,
@@ -65,20 +66,11 @@ class GetEmailByIdInteractor {
     }
   ) async* {
     try {
-
-      final email = await _emailRepository.getEmailStored(session, accountId, emailId);
-
-      if (email != null) {
-        yield Right<Failure, Success>(GetEmailByIdSuccess(email.toPresentationEmail()));
-      } else {
-        yield* _getEmailByIdFromServer(session, accountId, emailId, properties: properties);
-      }
+      final email = await _emailRepository.getStoredEmail(session, accountId, emailId);
+      yield Right<Failure, Success>(GetEmailByIdSuccess(email.toPresentationEmail()));
     } catch (e) {
-      if (e is PathNotFoundException) {
-        yield* _getEmailByIdFromServer(session, accountId, emailId, properties: properties);
-      } else {
-        yield Left<Failure, Success>(GetEmailByIdFailure(e));
-      }
+      logError('GetEmailByIdInteractor::_tryToGetEmailFromCache():EXCEPTION: $e');
+      yield* _getEmailByIdFromServer(session, accountId, emailId, properties: properties);
     }
   }
 }

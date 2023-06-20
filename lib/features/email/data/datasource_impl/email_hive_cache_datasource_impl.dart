@@ -229,11 +229,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email?> getEmailStored(Session session, AccountId accountId, EmailId emailId) {
+  Future<Email> getStoredEmail(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
-      final email = await _emailCacheManager.getEmailFromCache(accountId, session.username, emailId);
-      log('EmailHiveCacheDataSourceImpl::getEmailFromCache():emailId: $email');
-      return email?.toEmail();
+      final email = await _emailCacheManager.getStoredEmail(accountId, session.username, emailId);
+      return email.toEmail();
     }).catchError(_exceptionThrower.throwException);
   }
 
