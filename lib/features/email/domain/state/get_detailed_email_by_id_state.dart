@@ -9,15 +9,14 @@ class GetDetailedEmailByIdLoading extends UIState {}
 
 class GetDetailedEmailByIdSuccess extends UIState {
 
-  final Email email;
-  final DetailedEmail detailedEmail;
+  final Map<Email, DetailedEmail> mapDetailedEmail;
   final AccountId accountId;
   final Session session;
 
-  GetDetailedEmailByIdSuccess(this.email, this.detailedEmail, this.accountId, this.session);
+  GetDetailedEmailByIdSuccess(this.mapDetailedEmail, this.accountId, this.session);
 
   @override
-  List<Object?> get props => [email, detailedEmail, accountId, session];
+  List<Object?> get props => [mapDetailedEmail, accountId, session];
 }
 
 class GetDetailedEmailByIdFailure extends FeatureFailure {

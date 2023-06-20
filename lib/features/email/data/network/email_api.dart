@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
@@ -628,11 +629,16 @@ class EmailAPI with HandleSetErrorMixin {
     return setEmailResponse?.destroyed?.contains(emailId.id) == true;
   }
 
-  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) async {
+  Future<List<Email>> getListDetailedEmailById(
+    Session session,
+    AccountId accountId,
+    Set<EmailId> emailIds,
+    {Set<Comparator>? sort}
+  ) async {
     final jmapRequestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds({emailId.id})
+      ..addIds(emailIds.map((emailId) => emailId.id).toSet())
       ..addProperties(ThreadConstants.propertiesGetDetailedEmail)
       ..addFetchHTMLBodyValues(true);
 
@@ -649,8 +655,14 @@ class EmailAPI with HandleSetErrorMixin {
       getEmailInvocation.methodCallId,
       GetEmailResponse.deserialize);
 
+    if (sort != null && resultList != null) {
+      for (var comparator in sort) {
+        resultList.sortEmails(comparator);
+      }
+    }
+
     if (resultList?.list.isNotEmpty == true) {
-      return resultList!.list.first;
+      return resultList!.list;
     } else {
       throw NotFoundEmailException();
     }
