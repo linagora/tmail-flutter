@@ -8,8 +8,7 @@ import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
-import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_extension.dart';
-import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_cache_exceptions.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_detailed_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
 
@@ -47,55 +46,58 @@ class OpenedEmailCacheManager {
     return detailedEmailCacheList;
   }
 
-  Future<void> storeOpenedEmail(
+  Future<DetailedEmailHiveCache> storeOpenedEmail(
     AccountId accountId,
     UserName userName,
-    DetailedEmail detailedEmail
+    DetailedEmailHiveCache detailedEmailCache
   ) async {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
 
     if (listDetailedEmails.length >= CachingConstants.maxNumberOpenedEmailsForOffline) {
-      final lastElementsListEmail = listDetailedEmails.sublist(CachingConstants.maxNumberOpenedEmailsForOffline, listDetailedEmails.length);
+      final lastElementsListEmail = listDetailedEmails.sublist(
+        CachingConstants.maxNumberOpenedEmailsForOffline - 1,
+        listDetailedEmails.length);
       for (var email in lastElementsListEmail) {
-        log('OpenedEmailCacheManager::handleStoreDetailedEmail():latestEmail: $email');
         if (email.emailContentPath != null) {
           await _deleteFileExisted(email.emailContentPath!);
         }
         await removeDetailedEmail(accountId, userName, email.emailId);
       }
     }
-    await insertDetailedEmail(accountId, userName, detailedEmail.toHiveCache());
+    await insertDetailedEmail(accountId, userName, detailedEmailCache);
+
+    return detailedEmailCache;
   }
 
-  Future<bool> isOpenedDetailEmailCached(
+  Future<bool> isOpenedEmailAlreadyStored(
     AccountId accountId,
     UserName userName,
     EmailId emailId
   ) async {
-    final emailContentPathExists = await _isFileExisted(emailId);
-    final detailedEmailCacheExists = await getOpenedEmailExistedInCache(accountId, userName, emailId);
+    final listResult = await Future.wait([
+      getStoredOpenedEmail(accountId, userName, emailId),
+      _fileUtils.isFileExisted(
+        nameFile: emailId.asString,
+        folderPath: CachingConstants.openedEmailContentFolderName)
+    ], eagerError: true);
 
-    return emailContentPathExists == true && detailedEmailCacheExists != null;
+    final emailContentPathExists = listResult.last as bool;
+
+    return emailContentPathExists;
   }
 
-  Future<bool?> _isFileExisted(EmailId emailId) async {
-    final fileSaved = await _fileUtils.isFileExisted(
-      nameFile: emailId.asString,
-      folderPath: CachingConstants.openedEmailContentFolderName,
-    );
-    log('OpenedEmailCacheManager::_getDetailedEmailCache():_getEmailContentPath: $fileSaved');
-    return fileSaved;
-  }
-
-  Future<DetailedEmailHiveCache?> getOpenedEmailExistedInCache(
+  Future<DetailedEmailHiveCache> getStoredOpenedEmail(
     AccountId accountId,
     UserName userName,
     EmailId emailId
   ) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    final detailedEmailCache = await _cacheClient.getItem(keyCache,needToReopen: true);
-    log('OpenedEmailCacheManager::getOpenedEmailExistedInCache(): $detailedEmailCache');
-    return detailedEmailCache;
+    final detailedEmailCache = await _cacheClient.getItem(keyCache, needToReopen: true);
+    if (detailedEmailCache != null) {
+      return detailedEmailCache;
+    } else {
+      throw NotFoundStoredOpenedEmailException();
+    }
   }
 
   Future<void> _deleteFileExisted(String pathFile) async {

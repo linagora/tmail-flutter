@@ -153,7 +153,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storeDetailedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+  Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
     throw UnimplementedError();
   }
 
@@ -175,12 +175,12 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<DetailedEmail> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
+  Future<DetailedEmail> getStoredOpenedEmail(Session session, AccountId accountId, EmailId emailId) {
     throw UnimplementedError();
   }
 
   @override
-  Future<DetailedEmail?> getIncomingEmailedStored(Session session, AccountId accountId, EmailId emailId) {
+  Future<DetailedEmail> getStoredNewEmail(Session session, AccountId accountId, EmailId emailId) {
     throw UnimplementedError();
   }
 

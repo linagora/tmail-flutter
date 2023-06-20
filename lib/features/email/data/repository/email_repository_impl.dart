@@ -185,8 +185,8 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail) {
-    return emailDataSource[DataSourceType.hiveCache]!.storeDetailedEmail(session, accountId, detailedEmail);
+  Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail) {
+    return emailDataSource[DataSourceType.hiveCache]!.storeDetailedNewEmail(session, accountId, detailedEmail);
   }
 
   @override
@@ -195,7 +195,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> storeEmailToCache(Session session, AccountId accountId, Email email) {
+  Future<void> storeEmail(Session session, AccountId accountId, Email email) {
     return emailDataSource[DataSourceType.hiveCache]!.storeEmail(session, accountId, email);
   }
 
@@ -205,18 +205,17 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId) async {
-    final getIncomingEmailedStored = await emailDataSource[DataSourceType.hiveCache]!.getIncomingEmailedStored(session, accountId, emailId);
-    final openedEmail = await emailDataSource[DataSourceType.hiveCache]!.getOpenedEmail(session, accountId, emailId);
-    if (getIncomingEmailedStored != null) {
-      return getIncomingEmailedStored;
-    } else {
-      return openedEmail;
-    }
+  Future<DetailedEmail> getStoredOpenedEmail(Session session, AccountId accountId, EmailId emailId) async {
+    return emailDataSource[DataSourceType.hiveCache]!.getStoredOpenedEmail(session, accountId, emailId);
   }
 
   @override
   Future<Email?> getEmailStored(Session session, AccountId accountId, EmailId emailId) {
     return emailDataSource[DataSourceType.hiveCache]!.getEmailStored(session, accountId, emailId);
+  }
+
+  @override
+  Future<DetailedEmail> getStoredNewEmail(Session session, AccountId accountId, EmailId emailId) {
+    return emailDataSource[DataSourceType.hiveCache]!.getStoredNewEmail(session, accountId, emailId);
   }
 }

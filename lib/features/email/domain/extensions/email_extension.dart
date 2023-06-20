@@ -8,7 +8,8 @@ extension EmailExtension on Email {
     return DetailedEmail(
       emailId: id!,
       attachments: allAttachments,
-      headers: headers?.toList(),
+      headers: headers,
+      keywords: keywords,
       htmlEmailContent: htmlEmailContent
     );
   }

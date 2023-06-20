@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -31,13 +30,13 @@ class GetEmailContentInteractor {
       yield Right<Failure, Success>(GetEmailContentLoading());
 
       if (PlatformInfo.isMobile) {
-        yield* _tryToGetOpenedEmailCache(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
+        yield* _getStoredOpenedEmail(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
       } else {
         yield* _getContentEmailFromServer(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
       }
     } catch (e) {
       log('GetEmailContentInteractor::execute(): exception = $e');
-      yield Left(GetEmailContentFailure(e));
+      yield Left<Failure, Success>(GetEmailContentFailure(e));
     }
   }
 
@@ -51,63 +50,105 @@ class GetEmailContentInteractor {
       bool draftsEmail = false
     }
   ) async* {
-    final email = await emailRepository.getEmailContent(session, accountId, emailId);
+    try {
+      final email = await emailRepository.getEmailContent(session, accountId, emailId);
 
-    if (email.emailContentList.isNotEmpty) {
-      final newEmailContents = await emailRepository.transformEmailContent(
-        email.emailContentList,
-        email.allAttachments.listAttachmentsDisplayedInContent,
-        baseDownloadUrl,
-        accountId,
-        draftsEmail: draftsEmail
-      );
+      if (email.emailContentList.isNotEmpty) {
+        final newEmailContents = await emailRepository.transformEmailContent(
+          email.emailContentList,
+          email.allAttachments.listAttachmentsDisplayedInContent,
+          baseDownloadUrl,
+          accountId,
+          draftsEmail: draftsEmail
+        );
 
-      final newEmailContentsDisplayed = PlatformInfo.isWeb && !composeEmail
-        ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
-        : newEmailContents;
+        final newEmailContentsDisplayed = PlatformInfo.isWeb && !composeEmail
+          ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
+          : newEmailContents;
 
-      yield Right<Failure, Success>(GetEmailContentSuccess(
-        newEmailContents.asHtmlString,
-        newEmailContentsDisplayed,
-        email.allAttachments,
-        email
-      ));
-    } else if (email.allAttachments.isNotEmpty) {
-      yield Right<Failure, Success>(GetEmailContentSuccess("", [], email.allAttachments, email));
-    } else if (email.headers?.isNotEmpty == true) {
-      yield Right<Failure, Success>(GetEmailContentSuccess("", [], [], email));
-    } else {
-      yield Left(GetEmailContentFailure(null));
+        yield Right<Failure, Success>(GetEmailContentSuccess(
+          emailContents: newEmailContents.asHtmlString,
+          emailContentsDisplayed: newEmailContentsDisplayed,
+          attachments: email.allAttachments,
+          emailCurrent: email
+        ));
+      } else {
+        yield Right<Failure, Success>(GetEmailContentSuccess(
+          emailContents: '',
+          emailContentsDisplayed: [],
+          attachments: email.allAttachments,
+          emailCurrent: email
+        ));
+      }
+    } catch (e) {
+      logError('GetEmailContentInteractor::_getContentEmailFromServer():EXCEPTION: $e');
+      yield Left<Failure, Success>(GetEmailContentFailure(e));
     }
   }
 
-  Stream<Either<Failure, Success>> _tryToGetOpenedEmailCache(
+  Stream<Either<Failure, Success>> _getStoredOpenedEmail(
     Session session,
     AccountId accountId,
     EmailId emailId,
     String? baseDownloadUrl,
-      {
-        bool composeEmail = false,
-        bool draftsEmail = false
-      }
+    {
+      bool composeEmail = false,
+      bool draftsEmail = false
+    }
   ) async* {
     try {
-      final detailedEmail = await emailRepository.getOpenedEmail(session, accountId, emailId);
-      if (detailedEmail != null) {
-        log('GetEmailContentInteractor::_tryToGetOpenedEmailCache(): $detailedEmail');
-        yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
-          detailedEmail.htmlEmailContent ?? "",
-          detailedEmail.attachments ?? [],
-        ));
-      } else {
-        yield* _getContentEmailFromServer(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
-      }
+      final detailedEmail = await emailRepository.getStoredOpenedEmail(session, accountId, emailId);
+      yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
+        emailContentString: detailedEmail.htmlEmailContent ?? "",
+        attachments: detailedEmail.attachments ?? [],
+        emailCurrent: Email(
+          id: emailId,
+          headers: detailedEmail.headers,
+          keywords: detailedEmail.keywords
+        )
+      ));
     } catch (e) {
-      if (e is PathNotFoundException) {
-        yield* _getContentEmailFromServer(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
-      } else {
-        yield Left<Failure, Success>(GetEmailContentFailure(e));
-      }
+      logError('GetEmailContentInteractor::_getStoredOpenedEmail():EXCEPTION: $e');
+      yield* _getStoredNewEmail(
+        session,
+        accountId,
+        emailId,
+        baseDownloadUrl,
+        composeEmail: composeEmail,
+        draftsEmail: draftsEmail);
+    }
+  }
+
+  Stream<Either<Failure, Success>> _getStoredNewEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    String? baseDownloadUrl,
+    {
+      bool composeEmail = false,
+      bool draftsEmail = false
+    }
+  ) async* {
+    try {
+      final detailedEmail = await emailRepository.getStoredNewEmail(session, accountId, emailId);
+      yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
+        emailContentString: detailedEmail.htmlEmailContent ?? "",
+        attachments: detailedEmail.attachments ?? [],
+        emailCurrent: Email(
+          id: emailId,
+          headers: detailedEmail.headers,
+          keywords: detailedEmail.keywords
+        )
+      ));
+    } catch (e) {
+      logError('GetEmailContentInteractor::_getStoredNewEmail():EXCEPTION: $e');
+      yield* _getContentEmailFromServer(
+        session,
+        accountId,
+        emailId,
+        baseDownloadUrl,
+        composeEmail: composeEmail,
+        draftsEmail: draftsEmail);
     }
   }
 }

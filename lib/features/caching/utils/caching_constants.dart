@@ -21,12 +21,12 @@ class CachingConstants {
   static const int typeIdSessionHiveObj = 19;
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
-  static const String incomingEmailedCacheBoxName = 'incoming_emailed_cache_box';
+  static const String newEmailCacheBoxName = 'new_email_cache_box';
   static const String openedEmailCacheBoxName = 'opened_email_cache_box';
   static const String sendingEmailCacheBoxName = 'sending_email_cache_box';
   static const String sessionCacheBoxName = 'session_cache_box';
 
-  static const String incomingEmailedContentFolderName = 'incoming_emailed';
+  static const String newEmailsContentFolderName = 'new_emails';
   static const String openedEmailContentFolderName = 'opened_email';
 
   static const int maxNumberNewEmailsForOffline = 10;
