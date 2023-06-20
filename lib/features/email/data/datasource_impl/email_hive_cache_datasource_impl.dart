@@ -173,12 +173,6 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final task = HiveTask(
         runnable: () async {
-          final detailedEmailExisted = await _openedEmailCacheManager.isOpenedEmailAlreadyStored(accountId, session.username, detailedEmail.emailId);
-
-          if (detailedEmailExisted) {
-            return Future.value();
-          }
-
           final fileSaved = await _fileUtils.saveToFile(
             nameFile: detailedEmail.emailId.asString,
             content: detailedEmail.htmlEmailContent ?? '',

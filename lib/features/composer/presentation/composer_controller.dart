@@ -1135,8 +1135,8 @@ class ComposerController extends BaseController {
       _emailContents = arguments.emailContents;
       emailContentsViewState.value = Right(
         GetEmailContentSuccess(
-          emailContents: _emailContents!,
-          emailContentsDisplayed: [],
+          emailContent: _emailContents!,
+          emailContentDisplayed: '',
           attachments: [],
           emailCurrent: arguments.presentationEmail?.toEmail()
         )
@@ -1166,7 +1166,7 @@ class ComposerController extends BaseController {
           success.attachments.listAttachmentsDisplayedOutSide);
     }
     emailContentsViewState.value = Right(success);
-    _emailContents = success.emailContentString;
+    _emailContents = success.emailContent;
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
@@ -1176,7 +1176,7 @@ class ComposerController extends BaseController {
           success.attachments.listAttachmentsDisplayedOutSide);
     }
     emailContentsViewState.value = Right(success);
-    _emailContents = success.emailContents;
+    _emailContents = success.emailContent;
   }
 
   String getEmailAddressSender() {

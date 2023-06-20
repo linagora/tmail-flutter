@@ -400,7 +400,7 @@ class ComposerView extends BaseComposerView {
                   child: loadingWidget,
                 );
               } else if (success is GetEmailContentSuccess) {
-                var contentHtml = success.emailContents;
+                var contentHtml = success.emailContent;
                 if (contentHtml.isEmpty == true) {
                   contentHtml = HtmlExtension.editorStartTags;
                 }

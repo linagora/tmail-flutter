@@ -151,7 +151,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
     } else if (success is GetEmailContentFromCacheSuccess) {
-      _getEmailContentOffLineSuccess(success);
+      _getEmailContentOfflineSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
       _markAsEmailReadSuccess(success);
     } else if (success is ExportAttachmentSuccess) {
@@ -350,8 +350,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       await Future.delayed(const Duration(milliseconds: 300));
       consumeState(Stream.value(Right<Failure, Success>(
         GetEmailContentSuccess(
-          emailContents: emailLoaded.emailContents,
-          emailContentsDisplayed: emailLoaded.emailContentsDisplayed,
+          emailContent: emailLoaded.emailContent,
+          emailContentDisplayed: emailLoaded.emailContentDisplayed,
           attachments: emailLoaded.attachments,
           emailCurrent: emailLoaded.emailCurrent
         )
@@ -361,28 +361,47 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _getEmailContentOffLineSuccess(GetEmailContentFromCacheSuccess success) {
-    emailContents.value = success.emailContentString;
-    attachments.value = success.attachments;
-    initialEmailContents = success.emailContentString;
-  }
-
-  void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    if(emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
+  void _getEmailContentOfflineSuccess(GetEmailContentFromCacheSuccess success) {
+    if (emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
       emailSupervisorController.popFirstEmailQueue();
     }
     emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
 
     emailSupervisorController.pushEmailQueue(EmailLoaded(
-      success.emailContents,
-      success.emailContentsDisplayed.toList(),
+      success.emailContent,
+      success.emailContent,
       success.attachments.toList(),
       success.emailCurrent,
     ));
 
     if (success.emailCurrent?.id == currentEmail?.id) {
-      emailContents.value = success.emailContentsDisplayed.asHtmlString;
-      initialEmailContents = success.emailContents;
+      emailContents.value = success.emailContent;
+      initialEmailContents = success.emailContent;
+      attachments.value = success.attachments;
+
+      final isShowMessageReadReceipt = success.emailCurrent?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
+      if (isShowMessageReadReceipt) {
+        _handleReadReceipt();
+      }
+    }
+  }
+
+  void _getEmailContentSuccess(GetEmailContentSuccess success) {
+    if (emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
+      emailSupervisorController.popFirstEmailQueue();
+    }
+    emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
+
+    emailSupervisorController.pushEmailQueue(EmailLoaded(
+      success.emailContent,
+      success.emailContentDisplayed,
+      success.attachments.toList(),
+      success.emailCurrent,
+    ));
+
+    if (success.emailCurrent?.id == currentEmail?.id) {
+      emailContents.value = success.emailContentDisplayed;
+      initialEmailContents = success.emailContent;
       attachments.value = success.attachments;
 
       if (PlatformInfo.isMobile) {
