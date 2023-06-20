@@ -8,6 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
@@ -158,9 +159,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) {
+  Future<List<Email>> getListDetailedEmailById(Session session, AccountId accountId, Set<EmailId> emailIds, {Set<Comparator>? sort}) {
     return Future.sync(() async {
-      return await emailAPI.getDetailedEmailById(session, accountId, emailId);
+      return await emailAPI.getListDetailedEmailById(session, accountId, emailIds, sort: sort);
     }).catchError(_exceptionThrower.throwException);
   }
 

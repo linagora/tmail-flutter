@@ -406,7 +406,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (PlatformInfo.isMobile) {
         final detailedEmail = DetailedEmail(
           emailId: currentEmail!.id!,
-          createdTime: DateTime.now(),
+          createdTime: currentEmail?.receivedAt?.value ?? DateTime.now(),
           attachments: attachments,
           headers: currentEmail?.emailHeader?.toSet(),
           keywords: currentEmail?.keywords,
