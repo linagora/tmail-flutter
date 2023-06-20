@@ -53,10 +53,11 @@ mixin BaseEmailItemTile {
         text??"",
         maxLines: 1,
         style: TextStyle(
-            fontSize: 15,
-            overflow: CommonTextStyle.defaultTextOverFlow,
-            color: AppColor.colorTextButton,
-            fontWeight: FontWeight.w600)
+          fontSize: 15,
+          overflow: CommonTextStyle.defaultTextOverFlow,
+          color: AppColor.colorTextButton,
+          fontWeight: FontWeight.w600
+        )
     );
   }
 
