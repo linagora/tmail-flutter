@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_detailed_email_by_id_interator.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/store_detailed_email_to_cache_interator.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_new_email_interator.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -23,8 +23,8 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_dataso
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
@@ -104,7 +104,7 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<StateCacheClient>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
-      Get.find<DetailedEmailCacheManager>(),
+      Get.find<NewEmailCacheManager>(),
       Get.find<OpenedEmailCacheManager>(),
       Get.find<DetailedEmailCacheWorkerQueue>(),
       Get.find<OpenedEmailCacheWorkerQueue>(),
@@ -137,7 +137,7 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<FCMRepositoryImpl>(),
       Get.find<EmailRepository>()));
     Get.lazyPut(() => GetDetailedEmailByIdInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => StoreDetailedEmailToCacheInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => StoreNewEmailInteractor(Get.find<EmailRepository>()));
   }
 
   @override

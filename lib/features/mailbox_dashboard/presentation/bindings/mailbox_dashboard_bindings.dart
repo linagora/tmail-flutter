@@ -94,8 +94,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
@@ -248,7 +248,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
-      Get.find<DetailedEmailCacheManager>(),
+      Get.find<NewEmailCacheManager>(),
       Get.find<OpenedEmailCacheManager>(),
       Get.find<DetailedEmailCacheWorkerQueue>(),
       Get.find<OpenedEmailCacheWorkerQueue>(),

@@ -5,12 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/authentication_info_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
-import 'package:tmail_ui_user/features/caching/clients/detailed_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/encryption_key_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
@@ -31,8 +31,8 @@ import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/detailed_email_cache_worker_queue.dart';
+import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
@@ -75,8 +75,8 @@ class LocalBindings extends Bindings {
     Get.put(FcmCacheClient());
     Get.put(FCMCacheManager(Get.find<FcmCacheClient>(),Get.find<FCMSubscriptionCacheClient>()));
     Get.put(HiveCacheVersionClient(Get.find<SharedPreferences>(), Get.find<CacheExceptionThrower>()));
-    Get.put(DetailedEmailHiveCacheClient());
-    Get.put(DetailedEmailCacheManager(Get.find<DetailedEmailHiveCacheClient>(), Get.find<FileUtils>()));
+    Get.put(NewEmailHiveCacheClient());
+    Get.put(NewEmailCacheManager(Get.find<NewEmailHiveCacheClient>(), Get.find<FileUtils>()));
     Get.put(OpenedEmailHiveCacheClient());
     Get.put(OpenedEmailCacheManager(Get.find<OpenedEmailHiveCacheClient>(), Get.find<FileUtils>()));
     Get.put(SendingEmailHiveCacheClient());
@@ -91,7 +91,7 @@ class LocalBindings extends Bindings {
       Get.find<FcmCacheClient>(),
       Get.find<FCMSubscriptionCacheClient>(),
       Get.find<HiveCacheVersionClient>(),
-      Get.find<DetailedEmailHiveCacheClient>(),
+      Get.find<NewEmailHiveCacheClient>(),
       Get.find<OpenedEmailHiveCacheClient>(),
       Get.find<FileUtils>(),
       Get.find<SendingEmailCacheManager>(),

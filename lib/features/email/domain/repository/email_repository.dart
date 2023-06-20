@@ -88,15 +88,17 @@ abstract class EmailRepository {
 
   Future<jmap.State?> getEmailState(Session session, AccountId accountId);
 
-  Future<void> storeDetailedEmailToCache(Session session, AccountId accountId, DetailedEmail detailedEmail);
+  Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
   Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId);
 
-  Future<void> storeEmailToCache(Session session, AccountId accountId, Email email);
+  Future<void> storeEmail(Session session, AccountId accountId, Email email);
 
   Future<Email?> getEmailStored(Session session, AccountId accountId, EmailId emailId);
 
   Future<void> storeOpenedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
-  Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId);
+  Future<DetailedEmail> getStoredOpenedEmail(Session session, AccountId accountId, EmailId emailId);
+
+  Future<DetailedEmail> getStoredNewEmail(Session session, AccountId accountId, EmailId emailId);
 }

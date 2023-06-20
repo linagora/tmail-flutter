@@ -76,7 +76,7 @@ abstract class EmailDataSource {
 
   Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId);
 
-  Future<void> storeDetailedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
+  Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
   Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId);
 
@@ -86,9 +86,9 @@ abstract class EmailDataSource {
 
   Future<void> storeOpenedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
-  Future<DetailedEmail?> getOpenedEmail(Session session, AccountId accountId, EmailId emailId);
+  Future<DetailedEmail> getStoredOpenedEmail(Session session, AccountId accountId, EmailId emailId);
 
-  Future<DetailedEmail?> getIncomingEmailedStored(Session session, AccountId accountId, EmailId emailId);
+  Future<DetailedEmail> getStoredNewEmail(Session session, AccountId accountId, EmailId emailId);
 
   Future<SendingEmail> storeSendingEmail(AccountId accountId, UserName userName, SendingEmail sendingEmail);
 
