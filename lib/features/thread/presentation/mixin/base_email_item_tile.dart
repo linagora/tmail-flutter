@@ -25,24 +25,26 @@ mixin BaseEmailItemTile {
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
-  Widget buildIconAvatarSwipe({
-    double? iconSize,
-    TextStyle? textStyle
-  }) {
+  Widget buildIconAvatarSwipe(
+    {
+      double? iconSize,
+      TextStyle? textStyle
+    }
+  ) {
     return Container(
-      width: iconSize ?? 56,
-      height: iconSize ?? 56,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular((iconSize ?? 56) * 0.5),
-          border: Border.all(color: Colors.transparent),
+        width: iconSize ?? 56,
+        height: iconSize ?? 56,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
           color: AppColor.colorSpamReportBox
-      ),
-      child: SvgPicture.asset(
+        ),
+        child: SvgPicture.asset(
           imagePaths.icEmailOpen,
           width: 24,
           height: 24,
-          fit: BoxFit.fill),
+          fit: BoxFit.fill
+        ),
     );
   }
 
