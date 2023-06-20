@@ -82,7 +82,7 @@ abstract class EmailDataSource {
 
   Future<void> storeEmail(Session session, AccountId accountId, Email email);
 
-  Future<Email?> getEmailStored(Session session, AccountId accountId, EmailId emailId);
+  Future<Email> getStoredEmail(Session session, AccountId accountId, EmailId emailId);
 
   Future<void> storeOpenedEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
