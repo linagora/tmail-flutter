@@ -185,7 +185,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email?> getEmailStored(Session session, AccountId accountId, EmailId emailId) {
+  Future<Email> getStoredEmail(Session session, AccountId accountId, EmailId emailId) {
     throw UnimplementedError();
   }
 
