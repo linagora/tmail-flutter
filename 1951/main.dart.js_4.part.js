@@ -2039,15 +2039,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     BottomBarThreadSelectionWidget_build_closure3: function BottomBarThreadSelectionWidget_build_closure3(t0) {
       this.$this = t0;
     },
-    DismissibleWidget: function DismissibleWidget(t0, t1, t2, t3, t4, t5, t6) {
+    DismissibleWidget: function DismissibleWidget(t0, t1, t2, t3, t4, t5, t6, t7) {
       var _ = this;
       _.item = t0;
       _.child = t1;
       _.onDismissed = t2;
-      _.BaseEmailItemTile_responsiveUtils = t3;
-      _.BaseEmailItemTile_imagePaths = t4;
-      _.key = t5;
-      _.$ti = t6;
+      _.textLeft = t3;
+      _.BaseEmailItemTile_responsiveUtils = t4;
+      _.BaseEmailItemTile_imagePaths = t5;
+      _.key = t6;
+      _.$ti = t7;
     },
     DismissibleWidget_buildSwipeActionLeft_closure: function DismissibleWidget_buildSwipeActionLeft_closure() {
     },
@@ -5983,10 +5984,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     buildSwipeActionLeft$0() {
       var _null = null,
-        t1 = A.BorderRadius$circular(28),
-        t2 = A.Border_Border$all(C.Color_0, 1);
-      t1 = A.GestureDetector$(_null, A.Container$(C.Alignment_0_0, A.SvgPicture$asset("assets/images/ic_email_open.svg", _null, C.BoxFit_0, 24, _null, 24), C.Clip_0, _null, _null, new A.BoxDecoration(D.Color_4290764543, _null, t2, t1, _null, _null, _null, C.BoxShape_0), _null, 56, _null, _null, _null, _null, _null, 56), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.DismissibleWidget_buildSwipeActionLeft_closure(), _null, _null, _null, _null, _null, _null, _null);
-      return A.Container$(C.Alignment_m1_0, A.ListTile$(_null, _null, _null, _null, t1, _null, _null, A.Text$("Marke as read", _null, 1, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, C.TextOverflow_1, _null, _null, _null, _null), _null, _null, _null), _null), C.Clip_0, _null, _null, new A.BoxDecoration(I.Color_4292865791, _null, _null, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null);
+        t1 = A.GestureDetector$(_null, A.Container$(C.Alignment_0_0, A.SvgPicture$asset("assets/images/ic_email_open.svg", _null, C.BoxFit_0, 24, _null, 24), C.Clip_0, _null, _null, new A.BoxDecoration(D.Color_4290764543, _null, _null, _null, _null, _null, _null, C.BoxShape_1), _null, 56, _null, _null, _null, _null, _null, 56), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.DismissibleWidget_buildSwipeActionLeft_closure(), _null, _null, _null, _null, _null, _null, _null);
+      return A.Container$(C.Alignment_m1_0, A.ListTile$(_null, _null, _null, _null, t1, _null, _null, A.Text$(this.textLeft, _null, 1, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, C.TextOverflow_1, _null, _null, _null, _null), _null, _null, _null), _null), C.Clip_0, _null, _null, new A.BoxDecoration(I.Color_4292865791, _null, _null, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B._DismissibleWidget_StatelessWidget_BaseEmailItemTile.prototype = {};
@@ -10689,7 +10688,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this;
         t2 = $.$get$GetWidget__cache();
         A.Expando__checkType(t1);
-        if (!A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1))._isLoadingMore) {
+        if (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loadingMoreStatus !== C.LoadingMoreStatus_1) {
           t1 = scrollInfo.metrics;
           t2 = t1._scroll_metrics$_pixels;
           t2.toString;
@@ -10701,6 +10700,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         t1 = false;
       if (t1) {
+        A.log("ThreadView::_buildListEmailBody(): CALL LOAD MORE");
         t1 = this.$this;
         t2 = $.$get$GetWidget__cache();
         A.Expando__checkType(t1);
@@ -10810,7 +10810,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = $.GetInstance__getInstance;
       if (t4 == null)
         t4 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.DismissibleWidget(t3, t2, new B.ThreadView__buildListEmailBody___closure(), t1, t4.find$1$1$tag(0, null, type$.ImagePaths), null, type$.DismissibleWidget_PresentationEmail);
+      return new B.DismissibleWidget(t3, t2, new B.ThreadView__buildListEmailBody___closure(), "Marke as read", t1, t4.find$1$1$tag(0, null, type$.ImagePaths), null, type$.DismissibleWidget_PresentationEmail);
     },
     $signature: typesOffset + 18
   };
@@ -11902,4 +11902,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["vAUIUtlRYhJ+/FUtKdA42vV+TBo="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["V2faH+wX5xnm/0+v3ne0re+d4Wg="] = $__dart_deferred_initializers__.current
