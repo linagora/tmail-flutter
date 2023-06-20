@@ -67,15 +67,15 @@ class GetEmailContentInteractor {
           : newEmailContents;
 
         yield Right<Failure, Success>(GetEmailContentSuccess(
-          emailContents: newEmailContents.asHtmlString,
-          emailContentsDisplayed: newEmailContentsDisplayed,
+          emailContent: newEmailContents.asHtmlString,
+          emailContentDisplayed: newEmailContentsDisplayed.asHtmlString,
           attachments: email.allAttachments,
           emailCurrent: email
         ));
       } else {
         yield Right<Failure, Success>(GetEmailContentSuccess(
-          emailContents: '',
-          emailContentsDisplayed: [],
+          emailContent: '',
+          emailContentDisplayed: '',
           attachments: email.allAttachments,
           emailCurrent: email
         ));
@@ -99,7 +99,7 @@ class GetEmailContentInteractor {
     try {
       final detailedEmail = await emailRepository.getStoredOpenedEmail(session, accountId, emailId);
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
-        emailContentString: detailedEmail.htmlEmailContent ?? "",
+        emailContent: detailedEmail.htmlEmailContent ?? "",
         attachments: detailedEmail.attachments ?? [],
         emailCurrent: Email(
           id: emailId,
@@ -132,7 +132,7 @@ class GetEmailContentInteractor {
     try {
       final detailedEmail = await emailRepository.getStoredNewEmail(session, accountId, emailId);
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
-        emailContentString: detailedEmail.htmlEmailContent ?? "",
+        emailContent: detailedEmail.htmlEmailContent ?? "",
         attachments: detailedEmail.attachments ?? [],
         emailCurrent: Email(
           id: emailId,

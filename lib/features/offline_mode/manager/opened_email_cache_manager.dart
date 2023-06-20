@@ -69,23 +69,6 @@ class OpenedEmailCacheManager {
     return detailedEmailCache;
   }
 
-  Future<bool> isOpenedEmailAlreadyStored(
-    AccountId accountId,
-    UserName userName,
-    EmailId emailId
-  ) async {
-    final listResult = await Future.wait([
-      getStoredOpenedEmail(accountId, userName, emailId),
-      _fileUtils.isFileExisted(
-        nameFile: emailId.asString,
-        folderPath: CachingConstants.openedEmailContentFolderName)
-    ], eagerError: true);
-
-    final emailContentPathExists = listResult.last as bool;
-
-    return emailContentPathExists;
-  }
-
   Future<DetailedEmailHiveCache> getStoredOpenedEmail(
     AccountId accountId,
     UserName userName,
