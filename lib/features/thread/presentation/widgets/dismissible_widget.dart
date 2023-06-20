@@ -3,36 +3,41 @@ import 'package:flutter/material.dart';
 import '../mixin/base_email_item_tile.dart';
 
 class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
-  final T item;
+  final T? item;
   final Widget child;
-  final DismissDirectionCallback onDismissed;
+  final DismissDirectionCallback? onDismissed;
+  final String? textLeft;
 
   DismissibleWidget(
-      {super.key,
-      required this.item,
-      required this.onDismissed,
-      required this.child});
+    {
+      super.key,
+      this.item,
+      this.onDismissed,
+      this.textLeft,
+      required this.child
+    }
+  );
 
   @override
   Widget build(BuildContext context) => Dismissible(
-        direction: DismissDirection.startToEnd,
-        key: ObjectKey(item),
-        background: buildSwipeActionLeft(),
-        child: child,
-        onDismissed: onDismissed,
-      );
+      direction: DismissDirection.startToEnd,
+      key: ObjectKey(item),
+      background: buildSwipeActionLeft(),
+      onDismissed: onDismissed,
+      child: child,
+  );
 
   Widget buildSwipeActionLeft() => Container(
-        alignment: Alignment.centerLeft,
-        decoration: new BoxDecoration(
-          color: AppColor.colorItemRecipientSelected,
-        ),
-        child: ListTile(
-          leading: GestureDetector(
-            onTap: () {},
+      alignment: Alignment.centerLeft,
+      decoration: new BoxDecoration(
+        color: AppColor.colorItemRecipientSelected,
+      ),
+      child: ListTile(
+        leading: GestureDetector(
+          onTap: () {},
             child: buildIconAvatarSwipe(),
-          ),
-          title: buildTitleTileSwipe("Marke as read"),
         ),
-      );
+        title: buildTitleTileSwipe(textLeft),
+      ),
+  );
 }
