@@ -6,12 +6,12 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/state/store_detailed_email_to_cache_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/store_new_email_state.dart';
 
-class StoreDetailedEmailToCacheInteractor {
+class StoreNewEmailInteractor {
   final EmailRepository _emailRepository;
 
-  StoreDetailedEmailToCacheInteractor(this._emailRepository);
+  StoreNewEmailInteractor(this._emailRepository);
 
   Stream<Either<Failure, Success>> execute(
     Session session,
@@ -20,14 +20,14 @@ class StoreDetailedEmailToCacheInteractor {
     DetailedEmail detailedEmail
   ) async* {
     try {
-      yield Right<Failure, Success>(StoreDetailedEmailToCacheLoading());
+      yield Right<Failure, Success>(StoreNewEmailLoading());
       await Future.wait([
-        _emailRepository.storeEmailToCache(session, accountId, email),
-        _emailRepository.storeDetailedEmailToCache(session, accountId, detailedEmail),
+        _emailRepository.storeEmail(session, accountId, email),
+        _emailRepository.storeDetailedNewEmail(session, accountId, detailedEmail),
       ]);
-      yield Right<Failure, Success>(StoreDetailedEmailToCacheSuccess());
+      yield Right<Failure, Success>(StoreNewEmailSuccess());
     } catch (e) {
-      yield Left<Failure, Success>(StoreDetailedEmailToCacheFailure(e));
+      yield Left<Failure, Success>(StoreNewEmailFailure(e));
     }
   }
 }

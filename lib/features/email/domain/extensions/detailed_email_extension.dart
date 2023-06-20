@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_
 import 'package:tmail_ui_user/features/email/domain/extensions/list_email_header_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 
 extension DetailedEmailExtension on DetailedEmail {
   DetailedEmailHiveCache toHiveCache() {
@@ -12,12 +13,13 @@ extension DetailedEmailExtension on DetailedEmail {
       emailId: emailId.asString,
       timeSaved: DateTime.now(),
       attachments: attachments?.toHiveCache(),
-      headers: headers?.toHiveCache(),
+      headers: headers?.toList().toHiveCache(),
+      keywords: keywords?.toMapString(),
       emailContentPath: emailContentPath
     );
   }
 
-  String get newEmailFolderPath => CachingConstants.incomingEmailedContentFolderName;
+  String get newEmailFolderPath => CachingConstants.newEmailsContentFolderName;
 
   String get openedEmailFolderPath => CachingConstants.openedEmailContentFolderName;
 
@@ -26,6 +28,7 @@ extension DetailedEmailExtension on DetailedEmail {
       emailId: emailId,
       attachments: attachments,
       headers: headers,
+      keywords: keywords,
       htmlEmailContent: htmlEmailContent,
       emailContentPath: path,
     );
