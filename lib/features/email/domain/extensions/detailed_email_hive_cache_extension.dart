@@ -10,6 +10,7 @@ extension DetailedEmailHiveCacheExtension on DetailedEmailHiveCache {
   DetailedEmail toDetailedEmailWithContent(String emailContent) {
     return DetailedEmail(
       emailId: EmailId(Id(emailId)),
+      createdTime: timeSaved,
       attachments: attachments?.toAttachment(),
       headers: headers?.toSetEmailHeader(),
       keywords: keywords != null
