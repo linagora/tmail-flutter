@@ -1,8 +1,6 @@
 
-import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:equatable/equatable.dart';
-import 'package:intl/intl.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -110,10 +108,6 @@ class PresentationEmail with EquatableMixin {
   String get routeWebAsString => routeWeb.toString();
 
   bool get pushNotificationActivated => !isDraft && !hasRead;
-
-  String getCreateTimeAt(String newLocale) {
-    return DateFormat(sentAt?.value.toPattern(), newLocale).format(sentAt?.value ?? DateTime.now());
-  }
 
   List<EmailContent> get emailContentList {
     final newHtmlBody = htmlBody

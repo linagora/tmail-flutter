@@ -9,9 +9,12 @@ import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
@@ -22,9 +25,9 @@ import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_detailed_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_stored_state_email_state.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_detailed_email_by_id_interator.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_list_detailed_email_by_id_interator.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/store_new_email_interator.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_list_new_email_interator.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
@@ -60,9 +63,9 @@ class EmailChangeListener extends ChangeListener {
   GetMailboxesNotPutNotificationsInteractor? _getMailboxesNotPutNotificationsInteractor;
   GetEmailChangesToRemoveNotificationInteractor? _getEmailChangesToRemoveNotificationInteractor;
   GetNewReceiveEmailFromNotificationInteractor? _getNewReceiveEmailFromNotificationInteractor;
-  GetDetailedEmailByIdInteractor? _getDetailedEmailByIdInteractor;
+  GetListDetailedEmailByIdInteractor? _getListDetailedEmailByIdInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
-  StoreNewEmailInteractor? _storeNewEmailInteractor;
+  StoreListNewEmailInteractor? _storeListNewEmailInteractor;
 
   jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
@@ -81,9 +84,9 @@ class EmailChangeListener extends ChangeListener {
       _getMailboxesNotPutNotificationsInteractor = getBinding<GetMailboxesNotPutNotificationsInteractor>();
       _getEmailChangesToRemoveNotificationInteractor = getBinding<GetEmailChangesToRemoveNotificationInteractor>();
       _getNewReceiveEmailFromNotificationInteractor = getBinding<GetNewReceiveEmailFromNotificationInteractor>();
-      _getDetailedEmailByIdInteractor = getBinding<GetDetailedEmailByIdInteractor>();
+      _getListDetailedEmailByIdInteractor = getBinding<GetListDetailedEmailByIdInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
-      _storeNewEmailInteractor = getBinding<StoreNewEmailInteractor>();
+      _storeListNewEmailInteractor = getBinding<StoreListNewEmailInteractor>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -252,8 +255,7 @@ class EmailChangeListener extends ChangeListener {
       _storeNewEmailAction(
         success.session,
         success.accountId,
-        success.email,
-        success.detailedEmail);
+        success.mapDetailedEmail);
     }
   }
 
@@ -322,21 +324,18 @@ class EmailChangeListener extends ChangeListener {
 
   void _getListDetailedEmailByIdAction(Session? session, AccountId accountId, Set<EmailId> emailIds) {
     log('EmailChangeListener::_getListDetailedEmailByIdAction():emailIds: $emailIds');
-    for (var emailId in emailIds) {
-      _getDetailedEmailByIdAction(session, accountId, emailId);
-    }
-  }
-
-  void _getDetailedEmailByIdAction(Session? session, AccountId accountId, EmailId emailId) {
-    if (_getDetailedEmailByIdInteractor != null &&
+    if (_getListDetailedEmailByIdInteractor != null &&
         _dynamicUrlInterceptors != null &&
         session != null) {
       final baseDownloadUrl = session.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors!.jmapUrl);
-      consumeState(_getDetailedEmailByIdInteractor!.execute(
+      consumeState(_getListDetailedEmailByIdInteractor!.execute(
         session,
         accountId,
-        emailId,
-        baseDownloadUrl
+        emailIds,
+        baseDownloadUrl,
+        sort: <Comparator>{}
+          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+          ..setIsAscending(true))
       ));
     }
   }
@@ -344,16 +343,14 @@ class EmailChangeListener extends ChangeListener {
   void _storeNewEmailAction(
     Session session,
     AccountId accountId,
-    Email email,
-    DetailedEmail detailedEmail
+    Map<Email, DetailedEmail> mapDetailedEmails
   ) {
-    log('EmailChangeListener::_handleGetDetailedEmailByIdActionSuccess():emailId: ${email.id}');
-    if (_storeNewEmailInteractor != null) {
-      consumeState(_storeNewEmailInteractor!.execute(
+    log('EmailChangeListener::_storeNewEmailAction():mapDetailedEmails: ${mapDetailedEmails.length}');
+    if (_storeListNewEmailInteractor != null) {
+      consumeState(_storeListNewEmailInteractor!.execute(
         session,
         accountId,
-        email,
-        detailedEmail
+        mapDetailedEmails
       ));
     }
   }

@@ -13,6 +13,7 @@ import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
@@ -159,7 +160,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) {
+  Future<List<Email>> getListDetailedEmailById(Session session, AccountId accountId, Set<EmailId> emailIds, {Set<Comparator>? sort}) {
     throw UnimplementedError();
   }
 
