@@ -4,7 +4,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/detailed_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -29,7 +29,7 @@ class CachingManager {
   final FcmCacheClient _fcmCacheClient;
   final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
   final HiveCacheVersionClient _hiveCacheVersionClient;
-  final DetailedEmailHiveCacheClient _detailedEmailHiveCacheClient;
+  final NewEmailHiveCacheClient _newEmailHiveCacheClient;
   final OpenedEmailHiveCacheClient _openedEmailHiveCacheClient;
   final FileUtils _fileUtils;
   final SendingEmailCacheManager _sendingEmailCacheManager;
@@ -44,7 +44,7 @@ class CachingManager {
     this._fcmCacheClient,
     this._fcmSubscriptionCacheClient,
     this._hiveCacheVersionClient,
-    this._detailedEmailHiveCacheClient,
+    this._newEmailHiveCacheClient,
     this._openedEmailHiveCacheClient,
     this._fileUtils,
     this._sendingEmailCacheManager,
@@ -63,7 +63,7 @@ class CachingManager {
       if (PlatformInfo.isMobile)
         ...[
           _sessionHiveCacheClient.clearAllData(),
-          _detailedEmailHiveCacheClient.clearAllData(),
+          _newEmailHiveCacheClient.clearAllData(),
           _openedEmailHiveCacheClient.clearAllData(),
           _clearSendingEmailCache(),
         ]
@@ -80,7 +80,7 @@ class CachingManager {
       _recentSearchCacheClient.clearAllData(),
       if (PlatformInfo.isMobile)
        ...[
-         _detailedEmailHiveCacheClient.clearAllData(),
+         _newEmailHiveCacheClient.clearAllData(),
          _openedEmailHiveCacheClient.clearAllData(),
          _clearSendingEmailCache(),
        ]
@@ -123,7 +123,7 @@ class CachingManager {
 
   void clearAllFileInStorage() {
     if (PlatformInfo.isMobile) {
-      _fileUtils.removeFolder(CachingConstants.incomingEmailedContentFolderName);
+      _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName);
       _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName);
     }
   }
