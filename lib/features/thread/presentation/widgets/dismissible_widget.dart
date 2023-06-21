@@ -35,7 +35,7 @@ class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
       child: ListTile(
         leading: GestureDetector(
           onTap: () {},
-            child: buildIconAvatarSwipe(),
+            child: buildIconAvatarSwipe(imagePaths.icEmailOpen),
         ),
         title: buildTitleTileSwipe(textLeft),
       ),
