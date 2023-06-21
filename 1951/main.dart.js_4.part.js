@@ -285,7 +285,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _ = this;
       _._recentItems = _._quick_search_input_form$_suggestions = null;
       _.___SuggestionsListState__controllerListener_A = _.___SuggestionsListState__suggestionsValid_A = $;
-      _._lastTextValue = _._animationController = _._isQueued = _._isLoading = _._debounceTimer = null;
+      _._lastTextValue = _._quick_search_input_form$_animationController = _._isQueued = _._isLoading = _._debounceTimer = null;
       _.___SuggestionsListState__scrollController_FI = $;
       _.SingleTickerProviderStateMixin__ticker = t0;
       _.SingleTickerProviderStateMixin__tickerModeNotifier = t1;
@@ -480,6 +480,48 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._supportedDevices = t2;
       _._pointerToKind = t3;
     },
+    RenderFractionallySizedOverflowBox: function RenderFractionallySizedOverflowBox(t0, t1, t2, t3, t4, t5) {
+      var _ = this;
+      _._widthFactor = t0;
+      _._heightFactor = t1;
+      _._resolvedAlignment = null;
+      _._shifted_box$_alignment = t2;
+      _._shifted_box$_textDirection = t3;
+      _.RenderObjectWithChildMixin__child = t4;
+      _._cachedDryLayoutSizes = _._cachedIntrinsicDimensions = null;
+      _._computingThisDryLayout = false;
+      _._cachedBaselines = _._box$_size = null;
+      _._debugActivePointers = 0;
+      _._object$_debugDisposed = false;
+      _.debugCreator = _.parentData = null;
+      _._debugDoingThisLayout = _._debugDoingThisResize = false;
+      _._debugCanParentUseSize = null;
+      _._debugMutationsLocked = false;
+      _._needsLayout = true;
+      _._relayoutBoundary = null;
+      _._doingThisLayoutWithCallback = false;
+      _._constraints = null;
+      _._debugDoingThisPaint = false;
+      _.__RenderObject__wasRepaintBoundary_A = $;
+      _._layerHandle = t5;
+      _._needsCompositingBitsUpdate = false;
+      _.__RenderObject__needsCompositing_A = $;
+      _._needsPaint = true;
+      _._needsCompositedLayerUpdate = false;
+      _._cachedSemanticsConfiguration = null;
+      _._needsSemanticsUpdate = true;
+      _._semantics = null;
+      _._depth = 0;
+      _._node$_parent = _._owner = null;
+    },
+    FractionallySizedBox: function FractionallySizedBox(t0, t1, t2, t3, t4) {
+      var _ = this;
+      _.widthFactor = t0;
+      _.heightFactor = t1;
+      _.alignment = t2;
+      _.child = t3;
+      _.key = t4;
+    },
     pointerDragAnchorStrategy(draggable, context, position) {
       return C.Offset_0_0;
     },
@@ -547,8 +589,344 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _DragAvatar_updateDrag_closure0: function _DragAvatar_updateDrag_closure0() {
     },
-    ObjectKey: function ObjectKey(t0) {
-      this.value = t0;
+    ActionPaneConfiguration: function ActionPaneConfiguration(t0, t1, t2, t3, t4) {
+      var _ = this;
+      _.alignment = t0;
+      _.direction = t1;
+      _.isStartActionPane = t2;
+      _.child = t3;
+      _.key = t4;
+    },
+    BehindMotion: function BehindMotion(t0) {
+      this.key = t0;
+    },
+    ScrollMotion: function ScrollMotion(t0) {
+      this.key = t0;
+    },
+    SlidableAutoCloseBehaviorInteractor: function SlidableAutoCloseBehaviorInteractor(t0, t1, t2, t3) {
+      var _ = this;
+      _.groupTag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    SlidableAutoCloseNotification: function SlidableAutoCloseNotification(t0, t1, t2) {
+      this.groupTag = t0;
+      this.controller = t1;
+      this.closeSelf = t2;
+    },
+    SlidableAutoCloseInteractor: function SlidableAutoCloseInteractor(t0, t1, t2, t3) {
+      var _ = this;
+      _.groupTag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    SlidableAutoCloseBehaviorListener: function SlidableAutoCloseBehaviorListener(t0, t1, t2, t3) {
+      var _ = this;
+      _.groupTag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    SlidableAutoCloseBehaviorListener_build_closure: function SlidableAutoCloseBehaviorListener_build_closure(t0) {
+      this.$this = t0;
+    },
+    SlidableAutoCloseNotificationSender: function SlidableAutoCloseNotificationSender(t0, t1, t2, t3) {
+      var _ = this;
+      _.groupTag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    SlidableAutoCloseNotificationSender_build_closure: function SlidableAutoCloseNotificationSender_build_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    SlidableAutoCloseBarrierNotification: function SlidableAutoCloseBarrierNotification(t0, t1, t2) {
+      this.groupTag = t0;
+      this.controller = t1;
+      this.enabled = t2;
+    },
+    SlidableAutoCloseBarrierInteractor: function SlidableAutoCloseBarrierInteractor(t0, t1, t2, t3) {
+      var _ = this;
+      _.groupTag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    SlidableAutoCloseBarrierNotificationSender: function SlidableAutoCloseBarrierNotificationSender(t0, t1, t2, t3) {
+      var _ = this;
+      _.groupTag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    _SlidableAutoCloseBarrierNotificationSenderState: function _SlidableAutoCloseBarrierNotificationSenderState(t0) {
+      var _ = this;
+      _._widget = _.dispatcher = null;
+      _._debugLifecycleState = t0;
+      _._framework$_element = null;
+    },
+    _SlidableAutoCloseBarrierNotificationSenderState_dispose_closure: function _SlidableAutoCloseBarrierNotificationSenderState_dispose_closure(t0) {
+      this.$this = t0;
+    },
+    SlidableAutoCloseBarrierBehaviorListener: function SlidableAutoCloseBarrierBehaviorListener(t0, t1, t2, t3) {
+      var _ = this;
+      _.groupTag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    _SlidableAutoCloseBarrierBehaviorListenerState: function _SlidableAutoCloseBarrierBehaviorListenerState(t0) {
+      var _ = this;
+      _.absorbing = false;
+      _._widget = null;
+      _._debugLifecycleState = t0;
+      _._framework$_element = null;
+    },
+    _SlidableAutoCloseBarrierBehaviorListenerState_build_closure: function _SlidableAutoCloseBarrierBehaviorListenerState_build_closure(t0) {
+      this.$this = t0;
+    },
+    _SlidableNotificationSender: function _SlidableNotificationSender(t0, t1, t2, t3, t4) {
+      var _ = this;
+      _.controller = t0;
+      _.onStatusChanged = t1;
+      _.child = t2;
+      _.enabled = t3;
+      _.key = t4;
+    },
+    _SlidableNotificationSenderState0: function _SlidableNotificationSenderState0(t0) {
+      this._widget = null;
+      this._debugLifecycleState = t0;
+      this._framework$_element = null;
+    },
+    ActionPaneType: function ActionPaneType(t0, t1) {
+      this.index = t0;
+      this._core$_name = t1;
+    },
+    GestureDirection: function GestureDirection(t0, t1) {
+      this.index = t0;
+      this._core$_name = t1;
+    },
+    EndGesture: function EndGesture() {
+    },
+    OpeningGesture: function OpeningGesture() {
+    },
+    ClosingGesture: function ClosingGesture() {
+    },
+    StillGesture: function StillGesture(t0) {
+      this.direction = t0;
+    },
+    SlidableController: function SlidableController(t0, t1, t2, t3, t4, t5) {
+      var _ = this;
+      _._animationController = t0;
+      _._dismissGesture = t1;
+      _.isLeftToRight = _.enableEndActionPane = _.enableStartActionPane = true;
+      _._endActionPaneExtentRatio = _._startActionPaneExtentRatio = 0;
+      _._actionPaneConfigurator = null;
+      _._replayEndGesture = false;
+      _.endGesture = t2;
+      _.resizeRequest = t3;
+      _.actionPaneType = t4;
+      _.direction = t5;
+      _._closing = false;
+    },
+    _ValueNotifier: function _ValueNotifier(t0, t1, t2) {
+      var _ = this;
+      _._change_notifier$_value = t0;
+      _.ChangeNotifier__count = 0;
+      _.ChangeNotifier__listeners = t1;
+      _.ChangeNotifier__reentrantlyRemovedListeners = _.ChangeNotifier__notificationCallStackDepth = 0;
+      _.ChangeNotifier__creationDispatched = _.ChangeNotifier__debugDisposed = false;
+      _.$ti = t2;
+    },
+    SlidableDismissal: function SlidableDismissal(t0, t1, t2, t3) {
+      var _ = this;
+      _.axis = t0;
+      _.child = t1;
+      _.controller = t2;
+      _.key = t3;
+    },
+    _SlidableDismissalState: function _SlidableDismissalState(t0, t1, t2) {
+      var _ = this;
+      _.resized = false;
+      _.___SlidableDismissalState_resizeAnimation_A = _.___SlidableDismissalState_animationController_A = $;
+      _.SingleTickerProviderStateMixin__ticker = t0;
+      _.SingleTickerProviderStateMixin__tickerModeNotifier = t1;
+      _._widget = null;
+      _._debugLifecycleState = t2;
+      _._framework$_element = null;
+    },
+    _SlidableDismissalState_handleResizeRequestChanged_closure: function _SlidableDismissalState_handleResizeRequestChanged_closure(t0) {
+      this.resizeRequest = t0;
+    },
+    _SlidableDismissalState_handleResizeRequestChanged_closure0: function _SlidableDismissalState_handleResizeRequestChanged_closure0(t0) {
+      this.$this = t0;
+    },
+    _SizeTransition: function _SizeTransition(t0, t1, t2, t3) {
+      var _ = this;
+      _.axis = t0;
+      _.child = t1;
+      _.listenable = t2;
+      _.key = t3;
+    },
+    __SlidableDismissalState_State_SingleTickerProviderStateMixin: function __SlidableDismissalState_State_SingleTickerProviderStateMixin() {
+    },
+    SlidableGestureDetector: function SlidableGestureDetector(t0, t1, t2, t3, t4, t5) {
+      var _ = this;
+      _.controller = t0;
+      _.child = t1;
+      _.direction = t2;
+      _.enabled = t3;
+      _.dragStartBehavior = t4;
+      _.key = t5;
+    },
+    _SlidableGestureDetectorState: function _SlidableGestureDetectorState(t0) {
+      var _ = this;
+      _.dragExtent = 0;
+      _.___SlidableGestureDetectorState_lastPosition_A = _.___SlidableGestureDetectorState_startPosition_A = $;
+      _._widget = null;
+      _._debugLifecycleState = t0;
+      _._framework$_element = null;
+    },
+    SlidableGroupNotification_createDispatcher(context, assertParentExists, $T) {
+      var t1 = context.getElementForInheritedWidgetOfExactType$1$0($T._eval$1("_InheritedSlidableNotification<0>"));
+      if (t1 == null)
+        t1 = null;
+      else {
+        t1 = t1._widget;
+        t1.toString;
+      }
+      $T._eval$1("_InheritedSlidableNotification<0>?")._as(t1);
+      return null;
+    },
+    SlidableGroupNotification_dispatch(context, notification, assertParentExists, $T) {
+      var dispatcher = B.SlidableGroupNotification_createDispatcher(context, false, $T);
+      if (dispatcher != null)
+        dispatcher.dispatch$1(notification);
+    },
+    SlidableGroupBehaviorListener: function SlidableGroupBehaviorListener(t0, t1, t2, t3) {
+      var _ = this;
+      _.onNotification = t0;
+      _.child = t1;
+      _.key = t2;
+      _.$ti = t3;
+    },
+    _SlidableGroupBehaviorListenerState: function _SlidableGroupBehaviorListenerState(t0, t1) {
+      var _ = this;
+      _._widget = _.notifier = null;
+      _._debugLifecycleState = t0;
+      _._framework$_element = null;
+      _.$ti = t1;
+    },
+    SlidableNotificationSender: function SlidableNotificationSender(t0, t1, t2, t3) {
+      var _ = this;
+      _.tag = t0;
+      _.controller = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    _SlidableNotificationSenderState: function _SlidableNotificationSenderState(t0) {
+      var _ = this;
+      _._widget = _.listenerState = null;
+      _._debugLifecycleState = t0;
+      _._framework$_element = null;
+    },
+    SlidableScrollingBehavior: function SlidableScrollingBehavior(t0, t1, t2, t3) {
+      var _ = this;
+      _.controller = t0;
+      _.closeOnScroll = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    _SlidableScrollingBehaviorState: function _SlidableScrollingBehaviorState(t0) {
+      var _ = this;
+      _._widget = _.scrollPosition = null;
+      _._debugLifecycleState = t0;
+      _._framework$_element = null;
+    },
+    ActionPane$(children, motion) {
+      return new B.ActionPane(motion, children, null);
+    },
+    ActionPane_of(context) {
+      var t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$._ActionPaneScope);
+      return t1 == null ? null : t1.actionPaneData;
+    },
+    Slidable_of(context) {
+      var t1 = context.getElementForInheritedWidgetOfExactType$1$0(type$._SlidableControllerScope);
+      if (t1 == null)
+        t1 = null;
+      else {
+        t1 = t1._widget;
+        t1.toString;
+      }
+      type$.nullable__SlidableControllerScope._as(t1);
+      return t1 == null ? null : t1.controller;
+    },
+    ActionPaneData: function ActionPaneData(t0, t1, t2, t3) {
+      var _ = this;
+      _.extentRatio = t0;
+      _.alignment = t1;
+      _.direction = t2;
+      _.children = t3;
+    },
+    ActionPane: function ActionPane(t0, t1, t2) {
+      this.motion = t0;
+      this.children = t1;
+      this.key = t2;
+    },
+    _ActionPaneState: function _ActionPaneState(t0) {
+      var _ = this;
+      _.controller = null;
+      _.___ActionPaneState_closeThreshold_A = _.___ActionPaneState_openThreshold_A = $;
+      _.showMotion = true;
+      _._widget = null;
+      _._debugLifecycleState = t0;
+      _._framework$_element = null;
+    },
+    _ActionPaneState_handleRatioChanged_closure: function _ActionPaneState_handleRatioChanged_closure(t0, t1) {
+      this.$this = t0;
+      this.show = t1;
+    },
+    _ActionPaneScope: function _ActionPaneScope(t0, t1, t2) {
+      this.actionPaneData = t0;
+      this.child = t1;
+      this.key = t2;
+    },
+    Slidable: function Slidable(t0, t1, t2, t3) {
+      var _ = this;
+      _.startActionPane = t0;
+      _.endActionPane = t1;
+      _.child = t2;
+      _.key = t3;
+    },
+    _SlidableState: function _SlidableState(t0, t1, t2, t3) {
+      var _ = this;
+      _.___SlidableState_moveAnimation_A = _.___SlidableState_controller_F = $;
+      _.AutomaticKeepAliveClientMixin__keepAliveHandle = t0;
+      _.TickerProviderStateMixin__tickers = t1;
+      _.TickerProviderStateMixin__tickerModeNotifier = t2;
+      _._widget = null;
+      _._debugLifecycleState = t3;
+      _._framework$_element = null;
+    },
+    _SlidableState_handleActionPanelTypeChanged_closure: function _SlidableState_handleActionPanelTypeChanged_closure(t0) {
+      this.$this = t0;
+    },
+    _SlidableControllerScope: function _SlidableControllerScope(t0, t1, t2) {
+      this.controller = t0;
+      this.child = t1;
+      this.key = t2;
+    },
+    _SlidableClipper: function _SlidableClipper(t0, t1, t2) {
+      this.axis = t0;
+      this.controller = t1;
+      this._reclip = t2;
+    },
+    __SlidableState_State_TickerProviderStateMixin: function __SlidableState_State_TickerProviderStateMixin() {
+    },
+    __SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin: function __SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin() {
     },
     ListPresentationEmailExtension_get_isAllEmailRead(_this) {
       return J.every$1$ax(_this, new B.ListPresentationEmailExtension_get_isAllEmailRead_closure());
@@ -1888,8 +2266,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.listPresentationEmail = t2;
       _.index = t3;
     },
-    ThreadView__buildListEmailBody___closure: function ThreadView__buildListEmailBody___closure() {
-    },
     ThreadView__buildEmailItemDraggable_closure2: function ThreadView__buildEmailItemDraggable_closure2() {
     },
     ThreadView__buildEmailItemDraggable_closure3: function ThreadView__buildEmailItemDraggable_closure3() {
@@ -2039,21 +2415,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     BottomBarThreadSelectionWidget_build_closure3: function BottomBarThreadSelectionWidget_build_closure3(t0) {
       this.$this = t0;
     },
-    DismissibleWidget: function DismissibleWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
+    DismissibleWidget: function DismissibleWidget(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
-      _.item = t0;
-      _.child = t1;
-      _.onDismissed = t2;
-      _.textLeft = t3;
-      _.textRight = t4;
-      _.BaseEmailItemTile_responsiveUtils = t5;
-      _.BaseEmailItemTile_imagePaths = t6;
-      _.key = t7;
-      _.$ti = t8;
-    },
-    DismissibleWidget_buildSwipeActionLeft_closure: function DismissibleWidget_buildSwipeActionLeft_closure() {
-    },
-    DismissibleWidget_buildSwipeActionRight_closure: function DismissibleWidget_buildSwipeActionRight_closure() {
+      _.child = t0;
+      _.textLeft = t1;
+      _.textRight = t2;
+      _.BaseEmailItemTile_responsiveUtils = t3;
+      _.BaseEmailItemTile_imagePaths = t4;
+      _.key = t5;
+      _.$ti = t6;
     },
     _DismissibleWidget_StatelessWidget_BaseEmailItemTile: function _DismissibleWidget_StatelessWidget_BaseEmailItemTile() {
     },
@@ -2867,7 +3237,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     initState$0() {
       var t1, t2, _this = this;
       _this.super$State$initState();
-      _this._animationController = A.AnimationController$(C.AnimationBehavior_0, null, _this._widget.animationDuration, 0, null, 1, null, _this);
+      _this._quick_search_input_form$_animationController = A.AnimationController$(C.AnimationBehavior_0, null, _this._widget.animationDuration, 0, null, 1, null, _this);
       t1 = _this._widget;
       _this.___SuggestionsListState__suggestionsValid_A = t1.minCharsForSuggestions > 0 && true;
       _this._isQueued = _this._isLoading = false;
@@ -2986,7 +3356,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A._asyncStartSync($async$_getSuggestions$0, $async$completer);
     },
     dispose$0() {
-      this._animationController.dispose$0();
+      this._quick_search_input_form$_animationController.dispose$0();
       var t1 = this._debounceTimer;
       if (t1 != null)
         t1.cancel$0(0);
@@ -3003,7 +3373,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       child = t1 ? _this.createSuggestionsWidget$0() : _this.createRecentWidget$0();
       _this._widget.toString;
-      t1 = _this._animationController;
+      t1 = _this._quick_search_input_form$_animationController;
       t1.toString;
       animationChild = A.SizeTransition$(C.Axis_1, -1, child, A.CurvedAnimation$(C.Cubic_ifx, t1, _null));
       t1 = _this._widget;
@@ -3489,6 +3859,130 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new B._VerticalPointerState(this.gestureSettings, t1, new A.VelocityTracker(t2, A.List_List$filled(20, null, false, type$.nullable__PointAtTime)), t2, C.Offset_0_0);
     }
   };
+  B.RenderFractionallySizedOverflowBox.prototype = {
+    set$widthFactor(value) {
+      if (this._widthFactor == value)
+        return;
+      this._widthFactor = value;
+      this.markNeedsLayout$0();
+    },
+    set$heightFactor(value) {
+      if (this._heightFactor == value)
+        return;
+      this._heightFactor = value;
+      this.markNeedsLayout$0();
+    },
+    _shifted_box$_getInnerConstraints$1(constraints) {
+      var width, minHeight, maxHeight, height,
+        minWidth = constraints.minWidth,
+        maxWidth = constraints.maxWidth,
+        t1 = this._widthFactor;
+      if (t1 != null) {
+        width = maxWidth * t1;
+        maxWidth = width;
+        minWidth = maxWidth;
+      }
+      minHeight = constraints.minHeight;
+      maxHeight = constraints.maxHeight;
+      t1 = this._heightFactor;
+      if (t1 != null) {
+        height = maxHeight * t1;
+        maxHeight = height;
+        minHeight = maxHeight;
+      }
+      return new A.BoxConstraints(minWidth, maxWidth, minHeight, maxHeight);
+    },
+    computeMinIntrinsicWidth$1(height) {
+      var result, t2, _this = this,
+        t1 = _this.RenderObjectWithChildMixin__child;
+      if (t1 == null)
+        result = _this.super$RenderShiftedBox$computeMinIntrinsicWidth(height);
+      else {
+        t2 = _this._heightFactor;
+        if (t2 == null)
+          t2 = 1;
+        result = t1._computeIntrinsicDimension$3(C._IntrinsicDimension_0, height * t2, t1.get$computeMinIntrinsicWidth());
+      }
+      t1 = _this._widthFactor;
+      return result / (t1 == null ? 1 : t1);
+    },
+    computeMaxIntrinsicWidth$1(height) {
+      var result, t2, _this = this,
+        t1 = _this.RenderObjectWithChildMixin__child;
+      if (t1 == null)
+        result = _this.super$RenderShiftedBox$computeMaxIntrinsicWidth(height);
+      else {
+        t2 = _this._heightFactor;
+        if (t2 == null)
+          t2 = 1;
+        result = t1._computeIntrinsicDimension$3(C._IntrinsicDimension_1, height * t2, t1.get$computeMaxIntrinsicWidth());
+      }
+      t1 = _this._widthFactor;
+      return result / (t1 == null ? 1 : t1);
+    },
+    computeMinIntrinsicHeight$1(width) {
+      var result, t2, _this = this,
+        t1 = _this.RenderObjectWithChildMixin__child;
+      if (t1 == null)
+        result = _this.super$RenderShiftedBox$computeMinIntrinsicHeight(width);
+      else {
+        t2 = _this._widthFactor;
+        if (t2 == null)
+          t2 = 1;
+        result = t1._computeIntrinsicDimension$3(C._IntrinsicDimension_2, width * t2, t1.get$computeMinIntrinsicHeight());
+      }
+      t1 = _this._heightFactor;
+      return result / (t1 == null ? 1 : t1);
+    },
+    computeMaxIntrinsicHeight$1(width) {
+      var result, t2, _this = this,
+        t1 = _this.RenderObjectWithChildMixin__child;
+      if (t1 == null)
+        result = _this.super$RenderShiftedBox$computeMaxIntrinsicHeight(width);
+      else {
+        t2 = _this._widthFactor;
+        if (t2 == null)
+          t2 = 1;
+        result = t1._computeIntrinsicDimension$3(C._IntrinsicDimension_3, width * t2, t1.get$computeMaxIntrinsicHeight());
+      }
+      t1 = _this._heightFactor;
+      return result / (t1 == null ? 1 : t1);
+    },
+    computeDryLayout$1(constraints) {
+      var t1 = this.RenderObjectWithChildMixin__child;
+      if (t1 != null)
+        return constraints.constrain$1(t1.getDryLayout$1(this._shifted_box$_getInnerConstraints$1(constraints)));
+      return constraints.constrain$1(this._shifted_box$_getInnerConstraints$1(constraints).constrain$1(C.Size_0_0));
+    },
+    performLayout$0() {
+      var _this = this,
+        t1 = _this.RenderObjectWithChildMixin__child,
+        t2 = type$.BoxConstraints;
+      if (t1 != null) {
+        t1.layout$2$parentUsesSize(_this._shifted_box$_getInnerConstraints$1(t2._as(A.RenderObject.prototype.get$constraints.call(_this))), true);
+        t1 = t2._as(A.RenderObject.prototype.get$constraints.call(_this));
+        t2 = _this.RenderObjectWithChildMixin__child._box$_size;
+        t2.toString;
+        _this._box$_size = t1.constrain$1(t2);
+        _this.alignChild$0();
+      } else
+        _this._box$_size = t2._as(A.RenderObject.prototype.get$constraints.call(_this)).constrain$1(_this._shifted_box$_getInnerConstraints$1(t2._as(A.RenderObject.prototype.get$constraints.call(_this))).constrain$1(C.Size_0_0));
+    }
+  };
+  B.FractionallySizedBox.prototype = {
+    createRenderObject$1(context) {
+      var t1 = new B.RenderFractionallySizedOverflowBox(this.widthFactor, this.heightFactor, this.alignment, A.Directionality_maybeOf(context), null, A.LayerHandle$(type$.ContainerLayer));
+      t1.RenderObject$0();
+      t1.set$child(null);
+      return t1;
+    },
+    updateRenderObject$2(context, renderObject) {
+      renderObject.set$alignment(this.alignment);
+      renderObject.set$widthFactor(this.widthFactor);
+      renderObject.set$heightFactor(this.heightFactor);
+      renderObject.set$textDirection(A.Directionality_maybeOf(context));
+    }
+  };
   B.Draggable.prototype = {
     createRecognizer$1(onStart) {
       var t1, _null = null;
@@ -3712,22 +4206,879 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.data;
     }
   };
-  B.ObjectKey.prototype = {
-    $eq(_, other) {
-      if (other == null)
-        return false;
-      if (J.get$runtimeType$(other) !== A.getRuntimeType(this))
-        return false;
-      return other instanceof B.ObjectKey && other.value === this.value;
+  B.ActionPaneConfiguration.prototype = {
+    updateShouldNotify$1(oldWidget) {
+      return !this.alignment.$eq(0, oldWidget.alignment) || this.direction !== oldWidget.direction || this.isStartActionPane !== oldWidget.isStartActionPane;
+    }
+  };
+  B.BehindMotion.prototype = {
+    build$1(context) {
+      var paneData = B.ActionPane_of(context),
+        t1 = paneData.direction;
+      return A.Flex$(paneData.children, C.CrossAxisAlignment_2, t1, null, C.MainAxisAlignment_0, C.MainAxisSize_1, null, null, C.VerticalDirection_1);
+    }
+  };
+  B.ScrollMotion.prototype = {
+    build$1(context) {
+      var t2, t3, t4,
+        t1 = B.ActionPane_of(context);
+      t1.toString;
+      t2 = t1.alignment;
+      t3 = type$.Animation_double;
+      t4 = type$.Tween_Offset;
+      return A.SlideTransition$(D.BehindMotion_null, new A._AnimatedEvaluation(t3._as(new A._AnimatedEvaluation(t3._as(B.Slidable_of(context)._animationController), new A.CurveTween(new A.Interval(0, t1.extentRatio, C.C__Linear)), type$.CurveTween._eval$1("_AnimatedEvaluation<Animatable.T>"))), new A.Tween(new A.Offset(t2.x, t2.y), C.Offset_0_0, t4), t4._eval$1("_AnimatedEvaluation<Animatable.T>")), null, true);
+    }
+  };
+  B.SlidableAutoCloseBehaviorInteractor.prototype = {
+    build$1(context) {
+      var t1 = this.groupTag,
+        t2 = this.controller;
+      return new B.SlidableAutoCloseInteractor(t1, t2, new B.SlidableAutoCloseBarrierInteractor(t1, t2, this.child, null), null);
+    }
+  };
+  B.SlidableAutoCloseNotification.prototype = {};
+  B.SlidableAutoCloseInteractor.prototype = {
+    build$1(context) {
+      var t1 = this.groupTag,
+        t2 = this.controller;
+      return new B.SlidableAutoCloseNotificationSender(t1, t2, new B.SlidableAutoCloseBehaviorListener(t1, t2, this.child, null), null);
+    }
+  };
+  B.SlidableAutoCloseBehaviorListener.prototype = {
+    build$1(context) {
+      return new B.SlidableGroupBehaviorListener(new B.SlidableAutoCloseBehaviorListener_build_closure(this), this.child, null, type$.SlidableGroupBehaviorListener_SlidableAutoCloseNotification);
+    }
+  };
+  B.SlidableAutoCloseNotificationSender.prototype = {
+    build$1(context) {
+      context.dependOnInheritedWidgetOfExactType$1$0(type$._SlidableAutoCloseData);
+      return new B._SlidableNotificationSender(this.controller, new B.SlidableAutoCloseNotificationSender_build_closure(this, context), this.child, false, null);
+    }
+  };
+  B.SlidableAutoCloseBarrierNotification.prototype = {};
+  B.SlidableAutoCloseBarrierInteractor.prototype = {
+    build$1(context) {
+      var t1 = this.groupTag,
+        t2 = this.controller;
+      return new B.SlidableAutoCloseBarrierNotificationSender(t1, t2, new B.SlidableAutoCloseBarrierBehaviorListener(t1, t2, this.child, null), null);
+    }
+  };
+  B.SlidableAutoCloseBarrierNotificationSender.prototype = {
+    createState$0() {
+      return new B._SlidableAutoCloseBarrierNotificationSenderState(C._StateLifecycle_0);
+    }
+  };
+  B._SlidableAutoCloseBarrierNotificationSenderState.prototype = {
+    _handleStatusChanged$1($status) {
+      var t2, _this = this,
+        t1 = $status === C.AnimationStatus_0,
+        willBarrierBeEnabled = !t1;
+      if (willBarrierBeEnabled !== (_this.dispatcher != null)) {
+        t2 = _this._framework$_element;
+        t2.toString;
+        _this.dispatcher = B.SlidableGroupNotification_createDispatcher(t2, false, type$.SlidableAutoCloseBarrierNotification);
+        _this.dispatchSlidableAutoCloseBarrierNotification$1$enabled(willBarrierBeEnabled);
+        if (t1)
+          _this.dispatcher = null;
+      }
     },
-    get$hashCode(_) {
-      return A.Object_hash(A.getRuntimeType(this), A.objectHashCode(this.value), C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
+    dispatchSlidableAutoCloseBarrierNotification$1$enabled(enabled) {
+      var t3,
+        t1 = this._widget,
+        t2 = t1.groupTag;
+      t1 = t1.controller;
+      t3 = this.dispatcher;
+      if (t3 != null)
+        t3.dispatch$1(new B.SlidableAutoCloseBarrierNotification(t2, t1, enabled));
     },
-    toString$0(_) {
-      var _s16_ = "<optimized out>#";
-      if (A.getRuntimeType(this) === D.Type_ObjectKey_Gsr)
-        return "[" + (_s16_ + A.shortHash(this.value)) + "]";
-      return "[ObjectKey " + (_s16_ + A.shortHash(this.value)) + "]";
+    dispose$0() {
+      if (this.dispatcher != null)
+        $.SchedulerBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B._SlidableAutoCloseBarrierNotificationSenderState_dispose_closure(this));
+      this.super$State$dispose();
+    },
+    build$1(context) {
+      var t1 = this._widget.controller;
+      context.dependOnInheritedWidgetOfExactType$1$0(type$._SlidableAutoCloseData);
+      return new B._SlidableNotificationSender(t1, this.get$_handleStatusChanged(), this._widget.child, false, null);
+    }
+  };
+  B.SlidableAutoCloseBarrierBehaviorListener.prototype = {
+    createState$0() {
+      return new B._SlidableAutoCloseBarrierBehaviorListenerState(C._StateLifecycle_0);
+    }
+  };
+  B._SlidableAutoCloseBarrierBehaviorListenerState.prototype = {
+    build$1(context) {
+      var _null = null;
+      return new B.SlidableGroupBehaviorListener(new B._SlidableAutoCloseBarrierBehaviorListenerState_build_closure(this), A.GestureDetector$(_null, A.AbsorbPointer$(false, this._widget.child), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, type$.SlidableGroupBehaviorListener_SlidableAutoCloseBarrierNotification);
+    }
+  };
+  B._SlidableNotificationSender.prototype = {
+    createState$0() {
+      return new B._SlidableNotificationSenderState0(C._StateLifecycle_0);
+    }
+  };
+  B._SlidableNotificationSenderState0.prototype = {
+    initState$0() {
+      this.super$State$initState();
+      var t1 = this._widget;
+      t1.toString;
+      t1 = t1.controller._animationController;
+      t1.didRegisterListener$0();
+      t1 = t1.AnimationLocalStatusListenersMixin__statusListeners;
+      t1._isDirty = true;
+      t1._list.push(this.get$handleStatusChanged());
+    },
+    didUpdateWidget$1(oldWidget) {
+      var t1, t2, _this = this;
+      _this.super$State$didUpdateWidget(oldWidget);
+      t1 = oldWidget.controller;
+      t2 = _this._widget;
+      if (t1 !== t2.controller || !J.$eq$(oldWidget.onStatusChanged, t2.onStatusChanged)) {
+        t1 = t1._animationController;
+        t2 = _this.get$handleStatusChanged();
+        t1.didRegisterListener$0();
+        t1 = t1.AnimationLocalStatusListenersMixin__statusListeners;
+        t1._isDirty = true;
+        t1._list.push(t2);
+        t1 = _this._widget;
+        t1.toString;
+        t1 = t1.controller._animationController;
+        t1.didRegisterListener$0();
+        t1 = t1.AnimationLocalStatusListenersMixin__statusListeners;
+        t1._isDirty = true;
+        t1._list.push(t2);
+      }
+    },
+    dispose$0() {
+      var t1 = this._widget;
+      t1.toString;
+      t1 = t1.controller._animationController;
+      t1.didRegisterListener$0();
+      t1 = t1.AnimationLocalStatusListenersMixin__statusListeners;
+      t1._isDirty = true;
+      t1._list.push(this.get$handleStatusChanged());
+      this.super$State$dispose();
+    },
+    handleStatusChanged$1($status) {
+      this._widget.toString;
+    },
+    build$1(context) {
+      return this._widget.child;
+    }
+  };
+  B.ActionPaneType.prototype = {
+    _enumToString$0() {
+      return "ActionPaneType." + this._core$_name;
+    }
+  };
+  B.GestureDirection.prototype = {
+    _enumToString$0() {
+      return "GestureDirection." + this._core$_name;
+    }
+  };
+  B.EndGesture.prototype = {};
+  B.OpeningGesture.prototype = {};
+  B.ClosingGesture.prototype = {};
+  B.StillGesture.prototype = {};
+  B.SlidableController.prototype = {
+    set$actionPaneConfigurator(value) {
+      var _this = this;
+      if (_this._actionPaneConfigurator != value) {
+        _this._actionPaneConfigurator = value;
+        if (_this._replayEndGesture && value != null) {
+          _this._replayEndGesture = false;
+          value.handleEndGestureChanged$0();
+        }
+      }
+    },
+    set$ratio(_, value) {
+      var _this = this,
+        t1 = _this._actionPaneConfigurator,
+        newRatio = t1 == null ? null : t1.normalizeRatio$1(value);
+      if (newRatio == null)
+        newRatio = value;
+      if (!_this._closing)
+        if (newRatio !== 0) {
+          if (newRatio > 0)
+            t1 = _this.isLeftToRight ? _this.enableStartActionPane : _this.enableEndActionPane;
+          else
+            t1 = false;
+          if (!t1)
+            if (newRatio < 0)
+              t1 = _this.isLeftToRight ? _this.enableEndActionPane : _this.enableStartActionPane;
+            else
+              t1 = false;
+          else
+            t1 = true;
+        } else
+          t1 = true;
+      else
+        t1 = false;
+      if (t1) {
+        t1 = _this._animationController.__AnimationController__value_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        t1 = newRatio !== t1 * _this.direction._change_notifier$_value;
+      } else
+        t1 = false;
+      if (t1) {
+        _this.direction.set$value(0, C.JSNumber_methods.toInt$0(J.get$sign$in(newRatio)));
+        _this._animationController.set$value(0, Math.abs(newRatio));
+      }
+    },
+    _onDirectionChanged$0() {
+      var mulitiplier = this.isLeftToRight ? 1 : -1;
+      this.actionPaneType.set$value(0, D.List_I2K[this.direction._change_notifier$_value * mulitiplier + 1]);
+    },
+    close$0(_) {
+      var $async$goto = 0,
+        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
+        $async$self = this, t1;
+      var $async$close$0 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+        if ($async$errorCode === 1)
+          return A._asyncRethrow($async$result, $async$completer);
+        while (true)
+          switch ($async$goto) {
+            case 0:
+              // Function start
+              $async$self._closing = true;
+              t1 = $async$self._animationController;
+              t1._direction = C._AnimationDirection_1;
+              $async$goto = 2;
+              return A._asyncAwait(t1._animateToInternal$3$curve$duration(0, C.Cubic_JUR, C.Duration_200000), $async$close$0);
+            case 2:
+              // returning from await.
+              $async$self.direction.set$value(0, 0);
+              $async$self._closing = false;
+              // implicit return
+              return A._asyncReturn(null, $async$completer);
+          }
+      });
+      return A._asyncStartSync($async$close$0, $async$completer);
+    },
+    openCurrentActionPane$0() {
+      var $async$goto = 0,
+        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
+        $async$returnValue, $async$self = this;
+      var $async$openCurrentActionPane$0 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+        if ($async$errorCode === 1)
+          return A._asyncRethrow($async$result, $async$completer);
+        while (true)
+          switch ($async$goto) {
+            case 0:
+              // Function start
+              $async$self._actionPaneConfigurator._widget.toString;
+              $async$returnValue = $async$self.openTo$3$curve$duration(0.5, C.Cubic_JUR, C.Duration_200000);
+              // goto return
+              $async$goto = 1;
+              break;
+            case 1:
+              // return
+              return A._asyncReturn($async$returnValue, $async$completer);
+          }
+      });
+      return A._asyncStartSync($async$openCurrentActionPane$0, $async$completer);
+    },
+    openTo$3$curve$duration(ratio, curve, duration) {
+      return this.openTo$body$SlidableController(ratio, curve, duration);
+    },
+    openTo$body$SlidableController(ratio, curve, duration) {
+      var $async$goto = 0,
+        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
+        $async$returnValue, $async$self = this, t1, t2;
+      var $async$openTo$3$curve$duration = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+        if ($async$errorCode === 1)
+          return A._asyncRethrow($async$result, $async$completer);
+        while (true)
+          switch ($async$goto) {
+            case 0:
+              // Function start
+              if ($async$self._closing) {
+                // goto return
+                $async$goto = 1;
+                break;
+              }
+              t1 = $async$self._animationController;
+              t2 = t1.__AnimationController__value_A;
+              t2 === $ && A.throwUnnamedLateFieldNI();
+              if (t2 === 0)
+                $async$self.set$ratio(0, 0.05 * J.get$sign$in(ratio));
+              t1._direction = C._AnimationDirection_0;
+              $async$returnValue = t1._animateToInternal$3$curve$duration(Math.abs(ratio), curve, duration);
+              // goto return
+              $async$goto = 1;
+              break;
+            case 1:
+              // return
+              return A._asyncReturn($async$returnValue, $async$completer);
+          }
+      });
+      return A._asyncStartSync($async$openTo$3$curve$duration, $async$completer);
+    }
+  };
+  B._ValueNotifier.prototype = {};
+  B.SlidableDismissal.prototype = {
+    createState$0() {
+      return new B._SlidableDismissalState(null, null, C._StateLifecycle_0);
+    }
+  };
+  B._SlidableDismissalState.prototype = {
+    initState$0() {
+      var t1, t2, _this = this, _null = null;
+      _this.super$State$initState();
+      t1 = A.AnimationController$(C.AnimationBehavior_0, _null, _null, 0, _null, 1, _null, _this);
+      _this.___SlidableDismissalState_animationController_A = t1;
+      t2 = type$.Tween_double;
+      _this.___SlidableDismissalState_resizeAnimation_A = new A._AnimatedEvaluation(type$.Animation_double._as(t1), new A.Tween(1, 0, t2), t2._eval$1("_AnimatedEvaluation<Animatable.T>"));
+      _this._widget.controller.resizeRequest.addListener$1(0, _this.get$handleResizeRequestChanged());
+    },
+    didUpdateWidget$1(oldWidget) {
+      var t1, t2, _this = this;
+      _this.super$State$didUpdateWidget(oldWidget);
+      t1 = oldWidget.controller;
+      if (t1 !== _this._widget.controller) {
+        t2 = _this.get$handleResizeRequestChanged();
+        t1.resizeRequest.removeListener$1(0, t2);
+        _this._widget.controller.resizeRequest.addListener$1(0, t2);
+      }
+    },
+    dispose$0() {
+      var t1, _this = this;
+      _this._widget.controller.resizeRequest.removeListener$1(0, _this.get$handleResizeRequestChanged());
+      t1 = _this.___SlidableDismissalState_animationController_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1.dispose$0();
+      _this.super$__SlidableDismissalState_State_SingleTickerProviderStateMixin$dispose();
+    },
+    handleResizeRequestChanged$0() {
+      var _this = this,
+        t1 = _this._widget.controller,
+        resizeRequest = t1.resizeRequest._change_notifier$_value;
+      t1 = t1._animationController.__AnimationController__status_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      if (t1 === C.AnimationStatus_3) {
+        t1 = _this.___SlidableDismissalState_animationController_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        t1.duration = resizeRequest.get$duration(resizeRequest);
+        _this.___SlidableDismissalState_animationController_A.forward$1$from(0, 0).then$1$1(0, new B._SlidableDismissalState_handleResizeRequestChanged_closure(resizeRequest), type$.Null);
+        _this.setState$1(new B._SlidableDismissalState_handleResizeRequestChanged_closure0(_this));
+      }
+    },
+    build$1(context) {
+      var t2,
+        t1 = this.___SlidableDismissalState_resizeAnimation_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t2 = this._widget;
+      return new B._SizeTransition(t2.axis, t2.child, t1, null);
+    }
+  };
+  B._SizeTransition.prototype = {
+    build$1(context) {
+      var t2, alignment, t3, _null = null,
+        t1 = type$.Animation_double._as(this.listenable),
+        value = Math.max(A.checkNum(t1.get$value(t1)), 0);
+      t1 = this.axis;
+      t2 = t1 === C.Axis_1;
+      alignment = t2 ? C.AlignmentDirectional_m1_0 : C.AlignmentDirectional_0_m1;
+      t3 = value === 1 ? C.Clip_0 : C.Clip_1;
+      t2 = t2 ? value : _null;
+      t1 = t1 === C.Axis_0 ? value : _null;
+      return A.ClipRect$(new A.Align(alignment, t1, t2, this.child, _null), t3, _null);
+    }
+  };
+  B.__SlidableDismissalState_State_SingleTickerProviderStateMixin.prototype = {
+    dispose$0() {
+      var _this = this,
+        t1 = _this.SingleTickerProviderStateMixin__tickerModeNotifier;
+      if (t1 != null)
+        t1.removeListener$1(0, _this.get$_updateTicker());
+      _this.SingleTickerProviderStateMixin__tickerModeNotifier = null;
+      _this.super$State$dispose();
+    },
+    activate$0() {
+      this.super$State$activate();
+      this._updateTickerModeNotifier$0();
+      this._updateTicker$0();
+    }
+  };
+  B.SlidableGestureDetector.prototype = {
+    createState$0() {
+      return new B._SlidableGestureDetectorState(C._StateLifecycle_0);
+    }
+  };
+  B._SlidableGestureDetectorState.prototype = {
+    build$1(context) {
+      var t3, t4, t5, t6, t7, t8, _this = this, _null = null,
+        t1 = _this._widget,
+        t2 = t1.direction === C.Axis_0,
+        canDragHorizontally = t2 && true,
+        canDragVertically = !t2 && true;
+      t2 = canDragHorizontally ? _this.get$handleDragStart() : _null;
+      t3 = canDragHorizontally ? _this.get$handleDragUpdate() : _null;
+      t4 = canDragHorizontally ? _this.get$handleDragEnd() : _null;
+      t5 = canDragVertically ? _this.get$handleDragStart() : _null;
+      t6 = canDragVertically ? _this.get$handleDragUpdate() : _null;
+      t7 = canDragVertically ? _this.get$handleDragEnd() : _null;
+      t8 = t1.dragStartBehavior;
+      return A.GestureDetector$(C.HitTestBehavior_1, t1.child, t8, false, _null, _null, _null, _null, t4, t2, t3, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t7, t5, t6);
+    },
+    get$overallDragAxisExtent() {
+      var t1 = this._framework$_element,
+        size = t1.get$size(t1);
+      return this._widget.direction === C.Axis_0 ? size._dx : size._dy;
+    },
+    handleDragStart$1(details) {
+      var t1, t2, t3, t4, _this = this;
+      _this.___SlidableGestureDetectorState_lastPosition_A = _this.___SlidableGestureDetectorState_startPosition_A = details.localPosition;
+      t1 = J.get$sign$in(_this.dragExtent);
+      t2 = _this.get$overallDragAxisExtent();
+      t3 = _this._widget.controller;
+      t4 = t3._animationController.__AnimationController__value_A;
+      t4 === $ && A.throwUnnamedLateFieldNI();
+      t3 = t3.direction._change_notifier$_value;
+      _this.dragExtent = t1 * t2 * (t4 * t3) * t3;
+    },
+    handleDragUpdate$1(details) {
+      var _this = this,
+        t1 = details.primaryDelta;
+      t1.toString;
+      t1 = _this.dragExtent += t1;
+      _this.___SlidableGestureDetectorState_lastPosition_A = details.localPosition;
+      _this._widget.controller.set$ratio(0, t1 / _this.get$overallDragAxisExtent());
+    },
+    handleDragEnd$1(details) {
+      var t2, delta, gestureDirection, t3,
+        t1 = this.___SlidableGestureDetectorState_lastPosition_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t2 = this.___SlidableGestureDetectorState_startPosition_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      delta = t1.$sub(0, t2);
+      t1 = this._widget;
+      gestureDirection = (t1.direction === C.Axis_0 ? delta._dx : delta._dy) >= 0 ? D.GestureDirection_0 : D.GestureDirection_1;
+      t1 = t1.controller;
+      t2 = details.primaryVelocity;
+      if (t2 === 0 || t2 == null)
+        t1.endGesture.set$value(0, new B.StillGesture(gestureDirection));
+      else {
+        t3 = t1.endGesture;
+        if (J.get$sign$in(t2) === t1.direction._change_notifier$_value)
+          t3.set$value(0, new B.OpeningGesture());
+        else
+          t3.set$value(0, new B.ClosingGesture());
+      }
+      if (t1._actionPaneConfigurator == null)
+        t1._replayEndGesture = true;
+    }
+  };
+  B.SlidableGroupBehaviorListener.prototype = {
+    createState$0() {
+      return new B._SlidableGroupBehaviorListenerState(C._StateLifecycle_0, this.$ti._eval$1("_SlidableGroupBehaviorListenerState<1>"));
+    }
+  };
+  B._SlidableGroupBehaviorListenerState.prototype = {
+    didChangeDependencies$0() {
+      this.super$State$didChangeDependencies();
+      var t1 = this._framework$_element.dependOnInheritedWidgetOfExactType$1$0(this.$ti._eval$1("_InheritedSlidableNotification<1>"));
+      if (t1 != null)
+        t1.get$notifier();
+    },
+    dispose$0() {
+      this.super$State$dispose();
+    },
+    build$1(context) {
+      return this._widget.child;
+    }
+  };
+  B.SlidableNotificationSender.prototype = {
+    createState$0() {
+      return new B._SlidableNotificationSenderState(C._StateLifecycle_0);
+    }
+  };
+  B._SlidableNotificationSenderState.prototype = {
+    didChangeDependencies$0() {
+      this.super$State$didChangeDependencies();
+      var t1 = this._framework$_element.dependOnInheritedWidgetOfExactType$1$0(type$._SlidableNotificationListenerScope);
+      if (t1 != null)
+        t1.get$state(t1);
+    },
+    dispose$0() {
+      this.super$State$dispose();
+    },
+    build$1(context) {
+      return this._widget.child;
+    }
+  };
+  B.SlidableScrollingBehavior.prototype = {
+    createState$0() {
+      return new B._SlidableScrollingBehaviorState(C._StateLifecycle_0);
+    }
+  };
+  B._SlidableScrollingBehaviorState.prototype = {
+    didChangeDependencies$0() {
+      this.super$State$didChangeDependencies();
+      this.removeScrollingNotifierListener$0();
+      this.addScrollingNotifierListener$0();
+    },
+    didUpdateWidget$1(oldWidget) {
+      this.super$State$didUpdateWidget(oldWidget);
+      this._widget.toString;
+    },
+    dispose$0() {
+      this.removeScrollingNotifierListener$0();
+      this.super$State$dispose();
+    },
+    addScrollingNotifierListener$0() {
+      var t1, _this = this;
+      _this._widget.toString;
+      t1 = _this._framework$_element;
+      t1.toString;
+      t1 = A.Scrollable_maybeOf(t1);
+      if (t1 == null)
+        t1 = null;
+      else {
+        t1 = t1._scrollable$_position;
+        t1.toString;
+      }
+      _this.scrollPosition = t1;
+      if (t1 != null)
+        t1.isScrollingNotifier.addListener$1(0, _this.get$handleScrollingChanged());
+    },
+    removeScrollingNotifierListener$0() {
+      var t1 = this.scrollPosition;
+      if (t1 != null)
+        t1.isScrollingNotifier.removeListener$1(0, this.get$handleScrollingChanged());
+    },
+    handleScrollingChanged$0() {
+      var t2,
+        t1 = this._widget;
+      t1.toString;
+      t2 = this.scrollPosition;
+      t2 = t2 != null && t2.isScrollingNotifier._change_notifier$_value;
+      if (t2)
+        t1.controller.close$0(0);
+    },
+    build$1(context) {
+      return this._widget.child;
+    }
+  };
+  B.ActionPaneData.prototype = {};
+  B.ActionPane.prototype = {
+    createState$0() {
+      return new B._ActionPaneState(C._StateLifecycle_0);
+    }
+  };
+  B._ActionPaneState.prototype = {
+    initState$0() {
+      var t1, _this = this;
+      _this.super$State$initState();
+      t1 = _this._framework$_element;
+      t1.toString;
+      t1 = B.Slidable_of(t1);
+      _this.controller = t1;
+      t1.endGesture.addListener$1(0, _this.get$handleEndGestureChanged());
+      _this._widget.toString;
+      _this.updateThresholds$0();
+      _this.controller.set$actionPaneConfigurator(_this);
+    },
+    updateThresholds$0() {
+      this._widget.toString;
+      this.___ActionPaneState_openThreshold_A = 0.25;
+      this.___ActionPaneState_closeThreshold_A = 0.25;
+    },
+    didUpdateWidget$1(oldWidget) {
+      var _this = this;
+      _this.super$State$didUpdateWidget(oldWidget);
+      _this._widget.toString;
+      _this.showMotion = true;
+      _this.updateThresholds$0();
+    },
+    dispose$0() {
+      var _this = this;
+      _this.controller.endGesture.removeListener$1(0, _this.get$handleEndGestureChanged());
+      _this.controller._animationController.removeListener$1(0, _this.get$handleRatioChanged());
+      _this.controller.set$actionPaneConfigurator(null);
+      _this.super$State$dispose();
+    },
+    normalizeRatio$1(ratio) {
+      var absoluteRatio;
+      this._widget.toString;
+      absoluteRatio = C.JSNumber_methods.clamp$2(Math.abs(ratio), 0, 0.5);
+      if (ratio < 0)
+        return -absoluteRatio;
+      return absoluteRatio;
+    },
+    handleEndGestureChanged$0() {
+      var t3, t4, _this = this,
+        t1 = _this.controller,
+        gesture = t1.endGesture._change_notifier$_value,
+        t2 = t1._animationController.__AnimationController__value_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      _this._widget.toString;
+      if (gesture instanceof B.OpeningGesture) {
+        t3 = _this.___ActionPaneState_openThreshold_A;
+        t3 === $ && A.throwUnnamedLateFieldNI();
+        t3 = t3 <= 0.5;
+      } else
+        t3 = false;
+      if (!t3)
+        if (gesture instanceof B.StillGesture) {
+          t3 = gesture.direction;
+          if (t3 === D.GestureDirection_0) {
+            t4 = _this.___ActionPaneState_openThreshold_A;
+            t4 === $ && A.throwUnnamedLateFieldNI();
+            t4 = t2 >= t4;
+          } else
+            t4 = false;
+          if (!t4)
+            if (t3 === D.GestureDirection_1) {
+              t3 = _this.___ActionPaneState_closeThreshold_A;
+              t3 === $ && A.throwUnnamedLateFieldNI();
+              t3 = t2 > t3;
+              t2 = t3;
+            } else
+              t2 = false;
+          else
+            t2 = true;
+        } else
+          t2 = false;
+      else
+        t2 = true;
+      if (t2) {
+        t1.openCurrentActionPane$0();
+        return;
+      }
+      t1.close$0(0);
+    },
+    handleRatioChanged$0() {
+      var t3, show, _this = this,
+        t1 = _this.controller,
+        t2 = t1._animationController.__AnimationController__value_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      t3 = t1.direction._change_notifier$_value;
+      _this._widget.toString;
+      show = Math.abs(t2 * t3) <= 0.5 && t1._dismissGesture.ChangeNotifier__count <= 0;
+      if (show !== _this.showMotion)
+        _this.setState$1(new B._ActionPaneState_handleRatioChanged_closure(_this, show));
+    },
+    build$1(context) {
+      var t2, t3, t4, child, _null = null,
+        t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$.ActionPaneConfiguration);
+      t1.toString;
+      t2 = this.showMotion;
+      t3 = this._widget;
+      if (t2) {
+        t3.toString;
+        t2 = t1.direction === C.Axis_0;
+        t4 = t2 ? 0.5 : _null;
+        t2 = t2 ? _null : 0.5;
+        child = new B.FractionallySizedBox(t4, t2, t1.alignment, t3.motion, _null);
+      } else {
+        t3.toString;
+        child = _null;
+      }
+      t2 = t3.children;
+      child.toString;
+      return new B._ActionPaneScope(new B.ActionPaneData(0.5, t1.alignment, t1.direction, t2), child, _null);
+    }
+  };
+  B._ActionPaneScope.prototype = {
+    updateShouldNotify$1(oldWidget) {
+      return oldWidget.actionPaneData !== this.actionPaneData;
+    }
+  };
+  B.Slidable.prototype = {
+    createState$0() {
+      return new B._SlidableState(null, null, null, C._StateLifecycle_0);
+    }
+  };
+  B._SlidableState.prototype = {
+    get$wantKeepAlive() {
+      this._widget.toString;
+      return false;
+    },
+    initState$0() {
+      var t1, t2, t3, t4, t5, t6, _this = this, _null = null;
+      _this.super$__SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin$initState();
+      t1 = A.AnimationController$(C.AnimationBehavior_0, _null, _null, 0, _null, 1, _null, _this);
+      t2 = A.ValueNotifier$(_null, type$.nullable_EndGesture);
+      t3 = new B._ValueNotifier(_null, $.$get$ChangeNotifier__emptyListeners(), type$._ValueNotifier_nullable_DismissGesture);
+      t3.ValueNotifier$1(_null, type$.nullable_DismissGesture);
+      t4 = A.ValueNotifier$(_null, type$.nullable_ResizeRequest);
+      t5 = A.ValueNotifier$(D.ActionPaneType_1, type$.ActionPaneType);
+      t6 = A.ValueNotifier$(0, type$.int);
+      t4 = new B.SlidableController(t1, t3, t2, t4, t5, t6);
+      t6.addListener$1(0, t4.get$_onDirectionChanged());
+      t5.addListener$1(0, _this.get$handleActionPanelTypeChanged());
+      _this.___SlidableState_controller_F !== $ && A.throwUnnamedLateFieldAI();
+      _this.___SlidableState_controller_F = t4;
+    },
+    didChangeDependencies$0() {
+      var _this = this;
+      _this.super$State$didChangeDependencies();
+      _this.updateIsLeftToRight$0();
+      _this.updateController$0();
+      _this.updateMoveAnimation$0();
+    },
+    didUpdateWidget$1(oldWidget) {
+      this.super$State$didUpdateWidget(oldWidget);
+      this.updateIsLeftToRight$0();
+      this.updateController$0();
+    },
+    dispose$0() {
+      var t2,
+        t1 = this.___SlidableState_controller_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1.actionPaneType.removeListener$1(0, this.get$handleActionPanelTypeChanged());
+      t2 = t1._animationController;
+      t2.stop$0(0);
+      t2.dispose$0();
+      t2 = t1.direction;
+      t2.removeListener$1(0, t1.get$_onDirectionChanged());
+      t2.dispose$0();
+      this.super$__SlidableState_State_TickerProviderStateMixin$dispose();
+    },
+    updateController$0() {
+      var t2,
+        t1 = this.___SlidableState_controller_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      this._widget.toString;
+      t1.enableStartActionPane = true;
+      t2 = 0.5;
+      if (t1._startActionPaneExtentRatio !== t2 && t2 >= 0 && t2 <= 1)
+        t1._startActionPaneExtentRatio = t2;
+      t1.enableEndActionPane = true;
+      t2 = 0.5;
+      if (t1._endActionPaneExtentRatio !== t2 && t2 >= 0 && t2 <= 1)
+        t1._endActionPaneExtentRatio = t2;
+    },
+    updateIsLeftToRight$0() {
+      var t2,
+        t1 = this._framework$_element.dependOnInheritedWidgetOfExactType$1$0(type$.Directionality);
+      t1.toString;
+      t2 = this.___SlidableState_controller_F;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      this._widget.toString;
+      t1 = t1.textDirection === C.TextDirection_1;
+      t2.isLeftToRight = t1;
+    },
+    handleActionPanelTypeChanged$0() {
+      this.setState$1(new B._SlidableState_handleActionPanelTypeChanged_closure(this));
+    },
+    updateMoveAnimation$0() {
+      var t2, t3,
+        t1 = this.___SlidableState_controller_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t2 = t1.direction._change_notifier$_value;
+      this._widget.toString;
+      t3 = type$.Tween_Offset;
+      this.___SlidableState_moveAnimation_A = new A._AnimatedEvaluation(type$.Animation_double._as(t1._animationController), new A.Tween(C.Offset_0_0, new A.Offset(t2, 0), t3), t3._eval$1("_AnimatedEvaluation<Animatable.T>"));
+    },
+    get$actionPane() {
+      var t1 = this.___SlidableState_controller_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      switch (t1.actionPaneType._change_notifier$_value) {
+        case D.ActionPaneType_2:
+          return this._widget.startActionPane;
+        case D.ActionPaneType_0:
+          return this._widget.endActionPane;
+        default:
+          return null;
+      }
+    },
+    get$actionPaneAlignment() {
+      var t1 = this.___SlidableState_controller_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1 = t1.direction._change_notifier$_value;
+      this._widget.toString;
+      return new A.Alignment(-t1, 0);
+    },
+    build$1(context) {
+      var t1, t2, t3, $content, t4, _this = this, _null = null;
+      _this.super$AutomaticKeepAliveClientMixin$build(context);
+      t1 = _this.___SlidableState_moveAnimation_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t2 = _this._widget;
+      t2.toString;
+      t3 = _this.___SlidableState_controller_F;
+      t3 === $ && A.throwUnnamedLateFieldNI();
+      $content = A.SlideTransition$(new B.SlidableAutoCloseBehaviorInteractor(_null, t3, t2.child, _null), t1, _null, true);
+      t1 = A._setArrayType([], type$.JSArray_Widget);
+      if (_this.get$actionPane() != null) {
+        _this._widget.toString;
+        t1.push(A.Positioned$fill(0, A.ClipRect$(_this.get$actionPane(), C.Clip_1, new B._SlidableClipper(C.Axis_0, t3, t3._animationController))));
+      }
+      t1.push($content);
+      _this._widget.toString;
+      t2 = A.flipAxis(C.Axis_0);
+      t4 = _this.get$actionPaneAlignment();
+      _this._widget.toString;
+      return new B.SlidableGestureDetector(t3, new B.SlidableNotificationSender(_null, t3, new B.SlidableScrollingBehavior(t3, true, new B.SlidableDismissal(t2, new B.ActionPaneConfiguration(t4, C.Axis_0, t3.actionPaneType._change_notifier$_value === D.ActionPaneType_2, new B._SlidableControllerScope(t3, new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t1, _null), _null), _null), t3, _null), _null), _null), C.Axis_0, true, C.DragStartBehavior_0, _null);
+    }
+  };
+  B._SlidableControllerScope.prototype = {
+    updateShouldNotify$1(old) {
+      return this.controller !== old.controller;
+    }
+  };
+  B._SlidableClipper.prototype = {
+    getClip$1(size) {
+      var t1, t2, t3, offset;
+      switch (this.axis.index) {
+        case 0:
+          t1 = this.controller;
+          t2 = t1._animationController.__AnimationController__value_A;
+          t2 === $ && A.throwUnnamedLateFieldNI();
+          t3 = size._dx;
+          offset = t2 * t1.direction._change_notifier$_value * t3;
+          if (offset < 0)
+            return new A.Rect(t3 + offset, 0, t3, size._dy);
+          return new A.Rect(0, 0, offset, size._dy);
+        case 1:
+          t1 = this.controller;
+          t2 = t1._animationController.__AnimationController__value_A;
+          t2 === $ && A.throwUnnamedLateFieldNI();
+          t3 = size._dy;
+          offset = t2 * t1.direction._change_notifier$_value * t3;
+          if (offset < 0)
+            return new A.Rect(0, t3 + offset, size._dx, t3);
+          return new A.Rect(0, 0, size._dx, offset);
+      }
+    },
+    getApproximateClipRect$1(size) {
+      return this.getClip$1(size);
+    },
+    shouldReclip$1(oldClipper) {
+      return oldClipper.axis !== this.axis;
+    }
+  };
+  B.__SlidableState_State_TickerProviderStateMixin.prototype = {
+    activate$0() {
+      this.super$State$activate();
+      this._updateTickerModeNotifier$0();
+      this._updateTickers$0();
+    },
+    dispose$0() {
+      var _this = this,
+        t1 = _this.TickerProviderStateMixin__tickerModeNotifier;
+      if (t1 != null)
+        t1.removeListener$1(0, _this.get$_updateTickers());
+      _this.TickerProviderStateMixin__tickerModeNotifier = null;
+      _this.super$State$dispose();
+    }
+  };
+  B.__SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin.prototype = {
+    initState$0() {
+      this.super$State$initState();
+      this._widget.toString;
+    },
+    deactivate$0() {
+      var t1 = this.AutomaticKeepAliveClientMixin__keepAliveHandle;
+      if (t1 != null) {
+        t1.notifyListeners$0();
+        t1.super$ChangeNotifier$dispose();
+        this.AutomaticKeepAliveClientMixin__keepAliveHandle = null;
+      }
+      this.super$State$deactivate();
     }
   };
   B.ComposeFloatingButton.prototype = {
@@ -5316,14 +6667,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   B.BaseEmailItemTile.prototype = {
-    buildIconAvatarSwipe$1(iconPath) {
-      var _null = null;
-      return A.Container$(C.Alignment_0_0, A.SvgPicture$asset(iconPath, _null, C.BoxFit_0, 24, _null, 24), C.Clip_0, _null, _null, new A.BoxDecoration(D.Color_4290764543, _null, _null, _null, _null, _null, _null, C.BoxShape_1), _null, 56, _null, _null, _null, _null, _null, 56);
-    },
-    buildTitleTileSwipe$1(text) {
-      var _null = null;
-      return A.Text$(text, _null, 1, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, C.TextOverflow_1, _null, _null, _null, _null), _null, _null, _null);
-    },
     buildMailboxContain$2(isSearchEmailRunning, email) {
       var t1, _null = null;
       if (isSearchEmailRunning && email.get$mailboxName().length !== 0) {
@@ -5990,17 +7333,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.DismissibleWidget.prototype = {
     build$1(context) {
-      var _this = this;
-      return A.Dismissible$(_this.buildSwipeActionLeft$0(), _this.child, C.DismissDirection_1, new B.ObjectKey(_this.item), _this.onDismissed, C.Duration_300000, _this.buildSwipeActionRight$0());
+      var _this = this,
+        t1 = type$.JSArray_Widget;
+      return new B.Slidable(B.ActionPane$(A._setArrayType([_this.buildSwipeAction$2("assets/images/ic_email_open.svg", _this.textLeft)], t1), D.ScrollMotion_null), B.ActionPane$(A._setArrayType([_this.buildSwipeAction$2("assets/images/ic_move_mailbox.svg", _this.textRight)], t1), D.ScrollMotion_null), _this.child, null);
     },
-    buildSwipeActionLeft$0() {
-      var _null = null;
-      return A.Container$(C.Alignment_m1_0, A.ListTile$(_null, _null, _null, _null, A.GestureDetector$(_null, this.buildIconAvatarSwipe$1("assets/images/ic_email_open.svg"), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.DismissibleWidget_buildSwipeActionLeft_closure(), _null, _null, _null, _null, _null, _null, _null), _null, _null, this.buildTitleTileSwipe$1(this.textLeft), _null), C.Clip_0, _null, _null, new A.BoxDecoration(I.Color_4292865791, _null, _null, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null);
-    },
-    buildSwipeActionRight$0() {
+    buildSwipeAction$2(imagePaths, text) {
       var _null = null,
-        t1 = A.GestureDetector$(_null, this.buildIconAvatarSwipe$1("assets/images/ic_move_mailbox.svg"), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.DismissibleWidget_buildSwipeActionRight_closure(), _null, _null, _null, _null, _null, _null, _null);
-      return A.Container$(C.Alignment_1_0, A.ListTile$(_null, _null, _null, _null, _null, _null, _null, A.Row$(A._setArrayType([this.buildTitleTileSwipe$1(this.textRight)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_1, C.MainAxisSize_1, _null), t1), C.Clip_0, _null, _null, new A.BoxDecoration(I.Color_4292865791, _null, _null, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null);
+        t1 = A.Container$(C.Alignment_0_0, A.SvgPicture$asset(imagePaths, _null, C.BoxFit_0, 24, _null, 24), C.Clip_0, _null, _null, new A.BoxDecoration(D.Color_4290764543, _null, _null, _null, _null, _null, _null, C.BoxShape_1), _null, 56, _null, _null, _null, _null, _null, 56);
+      return A.Container$(C.Alignment_m1_0, A.Row$(A._setArrayType([new A.SizedBox(10, _null, _null, _null), t1, new A.SizedBox(10, _null, _null, _null), A.Text$(text, _null, 1, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, C.TextOverflow_1, _null, _null, _null, _null), _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(I.Color_4292865791, _null, _null, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B._DismissibleWidget_StatelessWidget_BaseEmailItemTile.prototype = {};
@@ -6272,7 +7612,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.link.builder.call$2(context, new B.DefaultLinkDelegate_build_closure(this, context));
     }
   };
-  var typesOffset = hunkHelpers.updateTypes(["~()", "PortalTarget()", "~(PointerEvent)", "~(int)", "~(PointerDownEvent)", "Widget(BuildContext)", "AppBarMailWidgetBuilder()", "AttachmentFileTileBuilder(Attachment)", "AttachmentFileTileBuilder(BuildContext,int)", "MaterialTextButton(EmailAddress)", "UserInformationWidgetBuilder()", "~(List<PresentationEmail>,PresentationMailbox)", "DownloadTaskItemWidget(BuildContext,int)", "AppGridDashboardItem(LinagoraApp)", "RecentSearchItemTileWidget(BuildContext,RecentSearch)", "EmailQuickSearchItemTileWidget(BuildContext,PresentationEmail)", "Chip()", "AppBarThreadWidgetBuilder()", "DismissibleWidget<PresentationEmail>()", "~(DraggableDetails)", "Offset(Draggable<Object>,BuildContext,Offset)", "DefaultLinkDelegate(LinkInfo)"]);
+  var typesOffset = hunkHelpers.updateTypes(["~()", "double(double)", "~(AnimationStatus)", "PortalTarget()", "~(PointerEvent)", "~(int)", "~(PointerDownEvent)", "Widget(BuildContext)", "~(SlidableAutoCloseNotification)", "~(SlidableAutoCloseBarrierNotification)", "~(DragStartDetails)", "~(DragUpdateDetails)", "~(DragEndDetails)", "AppBarMailWidgetBuilder()", "AttachmentFileTileBuilder(Attachment)", "AttachmentFileTileBuilder(BuildContext,int)", "MaterialTextButton(EmailAddress)", "UserInformationWidgetBuilder()", "~(List<PresentationEmail>,PresentationMailbox)", "DownloadTaskItemWidget(BuildContext,int)", "AppGridDashboardItem(LinagoraApp)", "RecentSearchItemTileWidget(BuildContext,RecentSearch)", "EmailQuickSearchItemTileWidget(BuildContext,PresentationEmail)", "Chip()", "AppBarThreadWidgetBuilder()", "DismissibleWidget<PresentationEmail>()", "~(DraggableDetails)", "Offset(Draggable<Object>,BuildContext,Offset)", "DefaultLinkDelegate(LinkInfo)"]);
   B.buildIconWebHasPosition_closure0.prototype = {
     call$1(detail) {
       this.onTapDown.call$1(B.TapDownDetailsExtension_getPosition(detail, this.context));
@@ -6462,7 +7802,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Positioned$(_null, A.CompositedTransformFollower$(A.TextFieldTapRegion$(t2 ? suggestionsList : A.FractionalTranslation$(suggestionsList, true, C.Offset_0_m1), _null, _null), t1._layerLink, new A.Offset(0, t3), false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, w);
     },
-    $signature: 416
+    $signature: 415
   };
   B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure.prototype = {
     call$1(selection) {
@@ -6676,7 +8016,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._SuggestionsListState__getSuggestions_closure.prototype = {
     call$0() {
       var t1 = this.$this;
-      t1._animationController.forward$1$from(0, 1);
+      t1._quick_search_input_form$_animationController.forward$1$from(0, 1);
       t1._isLoading = true;
     },
     $signature: 0
@@ -6694,7 +8034,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = true;
       if (t3)
         animationStart = 1;
-      t1._animationController.forward$1$from(0, animationStart);
+      t1._quick_search_input_form$_animationController.forward$1$from(0, animationStart);
       t1._isLoading = false;
       t1._quick_search_input_form$_suggestions = t2.suggestions;
       t1._recentItems = t2.recentItems;
@@ -6731,7 +8071,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3.toString;
       return new A.Padding(new A.EdgeInsets(0, 0, 8, 8), A.InkWell$(false, C.BorderRadius_tLn7, true, t2.call$2(t3, action), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B._SuggestionsListState_createSuggestionsWidget__closure(t1, action), _null, _null, _null, _null, _null, _null, _null), _null);
     },
-    $signature: 546
+    $signature: 545
   };
   B._SuggestionsListState_createSuggestionsWidget__closure.prototype = {
     call$0() {
@@ -6771,7 +8111,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3.toString;
       return new A.Padding(new A.EdgeInsets(0, 0, 8, 8), A.InkWell$(false, C.BorderRadius_tLn7, true, t2.call$2(t3, action), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B._SuggestionsListState_createRecentWidget__closure(t1, action), _null, _null, _null, _null, _null, _null, _null), _null);
     },
-    $signature: 546
+    $signature: 545
   };
   B._SuggestionsListState_createRecentWidget__closure.prototype = {
     call$0() {
@@ -6866,6 +8206,58 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return null;
     },
     $signature: 6
+  };
+  B.SlidableAutoCloseBehaviorListener_build_closure.prototype = {
+    call$1(notification) {
+      notification.get$groupTag();
+    },
+    $signature: typesOffset + 8
+  };
+  B.SlidableAutoCloseNotificationSender_build_closure.prototype = {
+    call$1($status) {
+      var t1 = this.$this;
+      if (($status === C.AnimationStatus_1 || $status === C.AnimationStatus_2) && !t1.controller._closing)
+        B.SlidableGroupNotification_dispatch(this.context, new B.SlidableAutoCloseNotification(t1.groupTag, t1.controller, false), false, type$.SlidableAutoCloseNotification);
+      return null;
+    },
+    $signature: 22
+  };
+  B._SlidableAutoCloseBarrierNotificationSenderState_dispose_closure.prototype = {
+    call$1(_) {
+      this.$this.dispatchSlidableAutoCloseBarrierNotification$1$enabled(false);
+    },
+    $signature: 9
+  };
+  B._SlidableAutoCloseBarrierBehaviorListenerState_build_closure.prototype = {
+    call$1(notification) {
+      this.$this._widget.toString;
+      notification.get$groupTag();
+    },
+    $signature: typesOffset + 9
+  };
+  B._SlidableDismissalState_handleResizeRequestChanged_closure.prototype = {
+    call$1(_) {
+      this.resizeRequest.get$onDismissed().call$0();
+    },
+    $signature: 54
+  };
+  B._SlidableDismissalState_handleResizeRequestChanged_closure0.prototype = {
+    call$0() {
+      this.$this.resized = true;
+    },
+    $signature: 0
+  };
+  B._ActionPaneState_handleRatioChanged_closure.prototype = {
+    call$0() {
+      this.$this.showMotion = this.show;
+    },
+    $signature: 0
+  };
+  B._SlidableState_handleActionPanelTypeChanged_closure.prototype = {
+    call$0() {
+      this.$this.updateMoveAnimation$0();
+    },
+    $signature: 0
   };
   B.ListPresentationEmailExtension_get_isAllEmailRead_closure.prototype = {
     call$1(email) {
@@ -7250,7 +8642,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return _this.$this._composer_view_web$_buildHtmlEditor$2(_this.context, t1);
       }
     },
-    $signature: 54
+    $signature: 55
   };
   B._EmailEditorState_build_closure.prototype = {
     call$0() {
@@ -7444,7 +8836,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t8 = $.GetInstance__getInstance = C.C_GetInstance;
       return new B.AppBarMailWidgetBuilder(t4, t8.find$1$1$tag(0, _null, type$.ResponsiveUtils), t1, t3, t5, t6, new B.EmailView__buildAppBar__closure(t2, t7), new B.EmailView__buildAppBar__closure0(t2, t7), new B.EmailView__buildAppBar__closure1(t2, t7), _null);
     },
-    $signature: typesOffset + 6
+    $signature: typesOffset + 13
   };
   B.EmailView__buildAppBar__closure.prototype = {
     call$0() {
@@ -7600,7 +8992,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(C.EdgeInsets_12_8_12_8, A.Text$(t1, _null, _null, _null, _null, _null, C.TextStyle_yzp4, _null, _null, _null), _null), new A.RoundedRectangleBorder(t5, C.BorderSide_8xm), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
-    $signature: 419
+    $signature: 418
   };
   B.EmailView__buildAttachmentsList_closure.prototype = {
     call$2(context, constraints) {
@@ -7622,7 +9014,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(attachment) {
       return new B.AttachmentFileTileBuilder(attachment, new B.EmailView__buildAttachmentsList___closure0(this.$this, this.context), null);
     },
-    $signature: typesOffset + 7
+    $signature: typesOffset + 14
   };
   B.EmailView__buildAttachmentsList___closure0.prototype = {
     call$1(attachment) {
@@ -7631,13 +9023,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1))._downloadAttachmentForWebAction$2(this.context, attachment);
     },
-    $signature: 548
+    $signature: 547
   };
   B.EmailView__buildAttachmentsList__closure0.prototype = {
     call$2(context, index) {
       return new B.AttachmentFileTileBuilder(this.attachments[index], new B.EmailView__buildAttachmentsList___closure(this.$this, context), null);
     },
-    $signature: typesOffset + 8
+    $signature: typesOffset + 15
   };
   B.EmailView__buildAttachmentsList___closure.prototype = {
     call$1(attachment) {
@@ -7646,7 +9038,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1))._downloadAttachmentForWebAction$2(this.context, attachment);
     },
-    $signature: 548
+    $signature: 547
   };
   B.EmailView__buildEmailContent_closure.prototype = {
     call$0() {
@@ -7904,14 +9296,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
-    $signature: 549
+    $signature: 548
   };
   B.EmailReceiverBuilder__buildListEmailAddressWidget_closure.prototype = {
     call$1(emailAddress) {
       var t1 = this.lastEmailAddress.$eq(0, emailAddress) ? A.EmailAddressExtension_asString(emailAddress) : A.EmailAddressExtension_asString(emailAddress) + ",";
       return E.MaterialTextButton$(8, null, t1, C.Color_4278190080, 16, null, new B.EmailReceiverBuilder__buildListEmailAddressWidget__closure(this.$this, this.context, emailAddress), C.TextOverflow_1, null, false);
     },
-    $signature: typesOffset + 9
+    $signature: typesOffset + 16
   };
   B.EmailReceiverBuilder__buildListEmailAddressWidget__closure.prototype = {
     call$0() {
@@ -7969,7 +9361,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return E.UserInformationWidgetBuilder$(t1.imagePaths, t4, t3._as(t2.get(t1)).mailboxDashBoardController.get$goToSettings(), _null, t5, _null);
     },
-    $signature: typesOffset + 10
+    $signature: typesOffset + 17
   };
   B.BaseMailboxView_buildLoadingView_closure.prototype = {
     call$0() {
@@ -8251,7 +9643,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._openMailboxEventController.add$1(0, new A.OpenMailboxViewEvent(this.context, t2));
       return null;
     },
-    $signature: 57
+    $signature: 58
   };
   B.MailboxView__buildListChildTileWidget___closure3.prototype = {
     call$1(mailboxNode) {
@@ -8265,7 +9657,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 57
+    $signature: 58
   };
   B.MailboxView__buildListChildTileWidget___closure4.prototype = {
     call$2(position, mailboxNode) {
@@ -8275,7 +9667,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t1.openMailboxMenuActionOnWeb$6(this.context, t1.imagePaths, t1.responsiveUtils, position, t2, A._instanceType(t1)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(t1)));
     },
-    $signature: 550
+    $signature: 549
   };
   B.MailboxView__buildListChildTileWidget___closure5.prototype = {
     call$1(mailboxNode) {
@@ -8284,7 +9676,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectMailboxNode$1(mailboxNode);
     },
-    $signature: 57
+    $signature: 58
   };
   B.MailboxView__buildListChildTileWidget__closure0.prototype = {
     call$0() {
@@ -8312,7 +9704,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._openMailboxEventController.add$1(0, new A.OpenMailboxViewEvent(this.context, t2));
       return null;
     },
-    $signature: 57
+    $signature: 58
   };
   B.MailboxView__buildListChildTileWidget___closure0.prototype = {
     call$2(position, mailboxNode) {
@@ -8322,7 +9714,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t1.openMailboxMenuActionOnWeb$6(this.context, t1.imagePaths, t1.responsiveUtils, position, t2, A._instanceType(t1)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(t1)));
     },
-    $signature: 550
+    $signature: 549
   };
   B.MailboxView__buildListChildTileWidget___closure1.prototype = {
     call$1(mailboxNode) {
@@ -8331,7 +9723,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectMailboxNode$1(mailboxNode);
     },
-    $signature: 57
+    $signature: 58
   };
   B.MailboxDashBoardView_build_closure2.prototype = {
     call$0() {
@@ -8539,7 +9931,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = B.AppConfig_appGridDashboardAvailable() ? new A.Obx(new B.MailboxDashBoardView__buildRightHeader__closure(t2, context), _null) : C.SizedBox_0_0_null_null;
       return A.Row$(A._setArrayType([t1, C.Spacer_null, t3, I.SizedBox_24_null_null_null, new A.Obx(new B.MailboxDashBoardView__buildRightHeader__closure0(t2, context), _null), C.SizedBox_16_null_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
-    $signature: 551
+    $signature: 550
   };
   B.MailboxDashBoardView__buildRightHeader__closure.prototype = {
     call$0() {
@@ -8560,7 +9952,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t6._jsWeakMap.get(t1)).get$showAppDashboardAction();
       return E.PortalTarget$(F.C_Filled, E.PortalTarget$(new E.Aligned(_null, _null, t7, t5, C.Alignment_0_0, F.C_AxisFlag, F.C_AxisFlag, C.Offset_0_0, _null), A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_app_dashboard.svg", _null, C.BoxFit_0, 28, _null, 28), _null, _null, _null, t6, 20, _null), new A.Obx(new B.MailboxDashBoardView__buildRightHeader___closure1(t1), _null), t2), t4, t3);
     },
-    $signature: typesOffset + 1
+    $signature: typesOffset + 3
   };
   B.MailboxDashBoardView__buildRightHeader___closure0.prototype = {
     call$0() {
@@ -8850,14 +10242,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return D.Padding_wr1;
     },
-    $signature: 440
+    $signature: 439
   };
   B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure.prototype = {
     call$2(context, index) {
       var t1 = this.downloadTasks;
       return new B.DownloadTaskItemWidget(J.$index$asx(t1.get$value(t1), index), null);
     },
-    $signature: typesOffset + 12
+    $signature: typesOffset + 19
   };
   B.MailboxDashBoardView__buildVacationNotificationMessage_closure.prototype = {
     call$0() {
@@ -8947,7 +10339,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(filter) {
       return this.$this._mailbox_dashboard_view_web$_buildQuickSearchFilterButton$2(this.context, filter);
     },
-    $signature: 552
+    $signature: 551
   };
   B.MailboxDashBoardView__buildQuickSearchFilterButton_closure.prototype = {
     call$0() {
@@ -9221,7 +10613,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
       return new B.AppGridDashboardItem(app, t1.find$1$1$tag(0, null, type$.ImagePaths), null);
     },
-    $signature: typesOffset + 13
+    $signature: typesOffset + 20
   };
   B.EmailQuickSearchItemTileWidget_build_closure.prototype = {
     call$2(context, constraints) {
@@ -9258,7 +10650,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(t7, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return E.PortalTarget$(F.C_Filled, E.PortalTarget$(F.Aligned_2Lz, B.QuickSearchInputForm$(new B.SearchInputFormWidget_build__closure0(t5), new B.SearchInputFormWidget_build__closure1(t5), new B.SearchInputFormWidget_build__closure2(t5), C.Duration_300000, t1.get$getAllRecentSearchAction(), new B.SearchInputFormWidget_build__closure3(t5), new B.SearchInputFormWidget_build__closure4(), D.List_yHZ, D.EdgeInsets_12_12_12_6, new B.SearchInputFormWidget_build__closure5(t5), 52, new B.SearchInputFormWidget_build__closure6(t5, t7), new B.SearchInputFormWidget_build__closure7(t5, t7), new B.QuickSearchSuggestionsBoxDecoration(C.Color_4294967295, C.BorderRadius_tLn1, new A.BoxConstraints(0, t6, 0, 1 / 0)), 0, t5.dashBoardController.get$quickSearchEmails(), t8, new A.Padding(D.EdgeInsets_12_12_12_8, A.Text$(A.Intl__message("Recent", _null, "recent", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_omH2, _null, _null, _null), _null), type$.PresentationEmail, type$.RecentSearch), new B.AdvancedSearchFilterOverlay(t6, _null), t2), t4, t3);
     },
-    $signature: typesOffset + 1
+    $signature: typesOffset + 3
   };
   B.SearchInputFormWidget_build__closure.prototype = {
     call$0() {
@@ -9274,7 +10666,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 553
+    $signature: 552
   };
   B.SearchInputFormWidget_build__closure1.prototype = {
     call$1(filterAction) {
@@ -9303,7 +10695,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 553
+    $signature: 552
   };
   B.SearchInputFormWidget_build__closure5.prototype = {
     call$1(context) {
@@ -9315,7 +10707,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, recent) {
       return B.RecentSearchItemTileWidget$(recent, null);
     },
-    $signature: typesOffset + 14
+    $signature: typesOffset + 21
   };
   B.SearchInputFormWidget_build__closure6.prototype = {
     call$1(recent) {
@@ -9340,7 +10732,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this.dashBoardController.selectedMailbox;
       return B.EmailQuickSearchItemTileWidget$(email, t1.get$value(t1), null);
     },
-    $signature: typesOffset + 15
+    $signature: typesOffset + 22
   };
   B.SearchInputFormWidget_build__closure7.prototype = {
     call$1(presentationEmail) {
@@ -9387,7 +10779,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = t1.getTextStyle$1$isFilterSelected(isFilterSelected);
       return L.Chip$(t2, t1.getBackgroundColor$1$isFilterSelected(isFilterSelected), _null, t3, new A.EdgeInsets(t4, 2, t5, 2), t6, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), new A.BorderSide(t1.getBackgroundColor$1$isFilterSelected(isFilterSelected), 1, C.BorderStyle_1, -1)));
     },
-    $signature: typesOffset + 16
+    $signature: typesOffset + 23
   };
   B.SpamReportBannerWebWidget_build_closure.prototype = {
     call$0() {
@@ -9736,7 +11128,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(filter) {
       return this.$this._buildQuickSearchFilterButton$2(this.context, filter);
     },
-    $signature: 552
+    $signature: 551
   };
   B.SearchEmailView__buildQuickSearchFilterButton_closure.prototype = {
     call$0() {
@@ -9905,7 +11297,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.$this;
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.RecentSearchItemTileWidget$(recentSearch, B.SearchEmailUtils_getPaddingListRecentSearch(context, t1._search_email_view$_responsiveUtils)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListRecentSearch__closure(t1, context, recentSearch), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
-    $signature: 554
+    $signature: 553
   };
   B.SearchEmailView__buildListRecentSearch__closure.prototype = {
     call$0() {
@@ -9932,7 +11324,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A._instanceType(t3)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(t3)).EmailActionController_mailboxDashBoardController.selectedMailbox;
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.EmailQuickSearchItemTileWidget$(t2, t4.get$value(t4), B.SearchEmailUtils_getPaddingSearchSuggestionList(context, t3._search_email_view$_responsiveUtils)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListSuggestionSearch__closure(t3, t1, index, context), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
-    $signature: 554
+    $signature: 553
   };
   B.SearchEmailView__buildListSuggestionSearch__closure.prototype = {
     call$0() {
@@ -9981,7 +11373,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = C.SizedBox_0_0_null_null;
       return t1;
     },
-    $signature: 54
+    $signature: 55
   };
   B.SearchEmailView__buildListEmailBody_closure.prototype = {
     call$1(scrollInfo) {
@@ -10086,7 +11478,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).pressEmailAction$4$mailboxContain(this.context, action, email, this.currentPresentationEmail.mailboxContain);
     },
-    $signature: 555
+    $signature: 554
   };
   B.SearchEmailView__buildListEmailBody___closure0.prototype = {
     call$2(email, position) {
@@ -10441,7 +11833,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t11 = $.GetInstance__getInstance = C.C_GetInstance;
       return new B.AppBarThreadWidgetBuilder(t10, t11.find$1$1$tag(0, null, type$.ResponsiveUtils), new B.ThreadView__buildAppBarNormal__closure(t1, t3), t8, t2, t9, new B.ThreadView__buildAppBarNormal__closure0(t1, t3), t4, t5, t6, t7, null);
     },
-    $signature: typesOffset + 17
+    $signature: typesOffset + 24
   };
   B.ThreadView__buildAppBarNormal__closure0.prototype = {
     call$2(actionType, selectionEmail) {
@@ -10812,7 +12204,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildListEmailBody__closure.prototype = {
     call$0() {
-      var t3, t4, t5, t6, _this = this, _null = null,
+      var t3, t4, t5, _this = this, _null = null,
         t1 = _this.context,
         t2 = type$.AppLocalizations;
       A.Localizations_of(t1, C.Type_AppLocalizations_swi, t2).toString;
@@ -10821,7 +12213,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A.Intl__message("Move To", _null, "moveTo", _null, _null);
       t4 = _this.listPresentationEmail;
       t5 = _this.index;
-      t6 = J.$index$asx(t4.get$value(t4), t5);
+      J.$index$asx(t4.get$value(t4), t5);
       t5 = _this.$this._buildEmailItem$2(t1, J.$index$asx(t4.get$value(t4), t5));
       $.$get$Get();
       t4 = $.GetInstance__getInstance;
@@ -10830,14 +12222,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = $.GetInstance__getInstance;
       if (t4 == null)
         t4 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.DismissibleWidget(t6, t5, new B.ThreadView__buildListEmailBody___closure(), t3, t2, t1, t4.find$1$1$tag(0, _null, type$.ImagePaths), _null, type$.DismissibleWidget_PresentationEmail);
+      return new B.DismissibleWidget(t5, t3, t2, t1, t4.find$1$1$tag(0, _null, type$.ImagePaths), _null, type$.DismissibleWidget_PresentationEmail);
     },
-    $signature: typesOffset + 18
-  };
-  B.ThreadView__buildListEmailBody___closure.prototype = {
-    call$1(direction) {
-    },
-    $signature: 330
+    $signature: typesOffset + 25
   };
   B.ThreadView__buildEmailItemDraggable_closure2.prototype = {
     call$1(_) {
@@ -10895,7 +12282,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController._isDraggingMailbox.set$value(0, false);
       return null;
     },
-    $signature: typesOffset + 19
+    $signature: typesOffset + 26
   };
   B.ThreadView__buildEmailItemDraggable_closure0.prototype = {
     call$2(_, __) {
@@ -10915,7 +12302,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).pressEmailAction$4$mailboxContain(this.context, action, email, email.mailboxContain);
       return null;
     },
-    $signature: 555
+    $signature: 554
   };
   B.ThreadView__buildEmailItemNotDraggable_closure0.prototype = {
     call$2(email, position) {
@@ -10989,7 +12376,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = C.SizedBox_0_0_null_null;
       return t1;
     },
-    $signature: 54
+    $signature: 55
   };
   B.ThreadView__buildEmptyTrashButton_closure.prototype = {
     call$0() {
@@ -11310,16 +12697,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  B.DismissibleWidget_buildSwipeActionLeft_closure.prototype = {
-    call$0() {
-    },
-    $signature: 0
-  };
-  B.DismissibleWidget_buildSwipeActionRight_closure.prototype = {
-    call$0() {
-    },
-    $signature: 0
-  };
   B.EmailTileBuilder__onHoverIconChanged_closure.prototype = {
     call$0() {
       return this.$this.isHoverIcon = this.isHover;
@@ -11586,7 +12963,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(A.Expanded$(A.Container$(_null, t2.buildEmailPartialContent$3(t3, t2.isSearchEmailRunning, t2._searchQuery), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1));
       return A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
-    $signature: 551
+    $signature: 550
   };
   B.FilterMessageCupertinoActionSheetActionBuilder_build_closure.prototype = {
     call$0() {
@@ -11644,6 +13021,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _.super$__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin$dispose = _.dispose$0;
     _ = B.__SuggestionsListState_State_SingleTickerProviderStateMixin0.prototype;
     _.super$__SuggestionsListState_State_SingleTickerProviderStateMixin$dispose = _.dispose$0;
+    _ = B.__SlidableDismissalState_State_SingleTickerProviderStateMixin.prototype;
+    _.super$__SlidableDismissalState_State_SingleTickerProviderStateMixin$dispose = _.dispose$0;
+    _ = B.__SlidableState_State_TickerProviderStateMixin.prototype;
+    _.super$__SlidableState_State_TickerProviderStateMixin$dispose = _.dispose$0;
+    _ = B.__SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin.prototype;
+    _.super$__SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin$initState = _.initState$0;
   })();
   (function installTearOffs() {
     var _instance_0_u = hunkHelpers._instance_0u,
@@ -11654,28 +13037,43 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _instance_0_u(B._TypeAheadFormFieldState.prototype, "get$_handleControllerChanged", "_handleControllerChanged$0", 0);
     _instance_0_u(B._TypeAheadFieldQuickSearchState.prototype, "get$_scrollResizeListener", "_scrollResizeListener$0", 0);
     var _;
-    _instance_1_u(_ = B.MultiDragGestureRecognizer.prototype, "get$_multidrag$_handleEvent", "_multidrag$_handleEvent$1", 2);
-    _instance_1_u(_, "get$_removeState", "_removeState$1", 3);
-    _static(B, "drag_target__pointerDragAnchorStrategy$closure", 3, null, ["call$3"], ["pointerDragAnchorStrategy"], 20, 0);
-    _instance_1_u(_ = B._DraggableState.prototype, "get$_routePointer", "_routePointer$1", 4);
+    _instance_1_u(_ = B.MultiDragGestureRecognizer.prototype, "get$_multidrag$_handleEvent", "_multidrag$_handleEvent$1", 4);
+    _instance_1_u(_, "get$_removeState", "_removeState$1", 5);
+    _instance_1_u(_ = B.RenderFractionallySizedOverflowBox.prototype, "get$computeMinIntrinsicWidth", "computeMinIntrinsicWidth$1", 1);
+    _instance_1_u(_, "get$computeMaxIntrinsicWidth", "computeMaxIntrinsicWidth$1", 1);
+    _instance_1_u(_, "get$computeMinIntrinsicHeight", "computeMinIntrinsicHeight$1", 1);
+    _instance_1_u(_, "get$computeMaxIntrinsicHeight", "computeMaxIntrinsicHeight$1", 1);
+    _static(B, "drag_target__pointerDragAnchorStrategy$closure", 3, null, ["call$3"], ["pointerDragAnchorStrategy"], 27, 0);
+    _instance_1_u(_ = B._DraggableState.prototype, "get$_routePointer", "_routePointer$1", 6);
     _instance_1_u(_, "get$_startDrag", "_startDrag$1", "_DragAvatar<1>?(Offset)");
-    _instance_1_u(B._DragAvatar.prototype, "get$_build", "_build$1", 5);
-    _instance_2_u(B.MailboxView.prototype, "get$_handleDragItemAccepted", "_handleDragItemAccepted$2", 11);
+    _instance_1_u(B._DragAvatar.prototype, "get$_build", "_build$1", 7);
+    _instance_1_u(B._SlidableAutoCloseBarrierNotificationSenderState.prototype, "get$_handleStatusChanged", "_handleStatusChanged$1", 2);
+    _instance_1_u(B._SlidableNotificationSenderState0.prototype, "get$handleStatusChanged", "handleStatusChanged$1", 2);
+    _instance_0_u(B.SlidableController.prototype, "get$_onDirectionChanged", "_onDirectionChanged$0", 0);
+    _instance_0_u(B._SlidableDismissalState.prototype, "get$handleResizeRequestChanged", "handleResizeRequestChanged$0", 0);
+    _instance_1_u(_ = B._SlidableGestureDetectorState.prototype, "get$handleDragStart", "handleDragStart$1", 10);
+    _instance_1_u(_, "get$handleDragUpdate", "handleDragUpdate$1", 11);
+    _instance_1_u(_, "get$handleDragEnd", "handleDragEnd$1", 12);
+    _instance_0_u(B._SlidableScrollingBehaviorState.prototype, "get$handleScrollingChanged", "handleScrollingChanged$0", 0);
+    _instance_0_u(_ = B._ActionPaneState.prototype, "get$handleEndGestureChanged", "handleEndGestureChanged$0", 0);
+    _instance_0_u(_, "get$handleRatioChanged", "handleRatioChanged$0", 0);
+    _instance_0_u(B._SlidableState.prototype, "get$handleActionPanelTypeChanged", "handleActionPanelTypeChanged$0", 0);
+    _instance_2_u(B.MailboxView.prototype, "get$_handleDragItemAccepted", "_handleDragItemAccepted$2", 18);
     _instance_0_u(B.AppGridDashboardItem.prototype, "get$_app_grid_dashboard_item$_openApp", "_app_grid_dashboard_item$_openApp$0", 0);
-    _static_1(B, "link_DefaultLinkDelegate_create$closure", "DefaultLinkDelegate_create", 21);
+    _static_1(B, "link_DefaultLinkDelegate_create$closure", "DefaultLinkDelegate_create", 28);
   })();
   (function inheritance() {
     var _mixinHard = hunkHelpers.mixinHard,
       _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B._SuggestionsBox, B.RichTextBuilder, B.Drag, B.MultiDragPointerState, B.DraggableDetails, B.FilterEmailPopupMenuMixin, B.TopBarThreadSelection, B.BaseEmailItemTile, B._EmailTileBuilder_Object_BaseEmailItemTile]);
-    _inheritMany(A._Enum, [B.SizeUnit, B._DragEndKind]);
-    _inheritMany(A.StatelessWidget, [B.BackgroundWidgetBuilder, B.ComposeFloatingButton, B.EmailAvatarBuilder, B.LinkBrowserWidget, B.AppBarMailWidgetBuilder, B.AttachmentFileTileBuilder, B.BottomBarMailWidgetBuilder, B.EmailReceiverBuilder, B.EmailSenderBuilder, B.InformationSenderAndReceiverBuilder, B.ReceivedTimeBuilder, B.AdvancedSearchFilterOverlay, B.IconOpenAdvancedSearchWidget, B.AppGridDashboardItem, B.AppDashboardOverlay, B._DownloadTaskItemWidget_StatelessWidget_AppLoaderMixin, B.EmailQuickSearchItemTileWidget, B.RecentSearchItemTileWidget, B._SearchInputFormWidget_StatelessWidget_AppLoaderMixin, B.SpamReportBannerWebWidget, B.AppBarSelectionMode, B.EmailReceiveTimeActionTileWidget, B.AppBarThreadWidgetBuilder, B.BottomBarThreadSelectionWidget, B._DismissibleWidget_StatelessWidget_BaseEmailItemTile, B.SpamReportBannerWidget, B.Link, B.DefaultLinkDelegate]);
-    _inheritMany(A.Closure, [B.buildIconWebHasPosition_closure0, B.QuickSearchInputForm_closure, B.QuickSearchInputForm__closure, B._TypeAheadFieldQuickSearchState_initState_closure0, B._TypeAheadFieldQuickSearchState_initState_closure1, B._TypeAheadFieldQuickSearchState__scrollResizeListener_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure0, B._TypeAheadFieldQuickSearchState_build_closure, B._SuggestionsListState_createSuggestionsWidget_closure, B._SuggestionsListState_createSuggestionsWidget_closure0, B._SuggestionsListState_createRecentWidget_closure, B._SuggestionsListState_createRecentWidget_closure0, B._SuggestionsBox__findRootMediaQuery_closure, B.MultiDragGestureRecognizer_acceptGesture_closure, B._DraggableState__startDrag_closure0, B._DraggableState__startDrag_closure1, B._DragAvatar_updateDrag_closure, B.ListPresentationEmailExtension_get_isAllEmailRead_closure, B.ListPresentationEmailExtension_get_isAllEmailStarred_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure0, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure1, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure0, B.ListPresentationEmailExtension_isAllSpam_closure, B.ListPresentationEmailExtension_isAllSpam_closure0, B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox_closure, B.ListPresentationEmailExtension_listEmailCanSpam_closure, B.ComposerView__buildEditorForm__closure, B.ComposerView__buildEditorForm__closure0, B.EmailView__buildBottomBar_closure, B.EmailView__buildLoadingView__closure, B.EmailView__buildLoadingView__closure0, B.EmailView__buildAttachmentsList__closure, B.EmailView__buildAttachmentsList___closure0, B.EmailView__buildAttachmentsList___closure, B.EmailView__buildEmailContent__closure, B.EmailView__markAsEmailUnreadAction_closure, B.EmailView__markAsEmailSpamOrUnSpamAction_closure, B.EmailView__quickCreatingRuleAction_closure, B.AppBarMailWidgetBuilder__buildListOptionButton_closure3, B.EmailReceiverBuilder__buildListEmailAddressWidget_closure, B.BaseMailboxView_buildLoadingView__closure, B.BaseMailboxView_buildLoadingView__closure0, B.MailboxView__buildListMailbox__closure1, B.MailboxView__buildListMailbox__closure, B.MailboxView__buildListChildTileWidget_closure, B.MailboxView__buildListChildTileWidget___closure2, B.MailboxView__buildListChildTileWidget___closure3, B.MailboxView__buildListChildTileWidget___closure5, B.MailboxView__buildListChildTileWidget___closure, B.MailboxView__buildListChildTileWidget___closure1, B.MailboxDashBoardView__buildRightHeader___closure, B.MailboxDashBoardView__buildListButtonTopBar__closure, B.MailboxDashBoardView__buildListButtonTopBar___closure, B.MailboxDashBoardView__buildMarkAsMailboxReadLoading__closure, B.MailboxDashBoardView__buildMarkAsMailboxReadLoading__closure0, B.MailboxDashBoardView__buildListButtonQuickSearchFilter__closure, B.MailboxDashBoardView__buildQuickSearchFilterButton__closure0, B.MailboxDashBoardView__buildQuickSearchFilterButton___closure, B.MailboxDashBoardView_popupMenuEmailReceiveTimeType_closure, B.AppDashboardOverlay_build_closure, B.SearchInputFormWidget_build__closure1, B.SearchInputFormWidget_build__closure5, B.SearchInputFormWidget_build__closure6, B.SearchInputFormWidget_build__closure7, B.SearchInputFormWidget__createConfiguration_closure0, B.SearchEmailView_build_closure, B.SearchEmailView__buildSearchInputForm_closure0, B.SearchEmailView__buildListSearchFilterAction_closure, B.SearchEmailView__buildQuickSearchFilterButton___closure0, B.SearchEmailView__buildQuickSearchFilterButton__closure0, B.SearchEmailView__buildQuickSearchFilterButton___closure, B.SearchEmailView__popupMenuEmailReceiveTimeType_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile__closure, B.SearchEmailView__buildEmptyEmail__closure, B.SearchEmailView__buildEmptyEmail__closure0, B.SearchEmailView__buildListEmailBody_closure, B.SearchEmailView__buildLoadingView__closure, B.SearchEmailView__buildLoadingView__closure0, B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure, B.SearchEmailView__buildLoadingViewLoadMore__closure, B.SearchEmailView__buildLoadingViewLoadMore__closure0, B.ThreadView__buildAppBarNormal___closure, B.ThreadView__filterMessagesCupertinoActionTile_closure, B.ThreadView__filterMessagesCupertinoActionTile__closure, B.ThreadView__buildLoadingView__closure, B.ThreadView__buildLoadingView__closure0, B.ThreadView__buildLoadingViewLoadMore__closure, B.ThreadView__buildLoadingViewLoadMore__closure0, B.ThreadView__buildListEmailBody_closure, B.ThreadView__buildListEmailBody___closure, B.ThreadView__buildEmailItemDraggable_closure2, B.ThreadView__buildEmailItemDraggable_closure3, B.ThreadView__buildEmailItemDraggable_closure1, B.ThreadView__buildEmptyEmail__closure, B.ThreadView__buildEmptyEmail__closure0, B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure, B.ThreadView__openInNewTabContextMenuItemAction_closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure0, B.AppBarThreadWidgetBuilder__buildFilterButton_closure0, B.EmailTileBuilder__buildListTileTablet__closure1, B.EmailTileBuilder__buildListTileTablet__closure, B.EmailTileBuilder__buildListTileForDesktop__closure2, B.EmailTileBuilder__buildListTileForDesktop__closure0, B.EmailTileBuilder__buildListActionButtonWhenHover_closure3]);
-    _inheritMany(A.Closure0Args, [B.buildIconWebHasPosition_closure, B._ScrollingFloatingButtonAnimatedState_dispose_closure, B._ScrollingFloatingButtonAnimatedState__handleScroll_closure, B._ScrollingFloatingButtonAnimatedState__handleScroll__closure, B._ScrollingFloatingButtonAnimatedState__handleScroll__closure0, B._TypeAheadFieldQuickSearchState_initState_closure, B._TypeAheadFieldQuickSearchState_initState__closure0, B._TypeAheadFieldQuickSearchState_initState__closure, B._TypeAheadFieldQuickSearchState_build__closure, B._SuggestionsListState_closure, B._SuggestionsListState__closure, B._SuggestionsListState__closure0, B._SuggestionsListState__getSuggestions_closure, B._SuggestionsListState__getSuggestions_closure0, B._SuggestionsListState_createSuggestionsWidget__closure0, B._SuggestionsListState_createSuggestionsWidget__closure, B._SuggestionsListState_createRecentWidget__closure0, B._SuggestionsListState_createRecentWidget__closure, B.MultiDragGestureRecognizer__startDrag_closure, B._DraggableState__startDrag_closure, B._DraggableState__startDrag__closure, B._DragAvatar_updateDrag_closure0, B.ComposerView_build_closure0, B.ComposerView_build__closure0, B.ComposerView_build__closure1, B.ComposerView_build__closure2, B.ComposerView__buildAppBarDesktop_closure, B.ComposerView__buildAppBarDesktop_closure0, B.ComposerView__buildAppBarDesktop__closure, B.ComposerView__buildAppBarDesktop_closure1, B.ComposerView_popUpMoreActionMenu_closure1, B.ComposerView_popUpMoreActionMenu_closure2, B.ComposerView__buildListButton_closure, B.ComposerView__buildListButton_closure0, B.ComposerView__buildListButton__closure, B.ComposerView__buildListButton_closure1, B.ComposerView__buildEditorForm_closure, B._EmailEditorState_build_closure, B._EmailEditorState_build_closure0, B.EmailView_build_closure0, B.EmailView_build_closure, B.EmailView__buildEmailView_closure, B.EmailView__buildMultipleEmailView_closure, B.EmailView__buildVacationNotificationMessage_closure, B.EmailView__buildAppBar_closure, B.EmailView__buildAppBar__closure, B.EmailView__buildLoadingView_closure, B.EmailView__buildAttachments_closure, B.EmailView__buildAttachmentsHeader_closure, B.EmailView__buildEmailContent_closure, B.EmailView__markAsEmailUnreadPopupItemAction_closure, B.EmailView__markAsEmailSpamOrUnSpamPopupItemAction_closure, B.EmailView__quickCreatingRulePopupItemAction_closure, B.AppBarMailWidgetBuilder_build_closure, B.AppBarMailWidgetBuilder__buildListOptionButton_closure, B.AppBarMailWidgetBuilder__buildListOptionButton_closure0, B.AppBarMailWidgetBuilder__buildListOptionButton_closure1, B.AppBarMailWidgetBuilder__buildListOptionButton_closure2, B.AttachmentFileTileBuilder_build_closure0, B.AttachmentFileTileBuilder_build_closure, B.BottomBarMailWidgetBuilder_build_closure, B.BottomBarMailWidgetBuilder_build_closure0, B.BottomBarMailWidgetBuilder_build_closure1, B.BottomBarMailWidgetBuilder_build_closure2, B.EmailActionCupertinoActionSheetActionBuilder_build_closure, B.EmailReceiverBuilder_build_closure, B.EmailReceiverBuilder__buildListEmailAddressWidget__closure, B.EmailSenderBuilder_build_closure, B.EmailSenderBuilder_build_closure0, B.BaseMailboxView_buildUserInformation_closure, B.BaseMailboxView_buildLoadingView_closure, B.MailboxView_build_closure, B.MailboxView__buildLogoApp_closure, B.MailboxView__buildListMailbox_closure, B.MailboxView__buildListMailbox_closure0, B.MailboxView__buildListMailbox_closure1, B.MailboxView__buildListMailbox_closure2, B.MailboxView__buildListMailbox_closure3, B.MailboxView__buildListMailbox_closure4, B.MailboxView__buildListMailbox__closure2, B.MailboxView__buildListMailbox_closure5, B.MailboxView__buildListMailbox__closure0, B.MailboxView__buildListChildTileWidget__closure, B.MailboxView__buildListChildTileWidget__closure0, B.MailboxDashBoardView_build_closure2, B.MailboxDashBoardView_build_closure, B.MailboxDashBoardView_build_closure0, B.MailboxDashBoardView_build_closure1, B.MailboxDashBoardView_build_closure4, B.MailboxDashBoardView_build_closure3, B.MailboxDashBoardView_build_closure5, B.MailboxDashBoardView_build_closure6, B.MailboxDashBoardView__buildThreadViewForWebDesktop_closure, B.MailboxDashBoardView__buildThreadViewForWebDesktop__closure0, B.MailboxDashBoardView__buildRightHeader__closure, B.MailboxDashBoardView__buildRightHeader___closure0, B.MailboxDashBoardView__buildRightHeader___closure1, B.MailboxDashBoardView__buildRightHeader__closure0, B.MailboxDashBoardView__buildRightHeader____closure, B.MailboxDashBoardView__buildRightHeader____closure0, B.MailboxDashBoardView__buildListButtonTopBar_closure, B.MailboxDashBoardView__buildListButtonTopBar_closure0, B.MailboxDashBoardView__buildListButtonTopBar_closure1, B.MailboxDashBoardView__buildListButtonTopBar_closure2, B.MailboxDashBoardView__buildMarkAsMailboxReadLoading_closure, B.MailboxDashBoardView__buildDownloadTaskStateWidget_closure, B.MailboxDashBoardView__buildVacationNotificationMessage_closure, B.MailboxDashBoardView__buildVacationNotificationMessage__closure0, B.MailboxDashBoardView__buildVacationNotificationMessage__closure, B.MailboxDashBoardView__buildListButtonQuickSearchFilter_closure, B.MailboxDashBoardView__buildQuickSearchFilterButton_closure, B.MailboxDashBoardView__buildQuickSearchFilterButton__closure, B.MailboxDashBoardView_popupMenuEmailReceiveTimeType__closure, B.MailboxDashBoardView__buildEmptyTrashButton_closure, B.MailboxDashBoardView__buildEmptyTrashButton__closure, B.MailboxDashBoardView__buildComposerButton_closure, B.FilterEmailPopupMenuMixin__filterEmailAction_closure, B.AdvancedSearchFilterOverlay_build_closure, B.IconOpenAdvancedSearchWidget_build_closure, B.IconOpenAdvancedSearchWidget_build__closure, B.AppDashboardOverlay_build_closure0, B.SearchInputFormWidget_build_closure, B.SearchInputFormWidget_build__closure, B.SearchInputFormWidget__buildShowAllResultButton_closure, B.SearchInputFormWidget__createConfiguration_closure, B.SearchInputFormWidget_buildListButtonForQuickSearchForm_closure, B.SpamReportBannerWebWidget_build_closure, B.TopBarThreadSelection_build_closure, B.TopBarThreadSelection_build_closure0, B.TopBarThreadSelection_build_closure1, B.TopBarThreadSelection_build_closure2, B.TopBarThreadSelection_build_closure3, B.QuotasFooterWidget_build_closure, B.QuotasWarningBannerWidget_build_closure, B.SearchEmailView_build_closure2, B.SearchEmailView_build_closure0, B.SearchEmailView_build__closure, B.SearchEmailView_build_closure1, B.SearchEmailView__buildSearchInputForm_closure, B.SearchEmailView__buildSearchInputForm_closure1, B.SearchEmailView__buildQuickSearchFilterButton_closure, B.SearchEmailView__buildQuickSearchFilterButton__closure, B.SearchEmailView__buildShowAllResultSearchButton_closure, B.SearchEmailView__buildListRecentSearch__closure, B.SearchEmailView__buildListSuggestionSearch__closure, B.SearchEmailView__buildEmptyEmail_closure, B.SearchEmailView__buildListEmailBody__closure, B.SearchEmailView__buildLoadingView_closure, B.SearchEmailView__buildLoadingViewLoadMore_closure, B.SearchEmailView__buildSearchFilterByMailboxButton_closure, B.SearchEmailView__buildSearchFilterByMailboxButton__closure, B.SearchEmailView__buildSearchFilterByContactButton_closure, B.SearchEmailView__buildSearchFilterByContactButton__closure, B.AppBarSelectionMode_build_closure, B.AppBarSelectionMode_build_closure0, B.AppBarSelectionMode_build_closure1, B.AppBarSelectionMode_build_closure2, B.AppBarSelectionMode_build_closure3, B.EmailReceiveTimeActionTileWidget_build_closure, B.EmailReceiveTimeCupertinoActionSheetActionBuilder_build_closure, B.ThreadView_build_closure, B.ThreadView__buildVacationNotificationMessage_closure, B.ThreadView__buildListButtonSelectionForMobile_closure, B.ThreadView__buildAppBarNormal_closure, B.ThreadView__buildFloatingButtonCompose_closure, B.ThreadView__buildFloatingButtonCompose__closure, B.ThreadView__buildLoadingView_closure, B.ThreadView__buildLoadingViewLoadMore_closure, B.ThreadView__buildListEmail_closure, B.ThreadView__buildResultListEmail_closure, B.ThreadView__buildResultListEmail_closure0, B.ThreadView__buildListEmailBody__closure, B.ThreadView__buildEmailItemDraggable_closure, B.ThreadView__buildFeedBackWidget_closure, B.ThreadView__buildEmptyEmail_closure, B.ThreadView__buildEmptyTrashButton_closure, B.ThreadView__buildEmptyTrashButton__closure, B.ThreadView__buildMarkAsSpamPopupMenuItem_closure, B.ThreadView__buildOpenInNewTabPopupMenuItem_closure, B.ThreadView__buildMarkAsMailboxReadLoading_closure, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure0, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure1, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure2, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure3, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure4, B.AppBarThreadWidgetBuilder__buildFilterButton_closure, B.BottomBarThreadSelectionWidget_build_closure, B.BottomBarThreadSelectionWidget_build_closure0, B.BottomBarThreadSelectionWidget_build_closure1, B.BottomBarThreadSelectionWidget_build_closure2, B.BottomBarThreadSelectionWidget_build_closure3, B.DismissibleWidget_buildSwipeActionLeft_closure, B.DismissibleWidget_buildSwipeActionRight_closure, B.EmailTileBuilder__onHoverIconChanged_closure, B.EmailTileBuilder__onHoverItemChanged_closure, B.EmailTileBuilder__buildListTile_closure1, B.EmailTileBuilder__buildListTile_closure0, B.EmailTileBuilder__buildListTile_closure, B.EmailTileBuilder__buildListTileTablet__closure2, B.EmailTileBuilder__buildListTileTablet__closure0, B.EmailTileBuilder__buildListTileForDesktop__closure3, B.EmailTileBuilder__buildListTileForDesktop__closure, B.EmailTileBuilder__buildListTileForDesktop__closure1, B.EmailTileBuilder__buildListActionButtonWhenHover_closure, B.EmailTileBuilder__buildListActionButtonWhenHover_closure0, B.EmailTileBuilder__buildListActionButtonWhenHover_closure1, B.EmailTileBuilder__buildListActionButtonWhenHover_closure2, B.FilterMessageCupertinoActionSheetActionBuilder_build_closure, B.SpamReportBannerWidget_build_closure, B.SpamReportBannerWidget_build__closure, B.DefaultLinkDelegate_build_closure]);
-    _inheritMany(A.StatefulWidget, [B.ScrollingFloatingButtonAnimated, B.TypeAheadFieldQuickSearch, B._SuggestionsList, B.Draggable, B.EmailEditorWidget]);
-    _inheritMany(A.State0, [B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, B.__SuggestionsListState_State_SingleTickerProviderStateMixin0, B._DraggableState, B._EmailEditorState]);
+    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B._SuggestionsBox, B.RichTextBuilder, B.Drag, B.MultiDragPointerState, B.DraggableDetails, B.SlidableAutoCloseNotification, B.SlidableAutoCloseBarrierNotification, B.EndGesture, B.SlidableController, B.ActionPaneData, B.FilterEmailPopupMenuMixin, B.TopBarThreadSelection, B.BaseEmailItemTile, B._EmailTileBuilder_Object_BaseEmailItemTile]);
+    _inheritMany(A._Enum, [B.SizeUnit, B._DragEndKind, B.ActionPaneType, B.GestureDirection]);
+    _inheritMany(A.StatelessWidget, [B.BackgroundWidgetBuilder, B.BehindMotion, B.ScrollMotion, B.SlidableAutoCloseBehaviorInteractor, B.SlidableAutoCloseInteractor, B.SlidableAutoCloseBehaviorListener, B.SlidableAutoCloseNotificationSender, B.SlidableAutoCloseBarrierInteractor, B.ComposeFloatingButton, B.EmailAvatarBuilder, B.LinkBrowserWidget, B.AppBarMailWidgetBuilder, B.AttachmentFileTileBuilder, B.BottomBarMailWidgetBuilder, B.EmailReceiverBuilder, B.EmailSenderBuilder, B.InformationSenderAndReceiverBuilder, B.ReceivedTimeBuilder, B.AdvancedSearchFilterOverlay, B.IconOpenAdvancedSearchWidget, B.AppGridDashboardItem, B.AppDashboardOverlay, B._DownloadTaskItemWidget_StatelessWidget_AppLoaderMixin, B.EmailQuickSearchItemTileWidget, B.RecentSearchItemTileWidget, B._SearchInputFormWidget_StatelessWidget_AppLoaderMixin, B.SpamReportBannerWebWidget, B.AppBarSelectionMode, B.EmailReceiveTimeActionTileWidget, B.AppBarThreadWidgetBuilder, B.BottomBarThreadSelectionWidget, B._DismissibleWidget_StatelessWidget_BaseEmailItemTile, B.SpamReportBannerWidget, B.Link, B.DefaultLinkDelegate]);
+    _inheritMany(A.Closure, [B.buildIconWebHasPosition_closure0, B.QuickSearchInputForm_closure, B.QuickSearchInputForm__closure, B._TypeAheadFieldQuickSearchState_initState_closure0, B._TypeAheadFieldQuickSearchState_initState_closure1, B._TypeAheadFieldQuickSearchState__scrollResizeListener_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure0, B._TypeAheadFieldQuickSearchState_build_closure, B._SuggestionsListState_createSuggestionsWidget_closure, B._SuggestionsListState_createSuggestionsWidget_closure0, B._SuggestionsListState_createRecentWidget_closure, B._SuggestionsListState_createRecentWidget_closure0, B._SuggestionsBox__findRootMediaQuery_closure, B.MultiDragGestureRecognizer_acceptGesture_closure, B._DraggableState__startDrag_closure0, B._DraggableState__startDrag_closure1, B._DragAvatar_updateDrag_closure, B.SlidableAutoCloseBehaviorListener_build_closure, B.SlidableAutoCloseNotificationSender_build_closure, B._SlidableAutoCloseBarrierNotificationSenderState_dispose_closure, B._SlidableAutoCloseBarrierBehaviorListenerState_build_closure, B._SlidableDismissalState_handleResizeRequestChanged_closure, B.ListPresentationEmailExtension_get_isAllEmailRead_closure, B.ListPresentationEmailExtension_get_isAllEmailStarred_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure0, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure1, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure0, B.ListPresentationEmailExtension_isAllSpam_closure, B.ListPresentationEmailExtension_isAllSpam_closure0, B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox_closure, B.ListPresentationEmailExtension_listEmailCanSpam_closure, B.ComposerView__buildEditorForm__closure, B.ComposerView__buildEditorForm__closure0, B.EmailView__buildBottomBar_closure, B.EmailView__buildLoadingView__closure, B.EmailView__buildLoadingView__closure0, B.EmailView__buildAttachmentsList__closure, B.EmailView__buildAttachmentsList___closure0, B.EmailView__buildAttachmentsList___closure, B.EmailView__buildEmailContent__closure, B.EmailView__markAsEmailUnreadAction_closure, B.EmailView__markAsEmailSpamOrUnSpamAction_closure, B.EmailView__quickCreatingRuleAction_closure, B.AppBarMailWidgetBuilder__buildListOptionButton_closure3, B.EmailReceiverBuilder__buildListEmailAddressWidget_closure, B.BaseMailboxView_buildLoadingView__closure, B.BaseMailboxView_buildLoadingView__closure0, B.MailboxView__buildListMailbox__closure1, B.MailboxView__buildListMailbox__closure, B.MailboxView__buildListChildTileWidget_closure, B.MailboxView__buildListChildTileWidget___closure2, B.MailboxView__buildListChildTileWidget___closure3, B.MailboxView__buildListChildTileWidget___closure5, B.MailboxView__buildListChildTileWidget___closure, B.MailboxView__buildListChildTileWidget___closure1, B.MailboxDashBoardView__buildRightHeader___closure, B.MailboxDashBoardView__buildListButtonTopBar__closure, B.MailboxDashBoardView__buildListButtonTopBar___closure, B.MailboxDashBoardView__buildMarkAsMailboxReadLoading__closure, B.MailboxDashBoardView__buildMarkAsMailboxReadLoading__closure0, B.MailboxDashBoardView__buildListButtonQuickSearchFilter__closure, B.MailboxDashBoardView__buildQuickSearchFilterButton__closure0, B.MailboxDashBoardView__buildQuickSearchFilterButton___closure, B.MailboxDashBoardView_popupMenuEmailReceiveTimeType_closure, B.AppDashboardOverlay_build_closure, B.SearchInputFormWidget_build__closure1, B.SearchInputFormWidget_build__closure5, B.SearchInputFormWidget_build__closure6, B.SearchInputFormWidget_build__closure7, B.SearchInputFormWidget__createConfiguration_closure0, B.SearchEmailView_build_closure, B.SearchEmailView__buildSearchInputForm_closure0, B.SearchEmailView__buildListSearchFilterAction_closure, B.SearchEmailView__buildQuickSearchFilterButton___closure0, B.SearchEmailView__buildQuickSearchFilterButton__closure0, B.SearchEmailView__buildQuickSearchFilterButton___closure, B.SearchEmailView__popupMenuEmailReceiveTimeType_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile__closure, B.SearchEmailView__buildEmptyEmail__closure, B.SearchEmailView__buildEmptyEmail__closure0, B.SearchEmailView__buildListEmailBody_closure, B.SearchEmailView__buildLoadingView__closure, B.SearchEmailView__buildLoadingView__closure0, B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure, B.SearchEmailView__buildLoadingViewLoadMore__closure, B.SearchEmailView__buildLoadingViewLoadMore__closure0, B.ThreadView__buildAppBarNormal___closure, B.ThreadView__filterMessagesCupertinoActionTile_closure, B.ThreadView__filterMessagesCupertinoActionTile__closure, B.ThreadView__buildLoadingView__closure, B.ThreadView__buildLoadingView__closure0, B.ThreadView__buildLoadingViewLoadMore__closure, B.ThreadView__buildLoadingViewLoadMore__closure0, B.ThreadView__buildListEmailBody_closure, B.ThreadView__buildEmailItemDraggable_closure2, B.ThreadView__buildEmailItemDraggable_closure3, B.ThreadView__buildEmailItemDraggable_closure1, B.ThreadView__buildEmptyEmail__closure, B.ThreadView__buildEmptyEmail__closure0, B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure, B.ThreadView__openInNewTabContextMenuItemAction_closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure0, B.AppBarThreadWidgetBuilder__buildFilterButton_closure0, B.EmailTileBuilder__buildListTileTablet__closure1, B.EmailTileBuilder__buildListTileTablet__closure, B.EmailTileBuilder__buildListTileForDesktop__closure2, B.EmailTileBuilder__buildListTileForDesktop__closure0, B.EmailTileBuilder__buildListActionButtonWhenHover_closure3]);
+    _inheritMany(A.Closure0Args, [B.buildIconWebHasPosition_closure, B._ScrollingFloatingButtonAnimatedState_dispose_closure, B._ScrollingFloatingButtonAnimatedState__handleScroll_closure, B._ScrollingFloatingButtonAnimatedState__handleScroll__closure, B._ScrollingFloatingButtonAnimatedState__handleScroll__closure0, B._TypeAheadFieldQuickSearchState_initState_closure, B._TypeAheadFieldQuickSearchState_initState__closure0, B._TypeAheadFieldQuickSearchState_initState__closure, B._TypeAheadFieldQuickSearchState_build__closure, B._SuggestionsListState_closure, B._SuggestionsListState__closure, B._SuggestionsListState__closure0, B._SuggestionsListState__getSuggestions_closure, B._SuggestionsListState__getSuggestions_closure0, B._SuggestionsListState_createSuggestionsWidget__closure0, B._SuggestionsListState_createSuggestionsWidget__closure, B._SuggestionsListState_createRecentWidget__closure0, B._SuggestionsListState_createRecentWidget__closure, B.MultiDragGestureRecognizer__startDrag_closure, B._DraggableState__startDrag_closure, B._DraggableState__startDrag__closure, B._DragAvatar_updateDrag_closure0, B._SlidableDismissalState_handleResizeRequestChanged_closure0, B._ActionPaneState_handleRatioChanged_closure, B._SlidableState_handleActionPanelTypeChanged_closure, B.ComposerView_build_closure0, B.ComposerView_build__closure0, B.ComposerView_build__closure1, B.ComposerView_build__closure2, B.ComposerView__buildAppBarDesktop_closure, B.ComposerView__buildAppBarDesktop_closure0, B.ComposerView__buildAppBarDesktop__closure, B.ComposerView__buildAppBarDesktop_closure1, B.ComposerView_popUpMoreActionMenu_closure1, B.ComposerView_popUpMoreActionMenu_closure2, B.ComposerView__buildListButton_closure, B.ComposerView__buildListButton_closure0, B.ComposerView__buildListButton__closure, B.ComposerView__buildListButton_closure1, B.ComposerView__buildEditorForm_closure, B._EmailEditorState_build_closure, B._EmailEditorState_build_closure0, B.EmailView_build_closure0, B.EmailView_build_closure, B.EmailView__buildEmailView_closure, B.EmailView__buildMultipleEmailView_closure, B.EmailView__buildVacationNotificationMessage_closure, B.EmailView__buildAppBar_closure, B.EmailView__buildAppBar__closure, B.EmailView__buildLoadingView_closure, B.EmailView__buildAttachments_closure, B.EmailView__buildAttachmentsHeader_closure, B.EmailView__buildEmailContent_closure, B.EmailView__markAsEmailUnreadPopupItemAction_closure, B.EmailView__markAsEmailSpamOrUnSpamPopupItemAction_closure, B.EmailView__quickCreatingRulePopupItemAction_closure, B.AppBarMailWidgetBuilder_build_closure, B.AppBarMailWidgetBuilder__buildListOptionButton_closure, B.AppBarMailWidgetBuilder__buildListOptionButton_closure0, B.AppBarMailWidgetBuilder__buildListOptionButton_closure1, B.AppBarMailWidgetBuilder__buildListOptionButton_closure2, B.AttachmentFileTileBuilder_build_closure0, B.AttachmentFileTileBuilder_build_closure, B.BottomBarMailWidgetBuilder_build_closure, B.BottomBarMailWidgetBuilder_build_closure0, B.BottomBarMailWidgetBuilder_build_closure1, B.BottomBarMailWidgetBuilder_build_closure2, B.EmailActionCupertinoActionSheetActionBuilder_build_closure, B.EmailReceiverBuilder_build_closure, B.EmailReceiverBuilder__buildListEmailAddressWidget__closure, B.EmailSenderBuilder_build_closure, B.EmailSenderBuilder_build_closure0, B.BaseMailboxView_buildUserInformation_closure, B.BaseMailboxView_buildLoadingView_closure, B.MailboxView_build_closure, B.MailboxView__buildLogoApp_closure, B.MailboxView__buildListMailbox_closure, B.MailboxView__buildListMailbox_closure0, B.MailboxView__buildListMailbox_closure1, B.MailboxView__buildListMailbox_closure2, B.MailboxView__buildListMailbox_closure3, B.MailboxView__buildListMailbox_closure4, B.MailboxView__buildListMailbox__closure2, B.MailboxView__buildListMailbox_closure5, B.MailboxView__buildListMailbox__closure0, B.MailboxView__buildListChildTileWidget__closure, B.MailboxView__buildListChildTileWidget__closure0, B.MailboxDashBoardView_build_closure2, B.MailboxDashBoardView_build_closure, B.MailboxDashBoardView_build_closure0, B.MailboxDashBoardView_build_closure1, B.MailboxDashBoardView_build_closure4, B.MailboxDashBoardView_build_closure3, B.MailboxDashBoardView_build_closure5, B.MailboxDashBoardView_build_closure6, B.MailboxDashBoardView__buildThreadViewForWebDesktop_closure, B.MailboxDashBoardView__buildThreadViewForWebDesktop__closure0, B.MailboxDashBoardView__buildRightHeader__closure, B.MailboxDashBoardView__buildRightHeader___closure0, B.MailboxDashBoardView__buildRightHeader___closure1, B.MailboxDashBoardView__buildRightHeader__closure0, B.MailboxDashBoardView__buildRightHeader____closure, B.MailboxDashBoardView__buildRightHeader____closure0, B.MailboxDashBoardView__buildListButtonTopBar_closure, B.MailboxDashBoardView__buildListButtonTopBar_closure0, B.MailboxDashBoardView__buildListButtonTopBar_closure1, B.MailboxDashBoardView__buildListButtonTopBar_closure2, B.MailboxDashBoardView__buildMarkAsMailboxReadLoading_closure, B.MailboxDashBoardView__buildDownloadTaskStateWidget_closure, B.MailboxDashBoardView__buildVacationNotificationMessage_closure, B.MailboxDashBoardView__buildVacationNotificationMessage__closure0, B.MailboxDashBoardView__buildVacationNotificationMessage__closure, B.MailboxDashBoardView__buildListButtonQuickSearchFilter_closure, B.MailboxDashBoardView__buildQuickSearchFilterButton_closure, B.MailboxDashBoardView__buildQuickSearchFilterButton__closure, B.MailboxDashBoardView_popupMenuEmailReceiveTimeType__closure, B.MailboxDashBoardView__buildEmptyTrashButton_closure, B.MailboxDashBoardView__buildEmptyTrashButton__closure, B.MailboxDashBoardView__buildComposerButton_closure, B.FilterEmailPopupMenuMixin__filterEmailAction_closure, B.AdvancedSearchFilterOverlay_build_closure, B.IconOpenAdvancedSearchWidget_build_closure, B.IconOpenAdvancedSearchWidget_build__closure, B.AppDashboardOverlay_build_closure0, B.SearchInputFormWidget_build_closure, B.SearchInputFormWidget_build__closure, B.SearchInputFormWidget__buildShowAllResultButton_closure, B.SearchInputFormWidget__createConfiguration_closure, B.SearchInputFormWidget_buildListButtonForQuickSearchForm_closure, B.SpamReportBannerWebWidget_build_closure, B.TopBarThreadSelection_build_closure, B.TopBarThreadSelection_build_closure0, B.TopBarThreadSelection_build_closure1, B.TopBarThreadSelection_build_closure2, B.TopBarThreadSelection_build_closure3, B.QuotasFooterWidget_build_closure, B.QuotasWarningBannerWidget_build_closure, B.SearchEmailView_build_closure2, B.SearchEmailView_build_closure0, B.SearchEmailView_build__closure, B.SearchEmailView_build_closure1, B.SearchEmailView__buildSearchInputForm_closure, B.SearchEmailView__buildSearchInputForm_closure1, B.SearchEmailView__buildQuickSearchFilterButton_closure, B.SearchEmailView__buildQuickSearchFilterButton__closure, B.SearchEmailView__buildShowAllResultSearchButton_closure, B.SearchEmailView__buildListRecentSearch__closure, B.SearchEmailView__buildListSuggestionSearch__closure, B.SearchEmailView__buildEmptyEmail_closure, B.SearchEmailView__buildListEmailBody__closure, B.SearchEmailView__buildLoadingView_closure, B.SearchEmailView__buildLoadingViewLoadMore_closure, B.SearchEmailView__buildSearchFilterByMailboxButton_closure, B.SearchEmailView__buildSearchFilterByMailboxButton__closure, B.SearchEmailView__buildSearchFilterByContactButton_closure, B.SearchEmailView__buildSearchFilterByContactButton__closure, B.AppBarSelectionMode_build_closure, B.AppBarSelectionMode_build_closure0, B.AppBarSelectionMode_build_closure1, B.AppBarSelectionMode_build_closure2, B.AppBarSelectionMode_build_closure3, B.EmailReceiveTimeActionTileWidget_build_closure, B.EmailReceiveTimeCupertinoActionSheetActionBuilder_build_closure, B.ThreadView_build_closure, B.ThreadView__buildVacationNotificationMessage_closure, B.ThreadView__buildListButtonSelectionForMobile_closure, B.ThreadView__buildAppBarNormal_closure, B.ThreadView__buildFloatingButtonCompose_closure, B.ThreadView__buildFloatingButtonCompose__closure, B.ThreadView__buildLoadingView_closure, B.ThreadView__buildLoadingViewLoadMore_closure, B.ThreadView__buildListEmail_closure, B.ThreadView__buildResultListEmail_closure, B.ThreadView__buildResultListEmail_closure0, B.ThreadView__buildListEmailBody__closure, B.ThreadView__buildEmailItemDraggable_closure, B.ThreadView__buildFeedBackWidget_closure, B.ThreadView__buildEmptyEmail_closure, B.ThreadView__buildEmptyTrashButton_closure, B.ThreadView__buildEmptyTrashButton__closure, B.ThreadView__buildMarkAsSpamPopupMenuItem_closure, B.ThreadView__buildOpenInNewTabPopupMenuItem_closure, B.ThreadView__buildMarkAsMailboxReadLoading_closure, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure0, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure1, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure2, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure3, B.AppBarThreadWidgetBuilder__buildBodyAppBarForWebSelection_closure4, B.AppBarThreadWidgetBuilder__buildFilterButton_closure, B.BottomBarThreadSelectionWidget_build_closure, B.BottomBarThreadSelectionWidget_build_closure0, B.BottomBarThreadSelectionWidget_build_closure1, B.BottomBarThreadSelectionWidget_build_closure2, B.BottomBarThreadSelectionWidget_build_closure3, B.EmailTileBuilder__onHoverIconChanged_closure, B.EmailTileBuilder__onHoverItemChanged_closure, B.EmailTileBuilder__buildListTile_closure1, B.EmailTileBuilder__buildListTile_closure0, B.EmailTileBuilder__buildListTile_closure, B.EmailTileBuilder__buildListTileTablet__closure2, B.EmailTileBuilder__buildListTileTablet__closure0, B.EmailTileBuilder__buildListTileForDesktop__closure3, B.EmailTileBuilder__buildListTileForDesktop__closure, B.EmailTileBuilder__buildListTileForDesktop__closure1, B.EmailTileBuilder__buildListActionButtonWhenHover_closure, B.EmailTileBuilder__buildListActionButtonWhenHover_closure0, B.EmailTileBuilder__buildListActionButtonWhenHover_closure1, B.EmailTileBuilder__buildListActionButtonWhenHover_closure2, B.FilterMessageCupertinoActionSheetActionBuilder_build_closure, B.SpamReportBannerWidget_build_closure, B.SpamReportBannerWidget_build__closure, B.DefaultLinkDelegate_build_closure]);
+    _inheritMany(A.StatefulWidget, [B.ScrollingFloatingButtonAnimated, B.TypeAheadFieldQuickSearch, B._SuggestionsList, B.Draggable, B.SlidableAutoCloseBarrierNotificationSender, B.SlidableAutoCloseBarrierBehaviorListener, B._SlidableNotificationSender, B.SlidableDismissal, B.SlidableGestureDetector, B.SlidableGroupBehaviorListener, B.SlidableNotificationSender, B.SlidableScrollingBehavior, B.ActionPane, B.Slidable, B.EmailEditorWidget]);
+    _inheritMany(A.State0, [B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, B.__SuggestionsListState_State_SingleTickerProviderStateMixin0, B._DraggableState, B._SlidableAutoCloseBarrierNotificationSenderState, B._SlidableAutoCloseBarrierBehaviorListenerState, B._SlidableNotificationSenderState0, B.__SlidableDismissalState_State_SingleTickerProviderStateMixin, B._SlidableGestureDetectorState, B._SlidableGroupBehaviorListenerState, B._SlidableNotificationSenderState, B._SlidableScrollingBehaviorState, B._ActionPaneState, B.__SlidableState_State_TickerProviderStateMixin, B._EmailEditorState]);
     _inherit(B._ScrollingFloatingButtonAnimatedState, B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin);
     _inheritMany(A.Closure2Args, [B._ScrollingFloatingButtonAnimatedState_build_closure, B.LinkBrowserWidget_build_closure, B.ComposerView_build_closure, B.ComposerView_build__closure, B.ComposerView_build__closure3, B.ComposerView_build_closure1, B.EmailView__buildMultipleEmailView__closure, B.EmailView__buildAppBar__closure0, B.EmailView__buildAppBar__closure1, B.EmailView__buildEmailMessage_closure, B.EmailView__buildAttachmentsList_closure, B.EmailView__buildAttachmentsList__closure0, B.InformationSenderAndReceiverBuilder_build_closure, B.MailboxView__buildListChildTileWidget___closure4, B.MailboxView__buildListChildTileWidget___closure0, B.MailboxDashBoardView__buildThreadViewForWebDesktop__closure, B.MailboxDashBoardView__buildRightHeader_closure, B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure0, B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure, B.EmailQuickSearchItemTileWidget_build_closure, B.SearchInputFormWidget_build__closure0, B.SearchInputFormWidget_build__closure2, B.SearchInputFormWidget_build__closure4, B.SearchInputFormWidget_build__closure3, B.SearchEmailView_build__closure0, B.SearchEmailView__buildListRecentSearch_closure, B.SearchEmailView__buildListSuggestionSearch_closure, B.SearchEmailView__buildListEmailBody_closure0, B.SearchEmailView__buildListEmailBody___closure, B.SearchEmailView__buildListEmailBody___closure0, B.ThreadView__buildListButtonSelectionForMobile__closure, B.ThreadView__buildAppBarNormal__closure0, B.ThreadView__buildAppBarNormal__closure, B.ThreadView__buildListEmailBody_closure0, B.ThreadView__buildEmailItemDraggable_closure0, B.ThreadView__buildEmailItemNotDraggable_closure, B.ThreadView__buildEmailItemNotDraggable_closure0, B.AppBarThreadWidgetBuilder_build_closure, B.EmailTileBuilder__buildListTileTablet_closure, B.EmailTileBuilder__buildListTileForDesktop_closure, B.EmailTileBuilder__buildSubjectAndContent_closure]);
     _inherit(B.QuickSearchInputForm, A.FormField);
@@ -11685,8 +13083,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B.MultiDragGestureRecognizer, A.GestureRecognizer);
     _inheritMany(B.MultiDragPointerState, [B._ImmediatePointerState, B._HorizontalPointerState, B._VerticalPointerState]);
     _inheritMany(B.MultiDragGestureRecognizer, [B.ImmediateMultiDragGestureRecognizer, B.HorizontalMultiDragGestureRecognizer, B.VerticalMultiDragGestureRecognizer]);
+    _inherit(B.RenderFractionallySizedOverflowBox, A.RenderAligningShiftedBox);
+    _inherit(B.FractionallySizedBox, A.SingleChildRenderObjectWidget);
     _inherit(B._DragAvatar, B.Drag);
-    _inherit(B.ObjectKey, A.LocalKey);
+    _inheritMany(A.InheritedWidget, [B.ActionPaneConfiguration, B._ActionPaneScope, B._SlidableControllerScope]);
+    _inheritMany(B.EndGesture, [B.OpeningGesture, B.ClosingGesture, B.StillGesture]);
+    _inherit(B._ValueNotifier, A.ValueNotifier);
+    _inherit(B._SlidableDismissalState, B.__SlidableDismissalState_State_SingleTickerProviderStateMixin);
+    _inherit(B._SizeTransition, A.AnimatedWidget);
+    _inherit(B.__SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin, B.__SlidableState_State_TickerProviderStateMixin);
+    _inherit(B._SlidableState, B.__SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin);
+    _inherit(B._SlidableClipper, A.CustomClipper);
     _inherit(B.ComposerView0, H.BaseComposerView);
     _inheritMany(A.GetWidget, [B.EmailView, B._BaseMailboxView_GetWidget_AppLoaderMixin, B._BaseMailboxDashBoardView_GetWidget_UserSettingPopupMenuMixin, B.QuotasFooterWidget, B.QuotasWarningBannerWidget, B._SearchEmailView_GetWidget_AppLoaderMixin, B._ThreadView_GetWidget_AppLoaderMixin]);
     _inheritMany(A.CupertinoActionSheetActionBuilder, [B.EmailActionCupertinoActionSheetActionBuilder, B.FilterMessageCupertinoActionSheetActionBuilder]);
@@ -11710,6 +13117,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixinHard(B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, A.SingleTickerProviderStateMixin);
     _mixinHard(B.__SuggestionsListState_State_SingleTickerProviderStateMixin0, A.SingleTickerProviderStateMixin);
     _mixin(B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, A.WidgetsBindingObserver);
+    _mixinHard(B.__SlidableDismissalState_State_SingleTickerProviderStateMixin, A.SingleTickerProviderStateMixin);
+    _mixinHard(B.__SlidableState_State_TickerProviderStateMixin, A.TickerProviderStateMixin);
+    _mixinHard(B.__SlidableState_State_TickerProviderStateMixin_AutomaticKeepAliveClientMixin, A.AutomaticKeepAliveClientMixin);
     _mixin(B._BaseMailboxView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(B._BaseMailboxView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, A.MailboxWidgetMixin);
     _mixin(B._BaseMailboxDashBoardView_GetWidget_UserSettingPopupMenuMixin, E.UserSettingPopupMenuMixin);
@@ -11724,7 +13134,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixin(B._DismissibleWidget_StatelessWidget_BaseEmailItemTile, B.BaseEmailItemTile);
     _mixin(B._EmailTileBuilder_Object_BaseEmailItemTile, B.BaseEmailItemTile);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"SizeUnit":{"Enum":[]},"BackgroundWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ScrollingFloatingButtonAnimated":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollingFloatingButtonAnimatedState":{"State0":["ScrollingFloatingButtonAnimated"]},"TypeAheadFieldQuickSearch":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SuggestionsList":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuickSearchInputForm":{"FormField":["String"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"FormField.T":"String"},"_TypeAheadFormFieldState":{"FormFieldState":["String"],"State0":["FormField<String>"]},"_TypeAheadFieldQuickSearchState":{"State0":["TypeAheadFieldQuickSearch<1,2>"],"WidgetsBindingObserver":[]},"_SuggestionsListState":{"State0":["_SuggestionsList<1,2>"]},"MultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_ImmediatePointerState":{"MultiDragPointerState":[]},"ImmediateMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_HorizontalPointerState":{"MultiDragPointerState":[]},"HorizontalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_VerticalPointerState":{"MultiDragPointerState":[]},"VerticalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"Draggable":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_DraggableState":{"State0":["Draggable<1>"]},"_DragEndKind":{"Enum":[]},"ObjectKey":{"Key":[]},"ComposeFloatingButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAvatarBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposerView0":{"GetWidget":["ComposerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ComposerController"},"EmailEditorWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailEditorState":{"State0":["EmailEditorWidget"]},"EmailView":{"GetWidget":["SingleEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SingleEmailController"},"AppBarMailWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentFileTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarMailWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSenderBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InformationSenderAndReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ReceivedTimeBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseMailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[]},"MailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxController"},"RefreshAllEmailAction":{"UIAction":[],"EquatableMixin":[]},"SelectionAllEmailAction":{"UIAction":[],"EquatableMixin":[]},"FilterMessageAction":{"UIAction":[],"EquatableMixin":[]},"HandleEmailActionTypeAction":{"UIAction":[],"EquatableMixin":[]},"OpenEmailDetailedFromSuggestionQuickSearchAction":{"UIAction":[],"EquatableMixin":[]},"BaseMailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[]},"MailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxDashBoardController"},"AdvancedSearchFilterOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IconOpenAdvancedSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DownloadTaskItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailQuickSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchInputFormWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWebWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuotasFooterWidget":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"QuotasWarningBannerWidget":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"SearchEmailView":{"GetWidget":["SearchEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchEmailController"},"AppBarSelectionMode":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiveTimeActionTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ThreadView":{"GetWidget":["ThreadController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ThreadController"},"AppBarThreadWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarThreadSelectionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DismissibleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"SizeUnit":{"Enum":[]},"BackgroundWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ScrollingFloatingButtonAnimated":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollingFloatingButtonAnimatedState":{"State0":["ScrollingFloatingButtonAnimated"]},"TypeAheadFieldQuickSearch":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SuggestionsList":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuickSearchInputForm":{"FormField":["String"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"FormField.T":"String"},"_TypeAheadFormFieldState":{"FormFieldState":["String"],"State0":["FormField<String>"]},"_TypeAheadFieldQuickSearchState":{"State0":["TypeAheadFieldQuickSearch<1,2>"],"WidgetsBindingObserver":[]},"_SuggestionsListState":{"State0":["_SuggestionsList<1,2>"]},"MultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_ImmediatePointerState":{"MultiDragPointerState":[]},"ImmediateMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_HorizontalPointerState":{"MultiDragPointerState":[]},"HorizontalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_VerticalPointerState":{"MultiDragPointerState":[]},"VerticalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"RenderFractionallySizedOverflowBox":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"FractionallySizedBox":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"Draggable":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_DraggableState":{"State0":["Draggable<1>"]},"_DragEndKind":{"Enum":[]},"ActionPaneConfiguration":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"BehindMotion":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ScrollMotion":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableAutoCloseData":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableAutoCloseBarrierNotificationSender":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableAutoCloseBarrierBehaviorListener":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableNotificationSender":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableAutoCloseBehaviorInteractor":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableAutoCloseInteractor":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableAutoCloseBehaviorListener":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableAutoCloseNotificationSender":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableAutoCloseBarrierInteractor":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableAutoCloseBarrierNotificationSenderState":{"State0":["SlidableAutoCloseBarrierNotificationSender"]},"_SlidableAutoCloseBarrierBehaviorListenerState":{"State0":["SlidableAutoCloseBarrierBehaviorListener"]},"_SlidableNotificationSenderState0":{"State0":["_SlidableNotificationSender"]},"ActionPaneType":{"Enum":[]},"GestureDirection":{"Enum":[]},"_ValueNotifier":{"ValueNotifier":["1"],"Listenable":[]},"SlidableDismissal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableDismissalState":{"State0":["SlidableDismissal"]},"_SizeTransition":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableGestureDetector":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableGestureDetectorState":{"State0":["SlidableGestureDetector"]},"_InheritedSlidableNotification":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableGroupBehaviorListener":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableGroupBehaviorListenerState":{"State0":["SlidableGroupBehaviorListener<1>"]},"_SlidableNotificationListenerScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"SlidableNotificationSender":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableNotificationSenderState":{"State0":["SlidableNotificationSender"]},"SlidableScrollingBehavior":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableScrollingBehaviorState":{"State0":["SlidableScrollingBehavior"]},"ActionPane":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ActionPaneScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"Slidable":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SlidableControllerScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ActionPaneState":{"State0":["ActionPane"]},"_SlidableState":{"State0":["Slidable"]},"_SlidableClipper":{"CustomClipper":["Rect"],"Listenable":[]},"ComposeFloatingButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAvatarBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposerView0":{"GetWidget":["ComposerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ComposerController"},"EmailEditorWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailEditorState":{"State0":["EmailEditorWidget"]},"EmailView":{"GetWidget":["SingleEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SingleEmailController"},"AppBarMailWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentFileTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarMailWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSenderBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InformationSenderAndReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ReceivedTimeBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseMailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[]},"MailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxController"},"RefreshAllEmailAction":{"UIAction":[],"EquatableMixin":[]},"SelectionAllEmailAction":{"UIAction":[],"EquatableMixin":[]},"FilterMessageAction":{"UIAction":[],"EquatableMixin":[]},"HandleEmailActionTypeAction":{"UIAction":[],"EquatableMixin":[]},"OpenEmailDetailedFromSuggestionQuickSearchAction":{"UIAction":[],"EquatableMixin":[]},"BaseMailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[]},"MailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxDashBoardController"},"AdvancedSearchFilterOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IconOpenAdvancedSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DownloadTaskItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailQuickSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchInputFormWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWebWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuotasFooterWidget":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"QuotasWarningBannerWidget":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"SearchEmailView":{"GetWidget":["SearchEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchEmailController"},"AppBarSelectionMode":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiveTimeActionTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ThreadView":{"GetWidget":["ThreadController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ThreadController"},"AppBarThreadWidgetBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarThreadSelectionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DismissibleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
   A._Universe_addErasedTypes(init.typeUniverse, JSON.parse('{"__SuggestionsListState_State_SingleTickerProviderStateMixin0":2,"__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver":2}'));
   var string$ = {
     All_me: "All messages in Trash will be deleted if you reach limited storage.",
@@ -11734,11 +13144,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
+      ActionPaneConfiguration: findType("ActionPaneConfiguration"),
+      ActionPaneType: findType("ActionPaneType"),
       AdvancedFilterController: findType("AdvancedFilterController"),
+      Animation_double: findType("Animation0<double>"),
       AppGridDashboardController: findType("AppGridDashboardController"),
       AppLocalizations: findType("AppLocalizations"),
       AppToast: findType("AppToast"),
+      BoxConstraints: findType("BoxConstraints"),
       Comparator: findType("Comparator0"),
+      ContainerLayer: findType("ContainerLayer0"),
+      CurveTween: findType("CurveTween"),
+      Directionality: findType("Directionality"),
       DismissibleWidget_PresentationEmail: findType("DismissibleWidget<PresentationEmail>"),
       Draggable_List_PresentationEmail: findType("Draggable<List<PresentationEmail>>"),
       EmailAddress: findType("EmailAddress"),
@@ -11761,6 +13178,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       MediaQuery: findType("MediaQuery"),
       MultiDragPointerState: findType("MultiDragPointerState"),
       NotificationListener_ScrollNotification: findType("NotificationListener<ScrollNotification>"),
+      Null: findType("Null"),
       OverlayState: findType("OverlayState"),
       PageStorageKey_String: findType("PageStorageKey<String>"),
       PointerCancelEvent: findType("PointerCancelEvent"),
@@ -11774,34 +13192,53 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ResponsiveUtils: findType("ResponsiveUtils0"),
       RestorableProperty_nullable_Object: findType("RestorableProperty<Object?>"),
       SearchController: findType("SearchController"),
+      SlidableAutoCloseBarrierNotification: findType("SlidableAutoCloseBarrierNotification"),
+      SlidableAutoCloseNotification: findType("SlidableAutoCloseNotification"),
+      SlidableGroupBehaviorListener_SlidableAutoCloseBarrierNotification: findType("SlidableGroupBehaviorListener<SlidableAutoCloseBarrierNotification>"),
+      SlidableGroupBehaviorListener_SlidableAutoCloseNotification: findType("SlidableGroupBehaviorListener<SlidableAutoCloseNotification>"),
       Some_SearchQuery: findType("Some<SearchQuery>"),
       Some_bool: findType("Some<bool>"),
       SpamReportController: findType("SpamReportController"),
       String: findType("String"),
+      Tween_Offset: findType("Tween<Offset>"),
+      Tween_double: findType("Tween<double>"),
       TypeAheadFieldQuickSearch_dynamic_dynamic: findType("TypeAheadFieldQuickSearch<@,@>"),
       UTCDate: findType("UTCDate"),
       ValueKey_String: findType("ValueKey<String>"),
       WhereTypeIterable_PresentationEmail: findType("WhereTypeIterable<PresentationEmail>"),
       WhereTypeIterable_PresentationMailbox: findType("WhereTypeIterable<PresentationMailbox>"),
       Widget: findType("Widget"),
+      _ActionPaneScope: findType("_ActionPaneScope"),
       _LocalizationsScope: findType("_LocalizationsScope"),
+      _SlidableAutoCloseData: findType("_SlidableAutoCloseData"),
+      _SlidableControllerScope: findType("_SlidableControllerScope"),
+      _SlidableNotificationListenerScope: findType("_SlidableNotificationListenerScope"),
       _TypeAheadFormFieldState_dynamic_dynamic: findType("_TypeAheadFormFieldState<@,@>"),
+      _ValueNotifier_nullable_DismissGesture: findType("_ValueNotifier<DismissGesture?>"),
       bool: findType("bool"),
       dynamic: findType("@"),
       int: findType("int"),
+      nullable_DismissGesture: findType("DismissGesture?"),
+      nullable_EndGesture: findType("EndGesture?"),
       nullable_Object: findType("Object?"),
       nullable_PresentationEmail: findType("PresentationEmail?"),
       nullable_PresentationMailbox: findType("PresentationMailbox?"),
       nullable_RenderBox: findType("RenderBox?"),
+      nullable_ResizeRequest: findType("ResizeRequest?"),
       nullable__PointAtTime: findType("_PointAtTime?"),
+      nullable__SlidableControllerScope: findType("_SlidableControllerScope?"),
       void: findType("~"),
       void_Function: findType("~()")
     };
   })();
   (function constants() {
     var makeConstList = hunkHelpers.makeConstList;
+    D.ActionPaneType_0 = new B.ActionPaneType(0, "end");
+    D.ActionPaneType_1 = new B.ActionPaneType(1, "none");
+    D.ActionPaneType_2 = new B.ActionPaneType(2, "start");
     D.AlignmentDirectional_0_0 = new A.AlignmentDirectional(0, 0);
     D.AlignmentDirectional_1_1 = new A.AlignmentDirectional(1, 1);
+    D.BehindMotion_null = new B.BehindMotion(null);
     D.BorderRadius_tLn14 = new A.BorderRadius(C.Radius_0_0, C.Radius_0_0, C.Radius_16_16, C.Radius_16_16);
     D.BoxConstraints_0_30_0_30 = new A.BoxConstraints(0, 30, 0, 30);
     D.BoxConstraints_EcO2 = new A.BoxConstraints(0, 100, 0, 1 / 0);
@@ -11844,12 +13281,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_8_0_20_0 = new A.EdgeInsets(8, 0, 20, 0);
     D.EdgeInsets_8_0_4_0 = new A.EdgeInsets(8, 0, 4, 0);
     D.EdgeInsets_8_3_8_3 = new A.EdgeInsets(8, 3, 8, 3);
+    D.GestureDirection_0 = new B.GestureDirection(0, "opening");
+    D.GestureDirection_1 = new B.GestureDirection(1, "closing");
     D.Color_251658240 = new A.Color(251658240);
     D.BoxShadow_oyn30 = new A.BoxShadow(0, C.BlurStyle_0, D.Color_251658240, C.Offset_0_0, 4);
     D.List_CQc1 = A._setArrayType(makeConstList([D.BoxShadow_oyn28, D.BoxShadow_oyn30]), type$.JSArray_BoxShadow);
     D.BoxShadow_oyn31 = new A.BoxShadow(0, C.BlurStyle_0, C.Color_687865856, C.Offset_0_0, 96);
     D.BoxShadow_oyn32 = new A.BoxShadow(0, C.BlurStyle_0, C.Color_520093696, C.Offset_0_0, 2);
     D.List_CQc2 = A._setArrayType(makeConstList([D.BoxShadow_oyn31, D.BoxShadow_oyn32]), type$.JSArray_BoxShadow);
+    D.List_I2K = A._setArrayType(makeConstList([D.ActionPaneType_0, D.ActionPaneType_1, D.ActionPaneType_2]), A.findType("JSArray<ActionPaneType>"));
     D.Color_2566945535 = new A.Color(2566945535);
     D.BoxShadow_ijF = new A.BoxShadow(0, C.BlurStyle_0, D.Color_2566945535, C.Offset_0_0, 12);
     D.List_UkC = A._setArrayType(makeConstList([D.BoxShadow_ijF]), type$.JSArray_BoxShadow);
@@ -11866,6 +13306,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.QuotasFooterWidget_null = new B.QuotasFooterWidget(null);
     D.QuotasWarningBannerWidget_null_null = new B.QuotasWarningBannerWidget(null, null);
     D.ScreenDisplayMode_0 = new A.ScreenDisplayMode(0, "fullScreen");
+    D.ScrollMotion_null = new B.ScrollMotion(null);
     D.SearchMailboxView_Color_4294375158_null = new K.SearchMailboxView(C.Color_4294375158, null);
     D.SearchMailboxView_null_null = new K.SearchMailboxView(null, null);
     D.SizeUnit_2 = new B.SizeUnit(2, "MB");
@@ -11896,7 +13337,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_oHY17 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 21, C.FontWeight_6_700, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_omH4 = new A.TextStyle(true, C.Color_4285034102, null, null, null, null, 12, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_omH2 = new A.TextStyle(true, C.Color_4285034102, null, null, null, null, 13, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.Type_ObjectKey_Gsr = A.typeLiteral("ObjectKey");
     D.ValueKey_UH2 = new A.ValueKey("list_attachment_minimize_in_email", type$.ValueKey_String);
     D.ValueKey_app_bar_messenger_widget = new A.ValueKey("app_bar_messenger_widget", type$.ValueKey_String);
     D.ValueKey_app_bar_thread_widget = new A.ValueKey("app_bar_thread_widget", type$.ValueKey_String);
@@ -11927,4 +13367,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["4qEMOWVwZ783QhywB8JWLKxOAIU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["fsYCgGEzvt4pWXE9MxkaKTgp/VI="] = $__dart_deferred_initializers__.current

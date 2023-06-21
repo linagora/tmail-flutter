@@ -3326,7 +3326,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t1._autocomplete_contact_text_field_with_tags$_isDuplicatedRecipient$1(t2 == null ? "" : t2))
         t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure3(t1, item));
     },
-    $signature: 556
+    $signature: 555
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure3.prototype = {
     call$0() {
@@ -4098,7 +4098,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 57
+    $signature: 58
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure0.prototype = {
     call$1(mailboxNode) {
@@ -4112,7 +4112,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 57
+    $signature: 58
   };
   C.MailBoxVisibilityFolderTileBuilder_build_closure.prototype = {
     call$0() {
@@ -4851,7 +4851,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(t3._buildListIdentityView$1(t5), 1));
       return A.Row$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 549
+    $signature: 548
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure.prototype = {
     call$0() {
@@ -4893,13 +4893,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(identitySelected) {
       return this.$this.controller.goToEditIdentity$2(this.context, identitySelected);
     },
-    $signature: 560
+    $signature: 559
   };
   C.IdentitiesRadioListBuilder__buildListIdentityView___closure0.prototype = {
     call$1(identitySelected) {
       return this.$this.controller.openConfirmationDialogDeleteIdentityAction$2(this.context, identitySelected);
     },
-    $signature: 560
+    $signature: 559
   };
   C.IdentitiesRadioListBuilder__buildLoadingView_closure.prototype = {
     call$0() {
@@ -4974,7 +4974,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).vacationPresentation;
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2.get$value(t2).status !== B.VacationResponderStatus_0 ? "assets/images/ic_switch_off.svg" : "assets/images/ic_switch_on.svg", _null, B.BoxFit_0, 24, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView__buildVacationFormView__closure8(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 561
+    $signature: 560
   };
   C.VacationView__buildVacationFormView__closure8.prototype = {
     call$0() {
@@ -5150,7 +5150,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).vacationPresentation;
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2.get$value(t2).vacationStopEnabled ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg", _null, B.BoxFit_0, 24, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView__buildVacationFormView___closure(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 561
+    $signature: 560
   };
   C.VacationView__buildVacationFormView___closure.prototype = {
     call$0() {
@@ -5721,4 +5721,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["CZbO/bWGBDnxeehEr2j3EqV7p/o="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Ru3piCkpCJKUFMcOqgv5cMLq8Qo="] = $__dart_deferred_initializers__.current

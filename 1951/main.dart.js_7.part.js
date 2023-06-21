@@ -1403,7 +1403,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 54
+    $signature: 55
   };
   B.ComposerLoadingMixin_buildInlineLoadingView__closure0.prototype = {
     call$1(success) {
@@ -1413,7 +1413,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure0(this.$this));
     },
-    $signature: 54
+    $signature: 55
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure.prototype = {
     call$1(failure) {
@@ -1427,7 +1427,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 54
+    $signature: 55
   };
   B.AttachmentFileComposerBuilder_build_closure.prototype = {
     call$0() {
@@ -1529,7 +1529,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
       }
     },
-    $signature: 556
+    $signature: 555
   };
   B.EmailAddressInputBuilder__buildTagEditor___closure3.prototype = {
     call$0() {
@@ -1727,7 +1727,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 399
+    $signature: 398
   };
   (function installTearOffs() {
     var _instance_2_u = hunkHelpers._instance_2u,
@@ -1837,4 +1837,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["7NEiXZiLCLA/39DVpaaT4YAjyTM="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["m1z7Pui/MKfV5XlQAs8qm8fAEQA="] = $__dart_deferred_initializers__.current

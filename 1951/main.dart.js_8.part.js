@@ -555,14 +555,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(_, __, ___) {
       return this.$this._mailbox_searched_item_builder$_buildMailboxItem$1(this.context);
     },
-    $signature: 486
+    $signature: 485
   };
   B._MailboxSearchedItemBuilderState_build_closure0.prototype = {
     call$1(emails) {
       var t1 = this.$this._widget;
       t1.onDragEmailToMailboxAccepted.call$2(emails, t1._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 487
+    $signature: 486
   };
   B._MailboxSearchedItemBuilderState__buildMailboxItem_closure.prototype = {
     call$1(value) {
@@ -624,4 +624,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["atWIIzB18qdBwLejBDaDQ/5I7ac="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["tUAD9XMhu4+W7zWiwyN2GiQsSJk="] = $__dart_deferred_initializers__.current
