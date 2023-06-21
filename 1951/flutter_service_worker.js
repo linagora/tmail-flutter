@@ -3,8 +3,8 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "index.html": "4239ce926c47562f66fc78ea6cc70a6f",
-"/": "4239ce926c47562f66fc78ea6cc70a6f",
+  "index.html": "88769387a6097ce43b208f7550d65376",
+"/": "88769387a6097ce43b208f7550d65376",
 "assets/assets/fonts/Inter/Inter-Medium.ttf": "1aa99aa25c72307cb7f16fae35e8c9d1",
 "assets/assets/fonts/Inter/Inter-SemiBold.ttf": "3e87064b7567bef4ecd2ba977ce028bc",
 "assets/assets/fonts/Inter/Inter-Bold.ttf": "cef517a165e8157d9f14a0911190948d",
@@ -54,7 +54,7 @@ const RESOURCES = {
 "assets/assets/images/ic_file_png.svg": "1a249d9f8094cd9c8a4190eec6937724",
 "assets/assets/images/ic_open_edit_rule.svg": "25d7b76cb02d1558b079a3402a89aa34",
 "assets/assets/images/ic_rename_mailbox.svg": "820e456b3bf0808ecadf45f0a761c53f",
-"assets/assets/images/ic_email_open.svg": "e15410640fcbf75041b8d80724e09e70",
+"assets/assets/images/ic_email_open.svg": "97d2f46c5e43dc4354a93de3029b69aa",
 "assets/assets/images/ic_back.svg": "bb7d650768ee26ec1a96e42b1314910a",
 "assets/assets/images/ic_file_docx.svg": "bb83e8a8b789ed8e2062bd7ceedcbb7e",
 "assets/assets/images/ic_filter_message_attachments.svg": "5b3bb2d466b299521d183fffaaca226d",
