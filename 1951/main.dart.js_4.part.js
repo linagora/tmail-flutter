@@ -2039,16 +2039,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     BottomBarThreadSelectionWidget_build_closure3: function BottomBarThreadSelectionWidget_build_closure3(t0) {
       this.$this = t0;
     },
-    DismissibleWidget: function DismissibleWidget(t0, t1, t2, t3, t4, t5, t6, t7) {
+    DismissibleWidget: function DismissibleWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
       var _ = this;
       _.item = t0;
       _.child = t1;
       _.onDismissed = t2;
       _.textLeft = t3;
-      _.BaseEmailItemTile_responsiveUtils = t4;
-      _.BaseEmailItemTile_imagePaths = t5;
-      _.key = t6;
-      _.$ti = t7;
+      _.textRight = t4;
+      _.BaseEmailItemTile_responsiveUtils = t5;
+      _.BaseEmailItemTile_imagePaths = t6;
+      _.key = t7;
+      _.$ti = t8;
     },
     DismissibleWidget_buildSwipeActionLeft_closure: function DismissibleWidget_buildSwipeActionLeft_closure() {
     },
@@ -5320,9 +5321,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Container$(C.Alignment_0_0, A.SvgPicture$asset(iconPath, _null, C.BoxFit_0, 24, _null, 24), C.Clip_0, _null, _null, new A.BoxDecoration(D.Color_4290764543, _null, _null, _null, _null, _null, _null, C.BoxShape_1), _null, 56, _null, _null, _null, _null, _null, 56);
     },
     buildTitleTileSwipe$1(text) {
-      var _null = null,
-        t1 = text == null ? "" : text;
-      return A.Text$(t1, _null, 1, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, C.TextOverflow_1, _null, _null, _null, _null), _null, _null, _null);
+      var _null = null;
+      return A.Text$(text, _null, 1, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, C.TextOverflow_1, _null, _null, _null, _null), _null, _null, _null);
     },
     buildMailboxContain$2(isSearchEmailRunning, email) {
       var t1, _null = null;
@@ -6000,7 +6000,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     buildSwipeActionRight$0() {
       var _null = null,
         t1 = A.GestureDetector$(_null, this.buildIconAvatarSwipe$1("assets/images/ic_move_mailbox.svg"), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.DismissibleWidget_buildSwipeActionRight_closure(), _null, _null, _null, _null, _null, _null, _null);
-      return A.Container$(C.Alignment_1_0, A.ListTile$(_null, _null, _null, _null, _null, _null, _null, A.Row$(A._setArrayType([this.buildTitleTileSwipe$1(_null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_1, C.MainAxisSize_1, _null), t1), C.Clip_0, _null, _null, new A.BoxDecoration(I.Color_4292865791, _null, _null, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null);
+      return A.Container$(C.Alignment_1_0, A.ListTile$(_null, _null, _null, _null, _null, _null, _null, A.Row$(A._setArrayType([this.buildTitleTileSwipe$1(this.textRight)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_1, C.MainAxisSize_1, _null), t1), C.Clip_0, _null, _null, new A.BoxDecoration(I.Color_4292865791, _null, _null, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B._DismissibleWidget_StatelessWidget_BaseEmailItemTile.prototype = {};
@@ -10812,22 +10812,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildListEmailBody__closure.prototype = {
     call$0() {
-      var t2, t3, t4, t5, _this = this, _null = null,
-        t1 = _this.context;
-      A.Localizations_of(t1, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      t2 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
-      t3 = _this.listPresentationEmail;
-      t4 = _this.index;
-      t5 = J.$index$asx(t3.get$value(t3), t4);
-      t4 = _this.$this._buildEmailItem$2(t1, J.$index$asx(t3.get$value(t3), t4));
+      var t3, t4, t5, t6, _this = this, _null = null,
+        t1 = _this.context,
+        t2 = type$.AppLocalizations;
+      A.Localizations_of(t1, C.Type_AppLocalizations_swi, t2).toString;
+      t3 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
+      A.Localizations_of(t1, C.Type_AppLocalizations_swi, t2).toString;
+      t2 = A.Intl__message("Move To", _null, "moveTo", _null, _null);
+      t4 = _this.listPresentationEmail;
+      t5 = _this.index;
+      t6 = J.$index$asx(t4.get$value(t4), t5);
+      t5 = _this.$this._buildEmailItem$2(t1, J.$index$asx(t4.get$value(t4), t5));
       $.$get$Get();
-      t3 = $.GetInstance__getInstance;
-      t1 = t3 == null ? $.GetInstance__getInstance = C.C_GetInstance : t3;
+      t4 = $.GetInstance__getInstance;
+      t1 = t4 == null ? $.GetInstance__getInstance = C.C_GetInstance : t4;
       t1 = t1.find$1$1$tag(0, _null, type$.ResponsiveUtils);
-      t3 = $.GetInstance__getInstance;
-      if (t3 == null)
-        t3 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.DismissibleWidget(t5, t4, new B.ThreadView__buildListEmailBody___closure(), t2, t1, t3.find$1$1$tag(0, _null, type$.ImagePaths), _null, type$.DismissibleWidget_PresentationEmail);
+      t4 = $.GetInstance__getInstance;
+      if (t4 == null)
+        t4 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B.DismissibleWidget(t6, t5, new B.ThreadView__buildListEmailBody___closure(), t3, t2, t1, t4.find$1$1$tag(0, _null, type$.ImagePaths), _null, type$.DismissibleWidget_PresentationEmail);
     },
     $signature: typesOffset + 18
   };
@@ -11924,4 +11927,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["gbqbfDWVY4qs7LwzUIb1R5yYk78="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["4qEMOWVwZ783QhywB8JWLKxOAIU="] = $__dart_deferred_initializers__.current
