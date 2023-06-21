@@ -1,6 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
-import '../mixin/base_email_item_tile.dart';
+import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 
 class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
   final T? item;
