@@ -1884,9 +1884,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ThreadView__buildListEmailBody__closure: function ThreadView__buildListEmailBody__closure(t0, t1, t2, t3) {
       var _ = this;
       _.$this = t0;
-      _.listPresentationEmail = t1;
-      _.index = t2;
-      _.context = t3;
+      _.context = t1;
+      _.listPresentationEmail = t2;
+      _.index = t3;
     },
     ThreadView__buildListEmailBody___closure: function ThreadView__buildListEmailBody___closure() {
     },
@@ -10791,26 +10791,28 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildListEmailBody_closure0.prototype = {
     call$2(context, index) {
-      return new A.Obx(new B.ThreadView__buildListEmailBody__closure(this.$this, this.listPresentationEmail, index, context), null);
+      return new A.Obx(new B.ThreadView__buildListEmailBody__closure(this.$this, context, this.listPresentationEmail, index), null);
     },
     $signature: 217
   };
   B.ThreadView__buildListEmailBody__closure.prototype = {
     call$0() {
-      var t4, _this = this,
-        t1 = _this.listPresentationEmail,
-        t2 = _this.index,
-        t3 = J.$index$asx(t1.get$value(t1), t2);
-      t2 = _this.$this._buildEmailItem$2(_this.context, J.$index$asx(t1.get$value(t1), t2));
+      var t2, t3, t4, t5, _this = this, _null = null,
+        t1 = _this.context;
+      A.Localizations_of(t1, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+      t2 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
+      t3 = _this.listPresentationEmail;
+      t4 = _this.index;
+      t5 = J.$index$asx(t3.get$value(t3), t4);
+      t4 = _this.$this._buildEmailItem$2(t1, J.$index$asx(t3.get$value(t3), t4));
       $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      t1 = t1.find$1$1$tag(0, null, type$.ResponsiveUtils);
-      t4 = $.GetInstance__getInstance;
-      if (t4 == null)
-        t4 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.DismissibleWidget(t3, t2, new B.ThreadView__buildListEmailBody___closure(), "Marke as read", t1, t4.find$1$1$tag(0, null, type$.ImagePaths), null, type$.DismissibleWidget_PresentationEmail);
+      t3 = $.GetInstance__getInstance;
+      t1 = t3 == null ? $.GetInstance__getInstance = C.C_GetInstance : t3;
+      t1 = t1.find$1$1$tag(0, _null, type$.ResponsiveUtils);
+      t3 = $.GetInstance__getInstance;
+      if (t3 == null)
+        t3 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B.DismissibleWidget(t5, t4, new B.ThreadView__buildListEmailBody___closure(), t2, t1, t3.find$1$1$tag(0, _null, type$.ImagePaths), _null, type$.DismissibleWidget_PresentationEmail);
     },
     $signature: typesOffset + 18
   };
@@ -11902,4 +11904,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["V2faH+wX5xnm/0+v3ne0re+d4Wg="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["kkR5fZfZPQzVXe+cAYSonLsJBWw="] = $__dart_deferred_initializers__.current
