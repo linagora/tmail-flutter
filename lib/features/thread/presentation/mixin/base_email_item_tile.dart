@@ -26,6 +26,7 @@ mixin BaseEmailItemTile {
   final imagePaths = Get.find<ImagePaths>();
 
   Widget buildIconAvatarSwipe(
+    String? iconPath,
     {
       double? iconSize,
       TextStyle? textStyle
@@ -40,7 +41,7 @@ mixin BaseEmailItemTile {
           color: AppColor.colorSpamReportBox
         ),
         child: SvgPicture.asset(
-          imagePaths.icEmailOpen,
+          iconPath ?? '',
           width: 24,
           height: 24,
           fit: BoxFit.fill
