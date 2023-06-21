@@ -7,6 +7,7 @@ class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
   final Widget child;
   final DismissDirectionCallback? onDismissed;
   final String? textLeft;
+  final String? textRight;
 
   DismissibleWidget(
     {
@@ -14,15 +15,16 @@ class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
       this.item,
       this.onDismissed,
       this.textLeft,
+      this.textRight,
       required this.child
     }
   );
 
   @override
   Widget build(BuildContext context) => Dismissible(
-      direction: DismissDirection.startToEnd,
       key: ObjectKey(item),
       background: buildSwipeActionLeft(),
+      secondaryBackground: buildSwipeActionRight(),
       onDismissed: onDismissed,
       child: child,
   );
@@ -39,5 +41,23 @@ class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
         ),
         title: buildTitleTileSwipe(textLeft),
       ),
+  );
+
+  Widget buildSwipeActionRight() => Container(
+    alignment: Alignment.centerRight,
+    decoration: new BoxDecoration(
+      color: AppColor.colorItemRecipientSelected,
+    ),
+    child: ListTile(
+      trailing: GestureDetector(
+        onTap: () {},
+        child: buildIconAvatarSwipe(imagePaths.icMoveMailbox),
+      ),
+      title: Row(mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          buildTitleTileSwipe(textRight),
+        ],
+      ),
+    ),
   );
 }
