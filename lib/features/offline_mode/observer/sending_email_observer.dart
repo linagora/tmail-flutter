@@ -5,7 +5,6 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -26,8 +25,6 @@ import 'package:tmail_ui_user/features/offline_mode/exceptions/workmanager_excep
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/offline_mode/observer/work_observer.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending_email_state.dart';
@@ -223,7 +220,6 @@ class SendingEmailObserver extends WorkObserver {
   }
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {
-    _showLocalNotification();
     _updateStoredSendingEmail(SendingState.success);
   }
 
@@ -247,15 +243,6 @@ class SendingEmailObserver extends WorkObserver {
 
   void _handleDeleteSendingEmailFailure(DeleteSendingEmailFailure failure) {
     _handleTaskFailureInWorkManager();
-  }
-
-  void _showLocalNotification() {
-    LocalNotificationManager.instance.showPushNotification(
-      id: _sendingEmail?.sendingId ?? '',
-      title: _sendingEmail?.email.subject ?? LocalNotificationConfig.messageHasBeenSentSuccessfully,
-      message: _sendingEmail?.presentationEmail.emailContentList.asHtmlString,
-      isInboxStyle: false
-    );
   }
 
   void _updateStoredSendingEmail(SendingState newState) {
