@@ -2903,5 +2903,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "languageArabic": "Арабский",
+  "@languageArabic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
