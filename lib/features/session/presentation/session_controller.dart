@@ -102,8 +102,10 @@ class SessionController extends ReloadableController {
       } else if (sessionException is BadCredentialsException && currentContext != null) {
         errorMessage = AppLocalizations.of(currentContext!).badCredentials;
       } else if (sessionException is UnknownError && currentContext != null) {
-        if (sessionException.message != null) {
+        if (sessionException.message != null && sessionException.code != null) {
           errorMessage = '[${sessionException.code}] ${sessionException.message}';
+        } else if (sessionException.message != null) {
+          errorMessage = sessionException.message!;
         } else {
           errorMessage = AppLocalizations.of(currentContext!).unknownError;
         }
