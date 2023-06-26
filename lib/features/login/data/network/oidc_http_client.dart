@@ -20,7 +20,7 @@ class OIDCHttpClient {
 
   OIDCHttpClient(this._dioClient);
 
-  Future<OIDCResponse?> checkOIDCIsAvailable(OIDCRequest oidcRequest) async {
+  Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) async {
     final result = await _dioClient.get(
         Endpoint.webFinger
             .generateOIDCPath(Uri.parse(oidcRequest.baseUrl))
@@ -31,10 +31,14 @@ class OIDCHttpClient {
             .generateEndpointPath()
     );
     log('OIDCHttpClient::checkOIDCIsAvailable(): RESULT: $result');
-    if (result is Map<String, dynamic>) {
-      return OIDCResponse.fromJson(result);
+    if (result != null) {
+      if (result is Map<String, dynamic>) {
+        return OIDCResponse.fromJson(result);
+      } else {
+        return OIDCResponse.fromJson(jsonDecode(result));
+      }
     } else {
-      return OIDCResponse.fromJson(jsonDecode(result));
+      throw CanNotFoundOIDCLinks();
     }
   }
 
