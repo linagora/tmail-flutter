@@ -126,7 +126,7 @@ class HomeController extends BaseController {
         failure is GetAuthenticatedAccountFailure ||
         failure is GetStoredTokenOidcFailure ||
         failure is GetCredentialFailure) {
-      _goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+      _goToLogin(arguments: LoginArguments(LoginFormType.baseUrlForm));
     }
   }
 

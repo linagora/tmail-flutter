@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,7 +10,6 @@ import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart'
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
-import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_decoration_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -72,7 +72,7 @@ class LoginView extends BaseLoginView {
                 style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
               )
             ),
-            Obx(() => buildLoginMessage(context, loginController.loginState.value)),
+            Obx(() => buildLoginMessage(context, loginController.viewState.value)),
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.baseUrlForm:
@@ -83,30 +83,7 @@ class LoginView extends BaseLoginView {
                   return const SizedBox.shrink();
               }
             }),
-            Obx(() {
-              switch (controller.loginFormType.value) {
-                case LoginFormType.baseUrlForm:
-                  return Obx(() => loginController.loginState.value.viewState.fold(
-                    (failure) => _buildNextButtonInContext(context),
-                    (success) => success is LoginLoadingAction
-                      ? buildLoadingCircularProgress()
-                      : _buildNextButtonInContext(context)));
-                case LoginFormType.credentialForm:
-                  return Obx(() => loginController.loginState.value.viewState.fold(
-                    (failure) => _buildLoginButtonInContext(context),
-                    (success) => success is LoginLoadingAction
-                      ? buildLoadingCircularProgress()
-                      : _buildLoginButtonInContext(context)));
-                case LoginFormType.ssoForm:
-                  return Obx(() => loginController.loginState.value.viewState.fold(
-                    (failure) => _buildLoginButtonInContext(context),
-                    (success) => success is LoginLoadingAction
-                      ? buildLoadingCircularProgress()
-                      : _buildLoginButtonInContext(context)));
-                default:
-                  return const SizedBox.shrink();
-              }
-            }),
+            _buildLoadingProgress(context),
             const Padding(
               padding: EdgeInsets.only(top: 16),
               child: PrivacyLinkWidget(),
@@ -208,5 +185,38 @@ class LoginView extends BaseLoginView {
   
   bool _supportScrollForm(BuildContext context) {
     return !(responsiveUtils.isMobile(context) && responsiveUtils.isPortrait(context));
+  }
+
+  Widget _buildLoadingProgress(BuildContext context) {
+    return Obx(() => loginController.viewState.value.fold(
+      (failure) {
+        switch (controller.loginFormType.value) {
+          case LoginFormType.baseUrlForm:
+            return _buildNextButtonInContext(context);
+          case LoginFormType.credentialForm:
+            return _buildLoginButtonInContext(context);
+          case LoginFormType.ssoForm:
+            return _buildLoginButtonInContext(context);
+          default:
+            return const SizedBox.shrink();
+        }
+      },
+      (success) {
+        if (success is LoadingState) {
+          return buildLoadingCircularProgress();
+        } else {
+          switch (controller.loginFormType.value) {
+            case LoginFormType.baseUrlForm:
+              return _buildNextButtonInContext(context);
+            case LoginFormType.credentialForm:
+              return _buildLoginButtonInContext(context);
+            case LoginFormType.ssoForm:
+              return _buildLoginButtonInContext(context);
+            default:
+              return const SizedBox.shrink();
+          }
+        }
+      }
+    ));
   }
 }
