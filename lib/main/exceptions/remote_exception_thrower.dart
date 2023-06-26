@@ -36,9 +36,15 @@ class RemoteExceptionThrower extends ExceptionThrower {
             } else if (error.error is SocketException) {
               throw const SocketError();
             } else {
-              throw UnknownError(
-                code: error.response?.statusCode,
-                message: error.response?.statusMessage);
+              if (error.response != null) {
+                throw UnknownError(
+                  code: error.response!.statusCode,
+                  message: error.response!.statusMessage);
+              } else if (error.error != null) {
+                throw UnknownError(message: error.error!.toString());
+              } else {
+                throw const UnknownError();
+              }
             }
         }
       } else if (error is ErrorMethodResponseException) {
