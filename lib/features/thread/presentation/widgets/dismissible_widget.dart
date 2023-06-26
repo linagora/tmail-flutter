@@ -6,7 +6,10 @@ import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item
 class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
   final T? item;
   final Widget child;
-  final DismissDirectionCallback? onDismissed;
+  final VoidCallback onDismissedLeft;
+  final VoidCallback onDismissedRight;
+  final String? iconLeft;
+  final String? iconRight;
   final String? textLeft;
   final String? textRight;
 
@@ -14,32 +17,45 @@ class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
     {
       super.key,
       this.item,
-      this.onDismissed,
+      required this.onDismissedLeft,
+      required this.onDismissedRight,
       this.textLeft,
       this.textRight,
-      required this.child
+      required this.child,
+      this.iconRight,
+      this.iconLeft
     }
   );
 
   @override
   Widget build(BuildContext context) => Slidable(
-      key: const ValueKey(0),
+      key: ValueKey(item),
       startActionPane:ActionPane(
         motion: const ScrollMotion(),
-        dismissible: DismissiblePane(onDismissed: () {}),
+        dismissible: DismissiblePane(
+          onDismissed:(){
+          onDismissedLeft();
+          }
+        ),
         children: [
           CustomSlidableAction(
-            onPressed: (BuildContext context) {  },
+            onPressed: (BuildContext context) {
+              onDismissedLeft();
+            },
             child: buildSwipeActionLeft(),
           ),
         ],
       ),
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
-        dismissible: DismissiblePane(onDismissed: () {}),
+        dismissible: DismissiblePane(onDismissed: () {
+          onDismissedRight();
+        }),
         children: [
           CustomSlidableAction(
-            onPressed: (BuildContext context) {  },
+            onPressed: (BuildContext context) {
+              onDismissedRight();
+            },
             child: buildSwipeActionRight()
           ),
         ],
@@ -55,8 +71,10 @@ class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
       child: ListTile(
         title: buildTitleTileSwipe(textRight),
         leading: GestureDetector(
-          child: buildIconAvatarSwipe(imagePaths.icMoveMailbox),
-          onTap: () {},
+          child: buildIconAvatarSwipe(iconRight),
+          onTap: () {
+            onDismissedRight();
+          },
         ),
       ),
   );
@@ -68,8 +86,10 @@ class DismissibleWidget<T> extends StatelessWidget with BaseEmailItemTile {
     ),
     child: ListTile(
       leading: GestureDetector(
-        child: buildIconAvatarSwipe(imagePaths.icEmailOpen),
-        onTap: () {},
+        child: buildIconAvatarSwipe(iconLeft),
+        onTap: () {
+          onDismissedLeft();
+        },
       ),
       title: buildTitleTileSwipe(textLeft),
     ),
