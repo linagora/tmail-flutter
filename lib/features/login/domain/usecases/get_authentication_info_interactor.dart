@@ -15,11 +15,7 @@ class GetAuthenticationInfoInteractor {
       yield Right<Failure, Success>(GetAuthenticationInfoLoading());
       final result = await _oidcRepository.getAuthenticationInfo();
       log('GetAuthenticationInfoInteractor::execute(): result: $result');
-      if (result?.isNotEmpty == true) {
-        yield Right<Failure, Success>(GetAuthenticationInfoSuccess());
-      } else {
-        yield Left<Failure, Success>(GetAuthenticationInfoFailure(null));
-      }
+      yield Right<Failure, Success>(GetAuthenticationInfoSuccess());
     } catch (e) {
       log('GetAuthenticationInfoInteractor::execute(): ERROR: $e');
       yield Left<Failure, Success>(GetAuthenticationInfoFailure(e));

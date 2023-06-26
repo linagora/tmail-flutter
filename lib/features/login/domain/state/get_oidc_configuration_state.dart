@@ -20,9 +20,8 @@ class GetOIDCConfigurationSuccess extends UIState {
 }
 
 class GetOIDCConfigurationFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetOIDCConfigurationFailure(this.exception);
+  GetOIDCConfigurationFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];

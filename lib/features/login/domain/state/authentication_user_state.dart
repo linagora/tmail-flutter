@@ -18,9 +18,8 @@ class AuthenticationUserSuccess extends UIState {
 }
 
 class AuthenticationUserFailure extends FeatureFailure {
-  final dynamic exception;
 
-  AuthenticationUserFailure(this.exception);
+  AuthenticationUserFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];
