@@ -327,10 +327,22 @@ class ThreadView extends GetWidget<ThreadController>
           itemExtent: _getItemExtent(context),
           itemCount: listPresentationEmail.length,
           itemBuilder: (context, index) => Obx(() => DismissibleWidget(
-              textLeft:AppLocalizations.of(context).mark_as_read,
+              iconLeft: listPresentationEmail[index].hasRead ?
+              _imagePaths.icMarkAsRead:
+              _imagePaths.icUnread,
+              iconRight: _imagePaths.icMoveMailbox,
+              textLeft: listPresentationEmail[index].hasRead ?
+              AppLocalizations.of(context).mark_as_unread :
+              AppLocalizations.of(context).mark_as_read,
               textRight:AppLocalizations.of(context).moveTo,
               item: listPresentationEmail[index],
-              onDismissed: (DismissDirection direction) {},
+              onDismissedLeft: (){
+                if(listPresentationEmail[index].hasRead){
+                  controller.markAsEmailRead(listPresentationEmail[index], ReadActions.markAsUnread);
+                }
+                controller.markAsEmailRead(listPresentationEmail[index], ReadActions.markAsRead);
+              },
+              onDismissedRight: (){},
               child: _buildEmailItem(context, listPresentationEmail[index])
           ))
         ),
