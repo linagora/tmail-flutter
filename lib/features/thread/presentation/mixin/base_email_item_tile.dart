@@ -55,6 +55,43 @@ mixin BaseEmailItemTile {
     }
   }
 
+  Widget buildIconAvatarSwipe(
+      String? iconPath,
+      {
+        double? iconSize,
+        TextStyle? textStyle
+      }
+  ) {
+    return Container(
+      width: iconSize ?? 56,
+      height: iconSize ?? 56,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColor.colorSpamReportBox
+      ),
+      child: SvgPicture.asset(
+          iconPath ?? '',
+          width: 24,
+          height: 24,
+          fit: BoxFit.fill
+      ),
+    );
+  }
+
+  Widget buildTitleTileSwipe(String? text){
+    return Text(
+        text ?? '',
+        maxLines: 1,
+        style: const TextStyle(
+            fontSize: 15,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            color: AppColor.colorTextButton,
+            fontWeight: FontWeight.w600
+        )
+    );
+  }
+
   bool isSearchEnabled(bool isSearchEmailRunning, SearchQuery? query) {
     return isSearchEmailRunning && query?.value.isNotEmpty == true;
   }
