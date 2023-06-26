@@ -86,7 +86,7 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
-  Future<String?> getAuthenticationInfo() {
+  Future<String> getAuthenticationInfo() {
     return _oidcDataSource.getAuthenticationInfo();
   }
 

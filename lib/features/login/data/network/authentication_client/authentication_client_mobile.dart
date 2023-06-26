@@ -93,8 +93,8 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   }
 
   @override
-  Future<String?> getAuthenticationInfo() {
-    return Future.value(null);
+  Future<String> getAuthenticationInfo() {
+    return Future.value('');
   }
 }
 

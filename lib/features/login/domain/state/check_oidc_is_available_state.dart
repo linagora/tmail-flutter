@@ -20,9 +20,8 @@ class CheckOIDCIsAvailableSuccess extends UIState {
 }
 
 class CheckOIDCIsAvailableFailure extends FeatureFailure {
-  final dynamic exception;
 
-  CheckOIDCIsAvailableFailure(this.exception);
+  CheckOIDCIsAvailableFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];

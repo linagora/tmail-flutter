@@ -23,13 +23,9 @@ class BadGateway extends AuthenticationException {
   List<Object?> get props => [message];
 }
 
-class NotFoundAuthenticatedAccountException implements Exception {
-  NotFoundAuthenticatedAccountException();
-}
+class NotFoundAuthenticatedAccountException implements Exception {}
 
-class NotFoundStoredTokenException implements Exception {
-  NotFoundStoredTokenException();
-}
+class NotFoundStoredTokenException implements Exception {}
 
 class InvalidBaseUrl extends AuthenticationException {
   InvalidBaseUrl() : super(AuthenticationException.invalidBaseUrl);
@@ -38,13 +34,9 @@ class InvalidBaseUrl extends AuthenticationException {
   List<Object?> get props => [message];
 }
 
-class NotFoundAccessTokenException implements Exception {
-  NotFoundAccessTokenException();
-}
+class NotFoundAccessTokenException implements Exception {}
 
-class AccessTokenInvalidException implements Exception {
-  AccessTokenInvalidException();
-}
+class AccessTokenInvalidException implements Exception {}
 
 class DownloadAttachmentHasTokenExpiredException implements Exception {
 
@@ -52,3 +44,11 @@ class DownloadAttachmentHasTokenExpiredException implements Exception {
 
   DownloadAttachmentHasTokenExpiredException(this.refreshToken);
 }
+
+class CanNotFoundBaseUrl implements Exception {}
+
+class CanNotFoundUserName implements Exception {}
+
+class CanNotFoundPassword implements Exception {}
+
+class CanNotAuthenticationInfoOnWeb implements Exception {}

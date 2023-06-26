@@ -37,5 +37,5 @@ abstract class AuthenticationOIDCDataSource {
       String discoveryUrl,
       List<String> scopes);
 
-  Future<String?> getAuthenticationInfo();
+  Future<String> getAuthenticationInfo();
 }
