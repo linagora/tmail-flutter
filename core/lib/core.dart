@@ -101,7 +101,6 @@ export 'data/network/download/downloaded_response.dart';
 // State
 export 'presentation/state/success.dart';
 export 'presentation/state/failure.dart';
-export 'presentation/state/app_state.dart';
 
 // Model
 export 'data/model/source_type/data_source_type.dart';
