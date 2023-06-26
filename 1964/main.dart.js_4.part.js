@@ -12786,10 +12786,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5 = type$.AppLocalizations;
       if (J.$index$asx(t1.get$value(t1), t2).get$hasRead()) {
         A.Localizations_of(t4, C.Type_AppLocalizations_swi, t5).toString;
-        t6 = A.Intl__message("Mark as unread", _null, "mark_as_unread", _null, _null);
+        t6 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
       } else {
         A.Localizations_of(t4, C.Type_AppLocalizations_swi, t5).toString;
-        t6 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
+        t6 = A.Intl__message("Mark as unread", _null, "mark_as_unread", _null, _null);
       }
       A.Localizations_of(t4, C.Type_AppLocalizations_swi, t5).toString;
       t5 = A.Intl__message("Move To", _null, "moveTo", _null, _null);
@@ -14042,4 +14042,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["4QOUYfdIlwLH1Z03NcA7UNjrvz4="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["jt77LXQ/9O61IdSqbJ454M/jH3k="] = $__dart_deferred_initializers__.current
