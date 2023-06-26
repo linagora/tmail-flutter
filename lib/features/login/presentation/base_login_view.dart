@@ -1,17 +1,25 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
-import 'package:tmail_ui_user/features/login/presentation/state/login_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -25,27 +33,26 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
 
   final FocusNode passFocusNode = FocusNode();
 
-  Widget buildLoginMessage(BuildContext context, LoginState loginState) {
+  Widget buildLoginMessage(BuildContext context, Either<Failure, Success> viewState) {
     return Padding(
       padding: const EdgeInsets.only(top: 11, bottom: 36, left: 58, right: 58),
       child: SizedBox(
         width: responsiveUtils.getWidthLoginTextField(context),
         child: Text(
-          loginState.viewState.fold(
+          viewState.fold(
             (failure) {
-              if (failure is LoginMissUrlAction) {
-                return AppLocalizations.of(context).requiredUrl;
-              } else if (failure is LoginMissUsernameAction) {
-                return AppLocalizations.of(context).requiredEmail;
-              } else if (failure is LoginMissPasswordAction) {
-                return AppLocalizations.of(context).requiredPassword;
-              } else if (failure is LoginSSONotAvailableAction) {
-                return AppLocalizations.of(context).ssoNotAvailable;
-              } else if (failure is GetOIDCConfigurationFailure
-                  || failure is LoginCanNotVerifySSOConfigurationAction) {
+              if (failure is CheckOIDCIsAvailableFailure) {
+                return _getMessageFailure(context, failure.exception);
+              } else if (failure is AuthenticationUserFailure) {
+                return _getMessageFailure(context, failure.exception);
+              } else if (failure is GetOIDCIsAvailableFailure) {
+                return _getMessageFailure(context, failure.exception);
+              } else if (failure is GetTokenOIDCFailure) {
+                return _getMessageFailure(context, failure.exception);
+              } else if (failure is AuthenticateOidcOnBrowserFailure) {
+                return _getMessageFailure(context, failure.exception);
+              } else if (failure is GetOIDCConfigurationFailure) {
                 return AppLocalizations.of(context).canNotVerifySSOConfiguration;
-              } else if (failure is GetTokenOIDCFailure || failure is LoginCanNotGetTokenAction) {
-                return AppLocalizations.of(context).canNotGetToken;
               } else {
                 return AppLocalizations.of(context).unknownError;
               }
@@ -63,11 +70,27 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w400,
-          color: loginState.viewState.fold(
+          color: viewState.fold(
             (failure) => AppColor.textFieldErrorBorderColor,
             (success) => AppColor.colorNameEmail)),
       ))
     );
+  }
+
+  String _getMessageFailure(BuildContext context, dynamic exception) {
+    if (exception is CanNotFoundBaseUrl) {
+      return AppLocalizations.of(context).requiredUrl;
+    } else if (exception is CanNotFoundUserName) {
+      return AppLocalizations.of(context).requiredEmail;
+    } else if (exception is CanNotFoundPassword) {
+      return AppLocalizations.of(context).requiredPassword;
+    } else if (exception is CanNotFoundOIDCLinks) {
+      return AppLocalizations.of(context).ssoNotAvailable;
+    }  else if (exception is CanNotFoundToken) {
+      return AppLocalizations.of(context).canNotGetToken;
+    } else {
+      return '';
+    }
   }
 
   Widget buildLoginButton(BuildContext context) {
