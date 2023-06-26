@@ -190,7 +190,6 @@ class ImagePaths {
   String get icDelivering => _getImagePath('ic_delivering.svg');
   String get icError => _getImagePath('ic_error.svg');
   String get icConnectedInternet => _getImagePath('ic_connected_internet.svg');
-  String get icEmailOpen => _getImagePath('ic_email_open.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
