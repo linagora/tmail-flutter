@@ -21,9 +21,8 @@ class GetTokenOIDCSuccess extends UIState {
 }
 
 class GetTokenOIDCFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetTokenOIDCFailure(this.exception);
+  GetTokenOIDCFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];

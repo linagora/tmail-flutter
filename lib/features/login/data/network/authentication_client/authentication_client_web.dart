@@ -97,10 +97,14 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   }
 
   @override
-  Future<String?> getAuthenticationInfo() async {
+  Future<String> getAuthenticationInfo() async {
     final authUrl = html.window.sessionStorage[OIDCConstant.authResponseKey];
     log('AuthenticationClientWeb::getAuthenticationInfo(): authUrl: $authUrl');
-    return authUrl;
+    if (authUrl != null && authUrl.isNotEmpty) {
+      return authUrl;
+    } else {
+      throw CanNotAuthenticationInfoOnWeb();
+    }
   }
 }
 
