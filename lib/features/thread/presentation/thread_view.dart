@@ -332,8 +332,8 @@ class ThreadView extends GetWidget<ThreadController>
               _imagePaths.icUnread,
               iconRight: _imagePaths.icMoveMailbox,
               textLeft: listPresentationEmail[index].hasRead ?
-              AppLocalizations.of(context).mark_as_unread :
-              AppLocalizations.of(context).mark_as_read,
+              AppLocalizations.of(context). mark_as_read :
+              AppLocalizations.of(context).mark_as_unread,
               textRight:AppLocalizations.of(context).moveTo,
               item: listPresentationEmail[index],
               onDismissedLeft: (){
