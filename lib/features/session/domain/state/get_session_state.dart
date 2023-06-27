@@ -1,6 +1,8 @@
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 
+class GetSessionLoading extends UIState {}
+
 class GetSessionSuccess extends UIState {
   final Session session;
 
