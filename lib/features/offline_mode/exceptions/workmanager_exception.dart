@@ -1,1 +1,3 @@
-class CannotCompleteTaskInWorkManagerException implements Exception {}
+class CanNotFoundInputData implements Exception {}
+
+class CanNotFoundWorkerType implements Exception {}

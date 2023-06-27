@@ -14,11 +14,10 @@ enum SendingState {
     switch(this) {
       case SendingState.waiting:
       case SendingState.running:
+      case SendingState.success:
         return AppLocalizations.of(context).delivering;
       case SendingState.error:
         return AppLocalizations.of(context).error;
-      case SendingState.success:
-        return '';
     }
   }
 
@@ -26,11 +25,10 @@ enum SendingState {
     switch(this) {
       case SendingState.waiting:
       case SendingState.running:
+      case SendingState.success:
         return imagePaths.icDelivering;
       case SendingState.error:
         return imagePaths.icError;
-      case SendingState.success:
-        return '';
     }
   }
 

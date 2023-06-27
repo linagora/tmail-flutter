@@ -19,7 +19,9 @@ import 'package:tmail_ui_user/features/login/domain/repository/authentication_oi
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
@@ -37,6 +39,15 @@ class CredentialBindings extends BaseBindings {
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<CredentialRepository>())
     );
+    Get.lazyPut(() => GetStoredTokenOidcInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<CredentialRepository>(),
+    ));
+    Get.lazyPut(() => GetAuthenticatedAccountInteractor(
+      Get.find<AccountRepository>(),
+      Get.find<GetCredentialInteractor>(),
+      Get.find<GetStoredTokenOidcInteractor>(),
+    ));
   }
 
   @override
