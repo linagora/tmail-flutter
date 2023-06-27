@@ -1,9 +1,8 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
+import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -52,11 +51,8 @@ class UserInformationWidgetBuilder extends StatelessWidget {
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _userProfile != null ? '${_userProfile?.email}'.withUnicodeCharacter : '',
-              maxLines: 1,
-              overflow: CommonTextStyle.defaultTextOverFlow,
-              softWrap: CommonTextStyle.defaultSoftWrap,
+            TextOverflowBuilder(
+              _userProfile != null ? '${_userProfile?.email}' : '',
               style: const TextStyle(
                 fontSize: 17,
                 color: AppColor.colorNameEmail,
@@ -65,12 +61,15 @@ class UserInformationWidgetBuilder extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             if (subtitle != null)
-              MaterialTextButton(
-                label: AppLocalizations.of(context).manage_account,
-                onTap: onSubtitleClick,
-                borderRadius: 20,
-                padding: const EdgeInsetsDirectional.symmetric(horizontal: 8, vertical: 8),
-                customStyle: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
+              Transform(
+                transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
+                child: MaterialTextButton(
+                  label: AppLocalizations.of(context).manage_account,
+                  onTap: onSubtitleClick,
+                  borderRadius: 20,
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 8, vertical: 8),
+                  customStyle: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
+                ),
               )
         ])),
         if (PlatformInfo.isMobile)

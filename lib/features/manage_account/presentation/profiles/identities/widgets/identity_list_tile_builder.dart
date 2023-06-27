@@ -1,8 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -65,10 +64,8 @@ class IdentityListTileBuilder extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text(
-                          (identity.name ?? '').withUnicodeCharacter,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
+                        child: TextOverflowBuilder(
+                          (identity.name ?? ''),
                           style: const TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
@@ -122,15 +119,13 @@ class IdentityListTileBuilder extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: SvgPicture.asset(imagePath, width: 15, height: 15))),
         const SizedBox(width: 4),
-        Expanded(child: Text(
-          (text ?? '').withUnicodeCharacter,
+        Expanded(child: TextOverflowBuilder(
+          (text ?? ''),
           style: const TextStyle(
             color: AppColor.colorEmailAddressFull,
             fontWeight: FontWeight.normal,
             fontSize: 13,
           ),
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap
         ))
       ]),
     );
@@ -151,15 +146,13 @@ class IdentityListTileBuilder extends StatelessWidget {
               decoration: TextDecoration.underline,
               color: AppColor.colorTextButton))),
         const SizedBox(width: 4),
-        Expanded(child: Text(
-          (text ?? '').withUnicodeCharacter,
+        Expanded(child: TextOverflowBuilder(
+          (text ?? ''),
           style: const TextStyle(
             color: AppColor.colorEmailAddressFull,
             fontWeight: FontWeight.normal,
             fontSize: 13,
           ),
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap
         ))
       ]),
     );
