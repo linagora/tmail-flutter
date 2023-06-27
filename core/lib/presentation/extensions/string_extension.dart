@@ -40,8 +40,9 @@ extension StringExtension on String {
     }
   }
 
-  String get withUnicodeCharacter {
+  String get overflow {
     return characters
+      .replaceAll(Characters(''), Characters('\u{200B}'))
       .replaceAll(Characters('-'), Characters('\u{2011}'))
       .toString();
   }

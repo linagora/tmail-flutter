@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -8,6 +7,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/list/sliver_grid_delegate_fixed_height.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -85,13 +85,10 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
                 )
               ),
             ),
-          Expanded(child: Text(
+          Expanded(child: TextOverflowBuilder(
             controller.identitySelected.value != null
-              ? (controller.identitySelected.value?.email ?? '').withUnicodeCharacter
-              : (controller.userProfile?.email ?? '').withUnicodeCharacter,
-            maxLines: 1,
-            overflow: CommonTextStyle.defaultTextOverFlow,
-            softWrap: CommonTextStyle.defaultSoftWrap,
+              ? (controller.identitySelected.value?.email ?? '')
+              : (controller.userProfile?.email ?? ''),
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.normal,
