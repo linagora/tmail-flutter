@@ -102,4 +102,6 @@ abstract class EmailDataSource {
   Future<void> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds);
 
   Future<List<SendingEmail>> updateMultipleSendingEmail(AccountId accountId, UserName userName, List<SendingEmail> newSendingEmails);
+
+  Future<SendingEmail> getStoredSendingEmail(AccountId accountId, UserName userName, String sendingId);
 }
