@@ -1,5 +1,4 @@
 
-import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -24,7 +23,6 @@ class SendingEmailCacheManager {
     await _hiveCacheClient.insertItem(keyCache, sendingEmailHiveCache);
     final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
     if (newSendingEmailHiveCache != null) {
-      log('SendingEmailCacheManager::storeSendingEmail():sendingId: ${newSendingEmailHiveCache.sendingId} | sendingState: ${newSendingEmailHiveCache.sendingState}');
       return newSendingEmailHiveCache;
     } else {
       throw NotFoundSendingEmailHiveObject();
@@ -42,7 +40,6 @@ class SendingEmailCacheManager {
     await _hiveCacheClient.deleteItem(keyCache);
     final storedSendingEmail = await _hiveCacheClient.getItem(keyCache);
     if (storedSendingEmail != null) {
-      log('SendingEmailCacheManager::deleteSendingEmail():sendingId: ${storedSendingEmail.sendingId}');
       throw ExistSendingEmailHiveObject();
     }
   }
@@ -64,7 +61,6 @@ class SendingEmailCacheManager {
     await _hiveCacheClient.updateItem(keyCache, sendingEmailHiveCache);
     final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
     if (newSendingEmailHiveCache != null) {
-      log('SendingEmailCacheManager::updateSendingEmail():sendingId: ${newSendingEmailHiveCache.sendingId} | sendingState: ${newSendingEmailHiveCache.sendingState}');
       return newSendingEmailHiveCache;
     } else {
       throw NotFoundSendingEmailHiveObject();
@@ -82,7 +78,6 @@ class SendingEmailCacheManager {
     };
     await _hiveCacheClient.updateMultipleItem(mapSendingEmailCache);
     final newListSendingEmailCache = await _hiveCacheClient.getValuesByListKey(mapSendingEmailCache.keys.toList());
-    log('SendingEmailCacheManager::updateMultipleSendingEmail():newListSendingEmailCache: ${newListSendingEmailCache.map((sendingEmail) => '${sendingEmail.sendingId} | ${sendingEmail.sendingState}').toList()}');
     return newListSendingEmailCache;
   }
 
@@ -90,9 +85,18 @@ class SendingEmailCacheManager {
     final listTupleKey = sendingIds.map((sendingId) => TupleKey(sendingId, accountId.asString, userName.value).encodeKey).toList();
     await _hiveCacheClient.deleteMultipleItem(listTupleKey);
     final newListSendingEmailCache = await _hiveCacheClient.getValuesByListKey(listTupleKey);
-    log('SendingEmailCacheManager::deleteMultipleSendingEmail():newListSendingEmailCache: ${newListSendingEmailCache.map((sendingEmail) => '${sendingEmail.sendingId} | ${sendingEmail.sendingState}').toList()}');
     if (newListSendingEmailCache.isNotEmpty) {
       throw ExistSendingEmailHiveObject();
+    }
+  }
+
+  Future<SendingEmailHiveCache> getStoredSendingEmail(AccountId accountId, UserName userName, String sendingId) async {
+    final keyCache = TupleKey(sendingId, accountId.asString, userName.value).encodeKey;
+    final storedSendingEmail = await _hiveCacheClient.getItem(keyCache);
+    if (storedSendingEmail != null) {
+      return storedSendingEmail;
+    } else {
+      throw NotFoundSendingEmailHiveObject();
     }
   }
 

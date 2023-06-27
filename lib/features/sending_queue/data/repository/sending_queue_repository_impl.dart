@@ -39,4 +39,9 @@ class SendingQueueRepositoryImpl extends SendingQueueRepository {
   Future<void> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds) {
     return _emailHiveCacheDataSourceImpl.deleteMultipleSendingEmail(accountId, userName, sendingIds);
   }
+
+  @override
+  Future<SendingEmail> getStoredSendingEmail(AccountId accountId, UserName userName, String sendingId) {
+    return _emailHiveCacheDataSourceImpl.getStoredSendingEmail(accountId, userName, sendingId);
+  }
 }
