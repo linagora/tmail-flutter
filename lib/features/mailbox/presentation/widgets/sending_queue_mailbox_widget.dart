@@ -1,14 +1,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SendingQueueMailboxWidget extends StatelessWidget {
 
@@ -59,11 +58,8 @@ class SendingQueueMailboxWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
-                          child: Text(
+                          child: TextOverflowBuilder(
                             AppLocalizations.of(context).sendingQueue,
-                            maxLines: 1,
-                            softWrap: CommonTextStyle.defaultSoftWrap,
-                            overflow: CommonTextStyle.defaultTextOverFlow,
                             style: const TextStyle(
                               fontSize: 15,
                               color: AppColor.colorNameEmail,
@@ -71,14 +67,9 @@ class SendingQueueMailboxWidget extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(
-                            right: AppUtils.isDirectionRTL(context) ? 0 : 12,
-                            left: AppUtils.isDirectionRTL(context) ? 12 : 0,
-                          ),
-                          child: Text(
+                          padding: const EdgeInsetsDirectional.only(start: 12),
+                          child: TextOverflowBuilder(
                             _getCountSendingEmails(),
-                            maxLines: 1,
-                            overflow: CommonTextStyle.defaultTextOverFlow,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Colors.black,

@@ -1,9 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/utils/app_logger.dart';
+import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -41,7 +40,6 @@ class SendingEmailTileWidget extends StatelessWidget {
     final imagePaths = Get.find<ImagePaths>();
 
     return LayoutBuilder(builder: (context, constraints) {
-      log('SendingEmailTileWidget::build(): MAX_WIDTH: ${constraints.maxWidth}');
       return Material(
         color: Colors.transparent,
         child: InkWell(
@@ -90,11 +88,8 @@ class SendingEmailTileWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(children: [
-                          Expanded(child: Text(
-                            AppLocalizations.of(context).titleRecipientSendingEmail(sendingEmail.presentationEmail.recipientsName()).withUnicodeCharacter,
-                            softWrap: CommonTextStyle.defaultSoftWrap,
-                            overflow: CommonTextStyle.defaultTextOverFlow,
-                            maxLines: 1,
+                          Expanded(child: TextOverflowBuilder(
+                            AppLocalizations.of(context).titleRecipientSendingEmail(sendingEmail.presentationEmail.recipientsName()),
                             style: TextStyle(
                               fontSize: 15,
                               color: sendingEmail.sendingState.getTitleSendingEmailItemColor(),
@@ -142,11 +137,8 @@ class SendingEmailTileWidget extends StatelessWidget {
                             )
                         ]),
                         const SizedBox(height: 8),
-                        Text(
-                          sendingEmail.presentationEmail.getEmailTitle().withUnicodeCharacter,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          maxLines: 1,
+                        TextOverflowBuilder(
+                          sendingEmail.presentationEmail.getEmailTitle(),
                           style: TextStyle(
                             fontSize: 13,
                             color: sendingEmail.sendingState.getSubTitleSendingEmailItemColor(),

@@ -1,9 +1,9 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -293,15 +293,12 @@ class MailBoxFolderTileBuilder {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
-              child: Text(
-                (_mailboxNode.item.name?.name ?? '').withUnicodeCharacter,
-                maxLines: 1,
-                softWrap: CommonTextStyle.defaultSoftWrap,
-                overflow: CommonTextStyle.defaultTextOverFlow,
+              child: TextOverflowBuilder(
+                (_mailboxNode.item.name?.name ?? ''),
                 style: TextStyle(
-                    fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 15,
-                    color: _mailboxNode.item.isTeamMailboxes ? Colors.black : AppColor.colorNameEmail,
-                    fontWeight: _mailboxNode.item.isTeamMailboxes ? FontWeight.bold : FontWeight.normal),
+                  fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 15,
+                  color: _mailboxNode.item.isTeamMailboxes ? Colors.black : AppColor.colorNameEmail,
+                  fontWeight: _mailboxNode.item.isTeamMailboxes ? FontWeight.bold : FontWeight.normal),
               ),
             ),
             if (showTrailingItem)
@@ -309,15 +306,12 @@ class MailBoxFolderTileBuilder {
           ],
         ),
         if(_mailboxNode.item.isTeamMailboxes)
-          Text(
-            (_mailboxNode.item.emailTeamMailBoxes ?? '').withUnicodeCharacter,
-            maxLines: 1,
-            softWrap: CommonTextStyle.defaultSoftWrap,
-            overflow: CommonTextStyle.defaultTextOverFlow,
+          TextOverflowBuilder(
+            (_mailboxNode.item.emailTeamMailBoxes ?? ''),
             style: const TextStyle(
-                fontSize: 13,
-                color: AppColor.colorEmailAddressFull,
-                fontWeight: FontWeight.w400),
+              fontSize: 13,
+              color: AppColor.colorEmailAddressFull,
+              fontWeight: FontWeight.w400),
           )
       ],
     );

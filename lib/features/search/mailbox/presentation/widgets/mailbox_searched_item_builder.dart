@@ -1,9 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -204,11 +203,8 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   Widget _buildTitleItem() {
-    return Text(
-      (widget._presentationMailbox.name?.name ?? '').withUnicodeCharacter,
-      maxLines: 1,
-      overflow: CommonTextStyle.defaultTextOverFlow,
-      softWrap: CommonTextStyle.defaultSoftWrap,
+    return TextOverflowBuilder(
+      (widget._presentationMailbox.name?.name ?? ''),
       style: const TextStyle(
         fontSize: 15,
         color: Colors.black
@@ -218,11 +214,8 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
 
   Widget _buildSubtitleItem() {
     if (widget._presentationMailbox.mailboxPath?.isNotEmpty == true) {
-      return Text(
-        (widget._presentationMailbox.mailboxPath ?? '').withUnicodeCharacter,
-        maxLines: 1,
-        overflow: CommonTextStyle.defaultTextOverFlow,
-        softWrap: CommonTextStyle.defaultSoftWrap,
+      return TextOverflowBuilder(
+        (widget._presentationMailbox.mailboxPath ?? ''),
         style: const TextStyle(
           fontSize: 11,
           color: AppColor.colorMailboxPath,
@@ -230,11 +223,8 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
         ),
       );
     } else if (widget._presentationMailbox.isTeamMailboxes) {
-      return Text(
-        (widget._presentationMailbox.emailTeamMailBoxes ?? '').withUnicodeCharacter,
-        maxLines: 1,
-        softWrap: CommonTextStyle.defaultSoftWrap,
-        overflow: CommonTextStyle.defaultTextOverFlow,
+      return TextOverflowBuilder(
+        (widget._presentationMailbox.emailTeamMailBoxes ?? ''),
         style: const TextStyle(
           fontSize: 11,
           color: AppColor.colorEmailAddressFull,
