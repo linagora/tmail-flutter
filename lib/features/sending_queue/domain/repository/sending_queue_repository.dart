@@ -15,4 +15,6 @@ abstract class SendingQueueRepository {
   Future<SendingEmail> updateSendingEmail(AccountId accountId, UserName userName, SendingEmail newSendingEmail);
 
   Future<List<SendingEmail>> updateMultipleSendingEmail(AccountId accountId, UserName userName, List<SendingEmail> newSendingEmails);
+
+  Future<SendingEmail> getStoredSendingEmail(AccountId accountId, UserName userName, String sendingId);
 }
