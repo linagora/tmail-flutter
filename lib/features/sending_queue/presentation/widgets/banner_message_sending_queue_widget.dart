@@ -1,7 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_utils.dart';
@@ -17,7 +16,6 @@ class BannerMessageSendingQueueWidget extends StatelessWidget {
     final imagePath = getBinding<ImagePaths>();
 
     return LayoutBuilder(builder: (context, constraints) {
-      log('BannerMessageSendingQueueWidget::build(): MAX_WIDTH: ${constraints.maxWidth}');
       return Container(
         margin: SendingQueueUtils.getMarginBannerMessageByResponsiveSize(constraints.maxWidth),
         padding: const EdgeInsets.all(16),
