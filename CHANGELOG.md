@@ -1,4 +1,11 @@
-## Unreleased
+## [0.8.3] - 2023-06-27
+### Fixed
+- \#1878 Fix font family not changed correctly in composer
+- \#1913 Fix Email/changes is called multiple times when an error cannotCalculateChanges is returned
+- \#1931 Fix user cannot do infinity scroll when he turn off network and reconnect again
+- \#1923 Fix user cannot view that email content by click on the notification in Offline Mode
+
+## [0.8.2] - 2023-06-15
 ### Fixed
 - Fix select font style always default when changed
 - Fix attachments not show when click ShowAll button
@@ -17,15 +24,15 @@
 
 ## [0.8.0] - 2023-06-12
 ### Added
-- TF-1786 Write stories for swipe in email item in ThreadView
+- \#1786 Write stories for swipe in email item in ThreadView
 - Support Sending emails when offline
 - Support manage the sending queue
 - Support view/modify SendingQueue entries
 
 ### Fixed
-- TF-1862 Fix right click on email item in email list view
-- TF-1851 Fix \[COMPOSER\] Selected rich text menu do not match current text status
-- TF-1851 Fix \[COMPOSER\] Need to apply color twice for bold
+- \#1862 Fix right click on email item in email list view
+- \#1851 Fix \[COMPOSER\] Selected rich text menu do not match current text status
+- \#1851 Fix \[COMPOSER\] Need to apply color twice for bold
 
 ## [0.7.11] - 2023-06-05
 ### Changed
@@ -146,6 +153,8 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.8.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.3
+[0.8.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.2
 [0.8.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.1
 [0.8.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.0
 [0.7.11]: https://github.com/linagora/tmail-flutter/releases/tag/v0.7.11
