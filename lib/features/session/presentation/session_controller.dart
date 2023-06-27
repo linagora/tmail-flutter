@@ -1,9 +1,9 @@
-import 'package:core/core.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
@@ -88,6 +88,11 @@ class SessionController extends ReloadableController {
       arguments: session);
   }
 
+  void _handleGetStoredSession() {
+    log('SessionController::_handleGetStoredSession():');
+    consumeState(_getStoredSessionInteractor.execute());
+  }
+
   void _getSession() async {
     consumeState(_getSessionInteractor.execute());
   }
@@ -136,10 +141,5 @@ class SessionController extends ReloadableController {
       logError('SessionController::_goToMailboxDashBoard(): apiUrl is NULL');
       performInvokeLogoutAction();
     }
-  }
-
-  void _handleGetStoredSession() {
-    log('SessionController::_handleGetStoredSession():');
-    consumeState(_getStoredSessionInteractor.execute());
   }
 }

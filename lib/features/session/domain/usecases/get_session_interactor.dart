@@ -11,6 +11,7 @@ class GetSessionInteractor {
 
   Stream<Either<Failure, Success>> execute() async* {
     try {
+      yield Right<Failure, Success>(GetSessionLoading());
       final session = await sessionRepository.getSession();
       yield Right<Failure, Success>(GetSessionSuccess(session));
     } catch (e) {
