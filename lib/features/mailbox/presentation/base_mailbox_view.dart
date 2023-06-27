@@ -21,17 +21,14 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
   final imagePaths = Get.find<ImagePaths>();
 
   Widget buildUserInformation(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(children: [
-        Obx(() => UserInformationWidgetBuilder(
-          imagePaths,
-          controller.mailboxDashBoardController.userProfile.value,
-          subtitle: AppLocalizations.of(context).manage_account,
-          onSubtitleClick: controller.mailboxDashBoardController.goToSettings)),
-        const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)
-      ]),
-    );
+    return Column(children: [
+      Obx(() => UserInformationWidgetBuilder(
+        imagePaths,
+        controller.mailboxDashBoardController.userProfile.value,
+        subtitle: AppLocalizations.of(context).manage_account,
+        onSubtitleClick: controller.mailboxDashBoardController.goToSettings)),
+      const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2)
+    ]);
   }
 
   Widget buildLoadingView() {
