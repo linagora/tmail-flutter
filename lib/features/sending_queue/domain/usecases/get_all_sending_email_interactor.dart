@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -15,6 +16,7 @@ class GetAllSendingEmailInteractor {
     try {
       yield Right<Failure, Success>(GetAllSendingEmailLoading());
       final sendingEmails = await _sendingQueueRepository.getAllSendingEmails(accountId, userName);
+      log('GetAllSendingEmailInteractor::execute():sendingEmails: ${sendingEmails.map((e) => '${e.email.subject} | ${e.sendingState}')}');
       yield Right<Failure, Success>(GetAllSendingEmailSuccess(sendingEmails));
     } catch (e) {
       yield Left<Failure, Success>(GetAllSendingEmailFailure(e));

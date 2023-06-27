@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/features/offline_mode/controller/work_scheduler_controller.dart';
+import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 
 class CachingManager {
@@ -133,7 +133,7 @@ class CachingManager {
     final sendingIds = listSendingEmails.map((sendingEmail) => sendingEmail.sendingId).toSet().toList();
     if (sendingIds.isNotEmpty) {
       await Future.wait(
-        sendingIds.map(WorkSchedulerController().cancelByUniqueId),
+        sendingIds.map(WorkManagerController().cancelByUniqueId),
         eagerError: true
       );
       await _sendingEmailCacheManager.clearAllSendingEmails();

@@ -84,9 +84,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
-import 'package:tmail_ui_user/features/offline_mode/controller/work_scheduler_controller.dart';
-import 'package:tmail_ui_user/features/offline_mode/scheduler/one_time_work_request.dart';
-import 'package:tmail_ui_user/features/offline_mode/scheduler/worker_type.dart';
+import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
+import 'package:tmail_ui_user/features/offline_mode/work_manager/one_time_work_request.dart';
+import 'package:tmail_ui_user/features/offline_mode/work_manager/worker_type.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
@@ -126,7 +126,6 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:uuid/uuid.dart';
-import 'package:tmail_ui_user/features/offline_mode/scheduler/worker.dart' as worker_scheduler;
 import 'package:workmanager/workmanager.dart' as work_manager;
 
 class MailboxDashBoardController extends ReloadableController {
@@ -1904,34 +1903,34 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
-    await WorkSchedulerController().cancelByUniqueId(success.newSendingEmail.sendingId);
+    await WorkManagerController().cancelByUniqueId(success.newSendingEmail.sendingId);
     addSendingEmailToSendingQueue(success.newSendingEmail);
     getAllSendingEmails();
   }
 
   void addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
     log('MailboxDashBoardController::addSendingEmailToSendingQueue():sendingEmail: $sendingEmail');
-    final worker = worker_scheduler.Worker(
-      sendingEmail.sendingId,
-      WorkerType.sendingEmail,
-      sendingEmail.toJson()
-    );
-    final workRequest = OneTimeWorkRequest(
-      worker,
-      initialDelay: const Duration(milliseconds: WorkManagerConstants.initialDelayTime),
+    final work = OneTimeWorkRequest(
+      uniqueId: PlatformInfo.isAndroid
+        ? sendingEmail.sendingId
+        : WorkerType.sendingEmail.iOSUniqueId,
+      taskId: sendingEmail.sendingId,
+      tag: WorkerType.sendingEmail.name,
+      inputData: sendingEmail.toJson()
+        ..addAll({
+          WorkManagerConstants.workerTypeKey: WorkerType.sendingEmail.name
+        }),
+      initialDelay: const Duration(milliseconds: WorkManagerConstants.delayTime),
+      backoffPolicy: work_manager.BackoffPolicy.linear,
+      backoffPolicyDelay: const Duration(milliseconds: WorkManagerConstants.delayTime),
       constraints: work_manager.Constraints(networkType: work_manager.NetworkType.connected)
     );
 
-    try {
-      await WorkSchedulerController().enqueue(workRequest);
-    } catch (e) {
-      logError('MailboxDashBoardController::addSendingEmailToSendingQueue(): EXCEPTION: $e');
-    }
+    await WorkManagerController().enqueue(work);
   }
 
   void getAllSendingEmails() {
     if (accountId.value != null && sessionCurrent != null) {
-      log('MailboxDashBoardController::getAllSendingEmails():accountId: ${accountId.value} | userName: ${sessionCurrent?.username}');
       consumeState(_getAllSendingEmailInteractor.execute(
         accountId.value!,
         sessionCurrent!.username
@@ -1939,11 +1938,10 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _handleGetAllSendingEmailsSuccess(GetAllSendingEmailSuccess success) {
-    log('MailboxDashBoardController::_handleGetAllSendingEmailsSuccess():LIST_SENDING_EMAIL: $success');
+  void _handleGetAllSendingEmailsSuccess(GetAllSendingEmailSuccess success) async {
     listSendingEmails.value = success.sendingEmails;
 
-    if (success.sendingEmails.isEmpty && dashboardRoute.value == DashboardRoutes.sendingQueue) {
+    if (listSendingEmails.isEmpty && dashboardRoute.value == DashboardRoutes.sendingQueue) {
       _openDefaultMailbox();
     }
   }
