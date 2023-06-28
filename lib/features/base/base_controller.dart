@@ -121,7 +121,8 @@ abstract class BaseController extends GetxController
 
   Exception? _performFilterExceptionInError(dynamic error) {
     logError('BaseController::_performFilterExceptionInError(): $error');
-    if (error is NoNetworkError || error is ConnectError || error is InternalServerError) {
+    if (error is NoNetworkError || error is ConnectionTimeout || error is InternalServerError) {
+      logError('BaseController::_performFilterExceptionInError(): NoNetworkError');
       if (currentOverlayContext != null && currentContext != null) {
         _appToast.showToastMessage(
           currentOverlayContext!,
@@ -136,10 +137,20 @@ abstract class BaseController extends GetxController
       }
       return error;
     } else if (error is BadCredentialsException) {
+      logError('BaseController::_performFilterExceptionInError(): BadCredentialsException');
       if (currentOverlayContext != null && currentContext != null) {
         _appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).badCredentials);
+      }
+      performInvokeLogoutAction();
+      return error;
+    } else if (error is ConnectionError) {
+      logError('BaseController::_performFilterExceptionInError(): ConnectionError');
+      if (currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).connectionError);
       }
       performInvokeLogoutAction();
       return error;
@@ -306,6 +317,7 @@ abstract class BaseController extends GetxController
   }
 
   void performInvokeLogoutAction() {
+    log('BaseController::performInvokeLogoutAction():');
     if (isAuthenticatedWithOidc) {
       _logoutOIDCAction();
     } else {

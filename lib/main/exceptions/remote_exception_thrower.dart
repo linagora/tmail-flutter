@@ -25,7 +25,9 @@ class RemoteExceptionThrower extends ExceptionThrower {
         logError('RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}');
         switch (error.type) {
           case DioErrorType.connectionTimeout:
-            throw const ConnectError();
+            throw ConnectionTimeout(message: error.message);
+          case DioErrorType.connectionError:
+            throw ConnectionError(message: error.message);
           default:
             if (error.response?.statusCode == HttpStatus.internalServerError) {
               throw const InternalServerError();

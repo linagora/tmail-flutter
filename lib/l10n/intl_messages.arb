@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-06-09T22:51:52.101985",
+  "@@last_modified": "2023-06-28T15:42:36.189236",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2914,6 +2914,12 @@
   },
   "messagesHaveBeenResent": "Messages have been resent",
   "@messagesHaveBeenResent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "Connection error": "Connection error",
+  "@Connection error": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
