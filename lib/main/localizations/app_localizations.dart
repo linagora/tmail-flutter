@@ -3007,4 +3007,8 @@ class AppLocalizations {
       'Messages have been resent',
       name: 'messagesHaveBeenResent');
   }
+
+  String get connectionError {
+    return Intl.message('Connection error');
+  }
 }
