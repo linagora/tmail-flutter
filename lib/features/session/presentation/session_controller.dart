@@ -101,6 +101,8 @@ class SessionController extends ReloadableController {
         errorMessage = AppLocalizations.of(currentContext!).wrongUrlMessage;
       } else if (sessionException is BadCredentialsException && currentContext != null) {
         errorMessage = AppLocalizations.of(currentContext!).badCredentials;
+      } else if (sessionException is ConnectionError && currentContext != null) {
+        errorMessage = AppLocalizations.of(currentContext!).connectionError;
       } else if (sessionException is UnknownError && currentContext != null) {
         if (sessionException.message != null && sessionException.code != null) {
           errorMessage = '[${sessionException.code}] ${sessionException.message}';
@@ -119,7 +121,7 @@ class SessionController extends ReloadableController {
   }
 
   bool _checkUrlError(dynamic sessionException) {
-    return sessionException is ConnectError || sessionException is BadGateway || sessionException is SocketError;
+    return sessionException is ConnectionTimeout || sessionException is BadGateway || sessionException is SocketError;
   }
 
   void _goToMailboxDashBoard(Session session) {
