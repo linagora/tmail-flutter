@@ -1061,7 +1061,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5.push(A.Expanded$(A.TextOverflowBuilder$(t1, D.TextStyle_8gI), 1));
       return new A.Padding(t4, A.Row$(t5, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
     },
-    $signature: 126
+    $signature: 112
   };
   B.BaseComposerView_buildEmailAddress_closure.prototype = {
     call$0() {
@@ -1258,7 +1258,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new A.Padding(t5, A.Column$(A._setArrayType([t9, t1._buildAttachmentsList$3(t4, uploadAttachments, t2.get$value(t2))], t7), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null);
       }
     },
-    $signature: 86
+    $signature: 91
   };
   B.BaseComposerView__buildAttachmentsList_closure.prototype = {
     call$2(context, constraints) {
@@ -1269,7 +1269,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.uploadFilesState;
       return new A.Align(C.AlignmentDirectional_m1_0, _null, _null, new A.SizedBox(_null, 60, A.ScrollConfiguration$(new B.CustomScrollBehavior(_null), A.ListView$builder(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).scrollControllerAttachment, new B.BaseComposerView__buildAttachmentsList__closure(t1, t3, constraints), J.get$length$asx(t3.get$value(t3)), _null, D.ValueKey_list_attachment_minimize, _null, _null, _null, C.Axis_0, true)), _null), _null);
     },
-    $signature: 1512
+    $signature: 1513
   };
   B.BaseComposerView__buildAttachmentsList__closure.prototype = {
     call$2(context, index) {
@@ -1289,7 +1289,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._refreshListUploadAttachmentState$0();
       return null;
     },
-    $signature: 1513
+    $signature: 1514
   };
   B.BaseComposerView_buildAppBar_closure.prototype = {
     call$0() {
@@ -1345,7 +1345,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Text$(t1, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_oHY0, C.TextAlign_2, _null, _null);
     },
-    $signature: 118
+    $signature: 116
   };
   B.BaseComposerView_buildBottomBar_closure.prototype = {
     call$0() {
@@ -1391,13 +1391,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure1(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure2(this.$this));
     },
-    $signature: 93
+    $signature: 188
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure1.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 34
+    $signature: 39
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure2.prototype = {
     call$1(success) {
@@ -1405,7 +1405,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 54
+    $signature: 89
   };
   B.ComposerLoadingMixin_buildInlineLoadingView__closure0.prototype = {
     call$1(success) {
@@ -1415,13 +1415,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure0(this.$this));
     },
-    $signature: 54
+    $signature: 89
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 34
+    $signature: 39
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure0.prototype = {
     call$1(success) {
@@ -1429,7 +1429,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 54
+    $signature: 89
   };
   B.AttachmentFileComposerBuilder_build_closure.prototype = {
     call$0() {
@@ -1475,7 +1475,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t1._prefixEmailAddress !== C.PrefixEmailAddress_1 && newListEmailAddress.length === 0;
       return A.FocusScope$(false, A.Focus$(false, _null, F.TagEditor$(false, t3, _null, _null, t1.controller, _null, C.Duration_150000, _null, t1.get$_findSuggestions(), t1.focusNode, _null, false, D.InputDecoration_Cfr, t1.keyTagEditor, C.TextInputType_5_null_null, t2, 20, new B.EmailAddressInputBuilder__buildTagEditor__closure(t1, setState, context), new B.EmailAddressInputBuilder__buildTagEditor__closure0(t1, setState), new B.EmailAddressInputBuilder__buildTagEditor__closure1(t1, setState), new B.EmailAddressInputBuilder__buildTagEditor__closure2(t1, setState), new B.EmailAddressInputBuilder__buildTagEditor__closure3(t1, setState), _null, true, new B.EmailAddressInputBuilder__buildTagEditor__closure4(t1, setState), _null, _null, C.Color_4294967295, 20, 350, 20, new B.EmailAddressInputBuilder__buildTagEditor__closure5(t1, newListEmailAddress0, setState), 8, C.TextInputAction_2, D.TextStyle_o8I, false, type$.SuggestionEmailAddress), _null, _null, _null, _null, true, _null, new B.EmailAddressInputBuilder__buildTagEditor__closure6(t1), new B.EmailAddressInputBuilder__buildTagEditor__closure7(t1), _null, _null, _null), _null, _null, _null, _null);
     },
-    $signature: 1514
+    $signature: 1515
   };
   B.EmailAddressInputBuilder__buildTagEditor__closure6.prototype = {
     call$1($focus) {
@@ -1483,7 +1483,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1._onFocusEmailAddressChangeAction;
       return t2 == null ? null : t2.call$2(t1._prefixEmailAddress, $focus);
     },
-    $signature: 16
+    $signature: 15
   };
   B.EmailAddressInputBuilder__buildTagEditor__closure7.prototype = {
     call$2(focusNode, $event) {
@@ -1500,13 +1500,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.KeyEventResult_1;
     },
-    $signature: 89
+    $signature: 88
   };
   B.EmailAddressInputBuilder__buildTagEditor__closure0.prototype = {
     call$1(focused) {
       this.setState.call$1(new B.EmailAddressInputBuilder__buildTagEditor___closure4(this.$this, focused));
     },
-    $signature: 59
+    $signature: 58
   };
   B.EmailAddressInputBuilder__buildTagEditor___closure4.prototype = {
     call$0() {
@@ -1531,7 +1531,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
       }
     },
-    $signature: 317
+    $signature: 555
   };
   B.EmailAddressInputBuilder__buildTagEditor___closure3.prototype = {
     call$0() {
@@ -1585,7 +1585,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t9.push(t1._email_address_input_builder$_buildCounter$2(context, t2.length - t4.length));
       return new A.Stack(C.Alignment_1_0, _null, C.StackFit_0, C.Clip_1, t9, _null);
     },
-    $signature: 1516
+    $signature: 1517
   };
   B.EmailAddressInputBuilder__buildTagEditor___closure0.prototype = {
     call$0() {
@@ -1655,7 +1655,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return t2._buildSuggestionItem$8(this.setState, context, tagEditorState, t3, index, $length, highlight, suggestionValid);
       }
     },
-    $signature: 1517
+    $signature: 1518
   };
   B.EmailAddressInputBuilder__buildCounter_closure.prototype = {
     call$0() {
@@ -1690,13 +1690,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return t1._email_address_input_builder$_toSuggestionEmailAddress$2(emailAddress, t1.listEmailAddress);
     },
-    $signature: 207
+    $signature: 227
   };
   B.EmailAddressInputBuilder__isDuplicatedRecipient_closure.prototype = {
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 285
+    $signature: 236
   };
   B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -1705,13 +1705,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 81
+    $signature: 78
   };
   B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
       return new A.SuggestionEmailAddress(emailAddress, C.SuggestionEmailState_1);
     },
-    $signature: 207
+    $signature: 227
   };
   B.EmailAddressInputBuilder__handleDeleteTagAction_closure.prototype = {
     call$0() {
@@ -1723,13 +1723,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(file) {
       return file.get$fileSize();
     },
-    $signature: 1519
+    $signature: 1520
   };
   B.ListUploadFileStateExtension_get_totalSize_closure0.prototype = {
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 500
+    $signature: 399
   };
   (function installTearOffs() {
     var _instance_2_u = hunkHelpers._instance_2u,
@@ -1839,4 +1839,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["GIiJV7PSF4jtXAoOXsJnN95YJhE="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["DsvF7xOLUjmD0FUzXG/or6CA+58="] = $__dart_deferred_initializers__.current

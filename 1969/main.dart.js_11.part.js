@@ -227,7 +227,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 17
+    $signature: 19
   };
   B.ComposerView__buildComposerViewForMobile_closure0.prototype = {
     call$0() {
@@ -242,7 +242,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.KeyboardVisibilityBuilder(new B.ComposerView__buildComposerViewForMobile__closure(this.$this, constraints), null);
     },
-    $signature: 398
+    $signature: 556
   };
   B.ComposerView__buildComposerViewForMobile__closure.prototype = {
     call$2(context, isKeyboardVisible) {
@@ -296,7 +296,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       return new A.KeyboardRichText(A.SafeArea$(true, A.Container$(_null, A.Column$(A._setArrayType([t6, C.Divider_6xV, A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([t8, t13, new A.SizedBox(_null, 500, _null, _null)], t14), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t7, _null, _null, C.ClampingScrollPhysics_null, _null, _null, C.Axis_1), 1)], t14), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, C.EdgeInsets_0_0_0_0, true, true), t10, t4, t5, _null);
     },
-    $signature: 519
+    $signature: 557
   };
   B.ComposerView__buildComposerViewForMobile___closure.prototype = {
     call$0() {
@@ -345,7 +345,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 17
+    $signature: 19
   };
   B.ComposerView__buildComposerViewForTablet_closure0.prototype = {
     call$0() {
@@ -360,7 +360,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.KeyboardVisibilityBuilder(new B.ComposerView__buildComposerViewForTablet__closure(this.$this, constraints), null);
     },
-    $signature: 398
+    $signature: 556
   };
   B.ComposerView__buildComposerViewForTablet__closure.prototype = {
     call$2(context, isKeyboardVisible) {
@@ -406,7 +406,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return new A.KeyboardRichText(A.Center$(A.SafeArea$(true, A.Card$(true, A.Container$(_null, A.ClipRRect$(E.BorderRadius_tLn4, A.Column$(A._setArrayType([t9, C.Divider_6xV, A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([t11, C.Divider_6xV, t13, t1.buildInlineLoadingView$1(t3._as(t2.get(t1))), t1._buildComposerEditor$1(context)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t10, _null, _null, C.ClampingScrollPhysics_null, _null, _null, C.Axis_1), 1), C.Divider_6xV, new A.Padding(D.EdgeInsetsDirectional_0_16_0_16, t1.buildBottomBar$1(context), _null)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2), C.Clip_0, _null, _null, E.BoxDecoration_G3F3, _null, _null, _null, _null, _null, _null, _null, t6), _null, 20, t8, E.RoundedRectangleBorder_27D5), true, C.EdgeInsets_0_0_0_0, true, true), _null, _null, _null), t7, t4, t5, _null);
     },
-    $signature: 519
+    $signature: 557
   };
   B.ComposerView__buildComposerViewForTablet___closure.prototype = {
     call$0() {
@@ -455,7 +455,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openFilePickerByType$2(this.context, C.FileType_1);
     },
-    $signature: 551
+    $signature: 558
   };
   B.ComposerView__browseFileAction_closure.prototype = {
     call$1(_) {
@@ -464,7 +464,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openFilePickerByType$2(this.context, C.FileType_0);
     },
-    $signature: 551
+    $signature: 558
   };
   B.ComposerView__buildComposerEditor_closure.prototype = {
     call$0() {
@@ -505,7 +505,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return this.$this._buildHtmlEditor$2$initialContent(this.context, "<p><br></p>");
     },
-    $signature: 93
+    $signature: 188
   };
   B.ComposerView__buildComposerEditor__closure0.prototype = {
     call$1(success) {
@@ -521,7 +521,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return _this.$this._buildHtmlEditor$2$initialContent(_this.context, _s11_);
     },
-    $signature: 54
+    $signature: 89
   };
   B.ComposerView__buildHtmlEditor_closure0.prototype = {
     call$1(_) {
@@ -539,7 +539,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).initRichTextForMobile$3(this.context, editorApi, this.initialContent);
     },
-    $signature: 1523
+    $signature: 1524
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -578,4 +578,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["YvNkw0dl2AkbJsDAT2MVkUBX49U="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["a8cXD1zQLrDxqaF2YqnyQA1RI2I="] = $__dart_deferred_initializers__.current

@@ -390,7 +390,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 34
+    $signature: 39
   };
   B.SearchMailboxView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -399,7 +399,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 51
+    $signature: 52
   };
   B.SearchMailboxView__buildSearchInputForm_closure.prototype = {
     call$0() {
@@ -442,7 +442,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 86
+    $signature: 91
   };
   B.SearchMailboxView__buildTextFieldSearchInput_closure.prototype = {
     call$1(text) {
@@ -474,13 +474,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t3._as(t2.get(t1)).listMailboxSearched;
       return A.ListView$builder(null, new B.SearchMailboxView__buildMailboxListView__closure(t1), J.get$length$asx(t2.get$value(t2)), null, C.ValueKey_list_mailbox_searched, t4, null, false, C.Axis_1, true);
     },
-    $signature: 291
+    $signature: 239
   };
   B.SearchMailboxView__buildMailboxListView__closure.prototype = {
     call$2(context, index) {
       return new A.LayoutBuilder(new B.SearchMailboxView__buildMailboxListView___closure(this.$this, index), null);
     },
-    $signature: 1550
+    $signature: 1551
   };
   B.SearchMailboxView__buildMailboxListView___closure.prototype = {
     call$2(context, constraints) {
@@ -519,19 +519,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.closeSearchView$1(t2);
       return null;
     },
-    $signature: 134
+    $signature: 148
   };
   B.SearchMailboxView__buildMailboxListView____closure0.prototype = {
     call$2(position, mailbox) {
       return this.$this._openMailboxMenuAction$3$position(this.context, mailbox, position);
     },
-    $signature: 1551
+    $signature: 1552
   };
   B.SearchMailboxView__buildMailboxListView____closure1.prototype = {
     call$1(mailbox) {
       return this.$this._openMailboxMenuAction$2(this.context, mailbox);
     },
-    $signature: 134
+    $signature: 148
   };
   B.SearchMailboxView__listPopupMenuItemAction_closure.prototype = {
     call$1(action) {
@@ -553,21 +553,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(_, __, ___) {
       return this.$this._mailbox_searched_item_builder$_buildMailboxItem$1(this.context);
     },
-    $signature: 312
+    $signature: 485
   };
   B._MailboxSearchedItemBuilderState_build_closure0.prototype = {
     call$1(emails) {
       var t1 = this.$this._widget;
       t1.onDragEmailToMailboxAccepted.call$2(emails, t1._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 314
+    $signature: 486
   };
   B._MailboxSearchedItemBuilderState__buildMailboxItem_closure.prototype = {
     call$1(value) {
       var t1 = this.$this;
       return t1.setState$1(new B._MailboxSearchedItemBuilderState__buildMailboxItem__closure(t1, value));
     },
-    $signature: 16
+    $signature: 15
   };
   B._MailboxSearchedItemBuilderState__buildMailboxItem__closure.prototype = {
     call$0() {
@@ -622,4 +622,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["WFZ3J1CkAfrM5KDldQ5LbbWwIbU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Jz9Pv970VB9WdtxtnS6VU8maaXE="] = $__dart_deferred_initializers__.current

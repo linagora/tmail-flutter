@@ -50,8 +50,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.key = t2;
       _.$ti = t3;
     }, BaseLoginView: function BaseLoginView() {
-    }, BaseLoginView_buildLoginMessage_closure: function BaseLoginView_buildLoginMessage_closure(t0) {
-      this.context = t0;
+    }, BaseLoginView_buildLoginMessage_closure: function BaseLoginView_buildLoginMessage_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
     }, BaseLoginView_buildLoginMessage_closure0: function BaseLoginView_buildLoginMessage_closure0(t0, t1) {
       this.$this = t0;
       this.context = t1;
@@ -99,83 +100,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    LoginView__buildMobileForm_closure1: function LoginView__buildMobileForm_closure1(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildMobileForm__closure: function LoginView__buildMobileForm__closure(t0) {
-      this.$this = t0;
-    },
-    LoginView__buildMobileForm___closure3: function LoginView__buildMobileForm___closure3() {
-    },
-    LoginView__buildMobileForm___closure4: function LoginView__buildMobileForm___closure4(t0) {
-      this.$this = t0;
-    },
-    LoginView__buildMobileForm__closure0: function LoginView__buildMobileForm__closure0(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildMobileForm___closure1: function LoginView__buildMobileForm___closure1(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildMobileForm___closure2: function LoginView__buildMobileForm___closure2(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildMobileForm__closure1: function LoginView__buildMobileForm__closure1(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildMobileForm___closure: function LoginView__buildMobileForm___closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildMobileForm___closure0: function LoginView__buildMobileForm___closure0(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
     LoginView__buildWebForm_closure: function LoginView__buildWebForm_closure(t0, t1) {
       this.$this = t0;
       this.context = t1;
     },
     LoginView__buildWebForm_closure0: function LoginView__buildWebForm_closure0(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildWebForm_closure1: function LoginView__buildWebForm_closure1(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildWebForm__closure: function LoginView__buildWebForm__closure(t0) {
-      this.$this = t0;
-    },
-    LoginView__buildWebForm___closure3: function LoginView__buildWebForm___closure3() {
-    },
-    LoginView__buildWebForm___closure4: function LoginView__buildWebForm___closure4(t0) {
-      this.$this = t0;
-    },
-    LoginView__buildWebForm__closure0: function LoginView__buildWebForm__closure0(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildWebForm___closure1: function LoginView__buildWebForm___closure1(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildWebForm___closure2: function LoginView__buildWebForm___closure2(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildWebForm__closure1: function LoginView__buildWebForm__closure1(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildWebForm___closure: function LoginView__buildWebForm___closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    LoginView__buildWebForm___closure0: function LoginView__buildWebForm___closure0(t0, t1) {
       this.$this = t0;
       this.context = t1;
     },
@@ -185,6 +114,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     LoginView__buildSSOButton_closure1: function LoginView__buildSSOButton_closure1(t0) {
       this.$this = t0;
+    },
+    LoginView__buildLoadingProgress_closure: function LoginView__buildLoadingProgress_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    LoginView__buildLoadingProgress__closure: function LoginView__buildLoadingProgress__closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    LoginView__buildLoadingProgress__closure0: function LoginView__buildLoadingProgress__closure0(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
     },
     PrivacyLinkWidget: function PrivacyLinkWidget(t0) {
       this.key = t0;
@@ -279,12 +220,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A._asyncStartSync($async$canLaunchUrlString, $async$completer);
     }
   },
-  A, C, D, E;
+  A, C, D, E, J;
   B = hunkHelpers.updateHolder(holdersList[3], B);
   A = holdersList[0];
   C = holdersList[2];
   D = holdersList[20];
   E = holdersList[21];
+  J = holdersList[1];
   B._AutofillScopeTextInputConfiguration.prototype = {
     toJson$0() {
       var result = this.super$TextInputConfiguration$toJson(),
@@ -370,11 +312,27 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   B.BaseLoginView.prototype = {
-    buildLoginMessage$2(context, loginState) {
+    buildLoginMessage$2(context, viewState) {
       var _null = null,
-        t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx < 600 ? 280 : 320,
-        t2 = loginState.viewState;
-      return new A.Padding(D.EdgeInsets_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(t2.fold$2(0, new B.BaseLoginView_buildLoginMessage_closure(context), new B.BaseLoginView_buildLoginMessage_closure0(this, context)), D.ValueKey_login_message, _null, _null, _null, _null, A.TextStyle$(_null, _null, t2.fold$2(0, new B.BaseLoginView_buildLoginMessage_closure1(), new B.BaseLoginView_buildLoginMessage_closure2()), _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null), _null), _null);
+        t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx < 600 ? 280 : 320;
+      return new A.Padding(D.EdgeInsets_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(viewState.fold$2(0, new B.BaseLoginView_buildLoginMessage_closure(this, context), new B.BaseLoginView_buildLoginMessage_closure0(this, context)), D.ValueKey_login_message, _null, _null, _null, _null, A.TextStyle$(_null, _null, viewState.fold$2(0, new B.BaseLoginView_buildLoginMessage_closure1(), new B.BaseLoginView_buildLoginMessage_closure2()), _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null), _null), _null);
+    },
+    _getMessageFailure$2(context, exception) {
+      var _null = null;
+      if (exception instanceof A.CanNotFoundBaseUrl) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        return A.Intl__message("Server address is required", _null, "requiredUrl", _null, _null);
+      } else if (exception instanceof A.CanNotFoundUserName) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        return A.Intl__message("Email is required", _null, "requiredEmail", _null, _null);
+      } else if (exception instanceof A.CanNotFoundPassword) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        return A.Intl__message("Password is required", _null, "requiredPassword", _null, _null);
+      } else if (exception instanceof A.CanNotFoundOIDCLinks) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        return A.Intl__message("Single sign-on (SSO) is not available", _null, "ssoNotAvailable", _null, _null);
+      } else
+        return "";
     },
     buildLoginButton$1(context) {
       var _null = null,
@@ -426,7 +384,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = _this._buildAppLogo$1(context);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t2 = type$.JSArray_Widget;
-      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_EcO4, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_oHY23, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildMobileForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildMobileForm_closure0(_this, context), _null), new A.Obx(new B.LoginView__buildMobileForm_closure1(_this, context), _null), D.Padding_sav], t2), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", _null, C.BoxFit_0, 44, _null, 97), _null))], t2), _null);
+      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_EcO4, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_oHY23, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildMobileForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildMobileForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t2), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", _null, C.BoxFit_0, 44, _null, 97), _null))], t2), _null);
     },
     _buildWebForm$1(context) {
       var t2, t3, t4, t5, t6, _this = this, _null = null,
@@ -445,7 +403,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A.BorderRadius$circular(20);
       t3 = _this._buildAppLogo$1(context);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t5, _null), A.Column$(A._setArrayType([new A.SizedBox(445, 690, A.Card$(true, new A.Padding(D.EdgeInsets_31_0_31_0, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t3, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_oHY23, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildWebForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildWebForm_closure0(_this, context), _null), new A.Obx(new B.LoginView__buildWebForm_closure1(_this, context), _null), D.Padding_sav], t6), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, 10, _null, new A.RoundedRectangleBorder(t4, C.BorderSide_8xm)), _null), new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", _null, C.BoxFit_0, 44, _null, 97), _null)], t6), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
+      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t5, _null), A.Column$(A._setArrayType([new A.SizedBox(445, 690, A.Card$(true, new A.Padding(D.EdgeInsets_31_0_31_0, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t3, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_oHY23, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildWebForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildWebForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t6), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, 10, _null, new A.RoundedRectangleBorder(t4, C.BorderSide_8xm)), _null), new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", _null, C.BoxFit_0, 44, _null, 97), _null)], t6), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
     },
     _buildAppLogo$1(buildContext) {
       var _null = null,
@@ -460,6 +418,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A.ButtonStyle$(_null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure(), t2), _null, _null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure0(), t2), _null, _null, _null, _null, _null, _null, _null, _null, new A.MaterialStatePropertyAll(new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_PLF1), type$.MaterialStatePropertyAll_nullable_OutlinedBorder), _null, _null, _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Single Sign-On", _null, "singleSignOn", _null, _null), _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null), C.Clip_0, _null, D.ValueKey_ssoSubmitForm, _null, _null, _null, new B.LoginView__buildSSOButton_closure1(this), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsets_24_0_24_16, _null, _null, _null, t1.size._dx);
+    },
+    _buildLoadingProgress$1(context) {
+      return new A.Obx(new B.LoginView__buildLoadingProgress_closure(this, context), null);
     }
   };
   B.PrivacyLinkWidget.prototype = {
@@ -514,58 +475,52 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1540
+    $signature: 1541
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1541
+    $signature: 1542
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1542
+    $signature: 1543
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1543
+    $signature: 1544
   };
   B.BaseLoginView_buildLoginMessage_closure.prototype = {
     call$1(failure) {
-      var t1, t2, t3, _this = this, _null = null;
-      if (failure instanceof A.LoginMissUrlAction) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        return A.Intl__message("Server address is required", _null, "requiredUrl", _null, _null);
-      } else if (failure instanceof A.LoginMissUsernameAction) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        return A.Intl__message("Email is required", _null, "requiredEmail", _null, _null);
-      } else if (failure instanceof A.LoginMissPasswordAction) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        return A.Intl__message("Password is required", _null, "requiredPassword", _null, _null);
-      } else if (failure instanceof A.LoginSSONotAvailableAction) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        return A.Intl__message("Single sign-on (SSO) is not available", _null, "ssoNotAvailable", _null, _null);
-      } else if (failure instanceof A.GetOIDCConfigurationFailure || false) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        return A.Intl__message("Can not verify SSO configuration, please check with your system administrator", _null, "canNotVerifySSOConfiguration", _null, _null);
-      } else {
-        t1 = failure instanceof A.GetTokenOIDCFailure || failure instanceof A.LoginCanNotGetTokenAction;
-        t2 = _this.context;
-        t3 = type$.AppLocalizations;
-        if (t1) {
-          A.Localizations_of(t2, C.Type_AppLocalizations_swi, t3).toString;
-          return A.Intl__message("Can not get token, please check with your system administrator", _null, "canNotGetToken", _null, _null);
+      var t1, t2, _this = this, _null = null;
+      if (failure instanceof A.CheckOIDCIsAvailableFailure)
+        return _this.$this._getMessageFailure$2(_this.context, failure.exception);
+      else if (failure instanceof A.AuthenticationUserFailure)
+        return _this.$this._getMessageFailure$2(_this.context, failure.exception);
+      else if (failure instanceof A.GetOIDCIsAvailableFailure)
+        return _this.$this._getMessageFailure$2(_this.context, failure.exception);
+      else if (failure instanceof A.GetTokenOIDCFailure)
+        return _this.$this._getMessageFailure$2(_this.context, failure.exception);
+      else if (failure instanceof A.AuthenticateOidcOnBrowserFailure)
+        return _this.$this._getMessageFailure$2(_this.context, failure.AuthenticateOidcOnBrowserFailure_exception);
+      else {
+        t1 = _this.context;
+        t2 = type$.AppLocalizations;
+        if (failure instanceof A.GetOIDCConfigurationFailure) {
+          A.Localizations_of(t1, C.Type_AppLocalizations_swi, t2).toString;
+          return A.Intl__message("Can not verify SSO configuration, please check with your system administrator", _null, "canNotVerifySSOConfiguration", _null, _null);
         } else {
-          A.Localizations_of(t2, C.Type_AppLocalizations_swi, t3).toString;
+          A.Localizations_of(t1, C.Type_AppLocalizations_swi, t2).toString;
           return A.Intl__message("Unknown error occurred, please try again", _null, "unknownError", _null, _null);
         }
       }
     },
-    $signature: 1544
+    $signature: 1545
   };
   B.BaseLoginView_buildLoginMessage_closure0.prototype = {
     call$1(success) {
@@ -581,31 +536,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
     },
-    $signature: 1545
+    $signature: 1546
   };
   B.BaseLoginView_buildLoginMessage_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1546
+    $signature: 1547
   };
   B.BaseLoginView_buildLoginMessage_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1547
+    $signature: 1548
   };
   B.BaseLoginView_buildLoginButton_closure0.prototype = {
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 15
+    $signature: 16
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 15
+    $signature: 16
   };
   B.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(context, loginUsername) {
@@ -625,13 +580,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2._userNameText = t4._change_notifier$_value.text;
       t1.passFocusNode.requestFocus$0();
     },
-    $signature: 1548
+    $signature: 1549
   };
   B.BaseLoginView_buildUserNameInput_closure0.prototype = {
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 352
+    $signature: 463
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -642,7 +597,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.LoginView__buildMobileForm_closure.prototype = {
     call$0() {
       var t1 = this.$this,
-        t2 = t1.loginController.loginState;
+        t2 = t1.loginController.viewState;
       return t1.buildLoginMessage$2(this.context, t2.get$value(t2));
     },
     $signature: 3
@@ -664,91 +619,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 3
   };
-  B.LoginView__buildMobileForm_closure1.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = $.$get$GetWidget__cache();
-      A.Expando__checkType(t1);
-      t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType;
-      switch (t2.get$value(t2)) {
-        case C.LoginFormType_1:
-          return new A.Obx(new B.LoginView__buildMobileForm__closure(t1), null);
-        case C.LoginFormType_2:
-          return new A.Obx(new B.LoginView__buildMobileForm__closure0(t1, this.context), null);
-        case C.LoginFormType_3:
-          return new A.Obx(new B.LoginView__buildMobileForm__closure1(t1, this.context), null);
-        default:
-          return C.SizedBox_0_0_null_null;
-      }
-    },
-    $signature: 3
-  };
-  B.LoginView__buildMobileForm__closure.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.loginController.loginState;
-      return t2.get$value(t2).viewState.fold$2(0, new B.LoginView__buildMobileForm___closure3(), new B.LoginView__buildMobileForm___closure4(t1));
-    },
-    $signature: 3
-  };
-  B.LoginView__buildMobileForm___closure3.prototype = {
-    call$1(failure) {
-      return C.SizedBox_0_0_null_null;
-    },
-    $signature: 34
-  };
-  B.LoginView__buildMobileForm___closure4.prototype = {
-    call$1(success) {
-      return success instanceof A.LoginLoadingAction ? D.SizedBox_rgI : C.SizedBox_0_0_null_null;
-    },
-    $signature: 54
-  };
-  B.LoginView__buildMobileForm__closure0.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.loginController.loginState,
-        t3 = this.context;
-      return t2.get$value(t2).viewState.fold$2(0, new B.LoginView__buildMobileForm___closure1(t1, t3), new B.LoginView__buildMobileForm___closure2(t1, t3));
-    },
-    $signature: 3
-  };
-  B.LoginView__buildMobileForm___closure1.prototype = {
-    call$1(failure) {
-      return this.$this.buildLoginButton$1(this.context);
-    },
-    $signature: 93
-  };
-  B.LoginView__buildMobileForm___closure2.prototype = {
-    call$1(success) {
-      return success instanceof A.LoginLoadingAction ? D.SizedBox_rgI : this.$this.buildLoginButton$1(this.context);
-    },
-    $signature: 54
-  };
-  B.LoginView__buildMobileForm__closure1.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.loginController.loginState,
-        t3 = this.context;
-      return t2.get$value(t2).viewState.fold$2(0, new B.LoginView__buildMobileForm___closure(t1, t3), new B.LoginView__buildMobileForm___closure0(t1, t3));
-    },
-    $signature: 3
-  };
-  B.LoginView__buildMobileForm___closure.prototype = {
-    call$1(failure) {
-      return this.$this._buildSSOButton$1(this.context);
-    },
-    $signature: 93
-  };
-  B.LoginView__buildMobileForm___closure0.prototype = {
-    call$1(success) {
-      return success instanceof A.LoginLoadingAction ? D.SizedBox_rgI : this.$this._buildSSOButton$1(this.context);
-    },
-    $signature: 54
-  };
   B.LoginView__buildWebForm_closure.prototype = {
     call$0() {
       var t1 = this.$this,
-        t2 = t1.loginController.loginState;
+        t2 = t1.loginController.viewState;
       return t1.buildLoginMessage$2(this.context, t2.get$value(t2));
     },
     $signature: 3
@@ -770,109 +644,75 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 3
   };
-  B.LoginView__buildWebForm_closure1.prototype = {
+  B.LoginView__buildSSOButton_closure0.prototype = {
+    call$1(states) {
+      return C.Color_4294967295;
+    },
+    $signature: 16
+  };
+  B.LoginView__buildSSOButton_closure.prototype = {
+    call$1(states) {
+      return C.Color_4278221567;
+    },
+    $signature: 16
+  };
+  B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
+      this.$this.loginController.handleSSOPressed$0();
+    },
+    $signature: 0
+  };
+  B.LoginView__buildLoadingProgress_closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = t1.loginController.viewState,
+        t3 = this.context;
+      return J.fold$2$ax(t2.get$value(t2), new B.LoginView__buildLoadingProgress__closure(t1, t3), new B.LoginView__buildLoadingProgress__closure0(t1, t3));
+    },
+    $signature: 3
+  };
+  B.LoginView__buildLoadingProgress__closure.prototype = {
+    call$1(failure) {
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType;
       switch (t2.get$value(t2)) {
         case C.LoginFormType_1:
-          return new A.Obx(new B.LoginView__buildWebForm__closure(t1), null);
+          return C.SizedBox_0_0_null_null;
         case C.LoginFormType_2:
-          return new A.Obx(new B.LoginView__buildWebForm__closure0(t1, this.context), null);
+          return t1.buildLoginButton$1(this.context);
         case C.LoginFormType_3:
-          return new A.Obx(new B.LoginView__buildWebForm__closure1(t1, this.context), null);
+          return t1._buildSSOButton$1(this.context);
         default:
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 3
+    $signature: 188
   };
-  B.LoginView__buildWebForm__closure.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.loginController.loginState;
-      return t2.get$value(t2).viewState.fold$2(0, new B.LoginView__buildWebForm___closure3(), new B.LoginView__buildWebForm___closure4(t1));
-    },
-    $signature: 3
-  };
-  B.LoginView__buildWebForm___closure3.prototype = {
-    call$1(failure) {
-      return C.SizedBox_0_0_null_null;
-    },
-    $signature: 34
-  };
-  B.LoginView__buildWebForm___closure4.prototype = {
+  B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
-      return success instanceof A.LoginLoadingAction ? D.SizedBox_rgI : C.SizedBox_0_0_null_null;
+      var t1, t2;
+      if (success instanceof A.LoadingState)
+        return D.SizedBox_rgI;
+      else {
+        t1 = this.$this;
+        t2 = $.$get$GetWidget__cache();
+        A.Expando__checkType(t1);
+        t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType;
+        switch (t2.get$value(t2)) {
+          case C.LoginFormType_1:
+            return C.SizedBox_0_0_null_null;
+          case C.LoginFormType_2:
+            return t1.buildLoginButton$1(this.context);
+          case C.LoginFormType_3:
+            return t1._buildSSOButton$1(this.context);
+          default:
+            return C.SizedBox_0_0_null_null;
+        }
+      }
     },
-    $signature: 54
-  };
-  B.LoginView__buildWebForm__closure0.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.loginController.loginState,
-        t3 = this.context;
-      return t2.get$value(t2).viewState.fold$2(0, new B.LoginView__buildWebForm___closure1(t1, t3), new B.LoginView__buildWebForm___closure2(t1, t3));
-    },
-    $signature: 3
-  };
-  B.LoginView__buildWebForm___closure1.prototype = {
-    call$1(failure) {
-      return this.$this.buildLoginButton$1(this.context);
-    },
-    $signature: 93
-  };
-  B.LoginView__buildWebForm___closure2.prototype = {
-    call$1(success) {
-      return success instanceof A.LoginLoadingAction ? D.SizedBox_rgI : this.$this.buildLoginButton$1(this.context);
-    },
-    $signature: 54
-  };
-  B.LoginView__buildWebForm__closure1.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.loginController.loginState,
-        t3 = this.context;
-      return t2.get$value(t2).viewState.fold$2(0, new B.LoginView__buildWebForm___closure(t1, t3), new B.LoginView__buildWebForm___closure0(t1, t3));
-    },
-    $signature: 3
-  };
-  B.LoginView__buildWebForm___closure.prototype = {
-    call$1(failure) {
-      return this.$this._buildSSOButton$1(this.context);
-    },
-    $signature: 93
-  };
-  B.LoginView__buildWebForm___closure0.prototype = {
-    call$1(success) {
-      return success instanceof A.LoginLoadingAction ? D.SizedBox_rgI : this.$this._buildSSOButton$1(this.context);
-    },
-    $signature: 54
-  };
-  B.LoginView__buildSSOButton_closure0.prototype = {
-    call$1(states) {
-      return C.Color_4294967295;
-    },
-    $signature: 15
-  };
-  B.LoginView__buildSSOButton_closure.prototype = {
-    call$1(states) {
-      return C.Color_4278221567;
-    },
-    $signature: 15
-  };
-  B.LoginView__buildSSOButton_closure1.prototype = {
-    call$0() {
-      var t1 = this.$this.loginController,
-        baseUri = t1._parseUri$1($.$get$dotenv().maybeGet$2$fallback("SERVER_URL", ""));
-      if (baseUri != null)
-        t1.consumeState$1(t1._getOIDCIsAvailableInteractor.execute$1(new A.OIDCRequest(baseUri.toString$0(0), baseUri.get$origin(baseUri))));
-      else
-        t1.loginState.set$value(0, new A.LoginState(new A.Left(new A.LoginCanNotAuthenticationSSOAction(), type$.Left_Failure_Success)));
-    },
-    $signature: 0
+    $signature: 89
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -945,7 +785,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Wrap$(C.WrapAlignment_0, A._setArrayType([t3, new A.Padding(C.EdgeInsets_0_8_0_0, new A.Stack(C.AlignmentDirectional_1_0, _null, C.StackFit_0, C.Clip_1, t6, _null), _null)], t9), C.WrapCrossAlignment_0, t2, C.WrapAlignment_0, 0, 0);
     },
-    $signature: 1549
+    $signature: 1550
   };
   B.LoginTextInputBuilder_build__closure.prototype = {
     call$1(value) {
@@ -965,13 +805,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(B._AutofillScopeTextInputConfiguration, A.TextInputConfiguration);
-    _inheritMany(A.Closure, [B._AutofillScopeTextInputConfiguration_toJson_closure, B.AutofillScopeMixin_attach_closure, B.AutofillGroupState_autofillClients_closure, B.BaseLoginView_buildLoginMessage_closure, B.BaseLoginView_buildLoginMessage_closure0, B.BaseLoginView_buildLoginMessage_closure1, B.BaseLoginView_buildLoginMessage_closure2, B.BaseLoginView_buildLoginButton_closure0, B.BaseLoginView_buildLoginButton_closure, B.BaseLoginView_buildUserNameInput_closure1, B.BaseLoginView_buildUserNameInput_closure0, B.BaseLoginView_buildPasswordInput_closure, B.LoginView__buildMobileForm___closure3, B.LoginView__buildMobileForm___closure4, B.LoginView__buildMobileForm___closure1, B.LoginView__buildMobileForm___closure2, B.LoginView__buildMobileForm___closure, B.LoginView__buildMobileForm___closure0, B.LoginView__buildWebForm___closure3, B.LoginView__buildWebForm___closure4, B.LoginView__buildWebForm___closure1, B.LoginView__buildWebForm___closure2, B.LoginView__buildWebForm___closure, B.LoginView__buildWebForm___closure0, B.LoginView__buildSSOButton_closure0, B.LoginView__buildSSOButton_closure, B.LoginTextInputBuilder_build__closure]);
+    _inheritMany(A.Closure, [B._AutofillScopeTextInputConfiguration_toJson_closure, B.AutofillScopeMixin_attach_closure, B.AutofillGroupState_autofillClients_closure, B.BaseLoginView_buildLoginMessage_closure, B.BaseLoginView_buildLoginMessage_closure0, B.BaseLoginView_buildLoginMessage_closure1, B.BaseLoginView_buildLoginMessage_closure2, B.BaseLoginView_buildLoginButton_closure0, B.BaseLoginView_buildLoginButton_closure, B.BaseLoginView_buildUserNameInput_closure1, B.BaseLoginView_buildUserNameInput_closure0, B.BaseLoginView_buildPasswordInput_closure, B.LoginView__buildSSOButton_closure0, B.LoginView__buildSSOButton_closure, B.LoginView__buildLoadingProgress__closure, B.LoginView__buildLoadingProgress__closure0, B.LoginTextInputBuilder_build__closure]);
     _inheritMany(A.Object, [B.AutofillScopeMixin, B.LoginTextInputBuilder]);
     _inherit(B.AutofillContextAction, A._Enum);
     _inherit(B.AutofillGroup, A.StatefulWidget);
     _inherit(B._AutofillGroupState_State_AutofillScopeMixin, A.State0);
     _inherit(B.AutofillGroupState, B._AutofillGroupState_State_AutofillScopeMixin);
-    _inheritMany(A.Closure0Args, [B.AutofillGroupState_register_closure, B.LoginView__buildMobileForm_closure, B.LoginView__buildMobileForm_closure0, B.LoginView__buildMobileForm_closure1, B.LoginView__buildMobileForm__closure, B.LoginView__buildMobileForm__closure0, B.LoginView__buildMobileForm__closure1, B.LoginView__buildWebForm_closure, B.LoginView__buildWebForm_closure0, B.LoginView__buildWebForm_closure1, B.LoginView__buildWebForm__closure, B.LoginView__buildWebForm__closure0, B.LoginView__buildWebForm__closure1, B.LoginView__buildSSOButton_closure1, B.PrivacyLinkWidget_build_closure, B.LoginTextInputBuilder__onTextChanged_closure, B.LoginTextInputBuilder__onTextChanged__closure, B.LoginTextInputBuilder__onObscureTextChanged_closure, B.LoginTextInputBuilder_build__closure0]);
+    _inheritMany(A.Closure0Args, [B.AutofillGroupState_register_closure, B.LoginView__buildMobileForm_closure, B.LoginView__buildMobileForm_closure0, B.LoginView__buildWebForm_closure, B.LoginView__buildWebForm_closure0, B.LoginView__buildSSOButton_closure1, B.LoginView__buildLoadingProgress_closure, B.PrivacyLinkWidget_build_closure, B.LoginTextInputBuilder__onTextChanged_closure, B.LoginTextInputBuilder__onTextChanged__closure, B.LoginTextInputBuilder__onObscureTextChanged_closure, B.LoginTextInputBuilder_build__closure0]);
     _inherit(B._AutofillScope, A.InheritedWidget);
     _inheritMany(A.StatelessWidget, [B.RecentItemTileWidget, B.PrivacyLinkWidget]);
     _inherit(B.BaseLoginView, A.GetWidget);
@@ -992,7 +832,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ImagePaths: findType("ImagePaths0"),
       JSArray_String: findType("JSArray<String>"),
       JSArray_Widget: findType("JSArray<Widget>"),
-      Left_Failure_Success: findType("Left<Failure,Success>"),
       LoginController: findType("LoginController"),
       Map_String_dynamic: findType("Map<String,@>"),
       MaterialStatePropertyAll_nullable_OutlinedBorder: findType("MaterialStatePropertyAll<OutlinedBorder?>"),
@@ -1051,4 +890,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["urNrUxjMMVfJbdMc2vN1zOhSB3I="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["H3jB5BVqoJttC+gqg/cdmdRcgGE="] = $__dart_deferred_initializers__.current
