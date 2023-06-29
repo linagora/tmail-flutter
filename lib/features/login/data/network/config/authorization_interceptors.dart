@@ -143,6 +143,17 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
 
   String _getTokenAsBearerHeader(String token) => 'Bearer $token';
 
+  bool get isAppRunning {
+    switch(_authenticationType) {
+      case AuthenticationType.basic:
+        return _authorization != null;
+      case AuthenticationType.oidc:
+        return _configOIDC != null && _token != null;
+      case AuthenticationType.none:
+        return false;
+    }
+  }
+
   void clear() {
     _authorization = null;
     _token = null;

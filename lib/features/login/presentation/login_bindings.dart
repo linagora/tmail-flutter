@@ -47,7 +47,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_m
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -56,23 +55,20 @@ class LoginBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => LoginController(
-        Get.find<LogoutOidcInteractor>(),
-        Get.find<DeleteAuthorityOidcInteractor>(),
-        Get.find<GetAuthenticatedAccountInteractor>(),
-        Get.find<UpdateAuthenticationAccountInteractor>(),
-        Get.find<AuthenticationInteractor>(),
-        Get.find<DynamicUrlInterceptors>(),
-        Get.find<CheckOIDCIsAvailableInteractor>(),
-        Get.find<GetOIDCIsAvailableInteractor>(),
-        Get.find<GetOIDCConfigurationInteractor>(),
-        Get.find<GetTokenOIDCInteractor>(),
-        Get.find<AuthenticateOidcOnBrowserInteractor>(),
-        Get.find<GetAuthenticationInfoInteractor>(),
-        Get.find<GetStoredOidcConfigurationInteractor>(),
-        Get.find<SaveLoginUrlOnMobileInteractor>(),
-        Get.find<GetAllRecentLoginUrlOnMobileInteractor>(),
-        Get.find<SaveLoginUsernameOnMobileInteractor>(),
-        Get.find<GetAllRecentLoginUsernameOnMobileInteractor>(),
+      Get.find<AuthenticationInteractor>(),
+      Get.find<DynamicUrlInterceptors>(),
+      Get.find<CheckOIDCIsAvailableInteractor>(),
+      Get.find<GetOIDCIsAvailableInteractor>(),
+      Get.find<GetOIDCConfigurationInteractor>(),
+      Get.find<GetTokenOIDCInteractor>(),
+      Get.find<AuthenticateOidcOnBrowserInteractor>(),
+      Get.find<GetAuthenticationInfoInteractor>(),
+      Get.find<GetStoredOidcConfigurationInteractor>(),
+      Get.find<SaveLoginUrlOnMobileInteractor>(),
+      Get.find<GetAllRecentLoginUrlOnMobileInteractor>(),
+      Get.find<SaveLoginUsernameOnMobileInteractor>(),
+      Get.find<GetAllRecentLoginUsernameOnMobileInteractor>(),
+      Get.find<GetAuthenticatedAccountInteractor>(),
     ));
   }
 
