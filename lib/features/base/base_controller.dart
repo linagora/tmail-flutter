@@ -143,16 +143,20 @@ abstract class BaseController extends GetxController
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).badCredentials);
       }
-      performInvokeLogoutAction();
+      if (authorizationInterceptors.isAppRunning) {
+        performInvokeLogoutAction();
+      }
       return error;
     } else if (error is ConnectionError) {
       logError('BaseController::_performFilterExceptionInError(): ConnectionError');
-      if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).connectionError);
+      if (authorizationInterceptors.isAppRunning) {
+        if (currentOverlayContext != null && currentContext != null) {
+          _appToast.showToastErrorMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).connectionError);
+        }
+        performInvokeLogoutAction();
       }
-      performInvokeLogoutAction();
       return error;
     }
 
