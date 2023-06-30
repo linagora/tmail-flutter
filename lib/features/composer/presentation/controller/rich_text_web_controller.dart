@@ -134,9 +134,8 @@ class RichTextWebController extends BaseRichTextController {
         );
         break;
       default:
-        editorController.execCommand(textStyleType.commandAction);
+        editorController.execSummernoteAPI(textStyleType.summernoteNameAPI);
         _selectTextStyleType(textStyleType);
-        editorController.setFocus();
         break;
     }
   }
@@ -146,8 +145,9 @@ class RichTextWebController extends BaseRichTextController {
     final colorAsString = newColor.toHexTriplet();
     log('RichTextWebController::_applyForegroundColor():colorAsString: $colorAsString');
     selectedTextColor.value = newColor;
-    editorController.execCommand(RichTextStyleType.textColor.commandAction, argument: colorAsString);
-    editorController.setFocus();
+    editorController.execSummernoteAPI(
+      RichTextStyleType.textColor.summernoteNameAPI,
+      value: colorAsString);
   }
 
   void applyBackgroundColor(Color? selectedColor) {
@@ -155,8 +155,9 @@ class RichTextWebController extends BaseRichTextController {
     final colorAsString = newColor.toHexTriplet();
     log('RichTextWebController::_applyBackgroundColor():colorAsString: $colorAsString');
     selectedTextBackgroundColor.value = newColor;
-    editorController.execCommand(RichTextStyleType.textBackgroundColor.commandAction, argument: colorAsString);
-    editorController.setFocus();
+    editorController.execSummernoteAPI(
+      RichTextStyleType.textBackgroundColor.summernoteNameAPI,
+      value: colorAsString);
   }
 
   void _selectTextStyleType(RichTextStyleType textStyleType) {
@@ -182,10 +183,9 @@ class RichTextWebController extends BaseRichTextController {
   void applyNewFontStyle(FontNameType? newFont) {
     final fontSelected = newFont ?? FontNameType.sansSerif;
     selectedFontName.value = fontSelected;
-    editorController.execCommand(
-      RichTextStyleType.fontName.commandAction,
-      argument: fontSelected.value);
-    editorController.setFocus();
+    editorController.execSummernoteAPI(
+      RichTextStyleType.fontName.summernoteNameAPI,
+      value: fontSelected.value);
   }
 
   bool get isMenuFontOpen => menuFontStatus.value == DropdownMenuFontStatus.open;
@@ -220,17 +220,20 @@ class RichTextWebController extends BaseRichTextController {
 
   void applyHeaderStyle(HeaderStyleType? newStyle) {
     final styleSelected = newStyle ?? HeaderStyleType.normal;
-    editorController.execCommand(
+    if (styleSelected == HeaderStyleType.blockquote || styleSelected == HeaderStyleType.code) {
+      editorController.execCommand(
         RichTextStyleType.headerStyle.commandAction,
         argument: styleSelected.styleValue);
-    editorController.setFocus();
+      editorController.setFocus();
+    } else {
+      editorController.execSummernoteAPI(styleSelected.summernoteNameAPI);
+    }
   }
 
   void applyParagraphType(ParagraphType newParagraph) {
     selectedParagraph.value = newParagraph;
-    editorController.execCommand(newParagraph.commandAction);
+    editorController.execSummernoteAPI(newParagraph.summernoteNameAPI);
     menuParagraphController.hideMenu();
-    editorController.setFocus();
   }
 
   void closeAllMenuPopup() {
@@ -250,9 +253,8 @@ class RichTextWebController extends BaseRichTextController {
 
   void applyOrderListType(OrderListType newOrderList) {
     selectedOrderList.value = newOrderList;
-    editorController.execCommand(newOrderList.commandAction);
+    editorController.execSummernoteAPI(newOrderList.summernoteNameAPI);
     menuOrderListController.hideMenu();
-    editorController.setFocus();
   }
 
   @override
