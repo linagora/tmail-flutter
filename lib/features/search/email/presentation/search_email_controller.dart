@@ -66,6 +66,7 @@ import 'package:tmail_ui_user/features/thread/presentation/extensions/list_prese
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SearchEmailController extends BaseController
@@ -478,41 +479,25 @@ class SearchEmailController extends BaseController
 
   void selectMailboxForSearchFilter(BuildContext context, PresentationMailbox? mailbox) async {
     final arguments = DestinationPickerArguments(
-        mailboxDashBoardController.accountId.value!,
-        MailboxActions.select,
-        mailboxDashBoardController.sessionCurrent,
-        mailboxIdSelected: mailbox?.id);
+      mailboxDashBoardController.accountId.value!,
+      MailboxActions.select,
+      mailboxDashBoardController.sessionCurrent,
+      mailboxIdSelected: mailbox?.id);
 
-    if (PlatformInfo.isWeb) {
-      showDialogDestinationPicker(
-          context: context,
-          arguments: arguments,
-          onSelectedMailbox: (destinationMailbox) {
-            final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox;
-            if (mailboxSelected != null && mailbox?.id != mailboxSelected.id) {
-              _updateSimpleSearchFilter(
-                  mailboxOption: Some(mailboxSelected),
-                  beforeOption: const None()
-              );
-              _searchEmailAction(context);
-            }
-          });
-    } else {
-      final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: arguments);
+    final destinationMailbox = PlatformInfo.isWeb
+      ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+      : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-      if (destinationMailbox is PresentationMailbox) {
-        final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox;
-        if (mailboxSelected != null && mailbox?.id != mailboxSelected.id) {
-          _updateSimpleSearchFilter(
-            mailboxOption: Some(mailboxSelected),
-            beforeOption: const None()
-          );
+    if (destinationMailbox is PresentationMailbox) {
+      final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox;
+      if (mailboxSelected != null && mailbox?.id != mailboxSelected.id) {
+        _updateSimpleSearchFilter(
+          mailboxOption: Some(mailboxSelected),
+          beforeOption: const None()
+        );
 
-          if (context.mounted) {
-            _searchEmailAction(context);
-          }
+        if (context.mounted) {
+          _searchEmailAction(context);
         }
       }
     }
@@ -526,29 +511,14 @@ class SearchEmailController extends BaseController
       final listContactSelected = simpleSearchFilter.value.getContactApplied(prefixEmailAddress);
       final arguments = ContactArguments(accountId!, session!, listContactSelected);
 
-      if (PlatformInfo.isWeb) {
-        showDialogContactView(
-            context: context,
-            arguments: arguments,
-            onSelectedContact: (newContact) {
-              _dispatchApplyContactAction(
-                  context,
-                  listContactSelected,
-                  prefixEmailAddress,
-                  newContact);
-            });
-      } else {
-        final newContact = await push(
-            AppRoutes.contact,
-            arguments: arguments);
+      final newContact = await push(AppRoutes.contact, arguments: arguments);
 
-        if (newContact is EmailAddress && context.mounted) {
-          _dispatchApplyContactAction(
-              context,
-              listContactSelected,
-              prefixEmailAddress,
-              newContact);
-        }
+      if (newContact is EmailAddress && context.mounted) {
+        _dispatchApplyContactAction(
+          context,
+          listContactSelected,
+          prefixEmailAddress,
+          newContact);
       }
     }
   }

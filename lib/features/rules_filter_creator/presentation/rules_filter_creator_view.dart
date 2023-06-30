@@ -8,7 +8,6 @@ import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_action_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_comparator_bottom_sheet_action_tile_builder.dart';
@@ -26,20 +25,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
   @override
   final controller = Get.find<RulesFilterCreatorController>();
 
-  RuleFilterCreatorView({Key? key}) : super(key: key) {
-    controller.arguments = Get.arguments;
-  }
-
-  RuleFilterCreatorView.fromArguments(
-      RulesFilterCreatorArguments arguments, {
-      Key? key,
-      OnCreatedRuleFilterCallback? onCreatedRuleFilterCallback,
-      VoidCallback? onDismissCallback
-  }) : super(key: key) {
-    controller.arguments = arguments;
-    controller.onCreatedRuleFilterCallback = onCreatedRuleFilterCallback;
-    controller.onDismissRuleFilterCreator = onDismissCallback;
-  }
+  RuleFilterCreatorView({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -19,7 +19,6 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
-import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_screen_type.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_search_mailbox_item_builder.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/top_bar_destination_picker_builder.dart';
@@ -45,20 +44,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   @override
   final controller = Get.find<DestinationPickerController>();
 
-  DestinationPickerView({Key? key}) : super(key: key) {
-    controller.arguments = Get.arguments;
-  }
-
-  DestinationPickerView.fromArguments(
-      DestinationPickerArguments arguments, {
-      Key? key,
-      OnSelectedMailboxCallback? onSelectedMailboxCallback,
-      VoidCallback? onDismissCallback
-  }) : super(key: key) {
-    controller.arguments = arguments;
-    controller.onSelectedMailboxCallback = onSelectedMailboxCallback;
-    controller.onDismissDestinationPicker = onDismissCallback;
-  }
+  DestinationPickerView({super.key});
 
   @override
   Widget build(BuildContext context) {
