@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -678,39 +679,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         session,
         mailboxIdSelected: currentMailbox.mailboxId
       );
-      if (PlatformInfo.isWeb) {
-        showDialogDestinationPicker(
-            context: context,
-            arguments: arguments,
-            onSelectedMailbox: (destinationMailbox) {
-              if (mailboxDashBoardController.sessionCurrent != null) {
-                _dispatchMoveToAction(
-                    context,
-                    accountId,
-                    mailboxDashBoardController.sessionCurrent!,
-                    email,
-                    currentMailbox,
-                    destinationMailbox);
-              }
-            });
-      } else {
-        final destinationMailbox = await push(
-            AppRoutes.destinationPicker,
-            arguments: arguments);
 
-        if (destinationMailbox != null &&
+      final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
+
+      if (destinationMailbox != null &&
           destinationMailbox is PresentationMailbox &&
           mailboxDashBoardController.sessionCurrent != null &&
           context.mounted
-        ) {
-          _dispatchMoveToAction(
-              context,
-              accountId,
-              mailboxDashBoardController.sessionCurrent!,
-              email,
-              currentMailbox,
-              destinationMailbox);
-        }
+      ) {
+        _dispatchMoveToAction(
+          context,
+          accountId,
+          mailboxDashBoardController.sessionCurrent!,
+          email,
+          currentMailbox,
+          destinationMailbox);
       }
     }
   }
@@ -1182,25 +1167,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         session,
         emailAddress: emailAddress);
 
-      if (PlatformInfo.isWeb) {
-        showDialogRuleFilterCreator(
-          context: context,
-          arguments: arguments,
-          onCreatedRuleFilter: (arguments) {
-            if (arguments is CreateNewEmailRuleFilterRequest) {
-              _createNewRuleFilterAction(accountId, arguments);
-            }
-          }
-        );
-      } else {
-        final newRuleFilterRequest = await push(
-          AppRoutes.rulesFilterCreator,
-          arguments: arguments
-        );
+      final newRuleFilterRequest = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
+        : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
-        if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
-          _createNewRuleFilterAction(accountId, newRuleFilterRequest);
-        }
+      if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
+        _createNewRuleFilterAction(accountId, newRuleFilterRequest);
       }
     }
   }

@@ -58,9 +58,9 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
 
   @override
   void initState() {
+    super.initState();
     _textDirection = widget.textDirection;
     _controller = widget.controller ?? TextEditingController();
-    super.initState();
   }
 
   @override

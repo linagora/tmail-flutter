@@ -79,8 +79,4 @@ class RulesFilterCreatorBindings extends BaseBindings {
       Get.find<StateDataSource>(),
     ));
   }
-
-  void dispose() {
-    Get.delete<RulesFilterCreatorController>();
-  }
 }

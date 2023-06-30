@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,6 @@ import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/app_bar_mailbox_creator_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -25,23 +25,11 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   @override
   final controller = Get.find<MailboxCreatorController>();
 
-  MailboxCreatorView({Key? key}) : super(key: key) {
-    controller.arguments = Get.arguments;
-  }
-
-  MailboxCreatorView.fromArguments(
-      MailboxCreatorArguments arguments, {
-      Key? key,
-      OnCreatedMailboxCallback? onCreatedMailboxCallback,
-      VoidCallback? onDismissCallback
-  }) : super(key: key) {
-    controller.arguments = arguments;
-    controller.onCreatedMailboxCallback = onCreatedMailboxCallback;
-    controller.onDismissMailboxCreator = onDismissCallback;
-  }
+  MailboxCreatorView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    log('MailboxCreatorView::build():');
     return PointerInterceptor(
       child: GestureDetector(
         onTap: () => controller.closeMailboxCreator(context),
@@ -114,7 +102,6 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Obx(() => TextFieldBuilder(
-        key: const Key('create_mailbox_name_input'),
         onTextChange: controller.setNewNameMailbox,
         keyboardType: TextInputType.visiblePassword,
         cursorColor: AppColor.colorTextButton,

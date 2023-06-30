@@ -20,7 +20,6 @@ import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_field_no_editable_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_field_builder.dart';
@@ -39,20 +38,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
   @override
   final controller = Get.find<IdentityCreatorController>();
 
-  IdentityCreatorView({Key? key}) : super(key: key) {
-    controller.arguments = Get.arguments;
-  }
-
-  IdentityCreatorView.fromArguments(
-      IdentityCreatorArguments arguments, {
-      Key? key,
-      OnCreatedIdentityCallback? onCreatedIdentityCallback,
-      VoidCallback? onDismissCallback
-  }) : super(key: key) {
-    controller.arguments = arguments;
-    controller.onCreatedIdentityCallback = onCreatedIdentityCallback;
-    controller.onDismissIdentityCreator = onDismissCallback;
-  }
+  IdentityCreatorView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -132,27 +118,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
                   )
               ))
             ),
-        ),
-        tabletLarge: Scaffold(
-            backgroundColor: Colors.black38,
-            body: GestureDetector(
-              onTap: () => controller.clearFocusEditor(context),
-              child: Center(child: Card(
-                  color: Colors.transparent,
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                  child: Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(16))),
-                      width: _responsiveUtils.getSizeScreenWidth(context) * 0.85,
-                      height: _responsiveUtils.getSizeScreenHeight(context) * 0.6,
-                      child: ClipRRect(
-                          borderRadius: const BorderRadius.all(Radius.circular(16)),
-                          child: _buildBodyMobile(context)
-                      )
-                  )
-              ))
-            )
         ),
         landscapeTablet: Scaffold(
             backgroundColor: Colors.black38,
@@ -245,7 +210,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             controller.inputBccIdentityController,
             focusNode: PlatformInfo.isWeb ? null : controller.inputBccIdentityFocusNode,
             onSelectedSuggestionAction: (newEmailAddress) {
-              controller.inputBccIdentityController?.text = newEmailAddress?.email ?? '';
+              controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
               controller.updateBccOfIdentity(newEmailAddress);
             },
             onChangeInputSuggestionAction: (pattern) {
@@ -383,8 +348,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
           controller.updateContentHtmlEditor(changed);
         }, onInit: () {
           log('IdentityCreatorView::_buildHtmlEditorWeb(): onInit');
+          controller.richTextWebController.editorController.setFullScreen();
           controller.updateContentHtmlEditor(initContent);
-          controller.richTextWebController.setEnableCodeView();
         }, onFocus: () {
           log('IdentityCreatorView::_buildHtmlEditorWeb(): onFocus');
           FocusManager.instance.primaryFocus?.unfocus();

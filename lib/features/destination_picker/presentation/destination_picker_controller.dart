@@ -3,7 +3,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
-import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -41,8 +41,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
-typedef OnSelectedMailboxCallback = Function(PresentationMailbox? destinationMailbox);
-
 class DestinationPickerController extends BaseMailboxController {
 
   final _uuid = Get.find<Uuid>();
@@ -59,19 +57,16 @@ class DestinationPickerController extends BaseMailboxController {
   final mailboxDestination = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();
 
-  FocusNode? nameInputFocusNode;
-  TextEditingController? nameInputController;
-  TextEditingController? searchInputController;
-  FocusNode? searchFocus;
   DestinationPickerArguments? arguments;
   Session? _session;
   AccountId? accountId;
   MailboxId? mailboxIdSelected;
-  OnSelectedMailboxCallback? onSelectedMailboxCallback;
-  VoidCallback? onDismissDestinationPicker;
 
   List<String> listMailboxNameAsStringExist = <String>[];
-
+  final FocusNode nameInputFocusNode = FocusNode();
+  final FocusNode searchFocus = FocusNode();
+  final TextEditingController nameInputController = TextEditingController();
+  final TextEditingController searchInputController = TextEditingController();
   final destinationListScrollController = ScrollController();
 
   DestinationPickerController(
@@ -91,17 +86,14 @@ class DestinationPickerController extends BaseMailboxController {
   @override
   void onInit() {
     super.onInit();
-    nameInputFocusNode = FocusNode();
-    nameInputController = TextEditingController();
-    searchInputController = TextEditingController();
-    searchFocus = FocusNode();
-    searchFocus?.unfocus();
-    nameInputFocusNode?.unfocus();
+    log('DestinationPickerController::onInit():arguments: ${Get.arguments}');
+    arguments = Get.arguments;
   }
 
   @override
   void onReady() {
     super.onReady();
+    log('DestinationPickerController::onReady():');
     if (arguments != null) {
       mailboxAction.value = arguments!.mailboxAction;
       mailboxIdSelected = arguments!.mailboxIdSelected;
@@ -143,7 +135,11 @@ class DestinationPickerController extends BaseMailboxController {
 
   @override
   void onClose() {
-    _disposeWidget();
+    log('DestinationPickerController::onClose():');
+    nameInputFocusNode.dispose();
+    nameInputController.dispose();
+    searchFocus.dispose();
+    searchInputController.dispose();
     destinationListScrollController.dispose();
     super.onClose();
   }
@@ -199,7 +195,7 @@ class DestinationPickerController extends BaseMailboxController {
   String? getErrorInputNameString(BuildContext context) {
     final nameMailbox = newNameMailbox.value;
 
-    if (nameInputFocusNode?.hasFocus == false && nameMailbox == null) {
+    if (nameInputFocusNode.hasFocus == false && nameMailbox == null) {
       return null;
     }
 
@@ -224,7 +220,7 @@ class DestinationPickerController extends BaseMailboxController {
   bool isCreateMailboxValidated(BuildContext context) {
     final nameValidated = getErrorInputNameString(context);
 
-    if (nameInputFocusNode?.hasFocus == false && newNameMailbox.value == null) {
+    if (nameInputFocusNode.hasFocus == false && newNameMailbox.value == null) {
       return false;
     }
 
@@ -265,13 +261,13 @@ class DestinationPickerController extends BaseMailboxController {
     listMailboxSearched.clear();
     searchState.value = searchState.value.disableSearchState();
     searchQuery.value = SearchQuery.initial();
-    searchInputController?.clear();
+    searchInputController.clear();
     KeyboardUtils.hideKeyboard(context);
   }
 
   void clearSearchText() {
     searchQuery.value = SearchQuery.initial();
-    searchFocus?.requestFocus();
+    searchFocus.requestFocus();
     listMailboxSearched.clear();
   }
 
@@ -377,12 +373,7 @@ class DestinationPickerController extends BaseMailboxController {
         AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox);
       return;
     }
-
-    if (PlatformInfo.isWeb) {
-      onSelectedMailboxCallback?.call(mailboxDestination.value);
-    } else {
-      popBack(result: mailboxDestination.value);
-    }
+    popBack(result: mailboxDestination.value);
   }
 
   void createNewMailboxAction(BuildContext context) {
@@ -408,29 +399,13 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   void backToDestinationScreen(BuildContext context) {
-    nameInputController?.clear();
+    nameInputController.clear();
     KeyboardUtils.hideKeyboard(context);
     destinationScreenType.value = DestinationScreenType.destinationPicker;
   }
 
-  void _disposeWidget() {
-    nameInputFocusNode?.dispose();
-    nameInputFocusNode = null;
-    nameInputController?.dispose();
-    nameInputController = null;
-    searchFocus?.dispose();
-    searchFocus = null;
-    searchInputController?.dispose();
-    searchInputController = null;
-  }
-
   void closeDestinationPicker(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
-
-    if (PlatformInfo.isWeb) {
-      onDismissDestinationPicker?.call();
-    } else {
-      popBack();
-    }
+    popBack();
   }
 }

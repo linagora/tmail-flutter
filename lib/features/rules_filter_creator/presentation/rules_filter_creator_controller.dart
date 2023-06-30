@@ -35,9 +35,8 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/e
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-
-typedef OnCreatedRuleFilterCallback = Function(dynamic arguments);
 
 class RulesFilterCreatorController extends BaseMailboxController {
 
@@ -56,17 +55,15 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final mailboxSelected = Rxn<PresentationMailbox>();
   final actionType = CreatorActionType.create.obs;
 
-  TextEditingController? inputRuleNameController;
-  TextEditingController? inputConditionValueController;
-  FocusNode? inputRuleNameFocusNode;
-  FocusNode? inputRuleConditionFocusNode;
+  final TextEditingController inputRuleNameController = TextEditingController();
+  final TextEditingController inputConditionValueController = TextEditingController();
+  final FocusNode inputRuleNameFocusNode = FocusNode();
+  final FocusNode inputRuleConditionFocusNode = FocusNode();
 
   String? _newRuleName;
   String? _newRuleConditionValue;
 
   RulesFilterCreatorArguments? arguments;
-  OnCreatedRuleFilterCallback? onCreatedRuleFilterCallback;
-  VoidCallback? onDismissRuleFilterCreator;
   AccountId? _accountId;
   Session? _session;
   TMailRule? _currentTMailRule;
@@ -82,15 +79,14 @@ class RulesFilterCreatorController extends BaseMailboxController {
   @override
   void onInit() {
     super.onInit();
-    inputRuleNameController = TextEditingController();
-    inputConditionValueController = TextEditingController();
-    inputRuleNameFocusNode = FocusNode();
-    inputRuleConditionFocusNode = FocusNode();
+    log('RulesFilterCreatorController::onInit():arguments: ${Get.arguments}');
+    arguments = Get.arguments;
   }
 
   @override
   void onReady() {
     super.onReady();
+    log('RulesFilterCreatorController::onReady():');
     if (arguments != null) {
       _accountId = arguments!.accountId;
       _session = arguments!.session;
@@ -110,7 +106,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   @override
   void onClose() {
-    _disposeWidget();
+    log('RulesFilterCreatorController::onClose():');
+    inputRuleNameFocusNode.dispose();
+    inputRuleConditionFocusNode.dispose();
+    inputRuleNameController.dispose();
+    inputConditionValueController.dispose();
     super.onClose();
   }
 
@@ -158,7 +158,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         }
         break;
     }
-    inputRuleNameFocusNode?.requestFocus();
+    inputRuleNameFocusNode.requestFocus();
   }
 
   void _setValueInputField(TextEditingController? controller, String value) {
@@ -219,31 +219,19 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void selectMailbox(BuildContext context) async {
     if (_accountId != null) {
       final arguments = DestinationPickerArguments(
-          _accountId!,
-          MailboxActions.selectForRuleAction,
-          _session);
+        _accountId!,
+        MailboxActions.selectForRuleAction,
+        _session);
 
-      if (PlatformInfo.isWeb) {
-        showDialogDestinationPicker(
-            context: context,
-            arguments: arguments,
-            onSelectedMailbox: (destinationMailbox) {
-              mailboxSelected.value = destinationMailbox;
-              errorRuleActionValue.value = _getErrorStringByInputValue(
-                  context,
-                  mailboxSelected.value?.name?.name);
-            });
-      } else {
-        final destinationMailbox = await push(
-            AppRoutes.destinationPicker,
-            arguments: arguments);
+      final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-        if (destinationMailbox is PresentationMailbox && context.mounted) {
-          mailboxSelected.value = destinationMailbox;
-          errorRuleActionValue.value = _getErrorStringByInputValue(
-              context,
-              mailboxSelected.value?.name?.name);
-        }
+      if (destinationMailbox is PresentationMailbox && context.mounted) {
+        mailboxSelected.value = destinationMailbox;
+        errorRuleActionValue.value = _getErrorStringByInputValue(
+          context,
+          mailboxSelected.value?.name?.name);
       }
     }
   }
@@ -254,14 +242,14 @@ class RulesFilterCreatorController extends BaseMailboxController {
     final errorName = _getErrorStringByInputValue(context, _newRuleName);
     if (errorName?.isNotEmpty == true) {
       errorRuleName.value = errorName;
-      inputRuleNameFocusNode?.requestFocus();
+      inputRuleNameFocusNode.requestFocus();
       return;
     }
 
     final errorCondition = _getErrorStringByInputValue(context, _newRuleConditionValue);
     if (errorCondition?.isNotEmpty == true) {
       errorRuleConditionValue.value = errorCondition;
-      inputRuleConditionFocusNode?.requestFocus();
+      inputRuleConditionFocusNode.requestFocus();
       return;
     }
 
@@ -301,53 +289,15 @@ class RulesFilterCreatorController extends BaseMailboxController {
           value: _newRuleConditionValue!
         ));
 
-    if (actionType.value == CreatorActionType.create) {
-      final ruleFilterRequest = CreateNewEmailRuleFilterRequest(
-        _listEmailRule ?? [],
-        newTMailRule);
-
-      if (PlatformInfo.isWeb) {
-        onCreatedRuleFilterCallback?.call(ruleFilterRequest);
-      } else {
-        popBack(result: ruleFilterRequest);
-      }
-    } else {
-      final ruleFilterRequest = EditEmailRuleFilterRequest(
-        _listEmailRule?.withIds ?? [],
-        newTMailRule);
-
-      if (PlatformInfo.isWeb) {
-        onCreatedRuleFilterCallback?.call(ruleFilterRequest);
-      } else {
-        popBack(result: ruleFilterRequest);
-      }
-    }
-  }
-
-  void _clearAll() {
-    inputRuleNameController?.clear();
-    inputConditionValueController?.clear();
-  }
-
-  void _disposeWidget() {
-    inputRuleNameFocusNode?.dispose();
-    inputRuleNameFocusNode = null;
-    inputRuleConditionFocusNode?.dispose();
-    inputRuleConditionFocusNode = null;
-    inputRuleNameController?.dispose();
-    inputRuleNameController = null;
-    inputConditionValueController?.dispose();
-    inputConditionValueController = null;
+    final ruleFilterRequest =
+    actionType.value == CreatorActionType.create
+      ? CreateNewEmailRuleFilterRequest(_listEmailRule ?? [], newTMailRule)
+      : EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
+    popBack(result: ruleFilterRequest);
   }
 
   void closeView(BuildContext context) {
-    _clearAll();
     KeyboardUtils.hideKeyboard(context);
-
-    if (PlatformInfo.isWeb) {
-      onDismissRuleFilterCreator?.call();
-    } else {
-      popBack();
-    }
+    popBack();
   }
 }

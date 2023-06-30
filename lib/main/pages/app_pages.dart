@@ -65,6 +65,13 @@ class AppPages {
             manage_account_dashboard.loadLibrary,
             () => manage_account_dashboard.ManageAccountDashBoardView()),
         binding: ManageAccountDashBoardBindings()),
+    GetPage(
+      name: AppRoutes.contact,
+      opaque: false,
+      page: () => DeferredWidget(
+        contact_view.loadLibrary,
+        () => contact_view.ContactView()),
+      binding: ContactBindings()),
     unknownRoutePage,
     if (PlatformInfo.isMobile)
       ...[
@@ -89,13 +96,6 @@ class AppPages {
                 mailbox_creator.loadLibrary,
                 () => mailbox_creator.MailboxCreatorView()),
             binding: MailboxCreatorBindings()),
-        GetPage(
-            name: AppRoutes.contact,
-            opaque: false,
-            page: () => DeferredWidget(
-                contact_view.loadLibrary,
-                () => contact_view.ContactView()),
-            binding: ContactBindings()),
         GetPage(
             name: AppRoutes.rulesFilterCreator,
             opaque: false,
