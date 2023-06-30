@@ -114,9 +114,9 @@ class ComposerStyle {
   static EdgeInsetsGeometry getEditorPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (PlatformInfo.isWeb) {
       if (responsiveUtils.isMobile(context)) {
-        return const EdgeInsetsDirectional.symmetric(horizontal: 16);
+        return const EdgeInsetsDirectional.symmetric(horizontal: 6);
       } else {
-        return const EdgeInsetsDirectional.only(start: 88, end: 48);
+        return const EdgeInsetsDirectional.only(start: 78, end: 38);
       }
     } else {
       if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeMobile(context)) {
