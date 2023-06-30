@@ -120,6 +120,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -791,35 +792,22 @@ class MailboxDashBoardController extends ReloadableController {
         sessionCurrent,
         mailboxIdSelected: currentMailbox.mailboxId);
 
-      if (PlatformInfo.isWeb) {
-        showDialogDestinationPicker(
-            context: context,
-            arguments: arguments,
-            onSelectedMailbox: (destinationMailbox) {
-              if (sessionCurrent != null) {
-                _dispatchMoveToMultipleAction(
-                    accountId.value!,
-                    sessionCurrent!,
-                    listEmails.listEmailIds,
-                    currentMailbox,
-                    destinationMailbox);
-              }
-            });
-      } else {
-        final destinationMailbox = await push(
-            AppRoutes.destinationPicker,
-            arguments: arguments);
+      final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-        if (destinationMailbox != null &&
-            destinationMailbox is PresentationMailbox &&
-            sessionCurrent != null) {
-          _dispatchMoveToMultipleAction(
-              accountId.value!,
-              sessionCurrent!,
-              listEmails.listEmailIds,
-              currentMailbox,
-              destinationMailbox);
-        }
+      if (destinationMailbox != null &&
+          destinationMailbox is PresentationMailbox &&
+          sessionCurrent != null &&
+          accountId.value != null
+      ) {
+        _dispatchMoveToMultipleAction(
+          accountId.value!,
+          sessionCurrent!,
+          listEmails.listEmailIds,
+          currentMailbox,
+          destinationMailbox
+        );
       }
     }
   }

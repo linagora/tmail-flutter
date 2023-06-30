@@ -41,6 +41,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
@@ -378,32 +379,17 @@ abstract class BaseMailboxController extends BaseController {
         mailboxIdSelected: mailboxSelected.id
       );
 
-      if (PlatformInfo.isWeb) {
-        showDialogDestinationPicker(
-          context: context,
-          arguments: arguments,
-          onSelectedMailbox: (destinationMailbox) {
-            onMovingMailboxAction(
-              mailboxSelected,
-              destinationMailbox == PresentationMailbox.unifiedMailbox
-                ? null
-                : destinationMailbox
-            );
-          }
-        );
-      } else {
-        final destinationMailbox = await push(
-            AppRoutes.destinationPicker,
-            arguments: arguments);
+      final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-        if (destinationMailbox is PresentationMailbox) {
-          onMovingMailboxAction(
-            mailboxSelected,
-            destinationMailbox == PresentationMailbox.unifiedMailbox
-              ? null
-              : destinationMailbox
-          );
-        }
+      if (destinationMailbox is PresentationMailbox) {
+        onMovingMailboxAction(
+          mailboxSelected,
+          destinationMailbox == PresentationMailbox.unifiedMailbox
+            ? null
+            : destinationMailbox
+        );
       }
     }
   }

@@ -5,10 +5,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get_core/get_core.dart';
-import 'package:get/get_instance/get_instance.dart';
-import 'package:get/get_rx/get_rx.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -40,8 +37,6 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
-typedef OnCreatedIdentityCallback = Function(dynamic arguments);
-
 class IdentityCreatorController extends BaseController {
 
   final VerifyNameInteractor _verifyNameInteractor;
@@ -62,13 +57,13 @@ class IdentityCreatorController extends BaseController {
   final isDefaultIdentity = RxBool(false);
   final isDefaultIdentitySupported = RxBool(false);
 
-  late RichTextController keyboardRichTextController;
-  late RichTextWebController richTextWebController;
-  late HtmlEditorController signatureHtmlEditorController;
-  TextEditingController? inputNameIdentityController;
-  TextEditingController? inputBccIdentityController;
-  FocusNode? inputNameIdentityFocusNode;
-  FocusNode? inputBccIdentityFocusNode;
+  final RichTextController keyboardRichTextController = RichTextController();
+  final RichTextWebController richTextWebController = RichTextWebController();
+  final TextEditingController inputNameIdentityController = TextEditingController();
+  final TextEditingController inputBccIdentityController = TextEditingController();
+  final FocusNode inputNameIdentityFocusNode = FocusNode();
+  final FocusNode inputBccIdentityFocusNode = FocusNode();
+  final ScrollController scrollController = ScrollController();
 
   String? _nameIdentity;
   String? _contentHtmlEditor;
@@ -77,9 +72,6 @@ class IdentityCreatorController extends BaseController {
   UserProfile? userProfile;
   Identity? identity;
   IdentityCreatorArguments? arguments;
-  OnCreatedIdentityCallback? onCreatedIdentityCallback;
-  VoidCallback? onDismissIdentityCreator;
-  ScrollController? scrollController;
 
   final GlobalKey htmlKey = GlobalKey();
   final htmlEditorMinHeight = 160;
@@ -107,21 +99,15 @@ class IdentityCreatorController extends BaseController {
 
   @override
   void onInit() {
-    log('IdentityCreatorController::onInit():');
     super.onInit();
-    keyboardRichTextController = RichTextController();
-    richTextWebController = RichTextWebController();
-    signatureHtmlEditorController = HtmlEditorController(processNewLineAsBr: true);
-    inputNameIdentityController = TextEditingController();
-    inputBccIdentityController = TextEditingController();
-    inputNameIdentityFocusNode = FocusNode();
-    inputBccIdentityFocusNode = FocusNode();
-    scrollController = ScrollController();
+    log('IdentityCreatorController::onInit():arguments: ${Get.arguments}');
+    arguments = Get.arguments;
   }
 
   @override
   void onReady() {
     super.onReady();
+    log('IdentityCreatorController::onReady():');
     if (arguments != null) {
       accountId = arguments!.accountId;
       session = arguments!.session;
@@ -136,7 +122,14 @@ class IdentityCreatorController extends BaseController {
 
   @override
   void onClose() {
-    _disposeWidget();
+    log('IdentityCreatorController::onClose():');
+    keyboardRichTextController.dispose();
+    inputNameIdentityFocusNode.dispose();
+    inputBccIdentityFocusNode.dispose();
+    inputNameIdentityController.dispose();
+    inputBccIdentityController.dispose();
+    scrollController.dispose();
+    richTextWebController.onClose();
     super.onClose();
   }
 
@@ -164,12 +157,12 @@ class IdentityCreatorController extends BaseController {
 
   void _setUpValueFromIdentity() {
     _nameIdentity = identity?.name ?? '';
-    inputNameIdentityController?.text = identity?.name ?? '';
+    inputNameIdentityController.text = identity?.name ?? '';
 
     if (identity?.signatureAsString.isNotEmpty == true) {
       updateContentHtmlEditor(arguments?.identity?.signatureAsString ?? '');
       if (PlatformInfo.isWeb) {
-        signatureHtmlEditorController.setText(arguments?.identity?.signatureAsString ?? '');
+        richTextWebController.editorController.setText(arguments?.identity?.signatureAsString ?? '');
       }
     }
   }
@@ -236,7 +229,7 @@ class IdentityCreatorController extends BaseController {
 
       if (identity?.bcc?.isNotEmpty == true) {
         bccOfIdentity.value = identity?.bcc!.first;
-        inputBccIdentityController?.text = identity?.bcc!.first.emailAddress ?? '';
+        inputBccIdentityController.text = identity?.bcc!.first.emailAddress ?? '';
       } else {
         bccOfIdentity.value = null;
       }
@@ -297,7 +290,7 @@ class IdentityCreatorController extends BaseController {
 
   Future<String?> _getSignatureHtmlText() async {
     if (PlatformInfo.isWeb) {
-      return signatureHtmlEditorController.getText();
+      return richTextWebController.editorController.getText();
     } else {
       return keyboardRichTextController.htmlEditorApi?.getText();
     }
@@ -346,25 +339,14 @@ class IdentityCreatorController extends BaseController {
       final identityRequest = CreateNewIdentityRequest(
         generateCreateId, 
         newIdentity,
-        isDefaultIdentity: isDefaultIdentity.value
-      );
-
-      if (PlatformInfo.isWeb) {
-        onCreatedIdentityCallback?.call(identityRequest);
-      } else {
-        popBack(result: identityRequest);
-      }
+        isDefaultIdentity: isDefaultIdentity.value);
+      popBack(result: identityRequest);
     } else {
       final identityRequest = EditIdentityRequest(
-          identityId: identity!.id!,
-          identityRequest: newIdentity.toIdentityRequest(),
-          isDefaultIdentity: isDefaultIdentity.value);
-
-      if (PlatformInfo.isWeb) {
-        onCreatedIdentityCallback?.call(identityRequest);
-      } else {
-        popBack(result: identityRequest);
-      }
+        identityId: identity!.id!,
+        identityRequest: newIdentity.toIdentityRequest(),
+        isDefaultIdentity: isDefaultIdentity.value);
+      popBack(result: identityRequest);
     }
   }
 
@@ -389,7 +371,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   String? _getErrorInputAddressString(BuildContext context, {String? value}) {
-    final emailAddress = value ?? inputBccIdentityController?.text ?? '';
+    final emailAddress = value ?? inputBccIdentityController.text;
     if (emailAddress.trim().isEmpty) {
       return null;
     }
@@ -434,24 +416,8 @@ class IdentityCreatorController extends BaseController {
   }
 
   void closeView(BuildContext context) {
-    if (PlatformInfo.isWeb) {
-      onDismissIdentityCreator?.call();
-    } else {
-      popBack();
-    }
-  }
-
-  void _disposeWidget() {
-    keyboardRichTextController.dispose();
-    inputNameIdentityFocusNode?.dispose();
-    inputNameIdentityFocusNode = null;
-    inputBccIdentityFocusNode?.dispose();
-    inputBccIdentityFocusNode = null;
-    inputNameIdentityController?.dispose();
-    inputNameIdentityController = null;
-    inputBccIdentityController?.dispose();
-    inputBccIdentityController = null;
-    scrollController?.dispose();
+    clearFocusEditor(context);
+    popBack();
   }
 
   void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
@@ -464,29 +430,27 @@ class IdentityCreatorController extends BaseController {
   }
 
   void _onFocusHTMLEditorOnMobile() async {
-    inputBccIdentityFocusNode?.unfocus();
-    inputNameIdentityFocusNode?.unfocus();
-    if (scrollController != null) {
-      if (htmlKey.currentContext != null) {
-        await Scrollable.ensureVisible(htmlKey.currentContext!);
-      }
-      await Future.delayed(const Duration(milliseconds: 500), () {
-        final offset = scrollController!.position.pixels +
-          defaultKeyboardToolbarHeight +
-          htmlEditorMinHeight;
-        scrollController!.animateTo(
-          offset,
-          duration: const Duration(milliseconds: 1),
-          curve: Curves.linear,
-        );
-      });
+    inputBccIdentityFocusNode.unfocus();
+    inputNameIdentityFocusNode.unfocus();
+    if (htmlKey.currentContext != null) {
+      await Scrollable.ensureVisible(htmlKey.currentContext!);
     }
+    await Future.delayed(const Duration(milliseconds: 500), () {
+      final offset = scrollController.position.pixels +
+        defaultKeyboardToolbarHeight +
+        htmlEditorMinHeight;
+      scrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.linear,
+      );
+    });
   }
 
   void _onEnterKeyDownOnMobile() {
-    if (scrollController != null && scrollController!.position.pixels < scrollController!.position.maxScrollExtent) {
-      scrollController!.animateTo(
-        scrollController!.position.pixels + 20,
+    if (scrollController.position.pixels < scrollController.position.maxScrollExtent) {
+      scrollController.animateTo(
+        scrollController.position.pixels + 20,
         duration: const Duration(milliseconds: 1),
         curve: Curves.linear,
       );

@@ -19,9 +19,8 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/v
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-
-typedef OnCreatedMailboxCallback = Function(NewMailboxArguments? arguments);
 
 class MailboxCreatorController extends BaseController {
 
@@ -31,8 +30,8 @@ class MailboxCreatorController extends BaseController {
   final newNameMailbox = Rxn<String>();
   bool _createdMailbox = false;
 
-  FocusNode? nameInputFocusNode;
-  TextEditingController? nameInputController;
+  final FocusNode nameInputFocusNode = FocusNode();
+  final TextEditingController nameInputController = TextEditingController();
 
   MailboxCreatorArguments? arguments;
   AccountId? accountId;
@@ -40,8 +39,6 @@ class MailboxCreatorController extends BaseController {
   MailboxTree? defaultMailboxTree;
   MailboxTree? personalMailboxTree;
   MailboxTree? teamMailboxesTre;
-  OnCreatedMailboxCallback? onCreatedMailboxCallback;
-  VoidCallback? onDismissMailboxCreator;
 
   List<String> listMailboxNameAsStringExist = <String>[];
 
@@ -52,13 +49,14 @@ class MailboxCreatorController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    nameInputFocusNode = FocusNode();
-    nameInputController = TextEditingController();
+    log('MailboxCreatorController::onInit():arguments: ${Get.arguments}');
+    arguments = Get.arguments;
   }
 
   @override
   void onReady() {
     super.onReady();
+    log('MailboxCreatorController::onReady():');
     if (arguments != null) {
       personalMailboxTree = arguments!.personalMailboxTree;
       defaultMailboxTree = arguments!.defaultMailboxTree;
@@ -71,7 +69,9 @@ class MailboxCreatorController extends BaseController {
 
   @override
   void onClose() {
-    _disposeWidget();
+    log('MailboxCreatorController::onClose():');
+    nameInputFocusNode.dispose();
+    nameInputController.dispose();
     super.onClose();
   }
 
@@ -111,7 +111,7 @@ class MailboxCreatorController extends BaseController {
 
   String? getErrorInputNameString(BuildContext context) {
     final nameMailbox = newNameMailbox.value;
-    final canCheckNameString = _createdMailbox && nameInputFocusNode?.hasFocus == false;
+    final canCheckNameString = _createdMailbox && nameInputFocusNode.hasFocus == false;
 
     return _verifyNameInteractor.execute(
         nameMailbox,
@@ -138,45 +138,24 @@ class MailboxCreatorController extends BaseController {
 
     if (accountId != null) {
       final arguments = DestinationPickerArguments(
-          accountId!,
-          MailboxActions.create,
-          _session,
-          mailboxIdSelected: selectedMailbox.value?.id);
+        accountId!,
+        MailboxActions.create,
+        _session,
+        mailboxIdSelected: selectedMailbox.value?.id);
 
-      if (PlatformInfo.isWeb) {
-        showDialogDestinationPicker(
-            context: context,
-            arguments: arguments,
-            onSelectedMailbox: (destinationMailbox) {
-              final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
-                  ? null
-                  : destinationMailbox;
+      final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-              selectedMailbox.value = mailboxDestination;
-              _createListMailboxNameAsStringInMailboxLocation();
-            });
-      } else {
-        final destinationMailbox = await push(
-            AppRoutes.destinationPicker,
-            arguments: arguments);
+      if (destinationMailbox is PresentationMailbox) {
+        final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
+          ? null
+          : destinationMailbox;
 
-        if (destinationMailbox is PresentationMailbox) {
-          final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
-              ? null
-              : destinationMailbox;
-
-          selectedMailbox.value = mailboxDestination;
-          _createListMailboxNameAsStringInMailboxLocation();
-        }
+        selectedMailbox.value = mailboxDestination;
+        _createListMailboxNameAsStringInMailboxLocation();
       }
     }
-  }
-
-  void _disposeWidget() {
-    nameInputFocusNode?.dispose();
-    nameInputFocusNode = null;
-    nameInputController?.dispose();
-    nameInputController = null;
   }
 
   void createNewMailbox(BuildContext context) {
@@ -191,24 +170,14 @@ class MailboxCreatorController extends BaseController {
 
     if (nameMailbox != null && nameMailbox.isNotEmpty && _createdMailbox) {
       final newMailboxArguments = NewMailboxArguments(
-          MailboxName(nameMailbox),
-          mailboxLocation: selectedMailbox.value);
-
-      if (PlatformInfo.isWeb) {
-        onCreatedMailboxCallback?.call(newMailboxArguments);
-      } else {
-        popBack(result: newMailboxArguments);
-      }
+        MailboxName(nameMailbox),
+        mailboxLocation: selectedMailbox.value);
+      popBack(result: newMailboxArguments);
     }
   }
 
   void closeMailboxCreator(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
-
-    if (PlatformInfo.isWeb) {
-      onDismissMailboxCreator?.call();
-    } else {
-      popBack();
-    }
+    popBack();
   }
 }
