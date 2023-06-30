@@ -17,6 +17,15 @@ enum OrderListType {
     }
   }
 
+  String get summernoteNameAPI {
+    switch(this) {
+      case OrderListType.bulletedList:
+        return 'insertUnorderedList';
+      case OrderListType.numberedList:
+        return 'insertOrderedList';
+    }
+  }
+
   String getIcon(ImagePaths imagePaths) {
     switch (this) {
       case OrderListType.bulletedList:

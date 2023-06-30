@@ -38,6 +38,27 @@ enum RichTextStyleType {
     }
   }
 
+  String get summernoteNameAPI {
+    switch (this) {
+      case RichTextStyleType.textColor:
+        return 'foreColor';
+      case RichTextStyleType.textBackgroundColor:
+        return 'backColor';
+      case RichTextStyleType.fontName:
+        return 'fontName';
+      case bold:
+        return 'bold';
+      case italic:
+        return 'italic';
+      case underline:
+        return 'underline';
+      case strikeThrough:
+        return 'strikethrough';
+      default:
+        return '';
+    }
+  }
+
   String getIcon(ImagePaths imagePaths) {
     switch (this) {
       case bold:
