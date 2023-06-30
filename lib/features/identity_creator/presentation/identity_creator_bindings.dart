@@ -18,8 +18,4 @@ class IdentityCreatorBindings extends Bindings {
       Get.find<IdentityUtils>()
     ));
   }
-
-  void dispose() {
-    Get.delete<IdentityCreatorController>();
-  }
 }

@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/da
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class AdvancedFilterController extends BaseController {
@@ -131,30 +132,19 @@ class AdvancedFilterController extends BaseController {
     final session = _mailboxDashBoardController.sessionCurrent;
     if (accountId != null) {
       final arguments = DestinationPickerArguments(
-          accountId,
-          MailboxActions.select,
-          session,
-          mailboxIdSelected: searchController.searchEmailFilter.value.mailbox?.id);
+        accountId,
+        MailboxActions.select,
+        session,
+        mailboxIdSelected: searchController.searchEmailFilter.value.mailbox?.id);
 
-      if (PlatformInfo.isWeb) {
-        showDialogDestinationPicker(
-            context: context,
-            arguments: arguments,
-            onSelectedMailbox: (destinationMailbox) {
-              _destinationMailboxSelected = destinationMailbox;
-              final mailboxName = destinationMailbox.name?.name;
-              mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
-            });
-      } else {
-        final destinationMailbox = await push(
-            AppRoutes.destinationPicker,
-            arguments: arguments);
+      final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-        if (destinationMailbox is PresentationMailbox) {
-          _destinationMailboxSelected = destinationMailbox;
-          final mailboxName = destinationMailbox.name?.name;
-          mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
-        }
+      if (destinationMailbox is PresentationMailbox) {
+        _destinationMailboxSelected = destinationMailbox;
+        final mailboxName = destinationMailbox.name?.name;
+        mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
       }
     }
   }

@@ -72,6 +72,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -477,29 +478,16 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         teamMailboxesTree.value,
         mailboxDashBoardController.sessionCurrent!);
 
-      if (PlatformInfo.isWeb) {
-        showDialogMailboxCreator(
-            context: context,
-            arguments: arguments,
-            onCreatedMailbox: (newMailboxArguments) {
-              final generateCreateId = Id(_uuid.v1());
-              _createNewMailboxAction(session, accountId, CreateNewMailboxRequest(
-                  generateCreateId,
-                  newMailboxArguments.newName,
-                  parentId: newMailboxArguments.mailboxLocation?.id));
-            });
-      } else {
-        final newMailboxArguments = await push(
-            AppRoutes.mailboxCreator,
-            arguments: arguments);
+      final result = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.mailboxCreator, arguments: arguments)
+        : await push(AppRoutes.mailboxCreator, arguments: arguments);
 
-        if (newMailboxArguments != null && newMailboxArguments is NewMailboxArguments) {
-          final generateCreateId = Id(_uuid.v1());
-          _createNewMailboxAction(session, accountId, CreateNewMailboxRequest(
-              generateCreateId,
-              newMailboxArguments.newName,
-              parentId: newMailboxArguments.mailboxLocation?.id));
-        }
+      if (result != null && result is NewMailboxArguments) {
+        final generateCreateId = Id(_uuid.v1());
+        _createNewMailboxAction(session, accountId, CreateNewMailboxRequest(
+          generateCreateId,
+          result.newName,
+          parentId: result.mailboxLocation?.id));
       }
     }
   }

@@ -22,8 +22,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ContactController extends BaseController {
 
-  TextEditingController? textInputSearchController;
-  FocusNode? textInputSearchFocus;
+  final TextEditingController textInputSearchController = TextEditingController();
+  final FocusNode textInputSearchFocus = FocusNode();
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
   final searchQuery = SearchQuery.initial().obs;
@@ -32,9 +32,9 @@ class ContactController extends BaseController {
   GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
-  late Debouncer<String> _deBouncerTime;
-  late AccountId _accountId;
-  late Session _session;
+  final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 500), initialValue: '');
+  AccountId? _accountId;
+  Session? _session;
 
   ContactArguments? arguments;
   EmailAddress? contactSelected;
@@ -44,14 +44,19 @@ class ContactController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    textInputSearchController = TextEditingController();
-    textInputSearchFocus = FocusNode();
-    _initializeDebounceTimeTextSearchChange();
+    log('ContactController::onInit():arguments: ${Get.arguments}');
+    arguments = Get.arguments;
+    _deBouncerTime.values.listen((value) {
+      searchQuery.value = SearchQuery(value);
+      _searchContactByNameOrEmail(searchQuery.value.value);
+    });
   }
 
   @override
   void onReady() async {
-    textInputSearchFocus?.requestFocus();
+    super.onReady();
+    log('ContactController::onReady():');
+    textInputSearchFocus.requestFocus();
     if (arguments != null) {
       _accountId = arguments!.accountId;
       _session = arguments!.session;
@@ -68,23 +73,15 @@ class ContactController extends BaseController {
         const Duration(milliseconds: 500),
         () => _checkContactPermission());
     }
-    super.onReady();
   }
 
   @override
   void onClose() {
-    _disposeWidget();
+    log('ContactController::onClose():');
+    textInputSearchFocus.dispose();
+    textInputSearchController.dispose();
+    _deBouncerTime.cancel();
     super.onClose();
-  }
-
-  void _initializeDebounceTimeTextSearchChange() {
-    _deBouncerTime = Debouncer<String>(
-        const Duration(milliseconds: 500),
-        initialValue: '');
-    _deBouncerTime.values.listen((value) async {
-      searchQuery.value = SearchQuery(value);
-      _searchContactByNameOrEmail(searchQuery.value.value);
-    });
   }
 
   void onTextSearchChange(String text) {
@@ -96,9 +93,9 @@ class ContactController extends BaseController {
   }
 
   void clearAllTextInputSearchForm() {
-    textInputSearchController?.clear();
+    textInputSearchController.clear();
     searchQuery.value = SearchQuery.initial();
-    textInputSearchFocus?.requestFocus();
+    textInputSearchFocus.requestFocus();
   }
 
   void _checkContactPermission() async {
@@ -167,32 +164,14 @@ class ContactController extends BaseController {
     }
   }
 
-  void _disposeWidget() {
-    textInputSearchFocus?.dispose();
-    textInputSearchFocus = null;
-    textInputSearchController?.dispose();
-    textInputSearchController = null;
-    _deBouncerTime.cancel();
-  }
-
   void selectContact(BuildContext context, EmailAddress emailAddress) {
     KeyboardUtils.hideKeyboard(context);
-
-    if (PlatformInfo.isWeb) {
-      onSelectedContactCallback?.call(emailAddress);
-    } else {
-      popBack(result: emailAddress);
-    }
+    popBack(result: emailAddress);
   }
 
   void closeContactView(BuildContext context) {
     clearAllTextInputSearchForm();
     KeyboardUtils.hideKeyboard(context);
-
-    if (PlatformInfo.isWeb) {
-      onDismissContactView?.call();
-    } else {
-      popBack();
-    }
+    popBack();
   }
 }

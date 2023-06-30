@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
@@ -88,23 +89,12 @@ class EmailRulesController extends BaseController {
     if (accountId != null && session != null) {
       final arguments = RulesFilterCreatorArguments(accountId, session);
 
-      if (PlatformInfo.isWeb) {
-        showDialogRuleFilterCreator(
-            context: context,
-            arguments: arguments,
-            onCreatedRuleFilter: (arguments) {
-              if (arguments is CreateNewEmailRuleFilterRequest) {
-                _createNewRuleFilterAction(accountId, arguments);
-              }
-            });
-      } else {
-        final newRuleFilterRequest = await push(
-            AppRoutes.rulesFilterCreator,
-            arguments: arguments);
+      final newRuleFilterRequest = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
+        : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
-        if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
-          _createNewRuleFilterAction(accountId, newRuleFilterRequest);
-        }
+      if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
+        _createNewRuleFilterAction(accountId, newRuleFilterRequest);
       }
     }
   }
@@ -140,23 +130,12 @@ class EmailRulesController extends BaseController {
         actionType: CreatorActionType.edit,
         tMailRule: rule);
 
-      if (PlatformInfo.isWeb) {
-        showDialogRuleFilterCreator(
-            context: context,
-            arguments: arguments,
-            onCreatedRuleFilter: (arguments) {
-              if (arguments is EditEmailRuleFilterRequest) {
-                _editEmailRuleFilterAction(accountId, arguments);
-              }
-            });
-      } else {
-        final newRuleFilterRequest = await push(
-            AppRoutes.rulesFilterCreator,
-            arguments: arguments);
+      final newRuleFilterRequest = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
+        : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
-        if (newRuleFilterRequest is EditEmailRuleFilterRequest) {
-          _editEmailRuleFilterAction(accountId, newRuleFilterRequest);
-        }
+      if (newRuleFilterRequest is EditEmailRuleFilterRequest) {
+        _editEmailRuleFilterAction(accountId, newRuleFilterRequest);
       }
     }
   }

@@ -17,7 +17,6 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/base/mixin/view_as_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -27,10 +26,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-mixin EmailActionController on ViewAsDialogActionMixin {
+mixin EmailActionController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -131,38 +131,22 @@ mixin EmailActionController on ViewAsDialogActionMixin {
         session,
         mailboxIdSelected: mailboxContain.mailboxId);
 
-      if (PlatformInfo.isWeb) {
-        showDialogDestinationPicker(
-          context: context,
-          arguments: arguments,
-          onSelectedMailbox: (destinationMailbox) {
-            if (mailboxDashBoardController.sessionCurrent != null) {
-              _dispatchMoveToAction(
-                context,
-                accountId,
-                mailboxDashBoardController.sessionCurrent!,
-                email,
-                mailboxContain,
-                destinationMailbox);
-            }
-          });
-      } else {
-        final destinationMailbox = await push(
-          AppRoutes.destinationPicker,
-          arguments: arguments);
+      final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-        if (destinationMailbox != null &&
+      if (destinationMailbox != null &&
           context.mounted &&
           destinationMailbox is PresentationMailbox &&
-          mailboxDashBoardController.sessionCurrent != null) {
-          _dispatchMoveToAction(
-            context,
-            accountId,
-            mailboxDashBoardController.sessionCurrent!,
-            email,
-            mailboxContain,
-            destinationMailbox);
-        }
+          mailboxDashBoardController.sessionCurrent != null
+      ) {
+        _dispatchMoveToAction(
+          context,
+          accountId,
+          mailboxDashBoardController.sessionCurrent!,
+          email,
+          mailboxContain,
+          destinationMailbox);
       }
     }
   }

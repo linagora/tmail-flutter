@@ -60,15 +60,13 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
 
   @override
   void initState() {
+    super.initState();
     if (widget.fromValue != null) {
       _controller = TextEditingController.fromValue(TextEditingValue(text: widget.fromValue!));
-    } else if (widget.controller != null) {
-      _controller = widget.controller!;
     } else {
-      _controller = TextEditingController();
+      _controller = widget.controller ?? TextEditingController();
     }
     _textDirection = widget.textDirection;
-    super.initState();
   }
 
   @override

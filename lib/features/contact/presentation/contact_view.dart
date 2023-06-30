@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_controller.dart';
-import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/utils/contact_utils.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/app_bar_contact_widget.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
@@ -20,23 +19,7 @@ class ContactView extends GetWidget<ContactController> {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
 
-  @override
-  final controller = Get.find<ContactController>();
-
-  ContactView({Key? key}) : super(key: key) {
-    controller.arguments = Get.arguments;
-  }
-
-  ContactView.fromArguments(
-      ContactArguments arguments, {
-      Key? key,
-      SelectedContactCallbackAction? onSelectedContactCallback,
-      VoidCallback? onDismissCallback
-  }) : super(key: key) {
-    controller.arguments = arguments;
-    controller.onSelectedContactCallback = onSelectedContactCallback;
-    controller.onDismissContactView = onDismissCallback;
-  }
+  ContactView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +65,7 @@ class ContactView extends GetWidget<ContactController> {
                           imagePaths: _imagePaths,
                           searchQuery: controller.searchQuery.value,
                           searchFocusNode: controller.textInputSearchFocus,
-                          searchInputController :controller.textInputSearchController,
+                          searchInputController: controller.textInputSearchController,
                           hasBackButton: false,
                           hasSearchButton: true,
                           padding: EdgeInsets.zero,

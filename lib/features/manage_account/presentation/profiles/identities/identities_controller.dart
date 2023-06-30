@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/identit
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class IdentitiesController extends BaseController {
@@ -152,27 +153,14 @@ class IdentitiesController extends BaseController {
     if (accountId != null && session != null && userProfile != null) {
       final arguments = IdentityCreatorArguments(accountId, session, userProfile);
 
-      if (PlatformInfo.isWeb) {
-        showDialogIdentityCreator(
-            context: context,
-            arguments: arguments,
-            onCreatedIdentity: (arguments) {
-              if (arguments is CreateNewIdentityRequest) {
-                _createNewIdentityAction(session, accountId, arguments);
-              } else if (arguments is EditIdentityRequest) {
-                _editIdentityAction(session, accountId, arguments);
-              }
-            });
-      } else {
-        final newIdentityArguments = await push(
-          AppRoutes.identityCreator,
-          arguments: arguments);
+      final newIdentityArguments = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
+        : await push(AppRoutes.identityCreator, arguments: arguments);
 
-        if (newIdentityArguments is CreateNewIdentityRequest) {
-          _createNewIdentityAction(session, accountId, newIdentityArguments);
-        } else if (newIdentityArguments is EditIdentityRequest) {
-          _editIdentityAction(session, accountId, newIdentityArguments);
-        }
+      if (newIdentityArguments is CreateNewIdentityRequest) {
+        _createNewIdentityAction(session, accountId, newIdentityArguments);
+      } else if (newIdentityArguments is EditIdentityRequest) {
+        _editIdentityAction(session, accountId, newIdentityArguments);
       }
     }
   }
@@ -271,33 +259,20 @@ class IdentitiesController extends BaseController {
     final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null && userProfile != null) {
       final arguments = IdentityCreatorArguments(
-          accountId,
-          session,
-          userProfile,
-          identity: identity,
-          actionType: IdentityActionType.edit);
+        accountId,
+        session,
+        userProfile,
+        identity: identity,
+        actionType: IdentityActionType.edit);
 
-      if (PlatformInfo.isWeb) {
-        showDialogIdentityCreator(
-            context: context,
-            arguments: arguments,
-            onCreatedIdentity: (arguments) {
-              if (arguments is CreateNewIdentityRequest) {
-                _createNewIdentityAction(session, accountId, arguments);
-              } else if (arguments is EditIdentityRequest) {
-                _editIdentityAction(session, accountId, arguments);
-              }
-            });
-      } else {
-        final newIdentityArguments = await push(
-          AppRoutes.identityCreator,
-          arguments: arguments);
+      final newIdentityArguments = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
+        : await push(AppRoutes.identityCreator, arguments: arguments);
 
-        if (newIdentityArguments is CreateNewIdentityRequest) {
-          _createNewIdentityAction(session, accountId, newIdentityArguments);
-        } else if (newIdentityArguments is EditIdentityRequest) {
-          _editIdentityAction(session, accountId, newIdentityArguments);
-        }
+      if (newIdentityArguments is CreateNewIdentityRequest) {
+        _createNewIdentityAction(session, accountId, newIdentityArguments);
+      } else if (newIdentityArguments is EditIdentityRequest) {
+        _editIdentityAction(session, accountId, newIdentityArguments);
       }
     }
   }

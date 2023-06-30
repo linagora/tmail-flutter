@@ -20,7 +20,6 @@ import 'package:model/account/authentication_type.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/view_as_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
@@ -55,8 +54,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 abstract class BaseController extends GetxController
     with MessageDialogActionMixin,
-        PopupContextMenuActionMixin,
-        ViewAsDialogActionMixin {
+        PopupContextMenuActionMixin {
 
   final CachingManager cachingManager = Get.find<CachingManager>();
   final languageCacheManager = Get.find<LanguageCacheManager>();
