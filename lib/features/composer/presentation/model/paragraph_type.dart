@@ -29,6 +29,23 @@ enum ParagraphType {
     }
   }
 
+  String get summernoteNameAPI {
+    switch(this) {
+      case ParagraphType.alignLeft:
+        return 'justifyLeft';
+      case ParagraphType.alignRight:
+        return 'justifyRight';
+      case ParagraphType.alignCenter:
+        return 'justifyCenter';
+      case ParagraphType.justify:
+        return 'justifyFull';
+      case ParagraphType.indent:
+        return 'indent';
+      case ParagraphType.outdent:
+        return 'outdent';
+    }
+  }
+
   String getIcon(ImagePaths imagePaths) {
     switch (this) {
       case ParagraphType.alignLeft:

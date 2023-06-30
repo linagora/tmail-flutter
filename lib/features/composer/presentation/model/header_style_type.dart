@@ -58,6 +58,27 @@ enum HeaderStyleType {
     }
   }
 
+  String get summernoteNameAPI {
+    switch (this) {
+      case HeaderStyleType.normal:
+        return 'formatPara';
+      case HeaderStyleType.h1:
+        return 'formatH1';
+      case HeaderStyleType.h2:
+        return 'formatH2';
+      case HeaderStyleType.h3:
+        return 'formatH3';
+      case HeaderStyleType.h4:
+        return 'formatH4';
+      case HeaderStyleType.h5:
+        return 'formatH5';
+      case HeaderStyleType.h6:
+        return 'formatH6';
+      default:
+        return '';
+    }
+  }
+
   double get textSize {
     switch(this) {
       case HeaderStyleType.normal:
