@@ -178,28 +178,14 @@ class ComposerController extends BaseController {
       } else {
         contentHtml = await richTextWebController.editorController.getText();
       }
-      log('ComposerController::_getEmailBodyText():WEB: contentHtml: $contentHtml');
       final newContentHtml = contentHtml.removeEditorStartTag();
-      log('ComposerController::_getEmailBodyText():WEB: newContentHtml: $newContentHtml');
+      log('ComposerController::_getEmailBodyText()::WEB:contentHtml: $contentHtml | newContentHtml: $newContentHtml');
       return newContentHtml;
     } else {
       String contentHtml = await htmlEditorApi?.getText() ?? '';
-      log('ComposerController::_getEmailBodyText():MOBILE: $contentHtml');
       final newContentHtml = contentHtml.removeEditorStartTag();
-      if (changedEmail) {
-        return newContentHtml;
-      } else if (_isMobileApp && identitySelected.value?.signatureAsString.isNotEmpty == true) {
-        await htmlEditorApi?.removeSignature();
-        await htmlEditorApi?.insertSignature(identitySelected.value!.signatureAsString.asSignatureHtml());
-
-        contentHtml = await htmlEditorApi?.getText() ?? '';
-        final contentHtmlWithSignature = contentHtml.removeEditorStartTag();
-        log('ComposerController::_getEmailBodyText():MOBILE:SIGNATURE: $contentHtmlWithSignature');
-
-        return contentHtmlWithSignature;
-      } else {
-        return newContentHtml;
-      }
+      log('ComposerController::_getEmailBodyText()::Mobile:contentHtml: $contentHtml | newContentHtml: $newContentHtml');
+      return newContentHtml;
     }
   }
 
@@ -1406,12 +1392,6 @@ class ComposerController extends BaseController {
     }
   }
 
-  bool get _isMobileApp {
-    return PlatformInfo.isMobile
-      && currentContext != null
-      && (_responsiveUtils.isLandscapeMobile(currentContext!) || _responsiveUtils.isPortraitMobile(currentContext!));
-  }
-
   Future<void> _applyIdentityForAllFieldComposer(
     Identity? formerIdentity,
     Identity newIdentity
@@ -1422,21 +1402,19 @@ class ComposerController extends BaseController {
         _removeBccEmailAddressFromFormerIdentity(formerIdentity.bcc!);
       }
 
-      if (!_isMobileApp) {
-        await _removeSignature();
-      }
+      await _removeSignature();
     }
     // Add new identity
     if (newIdentity.bcc?.isNotEmpty == true) {
-      await _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
+      _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
     }
 
-    if (!_isMobileApp && newIdentity.signatureAsString.isNotEmpty == true) {
+    if (newIdentity.signatureAsString.isNotEmpty == true) {
       await _applySignature(newIdentity.signatureAsString.asSignatureHtml());
     }
   }
 
-  Future<void> _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
+  void _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
     if (!listEmailAddressType.contains(PrefixEmailAddress.bcc)) {
       listEmailAddressType.add(PrefixEmailAddress.bcc);
     }
@@ -1445,8 +1423,6 @@ class ComposerController extends BaseController {
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.value = ExpandMode.COLLAPSE;
     _updateStatusEmailSendButton();
-
-    return Future.value(null);
   }
 
   void _removeBccEmailAddressFromFormerIdentity(Set<EmailAddress> listEmailAddress) {
