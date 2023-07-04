@@ -72,7 +72,8 @@ class DownloadAttachmentsInteractor {
       }
     } catch (exception) {
       log('DownloadAttachmentsInteractor::execute(): $exception');
-      if (exception is DownloadAttachmentHasTokenExpiredException) {
+      if (exception is DownloadAttachmentHasTokenExpiredException &&
+          exception.refreshToken.isNotEmpty) {
         yield* _retryDownloadAttachments(
             accountId,
             baseDownloadUrl,
