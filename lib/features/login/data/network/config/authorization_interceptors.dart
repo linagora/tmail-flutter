@@ -79,6 +79,7 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
     log('AuthorizationInterceptors::onError(): $err');
     if (_isTokenExpired() &&
         err.response?.statusCode == 401 &&
+        _isRefreshTokenNotEmpty() &&
         _isAuthenticationOidcValid()) {
       try {
         final newToken = await _authenticationClient.refreshingTokensOIDC(
@@ -138,6 +139,8 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
     }
     return false;
   }
+
+  bool _isRefreshTokenNotEmpty() => _token != null && _token!.refreshToken.isNotEmpty;
 
   String _getAuthorizationAsBasicHeader(String? authorization) => 'Basic $authorization';
 
