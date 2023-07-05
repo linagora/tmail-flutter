@@ -156,7 +156,7 @@ dependencies:
 
   worker_manager: 5.0.3
 
-  async: 2.10.0
+  async: 2.11.0
 
   html: 0.15.1
 
