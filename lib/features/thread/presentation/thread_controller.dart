@@ -5,7 +5,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide SearchController;
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';

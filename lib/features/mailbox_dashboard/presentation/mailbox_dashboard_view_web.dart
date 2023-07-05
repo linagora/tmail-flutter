@@ -1,5 +1,5 @@
 import 'package:core/core.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide SearchController;
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
