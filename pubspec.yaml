@@ -145,8 +145,8 @@ dependencies:
 
   flutter_portal: 1.1.3
 
-  # flutter_localizations depends on intl 0.17.0
-  timeago: 3.3.0
+  # flutter_localizations depends on intl 0.18.0
+  timeago: 3.5.0
 
   better_open_file: 3.6.4
 
