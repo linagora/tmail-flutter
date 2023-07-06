@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbo
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -104,18 +105,24 @@ class DestinationPickerController extends BaseMailboxController {
   }
 
   @override
-  void handleSuccessViewState(Success success) {
+  void handleSuccessViewState(Success success) async {
     super.handleSuccessViewState(success);
-    if (success is GetAllMailboxSuccess) {
+    if (success is GetAllMailboxSuccess)  {
       if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
-        buildTree(
+        await buildTree(
           success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes,
           mailboxIdSelected: mailboxIdSelected);
       } else {
-        buildTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+        await buildTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+      }
+      if (currentContext != null) {
+        await syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is RefreshChangesAllMailboxSuccess) {
-      refreshTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+      await refreshTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
+      if (currentContext != null) {
+        await syncAllMailboxWithDisplayName(currentContext!);
+      }
     } else if (success is SearchMailboxSuccess) {
       _searchMailboxSuccess(success);
     } else if (success is CreateNewMailboxSuccess) {
@@ -271,13 +278,17 @@ class DestinationPickerController extends BaseMailboxController {
     listMailboxSearched.clear();
   }
 
-  void searchMailbox(String value) {
+  void searchMailbox(BuildContext context, String value) {
     searchQuery.value = SearchQuery(value);
     final searchableMailboxList = mailboxAction.value == MailboxActions.moveEmail
       ? allMailboxes
       : allMailboxes.listPersonalMailboxes;
 
-    _searchMailboxAction(searchableMailboxList, searchQuery.value);
+    final mailboxListWithDisplayName = searchableMailboxList
+      .map((mailbox) => mailbox.withDisplayName(mailbox.getDisplayName(context)))
+      .toList();
+
+    _searchMailboxAction(mailboxListWithDisplayName, searchQuery.value);
   }
 
   void _searchMailboxAction(List<PresentationMailbox> allMailboxes, SearchQuery searchQuery) {

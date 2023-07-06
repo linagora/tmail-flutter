@@ -12,12 +12,21 @@ class SearchMailboxInteractor {
       yield Right<Failure, Success>(LoadingSearchMailbox());
 
       final resultList = mailboxes
-        .where((mailbox) => mailbox.name?.name.toLowerCase().contains(searchQuery.value.toLowerCase()) == true)
+        .where((mailbox) => _matchMailboxByQuery(mailbox, searchQuery))
         .toList();
 
       yield Right<Failure, Success>(SearchMailboxSuccess(resultList));
     } catch (exception) {
       yield Left<Failure, Success>(SearchMailboxFailure(exception));
+    }
+  }
+
+  bool _matchMailboxByQuery(PresentationMailbox mailbox, SearchQuery searchQuery) {
+    if (mailbox.displayName == null) {
+      return false;
+    } else {
+      return mailbox.displayName!.toLowerCase().contains(searchQuery.value.toLowerCase()) ||
+        searchQuery.value.toLowerCase().contains(mailbox.displayName!.toLowerCase());
     }
   }
 }
