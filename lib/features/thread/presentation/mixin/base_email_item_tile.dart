@@ -34,8 +34,8 @@ mixin BaseEmailItemTile {
   ) {
     if (hasMailboxLabel(isSearchEmailRunning, email)) {
       return Container(
-          margin: const EdgeInsets.only(left: 8),
-          padding: const EdgeInsets.symmetric(
+          margin: const EdgeInsetsDirectional.only(start: 8),
+          padding: const EdgeInsetsDirectional.symmetric(
               horizontal: 8,
               vertical: 3),
           constraints: const BoxConstraints(maxWidth: 100),
@@ -248,8 +248,8 @@ mixin BaseEmailItemTile {
         height: iconSize ?? 48,
         alignment: Alignment.center,
         padding: responsiveUtils.isDesktop(context)
-            ? const EdgeInsets.symmetric(horizontal: 4)
-            : const EdgeInsets.all(12),
+            ? const EdgeInsetsDirectional.symmetric(horizontal: 4)
+            : const EdgeInsetsDirectional.all(12),
         child: SvgPicture.asset(
             email.selectMode == SelectMode.ACTIVE
                 ? imagePaths.icSelected

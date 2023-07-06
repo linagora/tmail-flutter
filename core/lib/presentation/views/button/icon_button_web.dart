@@ -12,7 +12,7 @@ Widget buildIconWeb({
   required Widget icon,
   String? tooltip,
   IconWebCallback? onTap,
-  EdgeInsets? iconPadding,
+  EdgeInsetsGeometry? iconPadding,
   double? iconSize,
   double? splashRadius,
   double? minSize,
@@ -38,7 +38,7 @@ Widget buildIconWeb({
 Widget buildSVGIconButton({
   required String icon,
   String? tooltip,
-  EdgeInsets? padding,
+  EdgeInsetsGeometry? padding,
   double? iconSize,
   Color? iconColor,
   OnTapIconButtonCallbackAction? onTap,
@@ -127,7 +127,7 @@ Widget buildTextCircleButton(String text, {
 
 Widget buildTextIcon(String text, {
   TextStyle? textStyle,
-  EdgeInsets? padding,
+  EdgeInsetsGeometry? padding,
   IconWebCallback? onTap,
 }) {
   return Material(
@@ -147,7 +147,7 @@ Widget buildTextButton(String text, {
   double? width,
   double? height,
   Color? backgroundColor,
-  EdgeInsets? padding,
+  EdgeInsetsGeometry? padding,
   double? radius,
   IconWebCallback? onTap,
   FocusNode? focusNode,
@@ -160,7 +160,7 @@ Widget buildTextButton(String text, {
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.resolveWith((states) => backgroundColor ?? AppColor.colorTextButton),
             elevation: MaterialStateProperty.resolveWith((states) => 0),
-            padding: MaterialStateProperty.resolveWith<EdgeInsets>(
+            padding: MaterialStateProperty.resolveWith<EdgeInsetsGeometry>(
                 (Set<MaterialState> states) => padding ?? const EdgeInsets.symmetric(horizontal: 8)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius ?? 0)))),
         child: Text(
@@ -182,7 +182,7 @@ Widget buildButtonWrapText(String name, {
   double? radius,
   double? height,
   double? minWidth,
-  EdgeInsets? padding,
+  EdgeInsetsGeometry? padding,
   FocusNode? focusNode,
   IconWebCallback? onTap
 }) {
