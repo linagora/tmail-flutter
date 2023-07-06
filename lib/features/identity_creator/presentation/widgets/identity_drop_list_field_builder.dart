@@ -65,7 +65,7 @@ class IdentityDropListFieldBuilder extends StatelessWidget {
           onChanged: onSelectItemDropList,
           buttonStyleData: ButtonStyleData(
             height: 44,
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsetsDirectional.only(end: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppColor.colorInputBorderCreateMailbox, width: 0.5),
