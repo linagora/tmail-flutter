@@ -387,22 +387,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         _buildCheckboxIdentityDefault(context),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsetsDirectional.only(
               top: 24.0,
               bottom: 40.0,
-              left: AppUtils.isDirectionRTL(context) ? 0 : 12,
-              right: AppUtils.isDirectionRTL(context) ? 12 : 0
+              start: 12,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    right: AppUtils.isDirectionRTL(context) ? 0 : 12,
-                    left: AppUtils.isDirectionRTL(context) ? 12 : 0
-                  ),
-                  child: _buildCancelButton(context, width: 156),
-                ),
+                _buildCancelButton(context, width: 156),
+                const SizedBox(width: 12),
                 _buildSaveButton(context, width: 156),
               ],
             ),
