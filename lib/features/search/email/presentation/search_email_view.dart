@@ -122,6 +122,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             textInputAction: TextInputAction.search,
             controller: controller.textInputSearchController,
             focusNode: controller.textInputSearchFocus,
+            maxLines: 1,
             textDirection: DirectionUtils.getDirectionByLanguage(context),
             textStyle: const TextStyle(color: Colors.black, fontSize: 16),
             keyboardType: TextInputType.text,

@@ -104,6 +104,7 @@ class SearchAppBarWidget extends StatelessWidget {
       onTextChange: onTextChangeSearchAction,
       onTextSubmitted: onSearchTextAction,
       cursorColor: AppColor.colorTextButton,
+      maxLines: 1,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       autoFocus: true,
       focusNode: searchFocusNode,

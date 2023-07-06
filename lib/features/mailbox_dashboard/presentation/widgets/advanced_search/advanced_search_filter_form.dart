@@ -360,6 +360,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         controller: textEditingController,
         readOnly: isSelectFormList,
         mouseCursor: mouseCursor,
+        maxLines: 1,
         textInputAction: isSelectFormList ? TextInputAction.done : TextInputAction.next,
         onTap: onTap,
         onTextSubmitted: (value) {

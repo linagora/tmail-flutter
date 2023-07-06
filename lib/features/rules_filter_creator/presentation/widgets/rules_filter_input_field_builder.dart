@@ -34,6 +34,7 @@ class RulesFilterInputField extends StatelessWidget {
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       keyboardType: TextInputType.text,
       focusNode: focusNode,
+      maxLines: 1,
       decoration: (RulesFilterInputDecorationBuilder()
         ..setContentPadding(const EdgeInsets.symmetric(vertical: PlatformInfo.isWeb ? 16 : 12, horizontal: 12))
         ..setHintText(hintText)
