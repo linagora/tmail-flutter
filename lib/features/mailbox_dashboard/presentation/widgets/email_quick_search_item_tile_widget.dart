@@ -13,7 +13,7 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
 
   final PresentationEmail _presentationEmail;
   final PresentationMailbox? _presentationMailbox;
-  final EdgeInsets? contentPadding;
+  final EdgeInsetsGeometry? contentPadding;
 
   EmailQuickSearchItemTileWidget(
       this._presentationEmail,
@@ -29,7 +29,7 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
         final maxWidthItem = constraints.maxWidth;
         log('EmailQuickSearchItemTileWidget::build(): maxWidthItem: $maxWidthItem');
         return Padding(
-          padding: contentPadding ?? const EdgeInsets.all(12),
+          padding: contentPadding ?? const EdgeInsetsDirectional.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,

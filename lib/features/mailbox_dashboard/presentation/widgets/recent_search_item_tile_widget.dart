@@ -10,7 +10,7 @@ class RecentSearchItemTileWidget extends StatelessWidget {
   final imagePath = Get.find<ImagePaths>();
 
   final RecentSearch recentSearch;
-  final EdgeInsets? contentPadding;
+  final EdgeInsetsGeometry? contentPadding;
 
   RecentSearchItemTileWidget(
       this.recentSearch, {
@@ -21,7 +21,7 @@ class RecentSearchItemTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: contentPadding ?? const EdgeInsets.all(12),
+      padding: contentPadding ?? const EdgeInsetsDirectional.all(12),
       child: Row(
         children: [
           SvgPicture.asset(imagePath.icClockSB),
