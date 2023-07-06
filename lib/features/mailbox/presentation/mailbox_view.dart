@@ -270,8 +270,8 @@ class MailboxView extends BaseMailboxView {
               splashRadius: 15,
               icon: SvgPicture.asset(
                   categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-                    ? imagePaths.icExpandFolder
-                    : DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icBack : imagePaths.icCollapseFolder,
+                    ? imagePaths.icArrowBottom
+                    : DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icArrowLeft : imagePaths.icArrowRight,
                   colorFilter: AppColor.primaryColor.asFilter(),
                   fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).collapse,
