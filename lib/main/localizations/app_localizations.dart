@@ -3009,6 +3009,65 @@ class AppLocalizations {
   }
 
   String get connectionError {
-    return Intl.message('Connection error');
+    return Intl.message(
+      'Connection error',
+      name: 'connectionError'
+    );
+  }
+
+  String get inboxMailboxDisplayName {
+    return Intl.message(
+      'Inbox',
+      name: 'inboxMailboxDisplayName',
+    );
+  }
+
+  String get sentMailboxDisplayName {
+    return Intl.message(
+      'Sent',
+      name: 'sentMailboxDisplayName',
+    );
+  }
+
+  String get outboxMailboxDisplayName {
+    return Intl.message(
+      'Outbox',
+      name: 'outboxMailboxDisplayName',
+    );
+  }
+
+  String get spamMailboxDisplayName {
+    return Intl.message(
+      'Spam',
+      name: 'spamMailboxDisplayName',
+    );
+  }
+
+  String get draftsMailboxDisplayName {
+    return Intl.message(
+      'Drafts',
+      name: 'draftsMailboxDisplayName',
+    );
+  }
+
+  String get trashMailboxDisplayName {
+    return Intl.message(
+      'Trash',
+      name: 'trashMailboxDisplayName',
+    );
+  }
+
+  String get templatesMailboxDisplayName {
+    return Intl.message(
+      'Templates',
+      name: 'templatesMailboxDisplayName',
+    );
+  }
+
+  String get archiveMailboxDisplayName {
+    return Intl.message(
+      'Archive',
+      name: 'archiveMailboxDisplayName',
+    );
   }
 }
