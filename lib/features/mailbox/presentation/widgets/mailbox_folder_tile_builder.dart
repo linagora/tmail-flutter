@@ -107,9 +107,6 @@ class MailBoxFolderTileBuilder {
                       color: backgroundColorItem),
                     padding: const EdgeInsets.all(8),
                     child: Row(
-                      crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
-                        ? CrossAxisAlignment.start
-                        : CrossAxisAlignment.end,
                       children: [
                         _buildLeadingMailboxItem(context),
                         const SizedBox(width: 4),
@@ -138,9 +135,6 @@ class MailBoxFolderTileBuilder {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Row(
-                      crossAxisAlignment: _mailboxNode.item.isTeamMailboxes
-                        ? CrossAxisAlignment.start
-                        : CrossAxisAlignment.center,
                       children: [
                         _buildLeadingMailboxItem(context),
                         const SizedBox(width: 8),
@@ -194,16 +188,16 @@ class MailBoxFolderTileBuilder {
           buildIconWeb(
             icon: SvgPicture.asset(
               _mailboxNode.expandMode == ExpandMode.EXPAND
-                ? _imagePaths.icExpandFolder
-                : DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
+                ? _imagePaths.icArrowBottom
+                : DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icArrowLeft : _imagePaths.icArrowRight,
               colorFilter: _mailboxNode.item.allowedToDisplay
                 ? AppColor.primaryColor.asFilter()
                 : AppColor.colorIconUnSubscribedMailbox.asFilter(),
-              fit: BoxFit.fill
+              fit: BoxFit.fill,
             ),
-            minSize: 12,
-            splashRadius: 10,
+            splashRadius: 12,
             iconPadding: EdgeInsets.zero,
+            minSize: 15,
             tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
               ? AppLocalizations.of(_context).collapse
               : AppLocalizations.of(_context).expand,
@@ -288,10 +282,8 @@ class MailBoxFolderTileBuilder {
 
   Widget _buildTitleFolderItem(BuildContext context, {bool showTrailingItem = true}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
               child: TextOverflowBuilder(

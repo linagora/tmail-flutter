@@ -199,6 +199,8 @@ dependencies:
 
   flutter_keyboard_visibility: 5.4.1
 
+  extended_text: 10.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

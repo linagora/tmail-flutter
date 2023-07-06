@@ -300,8 +300,8 @@ mixin MailboxWidgetMixin {
             minSize: 12,
             icon: SvgPicture.asset(
               expandMode == ExpandMode.EXPAND
-                ? imagePaths.icExpandFolder
-                : DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icBack : imagePaths.icCollapseFolder,
+                ? imagePaths.icArrowBottom
+                : DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icArrowLeft : imagePaths.icArrowRight,
               colorFilter: AppColor.primaryColor.asFilter(),
               fit: BoxFit.fill
             ),
@@ -359,7 +359,7 @@ mixin MailboxWidgetMixin {
     MailboxController controller
   ) {
     return Padding(
-      padding: const EdgeInsetsDirectional.only(start: 32, bottom: 8, end: 4),
+      padding: const EdgeInsetsDirectional.only(start: 32, end: 4),
       child: Row(children: [
         SvgPicture.asset(
           imagePaths.icAppDashboard,
