@@ -11,6 +11,7 @@ import 'package:focused_menu_custom/modals.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 
@@ -85,7 +86,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildTitleItem(),
+                    _buildTitleItem(context),
                     _buildSubtitleItem()
                   ]
                 )
@@ -133,7 +134,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitleItem(),
+                      _buildTitleItem(context),
                       _buildSubtitleItem()
                     ]
                   )
@@ -167,7 +168,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildTitleItem(),
+                    _buildTitleItem(context),
                     _buildSubtitleItem()
                   ]
                 )
@@ -202,9 +203,9 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
     );
   }
 
-  Widget _buildTitleItem() {
+  Widget _buildTitleItem(BuildContext context) {
     return TextOverflowBuilder(
-      (widget._presentationMailbox.name?.name ?? ''),
+      widget._presentationMailbox.getDisplayName(context),
       style: const TextStyle(
         fontSize: 15,
         color: Colors.black
