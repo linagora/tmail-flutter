@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -40,7 +41,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
             children: [
               const SizedBox(width: 8),
               _buildLeadingMailboxItem(context),
-              Expanded(child: _buildTitleFolderItem()),
+              Expanded(child: _buildTitleFolderItem(context)),
               if (!_mailboxNode.item.isDefault)
                 _buildSubscribeButton(context),
               const SizedBox(width: 32),
@@ -82,12 +83,12 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleFolderItem() {
+  Widget _buildTitleFolderItem(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          _mailboxNode.item.name?.name ?? '',
+          _mailboxNode.item.getDisplayName(context),
           maxLines: 1,
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
