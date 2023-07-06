@@ -195,13 +195,17 @@ class MailboxView extends BaseMailboxView {
               end: 16),
             padding: const EdgeInsetsDirectional.only(start: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(AppLocalizations.of(context).mailBoxes,
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context).mailBoxes,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                ),
                 Row(children: [
                   buildIconWeb(
                     minSize: 40,
