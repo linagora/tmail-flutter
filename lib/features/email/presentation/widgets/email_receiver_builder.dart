@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -41,16 +42,25 @@ class EmailReceiverBuilder extends StatelessWidget {
     return Obx(() => Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: _buildEmailAddressOfReceiver(
-          context,
-          emailSelected,
-          controller.isDisplayFullEmailAddress,
-          maxWidth
+        Expanded(child: Padding(
+          padding: EdgeInsets.only(top: controller.isDisplayFullEmailAddress
+            ? DirectionUtils.isDirectionRTLByLanguage(context) ? 3 : 5.5
+            : 0),
+          child: _buildEmailAddressOfReceiver(
+            context,
+            emailSelected,
+            controller.isDisplayFullEmailAddress,
+            maxWidth
+          ),
         )),
         if (controller.isDisplayFullEmailAddress)
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: EdgeInsets.symmetric(
+              vertical: DirectionUtils.isDirectionRTLByLanguage(context) ? 0 : 6),
             child: MaterialTextButton(
+              padding: DirectionUtils.isDirectionRTLByLanguage(context)
+                ? const EdgeInsets.symmetric(horizontal: 8, vertical: 4)
+                : null,
               onTap: controller.collapseEmailAddress,
               label: AppLocalizations.of(context).hide,
             )
@@ -142,37 +152,29 @@ class EmailReceiverBuilder extends StatelessWidget {
     PrefixEmailAddress prefixEmailAddress,
     bool isDisplayFull
   ) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: Text(
-              '${prefixEmailAddress.asName(context)}:',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColor.colorEmailAddressFull
-              )
-            ),
-          ),
-          if (!isDisplayFull && presentationEmail.numberOfAllEmailAddress() > 1)
-            _buildListEmailAddressWidget(
-              context,
-              prefixEmailAddress.listEmailAddress(presentationEmail),
-              isDisplayFull
-            )
-          else
-            Expanded(child: _buildListEmailAddressWidget(
-              context,
-              prefixEmailAddress.listEmailAddress(presentationEmail),
-              isDisplayFull
-            ))
-        ]
-      ),
+    return Row(
+      children: [
+        Text(
+          '${prefixEmailAddress.asName(context)}:',
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColor.colorEmailAddressFull
+          )
+        ),
+        if (!isDisplayFull && presentationEmail.numberOfAllEmailAddress() > 1)
+          _buildListEmailAddressWidget(
+            context,
+            prefixEmailAddress.listEmailAddress(presentationEmail),
+            isDisplayFull
+          )
+        else
+          Expanded(child: _buildListEmailAddressWidget(
+            context,
+            prefixEmailAddress.listEmailAddress(presentationEmail),
+            isDisplayFull
+          ))
+      ]
     );
   }
 
