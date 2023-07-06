@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 
@@ -59,7 +60,7 @@ class RuleFilterButtonField<T> extends StatelessWidget {
 
   String _getName(BuildContext context, T? value) {
     if (value is PresentationMailbox) {
-      return value.name?.name ?? '';
+      return value.getDisplayName(context);
     }
     if (value is rule_condition.Field) {
       return value.getTitle(context);

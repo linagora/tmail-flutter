@@ -177,6 +177,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                       _searchQuery
                     )),
                     buildMailboxContain(
+                      _context,
                       isSearchEmailRunning,
                       _presentationEmail
                     ),
@@ -265,6 +266,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                           _searchQuery
                         )),
                         buildMailboxContain(
+                          _context,
                           isSearchEmailRunning,
                           _presentationEmail
                         ),
@@ -488,6 +490,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   Widget _buildDateTimeForDesktopScreen() {
     return Row(children: [
       buildMailboxContain(
+        _context,
         isSearchEmailRunning,
         _presentationEmail
       ),

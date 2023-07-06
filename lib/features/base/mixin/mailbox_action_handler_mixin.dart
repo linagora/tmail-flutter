@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -28,14 +29,13 @@ mixin MailboxActionHandlerMixin {
     final session = dashboardController.sessionCurrent;
     final accountId = dashboardController.accountId.value;
     final mailboxId = presentationMailbox.id;
-    final mailboxName = presentationMailbox.name;
     final countEmailsUnread = presentationMailbox.unreadEmails?.value.value ?? 0;
-    if (session != null && accountId != null && mailboxName != null) {
+    if (session != null && accountId != null) {
       dashboardController.markAsReadMailbox(
         session,
         accountId,
         mailboxId,
-        mailboxName,
+        presentationMailbox.getDisplayName(context),
         countEmailsUnread.toInt()
       );
 

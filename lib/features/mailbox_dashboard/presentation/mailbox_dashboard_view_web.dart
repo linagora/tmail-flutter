@@ -393,7 +393,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             ..textStyle(const TextStyle(
                 fontSize: 12,
                 color: AppColor.colorTextButtonHeaderThread))
-            ..onPressActionClick(() => controller.markAsReadMailboxAction())
+            ..onPressActionClick(() => controller.markAsReadMailboxAction(context))
             ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
           .build(),
         ),

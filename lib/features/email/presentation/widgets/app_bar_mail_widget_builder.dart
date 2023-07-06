@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -74,7 +75,7 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                         constraints: BoxConstraints(
                             maxWidth: _responsiveUtils.getSizeScreenWidth(context) - 250),
                         child: Text(
-                            mailboxContain?.name?.name.capitalizeFirstEach ?? '',
+                            mailboxContain?.getDisplayName(context) ?? '',
                             maxLines: 1,
                             overflow: CommonTextStyle.defaultTextOverFlow,
                             softWrap: CommonTextStyle.defaultSoftWrap,

@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -9,6 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_number_of_unread_spam_emails_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_spam_mailbox_cached_state.dart';
@@ -64,7 +66,7 @@ class SpamReportController extends BaseController {
     }
   }
 
-  void dismissSpamReportAction() {
+  void dismissSpamReportAction(BuildContext context) {
     if (Get.isRegistered<MailboxDashBoardController>()) {
       final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
       final spamMailbox = _presentationSpamMailbox.value;
@@ -78,7 +80,7 @@ class SpamReportController extends BaseController {
           session,
           accountId,
           spamMailbox.id,
-          spamMailbox.name ?? MailboxName(''),
+          spamMailbox.getDisplayName(context),
           spamMailbox.unreadEmails?.value.value.toInt() ?? 0
         );
         _presentationSpamMailbox.value = null;

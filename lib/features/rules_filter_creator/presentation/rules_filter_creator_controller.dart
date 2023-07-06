@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -234,7 +235,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         mailboxSelected.value = destinationMailbox;
         errorRuleActionValue.value = _getErrorStringByInputValue(
           context,
-          mailboxSelected.value?.name?.name);
+          mailboxSelected.value?.getDisplayName(context));
       }
     }
   }
@@ -256,7 +257,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
       return;
     }
 
-    final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.name?.name);
+    final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.getDisplayName(context));
     if (errorAction?.isNotEmpty == true) {
       errorRuleActionValue.value = errorAction;
       if (currentOverlayContext != null && currentContext != null) {

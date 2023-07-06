@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
@@ -264,7 +265,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
           context,
           mailbox,
           dashboardController,
-          onMovingMailboxAction: _invokeMovingMailboxAction
+          onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
         );
         break;
       case MailboxActions.delete:
@@ -310,11 +311,16 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     }
   }
 
-  void _invokeMovingMailboxAction(PresentationMailbox mailboxSelected, PresentationMailbox? destinationMailbox) {
+  void _invokeMovingMailboxAction(
+    BuildContext context,
+    PresentationMailbox mailboxSelected,
+    PresentationMailbox? destinationMailbox
+  ) {
     final accountId = dashboardController.accountId.value;
     final session = dashboardController.sessionCurrent;
     if (session != null && accountId != null) {
       _handleMovingMailbox(
+        context,
         session,
         accountId,
         MoveAction.moving,
@@ -325,6 +331,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   }
 
   void _handleMovingMailbox(
+    BuildContext context,
     Session session,
     AccountId accountId,
     MoveAction moveAction,
@@ -338,7 +345,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         mailboxSelected.id,
         moveAction,
         destinationMailboxId: destinationMailbox?.id,
-        destinationMailboxName: destinationMailbox?.name,
+        destinationMailboxDisplayName: destinationMailbox?.getDisplayName(context),
         parentId: mailboxSelected.parentId
       )
     ));
@@ -348,7 +355,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     if (success.moveAction == MoveAction.moving && currentOverlayContext != null && currentContext != null) {
       _appToast.showToastMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).allMailboxes),
+        AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allMailboxes),
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
           _undoMovingMailbox(MoveMailboxRequest(

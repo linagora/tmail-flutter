@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_st
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
@@ -143,7 +144,12 @@ class AdvancedFilterController extends BaseController {
 
       if (destinationMailbox is PresentationMailbox) {
         _destinationMailboxSelected = destinationMailbox;
-        final mailboxName = destinationMailbox.name?.name;
+        String? mailboxName;
+        if (context.mounted) {
+          mailboxName = _destinationMailboxSelected?.getDisplayName(context);
+        } else {
+          mailboxName = _destinationMailboxSelected?.name?.name;
+        }
         mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
       }
     }
@@ -246,7 +252,7 @@ class AdvancedFilterController extends BaseController {
     if (searchEmailFilter.mailbox == null) {
       mailBoxFilterInputController.text = AppLocalizations.of(context).allMailboxes;
     } else {
-      mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.name?.name);
+      mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.getDisplayName(context));
     }
     hasAttachment.value = searchEmailFilter.hasAttachment;
   }

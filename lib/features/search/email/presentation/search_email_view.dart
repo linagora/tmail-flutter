@@ -537,8 +537,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 const SizedBox(width: 4),
                 Text(
                   filterSelected
-                      ? controller.simpleSearchFilter.value.mailboxName
-                      : AppLocalizations.of(context).mailbox,
+                    ? controller.simpleSearchFilter.value.getMailboxName(context)
+                    : AppLocalizations.of(context).mailbox,
                   maxLines: 1,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   softWrap: CommonTextStyle.defaultSoftWrap,
