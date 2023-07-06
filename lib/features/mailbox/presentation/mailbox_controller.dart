@@ -51,6 +51,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
@@ -615,7 +616,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           context,
           selectedMailboxList.first,
           mailboxDashBoardController,
-          onMovingMailboxAction: _invokeMovingMailboxAction
+          onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
         );
         break;
       default:
@@ -769,6 +770,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _handleMovingMailbox(
+    BuildContext context,
     Session session,
     AccountId accountId,
     MoveAction moveAction,
@@ -782,7 +784,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         mailboxSelected.id,
         moveAction,
         destinationMailboxId: destinationMailbox?.id,
-        destinationMailboxName: destinationMailbox?.name,
+        destinationMailboxDisplayName: destinationMailbox?.getDisplayName(context),
         parentId: mailboxSelected.parentId)));
   }
 
@@ -793,7 +795,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _appToast.showToastMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).moved_to_mailbox(
-              success.destinationMailboxName?.name ?? AppLocalizations.of(currentContext!).allMailboxes),
+              success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allMailboxes),
           actionName: AppLocalizations.of(currentContext!).undo,
           onActionClick: () {
             _undoMovingMailbox(MoveMailboxRequest(
@@ -905,7 +907,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           context,
           mailbox,
           mailboxDashBoardController,
-          onMovingMailboxAction: _invokeMovingMailboxAction
+          onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
         );
         break;
       case MailboxActions.markAsRead:
@@ -934,11 +936,16 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  void _invokeMovingMailboxAction(PresentationMailbox mailboxSelected, PresentationMailbox? destinationMailbox) {
+  void _invokeMovingMailboxAction(
+    BuildContext context,
+    PresentationMailbox mailboxSelected,
+    PresentationMailbox? destinationMailbox
+  ) {
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (session != null && accountId != null) {
       _handleMovingMailbox(
+        context,
         session,
         accountId,
         MoveAction.moving,

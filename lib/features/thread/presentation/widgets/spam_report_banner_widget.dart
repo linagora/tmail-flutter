@@ -74,8 +74,7 @@ class SpamReportBannerWidget extends StatelessWidget {
                           context,
                           AppLocalizations.of(context).dismiss,
                           AppColor.textFieldErrorBorderColor,
-                          () => spamReportController
-                              .dismissSpamReportAction()),
+                          () => spamReportController.dismissSpamReportAction(context)),
                     ),
                   ],
                 ),

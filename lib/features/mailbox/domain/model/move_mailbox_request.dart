@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 class MoveMailboxRequest with EquatableMixin {
 
   final MailboxId? destinationMailboxId;
-  final MailboxName? destinationMailboxName;
+  final String? destinationMailboxDisplayName;
   final MailboxId? parentId;
   final MailboxId mailboxId;
   final MoveAction moveAction;
@@ -17,7 +17,7 @@ class MoveMailboxRequest with EquatableMixin {
     {
       this.parentId,
       this.destinationMailboxId,
-      this.destinationMailboxName
+      this.destinationMailboxDisplayName
     }
   );
 
@@ -27,6 +27,6 @@ class MoveMailboxRequest with EquatableMixin {
     moveAction,
     parentId,
     destinationMailboxId,
-    destinationMailboxName
+    destinationMailboxDisplayName
   ];
 }

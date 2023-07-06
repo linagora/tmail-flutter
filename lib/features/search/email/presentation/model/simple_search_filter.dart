@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -165,5 +166,5 @@ extension SearchEmailFilterExtension on SimpleSearchFilter {
     }
   }
 
-  String get mailboxName => mailbox?.name?.name ?? '';
+  String getMailboxName(BuildContext context) => mailbox?.getDisplayName(context) ?? '';
 }

@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/app_bar_mailbox_creator_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
@@ -154,7 +155,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                     fit: BoxFit.fill)),
                 const SizedBox(width: 12),
                 Expanded(child: Obx(() => Text(
-                  controller.selectedMailbox.value?.name?.name ?? AppLocalizations.of(context).allMailboxes,
+                  controller.selectedMailbox.value?.getDisplayName(context) ?? AppLocalizations.of(context).allMailboxes,
                   maxLines: 1,
                   softWrap: CommonTextStyle.defaultSoftWrap,
                   overflow: CommonTextStyle.defaultTextOverFlow,
