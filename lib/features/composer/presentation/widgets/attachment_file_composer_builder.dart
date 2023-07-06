@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:extended_text/extended_text.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -73,15 +74,29 @@ class AttachmentFileComposerBuilder extends StatelessWidget with AppLoaderMixin 
                     0.0),
                   child: Padding(
                     padding: const EdgeInsetsDirectional.only(end: PlatformInfo.isWeb ? 20 : 16),
-                    child: Text(
+                    child: ExtendedText(
                       fileState.fileName,
                       maxLines: 1,
-                      softWrap: CommonTextStyle.defaultSoftWrap,
                       overflow: CommonTextStyle.defaultTextOverFlow,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      overflowWidget: TextOverflowWidget(
+                        position: Directionality.maybeOf(context) == TextDirection.rtl
+                          ? TextOverflowPosition.start
+                          : TextOverflowPosition.end,
+                        child: const Text(
+                          '...',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500
+                          ),
+                        ),
+                      ),
                       style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500),
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500
+                      ),
                     ),
                   )
               ),
