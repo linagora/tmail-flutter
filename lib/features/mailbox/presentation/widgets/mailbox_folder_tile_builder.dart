@@ -14,6 +14,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -294,7 +295,7 @@ class MailBoxFolderTileBuilder {
           children: [
             Expanded(
               child: TextOverflowBuilder(
-                (_mailboxNode.item.name?.name ?? ''),
+                _mailboxNode.item.getDisplayName(context),
                 style: TextStyle(
                   fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 15,
                   color: _mailboxNode.item.isTeamMailboxes ? Colors.black : AppColor.colorNameEmail,
