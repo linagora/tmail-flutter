@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -211,19 +211,30 @@ class EmailAddressInputBuilder {
             tagBuilder: (context, index) {
               final isLastEmail = index == listEmailAddress.length - 1;
               return Stack(
-                alignment: Alignment.centerRight,
+                alignment: AlignmentDirectional.centerEnd,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(
-                      top: kIsWeb ? 8 : 0,
-                      right: _isCollapse ? 50 : 0),
+                    padding: EdgeInsetsDirectional.only(
+                      top: PlatformInfo.isWeb ? 8 : 0,
+                      end: _isCollapse ? 50 : 0),
                     child: InkWell(
                       onTap: () => _isCollapse
                         ? _onShowFullListEmailAddressAction?.call(_prefixEmailAddress)
                         : null,
                       child: Chip(
-                        labelPadding: const EdgeInsets.only(left: 12, right: 12, bottom: 2),
-                        label: Text(newListEmailAddress[index].asString(), maxLines: 1, overflow: kIsWeb ? null : TextOverflow.ellipsis),
+                        padding: DirectionUtils.isDirectionRTLByLanguage(context)
+                          ? EdgeInsets.zero
+                          : null,
+                        labelPadding: EdgeInsetsDirectional.symmetric(
+                          horizontal: 12,
+                          vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(newListEmailAddress[index].asString()) ? 0 : 2
+                        ),
+                        label: Text(
+                          newListEmailAddress[index].asString(),
+                          maxLines: 1,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                        ),
                         deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
                         labelStyle: const TextStyle(color: Colors.black, fontSize: 17, fontWeight: FontWeight.normal),
                         backgroundColor: _getTagBackgroundColor(listEmailAddress[index], isLastEmail),
@@ -309,12 +320,16 @@ class EmailAddressInputBuilder {
 
   Widget _buildCounter(BuildContext context, int count) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8, top: kIsWeb ? 8 : 0),
+      padding: const EdgeInsetsDirectional.only(start: 8, top: PlatformInfo.isWeb ? 8 : 0),
       child: InkWell(
         onTap: () => _onShowFullListEmailAddressAction?.call(_prefixEmailAddress),
         child: Chip(
           labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-          label: Text('+$count', maxLines: 1, overflow: kIsWeb ? null : TextOverflow.ellipsis),
+          label: Text(
+            '+$count',
+            maxLines: 1,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap),
           labelStyle: const TextStyle(color: Colors.black, fontSize: 17, fontWeight: FontWeight.normal),
           backgroundColor: AppColor.colorEmailAddressTag,
           shape: RoundedRectangleBorder(

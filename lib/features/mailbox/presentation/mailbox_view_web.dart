@@ -115,11 +115,14 @@ class MailboxView extends BaseMailboxView {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppLocalizations.of(context).mailBoxes,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold)),
+                  Expanded(child: Text(
+                    AppLocalizations.of(context).mailBoxes,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold
+                    )
+                  )),
                   Padding(
                     padding: EdgeInsetsDirectional.only(end: responsiveUtils.isDesktop(context) ? 0 : 12),
                     child: Row(
