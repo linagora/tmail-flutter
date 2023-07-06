@@ -1,5 +1,4 @@
 
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -8,7 +7,6 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   String getDisplayName(BuildContext context) {
     if (isDefault) {
-      log("PresentationMailboxExtension::getDisplayName:Role: $role | MailboxName: $name");
       switch(role!.value.toLowerCase()) {
         case PresentationMailbox.inboxRole:
           return AppLocalizations.of(context).inboxMailboxDisplayName;
