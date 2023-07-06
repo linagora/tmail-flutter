@@ -412,7 +412,7 @@ abstract class BaseMailboxController extends BaseController {
   }) {
     if (responsiveUtils.isLandscapeMobile(context) || responsiveUtils.isPortraitMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
+        ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.getDisplayName(context)))
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
         ..onConfirmAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
       ).show();
@@ -424,7 +424,7 @@ abstract class BaseMailboxController extends BaseController {
           child: (ConfirmDialogBuilder(imagePaths)
           ..key(const Key('confirm_dialog_delete_mailbox'))
           ..title(AppLocalizations.of(context).delete_mailboxes)
-          ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.name?.name ?? ''))
+          ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.getDisplayName(context)))
           ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
           ..colorConfirmButton(AppColor.colorConfirmActionDialog)
           ..styleTextConfirmButton(const TextStyle(

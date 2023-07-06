@@ -50,7 +50,6 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
-      mailboxNames: mailboxNames,
       selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain
@@ -73,7 +72,6 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
-      mailboxNames: mailboxNames,
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain
@@ -133,15 +131,7 @@ extension PresentationEmailExtension on PresentationEmail {
   PresentationEmail toSearchPresentationEmail(Map<MailboxId, PresentationMailbox> mapMailboxes) {
     mailboxIds?.removeWhere((key, value) => !value);
 
-    final listMailboxId = mailboxIds?.entries
-      .where((entry) => entry.value)
-      .map((entry) => entry.key)
-      .toList();
-
-    final listMailboxName = listMailboxId
-      ?.map((mailboxId) => mapMailboxes.containsKey(mailboxId) ? mapMailboxes[mailboxId]?.name : null)
-      .where((mailboxName) => mailboxName != null)
-      .toList();
+    final matchedMailbox = findMailboxContain(mapMailboxes);
 
     return PresentationEmail(
       id: this.id,
@@ -158,10 +148,9 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
-      mailboxNames: listMailboxName,
       selectMode: selectMode,
       routeWeb: routeWeb,
-      mailboxContain: mailboxContain
+      mailboxContain: matchedMailbox
     );
   }
 
@@ -194,7 +183,6 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
-      mailboxNames: mailboxNames,
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain
@@ -217,7 +205,6 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
-      mailboxNames: mailboxNames,
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain
@@ -240,7 +227,6 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
-      mailboxNames: mailboxNames,
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain

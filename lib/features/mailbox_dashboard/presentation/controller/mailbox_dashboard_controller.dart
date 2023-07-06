@@ -53,6 +53,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
@@ -1062,7 +1063,7 @@ class MailboxDashBoardController extends ReloadableController {
         ..messageText(actionType.getContentDialog(
             context,
             count: listEmails?.length,
-            mailboxName: mailboxCurrent?.name?.name))
+            mailboxName: mailboxCurrent?.getDisplayName(context)))
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
         ..onConfirmAction(
             actionType.getConfirmActionName(context),
@@ -1081,7 +1082,7 @@ class MailboxDashBoardController extends ReloadableController {
               ..content(actionType.getContentDialog(
                   context,
                   count: listEmails?.length,
-                  mailboxName: mailboxCurrent?.name?.name))
+                  mailboxName: mailboxCurrent?.getDisplayName(context)))
               ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
               ..colorConfirmButton(AppColor.colorConfirmActionDialog)
               ..styleTextConfirmButton(const TextStyle(
@@ -1253,14 +1254,19 @@ class MailboxDashBoardController extends ReloadableController {
     filterMessageOption.value = FilterMessageOption.all;
   }
 
-  void markAsReadMailboxAction() {
+  void markAsReadMailboxAction(BuildContext context) {
     final session = sessionCurrent;
     final currentAccountId = accountId.value;
     final mailboxId = selectedMailbox.value?.id;
-    final mailboxName = selectedMailbox.value?.name;
     final countEmailsUnread = selectedMailbox.value?.unreadEmails?.value.value ?? 0;
-    if (session != null && currentAccountId != null && mailboxId != null && mailboxName != null) {
-      markAsReadMailbox(session, currentAccountId, mailboxId, mailboxName, countEmailsUnread.toInt());
+    if (session != null && currentAccountId != null && mailboxId != null) {
+      markAsReadMailbox(
+        session,
+        currentAccountId,
+        mailboxId,
+        selectedMailbox.value?.getDisplayName(context) ?? '',
+        countEmailsUnread.toInt()
+      );
     }
   }
 
@@ -1268,14 +1274,14 @@ class MailboxDashBoardController extends ReloadableController {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
-    MailboxName mailboxName,
+    String mailboxDisplayName,
     int totalEmailsUnread
   ) {
     consumeState(_markAsMailboxReadInteractor.execute(
       session,
       accountId,
       mailboxId,
-      mailboxName,
+      mailboxDisplayName,
       totalEmailsUnread,
       _progressStateController));
   }
@@ -1287,14 +1293,14 @@ class MailboxDashBoardController extends ReloadableController {
       if (currentContext != null && currentOverlayContext != null) {
         _appToast.showToastSuccessMessage(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadSuccess(success.mailboxName.name),
+          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadSuccess(success.mailboxDisplayName),
           leadingSVGIcon: _imagePaths.icReadToast);
       }
     } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
       if (currentContext != null && currentOverlayContext != null) {
         _appToast.showToastSuccessMessage(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadHasSomeEmailFailure(success.mailboxName.name, success.countEmailsRead),
+          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadHasSomeEmailFailure(success.mailboxDisplayName, success.countEmailsRead),
           leadingSVGIcon: _imagePaths.icReadToast);
       }
     }

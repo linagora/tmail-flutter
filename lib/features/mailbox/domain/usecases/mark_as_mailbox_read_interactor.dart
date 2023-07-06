@@ -19,7 +19,7 @@ class MarkAsMailboxReadInteractor {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
-    MailboxName mailboxName,
+    String mailboxDisplayName,
     int totalEmailUnread,
     StreamController<Either<Failure, Success>> onProgressController
   ) async* {
@@ -44,15 +44,15 @@ class MarkAsMailboxReadInteractor {
 
       if (totalEmailUnread == listEmails.length) {
         yield Right(MarkAsMailboxReadAllSuccess(
-            mailboxName,
-            currentEmailState: currentEmailState,
-            currentMailboxState: currentMailboxState));
+          mailboxDisplayName,
+          currentEmailState: currentEmailState,
+          currentMailboxState: currentMailboxState));
       } else if (listEmails.isNotEmpty) {
         yield Right(MarkAsMailboxReadHasSomeEmailFailure(
-            mailboxName,
-            listEmails.length,
-            currentEmailState: currentEmailState,
-            currentMailboxState: currentMailboxState));
+          mailboxDisplayName,
+          listEmails.length,
+          currentEmailState: currentEmailState,
+          currentMailboxState: currentMailboxState));
       } else {
         yield Left(MarkAsMailboxReadAllFailure());
       }

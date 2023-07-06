@@ -12,7 +12,7 @@ class MoveMailboxSuccess extends UIActionState {
   final MoveAction moveAction;
   final MailboxId? parentId;
   final MailboxId? destinationMailboxId;
-  final MailboxName? destinationMailboxName;
+  final String? destinationMailboxDisplayName;
 
   MoveMailboxSuccess(
     this.mailboxIdSelected,
@@ -20,7 +20,7 @@ class MoveMailboxSuccess extends UIActionState {
     {
       this.parentId,
       this.destinationMailboxId,
-      this.destinationMailboxName,
+      this.destinationMailboxDisplayName,
       jmap.State? currentEmailState,
       jmap.State? currentMailboxState,
     }
@@ -29,14 +29,17 @@ class MoveMailboxSuccess extends UIActionState {
   @override
   List<Object?> get props => [
     mailboxIdSelected,
+    moveAction,
     parentId,
-    destinationMailboxId];
+    destinationMailboxId,
+    destinationMailboxDisplayName,
+    ...super.props
+  ];
 }
 
 class MoveMailboxFailure extends FeatureFailure {
-  final dynamic exception;
 
-  MoveMailboxFailure(this.exception);
+  MoveMailboxFailure(dynamic exception) : super(exception: exception);
 
   @override
   List<Object?> get props => [exception];
