@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-06-28T15:42:36.189236",
+  "@@last_modified": "2023-07-06T18:40:29.349603",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2918,8 +2918,56 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "Connection error": "Connection error",
-  "@Connection error": {
+  "connectionError": "Connection error",
+  "@connectionError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "inboxMailboxDisplayName": "Inbox",
+  "@inboxMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sentMailboxDisplayName": "Sent",
+  "@sentMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "outboxMailboxDisplayName": "Outbox",
+  "@outboxMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamMailboxDisplayName": "Spam",
+  "@spamMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "draftsMailboxDisplayName": "Drafts",
+  "@draftsMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "trashMailboxDisplayName": "Trash",
+  "@trashMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "templatesMailboxDisplayName": "Templates",
+  "@templatesMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveMailboxDisplayName": "Archive",
+  "@archiveMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

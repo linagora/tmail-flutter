@@ -8,15 +8,24 @@ import 'package:model/mailbox/select_mode.dart';
 
 class PresentationMailbox with EquatableMixin {
 
+  static const String inboxRole = 'inbox';
+  static const String sentRole = 'sent';
+  static const String trashRole = 'trash';
+  static const String templatesRole= 'templates';
+  static const String outboxRole = 'outbox';
+  static const String draftsRole = 'drafts';
+  static const String spamRole = 'spam';
+  static const String archiveRole = 'archive';
+
   static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')));
 
-  static final roleInbox = Role('inbox');
-  static final roleTrash = Role('trash');
-  static final roleSent = Role('sent');
-  static final roleTemplates = Role('templates');
-  static final roleOutbox = Role('outbox');
-  static final roleDrafts = Role('drafts');
-  static final roleSpam = Role('spam');
+  static final roleInbox = Role(inboxRole);
+  static final roleTrash = Role(trashRole);
+  static final roleSent = Role(sentRole);
+  static final roleTemplates = Role(templatesRole);
+  static final roleOutbox = Role(outboxRole);
+  static final roleDrafts = Role(draftsRole);
+  static final roleSpam = Role(spamRole);
 
   static final outboxMailboxName = MailboxName('Outbox');
   static final lowerCaseOutboxMailboxName = MailboxName('outbox');
