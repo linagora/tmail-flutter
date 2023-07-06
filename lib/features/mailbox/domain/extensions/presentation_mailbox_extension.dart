@@ -1,5 +1,5 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -9,21 +9,21 @@ extension PresentationMailboxExtension on PresentationMailbox {
   String getMailboxIcon(ImagePaths imagePaths) {
      if (hasRole()) {
         switch(role!.value) {
-          case 'inbox':
+          case PresentationMailbox.inboxRole:
             return imagePaths.icMailboxInbox;
-          case 'drafts':
+          case PresentationMailbox.draftsRole:
             return imagePaths.icMailboxDrafts;
-          case 'outbox':
+          case PresentationMailbox.outboxRole:
             return imagePaths.icMailboxOutbox;
-          case 'archive':
+          case PresentationMailbox.archiveRole:
             return imagePaths.icMailboxArchived;
-          case 'sent':
+          case PresentationMailbox.sentRole:
             return imagePaths.icMailboxSent;
-          case 'trash':
+          case PresentationMailbox.trashRole:
             return imagePaths.icMailboxTrash;
-          case 'spam':
+          case PresentationMailbox.spamRole:
             return imagePaths.icMailboxSpam;
-          case 'templates':
+          case PresentationMailbox.templatesRole:
             return imagePaths.icMailboxTemplate;
           case 'all_mail':
             return imagePaths.icMailboxAllMail;

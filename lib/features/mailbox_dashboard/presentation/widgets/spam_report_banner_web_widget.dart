@@ -83,7 +83,7 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                 left: 16,
                 child: buildSVGIconButton(
                   icon: imagePaths.icCloseComposer,
-                  onTap: spamReportController.dismissSpamReportAction,
+                  onTap: () => spamReportController.dismissSpamReportAction(context),
                 ),
               )
             else
@@ -92,7 +92,7 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                 right: 16,
                 child: buildSVGIconButton(
                   icon: imagePaths.icCloseComposer,
-                  onTap: spamReportController.dismissSpamReportAction,
+                  onTap: () => spamReportController.dismissSpamReportAction(context),
                 ),
               )
           ],

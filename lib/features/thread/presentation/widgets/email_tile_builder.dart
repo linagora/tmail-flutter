@@ -111,6 +111,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                           isSearchEmailRunning,
                           _searchQuery)),
                         buildMailboxContain(
+                          _context,
                           isSearchEmailRunning,
                           _presentationEmail),
                         if (_presentationEmail.hasStarred)

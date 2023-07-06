@@ -32,7 +32,6 @@ class PresentationEmail with EquatableMixin {
   final Set<EmailAddress>? bcc;
   final Set<EmailAddress>? replyTo;
   final Map<MailboxId, bool>? mailboxIds;
-  final List<MailboxName?>? mailboxNames;
   final SelectMode selectMode;
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
@@ -55,7 +54,6 @@ class PresentationEmail with EquatableMixin {
     this.bcc,
     this.replyTo,
     this.mailboxIds,
-    this.mailboxNames,
     this.selectMode = SelectMode.INACTIVE,
     this.routeWeb,
     this.mailboxContain,
@@ -97,14 +95,6 @@ class PresentationEmail with EquatableMixin {
 
   bool get withAttachments => hasAttachment == true;
 
-  String get mailboxName {
-    if (mailboxNames?.isNotEmpty == true) {
-      return mailboxNames?.first?.name ?? '';
-    } else {
-      return '';
-    }
-  }
-
   String get routeWebAsString => routeWeb.toString();
 
   bool get pushNotificationActivated => !isDraft && !hasRead;
@@ -139,7 +129,6 @@ class PresentationEmail with EquatableMixin {
     preview,
     hasAttachment,
     mailboxIds,
-    mailboxNames,
     selectMode,
     routeWeb,
     mailboxContain,

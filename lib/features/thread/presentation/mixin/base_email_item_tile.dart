@@ -15,6 +15,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -27,6 +28,7 @@ mixin BaseEmailItemTile {
   final imagePaths = Get.find<ImagePaths>();
 
   Widget buildMailboxContain(
+    BuildContext context,
     bool isSearchEmailRunning,
     PresentationEmail email
   ) {
@@ -41,7 +43,7 @@ mixin BaseEmailItemTile {
               borderRadius: BorderRadius.circular(10),
               color: AppColor.backgroundCounterMailboxColor),
           child: TextOverflowBuilder(
-            email.mailboxName,
+            email.mailboxContain?.getDisplayName(context) ?? '',
             style: const TextStyle(
                 fontSize: 10,
                 color: AppColor.mailboxTextColor,
@@ -64,7 +66,7 @@ mixin BaseEmailItemTile {
       email.hasRead ? AppColor.colorContentEmail : AppColor.colorNameEmail;
 
   bool hasMailboxLabel(bool isSearchEmailRunning, PresentationEmail email) {
-    return isSearchEmailRunning && email.mailboxName.isNotEmpty;
+    return isSearchEmailRunning && email.mailboxContain != null;
   }
 
   String informationSender(PresentationEmail email, PresentationMailbox? mailbox) {

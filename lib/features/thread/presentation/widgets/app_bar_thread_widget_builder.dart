@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -75,7 +76,7 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
           child: _buildMenuButton(),
         ),
       Expanded(child: Text(
-          _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
+          _currentMailbox?.getDisplayName(context) ?? '',
           maxLines: 1,
           overflow: CommonTextStyle.defaultTextOverFlow,
           softWrap: CommonTextStyle.defaultSoftWrap,
@@ -380,7 +381,7 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
                   Container(
                       constraints: BoxConstraints(maxWidth: constraints.maxWidth - 220),
                       child: Text(
-                          _currentMailbox?.name?.name.capitalizeFirstEach ?? '',
+                          _currentMailbox?.getDisplayName(context) ?? '',
                           maxLines: 1,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           overflow: CommonTextStyle.defaultTextOverFlow,
