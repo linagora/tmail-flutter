@@ -132,7 +132,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                       : EmailActionType.preview,
                   _presentationEmail),
               child: Padding(
-                padding: const EdgeInsets.only(top: 8, right: 12),
+                padding: const EdgeInsetsDirectional.only(top: 8, end: 12),
                 child: _buildAvatarIcon(),
               ),
             ),
@@ -141,7 +141,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                 Row(children: [
                   if (!_presentationEmail.hasRead)
                     Padding(
-                        padding: const EdgeInsets.only(right: 5),
+                        padding: const EdgeInsetsDirectional.only(end: 5),
                         child: SvgPicture.asset(
                             imagePaths.icUnreadStatus,
                             width: 9,
@@ -156,14 +156,14 @@ class EmailTileBuilder with BaseEmailItemTile {
                   buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
                   if (_presentationEmail.hasAttachment == true)
                     Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsetsDirectional.only(start: 8),
                         child: SvgPicture.asset(
                             imagePaths.icAttachment,
                             width: 16,
                             height: 16,
                             fit: BoxFit.fill)),
                   Padding(
-                      padding: const EdgeInsets.only(right: 4, left: 8),
+                      padding: const EdgeInsetsDirectional.only(end: 4, start: 8),
                       child: buildDateTime(_context, _presentationEmail)),
                   buildIconChevron()
                 ]),
@@ -182,7 +182,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     ),
                     if (_presentationEmail.hasStarred)
                       Padding(
-                        padding: const EdgeInsets.only(left: 8),
+                        padding: const EdgeInsetsDirectional.only(start: 8),
                         child: buildIconStar(),
                       ),
                   ],
@@ -321,7 +321,7 @@ class EmailTileBuilder with BaseEmailItemTile {
         child: Stack(alignment: Alignment.bottomCenter, children: [
           Row(children: [
             Container(
-                padding: const EdgeInsets.only(left: 16, right: 16),
+                padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
                 alignment: Alignment.center,
                 child: !_presentationEmail.hasRead
                     ? SvgPicture.asset(
@@ -349,7 +349,7 @@ class EmailTileBuilder with BaseEmailItemTile {
             buildIconWeb(
               icon: buildIconAnsweredOrForwarded(presentationEmail: _presentationEmail),
               tooltip: messageToolTipForAnsweredOrForwarded(context, _presentationEmail),
-              iconPadding: const EdgeInsets.only(right: 12),
+              iconPadding: const EdgeInsetsDirectional.only(end: 12),
               splashRadius: 1),
             InkWell(
               onTap: () {
@@ -388,7 +388,7 @@ class EmailTileBuilder with BaseEmailItemTile {
             Transform(
               transform: Matrix4.translationValues(0.0, 10, 0.0),
               child: const Padding(
-                  padding: EdgeInsets.only(left: 120),
+                  padding: EdgeInsetsDirectional.only(start: 120),
                   child: Divider(
                       color: AppColor.lineItemListColor,
                       height: 1,
@@ -521,7 +521,7 @@ class EmailTileBuilder with BaseEmailItemTile {
         if (_presentationEmail.getEmailTitle().isNotEmpty)
             Container(
               constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsetsDirectional.only(end: 12),
               child: buildEmailTitle(
                 _presentationEmail,
                 isSearchEmailRunning,

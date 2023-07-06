@@ -16,8 +16,8 @@ class EmailTileBuilder with BaseEmailItemTile {
   final PresentationMailbox? mailboxContain;
   final SearchQuery? _searchQuery;
   final bool isSearchEmailRunning;
-  final EdgeInsets? padding;
-  final EdgeInsets? paddingDivider;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? paddingDivider;
   final bool isDrag;
   final bool _isShowingEmailContent;
 
@@ -51,7 +51,7 @@ class EmailTileBuilder with BaseEmailItemTile {
         children: [
           ListTile(
             tileColor: _isShowingEmailContent ? AppColor.colorItemEmailSelectedDesktop : null,
-            contentPadding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            contentPadding: padding ?? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 5),
             onTap: () => _emailActionClick?.call(
                 EmailActionType.preview,
                 _presentationEmail),
@@ -75,7 +75,7 @@ class EmailTileBuilder with BaseEmailItemTile {
               children: [
                 if (!_presentationEmail.hasRead)
                   Padding(
-                      padding: const EdgeInsets.only(right: 5),
+                      padding: const EdgeInsetsDirectional.only(end: 5),
                       child: SvgPicture.asset(
                           imagePaths.icUnreadStatus,
                           width: 9,
@@ -89,10 +89,10 @@ class EmailTileBuilder with BaseEmailItemTile {
                 buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
                 if (_presentationEmail.hasAttachment == true)
                   Padding(
-                      padding: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsetsDirectional.only(start: 8),
                       child: buildIconAttachment()),
                 Padding(
-                    padding: const EdgeInsets.only(right: 4, left: 8),
+                    padding: const EdgeInsetsDirectional.only(end: 4, start: 8),
                     child: buildDateTime(_context, _presentationEmail)),
                 buildIconChevron(),
               ],
@@ -102,7 +102,7 @@ class EmailTileBuilder with BaseEmailItemTile {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
-                    padding: const EdgeInsets.only(top: 6),
+                    padding: const EdgeInsetsDirectional.only(top: 6),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -115,13 +115,13 @@ class EmailTileBuilder with BaseEmailItemTile {
                           _presentationEmail),
                         if (_presentationEmail.hasStarred)
                           Padding(
-                            padding: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsetsDirectional.only(start: 8),
                             child: buildIconStar(),
                           )
                       ],
                     )),
                 Padding(
-                    padding: const EdgeInsets.only(top: 6),
+                    padding: const EdgeInsetsDirectional.only(top: 6),
                     child: Row(children: [
                       Expanded(child: buildEmailPartialContent(
                         _presentationEmail,
@@ -133,7 +133,7 @@ class EmailTileBuilder with BaseEmailItemTile {
             ),
           ),
           Padding(
-            padding: paddingDivider ?? const EdgeInsets.symmetric(horizontal: 16),
+            padding: paddingDivider ?? const EdgeInsetsDirectional.symmetric(horizontal: 16),
             child: const Divider(
                 color: AppColor.lineItemListColor,
                 height: 1,
