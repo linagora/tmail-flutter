@@ -65,14 +65,17 @@ class MailboxVisibilityController extends BaseMailboxController {
   }
 
   @override
-  void handleSuccessViewState(Success success) {
+  void handleSuccessViewState(Success success) async {
     super.handleSuccessViewState(success);
     if (success is GetAllMailboxSuccess)  {
       currentMailboxState = success.currentMailboxState;
       _handleBuildTree(success.mailboxList);
     } else if (success is RefreshChangesAllMailboxSuccess) {
       currentMailboxState = success.currentMailboxState;
-      refreshTree(success.mailboxList);
+      await refreshTree(success.mailboxList);
+      if (currentContext != null) {
+        await syncAllMailboxWithDisplayName(currentContext!);
+      }
     } else if (success is SubscribeMailboxSuccess) {
       _subscribeMailboxSuccess(success);
     } else if (success is SubscribeMultipleMailboxAllSuccess) {
@@ -96,6 +99,9 @@ class MailboxVisibilityController extends BaseMailboxController {
     dispatchState(Right(LoadingBuildTreeMailboxVisibility()));
     await buildTree(mailboxList);
     dispatchState(Right(BuildTreeMailboxVisibilitySuccess()));
+    if (currentContext != null) {
+      await syncAllMailboxWithDisplayName(currentContext!);
+    }
   }
 
   void subscribeMailbox(MailboxNode mailboxNode) {

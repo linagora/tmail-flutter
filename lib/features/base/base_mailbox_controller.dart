@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.da
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -68,7 +69,7 @@ abstract class BaseMailboxController extends BaseController {
 
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
 
-  Future buildTree(
+  Future<void> buildTree(
       List<PresentationMailbox> allMailbox,
       {MailboxId? mailboxIdSelected}
   ) async {
@@ -85,7 +86,7 @@ abstract class BaseMailboxController extends BaseController {
     allMailboxes = tupleTree.value4;
   }
 
-  Future refreshTree(List<PresentationMailbox> allMailbox) async {
+  Future<void> refreshTree(List<PresentationMailbox> allMailbox) async {
     allMailboxes = allMailbox;
     final tupleTree = await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
       allMailbox, 
@@ -98,6 +99,14 @@ abstract class BaseMailboxController extends BaseController {
     defaultMailboxTree.value = tupleTree.value1;
     personalMailboxTree.value = tupleTree.value2;
     teamMailboxesTree.value = tupleTree.value3;
+  }
+
+  Future<void> syncAllMailboxWithDisplayName(BuildContext context) async {
+    log("BaseMailboxController::syncAllMailboxWithDisplayName");
+    final syncedMailbox = allMailboxes
+      .map((mailbox) => mailbox.withDisplayName(mailbox.getDisplayName(context)))
+      .toList();
+    allMailboxes = syncedMailbox;
   }
 
   void toggleMailboxFolder(MailboxNode selectedMailboxNode, ScrollController scrollController) {

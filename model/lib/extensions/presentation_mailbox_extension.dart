@@ -20,26 +20,49 @@ extension PresentationMailboxExtension on PresentationMailbox {
       mailboxPath: mailboxPath,
       state: state,
       namespace: namespace,
+      displayName: displayName,
+    );
+  }
+
+  PresentationMailbox withDisplayName(String? displayName) {
+    return PresentationMailbox(
+      id,
+      name: name,
+      parentId: parentId,
+      role: role,
+      sortOrder: sortOrder,
+      totalEmails: totalEmails,
+      unreadEmails: unreadEmails,
+      totalThreads: totalThreads,
+      unreadThreads: unreadThreads,
+      myRights: myRights,
+      isSubscribed: isSubscribed,
+      selectMode: selectMode,
+      mailboxPath: mailboxPath,
+      state: state,
+      namespace: namespace,
+      displayName: displayName,
     );
   }
 
   PresentationMailbox withMailboxSate(MailboxState newMailboxState) {
     return PresentationMailbox(
-        id,
-        name: name,
-        parentId: parentId,
-        role: role,
-        sortOrder: sortOrder,
-        totalEmails: totalEmails,
-        unreadEmails: unreadEmails,
-        totalThreads: totalThreads,
-        unreadThreads: unreadThreads,
-        myRights: myRights,
-        isSubscribed: isSubscribed,
-        selectMode: selectMode,
-        mailboxPath: mailboxPath,
-        state: newMailboxState,
-        namespace: namespace,
+      id,
+      name: name,
+      parentId: parentId,
+      role: role,
+      sortOrder: sortOrder,
+      totalEmails: totalEmails,
+      unreadEmails: unreadEmails,
+      totalThreads: totalThreads,
+      unreadThreads: unreadThreads,
+      myRights: myRights,
+      isSubscribed: isSubscribed,
+      selectMode: selectMode,
+      mailboxPath: mailboxPath,
+      state: newMailboxState,
+      namespace: namespace,
+      displayName: displayName,
     );
   }
 
@@ -62,21 +85,22 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   PresentationMailbox toggleSelectPresentationMailbox() {
     return PresentationMailbox(
-        id,
-        name: name,
-        parentId: parentId,
-        role: role,
-        sortOrder: sortOrder,
-        totalEmails: totalEmails,
-        unreadEmails: unreadEmails,
-        totalThreads: totalThreads,
-        unreadThreads: unreadThreads,
-        myRights: myRights,
-        isSubscribed: isSubscribed,
-        mailboxPath: mailboxPath,
-        selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
-        state: state,
-        namespace: namespace,
+      id,
+      name: name,
+      parentId: parentId,
+      role: role,
+      sortOrder: sortOrder,
+      totalEmails: totalEmails,
+      unreadEmails: unreadEmails,
+      totalThreads: totalThreads,
+      unreadThreads: unreadThreads,
+      myRights: myRights,
+      isSubscribed: isSubscribed,
+      mailboxPath: mailboxPath,
+      selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+      state: state,
+      namespace: namespace,
+      displayName: displayName,
     );
   }
 
@@ -97,6 +121,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       selectMode: selectMode,
       state: state,
       namespace: namespace,
+      displayName: displayName,
     );
   }
 }
