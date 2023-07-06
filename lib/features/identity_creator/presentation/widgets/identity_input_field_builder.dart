@@ -46,6 +46,7 @@ class IdentityInputFieldBuilder extends StatelessWidget {
         onTextChange: onChangeInputNameAction,
         textInputAction: TextInputAction.next,
         autoFocus: true,
+        maxLines: 1,
         textDirection: DirectionUtils.getDirectionByLanguage(context),
         controller: editingController,
         focusNode: focusNode,

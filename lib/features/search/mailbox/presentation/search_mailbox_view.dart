@@ -143,6 +143,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       onTextChange: controller.onTextSearchChange,
       textInputAction: TextInputAction.search,
       autoFocus: true,
+      maxLines: 1,
       controller: controller.textInputSearchController,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       textStyle: const TextStyle(

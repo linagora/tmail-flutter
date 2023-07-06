@@ -144,6 +144,7 @@ class _TextFieldAutoCompleteEmailAddressState
                   controller: tec,
                   focusNode: fn,
                   textInputAction: TextInputAction.next,
+                  maxLines: 1,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
