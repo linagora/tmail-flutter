@@ -45,6 +45,7 @@ class PresentationMailbox with EquatableMixin {
   final String? mailboxPath;
   final MailboxState? state;
   final Namespace? namespace;
+  final String? displayName;
 
   PresentationMailbox(
     this.id,
@@ -63,6 +64,7 @@ class PresentationMailbox with EquatableMixin {
       this.mailboxPath,
       this.state = MailboxState.activated,
       this.namespace,
+      this.displayName,
     }
   );
 

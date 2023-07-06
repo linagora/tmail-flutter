@@ -559,8 +559,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                   fit: BoxFit.fill),
                 hintText: AppLocalizations.of(context).hint_search_mailboxes,
                 onClearTextSearchAction: controller.clearSearchText,
-                onTextChangeSearchAction: controller.searchMailbox,
-                onSearchTextAction: controller.searchMailbox,
+                onTextChangeSearchAction: (query) => controller.searchMailbox(context, query),
+                onSearchTextAction: (query) => controller.searchMailbox(context, query),
               ))
             ]
         )

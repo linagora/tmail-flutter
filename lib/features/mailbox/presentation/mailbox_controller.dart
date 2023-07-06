@@ -998,12 +998,18 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     currentMailboxState = success.currentMailboxState;
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
     await buildTree(listMailboxDisplayed);
+    if (currentContext != null) {
+      await syncAllMailboxWithDisplayName(currentContext!);
+    }
   }
 
   void _handleRefreshChangesAllMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {
     currentMailboxState = success.currentMailboxState;
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
     await refreshTree(listMailboxDisplayed);
+    if (currentContext != null) {
+      await syncAllMailboxWithDisplayName(currentContext!);
+    }
   }
 
   void _unsubscribeMailboxAction(MailboxId mailboxId) {
