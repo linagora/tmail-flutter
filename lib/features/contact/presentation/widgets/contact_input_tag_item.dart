@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -44,7 +45,9 @@ class ContactInputTagItem extends StatelessWidget {
             label: contact.labelAvatar)
         : null,
       labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-      padding: const EdgeInsets.all(6),
+      padding: DirectionUtils.isDirectionRTLByHasAnyRtl(contact.asString())
+        ? EdgeInsets.zero
+        : const EdgeInsets.all(6),
       label: Text(
         contact.asString(),
         maxLines: 1,
