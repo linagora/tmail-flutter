@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
@@ -60,7 +61,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildTitleItem(),
+                        _buildTitleItem(context),
                         _buildSubtitleItem()
                       ]
                     )
@@ -90,9 +91,9 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleItem() {
+  Widget _buildTitleItem(BuildContext context) {
     return Text(
-      _presentationMailbox.name?.name ?? '',
+      _presentationMailbox.getDisplayName(context),
       maxLines: 1,
       overflow: CommonTextStyle.defaultTextOverFlow,
       softWrap: CommonTextStyle.defaultSoftWrap,
