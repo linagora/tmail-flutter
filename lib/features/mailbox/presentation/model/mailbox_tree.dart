@@ -6,6 +6,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import 'mailbox_node.dart';
 
@@ -85,7 +87,12 @@ class MailboxTree with EquatableMixin {
     if (matchedNode == null) {
       return null;
     }
-    String path = '${matchedNode.item.name?.name}';
+    String path = '';
+    if (currentContext != null) {
+      path = matchedNode.item.getDisplayName(currentContext!);
+    } else {
+      path = '${matchedNode.item.name?.name}';
+    }
 
     var parentId = matchedNode.item.parentId;
 
@@ -94,7 +101,11 @@ class MailboxTree with EquatableMixin {
       if (parentNode == null) {
         break;
       }
-      path = '${parentNode.item.name?.name}/$path';
+      if (currentContext != null) {
+        path = '${parentNode.item.getDisplayName(currentContext!)}/$path';
+      } else {
+        path = '${parentNode.item.name?.name}/$path';
+      }
       parentId = parentNode.item.parentId;
     }
     return path;
