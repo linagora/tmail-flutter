@@ -26,34 +26,38 @@ class AccountMenuItemTileBuilder extends StatelessWidget {
     final imagePaths = Get.find<ImagePaths>();
 
     return Padding(
+      key: const Key('account_menu_item_tile'),
       padding: const EdgeInsets.only(top: 6),
-      child: InkWell(
-        onTap: () => onSelectAccountMenuItemAction?.call(_menuItem),
-        child: Container(
-          key: const Key('account_menu_item_tile'),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: _getBackgroundColorItem(context)),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Column(children: [
-            Row(children: [
-              SvgPicture.asset(
-                _menuItem.getIcon(imagePaths),
-                width: 20,
-                height: 20,
-                fit: BoxFit.fill),
-              const SizedBox(width: 12),
-              Expanded(child: Text(
-                _menuItem.getName(context),
-                style: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 15,
-                  color: Colors.black
-                )
-              ))
-            ]),
-          ])
-        )),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onSelectAccountMenuItemAction?.call(_menuItem),
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: _getBackgroundColorItem(context)),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Column(children: [
+              Row(children: [
+                SvgPicture.asset(
+                  _menuItem.getIcon(imagePaths),
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.fill),
+                const SizedBox(width: 12),
+                Expanded(child: Text(
+                  _menuItem.getName(context),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 15,
+                    color: Colors.black
+                  )
+                ))
+              ]),
+            ])
+          )),
+      ),
     );
   }
 
@@ -64,8 +68,8 @@ class AccountMenuItemTileBuilder extends StatelessWidget {
       return AppColor.colorBgMailboxSelected;
     } else {
       return responsiveUtils.isWebDesktop(context)
-        ? AppColor.colorBgDesktop
-        : Colors.white;
+        ? Colors.transparent
+        : Colors.transparent;
     }
   }
 }
