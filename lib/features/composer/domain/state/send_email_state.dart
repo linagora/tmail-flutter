@@ -11,15 +11,9 @@ class SendEmailSuccess extends UIActionState {
     jmap.State? currentEmailState,
     jmap.State? currentMailboxState,
   }) : super(currentEmailState, currentMailboxState);
-
-  @override
-  List<Object?> get props => [];
 }
 
 class SendEmailFailure extends FeatureFailure {
 
   SendEmailFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

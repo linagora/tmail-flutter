@@ -2,10 +2,10 @@
 import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
-class UIActionState extends UIState {
+abstract class UIActionState extends UIState {
 
-  jmap.State? currentEmailState;
-  jmap.State? currentMailboxState;
+  final jmap.State? currentEmailState;
+  final jmap.State? currentMailboxState;
 
   UIActionState(this.currentEmailState, this.currentMailboxState);
 

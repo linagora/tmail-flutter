@@ -1,7 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 
-
 class DestroySubscriptionLoading extends UIState {}
 
 class DestroySubscriptionSuccess extends UIState {
@@ -15,10 +14,6 @@ class DestroySubscriptionSuccess extends UIState {
 }
 
 class DestroySubscriptionFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DestroySubscriptionFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DestroySubscriptionFailure(dynamic exception) : super(exception: exception);
 }

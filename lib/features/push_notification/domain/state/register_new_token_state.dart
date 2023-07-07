@@ -16,10 +16,6 @@ class RegisterNewTokenSuccess extends UIState {
 }
 
 class RegisterNewTokenFailure extends FeatureFailure {
-  final dynamic exception;
 
-  RegisterNewTokenFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  RegisterNewTokenFailure(dynamic exception) : super(exception: exception);
 }

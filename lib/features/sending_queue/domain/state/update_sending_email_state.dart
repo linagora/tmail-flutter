@@ -17,7 +17,4 @@ class UpdateSendingEmailSuccess extends UIState {
 class UpdateSendingEmailFailure extends FeatureFailure {
 
   UpdateSendingEmailFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

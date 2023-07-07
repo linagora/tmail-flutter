@@ -33,10 +33,10 @@ class MarkAsEmailReadInteractor {
             currentEmailState: currentEmailState,
             currentMailboxState: currentMailboxState));
       } else {
-        yield Left(MarkAsEmailReadFailure(null, readAction));
+        yield Left(MarkAsEmailReadFailure(readAction));
       }
     } catch (e) {
-      yield Left(MarkAsEmailReadFailure(e, readAction));
+      yield Left(MarkAsEmailReadFailure(readAction, exception: e));
     }
   }
 }

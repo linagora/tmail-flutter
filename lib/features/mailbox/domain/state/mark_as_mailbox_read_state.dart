@@ -1,15 +1,10 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
-class MarkAsMailboxReadLoading extends UIState {
-
-  MarkAsMailboxReadLoading();
-
-  @override
-  List<Object?> get props => [];
-}
+class MarkAsMailboxReadLoading extends UIState {}
 
 class UpdatingMarkAsMailboxReadState extends UIState {
 
@@ -38,7 +33,10 @@ class MarkAsMailboxReadAllSuccess extends UIActionState {
   ) : super(currentMailboxState, currentEmailState);
 
   @override
-  List<Object?> get props => [mailboxDisplayName];
+  List<Object?> get props => [
+    mailboxDisplayName,
+    ...super.props
+  ];
 }
 
 class MarkAsMailboxReadHasSomeEmailFailure extends UIActionState {
@@ -56,22 +54,16 @@ class MarkAsMailboxReadHasSomeEmailFailure extends UIActionState {
   ) : super(currentMailboxState, currentEmailState);
 
   @override
-  List<Object?> get props => [mailboxDisplayName, countEmailsRead];
+  List<Object?> get props => [
+    mailboxDisplayName,
+    countEmailsRead,
+    ...super.props
+  ];
 }
 
-class MarkAsMailboxReadAllFailure extends FeatureFailure {
-
-  MarkAsMailboxReadAllFailure();
-
-  @override
-  List<Object?> get props => [];
-}
+class MarkAsMailboxReadAllFailure extends FeatureFailure {}
 
 class MarkAsMailboxReadFailure extends FeatureFailure {
-  final dynamic exception;
 
-  MarkAsMailboxReadFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  MarkAsMailboxReadFailure(dynamic exception) : super(exception: exception);
 }

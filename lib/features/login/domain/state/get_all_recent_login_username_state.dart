@@ -13,10 +13,6 @@ class GetAllRecentLoginUsernameLatestSuccess extends UIState {
 }
 
 class GetAllRecentLoginUsernameLatestFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetAllRecentLoginUsernameLatestFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetAllRecentLoginUsernameLatestFailure(dynamic exception) : super(exception: exception);
 }

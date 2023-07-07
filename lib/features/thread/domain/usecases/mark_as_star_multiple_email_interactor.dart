@@ -45,7 +45,7 @@ class MarkAsStarMultipleEmailInteractor {
             currentEmailState: currentEmailState));
       }
     } catch (e) {
-      yield Left(MarkAsStarMultipleEmailFailure(e, markStarAction));
+      yield Left(MarkAsStarMultipleEmailFailure(markStarAction, e));
     }
   }
 }

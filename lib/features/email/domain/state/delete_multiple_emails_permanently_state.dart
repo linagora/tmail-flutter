@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
@@ -18,7 +19,7 @@ class DeleteMultipleEmailsPermanentlyAllSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [emailIds];
+  List<Object?> get props => [emailIds, ...super.props];
 }
 
 class DeleteMultipleEmailsPermanentlyHasSomeEmailFailure extends UIActionState {
@@ -34,23 +35,12 @@ class DeleteMultipleEmailsPermanentlyHasSomeEmailFailure extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object> get props => [emailIds];
+  List<Object?> get props => [emailIds, ...super.props];
 }
 
-class DeleteMultipleEmailsPermanentlyAllFailure extends FeatureFailure {
-
-  DeleteMultipleEmailsPermanentlyAllFailure();
-
-  @override
-  List<Object?> get props => [];
-}
+class DeleteMultipleEmailsPermanentlyAllFailure extends FeatureFailure {}
 
 class DeleteMultipleEmailsPermanentlyFailure extends FeatureFailure {
 
-  final dynamic exception;
-
-  DeleteMultipleEmailsPermanentlyFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteMultipleEmailsPermanentlyFailure(dynamic exception) : super(exception: exception);
 }

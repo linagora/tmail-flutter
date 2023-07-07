@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 
 class GetAllRecentSearchLatestSuccess extends UIState {
@@ -12,10 +13,6 @@ class GetAllRecentSearchLatestSuccess extends UIState {
 }
 
 class GetAllRecentSearchLatestFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetAllRecentSearchLatestFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetAllRecentSearchLatestFailure(dynamic exception) : super(exception: exception);
 }

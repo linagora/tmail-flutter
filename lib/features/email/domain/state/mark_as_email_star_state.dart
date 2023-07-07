@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
@@ -18,15 +18,14 @@ class MarkAsStarEmailSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [updatedEmail, markStarAction];
+  List<Object?> get props => [updatedEmail, markStarAction, ...super.props];
 }
 
 class MarkAsStarEmailFailure extends FeatureFailure {
-  final dynamic exception;
   final MarkStarAction markStarAction;
 
-  MarkAsStarEmailFailure(this.exception, this.markStarAction);
+  MarkAsStarEmailFailure(this.markStarAction, {dynamic exception}) : super(exception: exception);
 
   @override
-  List<Object?> get props => [exception, markStarAction];
+  List<Object?> get props => [markStarAction, ...super.props];
 }

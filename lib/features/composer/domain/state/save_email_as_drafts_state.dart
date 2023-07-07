@@ -1,15 +1,10 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
-class SaveEmailAsDraftsLoading extends UIState {
-
-  SaveEmailAsDraftsLoading();
-
-  @override
-  List<Object?> get props => [];
-}
+class SaveEmailAsDraftsLoading extends UIState {}
 
 class SaveEmailAsDraftsSuccess extends UIActionState {
 
@@ -24,14 +19,10 @@ class SaveEmailAsDraftsSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [emailAsDrafts, ...super.props];
 }
 
 class SaveEmailAsDraftsFailure extends FeatureFailure {
-  final dynamic exception;
 
-  SaveEmailAsDraftsFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  SaveEmailAsDraftsFailure(dynamic exception) : super(exception: exception);
 }

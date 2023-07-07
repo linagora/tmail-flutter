@@ -1,5 +1,6 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/oidc/token_oidc.dart';
 
 class RefreshTokenOIDCSuccess extends UIState {
 
@@ -12,10 +13,6 @@ class RefreshTokenOIDCSuccess extends UIState {
 }
 
 class RefreshTokenOIDCFailure extends FeatureFailure {
-  final dynamic exception;
 
-  RefreshTokenOIDCFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  RefreshTokenOIDCFailure(dynamic exception) : super(exception: exception);
 }

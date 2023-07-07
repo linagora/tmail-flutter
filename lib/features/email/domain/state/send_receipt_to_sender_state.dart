@@ -16,10 +16,5 @@ class SendReceiptToSenderSuccess extends UIState {
 
 class SendReceiptToSenderFailure extends FeatureFailure {
 
-  final dynamic exception;
-
-  SendReceiptToSenderFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  SendReceiptToSenderFailure(dynamic exception) : super(exception: exception);
 }

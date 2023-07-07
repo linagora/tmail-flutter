@@ -1,5 +1,6 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/user/user_profile.dart';
 
 class GetUserProfileSuccess extends UIState {
   final UserProfile userProfile;
@@ -11,10 +12,6 @@ class GetUserProfileSuccess extends UIState {
 }
 
 class GetUserProfileFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetUserProfileFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetUserProfileFailure(dynamic exception) : super(exception: exception);
 }

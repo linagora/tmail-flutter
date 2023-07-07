@@ -15,13 +15,6 @@ class GetStoredTokenOidcSuccess extends UIState {
 }
 
 class GetStoredTokenOidcFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetStoredTokenOidcFailure(this.exception);
-
-  @override
-  bool? get stringify => true;
-
-  @override
-  List<Object?> get props => [exception];
+  GetStoredTokenOidcFailure(dynamic exception) : super(exception: exception);
 }

@@ -3,19 +3,9 @@ import 'package:core/presentation/state/success.dart';
 
 class DeleteLastTimeDismissedSpamReportedLoading extends UIState {}
 
-class DeleteLastTimeDismissedSpamReportedSuccess extends UIState {
-
-  DeleteLastTimeDismissedSpamReportedSuccess();
-
-  @override
-  List<Object> get props => [];
-}
+class DeleteLastTimeDismissedSpamReportedSuccess extends UIState {}
 
 class DeleteLastTimeDismissedSpamReportedFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DeleteLastTimeDismissedSpamReportedFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteLastTimeDismissedSpamReportedFailure(dynamic exception) : super(exception: exception);
 }

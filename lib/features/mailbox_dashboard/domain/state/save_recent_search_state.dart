@@ -1,18 +1,9 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-class SaveRecentSearchSuccess extends UIState {
-
-  SaveRecentSearchSuccess();
-
-  @override
-  List<Object> get props => [];
-}
+class SaveRecentSearchSuccess extends UIState {}
 
 class SaveRecentSearchFailure extends FeatureFailure {
-  final dynamic exception;
 
-  SaveRecentSearchFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  SaveRecentSearchFailure(dynamic exception) : super(exception: exception);
 }

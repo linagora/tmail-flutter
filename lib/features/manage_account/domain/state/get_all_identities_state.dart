@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 
@@ -15,10 +16,6 @@ class GetAllIdentitiesSuccess extends UIState {
 }
 
 class GetAllIdentitiesFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetAllIdentitiesFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetAllIdentitiesFailure(dynamic exception) : super(exception: exception);
 }

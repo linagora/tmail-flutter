@@ -19,10 +19,6 @@ class InvalidSpamReportCondition extends FeatureFailure {
 }
 
 class GetUnreadSpamMailboxFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetUnreadSpamMailboxFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetUnreadSpamMailboxFailure(dynamic exception) : super(exception: exception);
 }

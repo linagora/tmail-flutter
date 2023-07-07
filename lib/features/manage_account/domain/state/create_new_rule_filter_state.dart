@@ -13,10 +13,6 @@ class CreateNewRuleFilterSuccess extends UIState {
 }
 
 class CreateNewRuleFilterFailure extends FeatureFailure {
-  final dynamic exception;
 
-  CreateNewRuleFilterFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  CreateNewRuleFilterFailure(dynamic exception) : super(exception: exception);
 }

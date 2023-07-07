@@ -13,10 +13,6 @@ class DeleteMailboxStateToRefreshSuccess extends UIState {
 }
 
 class DeleteMailboxStateToRefreshFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DeleteMailboxStateToRefreshFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteMailboxStateToRefreshFailure(dynamic exception) : super(exception: exception);
 }

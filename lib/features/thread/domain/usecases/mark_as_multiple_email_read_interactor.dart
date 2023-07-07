@@ -55,7 +55,7 @@ class MarkAsMultipleEmailReadInteractor {
             currentMailboxState: currentMailboxState));
       }
     } catch (e) {
-      yield Left(MarkAsMultipleEmailReadFailure(e, readAction));
+      yield Left(MarkAsMultipleEmailReadFailure(readAction, e));
     }
   }
 }
