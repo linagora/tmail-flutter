@@ -36,7 +36,7 @@ class ButtonBuilder {
     _context = context;
   }
 
-  void size(double size) {
+  void size(double? size) {
     _size = size;
   }
 

@@ -8,6 +8,7 @@ import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_w
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/cupertino.dart';
@@ -195,7 +196,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     return [
       buildIconWeb(
         icon: SvgPicture.asset(
-          imagePaths.icNewer,
+          DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icOlder : imagePaths.icNewer,
           colorFilter: controller.emailSupervisorController.nextEmailActivated
             ? AppColor.primaryColor.asFilter()
             : AppColor.colorAttachmentIcon.asFilter(),
@@ -206,7 +207,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         onTap: controller.emailSupervisorController.moveToNextEmail),
       buildIconWeb(
         icon: SvgPicture.asset(
-          imagePaths.icOlder,
+          DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icNewer : imagePaths.icOlder,
           width: IconUtils.defaultIconSize,
           height: IconUtils.defaultIconSize,
           colorFilter: controller.emailSupervisorController.previousEmailActivated

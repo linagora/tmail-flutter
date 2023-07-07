@@ -1,11 +1,11 @@
 
 import 'package:core/core.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnBackActionClick = void Function();
 typedef OnEmailActionClick = void Function(PresentationEmail, EmailActionType);
@@ -57,20 +57,23 @@ class AppBarMailWidgetBuilder extends StatelessWidget {
                 child: Container(
                   color: Colors.transparent,
                   height: 32,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: DirectionUtils.isDirectionRTLByLanguage(context)
+                    ? const EdgeInsetsDirectional.only(end: 10)
+                    : const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     SvgPicture.asset(
-                        _imagePaths.icBack,
-                        width: 14,
-                        height: 14,
-                        colorFilter: AppColor.colorTextButton.asFilter(),
-                        fit: BoxFit.fill),
+                      DirectionUtils.isDirectionRTLByLanguage(context)
+                        ? _imagePaths.icArrowRight
+                        : _imagePaths.icBack,
+                      width: DirectionUtils.isDirectionRTLByLanguage(context) ? null : 16,
+                      height: DirectionUtils.isDirectionRTLByLanguage(context) ? null : 16,
+                      colorFilter: AppColor.colorTextButton.asFilter(),
+                      fit: BoxFit.fill),
                     if (!isSearchIsRunning)
                       Container(
-                        margin: EdgeInsets.only(
-                          left: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                          right: AppUtils.isDirectionRTL(context) ? 8 : 0,
-                        ),
+                        margin: DirectionUtils.isDirectionRTLByLanguage(context)
+                          ? null
+                          : const EdgeInsetsDirectional.only(start: 8),
                         constraints: BoxConstraints(
                             maxWidth: _responsiveUtils.getSizeScreenWidth(context) - 250),
                         child: Text(
