@@ -53,8 +53,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           if (_supportVerticalDivider(context))
             const VerticalDivider(
                 color: AppColor.lineItemListColor,
-                width: 1,
-                thickness: 0.2),
+                width: 12),
           Expanded(child: SafeArea(
               right: responsiveUtils.isLandscapeMobile(context),
               left: responsiveUtils.isLandscapeMobile(context),

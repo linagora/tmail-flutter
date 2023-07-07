@@ -93,6 +93,7 @@ class MailboxView extends BaseMailboxView {
             AppConfig.appGridDashboardAvailable && responsiveUtils.isWebNotDesktop(context)
               ? buildAppGridDashboard(context, responsiveUtils, imagePaths, controller)
               : const SizedBox.shrink(),
+            const SizedBox(height: 8),
             Obx(() {
               if (controller.defaultMailboxIsNotEmpty) {
                 return _buildMailboxCategory(
@@ -105,7 +106,7 @@ class MailboxView extends BaseMailboxView {
               }
             }),
             const SizedBox(height: 8),
-            const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+            const Divider(color: AppColor.colorDividerMailbox, height: 1),
             const SizedBox(height: 13),
             Padding(
               padding: EdgeInsetsDirectional.only(
