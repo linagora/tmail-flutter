@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -58,12 +59,8 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                       color: _responsiveUtils.isWebDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Padding(
-                          padding: EdgeInsets.only(
-                            left: AppUtils.isDirectionRTL(context) ? 0 : 20,
-                            right: AppUtils.isDirectionRTL(context) ? 20 : 0,
-                            top: 24
-                          ),
-                          child: (ButtonBuilder(_imagePaths.icBack)
+                          padding: const EdgeInsetsDirectional.only(start: 20, top: 24),
+                          child: (ButtonBuilder(DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icArrowRight : _imagePaths.icBack)
                             ..key(const Key('button_back'))
                             ..decoration(BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.colorBgMailboxSelected))
                             ..paddingIcon(EdgeInsets.only(
@@ -72,31 +69,32 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             ))
                             ..iconColor(AppColor.colorTextButton)
                             ..maxWidth(100)
-                            ..size(16)
+                            ..size(DirectionUtils.isDirectionRTLByLanguage(context) ? null : 16)
                             ..radiusSplash(10)
-                            ..padding(const EdgeInsets.symmetric(vertical: 10))
+                            ..padding(DirectionUtils.isDirectionRTLByLanguage(context)
+                                ? const EdgeInsets.symmetric(vertical: 5)
+                                : const EdgeInsets.symmetric(vertical: 10))
                             ..textStyle(const TextStyle(fontSize: 15, color: AppColor.colorTextButton, fontWeight: FontWeight.normal))
                             ..onPressActionClick(() => controller.backToMailboxDashBoard(context))
                             ..text(AppLocalizations.of(context).back, isVertical: false))
                           .build()),
                         Padding(
-                            padding: EdgeInsets.only(
-                              left: AppUtils.isDirectionRTL(context) ? 0 : 32,
-                              right: AppUtils.isDirectionRTL(context) ? 32 : 0,
-                              top: 20
-                            ),
-                            child: Text(
-                                AppLocalizations.of(context).manage_account,
-                                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17))),
+                          padding: const EdgeInsetsDirectional.only(start: 32, top: 20),
+                          child: Text(
+                            AppLocalizations.of(context).manage_account,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17
+                            )
+                          )
+                        ),
                         const SizedBox(height: 12),
                         Obx(() {
                           if (controller.listAccountMenuItem.isNotEmpty) {
                             return ListView.builder(
                               key: const Key('list_manage_account_menu_item'),
-                              padding: EdgeInsets.only(
-                                left: AppUtils.isDirectionRTL(context) ? 8 : 16,
-                                right: AppUtils.isDirectionRTL(context) ? 16 : 8
-                              ),
+                              padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
                               shrinkWrap: true,
                               itemCount: controller.listAccountMenuItem.length,
                               itemBuilder: (context, index) => Obx(() {
@@ -116,10 +114,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
                         Padding(
-                          padding: EdgeInsets.only(
-                            left: AppUtils.isDirectionRTL(context) ? 0 : 32,
-                            right: AppUtils.isDirectionRTL(context) ? 32 : 0,
-                          ),
+                          padding: const EdgeInsetsDirectional.only(start: 32),
                           child: InkWell(
                             onTap: () {
                               controller.dashBoardController.logout(
