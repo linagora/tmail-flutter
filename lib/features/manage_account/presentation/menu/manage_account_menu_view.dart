@@ -114,26 +114,33 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             padding: EdgeInsets.symmetric(vertical: 16),
                             child: Divider(color: AppColor.lineItemListColor, height: 0.5, thickness: 0.2)),
                         Padding(
-                          padding: const EdgeInsetsDirectional.only(start: 32),
-                          child: InkWell(
-                            onTap: () {
-                              controller.dashBoardController.logout(
-                                controller.dashBoardController.sessionCurrent,
-                                controller.dashBoardController.accountId.value
-                              );
-                            },
-                            child: Row(children: [
-                              SvgPicture.asset(_imagePaths.icSignOut, fit: BoxFit.fill),
-                              const SizedBox(width: 12),
-                              Expanded(child: Text(
-                                AppLocalizations.of(context).sign_out,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 15,
-                                  color: Colors.black
-                                )
-                              ))
-                            ])
+                          padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                controller.dashBoardController.logout(
+                                  controller.dashBoardController.sessionCurrent,
+                                  controller.dashBoardController.accountId.value
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(10),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                child: Row(children: [
+                                  SvgPicture.asset(_imagePaths.icSignOut, fit: BoxFit.fill),
+                                  const SizedBox(width: 12),
+                                  Expanded(child: Text(
+                                    AppLocalizations.of(context).sign_out,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 15,
+                                      color: Colors.black
+                                    )
+                                  ))
+                                ]),
+                              )
+                            ),
                           )
                         ),
                       ]),
