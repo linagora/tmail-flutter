@@ -507,7 +507,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else if (failure instanceof A.GetTokenOIDCFailure)
         return _this.$this._getMessageFailure$2(_this.context, failure.exception);
       else if (failure instanceof A.AuthenticateOidcOnBrowserFailure)
-        return _this.$this._getMessageFailure$2(_this.context, failure.AuthenticateOidcOnBrowserFailure_exception);
+        return _this.$this._getMessageFailure$2(_this.context, failure.exception);
       else {
         t1 = _this.context;
         t2 = type$.AppLocalizations;
@@ -890,4 +890,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["jdbpU9I2psPhA6CNI5ncY1xPv3Y="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["sRCHIDvt0WxR8kz8hRSB+RLYBvs="] = $__dart_deferred_initializers__.current
