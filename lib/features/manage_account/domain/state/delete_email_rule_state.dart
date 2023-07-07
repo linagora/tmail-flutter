@@ -11,10 +11,6 @@ class DeleteEmailRuleSuccess extends UIState {
 }
 
 class DeleteEmailRuleFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DeleteEmailRuleFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteEmailRuleFailure(dynamic exception) : super(exception: exception);
 }

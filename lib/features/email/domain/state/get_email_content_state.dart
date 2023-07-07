@@ -49,7 +49,4 @@ class GetEmailContentFromCacheSuccess extends UIState {
 class GetEmailContentFailure extends FeatureFailure {
 
   GetEmailContentFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

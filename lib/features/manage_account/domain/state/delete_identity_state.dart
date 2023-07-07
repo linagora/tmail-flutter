@@ -11,10 +11,6 @@ class DeleteIdentitySuccess extends UIState {
 }
 
 class DeleteIdentityFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DeleteIdentityFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteIdentityFailure(dynamic exception) : super(exception: exception);
 }

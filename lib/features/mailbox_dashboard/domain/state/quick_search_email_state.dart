@@ -1,5 +1,5 @@
-
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:model/email/presentation_email.dart';
 
 class QuickSearchEmailSuccess extends UIState {
@@ -12,10 +12,6 @@ class QuickSearchEmailSuccess extends UIState {
 }
 
 class QuickSearchEmailFailure extends FeatureFailure {
-  final dynamic exception;
 
-  QuickSearchEmailFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  QuickSearchEmailFailure(dynamic exception) : super(exception: exception);
 }

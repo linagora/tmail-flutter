@@ -12,10 +12,6 @@ class AddRecipientsInForwardingSuccess extends UIState {
 }
 
 class AddRecipientsInForwardingFailure extends FeatureFailure {
-  final dynamic exception;
 
-  AddRecipientsInForwardingFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  AddRecipientsInForwardingFailure(dynamic exception) : super(exception: exception);
 }

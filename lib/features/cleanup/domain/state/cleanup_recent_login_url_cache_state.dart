@@ -1,18 +1,9 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-class CleanupRecentLoginUrlCacheSuccess extends UIState {
-
-  CleanupRecentLoginUrlCacheSuccess();
-
-  @override
-  List<Object> get props => [];
-}
+class CleanupRecentLoginUrlCacheSuccess extends UIState {}
 
 class CleanupRecentLoginUrlCacheFailure extends FeatureFailure {
-  final dynamic exception;
 
-  CleanupRecentLoginUrlCacheFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  CleanupRecentLoginUrlCacheFailure(dynamic exception) : super(exception: exception);
 }

@@ -15,10 +15,6 @@ class GetAppDashboardConfigurationSuccess extends UIState {
 }
 
 class GetAppDashboardConfigurationFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetAppDashboardConfigurationFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetAppDashboardConfigurationFailure(dynamic exception) : super(exception: exception);
 }

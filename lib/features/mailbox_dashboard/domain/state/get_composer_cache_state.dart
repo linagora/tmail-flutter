@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 
 class GetComposerCacheSuccess extends UIState {
@@ -12,10 +13,6 @@ class GetComposerCacheSuccess extends UIState {
 }
 
 class GetComposerCacheFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetComposerCacheFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetComposerCacheFailure(dynamic exception) : super(exception: exception);
 }

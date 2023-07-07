@@ -16,10 +16,6 @@ class GetStoredEmailDeliveryStateSuccess extends UIState {
 }
 
 class GetStoredEmailDeliveryStateFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetStoredEmailDeliveryStateFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetStoredEmailDeliveryStateFailure(dynamic exception) : super(exception: exception);
 }

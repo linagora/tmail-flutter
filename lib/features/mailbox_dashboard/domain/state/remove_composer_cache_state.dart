@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
 class RemoveComposerCacheSuccess extends UIState {
 
@@ -9,10 +10,6 @@ class RemoveComposerCacheSuccess extends UIState {
 }
 
 class RemoveComposerCacheFailure extends FeatureFailure {
-  final dynamic exception;
 
-  RemoveComposerCacheFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  RemoveComposerCacheFailure(dynamic exception) : super(exception: exception);
 }

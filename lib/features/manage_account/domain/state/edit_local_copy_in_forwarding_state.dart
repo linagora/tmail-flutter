@@ -12,10 +12,6 @@ class EditLocalCopyInForwardingSuccess extends UIState {
 }
 
 class EditLocalCopyInForwardingFailure extends FeatureFailure {
-  final dynamic exception;
 
-  EditLocalCopyInForwardingFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  EditLocalCopyInForwardingFailure(dynamic exception) : super(exception: exception);
 }

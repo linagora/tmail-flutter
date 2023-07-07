@@ -1,20 +1,11 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
 class EditIdentityLoading extends UIState {}
 
-class EditIdentitySuccess extends UIState {
-
-  EditIdentitySuccess();
-
-  @override
-  List<Object?> get props => [];
-}
+class EditIdentitySuccess extends UIState {}
 
 class EditIdentityFailure extends FeatureFailure {
-  final dynamic exception;
 
-  EditIdentityFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  EditIdentityFailure(dynamic exception) : super(exception: exception);
 }

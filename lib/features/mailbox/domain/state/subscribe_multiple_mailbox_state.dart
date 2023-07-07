@@ -28,7 +28,7 @@ class SubscribeMultipleMailboxAllSuccess extends UIActionState {
     parentMailboxId,
     mailboxIdsSubscribe,
     subscribeAction,
-    super.props
+    ...super.props
   ];
 }
 
@@ -53,23 +53,13 @@ class SubscribeMultipleMailboxHasSomeSuccess extends UIActionState {
     parentMailboxId,
     mailboxIdsSubscribe,
     subscribeAction,
-    super.props
+    ...super.props
   ];
 }
 
-class SubscribeMultipleMailboxAllFailure extends FeatureFailure {
-
-  SubscribeMultipleMailboxAllFailure();
-
-  @override
-  List<Object> get props => [];
-}
+class SubscribeMultipleMailboxAllFailure extends FeatureFailure {}
 
 class SubscribeMultipleMailboxFailure extends FeatureFailure {
-  final dynamic exception;
 
-  SubscribeMultipleMailboxFailure(this.exception);
-
-  @override
-  List<Object> get props => [exception];
+  SubscribeMultipleMailboxFailure(dynamic exception) : super(exception: exception);
 }

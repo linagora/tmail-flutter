@@ -23,10 +23,10 @@ class MarkAsStarEmailInteractor {
             markStarAction,
             currentEmailState: currentEmailState));
       } else {
-        yield Left(MarkAsStarEmailFailure(null, markStarAction));
+        yield Left(MarkAsStarEmailFailure(markStarAction));
       }
     } catch (e) {
-      yield Left(MarkAsStarEmailFailure(e, markStarAction));
+      yield Left(MarkAsStarEmailFailure(markStarAction, exception: e));
     }
   }
 }

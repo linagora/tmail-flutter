@@ -34,7 +34,4 @@ class GetStoredSendingEmailSuccess extends UIState {
 class GetStoredSendingEmailFailure extends FeatureFailure {
 
   GetStoredSendingEmailFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

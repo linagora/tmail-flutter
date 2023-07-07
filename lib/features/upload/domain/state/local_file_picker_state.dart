@@ -1,6 +1,6 @@
-
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/upload/file_info.dart';
 
 class LocalFilePickerSuccess extends UIState {
   final List<FileInfo> pickedFiles;
@@ -12,15 +12,8 @@ class LocalFilePickerSuccess extends UIState {
 }
 
 class LocalFilePickerFailure extends FeatureFailure {
-  final dynamic exception;
 
-  LocalFilePickerFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  LocalFilePickerFailure(dynamic exception) : super(exception: exception);
 }
 
-class LocalFilePickerCancel extends FeatureFailure {
-  @override
-  List<Object> get props => [];
-}
+class LocalFilePickerCancel extends FeatureFailure {}
