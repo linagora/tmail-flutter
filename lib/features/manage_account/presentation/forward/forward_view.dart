@@ -36,7 +36,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
             if (_responsiveUtils.isWebDesktop(context))
               ...[
                 ForwardHeaderWidget(imagePaths: _imagePaths, responsiveUtils: _responsiveUtils),
-                Container(height: 1, color: AppColor.colorDividerHeaderSetting)
+                const Divider(height: 1, color: AppColor.colorDividerHeaderSetting)
               ],
             Expanded(child: SingleChildScrollView(
               physics: const ClampingScrollPhysics(),

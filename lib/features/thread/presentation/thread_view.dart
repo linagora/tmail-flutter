@@ -50,10 +50,7 @@ class ThreadView extends GetWidget<ThreadController>
         body: Portal(
           child: Row(children: [
             if (supportVerticalDivider(context))
-              const VerticalDivider(
-                  color: AppColor.colorDividerVertical,
-                  width: 1,
-                  thickness: 0.2),
+              const VerticalDivider(color: AppColor.colorDividerVertical, width: 1),
             Expanded(child: SafeArea(
                 right: _responsiveUtils.isLandscapeMobile(context),
                 left: _responsiveUtils.isLandscapeMobile(context),

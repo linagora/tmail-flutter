@@ -347,7 +347,7 @@ mixin MailboxWidgetMixin {
             : const Offstage();
         })
       ),
-      const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+      const Divider(color: AppColor.colorDividerMailbox, height: 1)
     ]);
   }
 
