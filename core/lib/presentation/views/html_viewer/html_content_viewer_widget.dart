@@ -116,6 +116,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
     return InAppWebView(
       key: ValueKey(htmlData),
+      initialSettings: InAppWebViewSettings(
+        transparentBackground: true,
+      ),
       onWebViewCreated: (controller) async {
         _webViewController = controller;
         controller.loadData(data: htmlData);
