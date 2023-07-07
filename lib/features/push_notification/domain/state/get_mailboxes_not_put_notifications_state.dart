@@ -18,7 +18,4 @@ class GetMailboxesNotPutNotificationsSuccess extends UIState {
 class GetMailboxesNotPutNotificationsFailure extends FeatureFailure {
 
   GetMailboxesNotPutNotificationsFailure(exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

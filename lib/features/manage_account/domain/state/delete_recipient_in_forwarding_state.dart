@@ -2,13 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:forward/forward/tmail_forward.dart';
 
-class StartDeleteRecipientInForwarding extends UIState {
-
-  StartDeleteRecipientInForwarding();
-
-  @override
-  List<Object?> get props => [];
-}
+class StartDeleteRecipientInForwarding extends UIState {}
 
 class DeleteRecipientInForwardingSuccess extends UIState {
   final TMailForward forward;
@@ -20,10 +14,6 @@ class DeleteRecipientInForwardingSuccess extends UIState {
 }
 
 class DeleteRecipientInForwardingFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DeleteRecipientInForwardingFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteRecipientInForwardingFailure(dynamic exception) : super(exception: exception);
 }

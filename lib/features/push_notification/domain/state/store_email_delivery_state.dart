@@ -4,19 +4,9 @@ import 'package:core/presentation/state/success.dart';
 
 class StoreEmailDeliveryStateLoading extends UIState {}
 
-class StoreEmailDeliveryStateSuccess extends UIState {
-
-  StoreEmailDeliveryStateSuccess();
-
-  @override
-  List<Object> get props => [];
-}
+class StoreEmailDeliveryStateSuccess extends UIState {}
 
 class StoreEmailDeliveryStateFailure extends FeatureFailure {
-  final dynamic exception;
 
-  StoreEmailDeliveryStateFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  StoreEmailDeliveryStateFailure(dynamic exception) : super(exception: exception);
 }

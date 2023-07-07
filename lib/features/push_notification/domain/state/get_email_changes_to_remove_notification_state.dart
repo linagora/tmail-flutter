@@ -18,7 +18,4 @@ class GetEmailChangesToRemoveNotificationSuccess extends UIState {
 class GetEmailChangesToRemoveNotificationFailure extends FeatureFailure {
 
   GetEmailChangesToRemoveNotificationFailure(exception) : super(exception: exception);
-
-  @override
-  List<Object> get props => [exception];
 }

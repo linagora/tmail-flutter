@@ -1,14 +1,8 @@
-
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:model/email/presentation_email.dart';
 
-class SearchingState extends UIState {
-
-  SearchingState();
-
-  @override
-  List<Object> get props => [];
-}
+class SearchingState extends UIState {}
 
 class SearchEmailSuccess extends UIState {
   final List<PresentationEmail> emailList;
@@ -20,10 +14,6 @@ class SearchEmailSuccess extends UIState {
 }
 
 class SearchEmailFailure extends FeatureFailure {
-  final dynamic exception;
 
-  SearchEmailFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  SearchEmailFailure(dynamic exception) : super(exception: exception);
 }

@@ -1,18 +1,9 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-class SaveEmailAddressSuccess extends UIState {
-
-  SaveEmailAddressSuccess();
-
-  @override
-  List<Object?> get props => [];
-}
+class SaveEmailAddressSuccess extends UIState {}
 
 class SaveEmailAddressFailure extends FeatureFailure {
-  final dynamic exception;
 
-  SaveEmailAddressFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  SaveEmailAddressFailure(dynamic exception) : super(exception: exception);
 }

@@ -1,14 +1,8 @@
 import 'dart:ui';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-import 'package:core/core.dart';
-
-class SavingLanguage extends UIState {
-
-  SavingLanguage();
-
-  @override
-  List<Object?> get props => [];
-}
+class SavingLanguage extends UIState {}
 
 class SaveLanguageSuccess extends UIState {
 
@@ -21,10 +15,6 @@ class SaveLanguageSuccess extends UIState {
 }
 
 class SaveLanguageFailure extends FeatureFailure {
-  final dynamic exception;
 
-  SaveLanguageFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  SaveLanguageFailure(dynamic exception) : super(exception: exception);
 }

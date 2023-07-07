@@ -16,10 +16,6 @@ class GetMailboxStateToRefreshSuccess extends UIState {
 }
 
 class GetMailboxStateToRefreshFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetMailboxStateToRefreshFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetMailboxStateToRefreshFailure(dynamic exception) : super(exception: exception);
 }

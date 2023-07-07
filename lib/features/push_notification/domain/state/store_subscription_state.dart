@@ -4,19 +4,9 @@ import 'package:core/presentation/state/success.dart';
 
 class StoreSubscriptionLoading extends UIState {}
 
-class StoreSubscriptionSuccess extends UIState {
-
-  StoreSubscriptionSuccess();
-
-  @override
-  List<Object> get props => [];
-}
+class StoreSubscriptionSuccess extends UIState {}
 
 class StoreSubscriptionFailure extends FeatureFailure {
-  final dynamic exception;
 
-  StoreSubscriptionFailure(this.exception);
-
-  @override
-  List<Object> get props => [exception];
+  StoreSubscriptionFailure(dynamic exception) : super(exception: exception);
 }

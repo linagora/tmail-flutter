@@ -17,7 +17,4 @@ class GetStoredSessionSuccess extends UIState {
 class GetStoredSessionFailure extends FeatureFailure {
 
   GetStoredSessionFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

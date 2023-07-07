@@ -1,6 +1,7 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
-import 'package:model/model.dart';
+import 'package:model/email/presentation_email.dart';
 
 class RefreshChangesAllEmailSuccess extends UIState {
   final List<PresentationEmail> emailList;
@@ -13,10 +14,6 @@ class RefreshChangesAllEmailSuccess extends UIState {
 }
 
 class RefreshChangesAllEmailFailure extends FeatureFailure {
-  final dynamic exception;
 
-  RefreshChangesAllEmailFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  RefreshChangesAllEmailFailure(dynamic exception) : super(exception: exception);
 }

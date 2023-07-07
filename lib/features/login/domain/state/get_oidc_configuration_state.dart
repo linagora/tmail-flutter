@@ -1,13 +1,8 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/oidc/oidc_configuration.dart';
 
-class GetOIDCConfigurationLoading extends LoadingState {
-
-  GetOIDCConfigurationLoading();
-
-  @override
-  List<Object> get props => [];
-}
+class GetOIDCConfigurationLoading extends LoadingState {}
 
 class GetOIDCConfigurationSuccess extends UIState {
 
@@ -22,7 +17,4 @@ class GetOIDCConfigurationSuccess extends UIState {
 class GetOIDCConfigurationFailure extends FeatureFailure {
 
   GetOIDCConfigurationFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

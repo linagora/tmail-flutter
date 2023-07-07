@@ -1,13 +1,9 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/token_oidc.dart';
 
-class GetTokenOIDCLoading extends LoadingState {
-
-  GetTokenOIDCLoading();
-
-  @override
-  List<Object> get props => [];
-}
+class GetTokenOIDCLoading extends LoadingState {}
 
 class GetTokenOIDCSuccess extends UIState {
 
@@ -23,7 +19,4 @@ class GetTokenOIDCSuccess extends UIState {
 class GetTokenOIDCFailure extends FeatureFailure {
 
   GetTokenOIDCFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

@@ -59,7 +59,7 @@ class MoveMultipleEmailToMailboxInteractor {
           currentMailboxState: currentMailboxState));
       }
     } catch (e) {
-      yield Left(MoveMultipleEmailToMailboxFailure(e, moveRequest.emailActionType, moveRequest.moveAction));
+      yield Left(MoveMultipleEmailToMailboxFailure(moveRequest.emailActionType, moveRequest.moveAction, e));
     }
   }
 }

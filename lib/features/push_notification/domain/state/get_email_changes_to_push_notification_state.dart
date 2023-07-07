@@ -22,7 +22,4 @@ class GetEmailChangesToPushNotificationSuccess extends UIState {
 class GetEmailChangesToPushNotificationFailure extends FeatureFailure {
 
   GetEmailChangesToPushNotificationFailure(exception) : super(exception: exception);
-
-  @override
-  List<Object> get props => [exception];
 }

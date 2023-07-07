@@ -37,10 +37,10 @@ class MoveToMailboxInteractor {
           currentMailboxState: currentMailboxState,
           currentEmailState: currentEmailState));
       } else {
-        yield Left(MoveToMailboxFailure(moveRequest.emailActionType, null));
+        yield Left(MoveToMailboxFailure(moveRequest.emailActionType));
       }
     } catch (e) {
-      yield Left(MoveToMailboxFailure(moveRequest.emailActionType, e));
+      yield Left(MoveToMailboxFailure(moveRequest.emailActionType, exception: e));
     }
   }
 }

@@ -16,10 +16,6 @@ class GetFCMSubscriptionLocalSuccess extends UIState {
 }
 
 class GetFCMSubscriptionLocalFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetFCMSubscriptionLocalFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetFCMSubscriptionLocalFailure(dynamic exception) : super(exception: exception);
 }

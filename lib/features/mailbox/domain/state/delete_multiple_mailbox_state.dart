@@ -16,7 +16,7 @@ class DeleteMultipleMailboxAllSuccess extends UIActionState {
   }) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [listMailboxIdDeleted];
+  List<Object?> get props => [listMailboxIdDeleted, ...super.props];
 }
 
 class DeleteMultipleMailboxHasSomeSuccess extends UIActionState {
@@ -29,22 +29,12 @@ class DeleteMultipleMailboxHasSomeSuccess extends UIActionState {
   }) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [listMailboxIdDeleted];
+  List<Object?> get props => [listMailboxIdDeleted, ...super.props];
 }
 
-class DeleteMultipleMailboxAllFailure extends FeatureFailure {
-
-  DeleteMultipleMailboxAllFailure();
-
-  @override
-  List<Object> get props => [];
-}
+class DeleteMultipleMailboxAllFailure extends FeatureFailure {}
 
 class DeleteMultipleMailboxFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DeleteMultipleMailboxFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteMultipleMailboxFailure(dynamic exception) : super(exception: exception);
 }

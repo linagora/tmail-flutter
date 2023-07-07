@@ -17,7 +17,4 @@ class GetSpamMailboxCachedSuccess extends UIState {
 class GetSpamMailboxCachedFailure extends FeatureFailure {
 
   GetSpamMailboxCachedFailure(exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

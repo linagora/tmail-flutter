@@ -1,18 +1,9 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-class CleanupRecentSearchCacheSuccess extends UIState {
-
-  CleanupRecentSearchCacheSuccess();
-
-  @override
-  List<Object> get props => [];
-}
+class CleanupRecentSearchCacheSuccess extends UIState {}
 
 class CleanupRecentSearchCacheFailure extends FeatureFailure {
-  final dynamic exception;
 
-  CleanupRecentSearchCacheFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  CleanupRecentSearchCacheFailure(dynamic exception) : super(exception: exception);
 }

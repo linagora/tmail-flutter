@@ -13,10 +13,6 @@ class EditEmailRuleFilterSuccess extends UIState {
 }
 
 class EditEmailRuleFilterFailure extends FeatureFailure {
-  final dynamic exception;
 
-  EditEmailRuleFilterFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  EditEmailRuleFilterFailure(dynamic exception) : super(exception: exception);
 }

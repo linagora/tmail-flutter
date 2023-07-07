@@ -1,5 +1,6 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/email/presentation_email.dart';
 
 class LoadMoreEmailsSuccess extends UIState {
   final List<PresentationEmail> emailList;
@@ -11,10 +12,6 @@ class LoadMoreEmailsSuccess extends UIState {
 }
 
 class LoadMoreEmailsFailure extends FeatureFailure {
-  final dynamic exception;
 
-  LoadMoreEmailsFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  LoadMoreEmailsFailure(dynamic exception) : super(exception: exception);
 }

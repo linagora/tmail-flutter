@@ -15,11 +15,10 @@ class UploadAttachmentSuccess extends UIState {
 }
 
 class UploadAttachmentFailure extends FeatureFailure {
-  final dynamic exception;
   final bool isInline;
 
-  UploadAttachmentFailure(this.exception, {this.isInline = false});
+  UploadAttachmentFailure(dynamic exception, {this.isInline = false}) : super(exception: exception);
 
   @override
-  List<Object> get props => [exception, isInline];
+  List<Object?> get props => [isInline, ...super.props];
 }

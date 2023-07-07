@@ -26,15 +26,9 @@ class UpdateMultipleSendingEmailHasSomeSuccess extends UIState {
 class UpdateMultipleSendingEmailAllFailure extends FeatureFailure {
 
   UpdateMultipleSendingEmailAllFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }
 
 class UpdateMultipleSendingEmailFailure extends FeatureFailure {
 
   UpdateMultipleSendingEmailFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

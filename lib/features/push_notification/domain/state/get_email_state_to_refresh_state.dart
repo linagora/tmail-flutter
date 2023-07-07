@@ -16,10 +16,6 @@ class GetEmailStateToRefreshSuccess extends UIState {
 }
 
 class GetEmailStateToRefreshFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetEmailStateToRefreshFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetEmailStateToRefreshFailure(dynamic exception) : super(exception: exception);
 }

@@ -17,7 +17,4 @@ class GetCredentialViewState extends UIState {
 class GetCredentialFailure extends FeatureFailure {
 
   GetCredentialFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

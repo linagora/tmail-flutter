@@ -1,5 +1,6 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/download/download_task_id.dart';
 
 class DownloadAttachmentsSuccess extends UIState {
   final List<DownloadTaskId> taskIds;
@@ -11,10 +12,6 @@ class DownloadAttachmentsSuccess extends UIState {
 }
 
 class DownloadAttachmentsFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DownloadAttachmentsFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DownloadAttachmentsFailure(dynamic exception) : super(exception: exception);
 }

@@ -16,10 +16,6 @@ class GetQuotasSuccess extends UIState {
 }
 
 class GetQuotasFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetQuotasFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetQuotasFailure(dynamic exception) : super(exception: exception);
 }

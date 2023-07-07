@@ -2,13 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 
-class LoadingGetAllVacation extends UIState {
-
-  LoadingGetAllVacation();
-
-  @override
-  List<Object?> get props => [];
-}
+class LoadingGetAllVacation extends UIState {}
 
 class GetAllVacationSuccess extends UIState {
   final List<VacationResponse> listVacationResponse;
@@ -20,10 +14,6 @@ class GetAllVacationSuccess extends UIState {
 }
 
 class GetAllVacationFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetAllVacationFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetAllVacationFailure(dynamic exception) : super(exception: exception);
 }

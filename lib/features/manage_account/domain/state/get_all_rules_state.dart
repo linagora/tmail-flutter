@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 
 class GetAllRulesSuccess extends UIState {
@@ -11,10 +12,6 @@ class GetAllRulesSuccess extends UIState {
 }
 
 class GetAllRulesFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetAllRulesFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetAllRulesFailure(dynamic exception) : super(exception: exception);
 }

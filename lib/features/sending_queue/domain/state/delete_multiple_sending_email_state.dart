@@ -16,7 +16,4 @@ class DeleteMultipleSendingEmailSuccess extends UIState {
 class DeleteMultipleSendingEmailFailure extends FeatureFailure {
 
   DeleteMultipleSendingEmailFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

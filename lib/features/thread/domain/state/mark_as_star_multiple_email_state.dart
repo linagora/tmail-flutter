@@ -1,6 +1,7 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:model/email/mark_star_action.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
 class LoadingMarkAsStarMultipleEmailAll extends UIState {}
@@ -19,7 +20,7 @@ class MarkAsStarMultipleEmailAllSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [countMarkStarSuccess, markStarAction];
+  List<Object?> get props => [countMarkStarSuccess, markStarAction, ...super.props];
 }
 
 class MarkAsStarMultipleEmailAllFailure extends FeatureFailure {
@@ -45,15 +46,14 @@ class MarkAsStarMultipleEmailHasSomeEmailFailure extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object> get props => [countMarkStarSuccess, markStarAction];
+  List<Object?> get props => [countMarkStarSuccess, markStarAction, ...super.props];
 }
 
 class MarkAsStarMultipleEmailFailure extends FeatureFailure {
-  final dynamic exception;
   final MarkStarAction markStarAction;
 
-  MarkAsStarMultipleEmailFailure(this.exception, this.markStarAction);
+  MarkAsStarMultipleEmailFailure(this.markStarAction, dynamic exception) : super(exception: exception);
 
   @override
-  List<Object?> get props => [exception, markStarAction];
+  List<Object?> get props => [markStarAction, exception];
 }

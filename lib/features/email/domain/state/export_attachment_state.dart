@@ -1,4 +1,6 @@
-import 'package:core/core.dart';
+import 'package:core/data/network/download/downloaded_response.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
 class ExportAttachmentSuccess extends UIState {
   final DownloadedResponse downloadedResponse;
@@ -10,10 +12,6 @@ class ExportAttachmentSuccess extends UIState {
 }
 
 class ExportAttachmentFailure extends FeatureFailure {
-  final dynamic exception;
 
-  ExportAttachmentFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  ExportAttachmentFailure(dynamic exception) : super(exception: exception);
 }
