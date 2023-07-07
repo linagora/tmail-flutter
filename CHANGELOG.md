@@ -1,3 +1,19 @@
+## [0.8.4] - 2023-07-07
+### Fixed
+- \#1932 Turn off notifications after emailing
+- \#1963 Bypass the Screen with button Single sign-on when OIDC flow is detected
+- \#1829 App crash upon 401
+- \#1933 The inbox and sending queue is highlight once some emails in sending queue was sent in the same time
+- \#1877 \[Composer\] Text Style is not changed correctly once user change the focus
+- \#1952 Display signature in composer on mobile
+- \#1974 RefreshToken with OIDC on jmap.linagora.com/oidc
+- \#1708 \[UI\] \[Change languages\] Translating system mailboxes (INBOX, etc…)
+- \#1957 \[RTL\] Email subjects are displayed overlap email content
+- \#1957 \[RTL\] Name of attachments are reversed
+- \#1958 \[RTL\] 'To' and 'Cc' fields are not displayed in the single line
+- \#1959 \[RTL\] Invalid email red border is displayed over the address field
+- \#1960 \[RTL\] Cannot edit signature in Profile Identity
+
 ## [0.8.3] - 2023-06-27
 ### Fixed
 - \#1878 Fix font family not changed correctly in composer
@@ -153,6 +169,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.8.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.4
 [0.8.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.3
 [0.8.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.2
 [0.8.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.1
