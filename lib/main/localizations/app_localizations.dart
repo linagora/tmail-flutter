@@ -1250,12 +1250,6 @@ class AppLocalizations {
         name: 'signature');
   }
 
-  String get plain_text {
-    return Intl.message(
-        'Plain text',
-        name: 'plain_text');
-  }
-
   String get html_template {
     return Intl.message(
         'Html template',

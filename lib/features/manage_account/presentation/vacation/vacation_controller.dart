@@ -18,7 +18,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_message_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_presentation.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -37,9 +36,7 @@ class VacationController extends BaseController {
 
   final vacationPresentation = VacationPresentation.initialize().obs;
   final errorMessageBody = Rxn<String>();
-  final vacationMessageType = Rx<VacationMessageType>(VacationMessageType.plainText);
 
-  final messageTextController = TextEditingController();
   final subjectTextController = TextEditingController();
   final richTextControllerForMobile = RichTextController();
   final htmlEditorMinHeight = 150;
@@ -115,9 +112,8 @@ class VacationController extends BaseController {
 
   void _initializeValueForVacation(VacationPresentation newVacation) {
     vacationPresentation.value = newVacation;
-    messageTextController.text = newVacation.messagePlainText ?? '';
     subjectTextController.text = newVacation.subject ?? '';
-    updateMessageHtmlText(newVacation.messageHtmlText ?? '');
+    updateMessageHtmlText(newVacation.messageHtmlText ?? newVacation.messagePlainText ?? '');
     if (PlatformInfo.isWeb) {
       _richTextControllerForWeb.editorController.setText(newVacation.messageHtmlText ?? '');
     } else {
@@ -263,9 +259,8 @@ class VacationController extends BaseController {
         return;
       }
 
-      final messagePlainText = messageTextController.text;
       final messageHtmlText = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
-      if (messagePlainText.isEmpty && messageHtmlText.isEmpty && context.mounted) {
+      if (messageHtmlText.isEmpty && context.mounted) {
         if (currentOverlayContext != null && currentContext != null) {
           _appToast.showToastErrorMessage(
             currentOverlayContext!,
@@ -277,9 +272,9 @@ class VacationController extends BaseController {
       final subjectVacation = subjectTextController.text;
 
       final newVacationPresentation = vacationPresentation.value.copyWidth(
-          messagePlainText: messagePlainText,
-          messageHtmlText: messageHtmlText,
-          subject: subjectVacation);
+        messageHtmlText: messageHtmlText,
+        subject: subjectVacation
+      );
       log('VacationController::saveVacation(): newVacationPresentation: $newVacationPresentation');
       final newVacationResponse = newVacationPresentation.toVacationResponse();
       log('VacationController::saveVacation(): newVacationResponse: $newVacationResponse');
@@ -329,22 +324,10 @@ class VacationController extends BaseController {
     }
   }
 
-  void selectVacationMessageType(BuildContext context, VacationMessageType newMessageType) {
-    if (newMessageType == VacationMessageType.plainText && PlatformInfo.isMobile) {
-      _storeMessageHtmlTextOnMobile();
-    }
-    clearFocusEditor(context);
-    vacationMessageType.value = newMessageType;
-  }
-
-  void _storeMessageHtmlTextOnMobile() async {
-    final messageHtml = await _getMessageHtmlText();
-    updateMessageHtmlText(messageHtml);
-  }
-
   void clearFocusEditor(BuildContext context) {
     if (PlatformInfo.isMobile) {
       richTextControllerForMobile.htmlEditorApi?.unfocus();
+      KeyboardUtils.hideSystemKeyboardMobile();
     }
     KeyboardUtils.hideKeyboard(context);
   }
@@ -377,7 +360,6 @@ class VacationController extends BaseController {
 
   @override
   void onClose() {
-    messageTextController.dispose();
     subjectTextController.dispose();
     richTextControllerForMobile.dispose();
     scrollController.dispose();
