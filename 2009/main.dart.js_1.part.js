@@ -224,8 +224,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = hunkHelpers.updateHolder(holdersList[3], B);
   A = holdersList[0];
   C = holdersList[2];
-  D = holdersList[22];
-  E = holdersList[23];
+  D = holdersList[23];
+  E = holdersList[24];
   J = holdersList[1];
   B._AutofillScopeTextInputConfiguration.prototype = {
     toJson$0() {
@@ -554,13 +554,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 14
+    $signature: 15
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 14
+    $signature: 15
   };
   B.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(context, loginUsername) {
@@ -586,7 +586,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 538
+    $signature: 414
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -648,13 +648,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 14
+    $signature: 15
   };
   B.LoginView__buildSSOButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 14
+    $signature: 15
   };
   B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
@@ -688,7 +688,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 166
+    $signature: 178
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -712,7 +712,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 88
+    $signature: 91
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -890,4 +890,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["8WYa5IBoY4VJmKPmHi8uq4HKjLU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["vy3rB9/KZUA/xHMLijiEa/wD0dc="] = $__dart_deferred_initializers__.current

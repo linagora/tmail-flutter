@@ -26,9 +26,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C = hunkHelpers.updateHolder(holdersList[11], C);
   A = holdersList[2];
   B = holdersList[0];
-  E = holdersList[26];
-  D = holdersList[20];
-  F = holdersList[21];
+  E = holdersList[27];
+  D = holdersList[21];
+  F = holdersList[22];
   C.ContactSuggestionBoxItem.prototype = {
     build$1(context) {
       var t1, t2, t3, t4, t5, t6, t7, itemChild, _this = this, _null = null;
@@ -94,4 +94,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["CjUmvfDkcfuo/aSYU2YSdfD2RjQ="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["ANNdGZ/0Njdk18HSD2kl7dTc+mQ="] = $__dart_deferred_initializers__.current

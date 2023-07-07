@@ -122,7 +122,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (responsiveUtils.isPortraitTablet$1(context))
         return F.EdgeInsetsDirectional_24_24_24_24;
       else
-        return F.EdgeInsetsDirectional_0_24_0_24;
+        return H.EdgeInsetsDirectional_0_24_0_24;
     },
     ComposerStyle_getWidthForTablet(context, responsiveUtils) {
       var currentWidth = context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx;
@@ -132,7 +132,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return currentWidth * 0.7;
     }
   },
-  A, C, D, G, J, E, F;
+  A, C, D, G, J, E, F, H;
   B = hunkHelpers.updateHolder(holdersList[8], B);
   A = holdersList[0];
   C = holdersList[2];
@@ -141,6 +141,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   J = holdersList[1];
   E = holdersList[17];
   F = holdersList[18];
+  H = holdersList[19];
   B.ContextMenuActionBuilder.prototype = {};
   B.SimpleContextMenuActionBuilder.prototype = {
     build$0() {
@@ -228,7 +229,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 17
+    $signature: 16
   };
   B.ComposerView__buildComposerViewForMobile_closure0.prototype = {
     call$0() {
@@ -243,7 +244,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.KeyboardVisibilityBuilder(new B.ComposerView__buildComposerViewForMobile__closure(this.$this, constraints), null);
     },
-    $signature: 354
+    $signature: 547
   };
   B.ComposerView__buildComposerViewForMobile__closure.prototype = {
     call$2(context, isKeyboardVisible) {
@@ -297,7 +298,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       return new A.KeyboardRichText(A.SafeArea$(true, A.Container$(_null, A.Column$(A._setArrayType([t6, E.Divider_6xV, A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([t8, t13, new A.SizedBox(_null, 500, _null, _null)], t14), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t7, _null, _null, C.ClampingScrollPhysics_null, _null, _null, C.Axis_1), 1)], t14), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, C.EdgeInsets_0_0_0_0, true, true), t10, t4, t5, _null);
     },
-    $signature: 320
+    $signature: 548
   };
   B.ComposerView__buildComposerViewForMobile___closure.prototype = {
     call$0() {
@@ -346,7 +347,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 17
+    $signature: 16
   };
   B.ComposerView__buildComposerViewForTablet_closure0.prototype = {
     call$0() {
@@ -361,7 +362,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.KeyboardVisibilityBuilder(new B.ComposerView__buildComposerViewForTablet__closure(this.$this, constraints), null);
     },
-    $signature: 354
+    $signature: 547
   };
   B.ComposerView__buildComposerViewForTablet__closure.prototype = {
     call$2(context, isKeyboardVisible) {
@@ -407,7 +408,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return new A.KeyboardRichText(A.Center$(A.SafeArea$(true, A.Card$(true, A.Container$(_null, A.ClipRRect$(F.BorderRadius_tLn12, A.Column$(A._setArrayType([t9, E.Divider_6xV, A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([t11, E.Divider_6xV, t13, t1.buildInlineLoadingView$1(t3._as(t2.get(t1))), t1._buildComposerEditor$1(context)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t10, _null, _null, C.ClampingScrollPhysics_null, _null, _null, C.Axis_1), 1), E.Divider_6xV, new A.Padding(D.EdgeInsetsDirectional_0_16_0_16, t1.buildBottomBar$1(context), _null)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2), C.Clip_0, _null, _null, F.BoxDecoration_G3F3, _null, _null, _null, _null, _null, _null, _null, t6), _null, 20, t8, F.RoundedRectangleBorder_27D7), true, C.EdgeInsets_0_0_0_0, true, true), _null, _null, _null), t7, t4, t5, _null);
     },
-    $signature: 320
+    $signature: 548
   };
   B.ComposerView__buildComposerViewForTablet___closure.prototype = {
     call$0() {
@@ -456,7 +457,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openFilePickerByType$2(this.context, C.FileType_1);
     },
-    $signature: 434
+    $signature: 549
   };
   B.ComposerView__browseFileAction_closure.prototype = {
     call$1(_) {
@@ -465,7 +466,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openFilePickerByType$2(this.context, C.FileType_0);
     },
-    $signature: 434
+    $signature: 549
   };
   B.ComposerView__buildComposerEditor_closure.prototype = {
     call$0() {
@@ -506,7 +507,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return this.$this._buildHtmlEditor$2$initialContent(this.context, "<p><br></p>");
     },
-    $signature: 166
+    $signature: 178
   };
   B.ComposerView__buildComposerEditor__closure0.prototype = {
     call$1(success) {
@@ -522,7 +523,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return _this.$this._buildHtmlEditor$2$initialContent(_this.context, _s11_);
     },
-    $signature: 88
+    $signature: 91
   };
   B.ComposerView__buildHtmlEditor_closure0.prototype = {
     call$1(_) {
@@ -579,4 +580,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["77pmPzApyaPX812qqKtxmFUC4cI="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["IrngSBsg72V4aUWswHcmrbfwvhM="] = $__dart_deferred_initializers__.current

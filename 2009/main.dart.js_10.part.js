@@ -12,7 +12,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B, C;
   A = hunkHelpers.updateHolder(holdersList[15], A);
   B = holdersList[0];
-  C = holdersList[20];
+  C = holdersList[21];
   A.SuggestionEmailAddress.prototype = {
     get$props() {
       return [this.emailAddress, this.state];
@@ -40,4 +40,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["kw1/NF1B+dqKBNKngBgM2tUgzkc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["9daWcgv3rWb9JciHgoUMnF32ZGw="] = $__dart_deferred_initializers__.current

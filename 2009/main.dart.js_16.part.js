@@ -71,12 +71,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C = holdersList[2];
   A = holdersList[0];
   G = holdersList[17];
-  H = holdersList[19];
+  H = holdersList[20];
   D = holdersList[15];
-  E = holdersList[20];
+  E = holdersList[21];
   J = holdersList[1];
   I = holdersList[11];
-  F = holdersList[21];
+  F = holdersList[22];
   B.ContactView.prototype = {
     build$1(context) {
       var t8, t9, t10, t11, t12, t13, t14, t15, t16, _this = this, _null = null,
@@ -172,7 +172,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Padding(B.ContactUtils_getPaddingDividerSearchResultList(context, this.$this._contact_view$_responsiveUtils), C.Divider_I9g, null);
     },
-    $signature: 465
+    $signature: 541
   };
   B.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -208,7 +208,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 92
+    $signature: 90
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -229,4 +229,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
 };
 
-$__dart_deferred_initializers__["3NyhdjuK7MJFgOyRsrJWkIT9F5c="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Gkst6z9WMtX/K+Q7jyLVnOOQNTs="] = $__dart_deferred_initializers__.current
