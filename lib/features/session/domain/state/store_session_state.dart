@@ -8,7 +8,4 @@ class StoreSessionSuccess extends UIState {}
 class StoreSessionFailure extends FeatureFailure {
 
   StoreSessionFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

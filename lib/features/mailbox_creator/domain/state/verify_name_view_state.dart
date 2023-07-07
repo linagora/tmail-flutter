@@ -1,17 +1,9 @@
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-import 'package:core/core.dart';
-
-class VerifyNameViewState extends UIState {
-  VerifyNameViewState();
-
-  @override
-  List<Object> get props => [];
-}
+class VerifyNameViewState extends UIState {}
 
 class VerifyNameFailure extends FeatureFailure {
-  final dynamic exception;
 
-  VerifyNameFailure(this.exception);
-  @override
-  List<Object?> get props => [exception];
+  VerifyNameFailure(dynamic exception) : super(exception: exception);
 }

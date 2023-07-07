@@ -22,7 +22,4 @@ class GetNewReceiveEmailFromNotificationSuccess extends UIState {
 class GetNewReceiveEmailFromNotificationFailure extends FeatureFailure {
 
   GetNewReceiveEmailFromNotificationFailure(exception) : super(exception: exception);
-
-  @override
-  List<Object> get props => [exception];
 }

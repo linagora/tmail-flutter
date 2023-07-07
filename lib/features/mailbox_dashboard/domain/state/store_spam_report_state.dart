@@ -10,14 +10,10 @@ class StoreSpamReportStateSuccess extends UIState {
   StoreSpamReportStateSuccess(this.spamReportState);
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [spamReportState];
 }
 
 class StoreSpamReportStateFailure extends FeatureFailure {
-  final dynamic exception;
 
-  StoreSpamReportStateFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  StoreSpamReportStateFailure(dynamic exception) : super(exception: exception);
 }

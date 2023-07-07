@@ -13,19 +13,9 @@ class GetStoredEmailStateSuccess extends UIState {
   List<Object> get props => [state];
 }
 
-class NotFoundEmailState extends FeatureFailure {
-
-  NotFoundEmailState();
-
-  @override
-  List<Object> get props => [];
-}
+class NotFoundEmailState extends FeatureFailure {}
 
 class GetStoredEmailStateFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetStoredEmailStateFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetStoredEmailStateFailure(dynamic exception) : super(exception: exception);
 }

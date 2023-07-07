@@ -22,7 +22,4 @@ class GetDetailedEmailByIdSuccess extends UIState {
 class GetDetailedEmailByIdFailure extends FeatureFailure {
 
   GetDetailedEmailByIdFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

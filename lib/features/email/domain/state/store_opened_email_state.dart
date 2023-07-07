@@ -8,7 +8,4 @@ class StoreOpenedEmailSuccess extends UIState {}
 class StoreOpenedEmailFailure extends FeatureFailure {
 
   StoreOpenedEmailFailure(dynamic exception) : super(exception: exception);
-
-  @override
-  List<Object?> get props => [exception];
 }

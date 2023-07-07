@@ -16,10 +16,6 @@ class GetFirebaseSubscriptionSuccess extends UIState {
 }
 
 class GetFirebaseSubscriptionFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetFirebaseSubscriptionFailure(this.exception);
-
-  @override
-  List<Object> get props => [exception];
+  GetFirebaseSubscriptionFailure(dynamic exception) : super(exception: exception);
 }

@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:forward/forward/tmail_forward.dart';
 
 class GetForwardSuccess extends UIState {
@@ -11,10 +12,6 @@ class GetForwardSuccess extends UIState {
 }
 
 class GetForwardFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetForwardFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetForwardFailure(dynamic exception) : super(exception: exception);
 }

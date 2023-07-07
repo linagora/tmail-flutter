@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -36,16 +37,16 @@ class MoveToMailboxSuccess extends UIActionState {
     destinationMailboxId,
     moveAction,
     emailActionType,
-    destinationPath
+    destinationPath,
+    ...super.props
   ];
 }
 
 class MoveToMailboxFailure extends FeatureFailure {
   final EmailActionType emailActionType;
-  final dynamic exception;
 
-  MoveToMailboxFailure(this.emailActionType, this.exception);
+  MoveToMailboxFailure(this.emailActionType, {dynamic exception}) : super(exception: exception);
 
   @override
-  List<Object?> get props => [emailActionType, exception];
+  List<Object?> get props => [emailActionType, ...super.props];
 }

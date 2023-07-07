@@ -6,8 +6,6 @@ class DeleteSendingEmailLoading extends UIState {}
 class DeleteSendingEmailSuccess extends UIState {}
 
 class DeleteSendingEmailFailure extends FeatureFailure {
-  DeleteSendingEmailFailure(dynamic exception) : super(exception: exception);
 
-  @override
-  List<Object?> get props => [exception];
+  DeleteSendingEmailFailure(dynamic exception) : super(exception: exception);
 }

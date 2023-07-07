@@ -1,6 +1,6 @@
-
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:model/contact/contact.dart';
 
 class GetDeviceContactSuggestionsSuccess extends UIState {
   final List<Contact> results;
@@ -12,10 +12,6 @@ class GetDeviceContactSuggestionsSuccess extends UIState {
 }
 
 class GetDeviceContactSuggestionsFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetDeviceContactSuggestionsFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetDeviceContactSuggestionsFailure(dynamic exception) : super(exception: exception);
 }

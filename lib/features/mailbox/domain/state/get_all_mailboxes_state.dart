@@ -16,10 +16,6 @@ class GetAllMailboxSuccess extends UIState {
 }
 
 class GetAllMailboxFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetAllMailboxFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetAllMailboxFailure(dynamic exception) : super(exception: exception);
 }

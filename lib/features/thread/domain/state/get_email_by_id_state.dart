@@ -14,10 +14,6 @@ class GetEmailByIdSuccess extends UIState {
 }
 
 class GetEmailByIdFailure extends FeatureFailure {
-  final dynamic exception;
 
-  GetEmailByIdFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  GetEmailByIdFailure(dynamic exception) : super(exception: exception);
 }

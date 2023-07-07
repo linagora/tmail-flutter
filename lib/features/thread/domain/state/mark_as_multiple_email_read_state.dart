@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
@@ -19,7 +20,7 @@ class MarkAsMultipleEmailReadAllSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [countMarkAsReadSuccess, readActions];
+  List<Object?> get props => [countMarkAsReadSuccess, readActions, ...super.props];
 }
 
 class MarkAsMultipleEmailReadAllFailure extends FeatureFailure {
@@ -45,15 +46,14 @@ class MarkAsMultipleEmailReadHasSomeEmailFailure extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object> get props => [countMarkAsReadSuccess, readActions];
+  List<Object?> get props => [countMarkAsReadSuccess, readActions, ...super.props];
 }
 
 class MarkAsMultipleEmailReadFailure extends FeatureFailure {
-  final dynamic exception;
   final ReadActions readActions;
 
-  MarkAsMultipleEmailReadFailure(this.exception, this.readActions);
+  MarkAsMultipleEmailReadFailure(this.readActions, dynamic exception) : super(exception: exception);
 
   @override
-  List<Object?> get props => [exception, readActions];
+  List<Object?> get props => [readActions, exception];
 }

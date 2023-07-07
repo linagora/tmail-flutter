@@ -14,10 +14,6 @@ class CreateNewDefaultIdentitySuccess extends UIState {
 }
 
 class CreateNewDefaultIdentityFailure extends FeatureFailure {
-  final dynamic exception;
 
-  CreateNewDefaultIdentityFailure(this.exception);
-
-  @override
-  List<Object> get props => [exception];
+  CreateNewDefaultIdentityFailure(dynamic exception) : super(exception: exception);
 }

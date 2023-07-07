@@ -1,6 +1,10 @@
 import 'package:equatable/equatable.dart';
 
-abstract class Success with EquatableMixin {}
+abstract class Success with EquatableMixin {
+
+  @override
+  bool? get stringify => true;
+}
 
 abstract class ViewState extends Success {}
 

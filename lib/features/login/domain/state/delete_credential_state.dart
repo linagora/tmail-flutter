@@ -1,17 +1,9 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 
-class DeleteCredentialSuccess extends UIState {
-  DeleteCredentialSuccess();
-
-  @override
-  List<Object> get props => [];
-}
+class DeleteCredentialSuccess extends UIState {}
 
 class DeleteCredentialFailure extends FeatureFailure {
-  final dynamic exception;
 
-  DeleteCredentialFailure(this.exception);
-
-  @override
-  List<Object?> get props => [exception];
+  DeleteCredentialFailure(dynamic exception) : super(exception: exception);
 }
