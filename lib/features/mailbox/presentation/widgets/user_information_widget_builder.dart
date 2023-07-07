@@ -37,7 +37,7 @@ class UserInformationWidgetBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding ?? const EdgeInsetsDirectional.only(start: 16, end: 4, top: 16, bottom: 16),
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      child: Row(children: [
         (AvatarBuilder()
             ..text(_userProfile != null ? _userProfile!.getAvatarText() : '')
             ..backgroundColor(Colors.white)

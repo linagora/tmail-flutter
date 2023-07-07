@@ -65,7 +65,7 @@ extension AppColor on Color {
   static const backgroundCountAttachment = Color(0x681C1C1C);
   static const bgStatusResultSearch = Color(0xFFF5F5F7);
   static const bgWordSearch = Color(0x3D007AFF);
-  static const lineItemListColor = Color(0xFF99A2AD);
+  static const lineItemListColor = Color(0xFFE7E8EC);
   static const colorNameEmail = Color(0xFF000000);
   static const colorContentEmail = Color(0xFF6D7885);
   static const colorTextButton = Color(0xFF007AFF);
@@ -73,7 +73,7 @@ extension AppColor on Color {
   static const colorBgSearchBar = Color(0x99EBEDF0);
   static const colorBgIdentityButton = Color(0x00EBEDF0);
   static const colorShadowBgContentEmail = Color(0x14000000);
-  static const colorDividerMailbox = Color(0xFF99A2AD);
+  static const colorDividerMailbox = Color(0x1F000000);
   static const colorCollapseMailbox = Color(0xFFB8C1CC);
   static const colorExpandMailbox = Color(0xFF007AFF);
   static const colorBgMailbox = Color(0xFFF7F7F7);
