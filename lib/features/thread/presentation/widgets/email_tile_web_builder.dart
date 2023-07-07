@@ -202,11 +202,8 @@ class EmailTileBuilder with BaseEmailItemTile {
         ),
         if (_selectModeAll == SelectMode.INACTIVE)
           Transform(
-              transform: Matrix4.translationValues(0.0, 10.0, 0.0),
-              child: const Divider(
-                  color: AppColor.lineItemListColor,
-                  height: 1,
-                  thickness: 0.2)),
+            transform: Matrix4.translationValues(0.0, 10.0, 0.0),
+            child: const Divider(color: AppColor.lineItemListColor, height: 1)),
       ],
     );
   }
@@ -289,10 +286,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                   if (_selectModeAll == SelectMode.INACTIVE)
                     Transform(
                       transform: Matrix4.translationValues(0.0, 10.0, 0.0),
-                      child: const Divider(
-                          color: AppColor.lineItemListColor,
-                          height: 1,
-                          thickness: 0.2),
+                      child: const Divider(color: AppColor.lineItemListColor, height: 1),
                     ),
                 ],
               ))
@@ -391,10 +385,7 @@ class EmailTileBuilder with BaseEmailItemTile {
               transform: Matrix4.translationValues(0.0, 10, 0.0),
               child: const Padding(
                   padding: EdgeInsetsDirectional.only(start: 120),
-                  child: Divider(
-                      color: AppColor.lineItemListColor,
-                      height: 1,
-                      thickness: 0.2)),
+                  child: Divider(color: AppColor.lineItemListColor, height: 1)),
             )
         ]),
       );

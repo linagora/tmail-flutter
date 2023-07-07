@@ -135,10 +135,7 @@ class EmailTileBuilder with BaseEmailItemTile {
           ),
           Padding(
             padding: paddingDivider ?? const EdgeInsetsDirectional.symmetric(horizontal: 16),
-            child: const Divider(
-                color: AppColor.lineItemListColor,
-                height: 1,
-                thickness: 0.2)),
+            child: const Divider(color: AppColor.lineItemListColor, height: 1)),
         ],
       ),
     );

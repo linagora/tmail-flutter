@@ -109,7 +109,7 @@ class MailboxView extends BaseMailboxView {
           )
         ),
         if (!responsiveUtils.isTabletLarge(context))
-          const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+          const Divider(color: AppColor.colorDividerMailbox, height: 1),
       ]
     );
   }
@@ -187,7 +187,7 @@ class MailboxView extends BaseMailboxView {
             }
           }),
           const SizedBox(height: 8),
-          const Divider(color: AppColor.colorDividerMailbox, height: 0.5, thickness: 0.2),
+          const Divider(color: AppColor.colorDividerMailbox, height: 1),
           const SizedBox(height: 12),
           Container(
             margin: EdgeInsetsDirectional.only(
