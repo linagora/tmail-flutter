@@ -32,66 +32,71 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(onTap: clickAction,child: Padding(
-      padding: const EdgeInsets.only(top: 24, bottom: 24),
-      child: Row(
-        children: [
-          Expanded(flex: 9, child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: clickAction,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.symmetric(vertical: 24),
+          child: Row(
             children: [
-              Row(
+              Expanded(flex: 9, child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                      right: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
-                      left: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-                    ),
-                    child: _buildSettingIcon(context)),
-                  Expanded(child: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 12),
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      softWrap: CommonTextStyle.defaultSoftWrap,
-                      overflow: CommonTextStyle.defaultTextOverFlow,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColor.colorNameEmail,
-                        fontWeight: FontWeight.w400,
-                      )
-                    )
-                  ))
-                ],
-              ),
-              subtitle != null
-                ? Padding(
-                    padding: EdgeInsets.only(
-                      left: AppUtils.isDirectionRTL(context) ? 12 : _getSubtitleLeftPadding(context),
-                      right: AppUtils.isDirectionRTL(context) ? _getSubtitleLeftPadding(context) : 12,
-                      top: 12
-                    ),
-                    child: Text(
-                      subtitle!,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColor.colorContentEmail,
-                        fontWeight: FontWeight.w400)))
-                : const SizedBox.shrink()
-            ]
-          )),
-         IconButton(
-           padding: EdgeInsets.only(
-             right: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-             left: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
-           ),
-           icon: SvgPicture.asset(
-             DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePath.icBack : _imagePath.icCollapseFolder,
-             fit: BoxFit.fill,
-             colorFilter: AppColor.colorCollapseMailbox.asFilter()),
-           onPressed: clickAction
-        )
-      ])),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          right: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
+                          left: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                        ),
+                        child: _buildSettingIcon(context)),
+                      Expanded(child: Padding(
+                        padding: const EdgeInsets.only(left: 12, right: 12),
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: AppColor.colorNameEmail,
+                            fontWeight: FontWeight.w400,
+                          )
+                        )
+                      ))
+                    ],
+                  ),
+                  subtitle != null
+                    ? Padding(
+                        padding: EdgeInsets.only(
+                          left: AppUtils.isDirectionRTL(context) ? 12 : _getSubtitleLeftPadding(context),
+                          right: AppUtils.isDirectionRTL(context) ? _getSubtitleLeftPadding(context) : 12,
+                          top: 12
+                        ),
+                        child: Text(
+                          subtitle!,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColor.colorContentEmail,
+                            fontWeight: FontWeight.w400)))
+                    : const SizedBox.shrink()
+                ]
+              )),
+              IconButton(
+               padding: EdgeInsets.only(
+                 right: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                 left: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
+               ),
+               icon: SvgPicture.asset(
+                 DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePath.icBack : _imagePath.icCollapseFolder,
+                 fit: BoxFit.fill,
+                 colorFilter: AppColor.colorCollapseMailbox.asFilter()),
+               onPressed: clickAction
+            )
+          ])),
+      ),
     );
   }
 
