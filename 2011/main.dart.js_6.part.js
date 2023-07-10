@@ -25,8 +25,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _hitIsOnDeleteIcon(chipSize, deleteButtonSize, padding, tapPosition, textDirection) {
       var adjustedPosition, t2, accessibleDeleteButtonWidth,
         t1 = chipSize._dx - padding.get$horizontal();
-      padding.get$_top(padding);
-      padding.get$_bottom(padding);
+      padding.get$_edge_insets$_top(padding);
+      padding.get$_edge_insets$_bottom(padding);
       adjustedPosition = tapPosition.$sub(0, new A.Offset(padding.left, padding.top));
       t2 = deleteButtonSize._dx;
       accessibleDeleteButtonWidth = Math.min(t1 * 0.499, Math.max(t2, 24 + t2 / 2));
@@ -517,11 +517,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.notifier = t0;
       this.child = t1;
       this.key = t2;
+    },
+    Bidi_hasAnyRtl(text) {
+      var t1 = A.RegExp_RegExp("[\\u0591-\\u07FF\\uFB1D-\\uFDFD\\uFE70-\\uFEFC]", true, false);
+      return t1._nativeRegExp.test(text);
     }
   },
   D, C, A, J;
   B = hunkHelpers.updateHolder(holdersList[14], B);
-  D = holdersList[27];
+  D = holdersList[19];
   C = holdersList[2];
   A = holdersList[0];
   J = holdersList[1];
@@ -602,7 +606,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.setState$1(new B._RawChipState__handleTap_closure(_this));
       _this._widget.toString;
     },
-    _chip$_getBackgroundColor$3(theme, chipTheme, chipDefaults) {
+    _getBackgroundColor$3(theme, chipTheme, chipDefaults) {
       var t2, t3, _this = this,
         t1 = _this._widget;
       t1.toString;
@@ -655,7 +659,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = _this._widget;
       t3 = t2.onDeleted;
       t2 = t2.padding;
-      t2 = t2 == null ? _null : t2.get$_top(t2) + t2.get$_bottom(t2);
+      t2 = t2 == null ? _null : t2.get$_edge_insets$_top(t2) + t2.get$_edge_insets$_bottom(t2);
       if (t2 == null)
         t2 = 0;
       t4 = A.Theme_of(context);
@@ -958,11 +962,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     computeMinIntrinsicHeight$1(width) {
       var t3, t4, t5,
         t1 = this._chip$_theme.padding,
-        t2 = t1.get$_top(t1);
-      t1 = t1.get$_bottom(t1);
+        t2 = t1.get$_edge_insets$_top(t1);
+      t1 = t1.get$_edge_insets$_bottom(t1);
       t3 = this._chip$_theme.labelPadding;
-      t4 = t3.get$_top(t3);
-      t3 = t3.get$_bottom(t3);
+      t4 = t3.get$_edge_insets$_top(t3);
+      t3 = t3.get$_edge_insets$_bottom(t3);
       t5 = this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0);
       t5 = t5 == null ? 0 : t5._computeIntrinsicDimension$3(C._IntrinsicDimension_2, width, t5.get$computeMinIntrinsicHeight());
       return Math.max(32, t2 + t1 + (t4 + t3) + t5);
@@ -985,7 +989,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = _this._chip$_theme.labelPadding.get$horizontal();
         t3 = updatedSize._dy;
         t4 = _this._chip$_theme.labelPadding;
-        return new A.Size(t1 + t2, t3 + (t4.get$_top(t4) + t4.get$_bottom(t4)));
+        return new A.Size(t1 + t2, t3 + (t4.get$_edge_insets$_top(t4) + t4.get$_edge_insets$_bottom(t4)));
       }
       t1 = _this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0);
       t1.toString;
@@ -994,7 +998,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = _this._chip$_theme.labelPadding.get$horizontal();
       t3 = updatedSize._dy;
       t4 = _this._chip$_theme.labelPadding;
-      return new A.Size(t1 + t2, t3 + (t4.get$_top(t4) + t4.get$_bottom(t4)));
+      return new A.Size(t1 + t2, t3 + (t4.get$_edge_insets$_top(t4) + t4.get$_edge_insets$_bottom(t4)));
     },
     _layoutAvatar$3(contentConstraints, contentSize, layoutChild) {
       var avatarBoxSize, t2, avatarWidth,
@@ -1062,14 +1066,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       rawLabelSize = layoutChild.call$2(t1, contentConstraints);
       t1 = _this._chip$_theme.padding;
-      t2 = t1.get$_top(t1);
-      t1 = t1.get$_bottom(t1);
+      t2 = t1.get$_edge_insets$_top(t1);
+      t1 = t1.get$_edge_insets$_bottom(t1);
       t3 = _this._chip$_theme.labelPadding;
-      t4 = t3.get$_top(t3);
-      t3 = t3.get$_bottom(t3);
+      t4 = t3.get$_edge_insets$_top(t3);
+      t3 = t3.get$_edge_insets$_bottom(t3);
       t5 = rawLabelSize._dy;
       t6 = _this._chip$_theme.labelPadding;
-      contentSize = Math.max(32 - (t2 + t1) + (t4 + t3), t5 + (t6.get$_top(t6) + t6.get$_bottom(t6)));
+      contentSize = Math.max(32 - (t2 + t1) + (t4 + t3), t5 + (t6.get$_edge_insets$_top(t6) + t6.get$_edge_insets$_bottom(t6)));
       avatarSize = _this._layoutAvatar$3(contentConstraints, contentSize, layoutChild);
       deleteIconSize = _this._layoutDeleteIcon$3(contentConstraints, contentSize, layoutChild);
       t6 = avatarSize._dx;
@@ -1078,7 +1082,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       overallSize = new A.Size(t6 + labelSize._dx + t5, contentSize).$add(0, densityAdjustment);
       t5 = _this._chip$_theme.padding.get$horizontal();
       t6 = _this._chip$_theme.padding;
-      return new B._ChipSizes(constraints.constrain$1(new A.Size(overallSize._dx + t5, overallSize._dy + (t6.get$_top(t6) + t6.get$_bottom(t6)))), overallSize, contentSize, avatarSize, labelSize, deleteIconSize, densityAdjustment);
+      return new B._ChipSizes(constraints.constrain$1(new A.Size(overallSize._dx + t5, overallSize._dy + (t6.get$_edge_insets$_top(t6) + t6.get$_edge_insets$_bottom(t6)))), overallSize, contentSize, avatarSize, labelSize, deleteIconSize, densityAdjustment);
     },
     performLayout$0() {
       var t3, avatarOffset, start, labelOffset, t4, t5, deleteIconOffset, t6, t7, _this = this,
@@ -1098,7 +1102,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           if (t4.get$status(t4) !== C.AnimationStatus_0) {
             t4 = sizes.deleteIcon;
             t5 = _this._chip$_theme.padding;
-            _this.___RenderChip__deleteButtonRect_A = new A.Rect(0, 0, 0 + (t4._dx + t5.right), 0 + (t2._dy + (t5.get$_top(t5) + t5.get$_bottom(t5))));
+            _this.___RenderChip__deleteButtonRect_A = new A.Rect(0, 0, 0 + (t4._dx + t5.right), 0 + (t2._dy + (t5.get$_edge_insets$_top(t5) + t5.get$_edge_insets$_bottom(t5))));
             deleteIconOffset = centerLayout.call$2(t4, start - t3._dx);
           } else {
             _this.___RenderChip__deleteButtonRect_A = C.Rect_0_0_0_0;
@@ -1111,7 +1115,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             t4 = t4.right - t4.left;
             t3 = t3.padding.get$horizontal();
             t5 = _this._chip$_theme.padding;
-            _this.___RenderChip__pressRect_A = new A.Rect(t4, 0, t4 + (right - t4 + t3), 0 + (t2._dy + (t5.get$_top(t5) + t5.get$_bottom(t5))));
+            _this.___RenderChip__pressRect_A = new A.Rect(t4, 0, t4 + (right - t4 + t3), 0 + (t2._dy + (t5.get$_edge_insets$_top(t5) + t5.get$_edge_insets$_bottom(t5))));
           } else
             _this.___RenderChip__pressRect_A = C.Rect_0_0_0_0;
           break;
@@ -1137,7 +1141,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             t5 = _this._chip$_theme.padding;
             t3 = t3 !== C.AnimationStatus_0 ? start + t5.left : right + t5.get$horizontal();
             t5 = _this._chip$_theme.padding;
-            _this.___RenderChip__pressRect_A = new A.Rect(0, 0, 0 + t3, 0 + (t2._dy + (t5.get$_top(t5) + t5.get$_bottom(t5))));
+            _this.___RenderChip__pressRect_A = new A.Rect(0, 0, 0 + t3, 0 + (t2._dy + (t5.get$_edge_insets$_top(t5) + t5.get$_edge_insets$_bottom(t5))));
           } else
             _this.___RenderChip__pressRect_A = C.Rect_0_0_0_0;
           t3 = t4.$index(0, D._ChipSlot_2);
@@ -1155,7 +1159,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             deleteIconOffset = centerLayout.call$2(t4, start);
             t3 = _this._chip$_theme.padding;
             t4 = start + t3.left;
-            _this.___RenderChip__deleteButtonRect_A = new A.Rect(t4, 0, t4 + (t5 + t3.right), 0 + (t2._dy + (t3.get$_top(t3) + t3.get$_bottom(t3))));
+            _this.___RenderChip__deleteButtonRect_A = new A.Rect(t4, 0, t4 + (t5 + t3.right), 0 + (t2._dy + (t3.get$_edge_insets$_top(t3) + t3.get$_edge_insets$_bottom(t3))));
           } else {
             _this.___RenderChip__deleteButtonRect_A = C.Rect_0_0_0_0;
             deleteIconOffset = C.Offset_0_0;
@@ -1167,8 +1171,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           deleteIconOffset = C.Offset_0_0;
       }
       t3 = _this._chip$_theme.labelPadding;
-      t4 = t3.get$_top(t3);
-      t3 = t3.get$_bottom(t3);
+      t4 = t3.get$_edge_insets$_top(t3);
+      t3 = t3.get$_edge_insets$_bottom(t3);
       t5 = _this.SlottedContainerRenderObjectMixin__slotToChild;
       t6 = t5.$index(0, D._ChipSlot_0);
       if (t6 == null)
@@ -1198,8 +1202,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5.offset = new A.Offset(t3.left, t3.top).$add(0, deleteIconOffset);
       t3 = _this._chip$_theme.padding.get$horizontal();
       t5 = _this._chip$_theme.padding;
-      t7 = t5.get$_top(t5);
-      t5 = t5.get$_bottom(t5);
+      t7 = t5.get$_edge_insets$_top(t5);
+      t5 = t5.get$_edge_insets$_bottom(t5);
       _this._box$_size = t1._as(A.RenderObject.prototype.get$constraints.call(_this)).constrain$1(new A.Size(right + t3, t2._dy + (t7 + t5)));
     },
     get$_chip$_disabledColor() {
@@ -1411,7 +1415,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.AnimatedSwitcher.prototype = {
     createState$0() {
-      return new B._AnimatedSwitcherState(A.LinkedHashSet_LinkedHashSet$_empty(type$._ChildEntry), C.List_empty19, null, null, C._StateLifecycle_0);
+      return new B._AnimatedSwitcherState(A.LinkedHashSet_LinkedHashSet$_empty(type$._ChildEntry), C.List_empty27, null, null, C._StateLifecycle_0);
     },
     transitionBuilder$2(arg0, arg1) {
       return B.animated_switcher_AnimatedSwitcher_defaultTransitionBuilder$closure().call$2(arg0, arg1);
@@ -1786,7 +1790,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _scrollToVisible$0() {
       A.Future_Future$delayed(C.Duration_300000, new B.TagsEditorState__scrollToVisible_closure(this), type$.Null);
     },
-    _tag_editor$_onSubmitted$1(string) {
+    _onSubmitted$1(string) {
       var currentHighlightIndex, optionSelected, _this = this,
         t1 = _this._suggestions;
       if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true) {
@@ -1932,7 +1936,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t16 = t10.cursorColor;
       t17 = _this.__TagsEditorState__textDirection_A;
       t17 === $ && A.throwUnnamedLateFieldNI();
-      t8.push(A.LayoutId$(A.RawKeyboardListener$(false, A.TextField$(false, C.List_empty0, t10.autofocus, _null, A.text_field_TextField__defaultContextMenuBuilder$closure(), t13, t16, _null, _null, 2, decoration, true, _null, true, true, false, t12, _null, _null, _null, t14, _null, _null, 1, _null, _null, false, "\u2022", new B.TagsEditorState_build_closure(_this), _null, _this.get$_tag_editor$_onSubmitted(), _null, _null, false, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null, _null, _null, _null, t11, C.TextAlign_4, _null, C.TextCapitalization_30, t17, t15, _null), t9, new B.TagsEditorState_build_closure0(_this)), "text_field"));
+      t8.push(A.LayoutId$(A.RawKeyboardListener$(false, A.TextField$(false, C.List_empty0, t10.autofocus, _null, A.text_field_TextField__defaultContextMenuBuilder$closure(), t13, t16, _null, _null, 2, decoration, true, _null, true, true, false, t12, _null, _null, _null, t14, _null, _null, 1, _null, _null, false, "\u2022", new B.TagsEditorState_build_closure(_this), _null, _this.get$_onSubmitted(), _null, _null, false, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null, _null, _null, _null, t11, C.TextAlign_4, _null, C.TextCapitalization_30, t17, t15, _null), t9, new B.TagsEditorState_build_closure0(_this)), "text_field"));
       tagEditorArea = A.Container$(_null, new B.TagLayout(new B.TagEditorLayoutDelegate(t6, t7, t1, C.Size_0_0), t8, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t5, _null, t4, t3, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t2, _null, _null, _null);
       _this._widget.toString;
       return new A.NotificationListener(new B.TagsEditorState_build_closure1(_this), new B.SizeChangedLayoutNotifier(A.Column$(A._setArrayType([tagEditorArea, new A.CompositedTransformTarget(_this._tag_editor$_layerLink, A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, type$.NotificationListener_SizeChangedLayoutNotification);
@@ -2051,21 +2055,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._RawChipState_build_closure.prototype = {
     call$2(context, child) {
       var _this = this, _null = null;
-      return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
+      return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1518
+    $signature: 1520
   };
   B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
       return this.$this.RenderObjectWithChildMixin__child.hitTest$2$position(result, this.offset);
     },
-    $signature: 24
+    $signature: 21
   };
   B._RenderChip_hitTest_closure.prototype = {
     call$2(result, position) {
       return this.hitTestChild.hitTest$2$position(result, this.center);
     },
-    $signature: 24
+    $signature: 21
   };
   B._RenderChip_performLayout_centerLayout.prototype = {
     call$2(boxSize, x) {
@@ -2079,7 +2083,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1519
+    $signature: 1521
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -2114,7 +2118,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 29
+    $signature: 27
   };
   B._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -2123,7 +2127,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 29
+    $signature: 27
   };
   B._AnimatedSwitcherState__newEntry_closure.prototype = {
     call$1($status) {
@@ -2134,7 +2138,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.controller.dispose$0();
       }
     },
-    $signature: 23
+    $signature: 24
   };
   B._AnimatedSwitcherState__newEntry__closure.prototype = {
     call$0() {
@@ -2156,7 +2160,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1520
+    $signature: 1522
   };
   B.SizeChangedLayoutNotifier_createRenderObject_closure.prototype = {
     call$0() {
@@ -2186,7 +2190,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 248
+    $signature: 303
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -2220,7 +2224,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 25
+    $signature: 26
   };
   B.TagsEditorState__createOverlayEntry__closure.prototype = {
     call$2(context, snapshot) {
@@ -2294,7 +2298,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 107
+    $signature: 99
   };
   B.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -2337,7 +2341,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 248
+    $signature: 303
   };
   B.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
@@ -2352,7 +2356,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
       }
     },
-    $signature: 93
+    $signature: 100
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -2409,19 +2413,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 248
+    $signature: 303
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 490
+    $signature: 457
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 490
+    $signature: 457
   };
   (function aliases() {
     var _ = B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin.prototype;
@@ -2447,7 +2451,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _instance_0_u(_, "get$_onFocusKeyboardChanged", "_onFocusKeyboardChanged$0", 0);
     _instance_1_u(_, "get$_onTextFieldChange", "_onTextFieldChange$1", 2);
     _instance_1_u(_, "get$_onSearchChanged", "_onSearchChanged$1", 2);
-    _instance_1_u(_, "get$_tag_editor$_onSubmitted", "_tag_editor$_onSubmitted$1", 2);
+    _instance_1_u(_, "get$_onSubmitted", "_onSubmitted$1", 2);
   })();
   (function inheritance() {
     var _mixinHard = hunkHelpers.mixinHard,
@@ -2532,7 +2536,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_4292865791 = new A.Color(4292865791);
     D.Color_4294914887 = new A.Color(4294914887);
     D.Duration_195000 = new A.Duration(195000);
+    D.EdgeInsetsDirectional_0_24_0_24 = new A.EdgeInsetsDirectional(0, 24, 0, 24);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
+    D.EdgeInsetsDirectional_16_0_8_0 = new A.EdgeInsetsDirectional(16, 0, 8, 0);
     D.EdgeInsets_10_10_10_10 = new A.EdgeInsets(10, 10, 10, 10);
     D.IconData_57657_false = new A.IconData(57657, false);
     D.Icon_25o = new A.Icon(D.IconData_57657_false, 18, null, null);
@@ -2548,4 +2554,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["RZ/U5oFVSF0sS5KdmHko7/AY4EA="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["x9anmg0LtVPm4jG9d8L4L01h9OI="] = $__dart_deferred_initializers__.current

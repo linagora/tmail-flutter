@@ -27,7 +27,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _ = this;
       _.___HtmlContentViewerOnWebState_actualWidth_A = _.___HtmlContentViewerOnWebState_actualHeight_A = _.___HtmlContentViewerOnWebState_createdViewId_A = $;
       _._htmlData = _.webInit = null;
-      _._html_content_viewer_on_web_widget$_isLoading = true;
+      _._isLoading = true;
       _._widget = null;
       _._debugLifecycleState = t0;
       _._framework$_element = null;
@@ -320,7 +320,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _PortalState: function _PortalState(t0, t1) {
       var _ = this;
-      _._portal$_portalLink = t0;
+      _._portalLink = t0;
       _._widget = null;
       _._debugLifecycleState = t1;
       _._framework$_element = null;
@@ -505,7 +505,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _RenderPortalTargetTheater: function _RenderPortalTargetTheater(t0, t1, t2, t3, t4) {
       var _ = this;
       _._needsAddEntryInTheater = false;
-      _._portalLink = t0;
+      _._portal_target_theater$_portalLink = t0;
       _._portal_target_theater$_anchor = t1;
       _._targetSize = t2;
       _._branch = null;
@@ -734,10 +734,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A = hunkHelpers.updateHolder(holdersList[12], A);
   B = holdersList[0];
   C = holdersList[2];
-  E = holdersList[27];
-  D = holdersList[25];
+  E = holdersList[19];
+  D = holdersList[26];
   J = holdersList[1];
-  F = holdersList[23];
+  F = holdersList[24];
   A.ButtonBuilder.prototype = {
     build$0() {
       var t3, t4, t5, t6, t7, t8, _this = this, _null = null,
@@ -882,7 +882,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = _this.___HtmlContentViewerOnWebState_actualWidth_A;
       t2 === $ && B.throwUnnamedLateFieldNI();
       t1 = B._setArrayType([new B.SizedBox(t2, t1, _this._buildWebView$0(), _null)], type$.JSArray_Widget);
-      if (_this._html_content_viewer_on_web_widget$_isLoading)
+      if (_this._isLoading)
         t1.push(new B.Align(C.Alignment_0_m1, _null, _null, D.Padding_kr3, _null));
       return new B.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t1, _null);
     },
@@ -1380,7 +1380,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A._PortalState.prototype = {
     build$1(context) {
       var _null = null,
-        t1 = this._portal$_portalLink;
+        t1 = this._portalLink;
       return new A.PortalLinkScope(_null, t1, D.List__PortalMainLabel, new A.PortalTheater(_null, t1, this._widget.child, _null), _null);
     }
   };
@@ -1555,8 +1555,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     updateRenderObject$2(context, renderObject) {
       var t1 = this.portalLink;
-      if (renderObject._portalLink !== t1) {
-        renderObject._portalLink = t1;
+      if (renderObject._portal_target_theater$_portalLink !== t1) {
+        renderObject._portal_target_theater$_portalLink = t1;
         renderObject.markNeedsLayout$0();
       }
       t1 = this.anchor;
@@ -1579,8 +1579,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this,
         t1 = _this._branch;
       if (t1 != null) {
-        _this._portalLink.overlays.remove$1(0, new A.PortalLinkOverlay(t1));
-        _this._portalLink.theater.markNeedsPaint$0();
+        _this._portal_target_theater$_portalLink.overlays.remove$1(0, new A.PortalLinkOverlay(t1));
+        _this._portal_target_theater$_portalLink.theater.markNeedsPaint$0();
         t1 = _this._branch;
         t1.toString;
         _this.dropChild$1(t1);
@@ -1608,39 +1608,39 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.super$_RenderProxyBox_RenderBox_RenderObjectWithChildMixin$detach(0);
       t1 = _this._branch;
       if (t1 != null) {
-        _this._portalLink.overlays.remove$1(0, new A.PortalLinkOverlay(t1));
-        _this._portalLink.theater.markNeedsPaint$0();
+        _this._portal_target_theater$_portalLink.overlays.remove$1(0, new A.PortalLinkOverlay(t1));
+        _this._portal_target_theater$_portalLink.theater.markNeedsPaint$0();
         _this._branch.detach$0(0);
       }
     },
     markNeedsPaint$0() {
       this.super$RenderObject$markNeedsPaint();
-      this._portalLink.theater.markNeedsPaint$0();
+      this._portal_target_theater$_portalLink.theater.markNeedsPaint$0();
     },
     performLayout$0() {
       var t1, t2, constraints, _this = this;
       _this.super$RenderProxyBoxMixin$performLayout();
       if (_this._branch != null) {
         t1 = _this._portal_target_theater$_anchor;
-        t2 = _this._portalLink.theater;
+        t2 = _this._portal_target_theater$_portalLink.theater;
         t2 = t2 == null ? null : type$.BoxConstraints._as(B.RenderObject.prototype.get$constraints.call(t2));
         t2.toString;
         constraints = t1.getFollowerConstraints$2$targetSize$theaterConstraints(_this._targetSize, t2);
         _this._branch.layout$1(constraints);
         if (_this._needsAddEntryInTheater) {
           _this._needsAddEntryInTheater = false;
-          t1 = _this._portalLink;
+          t1 = _this._portal_target_theater$_portalLink;
           t2 = _this._branch;
           t2.toString;
           t1.overlays.add$1(0, new A.PortalLinkOverlay(t2));
-          _this._portalLink.theater.markNeedsPaint$0();
+          _this._portal_target_theater$_portalLink.theater.markNeedsPaint$0();
         }
       }
     },
     applyPaintTransform$2(child, transform) {
       var t1;
       if (child === this._branch) {
-        t1 = this._portalLink.theater;
+        t1 = this._portal_target_theater$_portalLink.theater;
         t1.toString;
         t1 = this.getTransformTo$1(0, t1);
         t1.copyInverse$1(t1);
@@ -1830,7 +1830,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _userInformation$2(context, userProfile) {
       var _null = null;
       if (userProfile != null)
-        return new B.SizedBox(300, _null, B.ListTile$(C.EdgeInsets_20_0_20_0, _null, _null, _null, _null, _null, _null, B.Text$(userProfile.email, _null, 1, _null, _null, _null, C.TextStyle_chs0, _null, _null, _null), _null), _null);
+        return new B.SizedBox(300, _null, B.ListTile$(C.EdgeInsets_20_0_20_0, _null, _null, _null, _null, _null, _null, B.Text$(userProfile.email, _null, 1, _null, _null, _null, C.TextStyle_chs2, _null, _null, _null), _null), _null);
       return C.SizedBox_0_0_null_null;
     },
     _settingAction$2(context, onCallBack) {
@@ -1918,7 +1918,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.call$1(new B.RelativeRect(t2, t3, screenSize._dx - t2, screenSize._dy - t3));
       }
     },
-    $signature: 26
+    $signature: 25
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
@@ -1953,7 +1953,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 291
+    $signature: 274
   };
   A._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -1985,7 +1985,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           if (J.$gt$n(scrollHeightWithBuffer, 100))
             t2.setState$1(new A._HtmlContentViewerOnWebState__setUpWeb___closure(t2, scrollHeightWithBuffer));
         }
-        if (t2._framework$_element != null && t2._html_content_viewer_on_web_widget$_isLoading)
+        if (t2._framework$_element != null && t2._isLoading)
           t2.setState$1(new A._HtmlContentViewerOnWebState__setUpWeb___closure0(t2));
       }
       if (t1.$index(data, _s4_) != null)
@@ -2036,19 +2036,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 221
+    $signature: 219
   };
   A._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
       var t1 = this.$this;
       t1.___HtmlContentViewerOnWebState_actualHeight_A = this.scrollHeightWithBuffer;
-      t1._html_content_viewer_on_web_widget$_isLoading = false;
+      t1._isLoading = false;
     },
     $signature: 0
   };
   A._HtmlContentViewerOnWebState__setUpWeb___closure0.prototype = {
     call$0() {
-      this.$this._html_content_viewer_on_web_widget$_isLoading = false;
+      this.$this._isLoading = false;
     },
     $signature: 0
   };
@@ -2062,7 +2062,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 511
+    $signature: 531
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -2080,7 +2080,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 510
+    $signature: 529
   };
   A.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -2092,7 +2092,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(result, position) {
       return this.$this.super$RenderProxyBoxMixin$hitTestChildren(result, position);
     },
-    $signature: 24
+    $signature: 21
   };
   A.PortalLinkScope_of_closure.prototype = {
     call$1(scope) {
@@ -2105,7 +2105,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.parent = element;
       return false;
     },
-    $signature: 105
+    $signature: 95
   };
   A.BuildContextPortalLinkScopeExt_getSpecificElementForInheritedWidgetsOfExactType_closure.prototype = {
     call$1(element) {
@@ -2132,7 +2132,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1._buildModeNormal$3(context, currentVisible, scope);
     },
-    $signature: 1498
+    $signature: 1505
   };
   A._PortalTargetState__buildModeNormal_closure.prototype = {
     call$0() {
@@ -2165,14 +2165,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 96
+    $signature: 103
   };
   A.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 96
+    $signature: 103
   };
   A.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -2289,9 +2289,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_1555612108 = new B.Color(1555612108);
     D.Color_4294964674 = new B.Color(4294964674);
     D.EdgeInsetsDirectional_16_16_4_16 = new B.EdgeInsetsDirectional(16, 16, 4, 16);
+    D.EdgeInsetsDirectional_8_0_4_0 = new B.EdgeInsetsDirectional(8, 0, 4, 0);
     D.EdgeInsetsDirectional_8_8_8_8 = new B.EdgeInsetsDirectional(8, 8, 8, 8);
     D.EdgeInsets_0_12_12_0 = new B.EdgeInsets(0, 12, 12, 0);
     D.EdgeInsets_0_4_0_0 = new B.EdgeInsets(0, 4, 0, 0);
+    D.EdgeInsets_0_5_0_5 = new B.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new B.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_10_5_10_5 = new B.EdgeInsets(10, 5, 10, 5);
     D.EdgeInsets_16_12_16_12 = new B.EdgeInsets(16, 12, 16, 12);
@@ -2311,4 +2313,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["u4eprCw8SnCBYrecC+0OaMrKKkA="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["6oVeE//7UwkEdWOaFkioMbLQvq4="] = $__dart_deferred_initializers__.current

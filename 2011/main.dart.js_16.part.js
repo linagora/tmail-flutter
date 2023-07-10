@@ -71,12 +71,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C = holdersList[2];
   A = holdersList[0];
   G = holdersList[17];
-  H = holdersList[19];
+  H = holdersList[20];
   D = holdersList[15];
-  E = holdersList[20];
+  E = holdersList[21];
   J = holdersList[1];
   I = holdersList[11];
-  F = holdersList[21];
+  F = holdersList[22];
   B.ContactView.prototype = {
     build$1(context) {
       var t8, t9, t10, t11, t12, t13, t14, t15, t16, _this = this, _null = null,
@@ -128,7 +128,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t2).toString;
       t1 = A.Positioned$(_null, A.buildIconWeb(_null, _null, t1, C.EdgeInsets_5_5_5_5, 25, 25, this.onCloseContactView, 15, A.Intl__message("Close", _null, "close", _null, _null)), _null, _null, 0, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t2).toString;
-      return new A.Stack(C.Alignment_0_0, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t1, A.Center$(A.Text$(A.Intl__message("Contact", _null, "contact", _null, _null), _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null, _null, _null), _null, _null, _null)], type$.JSArray_Widget), _null);
+      return new A.Stack(C.Alignment_0_0, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t1, A.Center$(A.Text$(A.Intl__message("Contact", _null, "contact", _null, _null), _null, _null, _null, _null, _null, C.TextStyle_oHY, _null, _null, _null), _null, _null, _null)], type$.JSArray_Widget), _null);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["ContactSuggestionBoxItem(BuildContext,int)"]);
@@ -172,7 +172,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Padding(B.ContactUtils_getPaddingDividerSearchResultList(context, this.$this._contact_view$_responsiveUtils), C.Divider_I9g, null);
     },
-    $signature: 463
+    $signature: 395
   };
   B.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -208,7 +208,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 89
+    $signature: 86
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -229,4 +229,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
 };
 
-$__dart_deferred_initializers__["w7U7zEWe6r37nNVRaimD3+iYpps="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["9IZevZN4Dn+x2HOcc5aF96t1nAI="] = $__dart_deferred_initializers__.current

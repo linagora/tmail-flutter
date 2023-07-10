@@ -7,9 +7,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A = holdersList[2];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
-    B.BorderRadius_tLn6 = new C.BorderRadius(A.Radius_5_5, A.Radius_5_5, A.Radius_5_5, A.Radius_5_5);
+    B.BorderRadius_tLn13 = new C.BorderRadius(A.Radius_5_5, A.Radius_5_5, A.Radius_5_5, A.Radius_5_5);
     B.EdgeInsets_32_16_32_16 = new C.EdgeInsets(32, 16, 32, 16);
   })();
 };
 
-$__dart_deferred_initializers__["QFlGSFBi0XypSiLqTHbJ+uP8jO8="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["IeBVKZfF3gCNtHq4V6bx5FwHLoA="] = $__dart_deferred_initializers__.current

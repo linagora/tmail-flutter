@@ -122,7 +122,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (responsiveUtils.isPortraitTablet$1(context))
         return F.EdgeInsetsDirectional_24_24_24_24;
       else
-        return F.EdgeInsetsDirectional_0_24_0_24;
+        return H.EdgeInsetsDirectional_0_24_0_24;
     },
     ComposerStyle_getWidthForTablet(context, responsiveUtils) {
       var currentWidth = context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx;
@@ -132,7 +132,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return currentWidth * 0.7;
     }
   },
-  A, C, D, G, J, E, F;
+  A, C, D, G, J, E, F, H;
   B = hunkHelpers.updateHolder(holdersList[8], B);
   A = holdersList[0];
   C = holdersList[2];
@@ -141,6 +141,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   J = holdersList[1];
   E = holdersList[17];
   F = holdersList[18];
+  H = holdersList[19];
   B.ContextMenuActionBuilder.prototype = {};
   B.SimpleContextMenuActionBuilder.prototype = {
     build$0() {
@@ -164,7 +165,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     popUpMoreActionMenu$1(context) {
       var _null = null;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A._setArrayType([A.PopupMenuItem$(A.Row$(A._setArrayType([new A.Obx(new B.ComposerView_popUpMoreActionMenu_closure(this), _null), new A.IgnorePointer(true, _null, G.buildTextIcon(A.Intl__message("Request read receipt", _null, "requestReadReceipt", _null, _null), _null, _null, C.TextStyle_cMb1), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), true, 48, new B.ComposerView_popUpMoreActionMenu_closure0(this), C.EdgeInsets_8_0_8_0, _null, type$.dynamic)], type$.JSArray_PopupMenuEntry_dynamic);
+      return A._setArrayType([A.PopupMenuItem$(A.Row$(A._setArrayType([new A.Obx(new B.ComposerView_popUpMoreActionMenu_closure(this), _null), new A.IgnorePointer(true, _null, G.buildTextIcon(A.Intl__message("Request read receipt", _null, "requestReadReceipt", _null, _null), _null, _null, C.TextStyle_cMb), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), true, 48, new B.ComposerView_popUpMoreActionMenu_closure0(this), C.EdgeInsets_8_0_8_0, _null, type$.dynamic)], type$.JSArray_PopupMenuEntry_dynamic);
     },
     _pickPhotoAndVideoAction$1(context) {
       var _null = null,
@@ -228,7 +229,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 18
+    $signature: 19
   };
   B.ComposerView__buildComposerViewForMobile_closure0.prototype = {
     call$0() {
@@ -243,7 +244,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.KeyboardVisibilityBuilder(new B.ComposerView__buildComposerViewForMobile__closure(this.$this, constraints), null);
     },
-    $signature: 351
+    $signature: 371
   };
   B.ComposerView__buildComposerViewForMobile__closure.prototype = {
     call$2(context, isKeyboardVisible) {
@@ -297,7 +298,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       return new A.KeyboardRichText(A.SafeArea$(true, A.Container$(_null, A.Column$(A._setArrayType([t6, E.Divider_6xV, A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([t8, t13, new A.SizedBox(_null, 500, _null, _null)], t14), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t7, _null, _null, C.ClampingScrollPhysics_null, _null, _null, C.Axis_1), 1)], t14), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, C.EdgeInsets_0_0_0_0, true, true), t10, t4, t5, _null);
     },
-    $signature: 325
+    $signature: 370
   };
   B.ComposerView__buildComposerViewForMobile___closure.prototype = {
     call$0() {
@@ -346,7 +347,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 18
+    $signature: 19
   };
   B.ComposerView__buildComposerViewForTablet_closure0.prototype = {
     call$0() {
@@ -361,7 +362,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.KeyboardVisibilityBuilder(new B.ComposerView__buildComposerViewForTablet__closure(this.$this, constraints), null);
     },
-    $signature: 351
+    $signature: 371
   };
   B.ComposerView__buildComposerViewForTablet__closure.prototype = {
     call$2(context, isKeyboardVisible) {
@@ -399,15 +400,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t12 = t12 == null ? _null : t12.email[0].toUpperCase();
       t11._avatar_builder$_text = t12 == null ? "" : t12;
       t11._avatar_builder$_size = 56;
-      t11._textStyle = F.TextStyle_1Gf1;
+      t11._avatar_builder$_textStyle = F.TextStyle_1Gf1;
       t11._bgColor = F.Color_4292763230;
       t12 = type$.JSArray_Widget;
       t11 = A.Row$(A._setArrayType([C.SizedBox_16_null_null_null, new A.Padding(C.EdgeInsets_0_20_0_0, t11.build$0(), _null), C.SizedBox_16_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t1.buildFromEmailAddress$1(context), E.Divider_6xV, t1.buildEmailAddress$1(context), E.Divider_6xV, t1.buildSubjectEmail$1(context)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t12), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       t13 = t1.buildAttachmentsWidget$1(context);
       A.Expando__checkType(t1);
-      return new A.KeyboardRichText(A.Center$(A.SafeArea$(true, A.Card$(true, A.Container$(_null, A.ClipRRect$(F.BorderRadius_tLn4, A.Column$(A._setArrayType([t9, E.Divider_6xV, A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([t11, E.Divider_6xV, t13, t1.buildInlineLoadingView$1(t3._as(t2.get(t1))), t1._buildComposerEditor$1(context)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t10, _null, _null, C.ClampingScrollPhysics_null, _null, _null, C.Axis_1), 1), E.Divider_6xV, new A.Padding(D.EdgeInsetsDirectional_0_16_0_16, t1.buildBottomBar$1(context), _null)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2), C.Clip_0, _null, _null, F.BoxDecoration_G3F3, _null, _null, _null, _null, _null, _null, _null, t6), _null, 20, t8, F.RoundedRectangleBorder_27D5), true, C.EdgeInsets_0_0_0_0, true, true), _null, _null, _null), t7, t4, t5, _null);
+      return new A.KeyboardRichText(A.Center$(A.SafeArea$(true, A.Card$(true, A.Container$(_null, A.ClipRRect$(F.BorderRadius_tLn12, A.Column$(A._setArrayType([t9, E.Divider_6xV, A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([t11, E.Divider_6xV, t13, t1.buildInlineLoadingView$1(t3._as(t2.get(t1))), t1._buildComposerEditor$1(context)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t10, _null, _null, C.ClampingScrollPhysics_null, _null, _null, C.Axis_1), 1), E.Divider_6xV, new A.Padding(D.EdgeInsetsDirectional_0_16_0_16, t1.buildBottomBar$1(context), _null)], t12), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2), C.Clip_0, _null, _null, F.BoxDecoration_G3F3, _null, _null, _null, _null, _null, _null, _null, t6), _null, 20, t8, F.RoundedRectangleBorder_27D7), true, C.EdgeInsets_0_0_0_0, true, true), _null, _null, _null), t7, t4, t5, _null);
     },
-    $signature: 325
+    $signature: 370
   };
   B.ComposerView__buildComposerViewForTablet___closure.prototype = {
     call$0() {
@@ -456,7 +457,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openFilePickerByType$2(this.context, C.FileType_1);
     },
-    $signature: 434
+    $signature: 365
   };
   B.ComposerView__browseFileAction_closure.prototype = {
     call$1(_) {
@@ -465,7 +466,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openFilePickerByType$2(this.context, C.FileType_0);
     },
-    $signature: 434
+    $signature: 365
   };
   B.ComposerView__buildComposerEditor_closure.prototype = {
     call$0() {
@@ -506,7 +507,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return this.$this._buildHtmlEditor$2$initialContent(this.context, "<p><br></p>");
     },
-    $signature: 166
+    $signature: 171
   };
   B.ComposerView__buildComposerEditor__closure0.prototype = {
     call$1(success) {
@@ -522,7 +523,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return _this.$this._buildHtmlEditor$2$initialContent(_this.context, _s11_);
     },
-    $signature: 85
+    $signature: 87
   };
   B.ComposerView__buildHtmlEditor_closure0.prototype = {
     call$1(_) {
@@ -531,7 +532,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).removeFocusAllInputEditorHeader$0();
     },
-    $signature: 26
+    $signature: 25
   };
   B.ComposerView__buildHtmlEditor_closure.prototype = {
     call$1(editorApi) {
@@ -540,7 +541,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).initRichTextForMobile$3(this.context, editorApi, this.initialContent);
     },
-    $signature: 1507
+    $signature: 1509
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -578,4 +579,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["P8vU7ZEP/ItH6oTywmid9rsTA48="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["V8ArqWdchNtpLx3OY3HVOOpw06Q="] = $__dart_deferred_initializers__.current

@@ -26,9 +26,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C = hunkHelpers.updateHolder(holdersList[11], C);
   A = holdersList[2];
   B = holdersList[0];
-  E = holdersList[26];
-  D = holdersList[20];
-  F = holdersList[21];
+  E = holdersList[27];
+  D = holdersList[21];
+  F = holdersList[22];
   C.ContactSuggestionBoxItem.prototype = {
     build$1(context) {
       var t1, t2, t3, t4, t5, t6, t7, itemChild, _this = this, _null = null;
@@ -42,11 +42,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.List_9Eu[B.EmailAddressExtension__generateIndex(t2)];
       t4 = C.EmailAddressExtension_get_labelAvatar(t2);
       t5 = type$.JSArray_Widget;
-      t6 = B._setArrayType([B.Text$(B.EmailAddressExtension_asString(t2), _null, 1, A.TextOverflow_1, _null, false, A.TextStyle_oHY4, _null, _null, _null)], t5);
+      t6 = B._setArrayType([B.Text$(B.EmailAddressExtension_asString(t2), _null, 1, A.TextOverflow_1, _null, false, A.TextStyle_oHY7, _null, _null, _null)], t5);
       t7 = t2.name;
       if ((t7 == null ? "" : t7).length !== 0) {
         t2 = t2.email;
-        t6.push(new B.Padding(E.EdgeInsets_0_2_0_0, B.Text$(t2 == null ? "" : t2, _null, 1, A.TextOverflow_1, _null, false, A.TextStyle_chs, _null, _null, _null), _null));
+        t6.push(new B.Padding(E.EdgeInsets_0_2_0_0, B.Text$(t2 == null ? "" : t2, _null, 1, A.TextOverflow_1, _null, false, A.TextStyle_chs1, _null, _null, _null), _null));
       }
       t2 = B._setArrayType([new C.GradientColorAvatarIcon(t3, 40, 24, t4, _null), A.SizedBox_12_null_null_null, B.Expanded$(B.Column$(t6, A.CrossAxisAlignment_0, _null, A.MainAxisAlignment_0, A.MainAxisSize_0, A.VerticalDirection_1), 1)], t5);
       t1 = t1.state;
@@ -66,7 +66,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = _this.iconSize,
         t2 = B.BorderRadius$circular(t1 * 0.5),
         t3 = B.Border_Border$all(A.Color_0, 1);
-      return B.Container$(A.Alignment_0_0, B.Text$(_this.label, _null, _null, _null, _null, _null, B.TextStyle$(_null, _null, A.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _this.labelFontSize, _null, _null, A.FontWeight_5_600, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null), A.Clip_0, _null, _null, new B.BoxDecoration(A.Color_4294506744, _null, t3, t2, _null, new B.LinearGradient(A.Alignment_0_m1, A.Alignment_0_1, A.TileMode_0, _this.colors, A.List_0_1, _null), _null, A.BoxShape_0), _null, t1, _null, _null, _null, _null, _null, t1);
+      return B.Container$(A.Alignment_0_0, B.Text$(_this.label, _null, _null, _null, _null, _null, B.TextStyle$(_null, _null, A.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _this.labelFontSize, _null, _null, A.FontWeight_5_600, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null), A.Clip_0, _null, _null, new B.BoxDecoration(A.Color_4294506744, _null, t3, t2, _null, new B.LinearGradient0(A.Alignment_0_m1, A.Alignment_0_1, A.TileMode_0, _this.colors, A.List_0_1, _null), _null, A.BoxShape_0), _null, t1, _null, _null, _null, _null, _null, t1);
     }
   };
   var typesOffset = hunkHelpers.updateTypes([]);
@@ -94,4 +94,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["KalS/kUQmziQ0cuwEVD70biNR4k="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["ANNdGZ/0Njdk18HSD2kl7dTc+mQ="] = $__dart_deferred_initializers__.current
