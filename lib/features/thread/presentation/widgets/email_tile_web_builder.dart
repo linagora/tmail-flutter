@@ -86,19 +86,19 @@ class EmailTileBuilder with BaseEmailItemTile {
     );
   }
 
-  EdgeInsets _getMarginItem() {
+  EdgeInsetsGeometry _getMarginItem() {
     if (responsiveUtils.isDesktop(_context)) {
       return const EdgeInsets.only(top: 3);
     } else {
-      return const EdgeInsets.only(top: 3, left: 16, right: 16);
+      return const EdgeInsetsDirectional.only(top: 3, start: 16, end: 16);
     }
   }
 
-  EdgeInsets _getPaddingItem() {
+  EdgeInsetsGeometry _getPaddingItem() {
     if (responsiveUtils.isDesktop(_context)) {
       return const EdgeInsets.symmetric(vertical: 8);
     } else {
-      return const EdgeInsets.only(bottom: 8, right: 8, top: 8);
+      return const EdgeInsetsDirectional.only(bottom: 8, end: 8, top: 8);
     }
   }
 
@@ -222,16 +222,10 @@ class EmailTileBuilder with BaseEmailItemTile {
           children: [
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               InkWell(
-                onTap: () {
-                  if (isHoverIcon) {
-                    _emailActionClick?.call(
-                        EmailActionType.selection,
-                        _presentationEmail);
-                  }
-                },
+                onTap: () => _emailActionClick?.call(EmailActionType.selection, _presentationEmail),
                 onHover: (value) => _onHoverIconChanged(value, setState),
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 8, right: 12),
+                  padding: const EdgeInsetsDirectional.only(top: 8, end: 12),
                   child: _buildAvatarIcon())),
               Expanded(child: Stack(alignment: Alignment.bottomCenter,
                 children: [
@@ -239,12 +233,12 @@ class EmailTileBuilder with BaseEmailItemTile {
                     Row(children: [
                       if (!_presentationEmail.hasRead)
                         Padding(
-                            padding: const EdgeInsets.only(right: 5),
-                            child: SvgPicture.asset(
-                                imagePaths.icUnreadStatus,
-                                width: 9,
-                                height: 9,
-                                fit: BoxFit.fill)),
+                          padding: const EdgeInsetsDirectional.only(end: 5),
+                          child: SvgPicture.asset(
+                            imagePaths.icUnreadStatus,
+                            width: 9,
+                            height: 9,
+                            fit: BoxFit.fill)),
                       Expanded(child: buildInformationSender(
                         _context,
                         _presentationEmail,
@@ -274,7 +268,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                         ),
                         if (_presentationEmail.hasStarred)
                           Padding(
-                            padding: const EdgeInsets.only(left: 8),
+                            padding: const EdgeInsetsDirectional.only(start: 8),
                             child: buildIconStar(),
                           )
                       ],
@@ -354,20 +348,16 @@ class EmailTileBuilder with BaseEmailItemTile {
               iconPadding: const EdgeInsetsDirectional.only(end: 12),
               splashRadius: 1),
             InkWell(
-              onTap: () {
-                if (isHoverIcon) {
-                  _emailActionClick?.call(
-                      EmailActionType.selection,
-                      _presentationEmail);
-                }
-              },
+              onTap: () => _emailActionClick?.call(EmailActionType.selection, _presentationEmail),
               onHover: (value) => _onHoverIconChanged(value, setState),
               child: _buildAvatarIcon(
-                  iconSize: 32,
-                  textStyle: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white)),
+                iconSize: 32,
+                textStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white
+                )
+              ),
             ),
             const SizedBox(width: 10),
             SizedBox(
@@ -494,11 +484,11 @@ class EmailTileBuilder with BaseEmailItemTile {
       ),
       if (_presentationEmail.hasAttachment == true)
         Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: buildIconAttachment()),
+          padding: const EdgeInsetsDirectional.only(start: 8),
+          child: buildIconAttachment()),
       Padding(
-          padding: const EdgeInsets.only(right: 20, left: 8),
-          child: buildDateTime(_context, _presentationEmail))
+        padding: const EdgeInsetsDirectional.only(end: 20, start: 8),
+        child: buildDateTime(_context, _presentationEmail))
     ]);
   }
 
@@ -507,11 +497,11 @@ class EmailTileBuilder with BaseEmailItemTile {
       buildIconAnsweredOrForwarded(width: 16, height: 16, presentationEmail: _presentationEmail),
       if (_presentationEmail.hasAttachment == true)
         Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: buildIconAttachment()),
+          padding: const EdgeInsetsDirectional.only(start: 8),
+          child: buildIconAttachment()),
       Padding(
-          padding: const EdgeInsets.only(right: 4, left: 8),
-          child: buildDateTime(_context, _presentationEmail)),
+        padding: const EdgeInsetsDirectional.only(end: 4, start: 8),
+        child: buildDateTime(_context, _presentationEmail)),
       buildIconChevron()
     ]);
   }
@@ -541,19 +531,27 @@ class EmailTileBuilder with BaseEmailItemTile {
     });
   }
 
+  bool get _isSelectionActivated {
+    return isHoverIcon ||
+      isHoverItem ||
+      _presentationEmail.selectMode == SelectMode.ACTIVE ||
+      (responsiveUtils.isMobile(_context) && _selectModeAll == SelectMode.ACTIVE);
+  }
+
   Widget _buildAvatarIcon({double? iconSize, TextStyle? textStyle}) {
-    if (isHoverIcon || _presentationEmail.selectMode == SelectMode.ACTIVE ||
-        (responsiveUtils.isMobile(_context) && _selectModeAll == SelectMode.ACTIVE)) {
-        return buildIconAvatarSelection(
-            _context,
-            _presentationEmail,
-            iconSize: iconSize ?? 48,
-            textStyle: textStyle);
+    if (_isSelectionActivated) {
+      return buildIconAvatarSelection(
+        _context,
+        _presentationEmail,
+        iconSize: iconSize ?? 48,
+        textStyle: textStyle
+      );
     } else {
       return buildIconAvatarText(
-          _presentationEmail,
-          iconSize: iconSize ?? 48,
-          textStyle: textStyle);
+        _presentationEmail,
+        iconSize: iconSize ?? 48,
+        textStyle: textStyle
+      );
     }
   }
 }
