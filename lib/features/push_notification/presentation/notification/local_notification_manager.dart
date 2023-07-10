@@ -4,10 +4,13 @@ import 'dart:io';
 
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -162,7 +165,10 @@ class LocalNotificationManager {
     }
   }
 
-  Future<void> removeNotification(String id) {
+  Future<void> removeNotification(String id) async {
+    if (id.startsWith(FcmUtils.instance.platformOS)) {
+      await removeNotificationBadgeForIOS();
+    }
     return _localNotificationsPlugin.cancel(id.hashCode);
   }
 
@@ -216,5 +222,19 @@ class LocalNotificationManager {
 
   void closeStream() {
     localNotificationsController.close();
+  }
+
+  Future<void> setNotificationBadgeForIOS() async {
+    log("LocalNotificationManager::setNotificationBadgeForIOS:");
+    if (PlatformInfo.isIOS) {
+      await FlutterAppBadger.updateBadgeCount(1);
+    }
+  }
+
+  Future<void> removeNotificationBadgeForIOS() async {
+    log("LocalNotificationManager::removeNotificationBadgeForIOS:");
+    if (PlatformInfo.isIOS) {
+      await FlutterAppBadger.removeBadge();
+    }
   }
 }
