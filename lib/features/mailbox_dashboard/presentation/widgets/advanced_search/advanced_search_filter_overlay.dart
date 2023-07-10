@@ -21,31 +21,30 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
     return PointerInterceptor(
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 4, bottom: 16, right: 22),
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: _getHeightOverlay(context, responsiveUtils),
-            ),
-            width: maxWidth ?? 660,
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: const [
-                  BoxShadow(
-                      color: AppColor.colorShadowComposer,
-                      blurRadius: 32,
-                      offset: Offset.zero),
-                  BoxShadow(
-                      color: AppColor.colorDropShadow,
-                      blurRadius: 4,
-                      offset: Offset.zero),
-                ]),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(right: 16),
-              child: AdvancedSearchInputForm(),
-            ),
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: _getHeightOverlay(context, responsiveUtils),
+          ),
+          width: maxWidth ?? 660,
+          margin: const EdgeInsetsDirectional.only(top: 4, bottom: 16, end: 22),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColor.colorShadowComposer,
+                blurRadius: 32,
+                offset: Offset.zero),
+              BoxShadow(
+                color: AppColor.colorDropShadow,
+                blurRadius: 4,
+                offset: Offset.zero),
+            ]
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            child: AdvancedSearchInputForm(),
           ),
         ),
       ),
