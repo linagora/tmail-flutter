@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmailReceiverBuilder extends StatelessWidget {
 
@@ -190,6 +191,9 @@ class EmailReceiverBuilder extends StatelessWidget {
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
         onTap: () => controller.openEmailAddressDialog(context, emailAddress),
+        onLongPress: () {
+          AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+        },
         borderRadius: 8,
         labelColor: Colors.black,
         labelSize: 16,
