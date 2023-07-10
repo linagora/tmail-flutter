@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 
 class FcmService {
 
@@ -41,6 +42,11 @@ class FcmService {
     if (!backgroundMessageStreamController.isClosed) {
       backgroundMessageStreamController.add(newRemoteMessage);
     }
+  }
+
+  void handleFirebaseMessageOpenedApp(RemoteMessage newRemoteMessage) async {
+    log("FcmService::handleFirebaseMessageOpenedApp:");
+    await LocalNotificationManager.instance.removeNotificationBadgeForIOS();
   }
 
   void handleGetToken(String? currentToken) async {
