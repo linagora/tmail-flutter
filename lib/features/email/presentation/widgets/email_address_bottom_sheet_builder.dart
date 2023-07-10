@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnCloseBottomSheetAction = void Function();
 typedef OnCopyEmailAddressBottomSheetAction = void Function(EmailAddress);
@@ -108,22 +109,30 @@ class EmailAddressBottomSheetBuilder {
                               fontWeight: FontWeight.w600,
                               color: AppColor.colorNameEmail),
                         )),
-                  Padding(
-                      padding: EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          top: _emailAddress.displayName.isNotEmpty ? 12 : 16),
-                      child: Text(
-                        _emailAddress.emailAddress,
-                        textAlign: TextAlign.center,
-                        overflow: CommonTextStyle.defaultTextOverFlow,
-                        softWrap: CommonTextStyle.defaultSoftWrap,
-                        maxLines: 2,
-                        style: const TextStyle(
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {},
+                      onLongPress: () {
+                        AppUtils.copyEmailAddressToClipboard(_context, _emailAddress.emailAddress);
+                      },
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 8),
+                        child: Text(
+                          _emailAddress.emailAddress,
+                          textAlign: TextAlign.center,
+                          overflow: CommonTextStyle.defaultTextOverFlow,
+                          softWrap: CommonTextStyle.defaultSoftWrap,
+                          maxLines: 2,
+                          style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.normal,
                             color: AppColor.colorMessageConfirmDialog),
-                      )),
+                        )
+                      ),
+                    ),
+                  ),
                   Material(
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.transparent,
