@@ -26,6 +26,10 @@ class FcmReceiver {
     FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundMessage);
   }
 
+  void onMessageOpenedApp() {
+    FirebaseMessaging.onMessageOpenedApp.listen(FcmService.instance.handleFirebaseMessageOpenedApp);
+  }
+
   void getFcmToken() async {
     try {
       final currentToken = await FirebaseMessaging.instance.getToken(vapidKey: AppUtils.fcmVapidPublicKey);

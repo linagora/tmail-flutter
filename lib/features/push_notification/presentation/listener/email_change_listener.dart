@@ -199,7 +199,7 @@ class EmailChangeListener extends ChangeListener {
     );
   }
 
-  void _showLocalNotificationForIOS(jmap.State newState, AccountId accountId) {
+  void _showLocalNotificationForIOS(jmap.State newState, AccountId accountId) async {
     final notificationPayload = NotificationPayload(newState: newState);
     log('EmailChangeListener::_showLocalNotificationForIOS():notificationPayload: $notificationPayload');
     LocalNotificationManager.instance.showPushNotification(
@@ -212,6 +212,7 @@ class EmailChangeListener extends ChangeListener {
         : LocalNotificationConfig.notificationMessage,
       payload: notificationPayload.encodeToString,
     );
+    await LocalNotificationManager.instance.setNotificationBadgeForIOS();
   }
 
   @override
