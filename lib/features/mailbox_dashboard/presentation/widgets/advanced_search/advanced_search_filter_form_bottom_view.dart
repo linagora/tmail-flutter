@@ -1,4 +1,7 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/checkbox/labeled_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -21,44 +24,26 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
     final responsiveUtils = Get.find<ResponsiveUtils>();
 
     return Padding(
-      padding: EdgeInsets.only(
-          top: _isMobileAndLandscapeTablet(context, responsiveUtils) ? 8 : 20),
+      padding: EdgeInsets.only(top: !responsiveUtils.isWebDesktop(context) ? 8 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_isMobileAndLandscapeTablet(context, responsiveUtils))
-            ...[
-              _buildCheckboxHasAttachment(
-                  context,
-                  currentFocusNode: focusManager?.attachmentCheckboxFocusNode,
-                  nextFocusNode: focusManager?.searchButtonFocusNode),
-              const SizedBox(height: 24)
-            ],
-          Row(
-            mainAxisAlignment: _isMobileAndLandscapeTablet(context, responsiveUtils)
-                ? MainAxisAlignment.spaceEvenly
-                : MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (!_isMobileAndLandscapeTablet(context, responsiveUtils))
-                Expanded(child: _buildCheckboxHasAttachment(
-                    context,
-                    currentFocusNode: focusManager?.attachmentCheckboxFocusNode,
-                    nextFocusNode: focusManager?.searchButtonFocusNode)),
-              ..._buildListButton(context, responsiveUtils),
-            ],
+          Transform(
+            transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
+            child: _buildCheckboxHasAttachment(
+              context,
+              currentFocusNode: focusManager?.attachmentCheckboxFocusNode,
+              nextFocusNode: focusManager?.searchButtonFocusNode),
           ),
+          _buildListButton(context, responsiveUtils),
         ],
       ),
     );
   }
 
-  List<Widget> _buildListButton(
-      BuildContext context,
-      ResponsiveUtils responsiveUtils
-  ) {
-    if (_isMobileAndLandscapeTablet(context, responsiveUtils)) {
-      return [
+  Widget _buildListButton(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (!responsiveUtils.isWebDesktop(context)) {
+      return Row(children: [
         Expanded(
           child: _buildButton(
             onAction: () {
@@ -88,15 +73,16 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
             nextFocusNode: focusManager?.fromFieldFocusNode
           ),
         ),
-      ];
+      ]);
     } else {
-      return [
+      return Row(children: [
+        const Spacer(),
         _buildButton(
           onAction: () {
             controller.cleanSearchFilter(context);
             popBack();
           },
-          colorButton: Colors.white,
+          colorButton: Colors.transparent,
           colorText: AppColor.colorContentEmail,
           text: AppLocalizations.of(context).clearFilter,
           context: context,
@@ -118,7 +104,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
           currentFocusNode: focusManager?.searchButtonFocusNode,
           nextFocusNode: focusManager?.fromFieldFocusNode
         ),
-      ];
+      ]);
     }
   }
 
@@ -170,25 +156,17 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         }
       },
       child: buildButtonWrapText(
-          text,
-          focusNode: currentFocusNode,
-          radius: 10,
-          height: 44,
-          minWidth: minWidth,
-          textStyle: TextStyle(
-              fontSize: 17,
-              color: colorText,
-              fontWeight: FontWeight.w500),
-          bgColor: colorButton,
-          onTap: onAction),
+        text,
+        focusNode: currentFocusNode,
+        radius: 10,
+        height: 44,
+        minWidth: minWidth,
+        textStyle: TextStyle(
+          fontSize: 17,
+          color: colorText,
+          fontWeight: FontWeight.w500),
+        bgColor: colorButton,
+        onTap: onAction),
     );
-  }
-
-  bool _isMobileAndLandscapeTablet(
-      BuildContext context,
-      ResponsiveUtils responsive
-  ) {
-    return responsive.isMobile(context) ||
-        responsive.landscapeTabletSupported(context);
   }
 }
