@@ -72,6 +72,7 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class SingleEmailController extends BaseController with AppLoaderMixin {
@@ -950,12 +951,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void copyEmailAddress(BuildContext context, EmailAddress emailAddress) {
     popBack();
-
-    Clipboard.setData(ClipboardData(text: emailAddress.emailAddress)).then((_){
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).email_address_copied_to_clipboard))
-      );
-    });
+    AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
   }
 
   void composeEmailFromEmailAddress(EmailAddress emailAddress) {
