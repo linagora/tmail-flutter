@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnOpenEmailAddressDetailAction = Function(BuildContext context, EmailAddress emailAddress);
 
@@ -32,6 +33,9 @@ class EmailSenderBuilder extends StatelessWidget {
             MaterialTextButton(
               label: emailAddress.displayName,
               onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+              onLongPress: () {
+                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+              },
               borderRadius: 8,
               padding: const EdgeInsets.all(3),
               labelSize: 20,
@@ -45,6 +49,9 @@ class EmailSenderBuilder extends StatelessWidget {
             child: MaterialTextButton(
               label: '<${emailAddress.emailAddress}>',
               onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+              onLongPress: () {
+                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+              },
               borderRadius: 8,
               padding: const EdgeInsets.all(3),
               labelSize: 16,

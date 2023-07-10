@@ -3,11 +3,13 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
 typedef OnTapMaterialTextButton = Function();
+typedef OnLongPressMaterialTextButton = Function();
 
 class MaterialTextButton extends StatelessWidget {
 
   final String label;
   final OnTapMaterialTextButton? onTap;
+  final OnLongPressMaterialTextButton? onLongPress;
   final double borderRadius;
   final Color? labelColor;
   final double labelSize;
@@ -21,6 +23,7 @@ class MaterialTextButton extends StatelessWidget {
     Key? key,
     required this.label,
     required this.onTap,
+    this.onLongPress,
     this.borderRadius = 12,
     this.labelColor,
     this.labelSize = 15,
@@ -37,6 +40,7 @@ class MaterialTextButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
         child: Padding(
           padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
