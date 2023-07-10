@@ -1537,7 +1537,8 @@ class MailboxDashBoardController extends ReloadableController {
     _handleMessageFromNotification(response?.payload);
   }
 
-  void _handleMessageFromNotification(String? payload, {bool onForeground = true}) {
+  void _handleMessageFromNotification(String? payload, {bool onForeground = true}) async {
+    await LocalNotificationManager.instance.removeNotificationBadgeForIOS();
     log('MailboxDashBoardController::_handleMessageFromNotification():payload: $payload');
     if (payload == null || payload.isEmpty) {
       dispatchRoute(DashboardRoutes.thread);
