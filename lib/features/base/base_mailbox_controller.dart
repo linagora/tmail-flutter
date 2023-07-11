@@ -440,22 +440,85 @@ abstract class BaseMailboxController extends BaseController {
     }
   }
 
+  List<MailboxNode> getAncestorOfMailboxNode(MailboxNode mailboxNode) {
+    final listAncestor = defaultMailboxTree.value.getAncestorList(mailboxNode)
+      ?? personalMailboxTree.value.getAncestorList(mailboxNode)
+      ?? teamMailboxesTree.value.getAncestorList(mailboxNode);
+    return listAncestor ?? [];
+  }
+
   SubscribeRequest? generateSubscribeRequest(
     MailboxId mailboxId,
     MailboxSubscribeState subscribeState,
     MailboxSubscribeAction subscribeAction
   ) {
+    switch(subscribeState) {
+      case MailboxSubscribeState.enabled:
+        return _generateSubscribeRequestWhenSubscribeEnabled(mailboxId, subscribeAction);
+      case MailboxSubscribeState.disabled:
+        return _generateSubscribeRequestWhenSubscribeDisabled(mailboxId, subscribeAction);
+    }
+  }
+
+  SubscribeRequest? _generateSubscribeRequestWhenSubscribeDisabled(
+    MailboxId mailboxId,
+    MailboxSubscribeAction subscribeAction
+  ) {
     final mailboxNode = findMailboxNodeById(mailboxId);
 
-    if (mailboxNode != null) {
-      if (mailboxNode.hasChildren()) {
-        final listDescendantMailboxIds = mailboxNode.descendantsAsList().mailboxIds;
-        return SubscribeMultipleMailboxRequest(mailboxId, listDescendantMailboxIds, subscribeState, subscribeAction);
-      } else {
-        return SubscribeMailboxRequest(mailboxId, subscribeState, subscribeAction);
-      }
+    if (mailboxNode == null) return null;
+
+    if (mailboxNode.hasChildren()) {
+      final listDescendantMailboxIds = mailboxNode.descendantsAsList().mailboxIds;
+      log("BaseMailboxController::_generateSubscribeRequestWhenSubscribeDisabled:listDescendantMailboxIds $listDescendantMailboxIds");
+      return SubscribeMultipleMailboxRequest(
+        mailboxId,
+        listDescendantMailboxIds,
+        MailboxSubscribeState.disabled,
+        subscribeAction
+      );
+    } else {
+      return SubscribeMailboxRequest(
+        mailboxId,
+        MailboxSubscribeState.disabled,
+        subscribeAction
+      );
     }
-    return null;
+  }
+
+  SubscribeRequest? _generateSubscribeRequestWhenSubscribeEnabled(
+    MailboxId mailboxId,
+    MailboxSubscribeAction subscribeAction
+  ) {
+    final mailboxNode = findMailboxNodeById(mailboxId);
+
+    if (mailboxNode == null) return null;
+
+    if (mailboxNode.hasParents()) {
+      final listAncestorMailboxIds = getAncestorOfMailboxNode(mailboxNode).mailboxIds;
+      listAncestorMailboxIds.add(mailboxId);
+      log("BaseMailboxController::_generateSubscribeRequestWhenSubscribeEnabled:listAncestorMailboxIds $listAncestorMailboxIds");
+      if (listAncestorMailboxIds.isNotEmpty) {
+        return SubscribeMultipleMailboxRequest(
+          mailboxId,
+          listAncestorMailboxIds,
+          MailboxSubscribeState.enabled,
+          subscribeAction
+        );
+      } else {
+        return SubscribeMailboxRequest(
+          mailboxId,
+          MailboxSubscribeState.enabled,
+          subscribeAction
+        );
+      }
+    } else {
+      return SubscribeMailboxRequest(
+        mailboxId,
+        MailboxSubscribeState.enabled,
+        subscribeAction
+      );
+    }
   }
 
   void getAllMailbox(Session session, AccountId accountId) async {
