@@ -7,6 +7,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/fps_manager.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:flutter/material.dart';
@@ -121,17 +122,19 @@ abstract class BaseController extends GetxController
     logError('BaseController::_performFilterExceptionInError(): $error');
     if (error is NoNetworkError || error is ConnectionTimeout || error is InternalServerError) {
       logError('BaseController::_performFilterExceptionInError(): NoNetworkError');
-      if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).no_internet_connection,
-          actionName: AppLocalizations.of(currentContext!).skip,
-          onActionClick: ToastView.dismiss,
-          leadingSVGIcon: _imagePaths.icNotConnection,
-          backgroundColor: AppColor.textFieldErrorBorderColor,
-          textColor: Colors.white,
-          infinityToast: true,
-        );
+      if (PlatformInfo.isWeb) {
+        if (currentOverlayContext != null && currentContext != null) {
+          _appToast.showToastMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).no_internet_connection,
+            actionName: AppLocalizations.of(currentContext!).skip,
+            onActionClick: ToastView.dismiss,
+            leadingSVGIcon: _imagePaths.icNotConnection,
+            backgroundColor: AppColor.textFieldErrorBorderColor,
+            textColor: Colors.white,
+            infinityToast: true,
+          );
+        }
       }
       return error;
     } else if (error is BadCredentialsException) {
