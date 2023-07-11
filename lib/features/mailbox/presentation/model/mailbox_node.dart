@@ -21,6 +21,8 @@ class MailboxNode with EquatableMixin{
 
   bool hasChildren() => childrenItems?.isNotEmpty ?? false;
 
+  bool hasParents() => item.hasParentId();
+
   bool get isActivated => nodeState == MailboxState.activated;
 
   bool get isSelected => selectMode == SelectMode.ACTIVE;
