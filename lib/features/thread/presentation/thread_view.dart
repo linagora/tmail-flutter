@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -60,6 +61,16 @@ class ThreadView extends GetWidget<ThreadController>
                       if (!_responsiveUtils.isWebDesktop(context))
                         ... [
                           _buildAppBarNormal(context),
+                          if (!PlatformInfo.isWeb)
+                            Obx(() {
+                              if (!controller.networkConnectionController.isNetworkConnectionAvailable()) {
+                                return const Padding(
+                                  padding: EdgeInsetsDirectional.only(bottom: 8),
+                                  child: NetworkConnectionBannerWidget());
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            }),
                           _buildSearchBarView(context),
                           const SpamReportBannerWidget(),
                           const QuotasWarningBannerWidget(),
