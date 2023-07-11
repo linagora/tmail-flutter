@@ -44,11 +44,7 @@ class NetworkConnectionController extends BaseController {
     final currentConnectionResult = await _connectivity.checkConnectivity();
     log('NetworkConnectionController::onReady():_getCurrentNetworkConnectionState: $currentConnectionResult');
     _setNetworkConnectivityState(currentConnectionResult);
-    if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {
-      _showToastLostConnection();
-    } else {
-      ToastView.dismiss();
-    }
+    _handleNetworkConnectionState();
   }
 
   void _listenNetworkConnectionChanged() {
@@ -56,11 +52,7 @@ class NetworkConnectionController extends BaseController {
       (result) {
         log('NetworkConnectionController::_listenNetworkConnectionChanged():onConnectivityChanged: $result');
         _setNetworkConnectivityState(result);
-        if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {
-          _showToastLostConnection();
-        } else {
-          ToastView.dismiss();
-        }
+        _handleNetworkConnectionState();
       },
       onError: (error, stackTrace) {
         logError('NetworkConnectionController::_listenNetworkConnectionChanged():error: $error');
@@ -75,6 +67,16 @@ class NetworkConnectionController extends BaseController {
 
   bool isNetworkConnectionAvailable() {
     return connectivityResult.value != ConnectivityResult.none;
+  }
+
+  void _handleNetworkConnectionState() {
+    if (PlatformInfo.isWeb) {
+      if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {
+        _showToastLostConnection();
+      } else {
+        ToastView.dismiss();
+      }
+    }
   }
 
   void _showToastLostConnection() {

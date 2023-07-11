@@ -83,7 +83,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/da
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
-import 'package:tmail_ui_user/features/network_status_handle/presentation/network_connnection_controller.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
 import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/work_manager/one_time_work_request.dart';
