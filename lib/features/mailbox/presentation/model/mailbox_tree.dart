@@ -111,6 +111,20 @@ class MailboxTree with EquatableMixin {
     return path;
   }
 
+  List<MailboxNode>? getAncestorList(MailboxNode mailboxNode) {
+    var parentId = mailboxNode.item.parentId;
+    List<MailboxNode> ancestor = <MailboxNode>[];
+    while(parentId != null) {
+      final parentNode = findNode((node) => node.item.id == parentId);
+      if (parentNode == null) {
+        break;
+      }
+      ancestor.add(parentNode);
+      parentId = parentNode.item.parentId;
+    }
+    return ancestor.isNotEmpty ? ancestor : null;
+  }
+
   Map<Role, PresentationMailbox> get mapPresentationMailboxByRole {
     if (root.childrenItems?.isEmpty == true) {
       return {};
