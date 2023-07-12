@@ -42,8 +42,8 @@ class SetDefaultIdentityCheckboxBuilder extends StatelessWidget {
                 )),
           ),
         ),
-        Padding(
-          padding: const EdgeInsetsDirectional.only(start: 8),
+        const SizedBox(width: 8),
+        Flexible(
           child: Text(
             AppLocalizations.of(context).setDefaultIdentity,
             style: const TextStyle(
