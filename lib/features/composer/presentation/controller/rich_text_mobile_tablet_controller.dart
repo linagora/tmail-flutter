@@ -1,5 +1,5 @@
-
 import 'package:core/utils/app_logger.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
@@ -22,5 +22,17 @@ class RichTextMobileTabletController extends BaseRichTextController {
   void applyHeaderStyle(HeaderStyleType? newStyle) {
     final styleSelected = newStyle ?? HeaderStyleType.normal;
     htmlEditorApi?.formatHeader(styleSelected.styleValue);
+  }
+
+  void insertImageAsBase64({required PlatformFile platformFile, int? maxWidth}) async {
+    if (platformFile.bytes != null) {
+      await htmlEditorApi?.insertImageData(
+        platformFile.bytes!,
+        'image/${platformFile.extension}',
+        maxWidth: maxWidth
+      );
+    } else {
+      logError("RichTextWebController::insertImageAsBase64: bytes is null");
+    }
   }
 }

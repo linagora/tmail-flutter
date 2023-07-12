@@ -74,6 +74,7 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
         autofillHints: widget.autofillHints,
         keyboardType: widget.keyboardType,
         decoration: widget.decoration,
+        focusNode: widget.focusNode,
         textDirection: _textDirection,
         onChanged: (value) {
           widget.onTextChange?.call(value);

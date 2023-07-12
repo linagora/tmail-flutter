@@ -1,5 +1,5 @@
 
 extension SizeExtension on int {
 
-  int get kiloByteToBytes => this * 1024;
+  int get toBytes => this * 1024;
 }
