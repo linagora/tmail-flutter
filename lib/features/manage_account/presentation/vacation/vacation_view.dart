@@ -36,7 +36,9 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
         richTextController: controller.richTextControllerForMobile,
         keyBroadToolbar: RichTextKeyboardToolBar(
           titleBack: AppLocalizations.of(context).format,
-          backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+          backgroundKeyboardToolBarColor: PlatformInfo.isIOS
+            ? AppColor.colorBackgroundKeyboard
+            : AppColor.colorBackgroundKeyboardAndroid,
           titleFormatBottomSheet: AppLocalizations.of(context).format,
           richTextController: controller.richTextControllerForMobile,
           titleQuickStyleBottomSheet: AppLocalizations.of(context).quickStyles,
