@@ -148,6 +148,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                             height: 9,
                             fit: BoxFit.fill)),
                   Expanded(child: buildInformationSender(
+                    _context,
                     _presentationEmail,
                     mailboxContain,
                     isSearchEmailRunning,
@@ -172,6 +173,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Expanded(child: buildEmailTitle(
+                      _context,
                       _presentationEmail,
                       isSearchEmailRunning,
                       _searchQuery
@@ -191,6 +193,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                 const SizedBox(height: 8),
                 Row(children: [
                   Expanded(child: buildEmailPartialContent(
+                    _context,
                     _presentationEmail,
                     isSearchEmailRunning,
                     _searchQuery
@@ -243,6 +246,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                                 height: 9,
                                 fit: BoxFit.fill)),
                       Expanded(child: buildInformationSender(
+                        _context,
                         _presentationEmail,
                         mailboxContain,
                         isSearchEmailRunning,
@@ -258,6 +262,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Expanded(child: buildEmailTitle(
+                          _context,
                           _presentationEmail,
                           isSearchEmailRunning,
                           _searchQuery
@@ -277,6 +282,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                     const SizedBox(height: 8),
                     Row(children: [
                       Expanded(child: buildEmailPartialContent(
+                        _context,
                         _presentationEmail,
                         isSearchEmailRunning,
                         _searchQuery
@@ -367,6 +373,7 @@ class EmailTileBuilder with BaseEmailItemTile {
             SizedBox(
               width: 160,
               child: buildInformationSender(
+                _context,
                 _presentationEmail,
                 mailboxContain,
                 isSearchEmailRunning,
@@ -517,12 +524,14 @@ class EmailTileBuilder with BaseEmailItemTile {
               constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
               padding: const EdgeInsetsDirectional.only(end: 12),
               child: buildEmailTitle(
+                _context,
                 _presentationEmail,
                 isSearchEmailRunning,
                 _searchQuery
               )),
         Expanded(child: Container(
           child: buildEmailPartialContent(
+            _context,
             _presentationEmail,
             isSearchEmailRunning,
             _searchQuery
