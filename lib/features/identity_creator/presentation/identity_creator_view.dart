@@ -43,43 +43,33 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
+    final responsiveWidget = ResponsiveWidget(
       responsiveUtils: _responsiveUtils,
-      mobile: Card(
-        margin: EdgeInsets.zero,
-        borderOnForeground: false,
-        color: Colors.transparent,
-        child: SafeArea(
-          top: PlatformInfo.isMobile,
-          bottom: false,
-          left: false,
-          right: false,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(16),
-              topLeft: Radius.circular(16)),
-            child: GestureDetector(
-              onTap: () => controller.clearFocusEditor(context),
-              child: Scaffold(
-                backgroundColor: Colors.white,
-                body: Container(
+      mobile: Scaffold(
+        backgroundColor: Colors.black38,
+        body: GestureDetector(
+          onTap: () => controller.clearFocusEditor(context),
+          child: Card(
+            margin: EdgeInsets.zero,
+            borderOnForeground: false,
+            color: Colors.transparent,
+            child: SafeArea(
+              top: PlatformInfo.isMobile,
+              bottom: false,
+              left: false,
+              right: false,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(16)),
+                child: Container(
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(16),
-                      topLeft: Radius.circular(16)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColor.colorShadowLayerBottom,
-                        blurRadius: 96,
-                        spreadRadius: 96,
-                        offset: Offset.zero),
-                      BoxShadow(
-                        color: AppColor.colorShadowLayerTop,
-                        blurRadius: 2,
-                        spreadRadius: 2,
-                        offset: Offset.zero),
-                    ]),
+                      topLeft: Radius.circular(16)
+                    ),
+                  ),
                   child: _buildBodyView(context),
                 ),
               ),
@@ -150,6 +140,29 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         )
       )
     );
+
+    if (PlatformInfo.isWeb) {
+      return responsiveWidget;
+    } else {
+      return KeyboardRichText(
+        keyBroadToolbar: RichTextKeyboardToolBar(
+          titleBack: AppLocalizations.of(context).titleFormat,
+          backgroundKeyboardToolBarColor: PlatformInfo.isIOS
+            ? AppColor.colorBackgroundKeyboard
+            : AppColor.colorBackgroundKeyboardAndroid,
+          isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
+          richTextController: controller.keyboardRichTextController,
+          titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
+          titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+          titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
+          titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+          insertImage: () => controller.pickImage(context, maxWidth: _getMaxWidth(context).toInt()),
+        ),
+        richTextController: controller.keyboardRichTextController,
+        paddingChild: EdgeInsets.zero,
+        child: responsiveWidget
+      );
+    }
   }
 
   Widget _buildBodyView(BuildContext context) {
@@ -232,7 +245,15 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           if (_isMobile(context))
             _buildActionButtonMobile(context)
           else
-            _buildActionButtonDesktop(context)
+            _buildActionButtonDesktop(context),
+          if (PlatformInfo.isMobile)
+            Obx(() {
+              if (controller.isMobileEditorFocus.isTrue) {
+                return const SizedBox(height: 48);
+              } else {
+                return const SizedBox.shrink();
+              }
+            })
         ]),
       ),
     );
@@ -241,24 +262,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
       onTap: () => controller.clearFocusEditor(context),
       child: Column(children: [
         _buildHeaderView(context),
-        Expanded(
-          child: PlatformInfo.isWeb
-            ? PointerInterceptor(child: bodyCreatorView)
-            : KeyboardRichText(
-                keyBroadToolbar: RichTextKeyboardToolBar(
-                  titleBack: AppLocalizations.of(context).titleFormat,
-                  backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
-                  isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
-                  richTextController: controller.keyboardRichTextController,
-                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                ),
-                richTextController: controller.keyboardRichTextController,
-                paddingChild: EdgeInsets.zero,
-                child: bodyCreatorView),
-        ),
+        Expanded(child: PointerInterceptor(child: bodyCreatorView))
       ]),
     );
   }
@@ -455,5 +459,17 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
     ));
   }
 
-  bool _isMobile(BuildContext context) => _responsiveUtils.isPortraitMobile(context) || _responsiveUtils.isLandscapeMobile(context);
+  bool _isMobile(BuildContext context) =>
+    _responsiveUtils.isPortraitMobile(context) ||
+    _responsiveUtils.isLandscapeMobile(context);
+
+  double _getMaxWidth(BuildContext context) {
+    if (_isMobile(context)) {
+      return _responsiveUtils.getSizeScreenWidth(context);
+    } else if (_responsiveUtils.isDesktop(context)) {
+      return math.max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 800);
+    } else {
+      return math.max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 700);
+    }
+  }
 }
