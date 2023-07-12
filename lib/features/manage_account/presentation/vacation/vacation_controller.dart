@@ -38,6 +38,7 @@ class VacationController extends BaseController {
   final errorMessageBody = Rxn<String>();
 
   final subjectTextController = TextEditingController();
+  final subjectTextFocusNode = FocusNode();
   final richTextControllerForMobile = RichTextController();
   final htmlEditorMinHeight = 150;
 
@@ -338,6 +339,8 @@ class VacationController extends BaseController {
   }
 
   void onFocusHTMLEditor() async {
+    subjectTextFocusNode.unfocus();
+
     await Scrollable.ensureVisible(htmlKey.currentContext!);
     await Future.delayed(const Duration(milliseconds: 500), () {
       scrollController.animateTo(
@@ -360,6 +363,7 @@ class VacationController extends BaseController {
 
   @override
   void onClose() {
+    subjectTextFocusNode.dispose();
     subjectTextController.dispose();
     richTextControllerForMobile.dispose();
     scrollController.dispose();
