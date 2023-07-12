@@ -251,7 +251,8 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                           child: TextInputFieldBuilder(
                             label: AppLocalizations.of(context).subject,
                             hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
-                            editingController: controller.subjectTextController
+                            editingController: controller.subjectTextController,
+                            focusNode: controller.subjectTextFocusNode,
                           ),
                         )
                       : Row(children: [
@@ -260,7 +261,8 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                             child: TextInputFieldBuilder(
                               label: AppLocalizations.of(context).subject,
                               hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
-                              editingController: controller.subjectTextController
+                              editingController: controller.subjectTextController,
+                              focusNode: controller.subjectTextFocusNode,
                             ),
                           )),
                           const SizedBox(width: 24),
