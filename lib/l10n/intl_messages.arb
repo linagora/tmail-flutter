@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-07-07T16:07:02.053606",
+  "@@last_modified": "2023-07-12T18:53:48.611802",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2965,5 +2965,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "pleaseChooseAnImageSizeCorrectly": "Please choose an image size <= {maxSize}KB",
+  "@pleaseChooseAnImageSizeCorrectly": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
   }
 }
