@@ -1,7 +1,10 @@
 
+import 'dart:convert';
+
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -255,6 +258,17 @@ class RichTextWebController extends BaseRichTextController {
     selectedOrderList.value = newOrderList;
     editorController.execSummernoteAPI(newOrderList.summernoteNameAPI);
     menuOrderListController.hideMenu();
+  }
+
+  void insertImageAsBase64({required PlatformFile platformFile}) {
+    if (platformFile.bytes != null) {
+      final base64Data = base64Encode(platformFile.bytes!);
+      editorController.insertHtml(
+        '<img src="data:image/${platformFile.extension};base64,$base64Data" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width: 100%"/>'
+      );
+    } else {
+      logError("RichTextWebController::insertImageAsBase64: bytes is null");
+    }
   }
 
   @override

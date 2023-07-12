@@ -22,11 +22,13 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
   final RichTextWebController richTextWebController;
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
   final EdgeInsetsGeometry? padding;
+  final List<Widget>? extendedOption;
 
   ToolbarRichTextWebBuilder({
     Key? key,
     required this.richTextWebController,
     this.padding,
+    this.extendedOption,
   }) : super(key: key);
 
   @override
@@ -42,6 +44,8 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
             crossAxisAlignment: WrapCrossAlignment.center,
             runSpacing: 8,
             children: [
+              if (extendedOption?.isNotEmpty == true)
+                ...extendedOption!,
               AbsorbPointer(
                 absorbing: codeViewEnabled,
                 child: DropDownMenuHeaderStyleWidget(
