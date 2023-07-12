@@ -20,6 +20,7 @@ import 'package:model/extensions/identity_extension.dart';
 import 'package:model/user/user_profile.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/extesions/size_extension.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
@@ -61,8 +62,10 @@ class IdentityCreatorController extends BaseController {
   final actionType = IdentityActionType.create.obs;
   final isDefaultIdentity = RxBool(false);
   final isDefaultIdentitySupported = RxBool(false);
+  final isMobileEditorFocus = RxBool(false);
 
   final RichTextController keyboardRichTextController = RichTextController();
+  final RichTextMobileTabletController richTextMobileTabletController = RichTextMobileTabletController();
   final RichTextWebController richTextWebController = RichTextWebController();
   final TextEditingController inputNameIdentityController = TextEditingController();
   final TextEditingController inputBccIdentityController = TextEditingController();
@@ -79,7 +82,7 @@ class IdentityCreatorController extends BaseController {
   IdentityCreatorArguments? arguments;
 
   final GlobalKey htmlKey = GlobalKey();
-  final htmlEditorMinHeight = 160;
+  final htmlEditorMinHeight = 150;
 
   void updateNameIdentity(BuildContext context, String? value) {
     _nameIdentity = value;
@@ -428,17 +431,23 @@ class IdentityCreatorController extends BaseController {
   }
 
   void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
+    richTextMobileTabletController.htmlEditorApi = editorApi;
     keyboardRichTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDownOnMobile,
       onFocus: _onFocusHTMLEditorOnMobile,
       context: context
     );
+    keyboardRichTextController.htmlEditorApi?.onFocusOut = () {
+      keyboardRichTextController.hideRichTextView();
+      isMobileEditorFocus.value = false;
+    };
   }
 
   void _onFocusHTMLEditorOnMobile() async {
     inputBccIdentityFocusNode.unfocus();
     inputNameIdentityFocusNode.unfocus();
+    isMobileEditorFocus.value = true;
     if (htmlKey.currentContext != null) {
       await Scrollable.ensureVisible(htmlKey.currentContext!);
     }
@@ -464,7 +473,9 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void pickImage(BuildContext context) async {
+  void pickImage(BuildContext context, {int? maxWidth}) async {
+    clearFocusEditor(context);
+
     final filePickerResult = await FilePicker.platform.pickFiles(
       type: FileType.image,
       withData: true
@@ -473,7 +484,7 @@ class IdentityCreatorController extends BaseController {
     if (context.mounted) {
       final platformFile = filePickerResult?.files.single;
       if (platformFile != null) {
-        _insertInlineImage(context, platformFile);
+        _insertInlineImage(context, platformFile, maxWidth: maxWidth);
       } else {
         _appToast.showToastErrorMessage(
           context,
@@ -486,18 +497,28 @@ class IdentityCreatorController extends BaseController {
   }
 
   bool _isExceedMaxSizeInlineImage(int fileSize) =>
-    fileSize > IdentityCreatorConstants.maxSizeIdentityInlineImage.kiloByteToBytes;
+    fileSize > IdentityCreatorConstants.maxKBSizeIdentityInlineImage.toBytes;
 
-  void _insertInlineImage(BuildContext context, PlatformFile platformFile) {
+  void _insertInlineImage(
+    BuildContext context,
+    PlatformFile platformFile,
+    {int? maxWidth}
+  ) {
     if (_isExceedMaxSizeInlineImage(platformFile.size)) {
       _appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).pleaseChooseAnImageSizeCorrectly(
-          IdentityCreatorConstants.maxSizeIdentityInlineImage
+          IdentityCreatorConstants.maxKBSizeIdentityInlineImage
         )
       );
     } else {
-      richTextWebController.insertImageAsBase64(platformFile: platformFile);
+      if (PlatformInfo.isWeb) {
+        richTextWebController.insertImageAsBase64(platformFile: platformFile);
+      } else if (PlatformInfo.isMobile) {
+        richTextMobileTabletController.insertImageAsBase64(platformFile: platformFile, maxWidth: maxWidth);
+      } else {
+        logError("IdentityCreatorController::_insertInlineImage: Platform not supported");
+      }
     }
   }
 }

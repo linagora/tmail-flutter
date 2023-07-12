@@ -147,6 +147,7 @@ extension AppColor on Color {
   static const colorCloseButton = Color(0xFF818C99);
   static const colorDropShadow = Color(0x0F000000);
   static const colorBackgroundKeyboard = Color(0xFFD2D5DC);
+  static const colorBackgroundKeyboardAndroid = Color(0xFFF2F0F4);
   static const colorShadowLayerBottom = Color(0x29000000);
   static const colorShadowLayerTop = Color(0x1F000000);
   static const colorDividerHorizontal = Color(0x1F000000);

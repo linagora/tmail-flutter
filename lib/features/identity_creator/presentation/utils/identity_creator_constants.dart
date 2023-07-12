@@ -1,4 +1,4 @@
 
 class IdentityCreatorConstants {
-  static const int maxSizeIdentityInlineImage = 16; // Kilobyte
+  static const int maxKBSizeIdentityInlineImage = 16; // Kilobyte
 }
