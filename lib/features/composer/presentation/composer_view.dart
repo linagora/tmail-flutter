@@ -5,6 +5,7 @@ import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/context_menu/simple_context_menu_action_builder.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,9 @@ class ComposerView extends BaseComposerView {
               return KeyboardRichText(
                 richTextController: controller.keyboardRichTextController,
                 keyBroadToolbar: RichTextKeyboardToolBar(
-                  backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+                  backgroundKeyboardToolBarColor: PlatformInfo.isIOS
+                    ? AppColor.colorBackgroundKeyboard
+                    : AppColor.colorBackgroundKeyboardAndroid,
                   isLandScapeMode: responsiveUtils.isLandscapeMobile(context),
                   insertAttachment: controller.isNetworkConnectionAvailable
                     ? () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context))
@@ -98,7 +101,9 @@ class ComposerView extends BaseComposerView {
               return KeyboardRichText(
                 richTextController: controller.keyboardRichTextController,
                 keyBroadToolbar: RichTextKeyboardToolBar(
-                  backgroundKeyboardToolBarColor: AppColor.colorBackgroundKeyboard,
+                  backgroundKeyboardToolBarColor: PlatformInfo.isIOS
+                    ? AppColor.colorBackgroundKeyboard
+                    : AppColor.colorBackgroundKeyboardAndroid,
                   insertAttachment: () => controller.openPickAttachmentMenu(context, _pickAttachmentsActionTiles(context)),
                   insertImage: () => controller.insertImage(context, constraints.maxWidth),
                   richTextController: controller.keyboardRichTextController,
