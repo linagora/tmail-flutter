@@ -3064,4 +3064,11 @@ class AppLocalizations {
       name: 'archiveMailboxDisplayName',
     );
   }
+
+  String pleaseChooseAnImageSizeCorrectly(int maxSize) {
+    return Intl.message(
+      'Please choose an image size <= ${maxSize}KB',
+      name: 'pleaseChooseAnImageSizeCorrectly',
+      args: [maxSize]);
+  }
 }

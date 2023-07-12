@@ -193,6 +193,7 @@ class ImagePaths {
   String get icArrowBottom => _getImagePath('ic_arrow_bottom.svg');
   String get icArrowLeft => _getImagePath('ic_arrow_left.svg');
   String get icArrowRight => _getImagePath('ic_arrow_right.svg');
+  String get icAddPicture => _getImagePath('ic_add_picture.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

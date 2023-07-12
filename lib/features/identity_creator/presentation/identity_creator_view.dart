@@ -8,7 +8,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +17,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
@@ -30,7 +30,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/identit
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
+class IdentityCreatorView extends GetWidget<IdentityCreatorController>
+    with RichTextButtonMixin {
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -163,7 +164,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             controller.errorNameIdentity.value,
             AppLocalizations.of(context).required,
             editingController: controller.inputNameIdentityController,
-            focusNode: PlatformInfo.isWeb ? null : controller.inputNameIdentityFocusNode,
+            focusNode: controller.inputNameIdentityFocusNode,
             isMandatory: true,
             onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
           )),
@@ -195,7 +196,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
             AppLocalizations.of(context).bcc_to,
             controller.errorBccIdentity.value,
             controller.inputBccIdentityController,
-            focusNode: PlatformInfo.isWeb ? null : controller.inputBccIdentityFocusNode,
+            focusNode: controller.inputBccIdentityFocusNode,
             onSelectedSuggestionAction: (newEmailAddress) {
               controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
               controller.updateBccOfIdentity(newEmailAddress);
@@ -306,7 +307,20 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
         if (PlatformInfo.isWeb)
           ToolbarRichTextWebBuilder(
             richTextWebController: controller.richTextWebController,
-            padding: const EdgeInsets.only(bottom: 12)
+            padding: const EdgeInsets.only(bottom: 12),
+            extendedOption: [
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 4.0),
+                child: buildWrapIconStyleText(
+                  icon: buildIconWithTooltip(
+                    path: _imagePaths.icAddPicture,
+                    tooltip: AppLocalizations.of(context).insertImage
+                  ),
+                  hasDropdown: false,
+                  onTap: () => controller.pickImage(context)
+                ),
+              ),
+            ]
           ),
         htmlEditor,
       ],
@@ -314,7 +328,6 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
   }
 
   Widget _buildHtmlEditorWeb(BuildContext context, String initContent) {
-    log('IdentityCreatorView::_buildHtmlEditorWeb(): initContent: $initContent');
     return html_editor_browser.HtmlEditor(
       key: const Key('identity_create_editor_web'),
       controller: controller.richTextWebController.editorController,
