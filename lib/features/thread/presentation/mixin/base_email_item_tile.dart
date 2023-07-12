@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -78,14 +79,17 @@ mixin BaseEmailItemTile {
   }
 
   Widget buildInformationSender(
-      PresentationEmail email,
-      PresentationMailbox? mailbox,
-      bool isSearchEmailRunning,
-      SearchQuery? query
+    BuildContext context,
+    PresentationEmail email,
+    PresentationMailbox? mailbox,
+    bool isSearchEmailRunning,
+    SearchQuery? query
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          informationSender(email, mailbox).overflow,
+          DirectionUtils.isDirectionRTLByLanguage(context)
+            ? informationSender(email, mailbox)
+            : informationSender(email, mailbox).overflow,
           query?.value ?? '',
           TextStyle(
               fontSize: 15,
@@ -110,13 +114,16 @@ mixin BaseEmailItemTile {
   }
 
   Widget buildEmailTitle(
+    BuildContext context,
     PresentationEmail email,
     bool isSearchEmailRunning,
     SearchQuery? query
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          email.getEmailTitle().overflow,
+          DirectionUtils.isDirectionRTLByLanguage(context)
+            ? email.getEmailTitle()
+            : email.getEmailTitle().overflow,
           query?.value ?? '',
           TextStyle(
               fontSize: 13,
@@ -140,13 +147,16 @@ mixin BaseEmailItemTile {
   }
 
   Widget buildEmailPartialContent(
+    BuildContext context,
     PresentationEmail email,
     bool isSearchEmailRunning,
     SearchQuery? query
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          email.getPartialContent().overflow,
+          DirectionUtils.isDirectionRTLByLanguage(context)
+            ? email.getPartialContent()
+            : email.getPartialContent().overflow,
           query?.value ?? '',
           const TextStyle(
               fontSize: 13,
