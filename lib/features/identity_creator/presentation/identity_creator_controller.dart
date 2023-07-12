@@ -1,9 +1,10 @@
-
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -20,7 +21,9 @@ import 'package:model/user/user_profile.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/extesions/size_extension.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
@@ -34,6 +37,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/id
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -44,6 +48,7 @@ class IdentityCreatorController extends BaseController {
   final IdentityUtils _identityUtils;
 
   final _uuid = Get.find<Uuid>();
+  final _appToast = Get.find<AppToast>();
 
   final noneEmailAddress = EmailAddress(null, 'None');
   final listEmailAddressDefault = <EmailAddress>[].obs;
@@ -302,12 +307,14 @@ class IdentityCreatorController extends BaseController {
     final error = _getErrorInputNameString(context);
     if (error?.isNotEmpty == true) {
       errorNameIdentity.value = error;
+      inputNameIdentityFocusNode.requestFocus();
       return;
     }
 
     final errorBcc = _getErrorInputAddressString(context);
     if (errorBcc?.isNotEmpty == true) {
       errorBccIdentity.value = errorBcc;
+      inputBccIdentityFocusNode.requestFocus();
       return;
     }
 
@@ -454,6 +461,43 @@ class IdentityCreatorController extends BaseController {
         duration: const Duration(milliseconds: 1),
         curve: Curves.linear,
       );
+    }
+  }
+
+  void pickImage(BuildContext context) async {
+    final filePickerResult = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      withData: true
+    );
+
+    if (context.mounted) {
+      final platformFile = filePickerResult?.files.single;
+      if (platformFile != null) {
+        _insertInlineImage(context, platformFile);
+      } else {
+        _appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).cannotSelectThisImage
+        );
+      }
+    } else {
+      logError("IdentityCreatorController::pickImage: context is unmounted");
+    }
+  }
+
+  bool _isExceedMaxSizeInlineImage(int fileSize) =>
+    fileSize > IdentityCreatorConstants.maxSizeIdentityInlineImage.kiloByteToBytes;
+
+  void _insertInlineImage(BuildContext context, PlatformFile platformFile) {
+    if (_isExceedMaxSizeInlineImage(platformFile.size)) {
+      _appToast.showToastErrorMessage(
+        context,
+        AppLocalizations.of(context).pleaseChooseAnImageSizeCorrectly(
+          IdentityCreatorConstants.maxSizeIdentityInlineImage
+        )
+      );
+    } else {
+      richTextWebController.insertImageAsBase64(platformFile: platformFile);
     }
   }
 }
