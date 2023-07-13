@@ -106,6 +106,8 @@ dependencies:
 
   http_parser: 4.0.2
 
+  numberpicker: 2.1.2
+
   # flutter_test from sdk depends on collection 1.17.1
   collection: 1.17.1
 
