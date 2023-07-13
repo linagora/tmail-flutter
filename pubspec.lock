@@ -577,9 +577,11 @@ packages:
   flutter_date_range_picker:
     dependency: "direct main"
     description:
-      path: "../flutter-date-range-picker"
-      relative: true
-    source: path
+      path: "."
+      ref: upgrade-flutter
+      resolved-ref: "72cf8ec39e0c9135818d3878d0bafa69025e4810"
+      url: "https://github.com/Arsnael/flutter-date-range-picker.git"
+    source: git
     version: "1.0.3"
   flutter_dotenv:
     dependency: "direct main"
@@ -1469,9 +1471,11 @@ packages:
   super_tag_editor:
     dependency: "direct main"
     description:
-      path: "../super_tag_editor"
-      relative: true
-    source: path
+      path: "."
+      ref: intl-upgrade
+      resolved-ref: da656831b66e968e5aa3b6bbcf6471df833f0e50
+      url: "https://github.com/Arsnael/super_tag_editor.git"
+    source: git
     version: "0.1.4"
   syncfusion_flutter_core:
     dependency: transitive
