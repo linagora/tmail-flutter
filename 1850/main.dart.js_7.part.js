@@ -2,124 +2,113 @@
 self.$__dart_deferred_initializers__ = self.$__dart_deferred_initializers__ || Object.create(null);
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var B = {
-    Chip$(avatar, backgroundColor, deleteIcon, label, labelPadding, labelStyle, materialTapTargetSize, onDeleted, padding, shape) {
-      return new B.Chip(avatar, label, labelStyle, labelPadding, shape, backgroundColor, padding, deleteIcon, onDeleted, materialTapTargetSize, null);
+    _Jenkins_combine(hash, o) {
+      hash = hash + J.get$hashCode$(o) & 536870911;
+      hash = hash + ((hash & 524287) << 10) & 536870911;
+      return hash ^ hash >>> 6;
     },
-    _RenderChip__boxRect(box) {
-      var t1, t2, t3;
-      if (box == null)
-        t1 = C.Rect_0_0_0_0;
-      else {
-        t1 = box.parentData;
-        t1.toString;
-        t1 = type$.BoxParentData._as(t1).offset;
-        t2 = box._box$_size;
-        t2.toString;
-        t3 = t1._dx;
-        t1 = t1._dy;
-        t2 = new A.Rect(t3, t1, t3 + t2._dx, t1 + t2._dy);
-        t1 = t2;
+    hashValues(arg01, arg02, arg03, arg04, arg05, arg06) {
+      var hash,
+        result = B._Jenkins_combine(B._Jenkins_combine(0, arg01), arg02);
+      if (arg03 !== D.C__HashEnd) {
+        result = B._Jenkins_combine(result, arg03);
+        if (arg04 !== D.C__HashEnd) {
+          result = B._Jenkins_combine(result, arg04);
+          if (arg05 !== D.C__HashEnd) {
+            result = B._Jenkins_combine(result, arg05);
+            if (arg06 !== D.C__HashEnd)
+              result = B._Jenkins_combine(result, arg06);
+          }
+        }
       }
-      return t1;
+      hash = result + ((result & 67108863) << 3) & 536870911;
+      hash ^= hash >>> 11;
+      return hash + ((hash & 16383) << 15) & 536870911;
     },
-    _hitIsOnDeleteIcon(chipSize, deleteButtonSize, padding, tapPosition, textDirection) {
-      var adjustedPosition, t2, accessibleDeleteButtonWidth,
-        t1 = chipSize._dx - padding.get$horizontal();
-      padding.get$_top(padding);
-      padding.get$_bottom(padding);
-      adjustedPosition = tapPosition.$sub(0, new A.Offset(padding.left, padding.top));
-      t2 = deleteButtonSize._dx;
-      accessibleDeleteButtonWidth = Math.min(t1 * 0.499, Math.max(t2, 24 + t2 / 2));
-      switch (textDirection.index) {
-        case 1:
-          return adjustedPosition._dx >= t1 - accessibleDeleteButtonWidth;
-        case 0:
-          return adjustedPosition._dx <= accessibleDeleteButtonWidth;
-      }
+    _HashEnd: function _HashEnd() {
     },
-    Chip: function Chip(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
+    buildTextIcon(text, onTap, padding, textStyle) {
+      var _null = null,
+        t1 = padding == null ? E.EdgeInsets_10_10_10_10 : padding;
+      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(t1, A.Text$(text, _null, _null, _null, _null, _null, textStyle, _null, _null, _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.buildTextIcon_closure(onTap), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, C.CircleBorder_Umb, _null, _null, C.MaterialType_0);
+    },
+    buildIconWithLowerMenu(icon, context, popupMenuItems, openPopUpMenuAction) {
+      return new A.Builder(new B.buildIconWithLowerMenu_closure(context, icon, openPopUpMenuAction, popupMenuItems), null);
+    },
+    buildIconWithUpperMenu(icon, context, popupMenuItems, openPopUpMenuAction) {
+      return new A.Builder(new B.buildIconWithUpperMenu_closure(context, icon, openPopUpMenuAction, popupMenuItems), null);
+    },
+    buildTextIcon_closure: function buildTextIcon_closure(t0) {
+      this.onTap = t0;
+    },
+    buildIconWithLowerMenu_closure: function buildIconWithLowerMenu_closure(t0, t1, t2, t3) {
       var _ = this;
-      _.avatar = t0;
-      _.label = t1;
-      _.labelStyle = t2;
-      _.labelPadding = t3;
-      _.shape = t4;
-      _.backgroundColor = t5;
-      _.padding = t6;
-      _.deleteIcon = t7;
-      _.onDeleted = t8;
-      _.materialTapTargetSize = t9;
-      _.key = t10;
+      _.context = t0;
+      _.icon = t1;
+      _.openPopUpMenuAction = t2;
+      _.popupMenuItems = t3;
     },
-    RawChip: function RawChip(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) {
+    buildIconWithLowerMenu__closure: function buildIconWithLowerMenu__closure(t0, t1, t2, t3, t4) {
       var _ = this;
-      _.avatar = t0;
-      _.label = t1;
-      _.labelStyle = t2;
-      _.labelPadding = t3;
-      _.deleteIcon = t4;
-      _.onDeleted = t5;
-      _.deleteIconColor = t6;
-      _.deleteButtonTooltipMessage = t7;
-      _.side = t8;
-      _.shape = t9;
-      _.clipBehavior = t10;
-      _.focusNode = t11;
-      _.autofocus = t12;
-      _.backgroundColor = t13;
-      _.padding = t14;
-      _.visualDensity = t15;
-      _.materialTapTargetSize = t16;
-      _.elevation = t17;
-      _.shadowColor = t18;
-      _.surfaceTintColor = t19;
-      _.useDeleteButtonTooltip = t20;
-      _.tapEnabled = t21;
-      _.key = t22;
+      _.iconContext = t0;
+      _.screenSize = t1;
+      _.openPopUpMenuAction = t2;
+      _.context = t3;
+      _.popupMenuItems = t4;
     },
-    _RawChipState: function _RawChipState(t0, t1, t2, t3) {
+    buildIconWithUpperMenu_closure: function buildIconWithUpperMenu_closure(t0, t1, t2, t3) {
       var _ = this;
-      _.___RawChipState_selectionFade_A = _.___RawChipState_enableAnimation_A = _.___RawChipState_deleteDrawerAnimation_A = _.___RawChipState_avatarDrawerAnimation_A = _.___RawChipState_checkmarkAnimation_A = _.___RawChipState_enableController_A = _.___RawChipState_deleteDrawerController_A = _.___RawChipState_avatarDrawerController_A = _.___RawChipState_selectController_A = $;
-      _._isTapping = false;
-      _.TickerProviderStateMixin__tickers = t0;
-      _.TickerProviderStateMixin__tickerModeNotifier = t1;
-      _.MaterialStateMixin_materialStates = t2;
-      _._widget = null;
-      _._debugLifecycleState = t3;
-      _._framework$_element = null;
+      _.context = t0;
+      _.icon = t1;
+      _.openPopUpMenuAction = t2;
+      _.popupMenuItems = t3;
     },
-    _RawChipState__handleTapDown_closure: function _RawChipState__handleTapDown_closure(t0) {
-      this.$this = t0;
-    },
-    _RawChipState__handleTapCancel_closure: function _RawChipState__handleTapCancel_closure(t0) {
-      this.$this = t0;
-    },
-    _RawChipState__handleTap_closure: function _RawChipState__handleTap_closure(t0) {
-      this.$this = t0;
-    },
-    _RawChipState_didUpdateWidget_closure: function _RawChipState_didUpdateWidget_closure(t0) {
-      this.$this = t0;
-    },
-    _RawChipState_didUpdateWidget_closure0: function _RawChipState_didUpdateWidget_closure0(t0) {
-      this.$this = t0;
-    },
-    _RawChipState_build_closure: function _RawChipState_build_closure(t0, t1, t2, t3, t4) {
+    buildIconWithUpperMenu__closure: function buildIconWithUpperMenu__closure(t0, t1, t2, t3, t4) {
       var _ = this;
-      _.$this = t0;
-      _.resolvedShape = t1;
-      _.theme = t2;
-      _.chipTheme = t3;
-      _.chipDefaults = t4;
+      _.iconContext = t0;
+      _.screenSize = t1;
+      _.openPopUpMenuAction = t2;
+      _.context = t3;
+      _.popupMenuItems = t4;
     },
-    _ChipRedirectingHitDetectionWidget: function _ChipRedirectingHitDetectionWidget(t0, t1, t2) {
-      this.constraints = t0;
-      this.child = t1;
-      this.key = t2;
-    },
-    _RenderChipRedirectingHitDetection: function _RenderChipRedirectingHitDetection(t0, t1, t2) {
+    ExtendedRenderParagraph: function ExtendedRenderParagraph(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26) {
       var _ = this;
-      _._additionalConstraints = t0;
-      _.RenderObjectWithChildMixin__child = t1;
+      _._selectionRects = null;
+      _._extended_render_paragraph$_startHandleLayerLink = t0;
+      _._extended_render_paragraph$_endHandleLayerLink = t1;
+      _._extended_render_paragraph$_selection = t2;
+      _._extended_render_paragraph$_selectionColor = t3;
+      _._extended_render_paragraph$_textPainter = t4;
+      _._rawText = t5;
+      _._extended_render_paragraph$_softWrap = t6;
+      _._extended_render_paragraph$_selectionHeightStyle = t7;
+      _._extended_render_paragraph$_selectionWidthStyle = t8;
+      _._extended_render_paragraph$_offset = t9;
+      _._extended_render_paragraph$_cachedChildNodes = _._extended_render_paragraph$_semanticsInfo = null;
+      _._extended_render_paragraph$_selectionStartInViewport = t10;
+      _._extended_render_paragraph$_selectionEndInViewport = t11;
+      _.textSelectionDelegate = t12;
+      _.oldOverflow = t13;
+      _.TextOverflowMixin__overflowRect = t14;
+      _.TextOverflowMixin__overflowRects = t15;
+      _.TextOverflowMixin__hasVisualOverflow = t16;
+      _.TextOverflowMixin__overflowShader = t17;
+      _.TextOverflowMixin__needsClipping = t18;
+      _.TextOverflowMixin__cachedPlainText = t19;
+      _.TextOverflowMixin__overflowWidget = t20;
+      _.TextOverflowMixin___TextOverflowMixin__overflow_A = t21;
+      _.TextOverflowMixin__layoutCount = t22;
+      _.selectionColor = _.endHandleLayerLink = _.startHandleLayerLink = _.selection = null;
+      _.__ExtendedTextSelectionRenderObject__longPress_A = _.__ExtendedTextSelectionRenderObject__tap_A = $;
+      _.lastSecondaryTapDownPosition = _.lastTapDownPosition = null;
+      _._extended_text_selection_render_object$_hasFocus = false;
+      _.textLayoutLastMinWidth = _.textLayoutLastMaxWidth = null;
+      _._hasSpecialInlineSpanBase = false;
+      _.__ExtendedTextRenderBox__placeholderSpans_A = $;
+      _._extended_text_render_box$_placeholderDimensions = null;
+      _.ContainerRenderObjectMixin__childCount = t23;
+      _.ContainerRenderObjectMixin__firstChild = t24;
+      _.ContainerRenderObjectMixin__lastChild = t25;
       _._cachedDryLayoutSizes = _._cachedIntrinsicDimensions = null;
       _._computingThisDryLayout = false;
       _._cachedBaselines = _._box$_size = null;
@@ -135,7 +124,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._constraints = null;
       _._debugDoingThisPaint = false;
       _.__RenderObject__wasRepaintBoundary_A = $;
-      _._layerHandle = t2;
+      _._layerHandle = t26;
       _._needsCompositingBitsUpdate = false;
       _.__RenderObject__needsCompositing_A = $;
       _._needsPaint = true;
@@ -146,730 +135,2035 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._depth = 0;
       _._node$_parent = _._owner = null;
     },
-    _RenderChipRedirectingHitDetection_hitTest_closure: function _RenderChipRedirectingHitDetection_hitTest_closure(t0, t1) {
+    ExtendedRenderParagraph_describeSemanticsConfiguration_closure: function ExtendedRenderParagraph_describeSemanticsConfiguration_closure() {
+    },
+    TextOverflowMixin: function TextOverflowMixin() {
+    },
+    TextOverflowMixin__paintTextOverflow_closure: function TextOverflowMixin__paintTextOverflow_closure(t0) {
       this.$this = t0;
-      this.offset = t1;
     },
-    _ChipRenderWidget: function _ChipRenderWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
+    _TextRange: function _TextRange(t0, t1) {
+      this.start = t0;
+      this.end = t1;
+    },
+    _ExtendedRenderParagraph_ExtendedTextSelectionRenderObject_TextOverflowMixin: function _ExtendedRenderParagraph_ExtendedTextSelectionRenderObject_TextOverflowMixin() {
+    },
+    ExtendedRichText$(endHandleLayerLink, hasFocus, key, locale, maxLines, overflow, overflowWidget, selection, selectionColor, selectionHeightStyle, selectionWidthStyle, softWrap, startHandleLayerLink, strutStyle, text, textAlign, textDirection, textHeightBehavior, textScaleFactor, textSelectionDelegate, textWidthBasis) {
+      return new B.ExtendedRichText(selectionHeightStyle, selectionWidthStyle, selection, selectionColor, text, textAlign, textDirection, softWrap, overflow, textScaleFactor, maxLines, locale, strutStyle, textWidthBasis, textHeightBehavior, startHandleLayerLink, endHandleLayerLink, overflowWidget, textSelectionDelegate, hasFocus, B.ExtendedRichText__extractChildren(text, overflowWidget), key);
+    },
+    ExtendedRichText__extractChildren(span, overFlowWidget) {
+      var result, _null = null, t1 = {};
+      t1.index = 0;
+      result = A._setArrayType([], type$.JSArray_Widget);
+      span.visitChildren$1(new B.ExtendedRichText__extractChildren_closure(t1, result));
+      t1 = t1.index++;
+      result.push(new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new A.PlaceholderSpanIndexSemanticsTag(t1, "PlaceholderSpanIndexSemanticsTag(" + t1 + ")"), _null, _null, _null, _null, _null), false, false, false, overFlowWidget, _null));
+      return result;
+    },
+    ExtendedRichText: function ExtendedRichText(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21) {
       var _ = this;
-      _.theme = t0;
-      _.value = t1;
-      _.isEnabled = t2;
-      _.checkmarkAnimation = t3;
-      _.avatarDrawerAnimation = t4;
-      _.deleteDrawerAnimation = t5;
-      _.enableAnimation = t6;
-      _.avatarBorder = t7;
-      _.key = t8;
+      _.selectionHeightStyle = t0;
+      _.selectionWidthStyle = t1;
+      _.selection = t2;
+      _.selectionColor = t3;
+      _.text = t4;
+      _.textAlign = t5;
+      _.textDirection = t6;
+      _.softWrap = t7;
+      _.overflow = t8;
+      _.textScaleFactor = t9;
+      _.maxLines = t10;
+      _.locale = t11;
+      _.strutStyle = t12;
+      _.textWidthBasis = t13;
+      _.textHeightBehavior = t14;
+      _.startHandleLayerLink = t15;
+      _.endHandleLayerLink = t16;
+      _.overflowWidget = t17;
+      _.textSelectionDelegate = t18;
+      _.hasFocus = t19;
+      _.children = t20;
+      _.key = t21;
     },
-    _ChipSlot: function _ChipSlot(t0, t1) {
+    ExtendedRichText__extractChildren_closure: function ExtendedRichText__extractChildren_closure(t0, t1) {
+      this._box_0 = t0;
+      this.result = t1;
+    },
+    ExtendedText$(data, maxLines, overflow, overflowWidget, softWrap, style) {
+      return new B.ExtendedText(overflowWidget, data, style, false, overflow, maxLines, null);
+    },
+    ExtendedText: function ExtendedText(t0, t1, t2, t3, t4, t5, t6) {
+      var _ = this;
+      _.overflowWidget = t0;
+      _.data = t1;
+      _.style = t2;
+      _.softWrap = t3;
+      _.overflow = t4;
+      _.maxLines = t5;
+      _.key = t6;
+    },
+    ExtendedTextSelectionState_userUpdateTextEditingValue_closure: function ExtendedTextSelectionState_userUpdateTextEditingValue_closure() {
+    },
+    TextOverflowWidget$(child, position) {
+      return new B.TextOverflowWidget(child, position, null);
+    },
+    TextOverflowAlign: function TextOverflowAlign(t0, t1) {
       this.index = t0;
       this._core$_name = t1;
     },
-    _ChipRenderTheme: function _ChipRenderTheme(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
-      var _ = this;
-      _.avatar = t0;
-      _.label = t1;
-      _.deleteIcon = t2;
-      _.brightness = t3;
-      _.padding = t4;
-      _.visualDensity = t5;
-      _.labelPadding = t6;
-      _.showAvatar = t7;
-      _.showCheckmark = t8;
-      _.checkmarkColor = t9;
-      _.canTapBody = t10;
+    TextOverflowPosition: function TextOverflowPosition(t0, t1) {
+      this.index = t0;
+      this._core$_name = t1;
     },
-    _RenderChip: function _RenderChip(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
-      var _ = this;
-      _.value = t0;
-      _.isEnabled = t1;
-      _.___RenderChip__pressRect_A = _.___RenderChip__deleteButtonRect_A = $;
-      _.checkmarkAnimation = t2;
-      _.avatarDrawerAnimation = t3;
-      _.deleteDrawerAnimation = t4;
-      _.enableAnimation = t5;
-      _.avatarBorder = t6;
-      _._chip$_theme = t7;
-      _._chip$_textDirection = t8;
-      _.SlottedContainerRenderObjectMixin__slotToChild = t9;
-      _._cachedDryLayoutSizes = _._cachedIntrinsicDimensions = null;
-      _._computingThisDryLayout = false;
-      _._cachedBaselines = _._box$_size = null;
-      _._debugActivePointers = 0;
-      _._object$_debugDisposed = false;
-      _.debugCreator = _.parentData = null;
-      _._debugDoingThisLayout = _._debugDoingThisResize = false;
-      _._debugCanParentUseSize = null;
-      _._debugMutationsLocked = false;
-      _._needsLayout = true;
-      _._relayoutBoundary = null;
-      _._doingThisLayoutWithCallback = false;
-      _._constraints = null;
-      _._debugDoingThisPaint = false;
-      _.__RenderObject__wasRepaintBoundary_A = $;
-      _._layerHandle = t10;
-      _._needsCompositingBitsUpdate = false;
-      _.__RenderObject__needsCompositing_A = $;
-      _._needsPaint = true;
-      _._needsCompositedLayerUpdate = false;
-      _._cachedSemanticsConfiguration = null;
-      _._needsSemanticsUpdate = true;
-      _._semantics = null;
-      _._depth = 0;
-      _._node$_parent = _._owner = null;
+    TextOverflowClearType: function TextOverflowClearType(t0, t1) {
+      this.index = t0;
+      this._core$_name = t1;
     },
-    _RenderChip_hitTest_closure: function _RenderChip_hitTest_closure(t0, t1) {
-      this.center = t0;
-      this.hitTestChild = t1;
-    },
-    _RenderChip_performLayout_centerLayout: function _RenderChip_performLayout_centerLayout(t0, t1) {
-      this.$this = t0;
-      this.sizes = t1;
-    },
-    _RenderChip__paintAvatar_paintWithOverlay: function _RenderChip__paintAvatar_paintWithOverlay(t0) {
-      this.$this = t0;
-    },
-    _RenderChip__paintChild_closure: function _RenderChip__paintChild_closure(t0) {
+    TextOverflowWidget: function TextOverflowWidget(t0, t1, t2) {
       this.child = t0;
-    },
-    _ChipSizes: function _ChipSizes(t0, t1, t2, t3, t4, t5, t6) {
-      var _ = this;
-      _.size = t0;
-      _.overall = t1;
-      _.content = t2;
-      _.avatar = t3;
-      _.label = t4;
-      _.deleteIcon = t5;
-      _.densityAdjustment = t6;
-    },
-    _UnconstrainedInkSplashFactory: function _UnconstrainedInkSplashFactory(t0) {
-      this.parentFactory = t0;
-    },
-    __ChipRenderWidget_RenderObjectWidget_SlottedMultiChildRenderObjectWidgetMixin: function __ChipRenderWidget_RenderObjectWidget_SlottedMultiChildRenderObjectWidgetMixin() {
-    },
-    __RawChipState_State_MaterialStateMixin: function __RawChipState_State_MaterialStateMixin() {
-    },
-    __RawChipState_State_MaterialStateMixin_TickerProviderStateMixin: function __RawChipState_State_MaterialStateMixin_TickerProviderStateMixin() {
-    },
-    __RenderChip_RenderBox_SlottedContainerRenderObjectMixin: function __RenderChip_RenderBox_SlottedContainerRenderObjectMixin() {
-    },
-    AnimatedSwitcher$(child, duration, switchInCurve) {
-      return new B.AnimatedSwitcher(child, duration, switchInCurve, null);
-    },
-    AnimatedSwitcher_defaultTransitionBuilder(child, animation) {
-      return new A.FadeTransition(animation, false, child, new A.ValueKey(child.key, type$.ValueKey_nullable_Key));
-    },
-    AnimatedSwitcher_defaultLayoutBuilder(currentChild, previousChildren) {
-      var t1 = A.List_List$of(previousChildren, true, type$.Widget);
-      if (currentChild != null)
-        t1.push(currentChild);
-      return new A.Stack(C.Alignment_0_0, null, C.StackFit_0, C.Clip_1, t1, null);
-    },
-    _ChildEntry: function _ChildEntry(t0, t1, t2, t3) {
-      var _ = this;
-      _.controller = t0;
-      _.animation = t1;
-      _.transition = t2;
-      _.widgetChild = t3;
-    },
-    AnimatedSwitcher: function AnimatedSwitcher(t0, t1, t2, t3) {
-      var _ = this;
-      _.child = t0;
-      _.duration = t1;
-      _.switchInCurve = t2;
-      _.key = t3;
-    },
-    _AnimatedSwitcherState: function _AnimatedSwitcherState(t0, t1, t2, t3, t4) {
-      var _ = this;
-      _._currentEntry = null;
-      _._outgoingEntries = t0;
-      _._outgoingWidgets = t1;
-      _._childNumber = 0;
-      _.TickerProviderStateMixin__tickers = t2;
-      _.TickerProviderStateMixin__tickerModeNotifier = t3;
-      _._widget = null;
-      _._debugLifecycleState = t4;
-      _._framework$_element = null;
-    },
-    _AnimatedSwitcherState__newEntry_closure: function _AnimatedSwitcherState__newEntry_closure(t0, t1, t2) {
-      this.$this = t0;
-      this.entry = t1;
-      this.controller = t2;
-    },
-    _AnimatedSwitcherState__newEntry__closure: function _AnimatedSwitcherState__newEntry__closure(t0, t1) {
-      this.$this = t0;
-      this.entry = t1;
-    },
-    _AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure: function _AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure() {
-    },
-    _AnimatedSwitcherState_build_closure: function _AnimatedSwitcherState_build_closure(t0) {
-      this.$this = t0;
-    },
-    __AnimatedSwitcherState_State_TickerProviderStateMixin: function __AnimatedSwitcherState_State_TickerProviderStateMixin() {
-    },
-    SizeChangedLayoutNotification: function SizeChangedLayoutNotification() {
-    },
-    SizeChangedLayoutNotifier: function SizeChangedLayoutNotifier(t0, t1) {
-      this.child = t0;
-      this.key = t1;
-    },
-    SizeChangedLayoutNotifier_createRenderObject_closure: function SizeChangedLayoutNotifier_createRenderObject_closure(t0) {
-      this.context = t0;
-    },
-    _RenderSizeChangedWithCallback: function _RenderSizeChangedWithCallback(t0, t1, t2) {
-      var _ = this;
-      _.onLayoutChangedCallback = t0;
-      _._oldSize = null;
-      _.RenderObjectWithChildMixin__child = t1;
-      _._cachedDryLayoutSizes = _._cachedIntrinsicDimensions = null;
-      _._computingThisDryLayout = false;
-      _._cachedBaselines = _._box$_size = null;
-      _._debugActivePointers = 0;
-      _._object$_debugDisposed = false;
-      _.debugCreator = _.parentData = null;
-      _._debugDoingThisLayout = _._debugDoingThisResize = false;
-      _._debugCanParentUseSize = null;
-      _._debugMutationsLocked = false;
-      _._needsLayout = true;
-      _._relayoutBoundary = null;
-      _._doingThisLayoutWithCallback = false;
-      _._constraints = null;
-      _._debugDoingThisPaint = false;
-      _.__RenderObject__wasRepaintBoundary_A = $;
-      _._layerHandle = t2;
-      _._needsCompositingBitsUpdate = false;
-      _.__RenderObject__needsCompositing_A = $;
-      _._needsPaint = true;
-      _._needsCompositedLayerUpdate = false;
-      _._cachedSemanticsConfiguration = null;
-      _._needsSemanticsUpdate = true;
-      _._semantics = null;
-      _._depth = 0;
-      _._node$_parent = _._owner = null;
-    },
-    SuggestionsBoxController: function SuggestionsBoxController(t0) {
-      this.context = t0;
-      this.overlayEntry = null;
-      this._isOpened = false;
-    },
-    TagEditor$(autoDisposeFocusNode, autofocus, backgroundColor, borderRadius, controller, cursorColor, debounceDuration, enableBorderColor, findSuggestions, focusNode, focusedBorderColor, hasAddButton, inputDecoration, key, keyboardType, $length, minTextFieldWidth, onDeleteTagAction, onFocusTagAction, onSelectOptionAction, onSubmitted, onTagChanged, padding, resetTextOnSubmitted, suggestionBuilder, suggestionMargin, suggestionPadding, suggestionsBoxBackgroundColor, suggestionsBoxElevation, suggestionsBoxMaxHeight, suggestionsBoxRadius, tagBuilder, tagSpacing, textInputAction, textStyle, useDefaultHighlight, $T) {
-      return new B.TagEditor($length, minTextFieldWidth, tagSpacing, tagBuilder, false, onTagChanged, true, onSubmitted, focusNode, onDeleteTagAction, onFocusTagAction, controller, textStyle, inputDecoration, keyboardType, textInputAction, autofocus, cursorColor, backgroundColor, focusedBorderColor, enableBorderColor, borderRadius, padding, autoDisposeFocusNode, suggestionsBoxMaxHeight, suggestionsBoxElevation, suggestionBuilder, findSuggestions, onSelectOptionAction, suggestionsBoxBackgroundColor, suggestionsBoxRadius, debounceDuration, suggestionMargin, suggestionPadding, useDefaultHighlight, key, $T._eval$1("TagEditor<0>"));
-    },
-    TagEditor: function TagEditor(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36) {
-      var _ = this;
-      _.length = t0;
-      _.minTextFieldWidth = t1;
-      _.tagSpacing = t2;
-      _.tagBuilder = t3;
-      _.hasAddButton = t4;
-      _.onTagChanged = t5;
-      _.resetTextOnSubmitted = t6;
-      _.onSubmitted = t7;
-      _.focusNode = t8;
-      _.onDeleteTagAction = t9;
-      _.onFocusTagAction = t10;
-      _.controller = t11;
-      _.textStyle = t12;
-      _.inputDecoration = t13;
-      _.keyboardType = t14;
-      _.textInputAction = t15;
-      _.autofocus = t16;
-      _.cursorColor = t17;
-      _.backgroundColor = t18;
-      _.focusedBorderColor = t19;
-      _.enableBorderColor = t20;
-      _.borderRadius = t21;
-      _.padding = t22;
-      _.autoDisposeFocusNode = t23;
-      _.suggestionsBoxMaxHeight = t24;
-      _.suggestionsBoxElevation = t25;
-      _.suggestionBuilder = t26;
-      _.findSuggestions = t27;
-      _.onSelectOptionAction = t28;
-      _.suggestionsBoxBackgroundColor = t29;
-      _.suggestionsBoxRadius = t30;
-      _.debounceDuration = t31;
-      _.suggestionMargin = t32;
-      _.suggestionPadding = t33;
-      _.useDefaultHighlight = t34;
-      _.key = t35;
-      _.$ti = t36;
-    },
-    TagsEditorState: function TagsEditorState(t0, t1, t2, t3, t4) {
-      var _ = this;
-      _.__TagsEditorState__textFieldController_A = $;
-      _._previousText = "";
-      _._tag_editor$_isFocused = false;
-      _.__TagsEditorState__focusNodeKeyboard_A = _.__TagsEditorState__focusNode_A = $;
-      _._suggestionsBoxController = _._suggestionsStreamController = null;
-      _._tag_editor$_layerLink = t0;
-      _._suggestions = null;
-      _._countBackspacePressed = _._searchId = 0;
-      _._deBouncer = null;
-      _._highlightedOptionIndex = t1;
-      _._validationSuggestionItemNotifier = t2;
-      _._widget = null;
-      _._debugLifecycleState = t3;
-      _._framework$_element = null;
-      _.$ti = t4;
-    },
-    TagsEditorState__initializeSuggestionBox_closure: function TagsEditorState__initializeSuggestionBox_closure(t0) {
-      this.$this = t0;
-    },
-    TagsEditorState__onFocusChanged_closure: function TagsEditorState__onFocusChanged_closure(t0) {
-      this.$this = t0;
-    },
-    TagsEditorState__createOverlayEntry_closure: function TagsEditorState__createOverlayEntry_closure(t0) {
-      this.$this = t0;
-    },
-    TagsEditorState__createOverlayEntry__closure: function TagsEditorState__createOverlayEntry__closure(t0, t1, t2, t3, t4) {
-      var _ = this;
-      _._box_0 = t0;
-      _.$this = t1;
-      _.size = t2;
-      _.compositedTransformFollowerOffset = t3;
-      _.showTop = t4;
-    },
-    TagsEditorState__createOverlayEntry___closure: function TagsEditorState__createOverlayEntry___closure(t0, t1) {
-      this.$this = t0;
-      this.snapshot = t1;
-    },
-    TagsEditorState__onSearchChanged_closure: function TagsEditorState__onSearchChanged_closure(t0, t1) {
-      this.$this = t0;
-      this.results = t1;
-    },
-    TagsEditorState__scrollToVisible_closure: function TagsEditorState__scrollToVisible_closure(t0) {
-      this.$this = t0;
-    },
-    TagsEditorState__scrollToVisible__closure: function TagsEditorState__scrollToVisible__closure(t0) {
-      this.$this = t0;
-    },
-    TagsEditorState_build_closure: function TagsEditorState_build_closure(t0) {
-      this.$this = t0;
-    },
-    TagsEditorState_build_closure0: function TagsEditorState_build_closure0(t0) {
-      this.$this = t0;
-    },
-    TagsEditorState_build__closure: function TagsEditorState_build__closure(t0) {
-      this.$this = t0;
-    },
-    TagEditorLayoutDelegate__isOverflow(childWidth, parentWidth, spacing, tagSizes) {
-      return childWidth + C.JSArray_methods.fold$2(tagSizes, 0, new B.TagEditorLayoutDelegate__isOverflow_closure()) + spacing * Math.max(tagSizes.length - 1, 0) > parentWidth;
-    },
-    TagEditorLayoutDelegate: function TagEditorLayoutDelegate(t0, t1, t2, t3) {
-      var _ = this;
-      _.length = t0;
-      _.minTextFieldWidth = t1;
-      _.spacing = t2;
-      _.parentSize = t3;
-      _._debugChildrenNeedingLayout = _._idToChild = null;
-    },
-    TagEditorLayoutDelegate__isOverflow_closure: function TagEditorLayoutDelegate__isOverflow_closure() {
-    },
-    TagEditorLayoutDelegate_performLayout_closure: function TagEditorLayoutDelegate_performLayout_closure() {
-    },
-    TagLayout: function TagLayout(t0, t1, t2) {
-      this.delegate = t0;
-      this.children = t1;
+      this.position = t1;
       this.key = t2;
     },
-    TagRenderLayoutBox: function TagRenderLayoutBox(t0, t1, t2, t3, t4) {
+    BackgroundTextSpan$(actualText, background, clipBorderRadius, deleteAll, paintBackground, recognizer, semanticsLabel, start, style, text) {
+      var t3, _null = null,
+        t1 = actualText == null,
+        t2 = t1 ? text : actualText;
+      t1 = t1 ? text : actualText;
+      t3 = recognizer == null ? C.C__DeferringMouseCursor : C.SystemMouseCursor_click;
+      return new B.BackgroundTextSpan(background, clipBorderRadius, paintBackground, new B.TextPainterHelper(), t2, deleteAll, new A.TextRange(start, start + t1.length), text, _null, recognizer, t3, _null, _null, semanticsLabel, _null, _null, style);
+    },
+    BackgroundTextSpan: function BackgroundTextSpan(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) {
       var _ = this;
-      _._custom_layout$_delegate = t0;
-      _.ContainerRenderObjectMixin__childCount = t1;
-      _.ContainerRenderObjectMixin__firstChild = t2;
-      _.ContainerRenderObjectMixin__lastChild = t3;
-      _._cachedDryLayoutSizes = _._cachedIntrinsicDimensions = null;
-      _._computingThisDryLayout = false;
-      _._cachedBaselines = _._box$_size = null;
-      _._debugActivePointers = 0;
-      _._object$_debugDisposed = false;
-      _.debugCreator = _.parentData = null;
-      _._debugDoingThisLayout = _._debugDoingThisResize = false;
-      _._debugCanParentUseSize = null;
-      _._debugMutationsLocked = false;
-      _._needsLayout = true;
-      _._relayoutBoundary = null;
-      _._doingThisLayoutWithCallback = false;
-      _._constraints = null;
-      _._debugDoingThisPaint = false;
-      _.__RenderObject__wasRepaintBoundary_A = $;
-      _._layerHandle = t4;
-      _._needsCompositingBitsUpdate = false;
-      _.__RenderObject__needsCompositing_A = $;
-      _._needsPaint = true;
-      _._needsCompositedLayerUpdate = false;
-      _._cachedSemanticsConfiguration = null;
-      _._needsSemanticsUpdate = true;
-      _._semantics = null;
-      _._depth = 0;
-      _._node$_parent = _._owner = null;
+      _.background = t0;
+      _.clipBorderRadius = t1;
+      _.paintBackground = t2;
+      _._textPainterHelper = t3;
+      _.actualText = t4;
+      _.deleteAll = t5;
+      _.textRange = t6;
+      _.text = t7;
+      _.children = t8;
+      _.recognizer = t9;
+      _.mouseCursor = t10;
+      _.onEnter = t11;
+      _.onExit = t12;
+      _.semanticsLabel = t13;
+      _.locale = t14;
+      _.spellOut = t15;
+      _.style = t16;
     },
-    ValidationSuggestionItem: function ValidationSuggestionItem(t0, t1, t2) {
-      this.notifier = t0;
-      this.child = t1;
+    convertTextInputPostionToTextPainterPostion(text, textPosition) {
+      var t1 = {},
+        caretOffset = textPosition.offset;
+      t1.caretOffset = caretOffset;
+      t1.textOffset = 0;
+      text.visitChildren$1(new B.convertTextInputPostionToTextPainterPostion_closure(t1, textPosition));
+      t1 = t1.caretOffset;
+      if (t1 !== caretOffset)
+        return new A.TextPosition(Math.max(0, t1), textPosition.affinity);
+      return textPosition;
+    },
+    convertTextInputSelectionToTextPainterSelection(text, selection) {
+      var extent, t1, base;
+      if (selection.get$isValid())
+        if (selection.start === selection.end) {
+          extent = B.convertTextInputPostionToTextPainterPostion(text, selection.get$extent());
+          if (!selection.get$extent().$eq(0, extent)) {
+            t1 = extent.offset;
+            return selection.copyWith$4$affinity$baseOffset$extentOffset$isDirectional(selection.affinity, t1, t1, selection.isDirectional);
+          }
+        } else {
+          extent = B.convertTextInputPostionToTextPainterPostion(text, selection.get$extent());
+          base = B.convertTextInputPostionToTextPainterPostion(text, selection.get$base());
+          if (!selection.get$extent().$eq(0, extent) || !selection.get$base().$eq(0, base))
+            return selection.copyWith$4$affinity$baseOffset$extentOffset$isDirectional(selection.affinity, base.offset, extent.offset, selection.isDirectional);
+        }
+      return selection;
+    },
+    convertTextPainterPostionToTextInputPostion(text, textPosition, end) {
+      var caretOffset, t1 = {};
+      if (textPosition != null) {
+        caretOffset = t1.caretOffset = textPosition.offset;
+        if (caretOffset <= 0)
+          return textPosition;
+        t1.textOffset = 0;
+        text.visitChildren$1(new B.convertTextPainterPostionToTextInputPostion_closure(t1, end, textPosition));
+        t1 = t1.caretOffset;
+        if (t1 !== caretOffset)
+          return new A.TextPosition(t1, textPosition.affinity);
+      }
+      return textPosition;
+    },
+    convertTextPainterSelectionToTextInputSelection(text, selection, selectWord) {
+      var extent, t1, base;
+      if (selection.get$isValid())
+        if (selection.start === selection.end) {
+          extent = B.convertTextPainterPostionToTextInputPostion(text, selection.get$extent(), null);
+          if (!selection.get$extent().$eq(0, extent)) {
+            t1 = extent.offset;
+            return selection.copyWith$4$affinity$baseOffset$extentOffset$isDirectional(selection.affinity, t1, t1, selection.isDirectional);
+          }
+        } else {
+          t1 = selection.get$extent();
+          extent = B.convertTextPainterPostionToTextInputPostion(text, t1, selectWord ? true : null);
+          t1 = selection.get$base();
+          base = B.convertTextPainterPostionToTextInputPostion(text, t1, selectWord ? false : null);
+          if (!selection.get$extent().$eq(0, extent) || !selection.get$base().$eq(0, base))
+            return selection.copyWith$4$affinity$baseOffset$extentOffset$isDirectional(selection.affinity, base.offset, extent.offset, selection.isDirectional);
+        }
+      return selection;
+    },
+    textSpanToActualText(textSpan) {
+      var t1,
+        buffer = new A.StringBuffer("");
+      textSpan.visitChildren$1(new B.textSpanToActualText_closure(buffer));
+      t1 = buffer._contents;
+      return t1.charCodeAt(0) == 0 ? t1 : t1;
+    },
+    getInlineOffset(inlineSpan) {
+      if (inlineSpan instanceof A.TextSpan && inlineSpan.text != null)
+        return inlineSpan.text.length;
+      if (inlineSpan instanceof A.PlaceholderSpan0)
+        return 1;
+      return 0;
+    },
+    convertTextInputPostionToTextPainterPostion_closure: function convertTextInputPostionToTextPainterPostion_closure(t0, t1) {
+      this._box_0 = t0;
+      this.textPosition = t1;
+    },
+    convertTextPainterPostionToTextInputPostion_closure: function convertTextPainterPostionToTextInputPostion_closure(t0, t1, t2) {
+      this._box_0 = t0;
+      this.end = t1;
+      this.textPosition = t2;
+    },
+    textSpanToActualText_closure: function textSpanToActualText_closure(t0) {
+      this.buffer = t0;
+    },
+    ExtendedWidgetSpan$(actualText, alignment, baseline, child, hide, start, style) {
+      var t3,
+        t1 = actualText == null,
+        t2 = t1 ? "\ufffc" : actualText;
+      t1 = t1 ? "\ufffc" : actualText;
+      t3 = new B.WidgetSpanSize();
+      t3.size = C.Size_0_0;
+      return new B.ExtendedWidgetSpan(t2, new A.TextRange(start, start + t1.length), t3, child, alignment, baseline, style);
+    },
+    ExtendedWidgetSpan: function ExtendedWidgetSpan(t0, t1, t2, t3, t4, t5, t6) {
+      var _ = this;
+      _.actualText = t0;
+      _.textRange = t1;
+      _.widgetSpanSize = t2;
+      _.child = t3;
+      _.alignment = t4;
+      _.baseline = t5;
+      _.style = t6;
+    },
+    WidgetSpanSize: function WidgetSpanSize() {
+      this.size = null;
+    },
+    _ExtendedWidgetSpan_WidgetSpan_SpecialInlineSpanBase: function _ExtendedWidgetSpan_WidgetSpan_SpecialInlineSpanBase() {
+    },
+    ExtendedTextRenderBox: function ExtendedTextRenderBox() {
+    },
+    ExtendedTextRenderBox_extractPlaceholderSpans_closure: function ExtendedTextRenderBox_extractPlaceholderSpans_closure(t0) {
+      this.$this = t0;
+    },
+    ExtendedTextRenderBox_hitTestChild_closure: function ExtendedTextRenderBox_hitTestChild_closure(t0, t1, t2, t3) {
+      var _ = this;
+      _.$this = t0;
+      _.position = t1;
+      _.textParentData = t2;
+      _.child = t3;
+    },
+    ExtendedTextRenderBox_paintWidgets_closure: function ExtendedTextRenderBox_paintWidgets_closure(t0) {
+      this._box_0 = t0;
+    },
+    _ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin: function _ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin() {
+    },
+    _ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin: function _ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin() {
+    },
+    _ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin: function _ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin() {
+    },
+    ExtendedTextSelectionRenderObject: function ExtendedTextSelectionRenderObject() {
+    },
+    ExtendedTextSelectionRenderObject__getWordAtOffset_closure: function ExtendedTextSelectionRenderObject__getWordAtOffset_closure(t0, t1) {
+      this.$this = t0;
+      this.position = t1;
+    },
+    ExtendedTextSelectionRenderObject_getRectForComposingRange_closure: function ExtendedTextSelectionRenderObject_getRectForComposingRange_closure() {
+    },
+    _SelectionHandleOverlay$0(dragStartBehavior, handleLayerLink, onSelectionHandleDragEnd, onSelectionHandleDragStart, onSelectionHandleDragUpdate, onSelectionHandleTapped, preferredLineHeight, selectionControls, type, visibility) {
+      return new B._SelectionHandleOverlay0(handleLayerLink, onSelectionHandleTapped, onSelectionHandleDragStart, onSelectionHandleDragUpdate, onSelectionHandleDragEnd, selectionControls, visibility, preferredLineHeight, type, dragStartBehavior, null);
+    },
+    ExtendedTextSelectionOverlay: function ExtendedTextSelectionOverlay(t0, t1, t2, t3, t4, t5, t6) {
+      var _ = this;
+      _.renderObject = t0;
+      _.selectionControls = t1;
+      _.selectionDelegate = t2;
+      _.__ExtendedTextSelectionOverlay__selectionOverlay_F = $;
+      _._extended_text_selection_overlay$_value = t3;
+      _._extended_text_selection_overlay$_effectiveStartHandleVisibility = t4;
+      _._extended_text_selection_overlay$_effectiveEndHandleVisibility = t5;
+      _._extended_text_selection_overlay$_effectiveToolbarVisibility = t6;
+      _._extended_text_selection_overlay$_handlesVisible = false;
+      _.__ExtendedTextSelectionOverlay__dragStartPosition_A = _.__ExtendedTextSelectionOverlay__dragEndPosition_A = $;
+    },
+    SelectionOverlay0: function SelectionOverlay0(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) {
+      var _ = this;
+      _.context = t0;
+      _._extended_text_selection_overlay$_startHandleType = t1;
+      _._extended_text_selection_overlay$_lineHeightAtStart = t2;
+      _.startHandlesVisible = t3;
+      _.onStartHandleDragStart = t4;
+      _.onStartHandleDragUpdate = t5;
+      _._extended_text_selection_overlay$_endHandleType = t6;
+      _._extended_text_selection_overlay$_lineHeightAtEnd = t7;
+      _.endHandlesVisible = t8;
+      _.onEndHandleDragStart = t9;
+      _.onEndHandleDragUpdate = t10;
+      _.toolbarVisible = t11;
+      _._selectionEndPoints = t12;
+      _.debugRequiredFor = t13;
+      _.toolbarLayerLink = t14;
+      _.startHandleLayerLink = t15;
+      _.endHandleLayerLink = t16;
+      _.selectionControls = t17;
+      _.selectionDelegate = t18;
+      _.dragStartBehavior = t19;
+      _.onSelectionHandleTapped = t20;
+      _.clipboardStatus = t21;
+      _._extended_text_selection_overlay$_toolbarLocation = t22;
+      _._extended_text_selection_overlay$_toolbar = _._extended_text_selection_overlay$_handles = null;
+      _._extended_text_selection_overlay$_buildScheduled = false;
+    },
+    SelectionOverlay__markNeedsBuild_closure: function SelectionOverlay__markNeedsBuild_closure(t0) {
+      this.$this = t0;
+    },
+    _SelectionHandleOverlay0: function _SelectionHandleOverlay0(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
+      var _ = this;
+      _.handleLayerLink = t0;
+      _.onSelectionHandleTapped = t1;
+      _.onSelectionHandleDragStart = t2;
+      _.onSelectionHandleDragUpdate = t3;
+      _.onSelectionHandleDragEnd = t4;
+      _.selectionControls = t5;
+      _.visibility = t6;
+      _.preferredLineHeight = t7;
+      _.type = t8;
+      _.dragStartBehavior = t9;
+      _.key = t10;
+    },
+    _SelectionHandleOverlayState0: function _SelectionHandleOverlayState0(t0, t1, t2) {
+      var _ = this;
+      _._extended_text_selection_overlay$___SelectionHandleOverlayState__controller_A = $;
+      _.SingleTickerProviderStateMixin__ticker = t0;
+      _.SingleTickerProviderStateMixin__tickerModeNotifier = t1;
+      _._widget = null;
+      _._debugLifecycleState = t2;
+      _._framework$_element = null;
+    },
+    __SelectionHandleOverlayState_State_SingleTickerProviderStateMixin0: function __SelectionHandleOverlayState_State_SingleTickerProviderStateMixin0() {
+    },
+    SpecialInlineSpanBase: function SpecialInlineSpanBase() {
+    },
+    SpecialTextSpan$(actualText, children, deleteAll, recognizer, semanticsLabel, start, style, text) {
+      var t3, _null = null,
+        t1 = actualText == null,
+        t2 = t1 ? text : actualText;
+      t1 = t1 ? text : actualText;
+      t3 = recognizer == null ? C.C__DeferringMouseCursor : C.SystemMouseCursor_click;
+      return new B.SpecialTextSpan(t2, deleteAll, new A.TextRange(start, start + t1.length), text, children, recognizer, t3, _null, _null, semanticsLabel, _null, _null, style);
+    },
+    SpecialTextSpan: function SpecialTextSpan(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) {
+      var _ = this;
+      _.actualText = t0;
+      _.deleteAll = t1;
+      _.textRange = t2;
+      _.text = t3;
+      _.children = t4;
+      _.recognizer = t5;
+      _.mouseCursor = t6;
+      _.onEnter = t7;
+      _.onExit = t8;
+      _.semanticsLabel = t9;
+      _.locale = t10;
+      _.spellOut = t11;
+      _.style = t12;
+    },
+    _SpecialTextSpan_TextSpan_SpecialInlineSpanBase: function _SpecialTextSpan_TextSpan_SpecialInlineSpanBase() {
+    },
+    TextPainterHelper: function TextPainterHelper() {
+      this._text_painter_helper$_painter = null;
+    },
+    CircleAvatar: function CircleAvatar(t0, t1, t2) {
+      this.child = t0;
+      this.backgroundColor = t1;
       this.key = t2;
-    }
-  },
-  D, C, A, J;
-  B = hunkHelpers.updateHolder(holdersList[10], B);
-  D = holdersList[15];
-  C = holdersList[2];
-  A = holdersList[0];
-  J = holdersList[1];
-  B.Chip.prototype = {
-    build$1(context) {
-      var _this = this, _null = null,
-        t1 = _this.deleteIcon;
+    },
+    DecorationImagePainter: function DecorationImagePainter(t0, t1) {
+      var _ = this;
+      _._details = t0;
+      _._onChanged = t1;
+      _._decoration_image$_image = _._imageStream = null;
+    },
+    RichTextWidget$(styleTextOrigin, styleWordSearched, textOrigin, wordSearched) {
+      return new B.RichTextWidget(textOrigin, wordSearched, styleTextOrigin, styleWordSearched, null);
+    },
+    RichTextWidget: function RichTextWidget(t0, t1, t2, t3, t4) {
+      var _ = this;
+      _.textOrigin = t0;
+      _.wordSearched = t1;
+      _.styleTextOrigin = t2;
+      _.styleWordSearched = t3;
+      _.key = t4;
+    },
+    CustomScrollBehavior: function CustomScrollBehavior(t0) {
+      this._androidOverscrollIndicator = t0;
+    },
+    BaseComposerView: function BaseComposerView() {
+    },
+    BaseComposerView_buildFromEmailAddress_closure: function BaseComposerView_buildFromEmailAddress_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildEmailAddress_closure: function BaseComposerView_buildEmailAddress_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildEmailAddress_closure0: function BaseComposerView_buildEmailAddress_closure0(t0) {
+      this.$this = t0;
+    },
+    BaseComposerView_buildEmailAddress_closure1: function BaseComposerView_buildEmailAddress_closure1(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildEmailAddress_closure2: function BaseComposerView_buildEmailAddress_closure2(t0) {
+      this.$this = t0;
+    },
+    BaseComposerView_buildEmailAddress_closure3: function BaseComposerView_buildEmailAddress_closure3(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildAttachmentsWidget_closure: function BaseComposerView_buildAttachmentsWidget_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView__buildAttachmentsList_closure: function BaseComposerView__buildAttachmentsList_closure(t0, t1) {
+      this.$this = t0;
+      this.uploadFilesState = t1;
+    },
+    BaseComposerView__buildAttachmentsList__closure: function BaseComposerView__buildAttachmentsList__closure(t0, t1, t2) {
+      this.$this = t0;
+      this.uploadFilesState = t1;
+      this.constraints = t2;
+    },
+    BaseComposerView__buildAttachmentsList___closure: function BaseComposerView__buildAttachmentsList___closure(t0) {
+      this.$this = t0;
+    },
+    BaseComposerView_buildAppBar_closure: function BaseComposerView_buildAppBar_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildAppBar_closure0: function BaseComposerView_buildAppBar_closure0(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildAppBar__closure: function BaseComposerView_buildAppBar__closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildTitleComposer_closure: function BaseComposerView_buildTitleComposer_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildBottomBar_closure: function BaseComposerView_buildBottomBar_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildBottomBar_closure0: function BaseComposerView_buildBottomBar_closure0(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    BaseComposerView_buildBottomBar_closure1: function BaseComposerView_buildBottomBar_closure1(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    _BaseComposerView_GetWidget_AppLoaderMixin: function _BaseComposerView_GetWidget_AppLoaderMixin() {
+    },
+    _BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin: function _BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin() {
+    },
+    _BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin_ComposerLoadingMixin: function _BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin_ComposerLoadingMixin() {
+    },
+    ComposerLoadingMixin: function ComposerLoadingMixin() {
+    },
+    ComposerLoadingMixin_buildInlineLoadingView_closure: function ComposerLoadingMixin_buildInlineLoadingView_closure(t0, t1) {
+      this.$this = t0;
+      this.controller = t1;
+    },
+    ComposerLoadingMixin_buildInlineLoadingView__closure: function ComposerLoadingMixin_buildInlineLoadingView__closure(t0, t1) {
+      this.$this = t0;
+      this.controller = t1;
+    },
+    ComposerLoadingMixin_buildInlineLoadingView___closure1: function ComposerLoadingMixin_buildInlineLoadingView___closure1() {
+    },
+    ComposerLoadingMixin_buildInlineLoadingView___closure2: function ComposerLoadingMixin_buildInlineLoadingView___closure2(t0) {
+      this.$this = t0;
+    },
+    ComposerLoadingMixin_buildInlineLoadingView__closure0: function ComposerLoadingMixin_buildInlineLoadingView__closure0(t0, t1) {
+      this.$this = t0;
+      this.controller = t1;
+    },
+    ComposerLoadingMixin_buildInlineLoadingView___closure: function ComposerLoadingMixin_buildInlineLoadingView___closure() {
+    },
+    ComposerLoadingMixin_buildInlineLoadingView___closure0: function ComposerLoadingMixin_buildInlineLoadingView___closure0(t0) {
+      this.$this = t0;
+    },
+    AttachmentFileComposerBuilder$(fileState, itemMargin, maxWidth, onDeleteAttachmentAction) {
+      var t1;
+      $.$get$Get();
+      t1 = $.GetInstance__getInstance;
       if (t1 == null)
-        t1 = D.Icon_25o;
-      return new B.RawChip(_this.avatar, _this.label, _this.labelStyle, _this.labelPadding, t1, _this.onDeleted, _null, _null, _null, _this.shape, C.Clip_0, _null, false, _this.backgroundColor, _this.padding, _null, _this.materialTapTargetSize, _null, _null, _null, true, false, _null);
-    }
-  };
-  B.RawChip.prototype = {
-    createState$0() {
-      return new B._RawChipState(null, null, A.LinkedHashSet_LinkedHashSet$_empty(type$.MaterialState), C._StateLifecycle_0);
-    }
-  };
-  B._RawChipState.prototype = {
-    get$canTap() {
-      this._widget.toString;
-      return false;
+        t1 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B.AttachmentFileComposerBuilder(t1.find$1$1$tag(0, null, type$.ImagePaths), fileState, maxWidth, itemMargin, onDeleteAttachmentAction, null);
     },
-    initState$0() {
-      var t1, _this = this, _null = null;
-      _this.super$State$initState();
-      _this._widget.toString;
-      _this.removeMaterialState$1(C.MaterialState_6);
-      _this._widget.toString;
-      _this.removeMaterialState$1(C.MaterialState_4);
-      _this._widget.toString;
-      t1 = A.AnimationController$(C.AnimationBehavior_0, _null, D.Duration_195000, 0, _null, 1, 0, _this);
-      _this.___RawChipState_selectController_A = t1;
-      _this.___RawChipState_selectionFade_A = A.CurvedAnimation$(C.Cubic_ifx, t1, _null);
-      _this.___RawChipState_avatarDrawerController_A = A.AnimationController$(C.AnimationBehavior_0, _null, C.Duration_150000, 0, _null, 1, _this._widget.avatar != null || false ? 1 : 0, _this);
-      _this.___RawChipState_deleteDrawerController_A = A.AnimationController$(C.AnimationBehavior_0, _null, C.Duration_150000, 0, _null, 1, _this._widget.onDeleted != null ? 1 : 0, _this);
-      _this._widget.toString;
-      _this.___RawChipState_enableController_A = A.AnimationController$(C.AnimationBehavior_0, _null, C.Duration_75000, 0, _null, 1, 1, _this);
-      _this.___RawChipState_checkmarkAnimation_A = A.CurvedAnimation$(new A.Interval(0.23076923076923073, 1, C.Cubic_ifx), _this.___RawChipState_selectController_A, new A.Interval(0.7435897435897436, 1, C.Cubic_ifx));
-      _this.___RawChipState_deleteDrawerAnimation_A = A.CurvedAnimation$(C.Cubic_ifx, _this.___RawChipState_deleteDrawerController_A, _null);
-      _this.___RawChipState_avatarDrawerAnimation_A = A.CurvedAnimation$(C.Cubic_ifx, _this.___RawChipState_avatarDrawerController_A, new A.Interval(0.4871794871794872, 1, C.Cubic_ifx));
-      _this.___RawChipState_enableAnimation_A = A.CurvedAnimation$(C.Cubic_ifx, _this.___RawChipState_enableController_A, _null);
+    AttachmentFileComposerBuilder: function AttachmentFileComposerBuilder(t0, t1, t2, t3, t4, t5) {
+      var _ = this;
+      _._attachment_file_composer_builder$_imagePaths = t0;
+      _.fileState = t1;
+      _.maxWidth = t2;
+      _.itemMargin = t3;
+      _.onDeleteAttachmentAction = t4;
+      _.key = t5;
     },
-    dispose$0() {
-      var _this = this,
-        t1 = _this.___RawChipState_selectController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.___RawChipState_avatarDrawerController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.___RawChipState_deleteDrawerController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.___RawChipState_enableController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      _this.super$__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin$dispose();
+    AttachmentFileComposerBuilder_build_closure: function AttachmentFileComposerBuilder_build_closure() {
     },
-    _chip$_handleTapDown$1(details) {
-      var _this = this;
-      if (!_this.get$canTap())
-        return;
-      _this.addMaterialState$1(C.MaterialState_2);
-      _this.setState$1(new B._RawChipState__handleTapDown_closure(_this));
+    AttachmentFileComposerBuilder_build_closure0: function AttachmentFileComposerBuilder_build_closure0(t0) {
+      this.$this = t0;
     },
-    _chip$_handleTapCancel$0() {
-      var _this = this;
-      if (!_this.get$canTap())
-        return;
-      _this.removeMaterialState$1(C.MaterialState_2);
-      _this.setState$1(new B._RawChipState__handleTapCancel_closure(_this));
+    _AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin: function _AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin() {
     },
-    _chip$_handleTap$0() {
-      var _this = this;
-      if (!_this.get$canTap())
-        return;
-      _this.removeMaterialState$1(C.MaterialState_2);
-      _this.setState$1(new B._RawChipState__handleTap_closure(_this));
-      _this._widget.toString;
+    EmailAddressInputBuilder: function EmailAddressInputBuilder(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
+      var _ = this;
+      _._email_address_input_builder$_context = t0;
+      _._email_address_input_builder$_imagePaths = t1;
+      _._email_address_input_builder$_responsiveUtils = t2;
+      _.expandMode = t3;
+      _._prefixEmailAddress = t4;
+      _._listEmailAddressType = t5;
+      _.controller = t6;
+      _.focusNode = t7;
+      _.autoDisposeFocusNode = t8;
+      _.keyTagEditor = t9;
+      _.nextFocusNode = t10;
+      _.listEmailAddress = t11;
+      _._gapBetweenTagChangedAndFindSuggestion = _._onFocusNextAddressAction = _._onFocusEmailAddressChangeAction = _._onShowFullListEmailAddressAction = _._onDeleteEmailAddressTypeAction = _._onAddEmailAddressTypeAction = _._onSuggestionEmailAddress = _._onUpdateListEmailAddressAction = null;
+      _.lastTagFocused = false;
     },
-    _chip$_getBackgroundColor$3(theme, chipTheme, chipDefaults) {
-      var t2, t3, _this = this,
-        t1 = _this._widget;
-      t1.toString;
-      t2 = chipTheme.disabledColor;
-      if (t2 == null)
-        t2 = theme.disabledColor;
-      t1 = t1.backgroundColor;
-      t3 = _this.___RawChipState_enableController_A;
-      t3 === $ && A.throwUnnamedLateFieldNI();
-      t3 = new A.ColorTween(t2, t1).transform$1(0, t3.get$value(t3));
-      _this._widget.toString;
-      t1 = chipTheme.selectedColor;
-      if (t1 == null)
-        t1 = theme.chipTheme.selectedColor;
-      if (t1 == null)
-        t1 = chipDefaults.get$selectedColor();
-      t2 = _this.___RawChipState_selectionFade_A;
-      t2 === $ && A.throwUnnamedLateFieldNI();
-      return new A.ColorTween(t3, t1).transform$1(0, t2.get$value(t2));
+    EmailAddressInputBuilder_build_closure: function EmailAddressInputBuilder_build_closure(t0) {
+      this.$this = t0;
     },
-    didUpdateWidget$1(oldWidget) {
-      var t1, _this = this;
-      _this.super$State$didUpdateWidget(oldWidget);
-      t1 = _this._widget;
-      if (J.$eq$(oldWidget.avatar, t1.avatar)) {
-        _this._widget.toString;
-        t1 = false;
+    EmailAddressInputBuilder_build_closure0: function EmailAddressInputBuilder_build_closure0(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder_build_closure1: function EmailAddressInputBuilder_build_closure1(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder__buildTagEditor_closure: function EmailAddressInputBuilder__buildTagEditor_closure(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure6: function EmailAddressInputBuilder__buildTagEditor__closure6(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure7: function EmailAddressInputBuilder__buildTagEditor__closure7(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure0: function EmailAddressInputBuilder__buildTagEditor__closure0(t0, t1) {
+      this.$this = t0;
+      this.setState = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor___closure4: function EmailAddressInputBuilder__buildTagEditor___closure4(t0, t1) {
+      this.$this = t0;
+      this.focused = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure: function EmailAddressInputBuilder__buildTagEditor__closure(t0, t1, t2) {
+      this.$this = t0;
+      this.setState = t1;
+      this.context = t2;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure1: function EmailAddressInputBuilder__buildTagEditor__closure1(t0, t1) {
+      this.$this = t0;
+      this.setState = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor___closure3: function EmailAddressInputBuilder__buildTagEditor___closure3(t0, t1) {
+      this.$this = t0;
+      this.item = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure2: function EmailAddressInputBuilder__buildTagEditor__closure2(t0, t1) {
+      this.$this = t0;
+      this.setState = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor___closure2: function EmailAddressInputBuilder__buildTagEditor___closure2(t0, t1) {
+      this.$this = t0;
+      this.textTrim = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure5: function EmailAddressInputBuilder__buildTagEditor__closure5(t0, t1, t2) {
+      this.$this = t0;
+      this.newListEmailAddress = t1;
+      this.setState = t2;
+    },
+    EmailAddressInputBuilder__buildTagEditor___closure0: function EmailAddressInputBuilder__buildTagEditor___closure0(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder__buildTagEditor___closure: function EmailAddressInputBuilder__buildTagEditor___closure(t0, t1, t2) {
+      this.$this = t0;
+      this.setState = t1;
+      this.index = t2;
+    },
+    EmailAddressInputBuilder__buildTagEditor____closure: function EmailAddressInputBuilder__buildTagEditor____closure(t0, t1) {
+      this.$this = t0;
+      this.index = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure3: function EmailAddressInputBuilder__buildTagEditor__closure3(t0, t1) {
+      this.$this = t0;
+      this.setState = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor___closure1: function EmailAddressInputBuilder__buildTagEditor___closure1(t0, t1) {
+      this.$this = t0;
+      this.textTrim = t1;
+    },
+    EmailAddressInputBuilder__buildTagEditor__closure4: function EmailAddressInputBuilder__buildTagEditor__closure4(t0, t1) {
+      this.$this = t0;
+      this.setState = t1;
+    },
+    EmailAddressInputBuilder__buildCounter_closure: function EmailAddressInputBuilder__buildCounter_closure(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder__buildSuggestionItem_closure: function EmailAddressInputBuilder__buildSuggestionItem_closure(t0, t1, t2, t3) {
+      var _ = this;
+      _.$this = t0;
+      _.setState = t1;
+      _.emailAddress = t2;
+      _.tagEditorState = t3;
+    },
+    EmailAddressInputBuilder__buildSuggestionItem__closure: function EmailAddressInputBuilder__buildSuggestionItem__closure(t0, t1) {
+      this.$this = t0;
+      this.emailAddress = t1;
+    },
+    EmailAddressInputBuilder__findSuggestions_closure: function EmailAddressInputBuilder__findSuggestions_closure(t0) {
+      this.$this = t0;
+    },
+    EmailAddressInputBuilder__isDuplicatedRecipient_closure: function EmailAddressInputBuilder__isDuplicatedRecipient_closure() {
+    },
+    EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure: function EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure(t0) {
+      this.query = t0;
+    },
+    EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0: function EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0() {
+    },
+    EmailAddressInputBuilder__handleDeleteTagAction_closure: function EmailAddressInputBuilder__handleDeleteTagAction_closure(t0) {
+      this.$this = t0;
+    },
+    ListUploadFileStateExtension_get_totalSize(_this) {
+      var t1;
+      if (!_this.get$isEmpty(_this)) {
+        t1 = _this.$ti._eval$1("MappedListIterable<ListMixin.E,num>");
+        return C.JSArray_methods.reduce$1(A.List_List$of(new A.MappedListIterable(_this, new B.ListUploadFileStateExtension_get_totalSize_closure(), t1), true, t1._eval$1("ListIterable.E")), new B.ListUploadFileStateExtension_get_totalSize_closure0());
+      }
+      return 0;
+    },
+    ListUploadFileStateExtension_get_totalSize_closure: function ListUploadFileStateExtension_get_totalSize_closure() {
+    },
+    ListUploadFileStateExtension_get_totalSize_closure0: function ListUploadFileStateExtension_get_totalSize_closure0() {
+    },
+    PrefixEmailAddressExtension_asName(_this, context) {
+      var _null = null;
+      switch (_this.index) {
+        case 1:
+          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          return A.Intl__message("To", _null, "to_email_address_prefix", _null, _null);
+        case 2:
+          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          return A.Intl__message("Cc", _null, "cc_email_address_prefix", _null, _null);
+        case 3:
+          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          return A.Intl__message("Bcc", _null, "bcc_email_address_prefix", _null, _null);
+        case 0:
+          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          return A.Intl__message("From", _null, "from_email_address_prefix", _null, _null);
+      }
+    },
+    ComposerStyle_getAppBarPadding(context, responsiveUtils) {
+      var t2,
+        t1 = type$.MediaQuery;
+      if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+        t2 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+        t2 = t2.get$orientation(t2) === C.Orientation_0;
       } else
+        t2 = false;
+      if (!t2)
+        if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+          t1 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+          t1 = t1.get$orientation(t1) === C.Orientation_1;
+        } else
+          t1 = false;
+      else
         t1 = true;
       if (t1)
-        _this.setState$1(new B._RawChipState_didUpdateWidget_closure(_this));
-      t1 = _this._widget;
-      if (!J.$eq$(oldWidget.onDeleted, t1.onDeleted))
-        _this.setState$1(new B._RawChipState_didUpdateWidget_closure0(_this));
+        return C.EdgeInsetsDirectional_0_0_8_0;
+      else
+        return D.EdgeInsetsDirectional_24_0_32_0;
     },
-    _wrapWithTooltip$3$child$enabled$tooltip(child, enabled, tooltip) {
-      if (!enabled || tooltip == null)
-        return child;
-      return A.Tooltip$(child, tooltip);
-    },
-    _buildDeleteIcon$4(context, theme, chipTheme, chipDefaults) {
-      var t2, t3, t4, t5, t6, _this = this, _null = null,
-        t1 = _this._widget;
-      if (t1.onDeleted == null)
-        return _null;
-      t1 = t1.deleteButtonTooltipMessage;
-      t2 = A.Localizations_of(context, C.Type_MaterialLocalizations_flR, type$.MaterialLocalizations);
-      t2.toString;
-      t1 = t2.get$deleteButtonTooltip();
-      t2 = _this._widget;
-      t3 = t2.onDeleted;
-      t2 = t2.padding;
-      t2 = t2 == null ? _null : t2.get$_top(t2) + t2.get$_bottom(t2);
-      if (t2 == null)
-        t2 = 0;
-      t4 = A.Theme_of(context);
-      t5 = _this._widget.onDeleted;
-      t6 = chipTheme.deleteIconColor;
-      if (t6 == null)
-        t6 = theme.chipTheme.deleteIconColor;
-      if (t6 == null)
-        t6 = chipDefaults.get$deleteIconColor();
-      t6 = theme.iconTheme.copyWith$1$color(t6);
-      t1 = _this._wrapWithTooltip$3$child$enabled$tooltip(A.InkWell$(false, _null, true, A.IconTheme$(_this._widget.deleteIcon, t6, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t5, _null, _null, _null, (32 + t2) * 0.45, _null, new B._UnconstrainedInkSplashFactory(t4.splashFactory), _null), t3 != null, t1);
-      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, t1, _null);
-    },
-    build$1(context) {
-      var theme, chipTheme, brightness, t2, t3, primaryColor, t4, t5, t6, backgroundColor, deleteIconColor, disabledColor, selectedColor, secondarySelectedColor, secondaryLabelStyle, chipDefaults, textDirection, resolvedSide, resolvedShape, elevation, pressElevation, shadowColor, surfaceTintColor, checkmarkColor, showCheckmark, padding, labelStyle, labelPadding, iconTheme, effectiveLabelStyle, resolvedLabelStyle, avatar, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, result, densityAdjustment, constraints, _this = this, _null = null,
-        t1 = A.EdgeInsets_lerp(C.EdgeInsets_8_0_8_0, C.EdgeInsets_4_0_4_0, A.clampDouble(context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.textScaleFactor - 1, 0, 1));
-      t1.toString;
-      theme = A.Theme_of(context);
-      context.dependOnInheritedWidgetOfExactType$1$0(type$.ChipTheme);
-      chipTheme = A.Theme_of(context).chipTheme;
-      brightness = chipTheme.brightness;
-      if (brightness == null)
-        brightness = theme.colorScheme.brightness;
-      _this._widget.toString;
-      t2 = brightness === C.Brightness_0 ? C.Color_4284809178 : theme.primaryColor;
-      t3 = theme.textTheme.bodyLarge;
-      t3.toString;
-      primaryColor = brightness === C.Brightness_1 ? C.Color_4278190080 : C.Color_4294967295;
-      t4 = primaryColor.value;
-      t5 = t4 >>> 16 & 255;
-      t6 = t4 >>> 8 & 255;
-      t4 &= 255;
-      backgroundColor = A.Color$fromARGB(31, t5, t6, t4);
-      deleteIconColor = A.Color$fromARGB(222, t5, t6, t4);
-      disabledColor = A.Color$fromARGB(12, t5, t6, t4);
-      selectedColor = A.Color$fromARGB(61, t5, t6, t4);
-      secondarySelectedColor = A.Color$fromARGB(61, t2.get$value(t2) >>> 16 & 255, t2.get$value(t2) >>> 8 & 255, t2.get$value(t2) & 255);
-      secondaryLabelStyle = t3.copyWith$1$color(A.Color$fromARGB(222, t2.get$value(t2) >>> 16 & 255, t2.get$value(t2) >>> 8 & 255, t2.get$value(t2) & 255));
-      t4 = A.ChipThemeData$(backgroundColor, brightness, _null, deleteIconColor, disabledColor, 0, _null, _null, t3.copyWith$1$color(A.Color$fromARGB(222, t5, t6, t4)), C.EdgeInsets_4_4_4_4, 8, secondaryLabelStyle, secondarySelectedColor, selectedColor, C.Color_4278190080, C.Color_4278190080, _null, true, _null, _null);
-      chipDefaults = t4;
-      textDirection = A.Directionality_maybeOf(context);
-      t2 = _this.MaterialStateMixin_materialStates;
-      t3 = type$.nullable_BorderSide;
-      t4 = A.MaterialStateProperty_resolveAs(_this._widget.side, t2, t3);
-      resolvedSide = t4 == null ? A.MaterialStateProperty_resolveAs(chipTheme.side, t2, t3) : t4;
-      if (resolvedSide == null)
-        resolvedSide = A.MaterialStateProperty_resolveAs(chipDefaults.side, t2, t3);
-      t3 = type$.nullable_OutlinedBorder;
-      t4 = A.MaterialStateProperty_resolveAs(_this._widget.shape, t2, t3);
-      if (t4 == null)
-        t4 = A.MaterialStateProperty_resolveAs(chipTheme.shape, t2, t3);
-      resolvedShape = t4 == null ? A.MaterialStateProperty_resolveAs(chipDefaults.shape, t2, t3) : t4;
-      resolvedShape = (resolvedShape == null ? C.StadiumBorder_Sik : resolvedShape).copyWith$1$side(resolvedSide);
-      t3 = _this._widget;
-      t3.toString;
-      t4 = chipTheme.elevation;
-      elevation = t4 == null ? chipDefaults.elevation : t4;
-      if (elevation == null)
-        elevation = 0;
-      t4 = chipTheme.pressElevation;
-      pressElevation = t4 == null ? chipDefaults.pressElevation : t4;
-      if (pressElevation == null)
-        pressElevation = 0;
-      shadowColor = chipTheme.shadowColor;
-      if (shadowColor == null)
-        shadowColor = chipDefaults.shadowColor;
-      surfaceTintColor = chipTheme.surfaceTintColor;
-      if (surfaceTintColor == null)
-        surfaceTintColor = chipDefaults.surfaceTintColor;
-      checkmarkColor = chipTheme.checkmarkColor;
-      if (checkmarkColor == null)
-        checkmarkColor = chipDefaults.checkmarkColor;
-      showCheckmark = true;
-      t4 = t3.padding;
-      padding = t4 == null ? chipTheme.padding : t4;
-      if (padding == null) {
-        t4 = chipDefaults.padding;
-        t4.toString;
-        padding = t4;
-      }
-      labelStyle = chipTheme.labelStyle;
-      if (labelStyle == null) {
-        t4 = chipDefaults.labelStyle;
-        t4.toString;
-        labelStyle = t4;
-      }
-      t4 = t3.labelPadding;
-      labelPadding = t4;
-      iconTheme = chipTheme.iconTheme;
-      if (iconTheme == null)
-        iconTheme = chipDefaults.iconTheme;
-      effectiveLabelStyle = labelStyle.merge$1(t3.labelStyle);
-      resolvedLabelStyle = effectiveLabelStyle.copyWith$1$color(A.MaterialStateProperty_resolveAs(effectiveLabelStyle.color, t2, type$.nullable_Color));
-      t1 = iconTheme != null && _this._widget.avatar != null;
-      t2 = _this._widget;
-      if (t1) {
-        t1 = t2.avatar;
-        t1.toString;
-        avatar = A.IconTheme$(t1, iconTheme, _null);
+    ComposerStyle_getFromAddressPadding(context, responsiveUtils) {
+      var t2,
+        t1 = type$.MediaQuery;
+      if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+        t2 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+        t2 = t2.get$orientation(t2) === C.Orientation_0;
       } else
-        avatar = t2.avatar;
-      t1 = _this.get$canTap() && _this._isTapping ? pressElevation : elevation;
-      t2 = _this._widget;
-      t2 = t2.clipBehavior;
-      t3 = _this.updateMaterialState$1(C.MaterialState_1);
-      t4 = _this._widget.focusNode;
-      t5 = _this.get$canTap() ? _this.get$_chip$_handleTap() : _null;
-      t6 = _this.get$canTap() ? _this.get$_chip$_handleTapDown() : _null;
-      t7 = _this.get$canTap() ? _this.get$_chip$_handleTapCancel() : _null;
-      t8 = _this.get$canTap() ? _this.updateMaterialState$1(C.MaterialState_0) : _null;
-      t9 = _this.___RawChipState_selectController_A;
-      t9 === $ && A.throwUnnamedLateFieldNI();
-      t10 = _this.___RawChipState_enableController_A;
-      t10 === $ && A.throwUnnamedLateFieldNI();
-      t10 = A._setArrayType([t9, t10], type$.JSArray_Listenable);
-      t9 = _this._widget;
-      t9 = A.DefaultTextStyle$(t9.label, _null, 1, C.TextOverflow_1, false, resolvedLabelStyle, C.TextAlign_4, _null, C.TextWidthBasis_0);
-      t11 = B.AnimatedSwitcher$(avatar, C.Duration_150000, C.Cubic_ifx);
-      t12 = B.AnimatedSwitcher$(_this._buildDeleteIcon$4(context, theme, chipTheme, chipDefaults), C.Duration_150000, C.Cubic_ifx);
-      t13 = padding.resolve$1(textDirection);
-      _this._widget.toString;
-      t14 = theme.visualDensity;
-      t15 = labelPadding.resolve$1(textDirection);
-      t16 = _this._widget.avatar;
-      t17 = _this.get$canTap();
-      _this._widget.toString;
-      t18 = _this.___RawChipState_checkmarkAnimation_A;
-      t18 === $ && A.throwUnnamedLateFieldNI();
-      t19 = _this.___RawChipState_enableAnimation_A;
-      t19 === $ && A.throwUnnamedLateFieldNI();
-      t20 = _this.___RawChipState_avatarDrawerAnimation_A;
-      t20 === $ && A.throwUnnamedLateFieldNI();
-      t21 = _this.___RawChipState_deleteDrawerAnimation_A;
-      t21 === $ && A.throwUnnamedLateFieldNI();
-      result = A.Material$(C.Duration_75000, true, _null, A.InkWell$(false, _null, true, A.AnimatedBuilder$(new A._MergingListenable(t10), new B._RawChipState_build_closure(_this, resolvedShape, theme, chipTheme, chipDefaults), _this._wrapWithTooltip$3$child$enabled$tooltip(new B._ChipRenderWidget(new B._ChipRenderTheme(t11, t9, t12, brightness, t13, t14, t15, t16 != null, showCheckmark, checkmarkColor, t17), false, true, t18, t20, t21, t19, C.CircleBorder_Umb, _null), false, _null)), resolvedShape, true, _null, t4, _null, _null, _null, _null, _null, t3, _null, t8, _null, t5, t7, t6, _null, _null, _null, _null, _null), t2, _null, t1, _null, shadowColor, resolvedShape, surfaceTintColor, _null, C.MaterialType_0);
-      _this._widget.toString;
-      densityAdjustment = new A.Offset(t14.horizontal, t14.vertical).$mul(0, 4);
-      t1 = _this._widget.materialTapTargetSize;
-      switch ((t1 == null ? theme.materialTapTargetSize : t1).index) {
-        case 0:
-          constraints = new A.BoxConstraints(48 + densityAdjustment._dx, 1 / 0, 48 + densityAdjustment._dy, 1 / 0);
-          break;
-        case 1:
-          constraints = C.BoxConstraints_mlX0;
-          break;
-        default:
-          constraints = _null;
-      }
-      t1 = A.Center$(result, 1, _null, 1);
-      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, new B._ChipRedirectingHitDetectionWidget(constraints, t1, _null), _null);
-    }
-  };
-  B._ChipRedirectingHitDetectionWidget.prototype = {
-    createRenderObject$1(context) {
-      var t1 = new B._RenderChipRedirectingHitDetection(this.constraints, null, A.LayerHandle$(type$.ContainerLayer));
-      t1.RenderObject$0();
-      t1.set$child(null);
-      return t1;
+        t2 = false;
+      if (!t2)
+        if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+          t1 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+          t1 = t1.get$orientation(t1) === C.Orientation_1;
+        } else
+          t1 = false;
+      else
+        t1 = true;
+      if (t1)
+        return D.EdgeInsetsDirectional_16_12_16_12;
+      else
+        return D.EdgeInsetsDirectional_8_12_8_12;
     },
-    updateRenderObject$2(context, renderObject) {
-      renderObject.set$additionalConstraints(this.constraints);
-    }
-  };
-  B._RenderChipRedirectingHitDetection.prototype = {
-    hitTest$2$position(result, position) {
-      var offset;
-      if (!this._box$_size.contains$1(0, position))
-        return false;
-      offset = new A.Offset(position._dx, this._box$_size._dy / 2);
-      return result.addWithRawTransform$3$hitTest$position$transform(new B._RenderChipRedirectingHitDetection_hitTest_closure(this, offset), position, A.MatrixUtils_forceToPoint(offset));
-    }
-  };
-  B._ChipRenderWidget.prototype = {
-    get$slots() {
-      return D.List_LlV;
+    ComposerStyle_getToAddressPadding(context, responsiveUtils) {
+      if (context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx < 600)
+        return E.EdgeInsetsDirectional_16_0_8_0;
+      else
+        return D.EdgeInsetsDirectional_8_0_8_0;
     },
-    childForSlot$1(slot) {
-      switch (slot.index) {
+    ComposerStyle_getCcBccAddressPadding(context, responsiveUtils) {
+      if (context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx < 600)
+        return E.EdgeInsetsDirectional_16_0_0_0;
+      else
+        return D.EdgeInsetsDirectional_8_0_8_0;
+    },
+    ComposerStyle_getSubjectWebPadding(context, responsiveUtils) {
+      if (context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx < 600)
+        return D.EdgeInsetsDirectional_16_0_16_0;
+      else
+        return D.EdgeInsetsDirectional_8_0_16_0;
+    },
+    ComposerStyle_getAppBarHeight(context, responsiveUtils) {
+      var t2,
+        t1 = type$.MediaQuery;
+      if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+        t2 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+        t2 = t2.get$orientation(t2) === C.Orientation_0;
+      } else
+        t2 = false;
+      if (!t2)
+        if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+          t1 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+          t1 = t1.get$orientation(t1) === C.Orientation_1;
+        } else
+          t1 = false;
+      else
+        t1 = true;
+      if (t1)
+        return 57;
+      else
+        return 65;
+    },
+    ComposerStyle_getSpace(context, responsiveUtils) {
+      var t2,
+        t1 = type$.MediaQuery;
+      if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+        t2 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+        t2 = t2.get$orientation(t2) === C.Orientation_0;
+      } else
+        t2 = false;
+      if (!t2)
+        if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+          t1 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+          t1 = t1.get$orientation(t1) === C.Orientation_1;
+        } else
+          t1 = false;
+      else
+        t1 = true;
+      if (t1)
+        return 8;
+      else
+        return 12;
+    },
+    ComposerStyle_getAttachmentPadding(context, responsiveUtils) {
+      var t2,
+        t1 = type$.MediaQuery;
+      if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+        t2 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+        t2 = t2.get$orientation(t2) === C.Orientation_0;
+      } else
+        t2 = false;
+      if (!t2)
+        if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
+          t1 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
+          t1 = t1.get$orientation(t1) === C.Orientation_1;
+        } else
+          t1 = false;
+      else
+        t1 = true;
+      if (t1)
+        return D.EdgeInsetsDirectional_16_0_16_0;
+      else
+        return D.EdgeInsetsDirectional_88_0_48_0;
+    },
+    ComposerStyle_getEditorPadding(context, responsiveUtils) {
+      if (context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size._dx < 600)
+        return D.EdgeInsetsDirectional_6_0_6_0;
+      else
+        return D.EdgeInsetsDirectional_78_0_38_0;
+    },
+    ComposerStyle_getMaxItemRowListAttachment(context, constraints) {
+      var t1 = constraints.maxWidth;
+      if (t1 < 600)
+        return 2;
+      else if (t1 < 900)
+        return 4;
+      else
+        return 5;
+    }
+  },
+  J, A, C, D, E, F, G, H, I;
+  B = hunkHelpers.updateHolder(holdersList[10], B);
+  J = holdersList[1];
+  A = holdersList[0];
+  C = holdersList[2];
+  D = holdersList[18];
+  E = holdersList[19];
+  F = holdersList[14];
+  G = holdersList[15];
+  H = holdersList[21];
+  I = holdersList[17];
+  B._HashEnd.prototype = {};
+  B.ExtendedRenderParagraph.prototype = {
+    set$startHandleLayerLink(value) {
+      if (this._extended_render_paragraph$_startHandleLayerLink == value)
+        return;
+      this._extended_render_paragraph$_startHandleLayerLink = value;
+      this.markNeedsPaint$0();
+    },
+    set$endHandleLayerLink(value) {
+      if (this._extended_render_paragraph$_endHandleLayerLink == value)
+        return;
+      this._extended_render_paragraph$_endHandleLayerLink = value;
+      this.markNeedsPaint$0();
+    },
+    set$selection(value) {
+      var _this = this;
+      if (J.$eq$(_this._extended_render_paragraph$_selection, value))
+        return;
+      _this._extended_render_paragraph$_selection = value;
+      _this._selectionRects = null;
+      _this.markNeedsPaint$0();
+      _this.markNeedsSemanticsUpdate$0();
+    },
+    set$selectionColor(value) {
+      if (J.$eq$(this._extended_render_paragraph$_selectionColor, value))
+        return;
+      this._extended_render_paragraph$_selectionColor = value;
+      this.markNeedsPaint$0();
+    },
+    set$text(_, value) {
+      var _this = this,
+        t1 = _this._rawText;
+      switch (t1.compareTo$1(0, value).index) {
         case 0:
-          return this.theme.label;
         case 1:
-          return this.theme.avatar;
+          return;
         case 2:
-          return this.theme.deleteIcon;
+          _this._extended_render_paragraph$_textPainter.set$text(0, value);
+          _this._rawText = value;
+          _this.extractPlaceholderSpans$1(value);
+          _this.TextOverflowMixin__cachedPlainText = null;
+          _this.markNeedsPaint$0();
+          _this.markNeedsSemanticsUpdate$0();
+          break;
+        case 3:
+          _this._extended_render_paragraph$_textPainter.set$text(0, value);
+          _this._rawText = value;
+          _this.TextOverflowMixin__overflowShader = _this.TextOverflowMixin__cachedPlainText = null;
+          _this.extractPlaceholderSpans$1(value);
+          _this.markNeedsTextLayout$0();
+          break;
       }
+    },
+    set$textAlign(_, value) {
+      var t1 = this._extended_render_paragraph$_textPainter;
+      if (t1._textAlign === value)
+        return;
+      t1.set$textAlign(0, value);
+      this.markNeedsTextLayout$0();
+    },
+    set$textDirection(value) {
+      var t1 = this._extended_render_paragraph$_textPainter;
+      if (t1._text_painter$_textDirection === value)
+        return;
+      t1.set$textDirection(value);
+      this.markNeedsTextLayout$0();
+    },
+    set$softWrap(value) {
+      if (this._extended_render_paragraph$_softWrap === value)
+        return;
+      this._extended_render_paragraph$_softWrap = value;
+      this.markNeedsTextLayout$0();
+    },
+    set$textScaleFactor(value) {
+      var t1 = this._extended_render_paragraph$_textPainter;
+      if (t1._textScaleFactor === value)
+        return;
+      t1.set$textScaleFactor(value);
+      this.TextOverflowMixin__overflowShader = null;
+      this.markNeedsTextLayout$0();
+    },
+    set$maxLines(value) {
+      var t1 = this._extended_render_paragraph$_textPainter;
+      if (t1._maxLines == value)
+        return;
+      t1.set$maxLines(value);
+      this.TextOverflowMixin__overflowShader = null;
+      this.markNeedsTextLayout$0();
+    },
+    set$locale(_, value) {
+      var t1 = this._extended_render_paragraph$_textPainter;
+      if (J.$eq$(t1._text_painter$_locale, value))
+        return;
+      t1.set$locale(0, value);
+      this.TextOverflowMixin__overflowShader = null;
+      this.markNeedsTextLayout$0();
+    },
+    set$strutStyle(value) {
+      var t1 = this._extended_render_paragraph$_textPainter;
+      if (J.$eq$(t1._strutStyle, value))
+        return;
+      t1.set$strutStyle(value);
+      this.TextOverflowMixin__overflowShader = null;
+      this.markNeedsTextLayout$0();
+    },
+    set$textWidthBasis(value) {
+      var t1 = this._extended_render_paragraph$_textPainter;
+      if (t1._textWidthBasis === value)
+        return;
+      t1.set$textWidthBasis(value);
+      this.TextOverflowMixin__overflowShader = null;
+      this.markNeedsTextLayout$0();
+    },
+    set$textHeightBehavior(value) {
+      return;
+    },
+    set$selectionHeightStyle(value) {
+      if (this._extended_render_paragraph$_selectionHeightStyle === value)
+        return;
+      this._extended_render_paragraph$_selectionHeightStyle = value;
+      this.markNeedsPaint$0();
+    },
+    set$selectionWidthStyle(value) {
+      if (this._extended_render_paragraph$_selectionWidthStyle === value)
+        return;
+      this._extended_render_paragraph$_selectionWidthStyle = value;
+      this.markNeedsPaint$0();
+    },
+    computeDistanceToActualBaseline$1(baseline) {
+      this.layoutTextWithConstraints$1(type$.BoxConstraints._as(A.RenderObject.prototype.get$constraints.call(this)));
+      return this._extended_render_paragraph$_textPainter.computeDistanceToActualBaseline$1(C.TextBaseline_0);
+    },
+    hitTestSelf$1(position) {
+      return true;
+    },
+    performLayout$0() {
+      var t2, t3, _this = this,
+        t1 = type$.BoxConstraints;
+      _this.layoutChildren$1(t1._as(A.RenderObject.prototype.get$constraints.call(_this)));
+      t2 = t1._as(A.RenderObject.prototype.get$constraints.call(_this));
+      _this.layoutText$3$forceLayout$maxWidth$minWidth(true, t1._as(A.RenderObject.prototype.get$constraints.call(_this)).maxWidth, t2.minWidth);
+      _this.setParentData$0();
+      t2 = _this._extended_render_paragraph$_textPainter;
+      t3 = t2.get$width(t2);
+      t2 = t2._paragraph;
+      t2 = Math.ceil(t2.get$height(t2));
+      _this._box$_size = t1._as(A.RenderObject.prototype.get$constraints.call(_this)).constrain$1(new A.Size(t3, t2));
+      _this.layoutOverflow$0();
+    },
+    paint$2(context, offset) {
+      var _this = this;
+      _this._extended_render_paragraph$_offset = offset;
+      _this.layoutTextWithConstraints$1(type$.BoxConstraints._as(A.RenderObject.prototype.get$constraints.call(_this)));
+      _this._innnPaint$2(offset, context);
+    },
+    _innnPaint$2(offset, context) {
+      var t1, t2, t3, bounds, t4, _i, rect, canvas, t5, t6, t7, paint, _this = this;
+      if (_this.TextOverflowMixin__needsClipping) {
+        t1 = _this._box$_size;
+        t2 = offset._dx;
+        t3 = offset._dy;
+        bounds = new A.Rect(t2, t3, t2 + t1._dx, t3 + t1._dy);
+        if (_this.TextOverflowMixin__overflowShader != null)
+          context.get$canvas(context).saveLayer$2(bounds, $.$get$_renderer().createPaint$0());
+        else
+          context.get$canvas(context).save$0(0);
+        context.get$canvas(context).clipRect$1(bounds);
+      }
+      if (_this.TextOverflowMixin__overflowRect != null) {
+        t1 = context.get$canvas(context);
+        t2 = _this._box$_size;
+        t3 = offset._dx;
+        t4 = offset._dy;
+        t1.saveLayer$2(new A.Rect(t3, t4, t3 + t2._dx, t4 + t2._dy), $.$get$_renderer().createPaint$0());
+        if ((_this.TextOverflowMixin__overflowWidget == null ? null : D.TextOverflowClearType_1) === D.TextOverflowClearType_0) {
+          t1 = _this.TextOverflowMixin__overflowRects;
+          if (t1 != null && t1.length !== 0)
+            for (t2 = t1.length, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
+              rect = t1[_i];
+              context.get$canvas(context).clipRect$2$clipOp(rect.shift$1(offset), C.ClipOp_0);
+            }
+          context.get$canvas(context).clipRect$2$clipOp(_this.TextOverflowMixin__overflowRect.shift$1(offset), C.ClipOp_0);
+        }
+      }
+      _this._paintSelection$2(context, offset);
+      canvas = context.get$canvas(context);
+      canvas.save$0(0);
+      t1 = offset._dx;
+      t2 = offset._dy;
+      canvas.translate$2(0, t1, t2);
+      t3 = _this._box$_size;
+      t4 = t3._dx;
+      t3 = t3._dy;
+      t5 = _this._extended_render_paragraph$_textPainter;
+      t6 = t5._text_painter$_text;
+      t6.toString;
+      _this._paintSpecialTextChildren$3(A._setArrayType([t6], type$.JSArray_InlineSpan), canvas, new A.Rect(0, 0, 0 + t4, 0 + t3));
+      canvas.restore$0(0);
+      t5.paint$2(context.get$canvas(context), offset);
+      _this.paintWidgets$3$overFlowRect(context, offset, _this.TextOverflowMixin__overflowRect);
+      if (_this.TextOverflowMixin__overflowRect != null) {
+        if ((_this.TextOverflowMixin__overflowWidget == null ? null : D.TextOverflowClearType_1) === D.TextOverflowClearType_1) {
+          t3 = _this.TextOverflowMixin__overflowRects;
+          if (t3 != null && t3.length !== 0)
+            for (t4 = t3.length, _i = 0; _i < t3.length; t3.length === t4 || (0, A.throwConcurrentModificationError)(t3), ++_i) {
+              rect = t3[_i];
+              t5 = context.get$canvas(context);
+              t6 = rect.shift$1(offset);
+              t7 = $.$get$_renderer().createPaint$0();
+              t7.set$blendMode(C.BlendMode_0);
+              t5.drawRect$2(t6, t7);
+            }
+          t3 = context.get$canvas(context);
+          t4 = _this.TextOverflowMixin__overflowRect.shift$1(offset);
+          t5 = $.$get$_renderer().createPaint$0();
+          t5.set$blendMode(C.BlendMode_0);
+          t3.drawRect$2(t4, t5);
+        }
+        context.get$canvas(context).restore$0(0);
+      }
+      _this._paintTextOverflow$2(context, offset);
+      _this.paintHandleLayers$2(context, A.RenderObject.prototype.get$paint.call(_this));
+      if (_this.TextOverflowMixin__needsClipping) {
+        if (_this.TextOverflowMixin__overflowShader != null) {
+          context.get$canvas(context).translate$2(0, t1, t2);
+          paint = $.$get$_renderer().createPaint$0();
+          paint.set$blendMode(C.BlendMode_13);
+          paint.set$shader(_this.TextOverflowMixin__overflowShader);
+          t1 = context.get$canvas(context);
+          t2 = _this._box$_size;
+          t1.drawRect$2(new A.Rect(0, 0, 0 + t2._dx, 0 + t2._dy), paint);
+        }
+        context.get$canvas(context).restore$0(0);
+      }
+    },
+    getOffsetForCaret$2(position, caretPrototype) {
+      var t1;
+      this.layoutTextWithConstraints$1(type$.BoxConstraints._as(A.RenderObject.prototype.get$constraints.call(this)));
+      t1 = this._extended_render_paragraph$_textPainter;
+      t1._computeCaretMetrics$2(position, caretPrototype);
+      t1 = t1.__TextPainter__caretMetrics_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      return t1.offset;
+    },
+    _combineSemanticsInfo$0() {
+      var t1, t2, workingLabel, workingText, _i, info, t3, t4, _null = null,
+        combined = A._setArrayType([], type$.JSArray_InlineSpanSemanticsInformation);
+      for (t1 = this._extended_render_paragraph$_semanticsInfo, t2 = t1.length, workingLabel = _null, workingText = "", _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
+        info = t1[_i];
+        if (info.requiresOwnNode) {
+          t3 = workingLabel == null ? workingText : workingLabel;
+          combined.push(new A.InlineSpanSemanticsInformation(workingText, t3, _null, false, false, C.List_empty2));
+          combined.push(info);
+          workingLabel = _null;
+          workingText = "";
+        } else {
+          t3 = info.text;
+          workingText += t3;
+          if (workingLabel == null)
+            workingLabel = "";
+          t4 = info.semanticsLabel;
+          workingLabel = t4 != null ? workingLabel + t4 : workingLabel + t3;
+        }
+      }
+      combined.push(A.InlineSpanSemanticsInformation$(workingText, _null, workingLabel, C.List_empty2));
+      return combined;
+    },
+    describeSemanticsConfiguration$1(config) {
+      var t1, t2, t3, collector, collector0, _i, t4, info, t5, _this = this;
+      _this.super$RenderObject$describeSemanticsConfiguration(config);
+      t1 = _this._extended_render_paragraph$_textPainter;
+      t2 = t1._text_painter$_text;
+      t2.toString;
+      t3 = type$.JSArray_InlineSpanSemanticsInformation;
+      collector = A._setArrayType([], t3);
+      t2.computeSemanticsInformation$1(collector);
+      _this._extended_render_paragraph$_semanticsInfo = collector;
+      t2 = _this.TextOverflowMixin__overflowWidget;
+      if (t2 != null) {
+        collector0 = A._setArrayType([], t3);
+        new A.WidgetSpan(t2, C.PlaceholderAlignment_4, null, null).computeSemanticsInformation$1(collector0);
+        C.JSArray_methods.addAll$1(collector, collector0);
+      }
+      t2 = _this._extended_render_paragraph$_semanticsInfo;
+      t2.toString;
+      if (C.JSArray_methods.any$1(t2, new B.ExtendedRenderParagraph_describeSemanticsConfiguration_closure()))
+        config._isSemanticBoundary = config.explicitChildNodes = true;
+      else {
+        for (t2 = _this._extended_render_paragraph$_semanticsInfo, t3 = t2.length, _i = 0, t4 = ""; _i < t3; ++_i) {
+          info = t2[_i];
+          t5 = info.semanticsLabel;
+          t4 += t5 == null ? info.text : t5;
+        }
+        config._attributedLabel = new A.AttributedString(t4.charCodeAt(0) == 0 ? t4 : t4, C.List_empty2);
+        config._hasBeenAnnotated = true;
+        t1 = t1._text_painter$_textDirection;
+        t1.toString;
+        config._textDirection = t1;
+      }
+    },
+    assembleSemanticsNode$3(node, config, children) {
+      var child, newChildCache, t3, t4, t5, t6, t7, currentDirection, ordinal, start, placeholderIndex, childIndex, _i, info, start0, t8, t9, childNode, t10, t11, t12, t13, rects, rect, currentDirection0, currentRect, configuration, ordinal0, recognizer, newChild, _this = this, _null = null,
+        newChildren = A._setArrayType([], type$.JSArray_SemanticsNode),
+        t1 = _this._extended_render_paragraph$_textPainter,
+        t2 = t1._text_painter$_textDirection;
+      t2.toString;
+      child = _this.ContainerRenderObjectMixin__firstChild;
+      newChildCache = A.ListQueue$(_null, type$.SemanticsNode);
+      for (t3 = _this._combineSemanticsInfo$0(), t4 = t3.length, t5 = type$.BoxConstraints, t6 = A._instanceType(_this)._eval$1("ContainerRenderObjectMixin.1"), t7 = type$.TextParentData, currentDirection = t2, ordinal = 0, start = 0, placeholderIndex = 0, childIndex = 0, _i = 0; _i < t3.length; t3.length === t4 || (0, A.throwConcurrentModificationError)(t3), ++_i, start = start0) {
+        info = t3[_i];
+        t2 = info.text;
+        start0 = start + t2.length;
+        t8 = start < start0;
+        t9 = t8 ? start : start0;
+        t8 = t8 ? start0 : start;
+        if (info.isPlaceholder) {
+          t2 = "PlaceholderSpanIndexSemanticsTag(" + placeholderIndex + ")";
+          while (true) {
+            if (children.length > childIndex) {
+              t8 = children[childIndex].tags;
+              t8 = t8 != null && t8.contains$1(0, new A.PlaceholderSpanIndexSemanticsTag(placeholderIndex, t2));
+            } else
+              t8 = false;
+            if (!t8)
+              break;
+            childNode = children[childIndex];
+            t8 = child.parentData;
+            t8.toString;
+            t7._as(t8);
+            t9 = childNode._rect;
+            t10 = t9.left;
+            t11 = t9.top;
+            t8 = t8.scale;
+            t12 = t8 == null;
+            t13 = t12 ? 1 : t8;
+            if (t12)
+              t8 = 1;
+            t8 = new A.Rect(t10, t11, t10 + (t9.right - t10) * t13, t11 + (t9.bottom - t11) * t8);
+            if (!t9.$eq(0, t8)) {
+              childNode._rect = t8;
+              childNode._markDirty$0();
+            }
+            newChildren.push(childNode);
+            ++childIndex;
+          }
+          t2 = child.parentData;
+          t2.toString;
+          child = t6._as(t2).ContainerParentDataMixin_nextSibling;
+          ++placeholderIndex;
+        } else {
+          t10 = t5._as(A.RenderObject.prototype.get$constraints.call(_this));
+          t1.setPlaceholderDimensions$1(_this._extended_text_render_box$_placeholderDimensions);
+          _this.layoutText$3$forceLayout$maxWidth$minWidth(true, t10.maxWidth, t10.minWidth);
+          t10 = _this._extended_render_paragraph$_selectionWidthStyle;
+          t11 = _this._extended_render_paragraph$_selectionHeightStyle;
+          rects = t1._paragraph.getBoxesForRange$4$boxHeightStyle$boxWidthStyle(t9, t8, t11, t10);
+          if (rects.length === 0)
+            continue;
+          t8 = C.JSArray_methods.get$first(rects);
+          rect = new A.Rect(t8.left, t8.top, t8.right, t8.bottom);
+          currentDirection0 = C.JSArray_methods.get$first(rects).direction;
+          for (t8 = A._arrayInstanceType(rects), t9 = t8._eval$1("SubListIterable<1>"), t10 = new A.SubListIterable(rects, 1, _null, t9), t10.SubListIterable$3(rects, 1, _null, t8._precomputed1), t10 = new A.ListIterator(t10, t10.get$length(t10), t9._eval$1("ListIterator<ListIterable.E>")), t9 = t9._eval$1("ListIterable.E"); t10.moveNext$0();) {
+            t8 = t10.__internal$_current;
+            if (t8 == null)
+              t8 = t9._as(t8);
+            rect = rect.expandToInclude$1(new A.Rect(t8.left, t8.top, t8.right, t8.bottom));
+            currentDirection0 = t8.direction;
+          }
+          t8 = rect.left;
+          t9 = Math.max(0, t8);
+          t10 = rect.top;
+          t11 = Math.max(0, t10);
+          t8 = Math.min(rect.right - t8, t5._as(A.RenderObject.prototype.get$constraints.call(_this)).maxWidth);
+          t10 = Math.min(rect.bottom - t10, t5._as(A.RenderObject.prototype.get$constraints.call(_this)).maxHeight);
+          currentRect = new A.Rect(Math.floor(t9) - 4, Math.floor(t11) - 4, Math.ceil(t9 + t8) + 4, Math.ceil(t11 + t10) + 4);
+          configuration = A.SemanticsConfiguration$();
+          ordinal0 = ordinal + 1;
+          configuration._sortKey = new A.OrdinalSortKey(ordinal, _null);
+          configuration._hasBeenAnnotated = true;
+          configuration._textDirection = currentDirection;
+          t10 = info.semanticsLabel;
+          configuration._attributedLabel = new A.AttributedString(t10 == null ? t2 : t10, C.List_empty2);
+          recognizer = info.recognizer;
+          if (recognizer != null) {
+            t2 = recognizer.onTap;
+            if (t2 != null) {
+              configuration._addArgumentlessAction$2(C.SemanticsAction_1, t2);
+              configuration._onTap = t2;
+              configuration._setFlag$2(C.SemanticsFlag_4194304, true);
+            }
+          }
+          t2 = _this._extended_render_paragraph$_cachedChildNodes;
+          newChild = (t2 == null ? _null : !t2.get$isEmpty(t2)) === true ? _this._extended_render_paragraph$_cachedChildNodes.removeFirst$0() : A.SemanticsNode$(_null, _null);
+          newChild.updateWith$1$config(0, configuration);
+          if (!newChild._rect.$eq(0, currentRect)) {
+            newChild._rect = currentRect;
+            newChild._markDirty$0();
+          }
+          newChildCache._add$1(0, newChild);
+          newChildren.push(newChild);
+          ordinal = ordinal0;
+          currentDirection = currentDirection0;
+        }
+      }
+      _this._extended_render_paragraph$_cachedChildNodes = newChildCache;
+      node.updateWith$2$childrenInInversePaintOrder$config(0, newChildren, config);
+    },
+    clearSemantics$0() {
+      this.super$RenderObject$clearSemantics();
+      this._extended_render_paragraph$_cachedChildNodes = null;
+    },
+    debugDescribeChildren$0() {
+      var t1 = this._extended_render_paragraph$_textPainter._text_painter$_text;
+      t1.toString;
+      return A._setArrayType([A.DiagnosticableTreeNode$("text", C.DiagnosticsTreeStyle_4, t1)], type$.JSArray_DiagnosticsNode);
+    },
+    _paintSpecialTextChildren$4$textOffset(textSpans, canvas, rect, textOffset) {
+      var t1, t2, t3, t4, t5, _i, ts, t6, topLeftOffset, t7, t8, t9, painter, buffer, endOffset, _this = this, _null = null;
+      for (t1 = textSpans.length, t2 = type$.BoxConstraints, t3 = _this._extended_render_paragraph$_textPainter, t4 = rect.right, t5 = type$.TextSpan, _i = 0; _i < textSpans.length; textSpans.length === t1 || (0, A.throwConcurrentModificationError)(textSpans), ++_i) {
+        ts = textSpans[_i];
+        t6 = t2._as(A.RenderObject.prototype.get$constraints.call(_this));
+        t3.setPlaceholderDimensions$1(_this._extended_text_render_box$_placeholderDimensions);
+        _this.layoutText$3$forceLayout$maxWidth$minWidth(true, t6.maxWidth, t6.minWidth);
+        t3._computeCaretMetrics$2(new A.TextPosition(textOffset, C.TextAffinity_1), rect);
+        t6 = t3.__TextPainter__caretMetrics_A;
+        t6 === $ && A.throwUnnamedLateFieldNI();
+        topLeftOffset = t6.offset;
+        if (textOffset !== 0 && C.Offset_0_0._dx === topLeftOffset._dx && C.Offset_0_0._dy === topLeftOffset._dy)
+          return;
+        if (ts instanceof B.BackgroundTextSpan) {
+          t6 = ts._textPainterHelper;
+          t7 = t6._text_painter_helper$_painter;
+          if (t7 != null) {
+            t8 = t5._as(t7._text_painter$_text);
+            t9 = ts.text;
+            t7 = t8.text != t9 || t7._textAlign !== t3._textAlign || t7._textScaleFactor !== t3._textScaleFactor || !J.$eq$(t7._text_painter$_locale, t3._text_painter$_locale);
+          } else
+            t7 = true;
+          if (t7) {
+            t7 = t3._textAlign;
+            t8 = t3._textScaleFactor;
+            t6._text_painter_helper$_painter = new A.TextPainter(ts, t7, t3._text_painter$_textDirection, t8, _null, t3._text_painter$_locale, _null, _null, C.TextWidthBasis_0, _null);
+          }
+          t6._text_painter_helper$_painter.layout$0();
+          painter = t6._text_painter_helper$_painter;
+          t6 = painter._textWidthBasis;
+          t7 = painter._paragraph;
+          t6 = t6 === C.TextWidthBasis_1 ? t7.get$longestLine() : t7.get$width(t7);
+          t6 = Math.ceil(t6);
+          t7 = painter._paragraph;
+          Math.ceil(t7.get$height(t7));
+          if (topLeftOffset._dx + t6 > t4) {
+            buffer = new A.StringBuffer("");
+            ts.computeToPlainText$3$includePlaceholders$includeSemanticsLabels(buffer, true, true);
+            t6 = buffer._contents;
+            endOffset = _this._findEndOffset$2(rect, textOffset + (t6.charCodeAt(0) == 0 ? t6 : t6).length);
+          } else
+            endOffset = _null;
+          ts.paint$5$endOffset$wholeTextPainter(canvas, topLeftOffset, rect, endOffset, t3);
+        } else if (ts instanceof A.TextSpan && ts.children != null) {
+          t6 = ts.children;
+          t6.toString;
+          _this._paintSpecialTextChildren$4$textOffset(t6, canvas, rect, textOffset);
+        }
+        buffer = new A.StringBuffer("");
+        ts.computeToPlainText$3$includePlaceholders$includeSemanticsLabels(buffer, true, true);
+        t6 = buffer._contents;
+        textOffset += (t6.charCodeAt(0) == 0 ? t6 : t6).length;
+      }
+    },
+    _paintSpecialTextChildren$3(textSpans, canvas, rect) {
+      return this._paintSpecialTextChildren$4$textOffset(textSpans, canvas, rect, 0);
+    },
+    _findEndOffset$2(rect, endTextOffset) {
+      var endOffset = this.getOffsetForCaret$2(new A.TextPosition(endTextOffset, C.TextAffinity_0), rect);
+      if (endTextOffset !== 0 && endOffset.$eq(0, C.Offset_0_0))
+        return this._findEndOffset$2(rect, endTextOffset - 1);
+      return endOffset;
+    },
+    hitTestChildren$2$position(result, position) {
+      var t1, _this = this;
+      if (_this.TextOverflowMixin__overflowWidget != null && _this.TextOverflowMixin__overflowRect != null) {
+        t1 = _this.ContainerRenderObjectMixin__lastChild;
+        t1.toString;
+        if (_this.hitTestChild$3$position(result, t1, position))
+          return true;
+        if (_this.TextOverflowMixin__overflowRect.contains$1(0, position))
+          return false;
+      }
+      return _this.super$ExtendedTextRenderBox$hitTestChildren(result, position);
+    },
+    _paintSelection$2(context, effectiveOffset) {
+      var t1, t2, t3, visibleRegion, startOffset, endOffset, showSelection, _this = this,
+        actualSelection = _this._extended_render_paragraph$_selection;
+      if (actualSelection == null)
+        return;
+      if (_this._hasSpecialInlineSpanBase) {
+        t1 = _this._extended_render_paragraph$_textPainter._text_painter$_text;
+        t1.toString;
+        actualSelection = B.convertTextInputSelectionToTextPainterSelection(t1, actualSelection);
+      }
+      actualSelection = _this.neverDragOnOverflow$1(actualSelection);
+      t1 = actualSelection.start;
+      t2 = actualSelection.end;
+      if (t1 !== t2 && _this._extended_render_paragraph$_selectionColor != null) {
+        t3 = _this._box$_size;
+        visibleRegion = new A.Rect(0, 0, 0 + t3._dx, 0 + t3._dy);
+        t3 = actualSelection.affinity;
+        startOffset = _this.getCaretOffset$2$effectiveOffset(new A.TextPosition(t1, t3), effectiveOffset);
+        _this._extended_render_paragraph$_selectionStartInViewport.set$value(0, visibleRegion.inflate$1(0.5).contains$1(0, startOffset));
+        endOffset = _this.getCaretOffset$2$effectiveOffset(new A.TextPosition(t2, t3), effectiveOffset);
+        _this._extended_render_paragraph$_selectionEndInViewport.set$value(0, visibleRegion.inflate$1(0.5).contains$1(0, endOffset));
+        showSelection = true;
+      } else
+        showSelection = false;
+      if (showSelection) {
+        if (_this._selectionRects == null) {
+          t1 = _this._extended_render_paragraph$_selectionWidthStyle;
+          _this._selectionRects = _this._extended_render_paragraph$_textPainter.getBoxesForSelection$3$boxHeightStyle$boxWidthStyle(actualSelection, _this._extended_render_paragraph$_selectionHeightStyle, t1);
+        }
+        _this.paintSelection$2(context.get$canvas(context), effectiveOffset);
+      }
+    },
+    getEndpointsForSelection$1(selection) {
+      var t1, textPainterSelection, boxes, start, end, _this = this;
+      if (selection.start !== selection.end) {
+        _this.layoutTextWithConstraints$1(type$.BoxConstraints._as(A.RenderObject.prototype.get$constraints.call(_this)));
+        if (_this._hasSpecialInlineSpanBase) {
+          t1 = _this._extended_render_paragraph$_textPainter._text_painter$_text;
+          t1.toString;
+          textPainterSelection = B.convertTextInputSelectionToTextPainterSelection(t1, selection);
+        } else
+          textPainterSelection = selection;
+        textPainterSelection = _this.neverDragOnOverflow$1(textPainterSelection);
+        t1 = _this._extended_render_paragraph$_selectionWidthStyle;
+        boxes = _this._extended_render_paragraph$_textPainter.getBoxesForSelection$3$boxHeightStyle$boxWidthStyle(textPainterSelection, _this._extended_render_paragraph$_selectionHeightStyle, t1);
+        if (boxes.length === 0)
+          return null;
+        t1 = C.JSArray_methods.get$first(boxes);
+        t1 = t1.direction === C.TextDirection_1 ? t1.left : t1.right;
+        start = new A.Offset(t1, C.JSArray_methods.get$first(boxes).bottom);
+        t1 = C.JSArray_methods.get$last(boxes);
+        t1 = t1.direction === C.TextDirection_1 ? t1.right : t1.left;
+        end = new A.Offset(t1, C.JSArray_methods.get$last(boxes).bottom);
+        if (start.$eq(0, end))
+          return null;
+        return A._setArrayType([new A.TextSelectionPoint(start, C.JSArray_methods.get$first(boxes).direction), new A.TextSelectionPoint(end, C.JSArray_methods.get$last(boxes).direction)], type$.JSArray_TextSelectionPoint);
+      }
+      return null;
+    },
+    getPositionForPoint$1(globalPosition) {
+      var offset, result, t1, t2, selection, t3, _this = this;
+      _this.layoutTextWithConstraints$1(type$.BoxConstraints._as(A.RenderObject.prototype.get$constraints.call(_this)));
+      offset = _this.globalToLocal$1(globalPosition);
+      result = _this._extended_render_paragraph$_textPainter._paragraph.getPositionForOffset$1(offset);
+      t1 = result.offset;
+      t2 = result.affinity;
+      selection = _this.neverDragOnOverflow$1(A.TextSelection$collapsed(t2, t1));
+      t3 = selection.baseOffset;
+      if (t3 !== t1)
+        result = new A.TextPosition(t3, t2);
+      else {
+        t3 = selection.extentOffset;
+        if (t3 !== t1)
+          result = new A.TextPosition(t3, t2);
+      }
+      return result;
+    },
+    get$plainText() {
+      var t1 = this.TextOverflowMixin__cachedPlainText;
+      if (t1 == null) {
+        t1 = this._extended_render_paragraph$_textPainter._text_painter$_text;
+        t1.toString;
+        t1 = this.TextOverflowMixin__cachedPlainText = B.textSpanToActualText(t1);
+      }
+      return t1;
+    }
+  };
+  B.TextOverflowMixin.prototype = {
+    set$overflowWidget(value) {
+      var _this = this;
+      if (J.$eq$(_this.TextOverflowMixin__overflowWidget, value))
+        return;
+      _this.set$overflow(0, C.TextOverflow_0);
+      _this.TextOverflowMixin__overflowWidget = value;
+      _this.markNeedsPaint$0();
+    },
+    set$overflow(_, value) {
+      var _this = this,
+        temp = _this.TextOverflowMixin__overflowWidget != null ? C.TextOverflow_0 : value,
+        t1 = _this.TextOverflowMixin___TextOverflowMixin__overflow_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      if (t1 === temp)
+        return;
+      _this.TextOverflowMixin___TextOverflowMixin__overflow_A = temp;
+      t1 = value === C.TextOverflow_2 ? "\u2026" : null;
+      _this._extended_render_paragraph$_textPainter.set$ellipsis(t1);
+      _this.markNeedsTextLayout$0();
+    },
+    layoutOverflow$0() {
+      var t1, t2, t3, t4, fadeSizePainter, fadeStart, fadeEnd, t5, textParentData, rect, textOverflowPosition, t6, maxOffset, t7, overflowSelection, position, start, end, range, hideWidgets, testTextPainter, t8, boxs, _i, box, t9, t10, _this = this, _null = null,
+        didOverflowWidth = _this._didVisualOverflow$0();
+      if (_this.TextOverflowMixin__hasVisualOverflow) {
+        t1 = _this.TextOverflowMixin___TextOverflowMixin__overflow_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        switch (t1.index) {
+          case 3:
+            _this.TextOverflowMixin__needsClipping = false;
+            _this.TextOverflowMixin__overflowShader = null;
+            break;
+          case 0:
+          case 2:
+            _this.TextOverflowMixin__needsClipping = true;
+            _this.TextOverflowMixin__overflowShader = null;
+            break;
+          case 1:
+            _this.TextOverflowMixin__needsClipping = true;
+            t1 = _this._extended_render_paragraph$_textPainter;
+            t2 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, t1._text_painter$_text.style, "\u2026");
+            t3 = t1._text_painter$_textDirection;
+            t3.toString;
+            t4 = t1._textScaleFactor;
+            fadeSizePainter = A.TextPainter$(_null, t1._text_painter$_locale, _null, _null, t2, C.TextAlign_4, t3, _null, t4, C.TextWidthBasis_0);
+            fadeSizePainter.layout$0();
+            if (didOverflowWidth) {
+              switch (t1._text_painter$_textDirection.index) {
+                case 0:
+                  fadeStart = fadeSizePainter.get$width(fadeSizePainter);
+                  fadeEnd = 0;
+                  break;
+                case 1:
+                  fadeEnd = _this._box$_size._dx;
+                  fadeStart = fadeEnd - fadeSizePainter.get$width(fadeSizePainter);
+                  break;
+                default:
+                  fadeStart = _null;
+                  fadeEnd = fadeStart;
+              }
+              _this.TextOverflowMixin__overflowShader = A.Gradient_Gradient$linear(new A.Offset(fadeStart, 0), new A.Offset(fadeEnd, 0), A._setArrayType([C.Color_4294967295, C.Color_16777215], type$.JSArray_Color), _null, C.TileMode_0, _null);
+            } else {
+              fadeEnd = _this._box$_size._dy;
+              t1 = fadeSizePainter._paragraph;
+              _this.TextOverflowMixin__overflowShader = A.Gradient_Gradient$linear(new A.Offset(0, fadeEnd - Math.ceil(t1.get$height(t1)) / 2), new A.Offset(0, fadeEnd), A._setArrayType([C.Color_4294967295, C.Color_16777215], type$.JSArray_Color), _null, C.TileMode_0, _null);
+            }
+            break;
+        }
+      } else {
+        _this.TextOverflowMixin__needsClipping = false;
+        _this.TextOverflowMixin__overflowShader = null;
+      }
+      _this.TextOverflowMixin__overflowRects = _this.TextOverflowMixin__overflowRect = null;
+      if (_this.TextOverflowMixin__overflowWidget != null) {
+        t1 = _this.ContainerRenderObjectMixin__lastChild;
+        t1.toString;
+        t2 = type$.BoxConstraints;
+        t3 = t2._as(A.RenderObject.prototype.get$constraints.call(_this));
+        _this.TextOverflowMixin__overflowWidget.toString;
+        t4 = _this._extended_render_paragraph$_textPainter;
+        t5 = t4.get$preferredLineHeight();
+        t1.layout$2$parentUsesSize(new A.BoxConstraints(0, t3.maxWidth, 0, t5), true);
+        if (!_this.TextOverflowMixin__hasVisualOverflow)
+          return;
+        t1 = _this.ContainerRenderObjectMixin__lastChild;
+        textParentData = type$.TextParentData._as(t1.parentData);
+        textParentData.scale = 1;
+        t3 = _this._box$_size;
+        t5 = 0 + t3._dx;
+        t3 = 0 + t3._dy;
+        rect = new A.Rect(0, 0, t5, t3);
+        t1 = t1._box$_size;
+        t1.toString;
+        textOverflowPosition = _this.TextOverflowMixin__overflowWidget.position;
+        t6 = new A.Runes(t4._text_painter$_text.toPlainText$0());
+        maxOffset = t6.get$length(t6);
+        if (textOverflowPosition === D.TextOverflowPosition_2) {
+          t2 = t1._dx;
+          t6 = t1._dy;
+          t7 = new A.Offset(t5, t3).$sub(0, new A.Offset(t2, t6 / 2));
+          overflowSelection = A.TextSelection$(C.TextAffinity_1, t4._paragraph.getPositionForOffset$1(t7).offset, t4._paragraph.getPositionForOffset$1(new A.Offset(t5, t3)).offset, false);
+          textParentData.offset = new A.Offset(t5, t3).$sub(0, new A.Offset(t2, t6));
+          _this._setOverflowRect$6(overflowSelection, t1, textParentData, rect, maxOffset, _this.TextOverflowMixin__overflowWidget.position);
+        } else {
+          t3 = t4._maxLines;
+          t3.toString;
+          t3 = C.JSInt_methods.$mod(t3, 2);
+          if (textOverflowPosition === D.TextOverflowPosition_1) {
+            t3 = t3 === 0 ? new A.Offset(0, rect.get$centerLeft()._dy + t4.get$preferredLineHeight() / 2) : rect.get$center().$sub(0, new A.Offset(t1._dx / 2, 0));
+            position = t4._paragraph.getPositionForOffset$1(t3);
+            t3 = t4._text_painter$_text;
+            t3.toString;
+            start = B.convertTextPainterPostionToTextInputPostion(t3, position, _null).offset;
+            end = start + 1;
+          } else {
+            t3 = t4.get$preferredLineHeight();
+            position = t4._paragraph.getPositionForOffset$1(new A.Offset(t1._dx, t3 / 2));
+            t3 = t4._text_painter$_text;
+            t3.toString;
+            end = B.convertTextPainterPostionToTextInputPostion(t3, position, _null).offset;
+            start = 0;
+          }
+          t3 = Math.min(start, end);
+          range = new B._TextRange(t3, Math.max(start, end));
+          hideWidgets = A._setArrayType([], type$.JSArray_int);
+          testTextPainter = _this._findNoOverflow$2(range, hideWidgets);
+          t6 = t4._text_painter$_text;
+          t6.toString;
+          t4.set$text(0, testTextPainter._text_painter$_text);
+          t7 = t4._text_painter$_text;
+          t7.toString;
+          _this.extractPlaceholderSpans$1(t7);
+          _this.TextOverflowMixin__cachedPlainText = null;
+          _this.layoutChildren$2$hideWidgets(t2._as(A.RenderObject.prototype.get$constraints.call(_this)), hideWidgets);
+          t7 = t2._as(A.RenderObject.prototype.get$constraints.call(_this));
+          _this.layoutText$3$forceLayout$maxWidth$minWidth(true, t2._as(A.RenderObject.prototype.get$constraints.call(_this)).maxWidth, t7.minWidth);
+          _this.setParentData$0();
+          t7 = t4.get$width(t4);
+          t8 = t4._paragraph;
+          t8 = Math.ceil(t8.get$height(t8));
+          _this._box$_size = t2._as(A.RenderObject.prototype.get$constraints.call(_this)).constrain$1(new A.Size(t7, t8));
+          if (textOverflowPosition === D.TextOverflowPosition_0) {
+            overflowSelection = A.TextSelection$(C.TextAffinity_1, t4._paragraph.getPositionForOffset$1(C.Offset_0_0).offset, t4._paragraph.getPositionForOffset$1(new A.Offset(t1._dx, 0)).offset, false);
+            textParentData.offset = _this.getCaretOffset$1(new A.TextPosition(overflowSelection.baseOffset, C.TextAffinity_1));
+            _this._setOverflowRect$6(overflowSelection, t1, textParentData, rect, maxOffset, _this.TextOverflowMixin__overflowWidget.position);
+          } else {
+            overflowSelection = B.convertTextInputSelectionToTextPainterSelection(t6, A.TextSelection$(C.TextAffinity_1, t3, t3 + Math.max(1, range.end - t3), false));
+            t2 = _this._extended_render_paragraph$_selectionWidthStyle;
+            boxs = t4.getBoxesForSelection$3$boxHeightStyle$boxWidthStyle(overflowSelection, _this._extended_render_paragraph$_selectionHeightStyle, t2);
+            if (_this.TextOverflowMixin__overflowRects == null)
+              _this.TextOverflowMixin__overflowRects = A._setArrayType([], type$.JSArray_Rect);
+            for (t2 = boxs.length, t3 = t1._dx, t5 -= 0, _i = 0; _i < boxs.length; boxs.length === t2 || (0, A.throwConcurrentModificationError)(boxs), ++_i) {
+              box = boxs[_i];
+              t6 = box.left;
+              t7 = box.top;
+              t8 = box.right;
+              t9 = box.bottom;
+              if (t8 - t6 === 0)
+                continue;
+              t10 = t6 + t3;
+              if (t10 < t5) {
+                textParentData.offset = new A.Offset(t6, t7);
+                t2 = t7 + (t9 - t7) / 2;
+                t6 = t4._paragraph.getPositionForOffset$1(new A.Offset(t6, t2)).offset;
+                t2 = t4._paragraph.getPositionForOffset$1(new A.Offset(t10, t2 + 0)).offset;
+                t3 = t6 < t2;
+                t4 = t3 ? t6 : t2;
+                overflowSelection = new A.TextSelection(t6, t2, C.TextAffinity_1, false, t4, t3 ? t2 : t6);
+                break;
+              } else {
+                t10 = _this.TextOverflowMixin__overflowRects;
+                if (t10 != null)
+                  t10.push(new A.Rect(t6, t7, t8, t9));
+              }
+            }
+            _this._setOverflowRect$6(overflowSelection, t1, textParentData, rect, maxOffset, _this.TextOverflowMixin__overflowWidget.position);
+          }
+        }
+      }
+    },
+    _findNoOverflow$2(range, hideWidgets) {
+      var testTextPainter, t1, maxOffset, t2, maxEnd, t3, t4, maxEnd0, _this = this;
+      _this.TextOverflowMixin__layoutCount = 0;
+      testTextPainter = A._Cell$named("testTextPainter");
+      t1 = _this._extended_render_paragraph$_textPainter._text_painter$_text;
+      t1.toString;
+      t1 = new A.Runes(B.textSpanToActualText(t1));
+      maxOffset = t1.get$length(t1);
+      for (t1 = range.start, t2 = type$.JSArray_int, maxEnd = maxOffset; _this.TextOverflowMixin__hasVisualOverflow;) {
+        testTextPainter.__late_helper$_value = _this._tryToFindNoOverflow1$2(range, hideWidgets);
+        t3 = _this.TextOverflowMixin__hasVisualOverflow;
+        t4 = range.end;
+        if (t3) {
+          range.end = Math.min(t4 + Math.max(C.JSInt_methods._tdivFast$1(maxEnd - t4, 2), 1), maxOffset);
+          C.JSArray_methods.clear$0(hideWidgets);
+        } else {
+          t3 = Math.min(t4 - 1, maxOffset);
+          range.end = t3;
+          _this._tryToFindNoOverflow1$2(range, A._setArrayType([], t2));
+          t4 = _this.TextOverflowMixin__hasVisualOverflow;
+          maxEnd0 = range.end;
+          if (t4) {
+            range.end = Math.min(maxEnd0 + 1, maxOffset);
+            _this.TextOverflowMixin__hasVisualOverflow = false;
+          } else {
+            range.end = Math.max(t1, Math.min(maxEnd0 - Math.max(C.JSInt_methods._tdivFast$1(maxEnd0 - t1, 2), 1), maxEnd0));
+            if (new B._TextRange(t1, t3).$eq(0, range))
+              _this.TextOverflowMixin__hasVisualOverflow = false;
+            else
+              _this.TextOverflowMixin__hasVisualOverflow = true;
+            maxEnd = maxEnd0;
+          }
+        }
+      }
+      return testTextPainter._readLocal$0();
+    },
+    _tryToFindNoOverflow1$2(range, hideWidgets) {
+      var inlineSpan, t3, t4, t5, t6, t7, t8, testTextPainter, _this = this,
+        t1 = _this._extended_render_paragraph$_textPainter,
+        t2 = t1._text_painter$_text;
+      t2.toString;
+      inlineSpan = _this._cutOffInlineSpan$5(t2, new A.Accumulator(), range, hideWidgets, new A.Accumulator());
+      t2 = t1._maxLines;
+      t3 = t1._textAlign;
+      t4 = t1._text_painter$_textDirection;
+      t5 = t1._textScaleFactor;
+      t6 = t1._text_painter$_locale;
+      t7 = t1._strutStyle;
+      t8 = t1._textWidthBasis;
+      testTextPainter = A.TextPainter$(null, t6, t2, t7, inlineSpan, t3, t4, t1._text_painter$_textHeightBehavior, t5, t8);
+      t8 = type$.BoxConstraints;
+      _this.layoutChildren$3$hideWidgets$textPainter(t8._as(A.RenderObject.prototype.get$constraints.call(_this)), hideWidgets, testTextPainter);
+      t5 = t8._as(A.RenderObject.prototype.get$constraints.call(_this));
+      testTextPainter.layout$2$maxWidth$minWidth(t8._as(A.RenderObject.prototype.get$constraints.call(_this)).maxWidth, t5.minWidth);
+      _this._didVisualOverflow$1$textPainter(testTextPainter);
+      _this.TextOverflowMixin__hasVisualOverflow = testTextPainter._paragraph.get$didExceedMaxLines();
+      return testTextPainter;
+    },
+    _setOverflowRect$6(overflowSelection, overFlowWidgetSize, textParentData, rect, maxOffset, position) {
+      var t3, t4, overflowRect, rightBig, t5, leftBig, t6, go, t7, t8, left, _this = this,
+        t1 = textParentData.offset,
+        t2 = t1._dx;
+      t1 = t1._dy;
+      t3 = overFlowWidgetSize._dx;
+      t4 = overFlowWidgetSize._dy;
+      _this.TextOverflowMixin__overflowRect = new A.Rect(t2, t1, t2 + t3, t1 + t4);
+      overflowRect = _this.getTextRect$3$effectiveOffset(overflowSelection, position, C.Offset_0_0);
+      t1 = _this.TextOverflowMixin__overflowRect;
+      t2 = overflowRect.right;
+      rightBig = t1.right > t2;
+      t5 = overflowRect.left;
+      leftBig = t1.left > t5;
+      if (t1.overlaps$1(overflowRect)) {
+        t1 = t2 - t5;
+        if (t1 === 0) {
+          t2 = _this.TextOverflowMixin__overflowRect;
+          t6 = t2.top;
+          overflowRect = new A.Rect(t5, t6, t5 + t1, t6 + (t2.bottom - t6));
+        }
+        _this.TextOverflowMixin__overflowRect = _this.TextOverflowMixin__overflowRect.expandToInclude$1(overflowRect);
+      }
+      for (t1 = rect.left, t2 = rect.right, go = true; go;) {
+        t5 = overflowSelection.baseOffset;
+        if (t5 > 0) {
+          t6 = _this.TextOverflowMixin__overflowRect.left;
+          if (t1 < t6) {
+            t7 = overflowRect.left;
+            t6 = leftBig ? t6 > t7 : t6 < t7;
+          } else
+            t6 = false;
+        } else
+          t6 = false;
+        if (t6) {
+          overflowSelection = overflowSelection.copyWith$1$baseOffset(t5 - 1);
+          go = true;
+        } else
+          go = false;
+        t5 = overflowSelection.extentOffset;
+        if (t5 < maxOffset) {
+          t6 = _this.TextOverflowMixin__overflowRect.right;
+          if (t2 > t6) {
+            t7 = overflowRect.right;
+            t6 = rightBig ? t6 > t7 : t6 < t7;
+          } else
+            t6 = false;
+        } else
+          t6 = false;
+        if (t6) {
+          overflowSelection = overflowSelection.copyWith$1$extentOffset(t5 + 1);
+          go = true;
+        }
+        if (!go)
+          break;
+        overflowRect = _this.getTextRect$3$effectiveOffset(overflowSelection, position, C.Offset_0_0);
+        if (_this.TextOverflowMixin__overflowRect.overlaps$1(overflowRect)) {
+          t5 = overflowRect.left;
+          t6 = overflowRect.right - t5;
+          if (t6 === 0) {
+            t7 = _this.TextOverflowMixin__overflowRect;
+            t8 = t7.top;
+            overflowRect = new A.Rect(t5, t8, t5 + t6, t8 + (t7.bottom - t8));
+          }
+          _this.TextOverflowMixin__overflowRect = _this.TextOverflowMixin__overflowRect.expandToInclude$1(overflowRect);
+          go = true;
+        } else {
+          t5 = _this.TextOverflowMixin__overflowRect;
+          t6 = t5.left;
+          if (t1 >= t6 || t2 <= t5.right) {
+            overflowRect = new A.Rect(t6, overflowRect.top, t5.right, overflowRect.bottom);
+            if (t5.overlaps$1(overflowRect))
+              _this.TextOverflowMixin__overflowRect = _this.TextOverflowMixin__overflowRect.expandToInclude$1(overflowRect);
+            go = false;
+          } else
+            go = true;
+        }
+      }
+      left = A._Cell$named("left");
+      _this.TextOverflowMixin__overflowWidget.toString;
+      switch (1) {
+        case 1:
+          left.__late_helper$_value = _this.TextOverflowMixin__overflowRect.right - t3;
+          break;
+      }
+      t1 = left._readLocal$0();
+      t2 = _this.TextOverflowMixin__overflowRect;
+      t3 = t2.top;
+      textParentData.offset = new A.Offset(t1, t3 + (t2.bottom - t3 - t4) / 2);
+    },
+    _paintTextOverflow$2(context, offset) {
+      var textParentData, t1, t2, _this = this;
+      if (_this.TextOverflowMixin__overflowWidget != null && _this.TextOverflowMixin__overflowRect != null) {
+        textParentData = type$.TextParentData._as(_this.ContainerRenderObjectMixin__lastChild.parentData);
+        t1 = textParentData.scale;
+        t1.toString;
+        t2 = _this.__RenderObject__needsCompositing_A;
+        t2 === $ && A.throwUnnamedLateFieldNI();
+        context.pushTransform$4(t2, offset.$add(0, textParentData.offset), A.Matrix4_Matrix4$diagonal3Values(t1, t1, t1), new B.TextOverflowMixin__paintTextOverflow_closure(_this));
+      }
+    },
+    _cutOffInlineSpan$5(value, offset, range, hideWidgets, hideWidgetIndex) {
+      var actualText, deleteAll, start, text, runes, finallyRunes, t1, i, index, text0, children, t2, _i, _null = null,
+        output = A._Cell$named("output");
+      if (type$.SpecialInlineSpanBase._is(value)) {
+        actualText = value.get$actualText();
+        deleteAll = value.get$deleteAll();
+      } else {
+        actualText = _null;
+        deleteAll = false;
+      }
+      if (value instanceof A.TextSpan) {
+        start = offset._inline_span$_value;
+        text = value.text;
+        if (text != null) {
+          runes = A.List_List$of(new A.Runes(text), true, type$.Runes._eval$1("Iterable.E"));
+          finallyRunes = A._setArrayType([], type$.JSArray_int);
+          for (t1 = range.start, i = 0; i < runes.length; ++i) {
+            index = i + offset._inline_span$_value;
+            if (t1 <= index && index <= range.end)
+              continue;
+            finallyRunes.push(runes[i]);
+          }
+          text0 = A.String_String$fromCharCodes(finallyRunes, 0, _null);
+        } else
+          text0 = text;
+        if (actualText == null)
+          actualText = text;
+        if (actualText != null) {
+          t1 = new A.Runes(actualText);
+          offset._inline_span$_value += t1.get$length(t1);
+        }
+        t1 = value.children;
+        if (t1 != null) {
+          children = A._setArrayType([], type$.JSArray_InlineSpan);
+          for (t2 = t1.length, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i)
+            children.push(this._cutOffInlineSpan$5(t1[_i], offset, range, hideWidgets, hideWidgetIndex));
+        } else
+          children = _null;
+        if (value instanceof B.BackgroundTextSpan) {
+          t1 = text0 == null ? "" : text0;
+          output.__late_helper$_value = B.BackgroundTextSpan$(actualText, value.background, value.clipBorderRadius, deleteAll, value.paintBackground, value.recognizer, value.semanticsLabel, start, value.style, t1);
+        } else {
+          t1 = text0 == null ? "" : text0;
+          output.__late_helper$_value = B.SpecialTextSpan$(actualText, children, deleteAll, value.recognizer, value.semanticsLabel, start, value.style, t1);
+        }
+      } else if (value instanceof A.WidgetSpan) {
+        t1 = range.contains$1(0, offset._inline_span$_value) ? C.SizedBox_0_0_null_null : value.child;
+        t2 = offset._inline_span$_value;
+        output.__late_helper$_value = B.ExtendedWidgetSpan$(actualText, value.alignment, value.baseline, t1, range.contains$1(0, t2), t2, value.style);
+        if (range.contains$1(0, offset._inline_span$_value))
+          hideWidgets.push(hideWidgetIndex._inline_span$_value);
+        t1 = actualText == null ? _null : actualText.length;
+        offset._inline_span$_value += t1 == null ? 1 : t1;
+        ++hideWidgetIndex._inline_span$_value;
+      } else
+        output.__late_helper$_value = value;
+      return output._readLocal$0();
+    },
+    _didVisualOverflow$1$textPainter(textPainter) {
+      var textDidExceedMaxLines, didOverflowHeight, didOverflowWidth, _this = this,
+        t1 = textPainter == null,
+        t2 = t1 ? _this._extended_render_paragraph$_textPainter : textPainter,
+        t3 = t2.get$width(t2);
+      t2 = t2._paragraph;
+      t2 = Math.ceil(t2.get$height(t2));
+      textDidExceedMaxLines = (t1 ? _this._extended_render_paragraph$_textPainter : textPainter)._paragraph.get$didExceedMaxLines();
+      t1 = _this._box$_size;
+      didOverflowHeight = t1._dy < t2 || textDidExceedMaxLines;
+      didOverflowWidth = t1._dx < t3;
+      _this.TextOverflowMixin__hasVisualOverflow = didOverflowWidth || didOverflowHeight;
+      return didOverflowWidth;
+    },
+    _didVisualOverflow$0() {
+      return this._didVisualOverflow$1$textPainter(null);
+    },
+    getTextRect$3$effectiveOffset(selection, position, effectiveOffset) {
+      var rect, _i, box, boxRect, i, textPosition, t3, offset, height, t4, t5,
+        t1 = this._extended_render_paragraph$_textPainter,
+        t2 = this._extended_render_paragraph$_selectionWidthStyle,
+        boxs = t1.getBoxesForSelection$3$boxHeightStyle$boxWidthStyle(selection, this._extended_render_paragraph$_selectionHeightStyle, t2);
+      t2 = boxs.length;
+      if (t2 !== 0) {
+        for (rect = null, _i = 0; _i < boxs.length; boxs.length === t2 || (0, A.throwConcurrentModificationError)(boxs), ++_i) {
+          box = boxs[_i];
+          boxRect = new A.Rect(box.left, box.top, box.right, box.bottom);
+          rect = rect == null ? boxRect : rect.expandToInclude$1(boxRect);
+        }
+        return rect.shift$1(effectiveOffset);
+      } else {
+        for (i = selection.baseOffset, t2 = selection.extentOffset, rect = null; i <= t2; ++i) {
+          textPosition = new A.TextPosition(i, C.TextAffinity_1);
+          t1._computeCaretMetrics$2(textPosition, C.Rect_0_0_0_0);
+          t3 = t1.__TextPainter__caretMetrics_A;
+          t3 === $ && A.throwUnnamedLateFieldNI();
+          offset = t3.offset;
+          t1._computeCaretMetrics$2(textPosition, C.Rect_0_0_0_0);
+          height = t1.__TextPainter__caretMetrics_A.fullHeight;
+          t3 = offset._dx;
+          t4 = offset._dy;
+          if (rect == null) {
+            t5 = height == null ? 0 : height;
+            rect = new A.Rect(t3, t4, t3 + 1, t4 + t5);
+          } else {
+            t5 = height == null ? 0 : height;
+            rect = rect.expandToInclude$1(new A.Rect(t3, t4, t3 + 1, t4 + t5));
+          }
+        }
+        rect.toString;
+        return rect;
+      }
+    },
+    neverDragOnOverflow$1(result) {
+      var t2, _this = this,
+        t1 = _this.TextOverflowMixin__overflowWidget;
+      if (t1 != null && _this.TextOverflowMixin__overflowRect != null) {
+        t1 = t1.position;
+        if (t1 === D.TextOverflowPosition_2) {
+          t1 = _this.TextOverflowMixin__overflowRect;
+          t2 = t1.left;
+          t1 = t1.bottom;
+          t1 = _this._extended_render_paragraph$_textPainter._paragraph.getPositionForOffset$1(new A.Offset(t2, t1)).offset;
+          if (result.extentOffset > t1)
+            result = result.copyWith$1$extentOffset(t1);
+        } else if (t1 === D.TextOverflowPosition_0) {
+          t1 = _this.TextOverflowMixin__overflowRect;
+          t2 = t1.right;
+          t1 = t1.top;
+          t1 = _this._extended_render_paragraph$_textPainter._paragraph.getPositionForOffset$1(new A.Offset(t2, t1)).offset;
+          if (result.baseOffset < t1)
+            result = result.copyWith$1$baseOffset(t1);
+        }
+      }
+      return result;
+    }
+  };
+  B._TextRange.prototype = {
+    contains$1(_, value) {
+      return this.start <= value && value <= this.end;
+    },
+    get$length(_) {
+      return this.end - this.start + 1;
+    },
+    get$hashCode(_) {
+      return A.Object_hash(this.start, this.end, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
+    },
+    $eq(_, other) {
+      if (other == null)
+        return false;
+      if (J.get$runtimeType$(other) !== A.getRuntimeType(this))
+        return false;
+      return other instanceof B._TextRange && this.start === other.start && this.end === other.end;
+    }
+  };
+  B._ExtendedRenderParagraph_ExtendedTextSelectionRenderObject_TextOverflowMixin.prototype = {};
+  B.ExtendedRichText.prototype = {
+    createRenderObject$1(context) {
+      var _this = this, _null = null,
+        t1 = _this.text,
+        t2 = A.Localizations_maybeLocaleOf(context),
+        t3 = type$.bool,
+        t4 = A.ValueNotifier$(true, t3);
+      t3 = A.ValueNotifier$(true, t3);
+      t2 = new B.ExtendedRenderParagraph(_this.startHandleLayerLink, _this.endHandleLayerLink, _this.selection, _this.selectionColor, A.TextPainter$(_null, t2, _this.maxLines, _this.strutStyle, t1, _this.textAlign, _this.textDirection, _this.textHeightBehavior, _this.textScaleFactor, _this.textWidthBasis), t1, _this.softWrap, _this.selectionHeightStyle, _this.selectionWidthStyle, C.Offset_0_0, t4, t3, _this.textSelectionDelegate, _this.overflow, _null, _null, false, _null, false, _null, _null, $, 0, 0, _null, _null, A.LayerHandle$(type$.ContainerLayer));
+      t2.RenderObject$0();
+      t2.set$hasFocus(_this.hasFocus);
+      t2.TextOverflowMixin___TextOverflowMixin__overflow_A = C.TextOverflow_0;
+      t2.TextOverflowMixin__overflowWidget = _this.overflowWidget;
+      t2.addAll$1(0, _null);
+      t2.extractPlaceholderSpans$1(t1);
+      return t2;
     },
     updateRenderObject$2(context, renderObject) {
       var t1, _this = this;
-      renderObject.set$theme(_this.theme);
-      t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$.Directionality);
-      t1.toString;
-      renderObject.set$textDirection(t1.textDirection);
-      renderObject.value = false;
-      renderObject.isEnabled = true;
-      renderObject.checkmarkAnimation = _this.checkmarkAnimation;
-      renderObject.avatarDrawerAnimation = _this.avatarDrawerAnimation;
-      renderObject.deleteDrawerAnimation = _this.deleteDrawerAnimation;
-      renderObject.enableAnimation = _this.enableAnimation;
-      renderObject.avatarBorder = _this.avatarBorder;
+      renderObject.set$text(0, _this.text);
+      renderObject.set$textAlign(0, _this.textAlign);
+      renderObject.set$textDirection(_this.textDirection);
+      renderObject.set$softWrap(_this.softWrap);
+      renderObject.set$overflow(0, _this.overflow);
+      renderObject.set$textScaleFactor(_this.textScaleFactor);
+      renderObject.set$maxLines(_this.maxLines);
+      renderObject.set$strutStyle(_this.strutStyle);
+      renderObject.set$textWidthBasis(_this.textWidthBasis);
+      t1 = A.Localizations_maybeLocaleOf(context);
+      renderObject.set$locale(0, t1);
+      renderObject.set$selection(_this.selection);
+      renderObject.set$selectionColor(_this.selectionColor);
+      renderObject.set$startHandleLayerLink(_this.startHandleLayerLink);
+      renderObject.set$endHandleLayerLink(_this.endHandleLayerLink);
+      renderObject.set$textHeightBehavior(_this.textHeightBehavior);
+      renderObject.set$selectionWidthStyle(_this.selectionWidthStyle);
+      renderObject.set$selectionHeightStyle(_this.selectionHeightStyle);
+      renderObject.set$overflowWidget(_this.overflowWidget);
+      renderObject.textSelectionDelegate = _this.textSelectionDelegate;
+      renderObject.set$hasFocus(_this.hasFocus);
+    }
+  };
+  B.ExtendedText.prototype = {
+    build$1(context) {
+      var effectiveTextStyle, innerTextSpan, t2, t3, t4, result, _this = this, _null = null,
+        t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$.DefaultTextStyle);
+      if (t1 == null)
+        t1 = C.DefaultTextStyle_MTi;
+      effectiveTextStyle = _this.style;
+      if (effectiveTextStyle.inherit)
+        effectiveTextStyle = t1.style.merge$1(effectiveTextStyle);
+      if (A.MediaQuery_boldTextOverride(context))
+        effectiveTextStyle = effectiveTextStyle.merge$1(C.TextStyle_LxF);
+      innerTextSpan = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, effectiveTextStyle, _this.data);
+      t2 = t1.textAlign;
+      if (t2 == null)
+        t2 = C.TextAlign_4;
+      t3 = context.dependOnInheritedWidgetOfExactType$1$0(type$.Directionality);
+      t3.toString;
+      t3 = t3.textDirection;
+      t4 = A.MediaQuery_textScaleFactorOf(context);
+      result = new A.RepaintBoundary(B.ExtendedRichText$(_null, false, _null, _null, _this.maxLines, _this.overflow, _this.overflowWidget, _null, _null, C.BoxHeightStyle_0, C.BoxWidthStyle_0, false, _null, _null, innerTextSpan, t2, t3, t1.textHeightBehavior, t4, _null, t1.textWidthBasis), _null);
+      return result;
     },
-    createRenderObject$1(context) {
-      var t2, t3, _this = this,
-        t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$.Directionality);
-      t1.toString;
-      t1 = new B._RenderChip(false, true, _this.checkmarkAnimation, _this.avatarDrawerAnimation, _this.deleteDrawerAnimation, _this.enableAnimation, _this.avatarBorder, _this.theme, t1.textDirection, A.LinkedHashMap_LinkedHashMap$_empty(type$._ChipSlot, type$.RenderBox), A.LayerHandle$(type$.ContainerLayer));
-      t1.RenderObject$0();
-      t2 = t1.get$markNeedsPaint();
-      t1.checkmarkAnimation.parent.addListener$1(0, t2);
-      t3 = t1.get$markNeedsLayout();
-      t1.avatarDrawerAnimation.parent.addListener$1(0, t3);
-      t1.deleteDrawerAnimation.parent.addListener$1(0, t3);
-      t1.enableAnimation.parent.addListener$1(0, t2);
-      return t1;
+    get$data(receiver) {
+      return this.data;
     }
   };
-  B._ChipSlot.prototype = {
+  B.TextOverflowAlign.prototype = {
     _enumToString$0() {
-      return "_ChipSlot." + this._core$_name;
+      return "TextOverflowAlign." + this._core$_name;
     }
   };
-  B._ChipRenderTheme.prototype = {
+  B.TextOverflowPosition.prototype = {
+    _enumToString$0() {
+      return "TextOverflowPosition." + this._core$_name;
+    }
+  };
+  B.TextOverflowClearType.prototype = {
+    _enumToString$0() {
+      return "TextOverflowClearType." + this._core$_name;
+    }
+  };
+  B.TextOverflowWidget.prototype = {
+    build$1(context) {
+      return this.child;
+    }
+  };
+  B.BackgroundTextSpan.prototype = {
+    paint$5$endOffset$wholeTextPainter(canvas, offset, rect, endOffset, wholeTextPainter) {
+      var t2, t3, t4, y, textRect, firstLineRect, t5, fullLinesAndLastLine, t6, i, t7, lastLineRect, t8, t9, _this = this,
+        t1 = _this._textPainterHelper,
+        handle = _this.paintBackground.call$7$endOffset$wholeTextPainter(_this, canvas, offset, t1._text_painter_helper$_painter, rect, endOffset, wholeTextPainter);
+      if (handle)
+        return;
+      t2 = t1._text_painter_helper$_painter;
+      t3 = t2.get$width(t2);
+      t2 = t2._paragraph;
+      t4 = offset._dx;
+      y = offset._dy;
+      textRect = new A.Rect(t4, y, t4 + t3, y + Math.ceil(t2.get$height(t2)));
+      if (endOffset != null) {
+        t2 = rect.right;
+        t3 = t1._text_painter_helper$_painter._paragraph;
+        firstLineRect = new A.Rect(t4, y, t4 + (t2 - t4), y + Math.ceil(t3.get$height(t3)));
+        canvas.save$0(0);
+        t3 = $.$get$_renderer();
+        t3 = t3.createPath$0();
+        t4 = _this.clipBorderRadius;
+        t5 = t4.get$topLeft(t4);
+        t4 = t4.get$bottomLeft(t4);
+        t1._text_painter_helper$_painter.toString;
+        t3.addRRect$1(new A.BorderRadius(t5, C.Radius_0_0, t4, C.Radius_0_0).toRRect$1(firstLineRect));
+        canvas.clipPath$1(0, t3);
+        t3 = _this.background;
+        canvas.drawRect$2(firstLineRect, t3);
+        canvas.restore$0(0);
+        t4 = endOffset._dy;
+        t5 = t1._text_painter_helper$_painter._paragraph;
+        fullLinesAndLastLine = C.JSNumber_methods.round$0((t4 - y) / Math.ceil(t5.get$height(t5)));
+        for (t4 = fullLinesAndLastLine - 1, t5 = _this.clipBorderRadius, t2 = 0 + (t2 - rect.left), t6 = 0 + endOffset._dx, i = 0; i < fullLinesAndLastLine; ++i) {
+          t7 = t1._text_painter_helper$_painter._paragraph;
+          y += Math.ceil(t7.get$height(t7));
+          t7 = t1._text_painter_helper$_painter;
+          if (i === t4) {
+            t7 = t7._paragraph;
+            lastLineRect = new A.Rect(0, y, t6, y + Math.ceil(t7.get$height(t7)));
+            canvas.save$0(0);
+            t7 = $.$get$_renderer();
+            t7 = t7.createPath$0();
+            t8 = t5.get$topRight(t5);
+            t9 = t5.get$bottomRight(t5);
+            t1._text_painter_helper$_painter.toString;
+            t7.addRRect$1(new A.BorderRadius(C.Radius_0_0, t8, C.Radius_0_0, t9).toRRect$1(lastLineRect));
+            canvas.clipPath$1(0, t7);
+            canvas.drawRect$2(lastLineRect, t3);
+            canvas.restore$0(0);
+          } else {
+            t7 = t7._paragraph;
+            canvas.drawRect$2(new A.Rect(0, y, t2, y + Math.ceil(t7.get$height(t7))), t3);
+          }
+        }
+      } else {
+        canvas.save$0(0);
+        t2 = $.$get$_renderer();
+        t2 = t2.createPath$0();
+        t2.addRRect$1(_this.clipBorderRadius.resolve$1(t1._text_painter_helper$_painter._text_painter$_textDirection).toRRect$1(textRect));
+        canvas.clipPath$1(0, t2);
+        canvas.drawRect$2(textRect, _this.background);
+        canvas.restore$0(0);
+      }
+    },
     $eq(_, other) {
       var _this = this;
       if (other == null)
@@ -878,1641 +2172,2766 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return true;
       if (J.get$runtimeType$(other) !== A.getRuntimeType(_this))
         return false;
-      return other instanceof B._ChipRenderTheme && other.avatar.super$Object$$eq(0, _this.avatar) && other.label.super$Object$$eq(0, _this.label) && other.deleteIcon.super$Object$$eq(0, _this.deleteIcon) && other.brightness === _this.brightness && other.padding.$eq(0, _this.padding) && other.labelPadding.$eq(0, _this.labelPadding) && other.showAvatar === _this.showAvatar && J.$eq$(other.checkmarkColor, _this.checkmarkColor) && other.canTapBody === _this.canTapBody;
+      if (other instanceof B.BackgroundTextSpan)
+        if (other.text == _this.text)
+          if (J.$eq$(other.style, _this.style))
+            other.recognizer == _this.recognizer;
+      return false;
     },
     get$hashCode(_) {
       var _this = this;
-      return A.Object_hash(_this.avatar, _this.label, _this.deleteIcon, _this.brightness, _this.padding, _this.labelPadding, _this.showAvatar, true, _this.checkmarkColor, _this.canTapBody, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
+      return B.hashValues(_this.style, _this.text, _this.recognizer, _this.background, _this.clipBorderRadius, _this.paintBackground);
+    },
+    compareTo$1(_, other) {
+      if (other instanceof B.BackgroundTextSpan)
+        return C.RenderComparison_2;
+      return this.super$SpecialTextSpan$compareTo(0, other);
     }
   };
-  B._RenderChip.prototype = {
-    set$theme(value) {
-      if (this._chip$_theme.$eq(0, value))
-        return;
-      this._chip$_theme = value;
-      this.markNeedsLayout$0();
-    },
-    set$textDirection(value) {
-      if (this._chip$_textDirection === value)
-        return;
-      this._chip$_textDirection = value;
-      this.markNeedsLayout$0();
-    },
-    get$children(_) {
-      var t3,
-        t1 = A._setArrayType([], type$.JSArray_RenderBox),
-        t2 = this.SlottedContainerRenderObjectMixin__slotToChild;
-      if (t2.$index(0, D._ChipSlot_1) != null) {
-        t3 = t2.$index(0, D._ChipSlot_1);
-        t3.toString;
-        t1.push(t3);
-      }
-      if (t2.$index(0, D._ChipSlot_0) != null) {
-        t3 = t2.$index(0, D._ChipSlot_0);
-        t3.toString;
-        t1.push(t3);
-      }
-      if (t2.$index(0, D._ChipSlot_2) != null) {
-        t2 = t2.$index(0, D._ChipSlot_2);
-        t2.toString;
-        t1.push(t2);
-      }
-      return t1;
-    },
-    get$sizedByParent() {
-      return false;
-    },
-    computeMinIntrinsicWidth$1(height) {
-      var t5,
-        t1 = this._chip$_theme.padding.get$horizontal(),
-        t2 = this._chip$_theme.labelPadding.get$horizontal(),
-        t3 = this.SlottedContainerRenderObjectMixin__slotToChild,
-        t4 = t3.$index(0, D._ChipSlot_1);
-      t4 = t4 == null ? 0 : t4._computeIntrinsicDimension$3(C._IntrinsicDimension_0, height, t4.get$computeMinIntrinsicWidth());
-      t5 = t3.$index(0, D._ChipSlot_0);
-      t5 = t5 == null ? 0 : t5._computeIntrinsicDimension$3(C._IntrinsicDimension_0, height, t5.get$computeMinIntrinsicWidth());
-      t3 = t3.$index(0, D._ChipSlot_2);
-      t3 = t3 == null ? 0 : t3._computeIntrinsicDimension$3(C._IntrinsicDimension_0, height, t3.get$computeMinIntrinsicWidth());
-      return t1 + t2 + t4 + t5 + t3;
-    },
-    computeMaxIntrinsicWidth$1(height) {
-      var t5,
-        t1 = this._chip$_theme.padding.get$horizontal(),
-        t2 = this._chip$_theme.labelPadding.get$horizontal(),
-        t3 = this.SlottedContainerRenderObjectMixin__slotToChild,
-        t4 = t3.$index(0, D._ChipSlot_1);
-      t4 = t4 == null ? 0 : t4._computeIntrinsicDimension$3(C._IntrinsicDimension_1, height, t4.get$computeMaxIntrinsicWidth());
-      t5 = t3.$index(0, D._ChipSlot_0);
-      t5 = t5 == null ? 0 : t5._computeIntrinsicDimension$3(C._IntrinsicDimension_1, height, t5.get$computeMaxIntrinsicWidth());
-      t3 = t3.$index(0, D._ChipSlot_2);
-      t3 = t3 == null ? 0 : t3._computeIntrinsicDimension$3(C._IntrinsicDimension_1, height, t3.get$computeMaxIntrinsicWidth());
-      return t1 + t2 + t4 + t5 + t3;
-    },
-    computeMinIntrinsicHeight$1(width) {
-      var t3, t4, t5,
-        t1 = this._chip$_theme.padding,
-        t2 = t1.get$_top(t1);
-      t1 = t1.get$_bottom(t1);
-      t3 = this._chip$_theme.labelPadding;
-      t4 = t3.get$_top(t3);
-      t3 = t3.get$_bottom(t3);
-      t5 = this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0);
-      t5 = t5 == null ? 0 : t5._computeIntrinsicDimension$3(C._IntrinsicDimension_2, width, t5.get$computeMinIntrinsicHeight());
-      return Math.max(32, t2 + t1 + (t4 + t3) + t5);
-    },
-    computeMaxIntrinsicHeight$1(width) {
-      return this.computeMinIntrinsicHeight$1(width);
-    },
-    computeDistanceToActualBaseline$1(baseline) {
-      return this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0).getDistanceToActualBaseline$1(baseline);
-    },
-    _layoutLabel$5(contentConstraints, iconSizes, size, rawSize, layoutChild) {
-      var maxWidth, updatedSize, t2, t3, t4, _this = this,
-        t1 = contentConstraints.maxWidth;
-      if (isFinite(t1)) {
-        maxWidth = Math.max(0, t1 - iconSizes - _this._chip$_theme.labelPadding.get$horizontal() - _this._chip$_theme.padding.get$horizontal());
-        t1 = _this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0);
-        t1.toString;
-        updatedSize = layoutChild.call$2(t1, new A.BoxConstraints(0, maxWidth, rawSize._dy, size._dy));
-        t1 = updatedSize._dx;
-        t2 = _this._chip$_theme.labelPadding.get$horizontal();
-        t3 = updatedSize._dy;
-        t4 = _this._chip$_theme.labelPadding;
-        return new A.Size(t1 + t2, t3 + (t4.get$_top(t4) + t4.get$_bottom(t4)));
-      }
-      t1 = _this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0);
-      t1.toString;
-      updatedSize = layoutChild.call$2(t1, new A.BoxConstraints(0, size._dx, rawSize._dy, size._dy));
-      t1 = updatedSize._dx;
-      t2 = _this._chip$_theme.labelPadding.get$horizontal();
-      t3 = updatedSize._dy;
-      t4 = _this._chip$_theme.labelPadding;
-      return new A.Size(t1 + t2, t3 + (t4.get$_top(t4) + t4.get$_bottom(t4)));
-    },
-    _layoutAvatar$3(contentConstraints, contentSize, layoutChild) {
-      var avatarBoxSize, t2, avatarWidth,
-        requestedSize = Math.max(0, contentSize),
-        avatarConstraints = A.BoxConstraints$tightFor(requestedSize, requestedSize),
-        t1 = this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_1);
-      t1.toString;
-      avatarBoxSize = layoutChild.call$2(t1, avatarConstraints);
-      t1 = this._chip$_theme;
-      t2 = this.avatarDrawerAnimation;
-      avatarWidth = t1.showAvatar ? 0 + t2.get$value(t2) * avatarBoxSize._dx : 0 + t2.get$value(t2) * contentSize;
-      return new A.Size(avatarWidth, 0 + avatarBoxSize._dy);
-    },
-    _layoutDeleteIcon$3(contentConstraints, contentSize, layoutChild) {
-      var boxSize,
-        requestedSize = Math.max(0, contentSize),
-        deleteIconConstraints = A.BoxConstraints$tightFor(requestedSize, requestedSize),
-        t1 = this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_2);
-      t1.toString;
-      boxSize = layoutChild.call$2(t1, deleteIconConstraints);
-      t1 = this.deleteDrawerAnimation;
-      if (t1.get$status(t1) === C.AnimationStatus_0)
-        return new A.Size(0, contentSize);
-      t1 = this.deleteDrawerAnimation;
-      return new A.Size(0 + t1.get$value(t1) * boxSize._dx, 0 + boxSize._dy);
-    },
-    hitTest$2$position(result, position) {
-      var t1, t2, t3, t4, hitIsOnDeleteIcon, hitTestChild, center, _this = this;
-      if (!_this._box$_size.contains$1(0, position))
+  B.ExtendedWidgetSpan.prototype = {
+    $eq(_, other) {
+      var _this = this;
+      if (other == null)
         return false;
-      t1 = _this.SlottedContainerRenderObjectMixin__slotToChild;
-      if (t1.$index(0, D._ChipSlot_2) != null) {
-        t2 = _this._chip$_theme;
-        t3 = _this._box$_size;
-        t3.toString;
-        t4 = t1.$index(0, D._ChipSlot_2)._box$_size;
-        t4.toString;
-        hitIsOnDeleteIcon = B._hitIsOnDeleteIcon(t3, t4, t2.padding, position, _this._chip$_textDirection);
-      } else
-        hitIsOnDeleteIcon = false;
-      if (hitIsOnDeleteIcon) {
-        t2 = t1.$index(0, D._ChipSlot_2);
-        if (t2 == null)
-          t2 = t1.$index(0, D._ChipSlot_0);
-        hitTestChild = t2 == null ? t1.$index(0, D._ChipSlot_1) : t2;
-      } else {
-        t2 = t1.$index(0, D._ChipSlot_0);
-        hitTestChild = t2 == null ? t1.$index(0, D._ChipSlot_1) : t2;
-      }
-      if (hitTestChild != null) {
-        center = hitTestChild._box$_size.center$1(C.Offset_0_0);
-        return result.addWithRawTransform$3$hitTest$position$transform(new B._RenderChip_hitTest_closure(center, hitTestChild), position, A.MatrixUtils_forceToPoint(center));
-      }
-      return false;
+      if (_this === other)
+        return true;
+      if (J.get$runtimeType$(other) !== A.getRuntimeType(_this))
+        return false;
+      if (!_this.super$WidgetSpan$$eq(0, other))
+        return false;
+      if (!J.$eq$(_this.widgetSpanSize.size, other.get$widgetSpanSize().size))
+        return false;
+      return type$.SpecialInlineSpanBase._is(other) && _this.equal$1(other);
     },
-    computeDryLayout$1(constraints) {
-      return this._chip$_computeSizes$2(constraints, A.layout_helper_ChildLayoutHelper_dryLayoutChild$closure()).size;
+    get$hashCode(_) {
+      var _this = this;
+      return B.hashValues(A.WidgetSpan.prototype.get$hashCode.call(_this, _this), B.hashValues(_this.actualText, _this.textRange.start, true, D.C__HashEnd, D.C__HashEnd, D.C__HashEnd), _this.widgetSpanSize.size, D.C__HashEnd, D.C__HashEnd, D.C__HashEnd);
     },
-    _chip$_computeSizes$2(constraints, layoutChild) {
-      var rawLabelSize, t2, t3, t4, t5, t6, contentSize, avatarSize, deleteIconSize, labelSize, overallSize, _this = this,
-        contentConstraints = new A.BoxConstraints(0, constraints.maxWidth, 0, constraints.maxHeight),
-        t1 = _this._chip$_theme.visualDensity,
-        densityAdjustment = new A.Offset(0, new A.Offset(t1.horizontal, t1.vertical).$mul(0, 4)._dy / 2);
-      t1 = _this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0);
-      t1.toString;
-      rawLabelSize = layoutChild.call$2(t1, contentConstraints);
-      t1 = _this._chip$_theme.padding;
-      t2 = t1.get$_top(t1);
-      t1 = t1.get$_bottom(t1);
-      t3 = _this._chip$_theme.labelPadding;
-      t4 = t3.get$_top(t3);
-      t3 = t3.get$_bottom(t3);
-      t5 = rawLabelSize._dy;
-      t6 = _this._chip$_theme.labelPadding;
-      contentSize = Math.max(32 - (t2 + t1) + (t4 + t3), t5 + (t6.get$_top(t6) + t6.get$_bottom(t6)));
-      avatarSize = _this._layoutAvatar$3(contentConstraints, contentSize, layoutChild);
-      deleteIconSize = _this._layoutDeleteIcon$3(contentConstraints, contentSize, layoutChild);
-      t6 = avatarSize._dx;
-      t5 = deleteIconSize._dx;
-      labelSize = _this._layoutLabel$5(contentConstraints, t6 + t5, new A.Size(rawLabelSize._dx, contentSize), rawLabelSize, layoutChild);
-      overallSize = new A.Size(t6 + labelSize._dx + t5, contentSize).$add(0, densityAdjustment);
-      t5 = _this._chip$_theme.padding.get$horizontal();
-      t6 = _this._chip$_theme.padding;
-      return new B._ChipSizes(constraints.constrain$1(new A.Size(overallSize._dx + t5, overallSize._dy + (t6.get$_top(t6) + t6.get$_bottom(t6)))), overallSize, contentSize, avatarSize, labelSize, deleteIconSize, densityAdjustment);
+    compareTo$1(_, other) {
+      var comparison = this.super$WidgetSpan$compareTo(0, other),
+        t1 = comparison === C.RenderComparison_0;
+      if (t1)
+        if (!J.$eq$(this.widgetSpanSize.size, type$.ExtendedWidgetSpan._as(other).widgetSpanSize.size))
+          return C.RenderComparison_3;
+      return t1 ? this.baseCompareTo$1(type$.SpecialInlineSpanBase._as(other)) : comparison;
     },
-    performLayout$0() {
-      var t3, avatarOffset, start, labelOffset, t4, t5, deleteIconOffset, t6, t7, _this = this,
-        t1 = type$.BoxConstraints,
-        sizes = _this._chip$_computeSizes$2(t1._as(A.RenderObject.prototype.get$constraints.call(_this)), A.layout_helper_ChildLayoutHelper_layoutChild$closure()),
-        t2 = sizes.overall,
-        right = t2._dx,
-        centerLayout = new B._RenderChip_performLayout_centerLayout(_this, sizes);
-      switch (_this._chip$_textDirection.index) {
-        case 0:
-          t3 = sizes.avatar;
-          avatarOffset = centerLayout.call$2(t3, right);
-          start = right - t3._dx;
-          t3 = sizes.label;
-          labelOffset = centerLayout.call$2(t3, start);
-          t4 = _this.deleteDrawerAnimation;
-          if (t4.get$status(t4) !== C.AnimationStatus_0) {
-            t4 = sizes.deleteIcon;
-            t5 = _this._chip$_theme.padding;
-            _this.___RenderChip__deleteButtonRect_A = new A.Rect(0, 0, 0 + (t4._dx + t5.right), 0 + (t2._dy + (t5.get$_top(t5) + t5.get$_bottom(t5))));
-            deleteIconOffset = centerLayout.call$2(t4, start - t3._dx);
-          } else {
-            _this.___RenderChip__deleteButtonRect_A = C.Rect_0_0_0_0;
-            deleteIconOffset = C.Offset_0_0;
-          }
-          t3 = _this._chip$_theme;
-          if (t3.canTapBody) {
-            t4 = _this.___RenderChip__deleteButtonRect_A;
-            t4 === $ && A.throwUnnamedLateFieldNI();
-            t4 = t4.right - t4.left;
-            t3 = t3.padding.get$horizontal();
-            t5 = _this._chip$_theme.padding;
-            _this.___RenderChip__pressRect_A = new A.Rect(t4, 0, t4 + (right - t4 + t3), 0 + (t2._dy + (t5.get$_top(t5) + t5.get$_bottom(t5))));
-          } else
-            _this.___RenderChip__pressRect_A = C.Rect_0_0_0_0;
-          break;
-        case 1:
-          t3 = sizes.avatar;
-          t4 = _this.SlottedContainerRenderObjectMixin__slotToChild;
-          t5 = t4.$index(0, D._ChipSlot_1);
-          if (t5 == null)
-            t5 = C.Size_0_0;
-          else {
-            t5 = t5._box$_size;
-            t5.toString;
-          }
-          t6 = t3._dx;
-          avatarOffset = centerLayout.call$2(t3, 0 - t5._dx + t6);
-          start = 0 + t6;
-          t3 = sizes.label;
-          labelOffset = centerLayout.call$2(t3, start);
-          start += t3._dx;
-          if (_this._chip$_theme.canTapBody) {
-            t3 = _this.deleteDrawerAnimation;
-            t3 = t3.get$status(t3);
-            t5 = _this._chip$_theme.padding;
-            t3 = t3 !== C.AnimationStatus_0 ? start + t5.left : right + t5.get$horizontal();
-            t5 = _this._chip$_theme.padding;
-            _this.___RenderChip__pressRect_A = new A.Rect(0, 0, 0 + t3, 0 + (t2._dy + (t5.get$_top(t5) + t5.get$_bottom(t5))));
-          } else
-            _this.___RenderChip__pressRect_A = C.Rect_0_0_0_0;
-          t3 = t4.$index(0, D._ChipSlot_2);
-          if (t3 == null)
-            t3 = C.Size_0_0;
-          else {
-            t3 = t3._box$_size;
-            t3.toString;
-          }
-          t4 = sizes.deleteIcon;
-          t5 = t4._dx;
-          start -= t3._dx - t5;
-          t3 = _this.deleteDrawerAnimation;
-          if (t3.get$status(t3) !== C.AnimationStatus_0) {
-            deleteIconOffset = centerLayout.call$2(t4, start);
-            t3 = _this._chip$_theme.padding;
-            t4 = start + t3.left;
-            _this.___RenderChip__deleteButtonRect_A = new A.Rect(t4, 0, t4 + (t5 + t3.right), 0 + (t2._dy + (t3.get$_top(t3) + t3.get$_bottom(t3))));
-          } else {
-            _this.___RenderChip__deleteButtonRect_A = C.Rect_0_0_0_0;
-            deleteIconOffset = C.Offset_0_0;
-          }
-          break;
-        default:
-          avatarOffset = C.Offset_0_0;
-          labelOffset = C.Offset_0_0;
-          deleteIconOffset = C.Offset_0_0;
-      }
-      t3 = _this._chip$_theme.labelPadding;
-      t4 = t3.get$_top(t3);
-      t3 = t3.get$_bottom(t3);
-      t5 = _this.SlottedContainerRenderObjectMixin__slotToChild;
-      t6 = t5.$index(0, D._ChipSlot_0);
-      if (t6 == null)
-        t6 = C.Size_0_0;
-      else {
-        t6 = t6._box$_size;
-        t6.toString;
-      }
-      labelOffset = labelOffset.$add(0, new A.Offset(0, (sizes.label._dy - (t4 + t3) - t6._dy) / 2));
-      t6 = t5.$index(0, D._ChipSlot_1).parentData;
-      t6.toString;
-      t3 = type$.BoxParentData;
-      t3._as(t6);
-      t4 = _this._chip$_theme.padding;
-      t6.offset = new A.Offset(t4.left, t4.top).$add(0, avatarOffset);
-      t4 = t5.$index(0, D._ChipSlot_0).parentData;
-      t4.toString;
-      t3._as(t4);
-      t6 = _this._chip$_theme.padding;
-      t6 = new A.Offset(t6.left, t6.top).$add(0, labelOffset);
-      t7 = _this._chip$_theme.labelPadding;
-      t4.offset = t6.$add(0, new A.Offset(t7.left, t7.top));
-      t5 = t5.$index(0, D._ChipSlot_2).parentData;
-      t5.toString;
-      t3._as(t5);
-      t3 = _this._chip$_theme.padding;
-      t5.offset = new A.Offset(t3.left, t3.top).$add(0, deleteIconOffset);
-      t3 = _this._chip$_theme.padding.get$horizontal();
-      t5 = _this._chip$_theme.padding;
-      t7 = t5.get$_top(t5);
-      t5 = t5.get$_bottom(t5);
-      _this._box$_size = t1._as(A.RenderObject.prototype.get$constraints.call(_this)).constrain$1(new A.Size(right + t3, t2._dy + (t7 + t5)));
+    build$3$dimensions$textScaleFactor(builder, dimensions, textScaleFactor) {
+      var currentDimensions,
+        t1 = this.style,
+        hasStyle = t1 != null;
+      if (hasStyle)
+        builder.pushStyle$1(t1.getTextStyle$1$textScaleFactor(textScaleFactor));
+      dimensions.toString;
+      currentDimensions = dimensions[builder.get$placeholderCount()];
+      t1 = this.widgetSpanSize.size = currentDimensions.size;
+      builder.addPlaceholder$6$baseline$baselineOffset$scale(t1._dx, t1._dy, this.alignment, currentDimensions.baseline, currentDimensions.baselineOffset, textScaleFactor);
+      if (hasStyle)
+        builder.pop$0();
     },
-    get$_chip$_disabledColor() {
-      var enableTween,
-        t1 = this.enableAnimation;
-      t1 = t1.get$status(t1);
-      if (t1 === C.AnimationStatus_3)
-        return C.Color_4294967295;
-      switch (this._chip$_theme.brightness.index) {
-        case 1:
-          enableTween = new A.ColorTween(A.Color$fromARGB(97, 255, 255, 255), C.Color_4294967295);
-          break;
-        case 0:
-          enableTween = new A.ColorTween(A.Color$fromARGB(97, 0, 0, 0), C.Color_4278190080);
-          break;
-        default:
-          enableTween = null;
-      }
-      t1 = this.enableAnimation;
-      t1 = enableTween.transform$1(0, t1.get$value(t1));
-      t1.toString;
-      return t1;
+    getSpanForPositionVisitor$2(position, offset) {
+      var affinity = position.affinity,
+        targetOffset = position.offset,
+        t1 = offset._inline_span$_value,
+        endOffset = t1 + 1;
+      if (!(t1 === targetOffset && affinity === C.TextAffinity_1))
+        t1 = endOffset === targetOffset && affinity === C.TextAffinity_0;
+      else
+        t1 = true;
+      if (t1)
+        return this;
+      offset._inline_span$_value = endOffset;
+      return null;
     },
-    _paintCheck$3(canvas, origin, size) {
-      var paint, t2, t, path, t3, t4, mid, t5, t6, t7, t8, _this = this,
-        t1 = _this._chip$_theme,
-        paintColor = t1.checkmarkColor;
-      if (!(paintColor != null))
-        switch (t1.brightness.index) {
-          case 1:
-            paintColor = t1.showAvatar ? C.Color_4294967295 : A.Color$fromARGB(222, 0, 0, 0);
-            break;
+    getSpanForPosition$1(position) {
+      return this;
+    },
+    get$actualText() {
+      return this.actualText;
+    },
+    get$deleteAll() {
+      return true;
+    },
+    get$textRange() {
+      return this.textRange;
+    },
+    get$widgetSpanSize() {
+      return this.widgetSpanSize;
+    }
+  };
+  B.WidgetSpanSize.prototype = {};
+  B._ExtendedWidgetSpan_WidgetSpan_SpecialInlineSpanBase.prototype = {};
+  B.ExtendedTextRenderBox.prototype = {
+    get$textChildCount() {
+      var t1 = this.TextOverflowMixin__overflowWidget,
+        t2 = this.ContainerRenderObjectMixin__childCount;
+      return t1 != null ? t2 - 1 : t2;
+    },
+    extractPlaceholderSpans$1(span) {
+      this.__ExtendedTextRenderBox__placeholderSpans_A = A._setArrayType([], type$.JSArray_PlaceholderSpan);
+      span.visitChildren$1(new B.ExtendedTextRenderBox_extractPlaceholderSpans_closure(this));
+    },
+    _extended_text_render_box$_canComputeIntrinsics$0() {
+      var t2, _i,
+        t1 = this.__ExtendedTextRenderBox__placeholderSpans_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t2 = t1.length;
+      _i = 0;
+      for (; _i < t2; ++_i)
+        switch (t1[_i].alignment.index) {
           case 0:
-            paintColor = t1.showAvatar ? C.Color_4278190080 : A.Color$fromARGB(222, 255, 255, 255);
-            break;
-          default:
-            paintColor = null;
+          case 1:
+          case 2:
+            return false;
+          case 3:
+          case 5:
+          case 4:
+            continue;
         }
-      t1 = _this.checkmarkAnimation.parent;
-      if (t1.get$status(t1) === C.AnimationStatus_2) {
-        t1 = _this.checkmarkAnimation;
-        paintColor = new A.ColorTween(C.Color_0, paintColor).transform$1(0, t1.get$value(t1));
-      }
-      t1 = $.$get$_renderer();
-      paint = t1.createPaint$0();
-      paintColor.toString;
-      paint.set$color(0, paintColor);
-      paint.set$style(0, C.PaintingStyle_1);
-      t2 = _this.SlottedContainerRenderObjectMixin__slotToChild;
-      paint.set$strokeWidth(2 * (t2.$index(0, D._ChipSlot_1) != null ? t2.$index(0, D._ChipSlot_1)._box$_size._dy / 24 : 1));
-      t2 = _this.checkmarkAnimation.parent;
-      if (t2.get$status(t2) === C.AnimationStatus_2)
-        t = 1;
-      else {
-        t2 = _this.checkmarkAnimation;
-        t = t2.get$value(t2);
-      }
-      if (t === 0)
-        return;
-      path = t1.createPath$0();
-      t1 = size * 0.15;
-      t2 = size * 0.45;
-      t3 = size * 0.4;
-      t4 = size * 0.7;
-      mid = new A.Offset(t3, t4);
-      t5 = origin._dx;
-      t6 = origin._dy;
-      t7 = t5 + t1;
-      t8 = t6 + t2;
-      if (t < 0.5) {
-        t1 = A.Offset_lerp(new A.Offset(t1, t2), mid, t * 2);
-        t1.toString;
-        path.moveTo$2(0, t7, t8);
-        path.lineTo$2(0, t5 + t1._dx, t6 + t1._dy);
-      } else {
-        t1 = A.Offset_lerp(mid, new A.Offset(size * 0.85, size * 0.25), (t - 0.5) * 2);
-        t1.toString;
-        path.moveTo$2(0, t7, t8);
-        path.lineTo$2(0, t5 + t3, t6 + t4);
-        path.lineTo$2(0, t5 + t1._dx, t6 + t1._dy);
-      }
-      canvas.drawPath$2(path, paint);
+      return true;
     },
-    _paintAvatar$2(context, offset) {
-      var t2, disabledColor, disabledColorAlpha, t3, t4, t5, _this = this,
-        t1 = new B._RenderChip__paintAvatar_paintWithOverlay(_this);
-      if (!_this._chip$_theme.showAvatar) {
-        t2 = _this.avatarDrawerAnimation;
-        t2 = t2.get$status(t2) === C.AnimationStatus_0;
-      } else
-        t2 = false;
-      if (t2)
-        return;
-      disabledColor = _this.get$_chip$_disabledColor();
-      disabledColorAlpha = disabledColor.get$value(disabledColor) >>> 24 & 255;
-      t2 = _this.__RenderObject__needsCompositing_A;
-      t2 === $ && A.throwUnnamedLateFieldNI();
-      if (t2)
-        context.pushLayer$3(A.OpacityLayer$(disabledColorAlpha), t1, offset);
-      else {
-        t2 = disabledColorAlpha !== 255;
-        if (t2) {
-          t3 = context.get$canvas(context);
-          t4 = B._RenderChip__boxRect(_this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_1)).shift$1(offset).inflate$1(20);
-          t5 = $.$get$_renderer().createPaint$0();
-          t5.set$color(0, disabledColor);
-          t3.saveLayer$2(t4, t5);
-        }
-        t1.call$2(context, offset);
-        if (t2)
-          context.get$canvas(context).restore$0(0);
+    _extended_text_render_box$_computeChildrenWidthWithMaxIntrinsics$1(height) {
+      var t2, t3, _this = this,
+        child = _this.ContainerRenderObjectMixin__firstChild,
+        placeholderDimensions = A.List_List$filled(_this.get$textChildCount(), C.PlaceholderDimensions_Ism, false, type$.PlaceholderDimensions),
+        t1 = A._instanceType(_this)._eval$1("ContainerRenderObjectMixin.1"),
+        childIndex = 0;
+      while (true) {
+        if (child != null) {
+          t2 = _this.TextOverflowMixin__overflowWidget;
+          t3 = _this.ContainerRenderObjectMixin__childCount;
+          t3 = childIndex < (t2 != null ? t3 - 1 : t3);
+          t2 = t3;
+        } else
+          t2 = false;
+        if (!t2)
+          break;
+        t2 = child._computeIntrinsicDimension$3(C._IntrinsicDimension_1, 1 / 0, child.get$computeMaxIntrinsicWidth());
+        t3 = _this.__ExtendedTextRenderBox__placeholderSpans_A;
+        t3 === $ && A.throwUnnamedLateFieldNI();
+        t3 = t3[childIndex];
+        placeholderDimensions[childIndex] = new A.PlaceholderDimensions(new A.Size(t2, 0), t3.alignment, null, t3.baseline);
+        t3 = child.parentData;
+        t3.toString;
+        child = t1._as(t3).ContainerParentDataMixin_nextSibling;
+        ++childIndex;
       }
+      _this._extended_render_paragraph$_textPainter.setPlaceholderDimensions$1(placeholderDimensions);
     },
-    _paintChild$4(context, offset, child, isEnabled) {
-      var t1, t2, childRect, t3, _this = this;
-      if (child == null)
-        return;
-      t1 = _this.get$_chip$_disabledColor();
-      t1 = t1.get$value(t1);
-      t2 = _this.enableAnimation;
-      if (t2.get$status(t2) !== C.AnimationStatus_3) {
-        t2 = _this.__RenderObject__needsCompositing_A;
-        t2 === $ && A.throwUnnamedLateFieldNI();
-        if (t2)
-          context.pushLayer$3(A.OpacityLayer$(t1 >>> 24 & 255), new B._RenderChip__paintChild_closure(child), offset);
-        else {
-          childRect = B._RenderChip__boxRect(child).shift$1(offset);
-          t1 = context.get$canvas(context);
-          t2 = childRect.inflate$1(20);
-          t3 = $.$get$_renderer().createPaint$0();
-          t3.set$color(0, _this.get$_chip$_disabledColor());
-          t1.saveLayer$2(t2, t3);
-          t3 = child.parentData;
-          t3.toString;
-          context.paintChild$2(child, type$.BoxParentData._as(t3).offset.$add(0, offset));
-          context.get$canvas(context).restore$0(0);
-        }
-      } else {
-        t1 = child.parentData;
-        t1.toString;
-        context.paintChild$2(child, type$.BoxParentData._as(t1).offset.$add(0, offset));
+    _extended_text_render_box$_computeChildrenWidthWithMinIntrinsics$1(height) {
+      var t2, t3, _this = this,
+        child = _this.ContainerRenderObjectMixin__firstChild,
+        placeholderDimensions = A.List_List$filled(_this.get$textChildCount(), C.PlaceholderDimensions_Ism, false, type$.PlaceholderDimensions),
+        t1 = A._instanceType(_this)._eval$1("ContainerRenderObjectMixin.1"),
+        childIndex = 0;
+      while (true) {
+        if (child != null) {
+          t2 = _this.TextOverflowMixin__overflowWidget;
+          t3 = _this.ContainerRenderObjectMixin__childCount;
+          t3 = childIndex < (t2 != null ? t3 - 1 : t3);
+          t2 = t3;
+        } else
+          t2 = false;
+        if (!t2)
+          break;
+        t2 = child._computeIntrinsicDimension$3(C._IntrinsicDimension_0, 1 / 0, child.get$computeMinIntrinsicWidth());
+        t3 = _this.__ExtendedTextRenderBox__placeholderSpans_A;
+        t3 === $ && A.throwUnnamedLateFieldNI();
+        t3 = t3[childIndex];
+        placeholderDimensions[childIndex] = new A.PlaceholderDimensions(new A.Size(t2, 0), t3.alignment, null, t3.baseline);
+        t3 = child.parentData;
+        t3.toString;
+        child = t1._as(t3).ContainerParentDataMixin_nextSibling;
+        ++childIndex;
       }
+      _this._extended_render_paragraph$_textPainter.setPlaceholderDimensions$1(placeholderDimensions);
     },
-    paint$2(context, offset) {
-      var t1, _this = this;
-      _this._paintAvatar$2(context, offset);
-      t1 = _this.deleteDrawerAnimation;
-      if (t1.get$status(t1) !== C.AnimationStatus_0)
-        _this._paintChild$4(context, offset, _this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_2), true);
-      _this._paintChild$4(context, offset, _this.SlottedContainerRenderObjectMixin__slotToChild.$index(0, D._ChipSlot_0), true);
+    _extended_text_render_box$_computeChildrenHeightWithMinIntrinsics$1(width) {
+      var t2, childIndex, t3, t4, size, _this = this,
+        child = _this.ContainerRenderObjectMixin__firstChild,
+        placeholderDimensions = A.List_List$filled(_this.get$textChildCount(), C.PlaceholderDimensions_Ism, false, type$.PlaceholderDimensions),
+        t1 = _this._extended_render_paragraph$_textPainter;
+      width /= t1._textScaleFactor;
+      t2 = A._instanceType(_this)._eval$1("ContainerRenderObjectMixin.1");
+      childIndex = 0;
+      while (true) {
+        if (child != null) {
+          t3 = _this.TextOverflowMixin__overflowWidget;
+          t4 = _this.ContainerRenderObjectMixin__childCount;
+          t4 = childIndex < (t3 != null ? t4 - 1 : t4);
+          t3 = t4;
+        } else
+          t3 = false;
+        if (!t3)
+          break;
+        size = child.getDryLayout$1(new A.BoxConstraints(0, width, 0, 1 / 0));
+        t3 = _this.__ExtendedTextRenderBox__placeholderSpans_A;
+        t3 === $ && A.throwUnnamedLateFieldNI();
+        t3 = t3[childIndex];
+        placeholderDimensions[childIndex] = new A.PlaceholderDimensions(size, t3.alignment, null, t3.baseline);
+        t3 = child.parentData;
+        t3.toString;
+        child = t2._as(t3).ContainerParentDataMixin_nextSibling;
+        ++childIndex;
+      }
+      t1.setPlaceholderDimensions$1(placeholderDimensions);
     },
     hitTestSelf$1(position) {
-      var t1 = this.___RenderChip__deleteButtonRect_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      if (!t1.contains$1(0, position)) {
-        t1 = this.___RenderChip__pressRect_A;
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        t1 = t1.contains$1(0, position);
+      return true;
+    },
+    hitTestChildren$2$position(result, position) {
+      var child, childIndex, t3, _this = this,
+        hitText = A._Cell$named("hitText"),
+        t1 = _this._extended_render_paragraph$_textPainter,
+        t2 = position.$sub(0, C.Offset_0_0),
+        textPosition = t1._paragraph.getPositionForOffset$1(t2),
+        span = t1._text_painter$_text.getSpanForPosition$1(textPosition);
+      if (span != null && type$.HitTestTarget._is(span)) {
+        result.add$1(0, new A.HitTestEntry(type$.HitTestTarget._as(span), type$.HitTestEntry_HitTestTarget));
+        hitText.set$finalLocalValue(true);
       } else
-        t1 = true;
+        hitText.set$finalLocalValue(false);
+      child = _this.ContainerRenderObjectMixin__firstChild;
+      t2 = A._instanceType(_this)._eval$1("ContainerRenderObjectMixin.1");
+      childIndex = 0;
+      while (true) {
+        if (!(child != null && childIndex < t1._inlinePlaceholderBoxes.length))
+          break;
+        if (_this.hitTestChild$3$position(result, child, position))
+          return true;
+        t3 = child.parentData;
+        t3.toString;
+        child = t2._as(t3).ContainerParentDataMixin_nextSibling;
+        ++childIndex;
+      }
+      return hitText._readLocal$0();
+    },
+    hitTestChild$3$position(result, child, position) {
+      var textParentData = type$.TextParentData._as(child.parentData),
+        t1 = textParentData.offset,
+        t2 = t1._dx,
+        t3 = this._extended_render_paragraph$_offset,
+        transform = A.Matrix4_Matrix4$translationValues(t2 + t3._dx, t1._dy + t3._dy, 0);
+      t3 = textParentData.scale;
+      transform.scale$3(0, t3, t3, t3);
+      return result.addWithPaintTransform$3$hitTest$position$transform(new B.ExtendedTextRenderBox_hitTestChild_closure(this, position, textParentData, child), position, transform);
+    },
+    _extended_text_render_box$_computeIntrinsicHeight$1(width) {
+      var t1, _this = this;
+      if (!_this._extended_text_render_box$_canComputeIntrinsics$0())
+        return 0;
+      _this._extended_text_render_box$_computeChildrenHeightWithMinIntrinsics$1(width);
+      _this.layoutText$2$maxWidth$minWidth(width, width);
+      t1 = _this._extended_render_paragraph$_textPainter._paragraph;
+      return Math.ceil(t1.get$height(t1));
+    },
+    layoutChildren$3$hideWidgets$textPainter(constraints, hideWidgets, textPainter) {
+      var child, t1, boxConstraints, t2, t3, childIndex, t4, t5, baselineOffset, childSize, _this = this;
+      if (_this.ContainerRenderObjectMixin__childCount === 0)
+        return;
+      child = _this.ContainerRenderObjectMixin__firstChild;
+      _this._extended_text_render_box$_placeholderDimensions = A.List_List$filled(_this.get$textChildCount(), C.PlaceholderDimensions_Ism, false, type$.PlaceholderDimensions);
+      t1 = _this._extended_render_paragraph$_textPainter;
+      boxConstraints = new A.BoxConstraints(0, constraints.maxWidth, 0, 1 / 0).$div(0, t1._textScaleFactor);
+      t2 = A._instanceType(_this)._eval$1("ContainerRenderObjectMixin.1");
+      t3 = hideWidgets != null;
+      childIndex = 0;
+      while (true) {
+        if (child != null) {
+          t4 = _this.TextOverflowMixin__overflowWidget;
+          t5 = _this.ContainerRenderObjectMixin__childCount;
+          t5 = childIndex < (t4 != null ? t5 - 1 : t5);
+          t4 = t5;
+        } else
+          t4 = false;
+        if (!t4)
+          break;
+        child.layout$2$parentUsesSize(t3 && C.JSArray_methods.contains$1(hideWidgets, childIndex) ? D.BoxConstraints_EcO2 : boxConstraints, true);
+        t4 = child._box$_size;
+        t4.toString;
+        t5 = _this.__ExtendedTextRenderBox__placeholderSpans_A;
+        t5 === $ && A.throwUnnamedLateFieldNI();
+        t5 = t5[childIndex];
+        switch (t5.alignment.index) {
+          case 0:
+            t5 = t5.baseline;
+            t5.toString;
+            baselineOffset = child.getDistanceToBaseline$1(t5);
+            break;
+          case 1:
+          case 2:
+          case 4:
+          case 5:
+          case 3:
+            baselineOffset = null;
+            break;
+          default:
+            baselineOffset = null;
+        }
+        childSize = t4;
+        t4 = _this._extended_text_render_box$_placeholderDimensions;
+        t4.toString;
+        t5 = _this.__ExtendedTextRenderBox__placeholderSpans_A;
+        t5 === $ && A.throwUnnamedLateFieldNI();
+        t5 = t5[childIndex];
+        t4[childIndex] = new A.PlaceholderDimensions(childSize, t5.alignment, baselineOffset, t5.baseline);
+        t5 = child.parentData;
+        t5.toString;
+        child = t2._as(t5).ContainerParentDataMixin_nextSibling;
+        ++childIndex;
+      }
+      t1 = textPainter == null ? t1 : textPainter;
+      t1.setPlaceholderDimensions$1(_this._extended_text_render_box$_placeholderDimensions);
+    },
+    layoutChildren$1(constraints) {
+      return this.layoutChildren$3$hideWidgets$textPainter(constraints, null, null);
+    },
+    layoutChildren$2$hideWidgets(constraints, hideWidgets) {
+      return this.layoutChildren$3$hideWidgets$textPainter(constraints, hideWidgets, null);
+    },
+    layoutTextWithConstraints$1(constraints) {
+      this._extended_render_paragraph$_textPainter.setPlaceholderDimensions$1(this._extended_text_render_box$_placeholderDimensions);
+      this.layoutText$3$forceLayout$maxWidth$minWidth(true, constraints.maxWidth, constraints.minWidth);
+    },
+    setParentData$0() {
+      var textParentData, t4,
+        child = this.ContainerRenderObjectMixin__firstChild,
+        t1 = type$.TextParentData,
+        t2 = this._extended_render_paragraph$_textPainter,
+        t3 = A._instanceType(this)._eval$1("ContainerRenderObjectMixin.1"),
+        childIndex = 0;
+      while (true) {
+        if (!(child != null && childIndex < t2._inlinePlaceholderBoxes.length))
+          break;
+        textParentData = t1._as(child.parentData);
+        t4 = t2._inlinePlaceholderBoxes[childIndex];
+        textParentData.offset = new A.Offset(t4.left, t4.top);
+        textParentData.scale = t2._inlinePlaceholderScales[childIndex];
+        child = t3._as(textParentData).ContainerParentDataMixin_nextSibling;
+        ++childIndex;
+      }
+    },
+    layoutText$3$forceLayout$maxWidth$minWidth(forceLayout, maxWidth, minWidth) {
+      var t1, widthMatters, availableMaxWidth, availableMinWidth, textMaxWidth, _this = this;
+      if (_this.textLayoutLastMaxWidth === maxWidth && _this.textLayoutLastMinWidth === minWidth && !forceLayout)
+        return;
+      if (!_this._extended_render_paragraph$_softWrap) {
+        t1 = _this.TextOverflowMixin___TextOverflowMixin__overflow_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        widthMatters = t1 === C.TextOverflow_2 || _this._extended_render_paragraph$_textPainter._maxLines !== 1;
+      } else
+        widthMatters = true;
+      availableMaxWidth = Math.max(0, maxWidth - 0);
+      availableMinWidth = Math.min(minWidth, availableMaxWidth);
+      textMaxWidth = widthMatters ? availableMaxWidth : 1 / 0;
+      _this._extended_render_paragraph$_textPainter.layout$2$maxWidth$minWidth(textMaxWidth, availableMinWidth);
+      _this.textLayoutLastMinWidth = minWidth;
+      _this.textLayoutLastMaxWidth = maxWidth;
+    },
+    layoutText$0() {
+      return this.layoutText$3$forceLayout$maxWidth$minWidth(false, 1 / 0, 0);
+    },
+    layoutText$2$maxWidth$minWidth(maxWidth, minWidth) {
+      return this.layoutText$3$forceLayout$maxWidth$minWidth(false, maxWidth, minWidth);
+    },
+    paintWidgets$3$overFlowRect(context, offset, overFlowRect) {
+      var textParentData, scale, t8, t9, rect, intersectRect, overlaps, child, _this = this, _box_0 = {},
+        t1 = _box_0.child = _this.ContainerRenderObjectMixin__firstChild,
+        t2 = A._instanceType(_this)._eval$1("ContainerRenderObjectMixin.1"),
+        t3 = overFlowRect != null,
+        t4 = type$.TextParentData,
+        t5 = offset._dx,
+        t6 = offset._dy,
+        t7 = _this._extended_render_paragraph$_textPainter,
+        childIndex = 0;
+      while (true) {
+        if (!(t1 != null && childIndex < t7._inlinePlaceholderBoxes.length))
+          break;
+        textParentData = t4._as(t1.parentData);
+        scale = textParentData.scale;
+        t8 = textParentData.offset;
+        t9 = t5 + t8._dx;
+        t8 = t6 + t8._dy;
+        t1 = t1._box$_size;
+        rect = new A.Rect(t9, t8, t9 + t1._dx, t8 + t1._dy);
+        if (t3)
+          if (overFlowRect.overlaps$1(rect)) {
+            intersectRect = overFlowRect.intersect$1(rect);
+            overlaps = intersectRect.right - intersectRect.left > 1 && intersectRect.bottom - intersectRect.top > 1;
+          } else
+            overlaps = false;
+        else
+          overlaps = false;
+        if (!overlaps) {
+          t1 = _this.__RenderObject__needsCompositing_A;
+          t1 === $ && A.throwUnnamedLateFieldNI();
+          t8 = textParentData.offset;
+          t9 = t8._dx;
+          t8 = t8._dy;
+          scale.toString;
+          context.pushTransform$4(t1, new A.Offset(t5 + t9, t6 + t8), A.Matrix4_Matrix4$diagonal3Values(scale, scale, scale), new B.ExtendedTextRenderBox_paintWidgets_closure(_box_0));
+        }
+        t1 = _box_0.child.parentData;
+        t1.toString;
+        child = t2._as(t1).ContainerParentDataMixin_nextSibling;
+        _box_0.child = child;
+        ++childIndex;
+        t1 = child;
+      }
+    },
+    getCaretOffset$2$effectiveOffset(textPosition, effectiveOffset) {
+      var t1, offset, t2, t3, t4, boxs, _this = this;
+      if (effectiveOffset == null)
+        effectiveOffset = C.Offset_0_0;
+      t1 = _this.__ExtendedTextRenderBox__placeholderSpans_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      if (t1.length !== 0) {
+        offset = textPosition.offset;
+        t1 = _this._extended_render_paragraph$_textPainter;
+        t2 = textPosition.affinity;
+        t3 = A.TextSelection$(t2, offset, offset + 1, false);
+        t4 = _this._extended_render_paragraph$_selectionWidthStyle;
+        boxs = t1.getBoxesForSelection$3$boxHeightStyle$boxWidthStyle(t3, _this._extended_render_paragraph$_selectionHeightStyle, t4);
+        if (boxs.length !== 0) {
+          t1 = A._setArrayType(boxs.slice(0), A._arrayInstanceType(boxs));
+          t1 = C.JSArray_methods.get$last(t1);
+          t2 = t1.left;
+          t1 = t1.top;
+          return new A.Offset(t2, t1).$add(0, effectiveOffset);
+        } else {
+          t3 = offset <= 0;
+          if (t3)
+            offset = 1;
+          boxs = t1.getBoxesForSelection$1(A.TextSelection$(t2, offset - 1, offset, false));
+          if (boxs.length !== 0) {
+            t1 = A._setArrayType(boxs.slice(0), A._arrayInstanceType(boxs));
+            t1 = C.JSArray_methods.get$last(t1);
+            t2 = t1.left;
+            t4 = t1.top;
+            t1 = t1.right;
+            if (t3)
+              return new A.Offset(t2, t4).$add(0, effectiveOffset);
+            else
+              return new A.Offset(t1, t4).$add(0, effectiveOffset);
+          }
+        }
+      }
+      t1 = _this._extended_render_paragraph$_textPainter;
+      t1._computeCaretMetrics$2(textPosition, C.Rect_0_0_0_0);
+      t1 = t1.__TextPainter__caretMetrics_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      return t1.offset.$add(0, effectiveOffset);
+    },
+    getCaretOffset$1(textPosition) {
+      return this.getCaretOffset$2$effectiveOffset(textPosition, null);
+    },
+    setupParentData$1(child) {
+      if (!(child.parentData instanceof A.TextParentData))
+        child.parentData = new A.TextParentData(null, null, C.Offset_0_0);
+    },
+    computeMinIntrinsicHeight$1(width) {
+      return this._extended_text_render_box$_computeIntrinsicHeight$1(width);
+    },
+    computeMaxIntrinsicHeight$1(width) {
+      return this._extended_text_render_box$_computeIntrinsicHeight$1(width);
+    },
+    computeMinIntrinsicWidth$1(height) {
+      var _this = this;
+      if (!_this._extended_text_render_box$_canComputeIntrinsics$0())
+        return 0;
+      _this._extended_text_render_box$_computeChildrenWidthWithMinIntrinsics$1(height);
+      _this.layoutText$0();
+      return Math.ceil(_this._extended_render_paragraph$_textPainter._paragraph.get$minIntrinsicWidth());
+    },
+    computeMaxIntrinsicWidth$1(height) {
+      var _this = this;
+      if (!_this._extended_text_render_box$_canComputeIntrinsics$0())
+        return 0;
+      _this._extended_text_render_box$_computeChildrenWidthWithMaxIntrinsics$1(height);
+      _this.layoutText$0();
+      return Math.ceil(_this._extended_render_paragraph$_textPainter._paragraph.get$maxIntrinsicWidth());
+    },
+    computeDistanceToActualBaseline$1(baseline) {
+      this.layoutTextWithConstraints$1(type$.BoxConstraints._as(A.RenderObject.prototype.get$constraints.call(this)));
+      return this._extended_render_paragraph$_textPainter.computeDistanceToActualBaseline$1(C.TextBaseline_0);
+    },
+    markNeedsTextLayout$0() {
+      this.textLayoutLastMinWidth = this.textLayoutLastMaxWidth = null;
+      this.markNeedsLayout$0();
+    },
+    systemFontsDidChange$0() {
+      var _this = this;
+      _this.super$RelayoutWhenSystemFontsChangeMixin$systemFontsDidChange();
+      _this._extended_render_paragraph$_textPainter.markNeedsLayout$0();
+      _this.textLayoutLastMinWidth = _this.textLayoutLastMaxWidth = null;
+    }
+  };
+  B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin.prototype = {
+    attach$1(owner) {
+      var child, t1, t2;
+      this.super$RenderObject$attach(owner);
+      child = this.ContainerRenderObjectMixin__firstChild;
+      for (t1 = type$.TextParentData; child != null;) {
+        child.attach$1(owner);
+        t2 = child.parentData;
+        t2.toString;
+        child = t1._as(t2).ContainerParentDataMixin_nextSibling;
+      }
+    },
+    detach$0(_) {
+      var child, t1, t2;
+      this.super$AbstractNode$detach(0);
+      child = this.ContainerRenderObjectMixin__firstChild;
+      for (t1 = type$.TextParentData; child != null;) {
+        child.detach$0(0);
+        t2 = child.parentData;
+        t2.toString;
+        child = t1._as(t2).ContainerParentDataMixin_nextSibling;
+      }
+    }
+  };
+  B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin.prototype = {};
+  B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin.prototype = {
+    attach$1(owner) {
+      this.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin$attach(owner);
+      $.PaintingBinding__instance.PaintingBinding__systemFonts._systemFontsCallbacks.add$1(0, this.get$systemFontsDidChange());
+    },
+    detach$0(_) {
+      $.PaintingBinding__instance.PaintingBinding__systemFonts._systemFontsCallbacks.remove$1(0, this.get$systemFontsDidChange());
+      this.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin$detach(0);
+    }
+  };
+  B.ExtendedTextSelectionRenderObject.prototype = {
+    _extended_text_selection_render_object$_handleTapDown$1(details) {
+      this.lastTapDownPosition = details.globalPosition;
+    },
+    _extended_text_selection_render_object$_handleTap$0() {
+      var t1 = this.lastTapDownPosition;
+      t1.toString;
+      this.selectPositionAt$2$cause$from(C.SelectionChangedCause_0, t1);
+    },
+    _extended_text_selection_render_object$_handleLongPress$0() {
+      var t1 = this.lastTapDownPosition;
+      t1.toString;
+      this.selectWordsInRange$2$cause$from(C.SelectionChangedCause_2, t1);
+    },
+    selectWordsInRange$3$cause$from$to(cause, from, to) {
+      var t1, t2, firstWord, lastWord, _this = this;
+      _this._extended_text_selection_render_object$_computeTextMetricsIfNeeded$0();
+      t1 = _this._extended_render_paragraph$_textPainter;
+      t2 = _this.globalToLocal$1(from.$sub(0, C.Offset_0_0));
+      firstWord = _this._extended_text_selection_render_object$_getWordAtOffset$1(t1._paragraph.getPositionForOffset$1(t2));
+      if (to == null)
+        lastWord = firstWord;
+      else {
+        t2 = _this.globalToLocal$1(to.$sub(0, C.Offset_0_0));
+        lastWord = _this._extended_text_selection_render_object$_getWordAtOffset$1(t1._paragraph.getPositionForOffset$1(t2));
+      }
+      _this.setSelection$2(A.TextSelection$(firstWord.affinity, firstWord.get$base().offset, lastWord.get$extent().offset, false), cause);
+    },
+    selectWordsInRange$2$cause$from(cause, from) {
+      return this.selectWordsInRange$3$cause$from$to(cause, from, null);
+    },
+    selectPositionAt$3$cause$from$to(cause, from, to) {
+      var fromPosition, toPosition, baseOffset, extentOffset, _this = this, _null = null,
+        t1 = type$.BoxConstraints,
+        t2 = t1._as(A.RenderObject.prototype.get$constraints.call(_this));
+      _this.layoutText$2$maxWidth$minWidth(t1._as(A.RenderObject.prototype.get$constraints.call(_this)).maxWidth, t2.minWidth);
+      t2 = _this._extended_render_paragraph$_textPainter;
+      t1 = _this.globalToLocal$1(from.$sub(0, C.Offset_0_0));
+      fromPosition = t2._paragraph.getPositionForOffset$1(t1);
+      if (to == null)
+        toPosition = _null;
+      else {
+        t1 = _this.globalToLocal$1(to.$sub(0, C.Offset_0_0));
+        toPosition = t2._paragraph.getPositionForOffset$1(t1);
+      }
+      if (_this._hasSpecialInlineSpanBase) {
+        t1 = t2._text_painter$_text;
+        t1.toString;
+        t1 = B.convertTextPainterPostionToTextInputPostion(t1, fromPosition, _null);
+        t1.toString;
+        t2 = t2._text_painter$_text;
+        t2.toString;
+        toPosition = B.convertTextPainterPostionToTextInputPostion(t2, toPosition, _null);
+        fromPosition = t1;
+      }
+      baseOffset = fromPosition.offset;
+      extentOffset = toPosition == null ? _null : toPosition.offset;
+      if (extentOffset == null)
+        extentOffset = baseOffset;
+      _this.setSelection$2(A.TextSelection$(fromPosition.affinity, baseOffset, extentOffset, false), cause);
+    },
+    selectPositionAt$2$cause$from(cause, from) {
+      return this.selectPositionAt$3$cause$from$to(cause, from, null);
+    },
+    _extended_text_selection_render_object$_getWordAtOffset$1(position) {
+      var t1,
+        selection = new B.ExtendedTextSelectionRenderObject__getWordAtOffset_closure(this, position).call$0();
+      if (this._hasSpecialInlineSpanBase) {
+        t1 = this._extended_render_paragraph$_textPainter._text_painter$_text;
+        t1.toString;
+        t1 = B.convertTextPainterSelectionToTextInputSelection(t1, selection, true);
+      } else
+        t1 = selection;
       return t1;
+    },
+    _extended_text_selection_render_object$_getNextWord$1(offset) {
+      var t1, range, t2;
+      for (t1 = this._extended_render_paragraph$_textPainter; true;) {
+        range = t1._paragraph.getWordBoundary$1(new A.TextPosition(offset, C.TextAffinity_1));
+        t2 = range.start;
+        t2 = !(t2 >= 0 && range.end >= 0) || t2 === range.end;
+        if (t2)
+          return null;
+        if (!this._extended_text_selection_render_object$_onlyWhitespace$1(range))
+          return range;
+        offset = range.end;
+      }
+    },
+    _extended_text_selection_render_object$_getPreviousWord$1(offset) {
+      var t1, range, t2;
+      for (t1 = this._extended_render_paragraph$_textPainter; offset >= 0;) {
+        range = t1._paragraph.getWordBoundary$1(new A.TextPosition(offset, C.TextAffinity_1));
+        t2 = range.start;
+        t2 = !(t2 >= 0 && range.end >= 0) || t2 === range.end;
+        if (t2)
+          return null;
+        if (!this._extended_text_selection_render_object$_onlyWhitespace$1(range))
+          return range;
+        offset = range.start - 1;
+      }
+      return null;
+    },
+    _extended_text_selection_render_object$_onlyWhitespace$1(range) {
+      var i, t1, t2, t3;
+      for (i = range.start, t1 = range.end, t2 = this._extended_render_paragraph$_textPainter; i < t1; ++i) {
+        t3 = t2._text_painter$_text.codeUnitAt$1(0, i);
+        t3.toString;
+        if (!A.TextLayoutMetrics_isWhitespace(t3))
+          return false;
+      }
+      return true;
+    },
+    paintHandleLayers$2(context, paint) {
+      var endpoints, startPoint, t2, t3, endPoint, _this = this,
+        t1 = _this._extended_render_paragraph$_selection;
+      if (t1 == null)
+        return;
+      endpoints = _this.getEndpointsForSelection$1(t1);
+      if (endpoints == null || false)
+        return;
+      startPoint = endpoints[0].point;
+      t1 = C.JSNumber_methods.clamp$2(startPoint._dx, 0, _this._box$_size._dx);
+      t2 = C.JSNumber_methods.clamp$2(startPoint._dy, 0, _this._box$_size._dy);
+      t3 = _this._extended_render_paragraph$_startHandleLayerLink;
+      t3.toString;
+      context.pushLayer$3(A.LeaderLayer$(t3, new A.Offset(t1, t2)), paint, C.Offset_0_0);
+      endPoint = endpoints[1].point;
+      t1 = C.JSNumber_methods.clamp$2(endPoint._dx, 0, _this._box$_size._dx);
+      t2 = C.JSNumber_methods.clamp$2(endPoint._dy, 0, _this._box$_size._dy);
+      t3 = _this._extended_render_paragraph$_endHandleLayerLink;
+      t3.toString;
+      context.pushLayer$3(A.LeaderLayer$(t3, new A.Offset(t1, t2)), paint, C.Offset_0_0);
+    },
+    paintSelection$2(canvas, effectiveOffset) {
+      var paint, t1, t2, _i, box, _this = this;
+      if (_this._selectionRects == null || _this._extended_render_paragraph$_selectionColor == null)
+        return;
+      paint = $.$get$_renderer().createPaint$0();
+      t1 = _this._extended_render_paragraph$_selectionColor;
+      t1.toString;
+      paint.set$color(0, t1);
+      for (t1 = _this._selectionRects, t2 = t1.length, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i) {
+        box = t1[_i];
+        canvas.drawRect$2(new A.Rect(box.left, box.top, box.right, box.bottom).shift$1(effectiveOffset), paint);
+      }
+    },
+    attach$1(owner) {
+      var t1, _this = this, _null = null;
+      _this.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin$attach(owner);
+      t1 = A.TapGestureRecognizer$(_this, _null);
+      t1.onTapDown = _this.get$_extended_text_selection_render_object$_handleTapDown();
+      t1.onTap = _this.get$_extended_text_selection_render_object$_handleTap();
+      _this.__ExtendedTextSelectionRenderObject__tap_A = t1;
+      t1 = A.LongPressGestureRecognizer$(_this, _null, _null, _null, _null);
+      t1.onLongPress = _this.get$_extended_text_selection_render_object$_handleLongPress();
+      _this.__ExtendedTextSelectionRenderObject__longPress_A = t1;
+    },
+    detach$0(_) {
+      var t1 = this.__ExtendedTextSelectionRenderObject__tap_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1._stopTimer$0();
+      t1.super$OneSequenceGestureRecognizer$dispose();
+      t1 = this.__ExtendedTextSelectionRenderObject__longPress_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1._stopTimer$0();
+      t1.super$OneSequenceGestureRecognizer$dispose();
+      this.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin$detach(0);
+    },
+    set$hasFocus(value) {
+      if (this._extended_text_selection_render_object$_hasFocus === value)
+        return;
+      this._extended_text_selection_render_object$_hasFocus = value;
+      this.markNeedsSemanticsUpdate$0();
+    },
+    getRectForComposingRange$1(range) {
+      var t1, _this = this;
+      if (!range.get$isValid() || range.start === range.end)
+        return null;
+      _this._extended_text_selection_render_object$_computeTextMetricsIfNeeded$0();
+      t1 = C.JSArray_methods.fold$2(_this._extended_render_paragraph$_textPainter.getBoxesForSelection$3$boxHeightStyle$boxWidthStyle(A.TextSelection$(C.TextAffinity_1, range.start, range.end, false), _this._extended_render_paragraph$_selectionHeightStyle, _this._extended_render_paragraph$_selectionWidthStyle), null, new B.ExtendedTextSelectionRenderObject_getRectForComposingRange_closure());
+      return t1 == null ? null : t1.shift$1(C.Offset_0_0);
+    },
+    _extended_text_selection_render_object$_computeTextMetricsIfNeeded$0() {
+      var t1 = type$.BoxConstraints,
+        t2 = t1._as(A.RenderObject.prototype.get$constraints.call(this));
+      this.layoutText$2$maxWidth$minWidth(t1._as(A.RenderObject.prototype.get$constraints.call(this)).maxWidth, t2.minWidth);
+    },
+    setSelection$2(nextSelection, cause) {
+      var t1, textLength, t2, _this = this;
+      if (_this.textSelectionDelegate == null)
+        return;
+      if (nextSelection.get$isValid()) {
+        t1 = _this.textSelectionDelegate.__ExtendedTextSelectionState__value_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        textLength = t1.text.length;
+        nextSelection = nextSelection.copyWith$2$baseOffset$extentOffset(Math.min(nextSelection.baseOffset, textLength), Math.min(nextSelection.extentOffset, textLength));
+      }
+      t1 = _this.textSelectionDelegate.__ExtendedTextSelectionState__value_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1 = t1.copyWith$1$selection(nextSelection);
+      t2 = _this.textSelectionDelegate;
+      if (t2 != null)
+        t2.userUpdateTextEditingValue$2(t1, cause);
     }
   };
-  B._ChipSizes.prototype = {};
-  B._UnconstrainedInkSplashFactory.prototype = {
-    create$11$borderRadius$color$containedInkWell$controller$customBorder$onRemoved$position$radius$rectCallback$referenceBox$textDirection(_, borderRadius, color, containedInkWell, controller, customBorder, onRemoved, position, radius, rectCallback, referenceBox, textDirection) {
-      return this.parentFactory.create$10$borderRadius$color$controller$customBorder$onRemoved$position$radius$rectCallback$referenceBox$textDirection(0, borderRadius, color, controller, customBorder, onRemoved, position, radius, rectCallback, referenceBox, textDirection);
+  B.ExtendedTextSelectionOverlay.prototype = {
+    _extended_text_selection_overlay$_updateTextSelectionOverlayVisibilities$0() {
+      var _this = this,
+        t1 = _this._extended_text_selection_overlay$_handlesVisible && _this.renderObject._extended_render_paragraph$_selectionStartInViewport._change_notifier$_value;
+      _this._extended_text_selection_overlay$_effectiveStartHandleVisibility.set$value(0, t1);
+      t1 = _this._extended_text_selection_overlay$_handlesVisible && _this.renderObject._extended_render_paragraph$_selectionEndInViewport._change_notifier$_value;
+      _this._extended_text_selection_overlay$_effectiveEndHandleVisibility.set$value(0, t1);
+      t1 = _this.renderObject;
+      t1 = t1._extended_render_paragraph$_selectionStartInViewport._change_notifier$_value || t1._extended_render_paragraph$_selectionEndInViewport._change_notifier$_value;
+      _this._extended_text_selection_overlay$_effectiveToolbarVisibility.set$value(0, t1);
+    },
+    set$handlesVisible(visible) {
+      if (this._extended_text_selection_overlay$_handlesVisible === visible)
+        return;
+      this._extended_text_selection_overlay$_handlesVisible = visible;
+      this._extended_text_selection_overlay$_updateTextSelectionOverlayVisibilities$0();
+    },
+    update$1(_, newValue) {
+      if (this._extended_text_selection_overlay$_value.$eq(0, newValue))
+        return;
+      this._extended_text_selection_overlay$_value = newValue;
+      this._extended_text_selection_overlay$_updateSelectionOverlay$0();
+    },
+    _extended_text_selection_overlay$_updateSelectionOverlay$0() {
+      var t2, t3, t4, prevText, t5, currText, selectedGraphemes, t6, startHandleRect, endHandleRect, _this = this, _null = null,
+        t1 = _this.__ExtendedTextSelectionOverlay__selectionOverlay_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t2 = _this.renderObject;
+      t3 = t2._extended_render_paragraph$_textPainter;
+      t4 = t3._text_painter$_textDirection;
+      t4.toString;
+      t1.set$startHandleType(_this._extended_text_selection_overlay$_chooseType$3(t4, C.TextSelectionHandleType_0, C.TextSelectionHandleType_1));
+      prevText = t3._text_painter$_text.toPlainText$0();
+      t4 = _this.selectionDelegate;
+      t5 = t4.__ExtendedTextSelectionState__value_A;
+      t5 === $ && A.throwUnnamedLateFieldNI();
+      currText = t5.text;
+      if (prevText === currText)
+        if (_this._extended_text_selection_overlay$_value.selection.get$isValid()) {
+          t5 = _this._extended_text_selection_overlay$_value.selection;
+          t5 = t5.start !== t5.end;
+        } else
+          t5 = false;
+      else
+        t5 = false;
+      if (t5) {
+        t5 = _this._extended_text_selection_overlay$_value.selection;
+        selectedGraphemes = C.JSString_methods.substring$2(currText, t5.start, t5.end);
+        t5 = selectedGraphemes.length === 0 ? C.StringCharacters_ehH : new A.StringCharacters(selectedGraphemes);
+        t5 = t5.get$first(t5);
+        t6 = _this._extended_text_selection_overlay$_value.selection.start;
+        startHandleRect = t2.getRectForComposingRange$1(new A.TextRange(t6, t6 + t5.length));
+      } else
+        startHandleRect = _null;
+      t5 = startHandleRect == null ? _null : startHandleRect.bottom - startHandleRect.top;
+      t1.set$lineHeightAtStart(t5 == null ? t3.get$preferredLineHeight() : t5);
+      t5 = t3._text_painter$_textDirection;
+      t5.toString;
+      t1.set$endHandleType(_this._extended_text_selection_overlay$_chooseType$3(t5, C.TextSelectionHandleType_1, C.TextSelectionHandleType_0));
+      prevText = t3._text_painter$_text.toPlainText$0();
+      currText = t4.__ExtendedTextSelectionState__value_A.text;
+      if (prevText === currText)
+        if (_this._extended_text_selection_overlay$_value.selection.get$isValid()) {
+          t4 = _this._extended_text_selection_overlay$_value.selection;
+          t4 = t4.start !== t4.end;
+        } else
+          t4 = false;
+      else
+        t4 = false;
+      if (t4) {
+        t4 = _this._extended_text_selection_overlay$_value.selection;
+        selectedGraphemes = C.JSString_methods.substring$2(currText, t4.start, t4.end);
+        t4 = selectedGraphemes.length === 0 ? C.StringCharacters_ehH : new A.StringCharacters(selectedGraphemes);
+        t4 = t4.get$last(t4);
+        t5 = _this._extended_text_selection_overlay$_value.selection.end;
+        endHandleRect = t2.getRectForComposingRange$1(new A.TextRange(t5 - t4.length, t5));
+      } else
+        endHandleRect = _null;
+      t4 = endHandleRect == null ? _null : endHandleRect.bottom - endHandleRect.top;
+      t1.set$lineHeightAtEnd(t4 == null ? t3.get$preferredLineHeight() : t4);
+      t3 = t2.getEndpointsForSelection$1(_this._extended_text_selection_overlay$_value.selection);
+      if (!A.listEquals(t1._selectionEndPoints, t3))
+        t1._extended_text_selection_overlay$_markNeedsBuild$0();
+      t1._selectionEndPoints = t3;
+      t1.set$toolbarLocation(t2.lastSecondaryTapDownPosition);
+    },
+    dispose$0() {
+      var t2, _this = this,
+        t1 = _this.__ExtendedTextSelectionOverlay__selectionOverlay_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1.hide$0();
+      t1 = _this.renderObject;
+      t2 = _this.get$_extended_text_selection_overlay$_updateTextSelectionOverlayVisibilities();
+      t1._extended_render_paragraph$_selectionStartInViewport.removeListener$1(0, t2);
+      t1._extended_render_paragraph$_selectionEndInViewport.removeListener$1(0, t2);
+      _this._extended_text_selection_overlay$_effectiveToolbarVisibility.dispose$0();
+      _this._extended_text_selection_overlay$_effectiveStartHandleVisibility.dispose$0();
+      _this._extended_text_selection_overlay$_effectiveEndHandleVisibility.dispose$0();
+    },
+    _extended_text_selection_overlay$_handleSelectionEndHandleDragStart$1(details) {
+      var t1 = this.selectionControls;
+      t1.toString;
+      this.__ExtendedTextSelectionOverlay__dragEndPosition_A = details.globalPosition.$add(0, new A.Offset(0, -t1.getHandleSize$1(this.renderObject._extended_render_paragraph$_textPainter.get$preferredLineHeight())._dy));
+    },
+    _extended_text_selection_overlay$_handleSelectionEndHandleDragUpdate$1(details) {
+      var t2, position, newSelection, _this = this,
+        t1 = _this.__ExtendedTextSelectionOverlay__dragEndPosition_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1 = t1.$add(0, details.delta);
+      _this.__ExtendedTextSelectionOverlay__dragEndPosition_A = t1;
+      t2 = _this.renderObject;
+      position = t2.getPositionForPoint$1(t1);
+      if (t2._hasSpecialInlineSpanBase) {
+        t1 = t2._extended_render_paragraph$_textPainter._text_painter$_text;
+        t1.toString;
+        t1 = B.convertTextPainterPostionToTextInputPostion(t1, position, null);
+        t1.toString;
+        position = t1;
+      }
+      t1 = _this._extended_text_selection_overlay$_value.selection;
+      if (t1.start === t1.end) {
+        _this._extended_text_selection_overlay$_handleSelectionHandleChanged$2$isEnd(A.TextSelection$fromPosition(position), true);
+        return;
+      }
+      newSelection = A.TextSelection$(C.TextAffinity_1, t1.baseOffset, position.offset, false);
+      if (newSelection.baseOffset >= newSelection.extentOffset)
+        return;
+      _this._extended_text_selection_overlay$_handleSelectionHandleChanged$2$isEnd(newSelection, true);
+    },
+    _extended_text_selection_overlay$_handleSelectionStartHandleDragStart$1(details) {
+      var t1 = this.selectionControls;
+      t1.toString;
+      this.__ExtendedTextSelectionOverlay__dragStartPosition_A = details.globalPosition.$add(0, new A.Offset(0, -t1.getHandleSize$1(this.renderObject._extended_render_paragraph$_textPainter.get$preferredLineHeight())._dy));
+    },
+    _extended_text_selection_overlay$_handleSelectionStartHandleDragUpdate$1(details) {
+      var t2, position, newSelection, _this = this,
+        t1 = _this.__ExtendedTextSelectionOverlay__dragStartPosition_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1 = t1.$add(0, details.delta);
+      _this.__ExtendedTextSelectionOverlay__dragStartPosition_A = t1;
+      t2 = _this.renderObject;
+      position = t2.getPositionForPoint$1(t1);
+      if (t2._hasSpecialInlineSpanBase) {
+        t1 = t2._extended_render_paragraph$_textPainter._text_painter$_text;
+        t1.toString;
+        t1 = B.convertTextPainterPostionToTextInputPostion(t1, position, null);
+        t1.toString;
+        position = t1;
+      }
+      t1 = _this._extended_text_selection_overlay$_value.selection;
+      if (t1.start === t1.end) {
+        _this._extended_text_selection_overlay$_handleSelectionHandleChanged$2$isEnd(A.TextSelection$fromPosition(position), false);
+        return;
+      }
+      newSelection = A.TextSelection$(C.TextAffinity_1, position.offset, t1.extentOffset, false);
+      if (newSelection.baseOffset >= newSelection.extentOffset)
+        return;
+      _this._extended_text_selection_overlay$_handleSelectionHandleChanged$2$isEnd(newSelection, false);
+    },
+    _extended_text_selection_overlay$_handleSelectionHandleChanged$2$isEnd(newSelection, isEnd) {
+      if (isEnd)
+        newSelection.get$extent();
+      else
+        newSelection.get$base();
+      this.selectionDelegate.userUpdateTextEditingValue$2(this._extended_text_selection_overlay$_value.copyWith$1$selection(newSelection), C.SelectionChangedCause_6);
+    },
+    _extended_text_selection_overlay$_chooseType$3(textDirection, ltrType, rtlType) {
+      var t1 = this._extended_text_selection_overlay$_value.selection;
+      if (t1.start === t1.end)
+        return C.TextSelectionHandleType_2;
+      switch (textDirection.index) {
+        case 1:
+          return ltrType;
+        case 0:
+          return rtlType;
+      }
     }
   };
-  B.__ChipRenderWidget_RenderObjectWidget_SlottedMultiChildRenderObjectWidgetMixin.prototype = {
-    updateRenderObject$2(context, renderObject) {
-      return this.super$RenderObjectWidget$updateRenderObject(context, renderObject);
+  B.SelectionOverlay0.prototype = {
+    set$startHandleType(value) {
+      if (this._extended_text_selection_overlay$_startHandleType === value)
+        return;
+      this._extended_text_selection_overlay$_startHandleType = value;
+      this._extended_text_selection_overlay$_markNeedsBuild$0();
+    },
+    set$lineHeightAtStart(value) {
+      if (this._extended_text_selection_overlay$_lineHeightAtStart === value)
+        return;
+      this._extended_text_selection_overlay$_lineHeightAtStart = value;
+      this._extended_text_selection_overlay$_markNeedsBuild$0();
+    },
+    set$endHandleType(value) {
+      if (this._extended_text_selection_overlay$_endHandleType === value)
+        return;
+      this._extended_text_selection_overlay$_endHandleType = value;
+      this._extended_text_selection_overlay$_markNeedsBuild$0();
+    },
+    set$lineHeightAtEnd(value) {
+      if (this._extended_text_selection_overlay$_lineHeightAtEnd === value)
+        return;
+      this._extended_text_selection_overlay$_lineHeightAtEnd = value;
+      this._extended_text_selection_overlay$_markNeedsBuild$0();
+    },
+    set$toolbarLocation(value) {
+      if (J.$eq$(this._extended_text_selection_overlay$_toolbarLocation, value))
+        return;
+      this._extended_text_selection_overlay$_toolbarLocation = value;
+      this._extended_text_selection_overlay$_markNeedsBuild$0();
+    },
+    showHandles$0() {
+      var t1, t2, _this = this;
+      if (_this._extended_text_selection_overlay$_handles != null)
+        return;
+      _this._extended_text_selection_overlay$_handles = A._setArrayType([A.OverlayEntry$(_this.get$_extended_text_selection_overlay$_buildStartHandle(), false), A.OverlayEntry$(_this.get$_extended_text_selection_overlay$_buildEndHandle(), false)], type$.JSArray_OverlayEntry);
+      t1 = _this.context.findRootAncestorStateOfType$1$0(type$.OverlayState);
+      t1.toString;
+      t2 = _this._extended_text_selection_overlay$_handles;
+      t2.toString;
+      t1.insertAll$1(0, t2);
+    },
+    _extended_text_selection_overlay$_markNeedsBuild$0() {
+      var t3, _this = this,
+        t1 = _this._extended_text_selection_overlay$_handles,
+        t2 = t1 == null;
+      if (t2 && _this._extended_text_selection_overlay$_toolbar == null)
+        return;
+      t3 = $.SchedulerBinding__instance;
+      if (t3.SchedulerBinding__schedulerPhase === C.SchedulerPhase_3) {
+        if (_this._extended_text_selection_overlay$_buildScheduled)
+          return;
+        _this._extended_text_selection_overlay$_buildScheduled = true;
+        t3.SchedulerBinding__postFrameCallbacks.push(new B.SelectionOverlay__markNeedsBuild_closure(_this));
+      } else {
+        if (!t2) {
+          t1[0].markNeedsBuild$0();
+          _this._extended_text_selection_overlay$_handles[1].markNeedsBuild$0();
+        }
+        t1 = _this._extended_text_selection_overlay$_toolbar;
+        if (t1 != null)
+          t1.markNeedsBuild$0();
+      }
+    },
+    hide$0() {
+      var _this = this,
+        t1 = _this._extended_text_selection_overlay$_handles;
+      if (t1 != null) {
+        t1[0].remove$0(0);
+        _this._extended_text_selection_overlay$_handles[1].remove$0(0);
+        _this._extended_text_selection_overlay$_handles = null;
+      }
+      if (_this._extended_text_selection_overlay$_toolbar != null)
+        _this.hideToolbar$0();
+    },
+    hideToolbar$0() {
+      var t1 = this._extended_text_selection_overlay$_toolbar;
+      if (t1 == null)
+        return;
+      t1.remove$0(0);
+      this._extended_text_selection_overlay$_toolbar = null;
+    },
+    _extended_text_selection_overlay$_buildStartHandle$1(context) {
+      var handle, t1, _this = this, _null = null,
+        selectionControls = _this.selectionControls;
+      if (selectionControls == null)
+        handle = A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+      else {
+        t1 = _this._extended_text_selection_overlay$_startHandleType;
+        handle = B._SelectionHandleOverlay$0(_this.dragStartBehavior, _this.startHandleLayerLink, _null, _this.onStartHandleDragStart, _this.onStartHandleDragUpdate, _this.onSelectionHandleTapped, _this._extended_text_selection_overlay$_lineHeightAtStart, selectionControls, t1, _this.startHandlesVisible);
+      }
+      return new A.ExcludeSemantics(true, handle, _null);
+    },
+    _extended_text_selection_overlay$_buildEndHandle$1(context) {
+      var handle, t1, _this = this, _null = null,
+        selectionControls = _this.selectionControls;
+      if (selectionControls == null || _this._extended_text_selection_overlay$_startHandleType === C.TextSelectionHandleType_2)
+        handle = A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+      else {
+        t1 = _this._extended_text_selection_overlay$_endHandleType;
+        handle = B._SelectionHandleOverlay$0(_this.dragStartBehavior, _this.endHandleLayerLink, _null, _this.onEndHandleDragStart, _this.onEndHandleDragUpdate, _this.onSelectionHandleTapped, _this._extended_text_selection_overlay$_lineHeightAtEnd, selectionControls, t1, _this.endHandlesVisible);
+      }
+      return new A.ExcludeSemantics(true, handle, _null);
     }
   };
-  B.__RawChipState_State_MaterialStateMixin.prototype = {};
-  B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin.prototype = {
+  B._SelectionHandleOverlay0.prototype = {
+    createState$0() {
+      return new B._SelectionHandleOverlayState0(null, null, C._StateLifecycle_0);
+    }
+  };
+  B._SelectionHandleOverlayState0.prototype = {
+    initState$0() {
+      var _this = this;
+      _this.super$State$initState();
+      _this._extended_text_selection_overlay$___SelectionHandleOverlayState__controller_A = A.AnimationController$(C.AnimationBehavior_0, null, C.Duration_150000, 0, null, 1, null, _this);
+      _this._extended_text_selection_overlay$_handleVisibilityChanged$0();
+      _this._widget.visibility.addListener$1(0, _this.get$_extended_text_selection_overlay$_handleVisibilityChanged());
+    },
+    _extended_text_selection_overlay$_handleVisibilityChanged$0() {
+      var t2,
+        t1 = this._widget.visibility._change_notifier$_value;
+      if (t1 == null)
+        t1 = true;
+      t2 = this._extended_text_selection_overlay$___SelectionHandleOverlayState__controller_A;
+      if (t1) {
+        t2 === $ && A.throwUnnamedLateFieldNI();
+        t2.forward$0(0);
+      } else {
+        t2 === $ && A.throwUnnamedLateFieldNI();
+        t2.reverse$0(0);
+      }
+    },
+    didUpdateWidget$1(oldWidget) {
+      var t1, _this = this;
+      _this.super$State$didUpdateWidget(oldWidget);
+      t1 = _this.get$_extended_text_selection_overlay$_handleVisibilityChanged();
+      oldWidget.visibility.removeListener$1(0, t1);
+      _this._extended_text_selection_overlay$_handleVisibilityChanged$0();
+      _this._widget.visibility.addListener$1(0, t1);
+    },
+    dispose$0() {
+      var t1, _this = this;
+      _this._widget.visibility.removeListener$1(0, _this.get$_extended_text_selection_overlay$_handleVisibilityChanged());
+      t1 = _this._extended_text_selection_overlay$___SelectionHandleOverlayState__controller_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1.dispose$0();
+      _this.super$__SelectionHandleOverlayState_State_SingleTickerProviderStateMixin$dispose0();
+    },
+    build$1(context) {
+      var handleSize, t2, t3, t4, handleRect, interactiveRect, t5, t6, t7, t8, t9, t10, t11, t12, t13, _this = this, _null = null,
+        t1 = _this._widget,
+        handleAnchor = t1.selectionControls.getHandleAnchor$2(t1.type, t1.preferredLineHeight);
+      t1 = _this._widget;
+      handleSize = t1.selectionControls.getHandleSize$1(t1.preferredLineHeight);
+      t1 = -handleAnchor._dx;
+      t2 = -handleAnchor._dy;
+      t3 = t1 + handleSize._dx;
+      t4 = t2 + handleSize._dy;
+      handleRect = new A.Rect(t1, t2, t3, t4);
+      interactiveRect = handleRect.expandToInclude$1(A.Rect$fromCircle(handleRect.get$center(), 24));
+      t5 = interactiveRect.left;
+      t6 = interactiveRect.right - t5;
+      t1 = Math.max((t6 - (t3 - t1)) / 2, 0);
+      t3 = interactiveRect.top;
+      t7 = interactiveRect.bottom - t3;
+      t2 = Math.max((t7 - (t4 - t2)) / 2, 0);
+      t4 = _this._widget;
+      t8 = t4.handleLayerLink;
+      t9 = _this._extended_text_selection_overlay$___SelectionHandleOverlayState__controller_A;
+      t9 === $ && A.throwUnnamedLateFieldNI();
+      t10 = t4.dragStartBehavior;
+      t11 = t4.onSelectionHandleDragStart;
+      t12 = t4.onSelectionHandleDragUpdate;
+      t13 = t4.onSelectionHandleDragEnd;
+      return A.CompositedTransformFollower$(new A.FadeTransition(t9, false, A.Container$(C.Alignment_m1_m1, A.GestureDetector$(C.HitTestBehavior_2, new A.Padding(new A.EdgeInsets(t1, t2, t1, t2), t4.selectionControls.buildHandle$4(context, t4.type, t4.preferredLineHeight, t4.onSelectionHandleTapped), _null), t10, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t13, t11, t12, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, _null, _null, _null, t7, _null, _null, _null, _null, _null, t6), _null), t8, new A.Offset(t5, t3), false, C.Alignment_m1_m1);
+    }
+  };
+  B.__SelectionHandleOverlayState_State_SingleTickerProviderStateMixin0.prototype = {
+    dispose$0() {
+      var _this = this,
+        t1 = _this.SingleTickerProviderStateMixin__tickerModeNotifier;
+      if (t1 != null)
+        t1.removeListener$1(0, _this.get$_updateTicker());
+      _this.SingleTickerProviderStateMixin__tickerModeNotifier = null;
+      _this.super$State$dispose();
+    },
     activate$0() {
       this.super$State$activate();
       this._updateTickerModeNotifier$0();
-      this._updateTickers$0();
+      this._updateTicker$0();
+    }
+  };
+  B.SpecialInlineSpanBase.prototype = {
+    equal$1(other) {
+      return other.get$textRange().start === this.get$textRange().start && other.get$deleteAll() === this.get$deleteAll() && other.get$actualText() === this.get$actualText();
     },
-    dispose$0() {
-      var _this = this,
-        t1 = _this.TickerProviderStateMixin__tickerModeNotifier;
+    baseCompareTo$1(other) {
+      if (other.get$actualText() !== this.get$actualText())
+        return C.RenderComparison_2;
+      if (other.get$textRange().start !== this.get$textRange().start)
+        return C.RenderComparison_3;
+      return C.RenderComparison_0;
+    }
+  };
+  B.SpecialTextSpan.prototype = {
+    $eq(_, other) {
+      var _this = this;
+      if (other == null)
+        return false;
+      if (_this === other)
+        return true;
+      if (J.get$runtimeType$(other) !== A.getRuntimeType(_this))
+        return false;
+      if (!_this.super$TextSpan$$eq(0, other))
+        return false;
+      return type$.SpecialInlineSpanBase._is(other) && _this.equal$1(other);
+    },
+    get$hashCode(_) {
+      var _this = this;
+      return B.hashValues(A.TextSpan.prototype.get$hashCode.call(_this, _this), B.hashValues(_this.actualText, _this.textRange.start, _this.deleteAll, D.C__HashEnd, D.C__HashEnd, D.C__HashEnd), D.C__HashEnd, D.C__HashEnd, D.C__HashEnd, D.C__HashEnd);
+    },
+    compareTo$1(_, other) {
+      var comparison = this.super$TextSpan$compareTo(0, other);
+      return comparison === C.RenderComparison_0 ? this.baseCompareTo$1(type$.SpecialInlineSpanBase._as(other)) : comparison;
+    },
+    get$actualText() {
+      return this.actualText;
+    },
+    get$deleteAll() {
+      return this.deleteAll;
+    },
+    get$textRange() {
+      return this.textRange;
+    }
+  };
+  B._SpecialTextSpan_TextSpan_SpecialInlineSpanBase.prototype = {};
+  B.TextPainterHelper.prototype = {};
+  B.CircleAvatar.prototype = {
+    get$_minDiameter() {
+      return 40;
+      return 0;
+    },
+    get$_maxDiameter() {
+      return 40;
+      return 1 / 0;
+    },
+    build$1(context) {
+      var minDiameter, maxDiameter, t1, t2, _this = this, _null = null,
+        theme = A.Theme_of(context),
+        textStyle = theme.primaryTextTheme.titleMedium.copyWith$1$color(_null),
+        effectiveBackgroundColor = _this.backgroundColor;
+      switch (A.ThemeData_estimateBrightnessForColor(effectiveBackgroundColor).index) {
+        case 0:
+          textStyle = textStyle.copyWith$1$color(theme.primaryColorLight);
+          break;
+        case 1:
+          textStyle = textStyle.copyWith$1$color(theme.primaryColorDark);
+          break;
+      }
+      minDiameter = _this.get$_minDiameter();
+      maxDiameter = _this.get$_maxDiameter();
+      t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.copyWith$1$textScaleFactor(1);
+      t2 = theme.iconTheme.copyWith$1$color(textStyle.color);
+      t2 = A.Center$(new A.MediaQuery(t1, A.IconTheme$(A.DefaultTextStyle$(_this.child, _null, _null, C.TextOverflow_0, true, textStyle, _null, _null, C.TextWidthBasis_0), t2, _null), _null), _null, _null, _null);
+      return A.AnimatedContainer$(t2, new A.BoxConstraints(minDiameter, maxDiameter, minDiameter, maxDiameter), C.C__Linear, new A.BoxDecoration(effectiveBackgroundColor, _null, _null, _null, _null, _null, _null, C.BoxShape_1), C.Duration_200000, _null, _null, _null);
+    }
+  };
+  B.DecorationImagePainter.prototype = {
+    paint$4(canvas, rect, clipPath, configuration) {
+      var t2, t3, t4, _this = this,
+        t1 = _this._details,
+        newImageStream = t1.image.resolve$1(configuration);
+      newImageStream.get$key(newImageStream);
+      _this._imageStream = newImageStream;
+      newImageStream.addListener$1(0, new A.ImageStreamListener(_this.get$_handleImage(), null, t1.onError));
+      if (_this._decoration_image$_image == null)
+        return;
+      t2 = clipPath != null;
+      if (t2) {
+        canvas.save$0(0);
+        canvas.clipPath$1(0, clipPath);
+      }
+      t3 = _this._decoration_image$_image;
+      t4 = t3.image;
+      A.paintImage(C.Alignment_0_0, canvas, null, null, t3.debugLabel, C.FilterQuality_1, t1.fit, false, t4, false, false, 1, rect, C.ImageRepeat_3, t3.scale);
+      if (t2)
+        canvas.restore$0(0);
+    },
+    _handleImage$2(value, synchronousCall) {
+      var t1, t2, _this = this;
+      if (J.$eq$(_this._decoration_image$_image, value))
+        return;
+      t1 = _this._decoration_image$_image;
       if (t1 != null)
-        t1.removeListener$1(0, _this.get$_updateTickers());
-      _this.TickerProviderStateMixin__tickerModeNotifier = null;
-      _this.super$State$dispose();
-    }
-  };
-  B.__RenderChip_RenderBox_SlottedContainerRenderObjectMixin.prototype = {
-    attach$1(owner) {
-      var t1, t2, _i;
-      this.super$RenderObject$attach(owner);
-      for (t1 = this.get$children(this), t2 = t1.length, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i)
-        t1[_i].attach$1(owner);
-    },
-    detach$0(_) {
-      var t1, t2, _i;
-      this.super$AbstractNode$detach(0);
-      for (t1 = this.get$children(this), t2 = t1.length, _i = 0; _i < t1.length; t1.length === t2 || (0, A.throwConcurrentModificationError)(t1), ++_i)
-        t1[_i].detach$0(0);
-    }
-  };
-  B._ChildEntry.prototype = {
-    toString$0(_) {
-      return "Entry#" + A.shortHash(this) + "(" + this.widgetChild.toString$0(0) + ")";
-    }
-  };
-  B.AnimatedSwitcher.prototype = {
-    createState$0() {
-      return new B._AnimatedSwitcherState(A.LinkedHashSet_LinkedHashSet$_empty(type$._ChildEntry), C.List_empty18, null, null, C._StateLifecycle_0);
-    },
-    transitionBuilder$2(arg0, arg1) {
-      return B.animated_switcher_AnimatedSwitcher_defaultTransitionBuilder$closure().call$2(arg0, arg1);
-    },
-    layoutBuilder$2(arg0, arg1) {
-      return B.animated_switcher_AnimatedSwitcher_defaultLayoutBuilder$closure().call$2(arg0, arg1);
-    }
-  };
-  B._AnimatedSwitcherState.prototype = {
-    initState$0() {
-      this.super$State$initState();
-      this._addEntryForNewChild$1$animate(false);
-    },
-    didUpdateWidget$1(oldWidget) {
-      var t1, hasNewChild, t2, _this = this;
-      _this.super$State$didUpdateWidget(oldWidget);
-      t1 = _this._widget;
-      t1 = t1.child;
-      hasNewChild = t1 != null;
-      t2 = _this._currentEntry;
-      if (hasNewChild === (t2 != null))
-        if (hasNewChild) {
-          t2 = t2.widgetChild;
-          t1 = !(A.getRuntimeType(t1) === A.getRuntimeType(t2) && J.$eq$(t1.key, t2.key));
+        if (value.image.isCloneOf$1(t1.image)) {
+          t2 = t1.scale;
+          t1 = t2 === t2 && value.debugLabel == t1.debugLabel;
         } else
           t1 = false;
       else
-        t1 = true;
+        t1 = false;
       if (t1) {
-        ++_this._childNumber;
-        _this._addEntryForNewChild$1$animate(true);
-      } else {
-        t1 = _this._currentEntry;
-        if (t1 != null) {
-          t2 = _this._widget.child;
-          t2.toString;
-          t1.widgetChild = t2;
-          _this._updateTransitionForEntry$1(t1);
-          _this._outgoingWidgets = null;
-        }
-      }
-    },
-    _addEntryForNewChild$1$animate(animate) {
-      var controller, animation, _this = this,
-        t1 = _this._currentEntry;
-      if (t1 != null) {
-        _this._outgoingEntries.add$1(0, t1);
-        _this._currentEntry.controller.reverse$0(0);
-        _this._currentEntry = _this._outgoingWidgets = null;
-      }
-      t1 = _this._widget;
-      if (t1.child == null)
+        value.image.dispose$0();
         return;
-      controller = A.AnimationController$(C.AnimationBehavior_0, null, t1.duration, 0, null, 1, null, _this);
-      animation = A.CurvedAnimation$(_this._widget.switchInCurve, controller, C.C__Linear);
-      t1 = _this._widget.child;
-      t1.toString;
-      _this._currentEntry = _this._newEntry$4$animation$builder$child$controller(animation, B.animated_switcher_AnimatedSwitcher_defaultTransitionBuilder$closure(), t1, controller);
-      if (animate)
-        controller.forward$0(0);
-      else
-        controller.set$value(0, 1);
-    },
-    _newEntry$4$animation$builder$child$controller(animation, builder, child, controller) {
-      var t1 = builder.call$2(child, animation),
-        t2 = this._childNumber,
-        t3 = t1.key,
-        entry = new B._ChildEntry(controller, animation, new A.KeyedSubtree(t1, t3 != null ? new A.ValueKey(t3, type$.ValueKey_Key) : new A.ValueKey(t2, type$.ValueKey_int)), child);
-      animation.parent.addStatusListener$1(new B._AnimatedSwitcherState__newEntry_closure(this, entry, controller));
-      return entry;
-    },
-    _updateTransitionForEntry$1(entry) {
-      var t1 = entry.transition;
-      entry.transition = new A.KeyedSubtree(this._widget.transitionBuilder$2(entry.widgetChild, entry.animation), t1.key);
-    },
-    _rebuildOutgoingWidgetsIfNeeded$0() {
-      if (this._outgoingWidgets == null) {
-        var t1 = this._outgoingEntries;
-        this._outgoingWidgets = A.List_List$unmodifiable(new A.EfficientLengthMappedIterable(t1, new B._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure(), A._instanceType(t1)._eval$1("EfficientLengthMappedIterable<SetMixin.E,Widget>")), type$.Widget);
       }
+      t1 = _this._decoration_image$_image;
+      if (t1 != null)
+        t1.image.dispose$0();
+      _this._decoration_image$_image = value;
+      if (!synchronousCall)
+        _this._onChanged.call$0();
     },
     dispose$0() {
-      var t2, t3, t4, value, result,
-        t1 = this._currentEntry;
+      var t1 = this._decoration_image$_image;
       if (t1 != null)
-        t1.controller.dispose$0();
-      for (t1 = this._outgoingEntries, t1 = A._LinkedHashSetIterator$(t1, t1._collection$_modifications, A._instanceType(t1)._precomputed1), t2 = t1.$ti._precomputed1; t1.moveNext$0();) {
-        t3 = t1._collection$_current;
-        t3 = (t3 == null ? t2._as(t3) : t3).controller;
-        t3._ticker.dispose$0();
-        t3._ticker = null;
-        t4 = t3.AnimationLocalStatusListenersMixin__statusListeners;
-        t4._isDirty = false;
-        C.JSArray_methods.clear$0(t4._list);
-        value = t4.__ObserverList__set_FI;
-        if (value === $) {
-          result = A.HashSet_HashSet(t4.$ti._precomputed1);
-          t4.__ObserverList__set_FI !== $ && A.throwUnnamedLateFieldADI();
-          t4.__ObserverList__set_FI = result;
-          value = result;
-        }
-        if (value._collection$_length > 0) {
-          value._collection$_strings = value._collection$_nums = value._collection$_rest = value._elements = null;
-          value._collection$_length = 0;
-        }
-        t4 = t3.AnimationLocalListenersMixin__listeners;
-        t4._isDirty = false;
-        C.JSArray_methods.clear$0(t4._list);
-        value = t4.__ObserverList__set_FI;
-        if (value === $) {
-          result = A.HashSet_HashSet(t4.$ti._precomputed1);
-          t4.__ObserverList__set_FI !== $ && A.throwUnnamedLateFieldADI();
-          t4.__ObserverList__set_FI = result;
-          value = result;
-        }
-        if (value._collection$_length > 0) {
-          value._collection$_strings = value._collection$_nums = value._collection$_rest = value._elements = null;
-          value._collection$_length = 0;
-        }
-        t3.super$AnimationEagerListenerMixin$dispose();
-      }
-      this.super$__AnimatedSwitcherState_State_TickerProviderStateMixin$dispose();
+        t1.image.dispose$0();
+      this._decoration_image$_image = null;
     },
+    toString$0(_) {
+      return "DecorationImagePainter(stream: " + A.S(this._imageStream) + ", image: " + A.S(this._decoration_image$_image) + ") for " + this._details.toString$0(0);
+    }
+  };
+  B.RichTextWidget.prototype = {
     build$1(context) {
-      var t1, t2, t3, t4, _this = this;
-      _this._rebuildOutgoingWidgetsIfNeeded$0();
-      t1 = _this._widget;
-      t1.toString;
-      t2 = _this._currentEntry;
-      t2 = t2 == null ? null : t2.transition;
-      t3 = _this._outgoingWidgets;
-      t3.toString;
-      t4 = A._arrayInstanceType(t3)._eval$1("WhereIterable<1>");
-      t4 = A.LinkedHashSet_LinkedHashSet$of(new A.WhereIterable(t3, new B._AnimatedSwitcherState_build_closure(_this), t4), t4._eval$1("Iterable.E"));
-      return t1.layoutBuilder$2(t2, A.List_List$of(t4, true, A._instanceType(t4)._eval$1("SetMixin.E")));
-    }
-  };
-  B.__AnimatedSwitcherState_State_TickerProviderStateMixin.prototype = {
-    activate$0() {
-      this.super$State$activate();
-      this._updateTickerModeNotifier$0();
-      this._updateTickers$0();
-    },
-    dispose$0() {
-      var _this = this,
-        t1 = _this.TickerProviderStateMixin__tickerModeNotifier;
-      if (t1 != null)
-        t1.removeListener$1(0, _this.get$_updateTickers());
-      _this.TickerProviderStateMixin__tickerModeNotifier = null;
-      _this.super$State$dispose();
-    }
-  };
-  B.SizeChangedLayoutNotification.prototype = {};
-  B.SizeChangedLayoutNotifier.prototype = {
-    createRenderObject$1(context) {
-      var t1 = new B._RenderSizeChangedWithCallback(new B.SizeChangedLayoutNotifier_createRenderObject_closure(context), null, A.LayerHandle$(type$.ContainerLayer));
-      t1.RenderObject$0();
-      t1.set$child(null);
-      return t1;
-    }
-  };
-  B._RenderSizeChangedWithCallback.prototype = {
-    performLayout$0() {
-      var t1, _this = this;
-      _this.super$RenderProxyBoxMixin$performLayout();
-      t1 = _this._oldSize;
-      if (t1 != null && !_this._box$_size.$eq(0, t1))
-        _this.onLayoutChangedCallback.call$0();
-      t1 = _this._box$_size;
-      t1.toString;
-      _this._oldSize = t1;
-    }
-  };
-  B.SuggestionsBoxController.prototype = {
-    open$0(_) {
-      var t1, t2, _this = this;
-      if (_this._isOpened)
-        return;
-      t1 = _this.context.findAncestorStateOfType$1$0(type$.OverlayState);
-      t1.toString;
-      t2 = _this.overlayEntry;
-      t2.toString;
-      t1.insert$1(0, t2);
-      _this._isOpened = true;
-    },
-    close$0(_) {
-      if (!this._isOpened)
-        return;
-      this.overlayEntry.remove$0(0);
-      this._isOpened = false;
-    }
-  };
-  B.TagEditor.prototype = {
-    createState$0() {
-      return new B.TagsEditorState(new A.LayerLink(), A.ValueNotifier$(0, type$.int), A.ValueNotifier$(null, type$.nullable_String), C._StateLifecycle_0, this.$ti._eval$1("TagsEditorState<1>"));
-    },
-    tagBuilder$2(arg0, arg1) {
-      return this.tagBuilder.call$2(arg0, arg1);
-    },
-    findSuggestions$1(arg0) {
-      return this.findSuggestions.call$1(arg0);
-    },
-    get$length(receiver) {
-      return this.length;
-    }
-  };
-  B.TagsEditorState.prototype = {
-    initState$0() {
-      var t1, _this = this, _null = null;
-      _this.super$State$initState();
-      t1 = _this._widget.controller;
-      _this.__TagsEditorState__textFieldController_A = t1;
-      t1 = A.FocusNode$(true, _null, true, true, _null, _null, false);
-      t1.addListener$1(0, _this.get$_onFocusKeyboardChanged());
-      _this.__TagsEditorState__focusNodeKeyboard_A = t1;
-      t1 = _this._widget.focusNode;
-      if (t1 == null)
-        t1 = A.FocusNode$(true, _null, true, true, _null, _null, false);
-      t1.addListener$1(0, _this.get$_onFocusChanged());
-      _this.__TagsEditorState__focusNode_A = t1;
-      _this._widget.toString;
-      _this._initializeSuggestionBox$0();
-    },
-    dispose$0() {
-      var _this = this,
-        t1 = _this._widget;
-      if (t1.autoDisposeFocusNode || t1.focusNode == null) {
-        t1 = _this.__TagsEditorState__focusNode_A;
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        t1.removeListener$1(0, _this.get$_onFocusChanged());
-        _this.__TagsEditorState__focusNode_A.dispose$0();
+      var t2, t3, _this = this, _null = null,
+        t1 = _this.wordSearched;
+      if (t1.length === 0) {
+        t1 = _this.styleTextOrigin;
+        if (t1 == null)
+          t1 = C.TextStyle_oHY4;
+        return A.Text$(_this.textOrigin, _null, 1, C.TextOverflow_1, _null, false, t1, _null, _null, _null);
+      } else {
+        t2 = _this.styleTextOrigin;
+        if (t2 == null)
+          t2 = C.TextStyle_oHY4;
+        t3 = _this.styleWordSearched;
+        if (t3 == null)
+          t3 = C.TextStyle_oHY11;
+        return A.RichText$(_null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextSpan$(_this._getSpans$3(_this.textOrigin, t1, t3), _null, _null, _null, _null, _null, _null, _null, t2, _null), C.TextAlign_4, _null, _null, 1, C.TextWidthBasis_0);
       }
-      t1 = _this._suggestionsStreamController;
-      if (t1 != null)
-        t1.close$0(0);
-      t1 = _this._suggestionsBoxController;
-      if (t1 != null)
-        t1.close$0(0);
-      t1 = _this.__TagsEditorState__focusNodeKeyboard_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.removeListener$1(0, _this.get$_onFocusKeyboardChanged());
-      _this.__TagsEditorState__focusNodeKeyboard_A.dispose$0();
-      _this._highlightedOptionIndex.dispose$0();
-      _this._validationSuggestionItemNotifier.dispose$0();
-      t1 = _this._deBouncer;
-      if (t1 != null)
-        t1.cancel$0(0);
-      _this.super$State$dispose();
     },
-    _updateHighlight$1(newIndex) {
-      var t1 = this._suggestions;
-      if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true) {
-        t1 = this._suggestions;
-        t1.toString;
-        t1 = C.JSInt_methods.$mod(newIndex, J.get$length$asx(t1));
+    _getSpans$3(text, matchWord, style) {
+      var startIndex, endIndex, _null = null,
+        spans = A._setArrayType([], type$.JSArray_TextSpan),
+        t1 = text.length,
+        t2 = matchWord.length,
+        spanBoundary = 0;
+      do {
+        startIndex = C.JSString_methods.indexOf$2(text.toLowerCase(), matchWord.toLowerCase(), spanBoundary);
+        if (startIndex === -1) {
+          spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, C.JSString_methods.substring$1(text, spanBoundary)));
+          return spans;
+        }
+        if (startIndex > spanBoundary)
+          spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, C.JSString_methods.substring$2(text, spanBoundary, startIndex)));
+        endIndex = startIndex + t2;
+        spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, style, C.JSString_methods.substring$2(text, startIndex, endIndex)));
+        if (endIndex < t1) {
+          spanBoundary = endIndex;
+          continue;
+        } else
+          break;
+      } while (true);
+      return spans;
+    }
+  };
+  B.CustomScrollBehavior.prototype = {
+    get$dragDevices() {
+      return A.LinkedHashSet_LinkedHashSet$_literal([C.PointerDeviceKind_0, C.PointerDeviceKind_1], type$.PointerDeviceKind);
+    }
+  };
+  B.BaseComposerView.prototype = {
+    buildFromEmailAddress$1(context) {
+      return new A.Obx(new B.BaseComposerView_buildFromEmailAddress_closure(this, context), null);
+    },
+    _buildItemIdentity$1(identity) {
+      var t3, t4, _null = null,
+        t1 = A.BorderRadius$circular(12),
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(this);
+      t2 = A._instanceType(this)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(this)).identitySelected;
+      t2 = identity.$eq(0, t2.get$value(t2)) ? D.Color_2162090727 : C.Color_0;
+      t3 = identity.name;
+      t3 = A.Text$(t3 == null ? "" : t3, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_oHY4, _null, _null, _null);
+      t4 = identity.email;
+      return A.DropdownMenuItem$(A.PointerInterceptor$(A.Container$(C.AlignmentDirectional_m1_0, A.Column$(A._setArrayType([t3, A.Text$(t4 == null ? "" : t4, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_chs, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_0, _null, _null, new A.BoxDecoration(t2, _null, _null, t1, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsets_8_0_8_0, _null, _null, _null)), identity, type$.Identity);
+    },
+    buildEmailAddress$1(context) {
+      var _this = this, _null = null;
+      return A.Column$(A._setArrayType([new A.Obx(new B.BaseComposerView_buildEmailAddress_closure(_this, context), _null), new A.Obx(new B.BaseComposerView_buildEmailAddress_closure0(_this), _null), new A.Obx(new B.BaseComposerView_buildEmailAddress_closure1(_this, context), _null), new A.Obx(new B.BaseComposerView_buildEmailAddress_closure2(_this), _null), new A.Obx(new B.BaseComposerView_buildEmailAddress_closure3(_this, context), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
+    },
+    buildSubjectEmail$1(context) {
+      var t2, t3, t4, t5, t6, t7, _this = this, _null = null,
+        t1 = B.ComposerStyle_getSubjectWebPadding(context, _this.responsiveUtils);
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+      t2 = A.Text$(A.Intl__message("Subject", _null, "subject_email", _null, _null) + ":", _null, _null, _null, _null, _null, D.TextStyle_8gb, _null, _null, _null);
+      t3 = $.$get$GetWidget__cache();
+      A.Expando__checkType(_this);
+      t3 = t3._jsWeakMap;
+      t4 = A._instanceType(_this)._eval$1("GetWidget.S");
+      t5 = t4._as(t3.get(_this)).subjectEmailInputFocusNode;
+      A.Expando__checkType(_this);
+      t6 = t4._as(t3.get(_this)).get$setSubjectEmail();
+      t7 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale;
+      t7 = A.Bidi_isRtlLanguage(t7.get$languageCode(t7)) ? C.TextDirection_0 : C.TextDirection_1;
+      A.Expando__checkType(_this);
+      return new A.Padding(t1, A.Row$(A._setArrayType([t2, C.SizedBox_8_null_null_null, A.Expanded$(A.TextFieldBuilder$(false, t4._as(t3.get(_this)).subjectEmailInputController, C.Color_4278221567, D.InputDecoration_Au4, t5, D.ValueKey_subject_email_input, _null, 1, _null, _null, _null, t6, _null, false, t7, _null, C.TextStyle_oHY3), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
+    },
+    buildAttachmentsWidget$1(context) {
+      return new A.Obx(new B.BaseComposerView_buildAttachmentsWidget_closure(this, context), null);
+    },
+    _buildAttachmentsList$3(context, uploadFilesState, expandMode) {
+      if (expandMode === C.ExpandMode_1)
+        return new A.LayoutBuilder(new B.BaseComposerView__buildAttachmentsList_closure(this, uploadFilesState), null);
+      else
+        return C.SizedBox_0_0_null_null;
+    },
+    buildAppBar$1(context) {
+      var t3, t4, t5, t6, _this = this, _null = null,
+        t1 = _this.responsiveUtils,
+        t2 = B.ComposerStyle_getAppBarHeight(context, t1);
+      t1 = B.ComposerStyle_getAppBarPadding(context, t1);
+      t3 = A.SvgPicture$asset("assets/images/ic_close.svg", _null, C.BoxFit_0, 30, _null, 30);
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+      t3 = A._setArrayType([A.buildIconWeb(_null, _null, t3, C.EdgeInsets_0_0_0_0, _null, _null, new B.BaseComposerView_buildAppBar_closure(_this, context), _null, A.Intl__message("Save & close", _null, "saveAndClose", _null, _null)), A.Expanded$(_this.buildTitleComposer$1(context), 1)], type$.JSArray_Widget);
+      t4 = type$.MediaQuery;
+      if (context.dependOnInheritedWidgetOfExactType$1$0(t4).data.size.get$shortestSide() < 600)
+        t3.push(new A.Obx(new B.BaseComposerView_buildAppBar_closure0(_this, context), _null));
+      if (context.dependOnInheritedWidgetOfExactType$1$0(t4).data.size.get$shortestSide() < 600) {
+        t4 = A.SvgPicture$asset(string$.assets, _null, C.BoxFit_1, _null, _null, _null);
+        t5 = _this.popUpMoreActionMenu$1(context);
+        t6 = $.$get$GetWidget__cache();
+        A.Expando__checkType(_this);
+        t3.push(B.buildIconWithLowerMenu(t4, context, t5, A._instanceType(_this)._eval$1("GetWidget.S")._as(t6._jsWeakMap.get(_this)).get$openPopupMenuAction()));
+      }
+      return A.Container$(_null, A.Row$(t3, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, _null, _null, t2, _null, _null, t1, _null, _null, _null);
+    },
+    popUpMoreActionMenu$1(context) {
+      return A._setArrayType([], type$.JSArray_PopupMenuEntry_dynamic);
+    },
+    buildTitleComposer$1(context) {
+      return new A.Obx(new B.BaseComposerView_buildTitleComposer_closure(this, context), null);
+    },
+    buildBottomBar$1(context) {
+      var t2, t3, t4, t5, _this = this, _null = null,
+        t1 = type$.AppLocalizations;
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
+      t2 = A.buildTextButton(A.Intl__message("Cancel", _null, "cancel", _null, _null), C.Color_218111037, 44, new B.BaseComposerView_buildBottomBar_closure(_this, context), 10, D.TextStyle_pyh, 150);
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
+      t3 = A.buildTextButton(A.Intl__message("Save to drafts", _null, "save_to_drafts", _null, _null), C.Color_218111037, 44, new B.BaseComposerView_buildBottomBar_closure0(_this, context), 10, C.TextStyle_yzp, 150);
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
+      t1 = type$.JSArray_Widget;
+      t3 = A.Row$(A._setArrayType([E.SizedBox_24_null_null_null, t2, C.SizedBox_12_null_null_null, t3, C.SizedBox_12_null_null_null, A.buildTextButton(A.Intl__message("Send", _null, "send", _null, _null), _null, 44, new B.BaseComposerView_buildBottomBar_closure1(_this, context), 10, _null, 150), E.SizedBox_24_null_null_null], t1), C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_1, _null);
+      t2 = A.SvgPicture$asset(string$.assets, _null, C.BoxFit_1, _null, _null, _null);
+      t4 = _this.popUpMoreActionMenu$1(context);
+      t5 = $.$get$GetWidget__cache();
+      A.Expando__checkType(_this);
+      return new A.Stack(C.Alignment_1_0, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t3, A.Row$(A._setArrayType([B.buildIconWithUpperMenu(t2, context, t4, A._instanceType(_this)._eval$1("GetWidget.S")._as(t5._jsWeakMap.get(_this)).get$openPopupMenuAction())], t1), C.CrossAxisAlignment_2, C.MainAxisAlignment_1, C.MainAxisSize_1, _null)], t1), _null);
+    }
+  };
+  B._BaseComposerView_GetWidget_AppLoaderMixin.prototype = {};
+  B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin.prototype = {};
+  B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin_ComposerLoadingMixin.prototype = {};
+  B.ComposerLoadingMixin.prototype = {
+    _loadingWidgetWithSizeColor$0() {
+      var _null = null;
+      return A.Center$(A.Container$(_null, A.CircularProgressIndicator$(_null, C.Color_4278221567, _null, _null, _null, 4, _null, _null), C.Clip_0, _null, _null, _null, _null, 24, _null, E.EdgeInsets_10_10_10_10, _null, _null, _null, 24), _null, _null, _null);
+    },
+    buildInlineLoadingView$1(controller) {
+      return new A.Obx(new B.ComposerLoadingMixin_buildInlineLoadingView_closure(this, controller), null);
+    }
+  };
+  B.AttachmentFileComposerBuilder.prototype = {
+    build$1(context) {
+      var t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
+        t1 = A.ThemeData_ThemeData(_null, _null, _null, C.Color_0, _null, _null, C.Color_0, _null, _null, _null),
+        t2 = _this.itemMargin;
+      if (t2 == null)
+        t2 = C.EdgeInsets_0_0_0_0;
+      t3 = A.BorderRadius$circular(10);
+      t4 = A.Border_Border$all(C.Color_520093696, 1);
+      t5 = _this.fileState;
+      t6 = A.SvgPicture$asset(t5.getIcon$1(_this._attachment_file_composer_builder$_imagePaths), _null, C.BoxFit_0, 40, _null, 40);
+      t7 = type$._LocalizationsScope;
+      t8 = context.dependOnInheritedWidgetOfExactType$1$0(t7).localizationsState._localizations$_locale;
+      A.Bidi_isRtlLanguage(t8.get$languageCode(t8));
+      t8 = A.Matrix4_Matrix4$translationValues(0, -8, 0);
+      t9 = t5.get$fileName();
+      t8 = A.Transform$(_null, new A.Padding(D.EdgeInsetsDirectional_0_0_20_0, B.ExtendedText$(t9, 1, C.TextOverflow_1, B.TextOverflowWidget$(D.Text_qbZ, A.Directionality_maybeOf(context) === C.TextDirection_0 ? D.TextOverflowPosition_0 : D.TextOverflowPosition_2), false, D.TextStyle_oHY8), _null), t8, true);
+      if (t5.get$fileSize() !== 0) {
+        t7 = context.dependOnInheritedWidgetOfExactType$1$0(t7).localizationsState._localizations$_locale;
+        A.Bidi_isRtlLanguage(t7.get$languageCode(t7));
+        t7 = A.Matrix4_Matrix4$translationValues(0, -8, 0);
+        t7 = A.Transform$(_null, A.Text$(A.filesize(t5.get$fileSize(), 2), _null, 1, C.TextOverflow_1, _null, false, D.TextStyle_jjv1, _null, _null, _null), t7, true);
+        t5 = t7;
       } else
-        t1 = 0;
-      this._highlightedOptionIndex.set$value(0, t1);
+        t5 = _null;
+      t8 = A.ListTile$(C.EdgeInsets_0_0_0_0, C.Color_4278221567, C.Color_4278221567, _null, new A.Padding(D.EdgeInsetsDirectional_8_0_0_6, t6, _null), new B.AttachmentFileComposerBuilder_build_closure(), t5, t8, _null);
+      t5 = A.SvgPicture$asset("assets/images/ic_delete_attachment.svg", _null, C.BoxFit_0, _null, _null, _null);
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+      return new A.Theme(t1, A.Container$(C.Alignment_0_0, new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t8, A.PositionedDirectional$(_null, A.buildIconWeb(_null, _null, t5, _null, _null, _null, new B.AttachmentFileComposerBuilder_build_closure0(_this), _null, A.Intl__message("Delete", _null, "delete", _null, _null)), -5, _null, -5, _null), new A.Align(C.AlignmentDirectional_0_1, _null, _null, _this.get$_progressLoading(), _null)], type$.JSArray_Widget), _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294967295, _null, t4, t3, _null, _null, _null, C.BoxShape_0), _null, _null, _null, t2, C.EdgeInsets_0_0_0_0, _null, _null, _this.maxWidth), _null);
     },
-    _initializeSuggestionBox$0() {
-      var _this = this,
-        t1 = _this._widget.debounceDuration;
-      t1 = _this._deBouncer = A.Debouncer$(t1, "", type$.String);
-      t1.get$values(t1).listen$1(_this.get$_onSearchChanged());
-      t1 = _this._framework$_element;
-      t1.toString;
-      _this._suggestionsBoxController = new B.SuggestionsBoxController(t1);
-      _this._suggestionsStreamController = new A._AsyncBroadcastStreamController(null, null, _this.$ti._eval$1("_AsyncBroadcastStreamController<List<1>?>"));
-      $.WidgetsBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B.TagsEditorState__initializeSuggestionBox_closure(_this));
-    },
-    _onFocusChanged$0() {
-      var _this = this,
-        t1 = _this.__TagsEditorState__focusNode_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      if (t1.get$hasFocus()) {
-        _this._widget.onFocusTagAction.call$1(false);
-        _this._countBackspacePressed = 0;
-        _this._scrollToVisible$0();
-        t1 = _this._suggestionsBoxController;
-        if (t1 != null)
-          t1.open$0(0);
-      } else {
-        t1 = _this._suggestionsBoxController;
-        if (t1 != null)
-          t1.close$0(0);
+    get$_progressLoading() {
+      var t1 = this.fileState;
+      switch (t1.uploadStatus.index) {
+        case 0:
+          return new A.Padding(D.EdgeInsets_8_50_8_0, C.Center_2No, null);
+        case 1:
+          return new A.Padding(D.EdgeInsets_0_50_0_0, this.horizontalPercentLoadingWidget$1(t1.uploadingProgress / 100), null);
+        case 2:
+        case 3:
+          return C.SizedBox_0_0_null_null;
       }
-      if (_this._framework$_element != null)
-        _this.setState$1(new B.TagsEditorState__onFocusChanged_closure(_this));
+    }
+  };
+  B._AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin.prototype = {};
+  B.EmailAddressInputBuilder.prototype = {
+    build$0() {
+      var _this = this, _null = null,
+        t1 = _this._prefixEmailAddress,
+        t2 = t1 === C.PrefixEmailAddress_1,
+        t3 = _this._email_address_input_builder$_context,
+        t4 = _this._email_address_input_builder$_responsiveUtils,
+        t5 = t2 ? B.ComposerStyle_getToAddressPadding(t3, t4) : B.ComposerStyle_getCcBccAddressPadding(t3, t4),
+        t6 = type$.JSArray_Widget;
+      t4 = A._setArrayType([A.Text$(A.S(B.PrefixEmailAddressExtension_asName(t1, t3)) + ":", _null, _null, _null, _null, _null, D.TextStyle_8gb, _null, _null, _null), new A.SizedBox(B.ComposerStyle_getSpace(t3, t4), _null, _null, _null), A.Expanded$(_this._buildTagEditor$0(), 1), new A.SizedBox(B.ComposerStyle_getSpace(t3, t4), _null, _null, _null)], t6);
+      if (t2) {
+        t1 = A._setArrayType([], t6);
+        t2 = _this._listEmailAddressType;
+        if (!t2.contains$1(t2, C.PrefixEmailAddress_2)) {
+          A.Localizations_of(t3, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          t1.push(B.buildTextIcon(A.Intl__message("Cc", _null, "cc_email_address_prefix", _null, _null), new B.EmailAddressInputBuilder_build_closure(_this), C.EdgeInsets_5_5_5_5, D.TextStyle_Iyc));
+        }
+        if (!t2.contains$1(t2, C.PrefixEmailAddress_3)) {
+          A.Localizations_of(t3, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          t1.push(B.buildTextIcon(A.Intl__message("Bcc", _null, "bcc_email_address_prefix", _null, _null), new B.EmailAddressInputBuilder_build_closure0(_this), C.EdgeInsets_5_5_5_5, D.TextStyle_Iyc));
+        }
+        t4.push(A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
+      } else
+        t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_close_composer.svg", _null, C.BoxFit_0, 28, _null, 28), C.EdgeInsets_0_0_0_0, _null, _null, new B.EmailAddressInputBuilder_build_closure1(_this), _null, _null));
+      return new A.Padding(t5, A.Row$(t4, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
     },
-    _onFocusKeyboardChanged$0() {
-      var t2, _this = this,
-        t1 = _this.__TagsEditorState__focusNodeKeyboard_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1 = t1.get$hasFocus();
-      t2 = _this._widget;
-      if (t1) {
-        t2.onFocusTagAction.call$1(true);
-        _this._countBackspacePressed = 1;
-      } else {
-        t2.onFocusTagAction.call$1(false);
-        _this._countBackspacePressed = 0;
-      }
+    _buildTagEditor$0() {
+      return new A.StatefulBuilder(new B.EmailAddressInputBuilder__buildTagEditor_closure(this), null);
     },
-    _createOverlayEntry$0() {
-      var t1 = this._suggestionsBoxController;
-      if (t1 != null)
-        t1.overlayEntry = A.OverlayEntry$(new B.TagsEditorState__createOverlayEntry_closure(this), false);
+    _email_address_input_builder$_buildCounter$2(context, count) {
+      var _null = null;
+      return new A.Padding(D.EdgeInsetsDirectional_8_8_0_0, A.InkWell$(false, _null, true, F.Chip$(_null, D.Color_342718597, _null, A.Text$("+" + count, _null, 1, C.TextOverflow_1, _null, false, _null, _null, _null, _null), C.EdgeInsets_8_0_8_0, C.TextStyle_oHY9, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), D.BorderSide_Cbk)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.EmailAddressInputBuilder__buildCounter_closure(this), _null, _null, _null, _null, _null, _null, _null), _null);
     },
-    _onTextFieldChange$1(string) {
-      var t1, _this = this;
-      if (string !== _this._previousText) {
-        t1 = _this._deBouncer;
-        if (t1 != null)
-          t1.set$value(0, string);
-      }
-      _this._previousText = string;
-      if (string.length !== 0)
-        _this._widget.toString;
-      return;
+    get$_isCollapse() {
+      return this.listEmailAddress.length > 1 && this.expandMode === C.ExpandMode_0;
     },
-    _onSearchChanged$1(value) {
-      return this._onSearchChanged$body$TagsEditorState(value);
+    _buildSuggestionItem$8(setState, context, tagEditorState, emailAddress, index, $length, highlight, suggestionValid) {
+      var _this = this, _null = null,
+        t1 = highlight ? C.Color_4294112245 : C.Color_4294967295,
+        t2 = _this._buildAvatarSuggestionItem$1(emailAddress),
+        t3 = _this._buildTitleSuggestionItem$2(emailAddress, suggestionValid);
+      return A.Container$(_null, A.Material$(C.Duration_200000, true, _null, A.ListTile$(C.EdgeInsets_16_0_16_0, _null, _null, _null, t2, new B.EmailAddressInputBuilder__buildSuggestionItem_closure(_this, setState, emailAddress, tagEditorState), _this._buildSubtitleSuggestionItem$2(emailAddress, suggestionValid), t3, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4), C.Clip_0, t1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    _onSearchChanged$body$TagsEditorState(value) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.dynamic),
-        $async$self = this, t2, t1, results;
-      var $async$_onSearchChanged$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              t1 = ++$async$self._searchId;
-              $async$goto = 2;
-              return A._asyncAwait($async$self._widget.findSuggestions$1(value), $async$_onSearchChanged$1);
-            case 2:
-              // returning from await.
-              results = $async$result;
-              if ($async$self._searchId === t1 && $async$self._framework$_element != null)
-                $async$self.setState$1(new B.TagsEditorState__onSearchChanged_closure($async$self, results));
-              $async$self._updateHighlight$1(0);
-              $async$self._validationSuggestionItemNotifier.set$value(0, value);
-              t1 = $async$self._suggestionsStreamController;
-              if (t1 != null) {
-                t2 = $async$self._suggestions;
-                t1.add$1(0, t2 == null ? A._setArrayType([], $async$self.$ti._eval$1("JSArray<1>")) : t2);
-              }
-              t1 = $async$self._suggestionsBoxController;
-              if (t1 != null)
-                t1.open$0(0);
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$_onSearchChanged$1, $async$completer);
+    _buildAvatarSuggestionItem$1(emailAddress) {
+      var _null = null,
+        t1 = A.Border_Border$all(C.Color_335544320, 1);
+      return A.Container$(C.Alignment_0_0, A.Text$(A.EmailAddressExtension_asString(emailAddress).length !== 0 ? A.EmailAddressExtension_asString(emailAddress)[0].toUpperCase() : "", _null, _null, _null, _null, _null, C.TextStyle_oHY12, _null, _null, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294506744, _null, t1, _null, _null, _null, _null, C.BoxShape_1), _null, 40, _null, _null, _null, _null, _null, 40);
     },
-    closeSuggestionBox$0() {
-      var t1, _this = this;
-      _this._suggestions = null;
-      t1 = _this._suggestionsStreamController;
-      if (t1 != null)
-        t1.add$1(0, A._setArrayType([], _this.$ti._eval$1("JSArray<1>")));
-      _this._updateHighlight$1(0);
-      _this._validationSuggestionItemNotifier.set$value(0, null);
-      t1 = _this._suggestionsBoxController;
-      if (t1 != null)
-        t1.close$0(0);
+    _buildTitleSuggestionItem$2(emailAddress, suggestionValid) {
+      var t1 = A.EmailAddressExtension_asString(emailAddress);
+      return B.RichTextWidget$(null, null, t1, suggestionValid == null ? "" : suggestionValid);
     },
-    _scrollToVisible$0() {
-      A.Future_Future$delayed(C.Duration_300000, new B.TagsEditorState__scrollToVisible_closure(this), type$.Null);
-    },
-    _tag_editor$_onSubmitted$1(string) {
-      var currentHighlightIndex, optionSelected, _this = this,
-        t1 = _this._suggestions;
-      if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true) {
-        t1 = _this._suggestionsBoxController;
-        t1 = (t1 == null ? null : t1._isOpened) === true;
+    _buildSubtitleSuggestionItem$2(emailAddress, suggestionValid) {
+      var t1 = emailAddress.name;
+      if ((t1 == null ? "" : t1).length !== 0) {
+        t1 = emailAddress.email;
+        t1 = (t1 == null ? "" : t1).length !== 0;
       } else
         t1 = false;
       if (t1) {
-        currentHighlightIndex = _this._highlightedOptionIndex._change_notifier$_value;
-        t1 = _this._suggestions;
-        if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true)
-          if (currentHighlightIndex >= 0) {
-            t1 = _this._suggestions;
-            t1.toString;
-            t1 = currentHighlightIndex < J.get$length$asx(t1);
-          } else
-            t1 = false;
-        else
-          t1 = false;
-        if (t1) {
-          t1 = _this._suggestions;
-          t1.toString;
-          optionSelected = J.$index$asx(t1, currentHighlightIndex);
-          _this._widget.onSelectOptionAction.call$1(optionSelected);
-          _this.resetTextField$0();
-          _this.closeSuggestionBox$0();
-        }
-      } else {
-        _this._widget.onSubmitted.call$1(string);
-        _this._widget.toString;
-        _this.resetTextField$0();
-      }
-      _this._widget.toString;
-      t1 = _this.__TagsEditorState__focusNode_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.requestFocus$0();
+        t1 = emailAddress.email;
+        if (t1 == null)
+          t1 = "";
+        return B.RichTextWidget$(C.TextStyle_chs, C.TextStyle_oHY10, t1, suggestionValid == null ? "" : suggestionValid);
+      } else
+        return null;
     },
-    resetTextField$0() {
-      var _this = this,
-        t1 = _this.__TagsEditorState__textFieldController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.set$text(0, "");
-      _this._previousText = "";
-      _this._updateHighlight$1(0);
-      _this._validationSuggestionItemNotifier.set$value(0, null);
+    _findSuggestions$1(query) {
+      return this._findSuggestions$body$EmailAddressInputBuilder(query);
     },
-    _onKeyboardBackspaceListener$0() {
+    _findSuggestions$body$EmailAddressInputBuilder(query) {
       var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.dynamic),
-        $async$self = this, t1;
-      var $async$_onKeyboardBackspaceListener$0 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+        $async$completer = A._makeAsyncAwaitCompleter(type$.List_SuggestionEmailAddress),
+        $async$returnValue, $async$self = this, t1, processedQuery, t2, tmailSuggestion, currentTextOnTextField, $async$temp1, $async$temp2, $async$temp3;
+      var $async$_findSuggestions$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
         while (true)
           switch ($async$goto) {
             case 0:
               // Function start
-              t1 = $async$self.__TagsEditorState__textFieldController_A;
-              t1 === $ && A.throwUnnamedLateFieldNI();
-              if (t1._change_notifier$_value.text.length === 0 && $async$self._widget.length > 0) {
-                t1 = ++$async$self._countBackspacePressed;
-                if (t1 === 1) {
-                  t1 = $async$self.__TagsEditorState__focusNode_A;
-                  t1 === $ && A.throwUnnamedLateFieldNI();
-                  t1.unfocus$0();
-                  t1 = $async$self.__TagsEditorState__focusNodeKeyboard_A;
-                  t1 === $ && A.throwUnnamedLateFieldNI();
-                  t1.requestFocus$0();
-                } else if (t1 >= 2) {
-                  $async$self._widget.onDeleteTagAction.call$0();
-                  if ($async$self._widget.length > 1)
-                    $async$self._countBackspacePressed = 1;
-                  else {
-                    $async$self._countBackspacePressed = 0;
-                    t1 = $async$self.__TagsEditorState__focusNodeKeyboard_A;
-                    t1 === $ && A.throwUnnamedLateFieldNI();
-                    t1.unfocus$0();
-                    t1 = $async$self.__TagsEditorState__focusNode_A;
-                    t1 === $ && A.throwUnnamedLateFieldNI();
-                    t1.requestFocus$0();
-                  }
-                }
-              } else {
-                t1 = $async$self.__TagsEditorState__focusNodeKeyboard_A;
-                t1 === $ && A.throwUnnamedLateFieldNI();
-                t1.unfocus$0();
-                t1 = $async$self.__TagsEditorState__focusNode_A;
-                t1 === $ && A.throwUnnamedLateFieldNI();
-                t1.requestFocus$0();
+              A.log("EmailAddressInputBuilder::_findSuggestions():query: " + query);
+              t1 = $async$self._gapBetweenTagChangedAndFindSuggestion;
+              t1 = t1 == null ? null : t1._handle != null;
+              if (t1 === true) {
+                A.log("EmailAddressInputBuilder::_findSuggestions(): return empty");
+                $async$returnValue = A._setArrayType([], type$.JSArray_SuggestionEmailAddress);
+                // goto return
+                $async$goto = 1;
+                break;
               }
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
+              processedQuery = C.JSString_methods.trim$0(query);
+              t1 = processedQuery.length;
+              if (t1 === 0) {
+                $async$returnValue = A._setArrayType([], type$.JSArray_SuggestionEmailAddress);
+                // goto return
+                $async$goto = 1;
+                break;
+              }
+              t2 = type$.SuggestionEmailAddress;
+              tmailSuggestion = J.JSArray_JSArray$growable(0, t2);
+              $async$goto = t1 >= 3 && $async$self._onSuggestionEmailAddress != null ? 3 : 4;
+              break;
+            case 3:
+              // then
+              $async$temp1 = C.JSArray_methods;
+              $async$temp2 = tmailSuggestion;
+              $async$temp3 = J;
+              $async$goto = 5;
+              return A._asyncAwait($async$self._onSuggestionEmailAddress.call$1(processedQuery), $async$_findSuggestions$1);
+            case 5:
+              // returning from await.
+              $async$temp1.addAll$1($async$temp2, $async$temp3.map$1$1$ax($async$result, new B.EmailAddressInputBuilder__findSuggestions_closure($async$self), t2));
+            case 4:
+              // join
+              C.JSArray_methods.addAll$1(tmailSuggestion, $async$self._matchedSuggestionEmailAddress$2(processedQuery, $async$self.listEmailAddress));
+              currentTextOnTextField = $async$self.controller._change_notifier$_value.text;
+              if (currentTextOnTextField.length === 0) {
+                $async$returnValue = A._setArrayType([], type$.JSArray_SuggestionEmailAddress);
+                // goto return
+                $async$goto = 1;
+                break;
+              }
+              t1 = A.LinkedHashSet_LinkedHashSet$from(tmailSuggestion, A._arrayInstanceType(tmailSuggestion)._precomputed1);
+              $async$returnValue = A.List_List$of(t1, true, A._instanceType(t1)._eval$1("SetMixin.E"));
+              // goto return
+              $async$goto = 1;
+              break;
+            case 1:
+              // return
+              return A._asyncReturn($async$returnValue, $async$completer);
           }
       });
-      return A._asyncStartSync($async$_onKeyboardBackspaceListener$0, $async$completer);
+      return A._asyncStartSync($async$_findSuggestions$1, $async$completer);
     },
-    build$1(context) {
-      var t3, t4, t5, t6, t7, t8, _list, t9, index, t10, t11, t12, t13, t14, t15, t16, tagEditorArea, _this = this, _null = null,
-        t1 = _this._widget,
-        decoration = t1.inputDecoration,
-        t2 = t1.padding;
-      if (t2 == null)
-        t2 = C.EdgeInsets_0_0_0_0;
-      t3 = t1.borderRadius;
-      if (t3 == null)
-        t3 = 0;
-      t3 = A.BorderRadius$all(new A.Radius(t3, t3));
-      t4 = _this._tag_editor$_isFocused ? 1 : 0.5;
-      if (_this._tag_editor$_isFocused) {
-        t5 = t1.focusedBorderColor;
-        if (t5 == null)
-          t5 = C.Color_0;
-      } else {
-        t5 = t1.enableBorderColor;
-        if (t5 == null)
-          t5 = C.Color_0;
+    _email_address_input_builder$_isDuplicatedRecipient$1(inputEmail) {
+      var t1;
+      if (inputEmail.length === 0)
+        return false;
+      t1 = this.listEmailAddress;
+      return A.IterableNullableExtension_whereNotNull(new A.MappedListIterable(t1, new B.EmailAddressInputBuilder__isDuplicatedRecipient_closure(), A._arrayInstanceType(t1)._eval$1("MappedListIterable<1,String?>")), type$.String).contains$1(0, inputEmail);
+    },
+    _toSuggestionEmailAddress$2(item, addedEmailAddresses) {
+      if (C.JSArray_methods.contains$1(addedEmailAddresses, item))
+        return new G.SuggestionEmailAddress(item, H.SuggestionEmailState_1);
+      else
+        return new G.SuggestionEmailAddress(item, H.SuggestionEmailState_0);
+    },
+    _matchedSuggestionEmailAddress$2(query, addedEmailAddress) {
+      var t1 = A._arrayInstanceType(addedEmailAddress);
+      return new A.MappedIterable(new A.WhereIterable(addedEmailAddress, new B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure(query), t1._eval$1("WhereIterable<1>")), new B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0(), t1._eval$1("MappedIterable<1,SuggestionEmailAddress>"));
+    },
+    _handleGapBetweenTagChangedAndFindSuggestion$0() {
+      A.log("EmailAddressInputBuilder::_handleGapBetweenTagChangedAndFindSuggestion(): Timeout");
+    },
+    _getTagBackgroundColor$2(emailCurrent, isLastEmail) {
+      var t1, t2;
+      if (this.lastTagFocused && isLastEmail)
+        return E.Color_4292865791;
+      else {
+        t1 = emailCurrent.email;
+        if (t1 == null)
+          t1 = "";
+        t2 = A.RegExp_RegExp(string$.______, true, false);
+        t1 = t2._nativeRegExp.test(t1);
+        return t1 ? D.Color_342718597 : C.Color_4294967295;
       }
-      t4 = A.Border_Border$all(t5, t4);
-      t5 = t1.backgroundColor;
-      if (t5 == null)
-        t5 = C.Color_0;
-      t6 = t1.length;
-      t7 = t1.minTextFieldWidth;
-      t1 = t1.tagSpacing;
-      t8 = type$.Widget;
-      _list = J.JSArray_JSArray$allocateGrowable(t6, t8);
-      for (t9 = type$.ValueKey_Object, index = 0; index < t6; ++index) {
-        t10 = "tag_" + index;
-        t11 = _this._widget.tagBuilder$2(context, index);
-        _list[index] = new A.LayoutId(t10, t11, new A.ValueKey(t10, t9));
+    },
+    _getTagBorderSide$2(emailCurrent, isLastEmail) {
+      var t1, t2, t3, t4,
+        _s153_ = string$.______;
+      if (this.lastTagFocused && isLastEmail)
+        return C.BorderSide_PLF;
+      else {
+        t1 = emailCurrent.email;
+        t2 = t1 == null;
+        t3 = t2 ? "" : t1;
+        t4 = A.RegExp_RegExp(_s153_, true, false);
+        t3 = t4._nativeRegExp.test(t3);
+        t3 = t3 ? 0 : 1;
+        if (t2)
+          t1 = "";
+        t2 = A.RegExp_RegExp(_s153_, true, false);
+        t1 = t2._nativeRegExp.test(t1);
+        return new A.BorderSide(t1 ? D.Color_342718597 : E.Color_4294914887, t3, C.BorderStyle_1, -1);
       }
-      t8 = A.List_List$of(_list, true, t8);
-      t9 = _this.__TagsEditorState__focusNodeKeyboard_A;
-      t9 === $ && A.throwUnnamedLateFieldNI();
-      t10 = _this._widget;
-      t11 = t10.textStyle;
-      t12 = _this.__TagsEditorState__focusNode_A;
-      t12 === $ && A.throwUnnamedLateFieldNI();
-      t13 = _this.__TagsEditorState__textFieldController_A;
-      t13 === $ && A.throwUnnamedLateFieldNI();
-      t14 = t10.keyboardType;
-      t15 = t10.textInputAction;
-      t16 = t10.cursorColor;
-      t8.push(A.LayoutId$(A.RawKeyboardListener$(false, A.TextField$(false, C.List_empty0, t10.autofocus, _null, A.text_field_TextField__defaultContextMenuBuilder$closure(), t13, t16, _null, _null, 2, decoration, true, _null, true, true, false, t12, _null, _null, _null, t14, _null, _null, 1, _null, _null, false, "\u2022", _this.get$_onTextFieldChange(), _null, _this.get$_tag_editor$_onSubmitted(), _null, _null, false, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null, _null, _null, _null, t11, C.TextAlign_4, _null, C.TextCapitalization_30, _null, t15, _null), t9, new B.TagsEditorState_build_closure(_this)), "text_field"));
-      tagEditorArea = A.Container$(_null, new B.TagLayout(new B.TagEditorLayoutDelegate(t6, t7, t1, C.Size_0_0), t8, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t5, _null, t4, t3, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t2, _null, _null, _null);
-      _this._widget.toString;
-      return new A.NotificationListener(new B.TagsEditorState_build_closure0(_this), new B.SizeChangedLayoutNotifier(A.Column$(A._setArrayType([tagEditorArea, new A.CompositedTransformTarget(_this._tag_editor$_layerLink, A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, type$.NotificationListener_SizeChangedLayoutNotification);
+    },
+    _handleDeleteTagAction$2(setState, context) {
+      var t1, t2, _this = this;
+      A.log("EmailAddressInputBuilder::_handleDeleteTagAction()");
+      t1 = _this.listEmailAddress;
+      if (t1.length !== 0) {
+        setState.call$1(new B.EmailAddressInputBuilder__handleDeleteTagAction_closure(_this));
+        t2 = _this._onUpdateListEmailAddressAction;
+        if (t2 != null)
+          t2.call$2(_this._prefixEmailAddress, t1);
+      }
     }
   };
-  B.TagEditorLayoutDelegate.prototype = {
-    getSize$1(constraints) {
-      return new A.Size(constraints.maxWidth, 0);
+  var typesOffset = hunkHelpers.updateTypes(["~()", "double(double)", "~(DragStartDetails)", "~(DragUpdateDetails)", "Widget(BuildContext)", "SuggestionEmailAddress(EmailAddress)", "~(TapDownDetails)", "~(ImageInfo,bool)", "DropdownMenuItem<Identity>(Identity)", "AttachmentFileComposerBuilder(BuildContext,int)", "List<SuggestionEmailAddress>/(String)", "Null(SuggestionEmailAddress)", "Widget(BuildContext,TagsEditorState<SuggestionEmailAddress>,SuggestionEmailAddress,int,int,bool,String?)"]);
+  B.buildTextIcon_closure.prototype = {
+    call$0() {
+      var t1 = this.onTap;
+      return t1 == null ? null : t1.call$0();
     },
-    performLayout$1(size) {
-      var t2, t3, t4, t5, t6, cursor, _i, tagId, child, childSize, t7, t8, textWidth, textFieldSize, _this = this,
-        _s10_ = "text_field",
-        t1 = type$.JSArray_Size,
-        tagSizes = A._setArrayType([], t1);
-      for (t2 = A.Iterable_Iterable$generate(_this.length, null, type$.int).toList$0(0), t3 = t2.length, t4 = type$.MultiChildLayoutParentData, t5 = _this.spacing, t6 = size._dx, cursor = C.Offset_0_0, _i = 0; _i < t2.length; t2.length === t3 || (0, A.throwConcurrentModificationError)(t2), ++_i) {
-        tagId = "tag_" + A.S(t2[_i]);
-        if (_this._idToChild.$index(0, tagId) != null) {
-          child = _this._idToChild.$index(0, tagId);
-          child.layout$2$parentUsesSize(new A.BoxConstraints(0, t6, 0, 1 / 0), true);
-          childSize = child._box$_size;
-          t7 = childSize._dx;
-          if (B.TagEditorLayoutDelegate__isOverflow(t7, t6, t5, tagSizes)) {
-            cursor = new A.Offset(0, cursor._dy + childSize._dy);
-            tagSizes = A._setArrayType([], t1);
-          }
-          t8 = _this._idToChild.$index(0, tagId).parentData;
-          t8.toString;
-          t4._as(t8).offset = cursor;
-          cursor = new A.Offset(cursor._dx + t7 + t5, cursor._dy);
-          tagSizes.push(childSize);
-        }
+    $signature: 0
+  };
+  B.buildIconWithLowerMenu_closure.prototype = {
+    call$1(iconContext) {
+      var _this = this, _null = null,
+        t1 = _this.context;
+      return A.buildIconWeb(_null, _null, _this.icon, _null, _null, _null, new B.buildIconWithLowerMenu__closure(iconContext, t1.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size, _this.openPopUpMenuAction, t1, _this.popupMenuItems), _null, _null);
+    },
+    $signature: 25
+  };
+  B.buildIconWithLowerMenu__closure.prototype = {
+    call$0() {
+      var _this = this,
+        box = type$.RenderBox._as(_this.iconContext.get$renderObject()),
+        iconTopLeft = A.MatrixUtils_transformPoint(box.getTransformTo$1(0, null), C.Offset_0_0),
+        iconSize = box._box$_size,
+        popupLeft = iconTopLeft._dx + iconSize._dx * 3 / 4,
+        t1 = _this.screenSize,
+        popupRight = t1._dx - popupLeft;
+      _this.openPopUpMenuAction.call$3(_this.context, new A.RelativeRect(popupLeft, iconTopLeft._dy + iconSize._dy * 4 / 5, popupRight, t1._dy - popupRight), _this.popupMenuItems);
+    },
+    $signature: 0
+  };
+  B.buildIconWithUpperMenu_closure.prototype = {
+    call$1(iconContext) {
+      var _this = this, _null = null,
+        t1 = _this.context;
+      return A.buildIconWeb(_null, _null, _this.icon, _null, _null, _null, new B.buildIconWithUpperMenu__closure(iconContext, t1.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data.size, _this.openPopUpMenuAction, t1, _this.popupMenuItems), _null, _null);
+    },
+    $signature: 25
+  };
+  B.buildIconWithUpperMenu__closure.prototype = {
+    call$0() {
+      var _this = this,
+        box = type$.RenderBox._as(_this.iconContext.get$renderObject()),
+        iconTopLeft = A.MatrixUtils_transformPoint(box.getTransformTo$1(0, null), C.Offset_0_0),
+        iconSize = box._box$_size,
+        popupLeft = iconTopLeft._dx + iconSize._dx * 3 / 4,
+        t1 = _this.screenSize,
+        popupRight = t1._dx - popupLeft;
+      _this.openPopUpMenuAction.call$3(_this.context, new A.RelativeRect(popupLeft, iconTopLeft._dy - iconSize._dy * 9 / 5, popupRight, t1._dy - popupRight), _this.popupMenuItems);
+    },
+    $signature: 0
+  };
+  B.ExtendedRenderParagraph_describeSemanticsConfiguration_closure.prototype = {
+    call$1(info) {
+      return info.recognizer != null;
+    },
+    $signature: 233
+  };
+  B.TextOverflowMixin__paintTextOverflow_closure.prototype = {
+    call$2(context, offset) {
+      var t1 = this.$this.ContainerRenderObjectMixin__lastChild;
+      t1.toString;
+      context.paintChild$2(t1, offset);
+    },
+    $signature: 27
+  };
+  B.ExtendedRichText__extractChildren_closure.prototype = {
+    call$1(span) {
+      var t1, _null = null;
+      if (span instanceof A.WidgetSpan) {
+        t1 = this._box_0.index++;
+        this.result.push(new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new A.PlaceholderSpanIndexSemanticsTag(t1, "PlaceholderSpanIndexSemanticsTag(" + t1 + ")"), _null, _null, _null, _null, _null), false, false, false, span.child, _null));
       }
-      if (_this._idToChild.$index(0, _s10_) != null) {
-        textWidth = Math.max(t6 - C.JSArray_methods.fold$2(tagSizes, 0, new B.TagEditorLayoutDelegate_performLayout_closure()) - t5 * Math.max(tagSizes.length - 1, 0), _this.minTextFieldWidth);
-        if (B.TagEditorLayoutDelegate__isOverflow(textWidth, t6, t5, tagSizes)) {
-          textFieldSize = _this.layoutChild$2(_s10_, A.BoxConstraints$loose(new A.Size(t6, 1 / 0)));
-          cursor = new A.Offset(0, cursor._dy + textFieldSize._dy);
-        } else
-          textFieldSize = _this.layoutChild$2(_s10_, A.BoxConstraints$loose(new A.Size(textWidth, 1 / 0)));
-        _this.positionChild$2(_s10_, cursor);
+      return true;
+    },
+    $signature: 70
+  };
+  B.ExtendedTextSelectionState_userUpdateTextEditingValue_closure.prototype = {
+    call$0() {
+    },
+    $signature: 0
+  };
+  B.convertTextInputPostionToTextPainterPostion_closure.prototype = {
+    call$1(ts) {
+      var $length,
+        t1 = this._box_0;
+      if (type$.SpecialInlineSpanBase._is(ts)) {
+        $length = ts.get$actualText().length;
+        t1.caretOffset = t1.caretOffset - ($length - B.getInlineOffset(ts));
+        t1 = t1.textOffset += $length;
       } else
-        textFieldSize = C.Size_0_0;
-      _this.parentSize = new A.Size(t6, cursor._dy + textFieldSize._dy);
+        t1 = t1.textOffset = t1.textOffset + B.getInlineOffset(ts);
+      if (t1 >= this.textPosition.offset)
+        return false;
+      return true;
     },
-    shouldRelayout$1(oldDelegate) {
-      return false;
-    },
-    get$length(receiver) {
-      return this.length;
-    }
+    $signature: 70
   };
-  B.TagLayout.prototype = {
-    createRenderObject$1(context) {
-      var t1 = new B.TagRenderLayoutBox(type$.TagEditorLayoutDelegate._as(this.delegate), 0, null, null, A.LayerHandle$(type$.ContainerLayer));
-      t1.RenderObject$0();
-      t1.addAll$1(0, null);
-      return t1;
-    }
-  };
-  B.TagRenderLayoutBox.prototype = {
-    performLayout$0() {
-      this.super$RenderCustomMultiChildLayoutBox$performLayout();
-      this._box$_size = type$.TagEditorLayoutDelegate._as(this._custom_layout$_delegate).parentSize;
-    }
-  };
-  B.ValidationSuggestionItem.prototype = {};
-  var typesOffset = hunkHelpers.updateTypes(["~()", "double(double)", "~(String)", "~(TapDownDetails)", "Widget(_ChildEntry)", "bool(SizeChangedLayoutNotification)", "Widget(Widget,Animation0<double>)", "Widget(Widget?,List<Widget>)"]);
-  B._RawChipState__handleTapDown_closure.prototype = {
-    call$0() {
-      this.$this._isTapping = true;
-    },
-    $signature: 0
-  };
-  B._RawChipState__handleTapCancel_closure.prototype = {
-    call$0() {
-      this.$this._isTapping = false;
-    },
-    $signature: 0
-  };
-  B._RawChipState__handleTap_closure.prototype = {
-    call$0() {
-      this.$this._isTapping = false;
-    },
-    $signature: 0
-  };
-  B._RawChipState_didUpdateWidget_closure.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1._widget.avatar != null || false;
-      t1 = t1.___RawChipState_avatarDrawerController_A;
-      if (t2) {
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        t1.forward$0(0);
-      } else {
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        t1.reverse$0(0);
-      }
-    },
-    $signature: 0
-  };
-  B._RawChipState_didUpdateWidget_closure0.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1._widget.onDeleted;
-      t1 = t1.___RawChipState_deleteDrawerController_A;
-      if (t2 != null) {
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        t1.forward$0(0);
-      } else {
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        t1.reverse$0(0);
-      }
-    },
-    $signature: 0
-  };
-  B._RawChipState_build_closure.prototype = {
-    call$2(context, child) {
-      var _this = this, _null = null;
-      return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
-    },
-    $signature: 1463
-  };
-  B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
-    call$2(result, position) {
-      return this.$this.RenderObjectWithChildMixin__child.hitTest$2$position(result, this.offset);
-    },
-    $signature: 22
-  };
-  B._RenderChip_hitTest_closure.prototype = {
-    call$2(result, position) {
-      return this.hitTestChild.hitTest$2$position(result, this.center);
-    },
-    $signature: 22
-  };
-  B._RenderChip_performLayout_centerLayout.prototype = {
-    call$2(boxSize, x) {
-      var t1;
-      switch (this.$this._chip$_textDirection.index) {
-        case 0:
-          t1 = this.sizes;
-          return new A.Offset(x - boxSize._dx, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
-        case 1:
-          t1 = this.sizes;
-          return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
-      }
-    },
-    $signature: 1464
-  };
-  B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
-    call$2(context, offset) {
-      var t4, t5, avatarRect, darkenPaint, path, checkOffset,
-        t1 = this.$this,
-        t2 = t1.SlottedContainerRenderObjectMixin__slotToChild,
-        t3 = t2.$index(0, D._ChipSlot_1);
-      t3.toString;
-      t4 = t2.$index(0, D._ChipSlot_1).parentData;
-      t4.toString;
-      t5 = type$.BoxParentData;
-      context.paintChild$2(t3, t5._as(t4).offset.$add(0, offset));
-      t3 = t1.checkmarkAnimation;
-      t3 = t3.get$status(t3);
-      if (t3 !== C.AnimationStatus_0) {
-        if (t1._chip$_theme.showAvatar) {
-          avatarRect = B._RenderChip__boxRect(t2.$index(0, D._ChipSlot_1)).shift$1(offset);
-          darkenPaint = $.$get$_renderer().createPaint$0();
-          t3 = $.$get$_RenderChip_selectionScrimTween();
-          t4 = t1.checkmarkAnimation;
-          t4 = t3.transform$1(0, t4.get$value(t4));
-          t4.toString;
-          darkenPaint.set$color(0, t4);
-          darkenPaint.set$blendMode(C.BlendMode_9);
-          path = t1.avatarBorder.getOuterPath$1(avatarRect);
-          context.get$canvas(context).drawPath$2(path, darkenPaint);
+  B.convertTextPainterPostionToTextInputPostion_closure.prototype = {
+    call$1(ts) {
+      var t1, t2, textOffset, _this = this;
+      if (type$.SpecialInlineSpanBase._is(ts)) {
+        t1 = ts.get$actualText();
+        t2 = _this._box_0;
+        t2.caretOffset = t2.caretOffset + (t1.length - B.getInlineOffset(ts));
+        if (ts.get$deleteAll() && t2.caretOffset >= ts.get$textRange().start && t2.caretOffset <= ts.get$textRange().end) {
+          t1 = _this.end;
+          if (t1 != null)
+            t2.caretOffset = t1 ? ts.get$textRange().end : ts.get$textRange().start;
+          else if (t2.caretOffset > (ts.get$textRange().end - ts.get$textRange().start) / 2 + ts.get$textRange().start)
+            t2.caretOffset = ts.get$textRange().end;
+          else
+            t2.caretOffset = ts.get$textRange().start;
+          return false;
         }
-        t3 = t2.$index(0, D._ChipSlot_1)._box$_size._dy;
-        t4 = t2.$index(0, D._ChipSlot_1).parentData;
-        t4.toString;
-        checkOffset = t5._as(t4).offset.$add(0, new A.Offset(t2.$index(0, D._ChipSlot_1)._box$_size._dy * 0.125, t2.$index(0, D._ChipSlot_1)._box$_size._dy * 0.125));
-        t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
+      t1 = _this._box_0;
+      textOffset = t1.textOffset + B.getInlineOffset(ts);
+      t1.textOffset = textOffset;
+      if (textOffset >= _this.textPosition.offset)
+        return false;
+      return true;
     },
-    $signature: 28
+    $signature: 70
   };
-  B._RenderChip__paintChild_closure.prototype = {
-    call$2(context, offset) {
-      var t1 = this.child,
-        t2 = t1.parentData;
-      t2.toString;
-      context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
+  B.textSpanToActualText_closure.prototype = {
+    call$1(span) {
+      var t1 = this.buffer;
+      if (type$.SpecialInlineSpanBase._is(span))
+        t1._contents += span.get$actualText();
+      else
+        span.computeToPlainText$1(t1);
+      return true;
     },
-    $signature: 28
+    $signature: 70
   };
-  B._AnimatedSwitcherState__newEntry_closure.prototype = {
-    call$1($status) {
+  B.ExtendedTextRenderBox_extractPlaceholderSpans_closure.prototype = {
+    call$1(span) {
       var t1;
-      if ($status === C.AnimationStatus_0) {
-        t1 = this.$this;
-        t1.setState$1(new B._AnimatedSwitcherState__newEntry__closure(t1, this.entry));
-        this.controller.dispose$0();
+      if (span instanceof A.PlaceholderSpan0) {
+        t1 = this.$this.__ExtendedTextRenderBox__placeholderSpans_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        t1.push(span);
       }
+      if (type$.SpecialInlineSpanBase._is(span))
+        this.$this._hasSpecialInlineSpanBase = true;
+      return true;
+    },
+    $signature: 70
+  };
+  B.ExtendedTextRenderBox_hitTestChild_closure.prototype = {
+    call$2(result, transformed) {
+      return this.child.hitTest$2$position(result, transformed);
     },
     $signature: 21
   };
-  B._AnimatedSwitcherState__newEntry__closure.prototype = {
+  B.ExtendedTextRenderBox_paintWidgets_closure.prototype = {
+    call$2(context, offset) {
+      var t1 = this._box_0.child;
+      t1.toString;
+      context.paintChild$2(t1, offset);
+    },
+    $signature: 27
+  };
+  B.ExtendedTextSelectionRenderObject__getWordAtOffset_closure.prototype = {
     call$0() {
-      var t1 = this.$this;
-      t1._outgoingEntries.remove$1(0, this.entry);
-      t1._outgoingWidgets = null;
+      var previousWord, nextWord,
+        t1 = this.$this,
+        t2 = this.position,
+        word = t1._extended_render_paragraph$_textPainter._paragraph.getWordBoundary$1(t2),
+        t3 = t2.offset,
+        t4 = word.end;
+      if (t3 >= t4)
+        return A.TextSelection$fromPosition(t2);
+      if (A.TextLayoutMetrics_isWhitespace(C.JSString_methods.codeUnitAt$1(t1.get$plainText(), t3)) && t3 > 0) {
+        t2 = word.start;
+        previousWord = t1._extended_text_selection_render_object$_getPreviousWord$1(t2);
+        switch (A.defaultTargetPlatform().index) {
+          case 2:
+            if (previousWord == null) {
+              nextWord = t1._extended_text_selection_render_object$_getNextWord$1(t2);
+              if (nextWord == null)
+                return A.TextSelection$collapsed(C.TextAffinity_1, t3);
+              return A.TextSelection$(C.TextAffinity_1, t3, nextWord.end, false);
+            }
+            return A.TextSelection$(C.TextAffinity_1, previousWord.start, t3, false);
+          case 0:
+            if (previousWord == null)
+              return A.TextSelection$(C.TextAffinity_1, t3, t3 + 1, false);
+            return A.TextSelection$(C.TextAffinity_1, previousWord.start, t3, false);
+          case 1:
+          case 4:
+          case 3:
+          case 5:
+            break;
+        }
+      }
+      return A.TextSelection$(C.TextAffinity_1, word.start, t4, false);
     },
-    $signature: 0
+    $signature: 1454
   };
-  B._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure.prototype = {
-    call$1(entry) {
-      return entry.transition;
+  B.ExtendedTextSelectionRenderObject_getRectForComposingRange_closure.prototype = {
+    call$2(accum, incoming) {
+      var t1 = accum == null ? null : accum.expandToInclude$1(new A.Rect(incoming.left, incoming.top, incoming.right, incoming.bottom));
+      return t1 == null ? new A.Rect(incoming.left, incoming.top, incoming.right, incoming.bottom) : t1;
     },
-    $signature: typesOffset + 4
+    $signature: 335
   };
-  B._AnimatedSwitcherState_build_closure.prototype = {
-    call$1(outgoing) {
-      var t1 = outgoing.key,
-        t2 = this.$this._currentEntry;
-      return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
+  B.SelectionOverlay__markNeedsBuild_closure.prototype = {
+    call$1(duration) {
+      var t2,
+        t1 = this.$this;
+      t1._extended_text_selection_overlay$_buildScheduled = false;
+      t2 = t1._extended_text_selection_overlay$_handles;
+      if (t2 != null) {
+        t2[0].markNeedsBuild$0();
+        t1._extended_text_selection_overlay$_handles[1].markNeedsBuild$0();
+      }
+      t1 = t1._extended_text_selection_overlay$_toolbar;
+      if (t1 != null)
+        t1.markNeedsBuild$0();
     },
-    $signature: 1465
+    $signature: 9
   };
-  B.SizeChangedLayoutNotifier_createRenderObject_closure.prototype = {
+  B.BaseComposerView_buildFromEmailAddress_closure.prototype = {
     call$0() {
-      this.context.dispatchNotification$1(D.C_SizeChangedLayoutNotification);
+      var t5, t6, t7, t8, t9, _null = null,
+        t1 = this.context,
+        t2 = this.$this,
+        t3 = t2.responsiveUtils,
+        t4 = B.ComposerStyle_getFromAddressPadding(t1, t3);
+      A.Localizations_of(t1, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+      t5 = A._setArrayType([A.Text$(A.Intl__message("From", _null, "from_email_address_prefix", _null, _null) + ":", _null, _null, _null, _null, _null, D.TextStyle_8gb, _null, _null, _null), new A.SizedBox(B.ComposerStyle_getSpace(t1, t3), _null, _null, _null)], type$.JSArray_Widget);
+      t6 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t2);
+      t6 = t6._jsWeakMap;
+      t7 = A._instanceType(t2)._eval$1("GetWidget.S");
+      t8 = t7._as(t6.get(t2)).listIdentities;
+      if (!t8.get$isEmpty(t8)) {
+        t1 = B.ComposerStyle_getSpace(t1, t3);
+        t3 = A.SvgPicture$asset("assets/images/ic_edit_identity.svg", _null, C.BoxFit_1, _null, _null, _null);
+        A.Expando__checkType(t2);
+        t8 = t7._as(t6.get(t2)).listIdentities;
+        t9 = t8.$ti._eval$1("MappedListIterable<ListMixin.E,DropdownMenuItem<Identity>>");
+        t9 = A.List_List$of(new A.MappedListIterable(t8, t2.get$_buildItemIdentity(), t9), true, t9._eval$1("ListIterable.E"));
+        A.Expando__checkType(t2);
+        t8 = t7._as(t6.get(t2)).get$selectIdentity();
+        t5.push(new A.Padding(new A.EdgeInsetsDirectional(0, 0, t1, 0), new A.DropdownButtonHideUnderline(A.DropdownButton2$(_null, t3, A.DropdownStyleData$(new A.BoxDecoration(C.Color_4294967295, _null, _null, A.BorderRadius$circular(20), _null, _null, _null, C.BoxShape_0), 4, 240, C.Offset_0_0, new A.ScrollbarThemeData(new A.MaterialStatePropertyAll(true, type$.MaterialStatePropertyAll_bool), new A.MaterialStatePropertyAll(6, type$.MaterialStatePropertyAll_double), _null, _null, _null, _null, C.Radius_40_40, _null, _null, _null, _null, _null, _null), 370), _null, C.IconStyleData_4Xf, true, t9, D.MenuItemStyleData_djF0, t8, _null, _null, type$.Identity), _null), _null));
+      }
+      A.Expando__checkType(t2);
+      t1 = t7._as(t6.get(t2)).identitySelected;
+      if (t1.get$value(t1) != null) {
+        A.Expando__checkType(t2);
+        t1 = t7._as(t6.get(t2)).identitySelected;
+        t1 = t1.get$value(t1);
+        t1 = t1 == null ? _null : t1.email;
+        if (t1 == null)
+          t1 = "";
+      } else {
+        A.Expando__checkType(t2);
+        t1 = t7._as(t6.get(t2)).mailboxDashBoardController.userProfile;
+        t1 = t1.get$value(t1);
+        t1 = t1 == null ? _null : t1.email;
+        if (t1 == null)
+          t1 = "";
+      }
+      t5.push(A.Expanded$(A.TextOverflowBuilder$(t1, D.TextStyle_8gI), 1));
+      return new A.Padding(t4, A.Row$(t5, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
     },
-    $signature: 0
+    $signature: 128
   };
-  B.TagsEditorState__initializeSuggestionBox_closure.prototype = {
-    call$1(_) {
-      return this.$call$body$TagsEditorState__initializeSuggestionBox_closure(_);
+  B.BaseComposerView_buildEmailAddress_closure.prototype = {
+    call$0() {
+      var t3, t4, t5, t6, t7, t8, t9, t10,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = t3._as(t2.get(t1)).listToEmailAddress;
+      A.Expando__checkType(t1);
+      t5 = t3._as(t2.get(t1)).listEmailAddressType;
+      A.Expando__checkType(t1);
+      t6 = t3._as(t2.get(t1)).toAddressExpandMode;
+      t6 = t6.get$value(t6);
+      A.Expando__checkType(t1);
+      t7 = t3._as(t2.get(t1)).toEmailAddressController;
+      A.Expando__checkType(t1);
+      t8 = t3._as(t2.get(t1)).toAddressFocusNode;
+      A.Expando__checkType(t1);
+      t9 = t3._as(t2.get(t1)).keyToEmailTagEditor;
+      A.Expando__checkType(t1);
+      t10 = t3._as(t2.get(t1)).isInitialRecipient;
+      t10.get$value(t10);
+      A.Expando__checkType(t1);
+      t4 = new B.EmailAddressInputBuilder(this.context, t1.imagePaths, t1.responsiveUtils, t6, C.PrefixEmailAddress_1, t5, t7, t8, false, t9, t3._as(t2.get(t1)).getNextFocusOfToEmailAddress$0(), t4);
+      A.Expando__checkType(t1);
+      t4._onFocusEmailAddressChangeAction = t3._as(t2.get(t1)).get$onEmailAddressFocusChange();
+      A.Expando__checkType(t1);
+      t4._onShowFullListEmailAddressAction = t3._as(t2.get(t1)).get$showFullEmailAddress();
+      A.Expando__checkType(t1);
+      t4._onAddEmailAddressTypeAction = t3._as(t2.get(t1)).get$addEmailAddressType();
+      A.Expando__checkType(t1);
+      t4._onUpdateListEmailAddressAction = t3._as(t2.get(t1)).get$updateListEmailAddress();
+      A.Expando__checkType(t1);
+      t4._onSuggestionEmailAddress = t3._as(t2.get(t1)).get$getAutoCompleteSuggestion();
+      A.Expando__checkType(t1);
+      t4._onFocusNextAddressAction = t3._as(t2.get(t1)).get$handleFocusNextAddressAction();
+      return t4.build$0();
     },
-    $call$body$TagsEditorState__initializeSuggestionBox_closure(_) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$self = this;
-      var $async$call$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              $async$self.$this._createOverlayEntry$0();
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$call$1, $async$completer);
-    },
-    $signature: 249
+    $signature: 3
   };
-  B.TagsEditorState__onFocusChanged_closure.prototype = {
+  B.BaseComposerView_buildEmailAddress_closure0.prototype = {
     call$0() {
       var t1 = this.$this,
-        t2 = t1.__TagsEditorState__focusNode_A;
-      t2 === $ && A.throwUnnamedLateFieldNI();
-      t1._tag_editor$_isFocused = t2.get$hasFocus();
-    },
-    $signature: 0
-  };
-  B.TagsEditorState__createOverlayEntry_closure.prototype = {
-    call$1(context) {
-      var t4, topAvailableSpace, mq, bottomAvailableSpace, suggestionBoxHeight, showTop, compositedTransformFollowerOffset, _null = null, t1 = {},
-        t2 = this.$this,
-        t3 = type$.nullable_RenderBox;
-      if (t3._as(t2._framework$_element.get$renderObject()) != null) {
-        t4 = t3._as(t2._framework$_element.get$renderObject())._box$_size;
-        t4.toString;
-        topAvailableSpace = A.MatrixUtils_transformPoint(t3._as(t2._framework$_element.get$renderObject()).getTransformTo$1(0, _null), C.Offset_0_0)._dy;
-        mq = context.dependOnInheritedWidgetOfExactType$1$0(type$.MediaQuery).data;
-        t3 = t4._dy;
-        bottomAvailableSpace = mq.size._dy - mq.viewInsets.bottom - topAvailableSpace - t3;
-        suggestionBoxHeight = Math.max(topAvailableSpace, bottomAvailableSpace);
-        t1.suggestionBoxHeight = suggestionBoxHeight;
-        t1.suggestionBoxHeight = Math.min(suggestionBoxHeight, t2._widget.suggestionsBoxMaxHeight);
-        showTop = topAvailableSpace > bottomAvailableSpace;
-        compositedTransformFollowerOffset = showTop ? new A.Offset(0, -t3) : C.Offset_0_0;
-        t3 = t2._suggestionsStreamController;
-        t3 = t3 == null ? _null : new A._BroadcastStream(t3, A._instanceType(t3)._eval$1("_BroadcastStream<1>"));
-        return A.StreamBuilder$(new B.TagsEditorState__createOverlayEntry__closure(t1, t2, t4, compositedTransformFollowerOffset, showTop), t2._suggestions, t3, t2.$ti._eval$1("List<1>?"));
-      }
-      return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
-    },
-    $signature: 23
-  };
-  B.TagsEditorState__createOverlayEntry__closure.prototype = {
-    call$2(context, snapshot) {
-      var t2, t3, t4, t5, t6, t7, t8, t9, t10, suggestionsListView, _this = this, _null = null,
-        t1 = snapshot.data;
-      if (t1 != null && J.get$isNotEmpty$asx(t1)) {
-        t2 = _this.$this;
-        t3 = t2._widget;
-        t4 = t3.suggestionMargin;
-        if (t4 == null)
-          t4 = C.EdgeInsets_0_0_0_0;
-        t5 = t3.suggestionsBoxElevation;
-        if (t5 == null)
-          t5 = 20;
-        t6 = t3.suggestionsBoxRadius;
-        t7 = A.BorderRadius$circular(t6);
-        t8 = t3.suggestionsBoxBackgroundColor;
-        t9 = A.BorderRadius$circular(t6);
-        t6 = A.BorderRadius$all(new A.Radius(t6, t6));
-        t10 = _this._box_0.suggestionBoxHeight;
-        t3 = t3.suggestionPadding;
-        if (t3 == null)
-          t3 = C.EdgeInsets_0_0_0_0;
-        t1.toString;
-        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), J.get$length$asx(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t10), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._highlightedOptionIndex)), _null, _null);
-        t1 = !_this.showTop ? suggestionsListView : A.FractionalTranslation$(suggestionsListView, true, C.Offset_0_m1);
-        return A.Positioned$(_null, A.CompositedTransformFollower$(t1, t2._tag_editor$_layerLink, _this.compositedTransformFollowerOffset, false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, _this.size._dx);
-      }
-      return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
-    },
-    $signature() {
-      return this.$this.$ti._eval$1("Widget(BuildContext,AsyncSnapshot<List<1>?>)");
-    }
-  };
-  B.TagsEditorState__createOverlayEntry___closure.prototype = {
-    call$2(context, index) {
-      var item, highlight, t3, t4, t5, _null = null,
-        t1 = this.$this,
-        t2 = t1._suggestions;
-      if (t2 != null)
-        t2 = J.get$isNotEmpty$asx(t2) === true;
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).listEmailAddressType;
+      if (t1.contains$1(t1, C.PrefixEmailAddress_2))
+        return I.Divider_6xV;
       else
-        t2 = false;
-      if (t2) {
-        t2 = t1._suggestions;
-        t2.toString;
-        item = J.$index$asx(t2, index);
-        highlight = A.AutocompleteHighlightedOption_of(context) === index;
-        t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$.ValidationSuggestionItem);
-        if (t2 == null)
-          t2 = _null;
-        else
-          t2 = t2.notifier._change_notifier$_value;
-        t3 = t1._widget;
-        if (!t3.useDefaultHighlight) {
-          t4 = this.snapshot.data;
-          t4.toString;
-          t4 = J.get$length$asx(t4);
-          return t3.suggestionBuilder.call$7(context, t1, item, index, t4, highlight, t2);
-        } else {
-          if (highlight)
-            t3 = A.Theme_of(context).focusColor;
-          else
-            t3 = _null;
-          t4 = t1._widget;
-          t4.toString;
-          t5 = this.snapshot.data;
-          t5.toString;
-          return A.Container$(_null, t4.suggestionBuilder.call$7(context, t1, item, index, J.get$length$asx(t5), highlight, t2), C.Clip_0, t3, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
-        }
-      } else
-        return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+        return C.SizedBox_0_0_null_null;
     },
-    $signature: 114
+    $signature: 3
   };
-  B.TagsEditorState__onSearchChanged_closure.prototype = {
+  B.BaseComposerView_buildEmailAddress_closure1.prototype = {
     call$0() {
-      return this.$this._suggestions = this.results;
+      var t3, t4, t5, t6, t7, t8, t9, t10,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = t3._as(t2.get(t1)).listEmailAddressType;
+      if (t4.contains$1(t4, C.PrefixEmailAddress_2)) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).listCcEmailAddress;
+        A.Expando__checkType(t1);
+        t5 = t3._as(t2.get(t1)).listEmailAddressType;
+        A.Expando__checkType(t1);
+        t6 = t3._as(t2.get(t1)).ccAddressFocusNode;
+        A.Expando__checkType(t1);
+        t7 = t3._as(t2.get(t1)).ccAddressExpandMode;
+        t7 = t7.get$value(t7);
+        A.Expando__checkType(t1);
+        t8 = t3._as(t2.get(t1)).ccEmailAddressController;
+        A.Expando__checkType(t1);
+        t9 = t3._as(t2.get(t1)).keyCcEmailTagEditor;
+        A.Expando__checkType(t1);
+        t10 = t3._as(t2.get(t1)).isInitialRecipient;
+        t10.get$value(t10);
+        A.Expando__checkType(t1);
+        t4 = new B.EmailAddressInputBuilder(this.context, t1.imagePaths, t1.responsiveUtils, t7, C.PrefixEmailAddress_2, t5, t8, t6, false, t9, t3._as(t2.get(t1)).getNextFocusOfCcEmailAddress$0(), t4);
+        A.Expando__checkType(t1);
+        t4._onFocusEmailAddressChangeAction = t3._as(t2.get(t1)).get$onEmailAddressFocusChange();
+        A.Expando__checkType(t1);
+        t4._onShowFullListEmailAddressAction = t3._as(t2.get(t1)).get$showFullEmailAddress();
+        A.Expando__checkType(t1);
+        t4._onDeleteEmailAddressTypeAction = t3._as(t2.get(t1)).get$deleteEmailAddressType();
+        A.Expando__checkType(t1);
+        t4._onUpdateListEmailAddressAction = t3._as(t2.get(t1)).get$updateListEmailAddress();
+        A.Expando__checkType(t1);
+        t4._onSuggestionEmailAddress = t3._as(t2.get(t1)).get$getAutoCompleteSuggestion();
+        A.Expando__checkType(t1);
+        t4._onFocusNextAddressAction = t3._as(t2.get(t1)).get$handleFocusNextAddressAction();
+        return t4.build$0();
+      } else
+        return C.SizedBox_0_0_null_null;
+    },
+    $signature: 3
+  };
+  B.BaseComposerView_buildEmailAddress_closure2.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).listEmailAddressType;
+      if (t1.contains$1(t1, C.PrefixEmailAddress_3))
+        return I.Divider_6xV;
+      else
+        return C.SizedBox_0_0_null_null;
+    },
+    $signature: 3
+  };
+  B.BaseComposerView_buildEmailAddress_closure3.prototype = {
+    call$0() {
+      var t3, t4, t5, t6, t7, t8, t9, t10,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = t3._as(t2.get(t1)).listEmailAddressType;
+      if (t4.contains$1(t4, C.PrefixEmailAddress_3)) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).listBccEmailAddress;
+        A.Expando__checkType(t1);
+        t5 = t3._as(t2.get(t1)).listEmailAddressType;
+        A.Expando__checkType(t1);
+        t6 = t3._as(t2.get(t1)).bccAddressFocusNode;
+        A.Expando__checkType(t1);
+        t7 = t3._as(t2.get(t1)).bccAddressExpandMode;
+        t7 = t7.get$value(t7);
+        A.Expando__checkType(t1);
+        t8 = t3._as(t2.get(t1)).bccEmailAddressController;
+        A.Expando__checkType(t1);
+        t9 = t3._as(t2.get(t1)).keyBccEmailTagEditor;
+        A.Expando__checkType(t1);
+        t10 = t3._as(t2.get(t1)).isInitialRecipient;
+        t10.get$value(t10);
+        A.Expando__checkType(t1);
+        t4 = new B.EmailAddressInputBuilder(this.context, t1.imagePaths, t1.responsiveUtils, t7, C.PrefixEmailAddress_3, t5, t8, t6, false, t9, t3._as(t2.get(t1)).subjectEmailInputFocusNode, t4);
+        A.Expando__checkType(t1);
+        t4._onFocusEmailAddressChangeAction = t3._as(t2.get(t1)).get$onEmailAddressFocusChange();
+        A.Expando__checkType(t1);
+        t4._onShowFullListEmailAddressAction = t3._as(t2.get(t1)).get$showFullEmailAddress();
+        A.Expando__checkType(t1);
+        t4._onDeleteEmailAddressTypeAction = t3._as(t2.get(t1)).get$deleteEmailAddressType();
+        A.Expando__checkType(t1);
+        t4._onUpdateListEmailAddressAction = t3._as(t2.get(t1)).get$updateListEmailAddress();
+        A.Expando__checkType(t1);
+        t4._onSuggestionEmailAddress = t3._as(t2.get(t1)).get$getAutoCompleteSuggestion();
+        A.Expando__checkType(t1);
+        t4._onFocusNextAddressAction = t3._as(t2.get(t1)).get$handleFocusNextAddressAction();
+        return t4.build$0();
+      } else
+        return C.SizedBox_0_0_null_null;
+    },
+    $signature: 3
+  };
+  B.BaseComposerView_buildAttachmentsWidget_closure.prototype = {
+    call$0() {
+      var t3, uploadAttachments, t4, t5, t6, t7, t8, t9, _null = null,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      uploadAttachments = t3._as(t2.get(t1)).uploadController.listUploadAttachments;
+      if (uploadAttachments.get$length(uploadAttachments) === 0)
+        return C.SizedBox_0_0_null_null;
+      else {
+        t4 = this.context;
+        t5 = B.ComposerStyle_getAttachmentPadding(t4, t1.responsiveUtils);
+        A.Expando__checkType(t1);
+        t6 = t3._as(t2.get(t1)).expandModeAttachments;
+        t6 = t6.get$value(t6);
+        t7 = type$.AppLocalizations;
+        A.Localizations_of(t4, C.Type_AppLocalizations_swi, t7).toString;
+        t8 = A.Text$(A.Intl__message("Attachments", _null, "attachments", _null, _null) + " (" + A.filesize(B.ListUploadFileStateExtension_get_totalSize(uploadAttachments), 0) + "):", _null, _null, _null, _null, _null, D.TextStyle_7BT, _null, _null, _null);
+        A.Expando__checkType(t1);
+        t9 = t3._as(t2.get(t1)).get$toggleDisplayAttachments();
+        if (t6 === C.ExpandMode_1) {
+          A.Localizations_of(t4, C.Type_AppLocalizations_swi, t7).toString;
+          t6 = A.Intl__message("Hide", _null, "hide", _null, _null);
+        } else {
+          A.Localizations_of(t4, C.Type_AppLocalizations_swi, t7).toString;
+          t6 = A.Intl__message("Show all", _null, "showAll", _null, _null) + " (" + J.get$length$asx(uploadAttachments.get$value(uploadAttachments)) + ")";
+        }
+        t7 = type$.JSArray_Widget;
+        t9 = A.Row$(A._setArrayType([t8, C.Spacer_null, A.Material$(C.Duration_200000, true, _null, A.TextButton$(A.Text$(t6, _null, _null, _null, _null, _null, D.TextStyle_yzp2, _null, _null, _null), _null, t9, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_2)], t7), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+        A.Expando__checkType(t1);
+        t2 = t3._as(t2.get(t1)).expandModeAttachments;
+        return new A.Padding(t5, A.Column$(A._setArrayType([t9, t1._buildAttachmentsList$3(t4, uploadAttachments, t2.get$value(t2))], t7), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null);
+      }
+    },
+    $signature: 86
+  };
+  B.BaseComposerView__buildAttachmentsList_closure.prototype = {
+    call$2(context, constraints) {
+      var t3, _null = null,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t3 = this.uploadFilesState;
+      return new A.Align(C.AlignmentDirectional_m1_0, _null, _null, new A.SizedBox(_null, 60, A.ScrollConfiguration$(new B.CustomScrollBehavior(_null), A.ListView$builder(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).scrollControllerAttachment, new B.BaseComposerView__buildAttachmentsList__closure(t1, t3, constraints), J.get$length$asx(t3.get$value(t3)), _null, D.ValueKey_list_attachment_minimize, _null, _null, _null, C.Axis_0, true)), _null), _null);
+    },
+    $signature: 1457
+  };
+  B.BaseComposerView__buildAttachmentsList__closure.prototype = {
+    call$2(context, index) {
+      var t1 = this.uploadFilesState,
+        t2 = this.constraints;
+      return B.AttachmentFileComposerBuilder$(J.$index$asx(t1.get$value(t1), index), C.EdgeInsetsDirectional_0_0_8_0, t2.maxWidth / B.ComposerStyle_getMaxItemRowListAttachment(context, t2), new B.BaseComposerView__buildAttachmentsList___closure(this.$this));
+    },
+    $signature: typesOffset + 9
+  };
+  B.BaseComposerView__buildAttachmentsList___closure.prototype = {
+    call$1(attachment) {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).uploadController;
+      t1._uploadingStateFiles.deleteElementByUploadTaskId$1(attachment.uploadTaskId);
+      t1._refreshListUploadAttachmentState$0();
+      return null;
+    },
+    $signature: 1458
+  };
+  B.BaseComposerView_buildAppBar_closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).saveEmailAsDrafts$1(this.context);
     },
     $signature: 0
   };
-  B.TagsEditorState__scrollToVisible_closure.prototype = {
+  B.BaseComposerView_buildAppBar_closure0.prototype = {
     call$0() {
-      $.WidgetsBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B.TagsEditorState__scrollToVisible__closure(this.$this));
+      var t3, t4, _null = null,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).isEnableEmailSendButton;
+      t3 = A.SvgPicture$asset(t2.get$value(t2) ? "assets/images/ic_send_mobile.svg" : "assets/images/ic_send_disable.svg", _null, C.BoxFit_0, _null, _null, _null);
+      t4 = this.context;
+      A.Localizations_of(t4, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+      return A.buildIconWeb(_null, _null, t3, _null, _null, _null, new B.BaseComposerView_buildAppBar__closure(t1, t4), _null, A.Intl__message("Send", _null, "send", _null, _null));
     },
-    $signature: 6
+    $signature: 3
   };
-  B.TagsEditorState__scrollToVisible__closure.prototype = {
-    call$1(_) {
-      return this.$call$body$TagsEditorState__scrollToVisible__closure(_);
+  B.BaseComposerView_buildAppBar__closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).sendEmailAction$1(this.context);
     },
-    $call$body$TagsEditorState__scrollToVisible__closure(_) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$self = this, t1, renderBox;
-      var $async$call$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              t1 = $async$self.$this;
-              renderBox = type$.RenderBox._as(t1._framework$_element.get$renderObject());
-              t1 = t1._framework$_element;
-              t1.toString;
-              $async$goto = 2;
-              return A._asyncAwait(A.Scrollable_maybeOf(t1)._scrollable$_position.ensureVisible$1(renderBox), $async$call$1);
-            case 2:
-              // returning from await.
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$call$1, $async$completer);
-    },
-    $signature: 249
+    $signature: 0
   };
-  B.TagsEditorState_build_closure.prototype = {
-    call$1($event) {
-      var t1 = $event instanceof A.RawKeyDownEvent;
-      if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294967304))
-        this.$this._onKeyboardBackspaceListener$0();
-      else if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294968065)) {
+  B.BaseComposerView_buildTitleComposer_closure.prototype = {
+    call$0() {
+      var t3, t4, _null = null,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = t3._as(t2.get(t1)).subjectEmail;
+      t4 = t4.get$value(t4);
+      if ((t4 == null ? _null : J.get$length$asx(t4) !== 0) === true) {
+        A.Expando__checkType(t1);
+        t1 = t3._as(t2.get(t1)).subjectEmail;
+        t1 = t1.get$value(t1);
+        if (t1 == null)
+          t1 = "";
+      } else {
+        A.Localizations_of(this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        t1 = A.CapitalizeExtension_get_capitalizeFirstEach(A.Intl__message("New message", _null, "new_message", _null, _null));
+      }
+      return A.Text$(t1, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_oHY, C.TextAlign_2, _null, _null);
+    },
+    $signature: 118
+  };
+  B.BaseComposerView_buildBottomBar_closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
+      A.FocusScope_of(this.context).unfocus$0();
+      t1.mailboxDashBoardController.closeComposerOverlay$0();
+      return null;
+    },
+    $signature: 0
+  };
+  B.BaseComposerView_buildBottomBar_closure0.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).saveEmailAsDrafts$1(this.context);
+    },
+    $signature: 0
+  };
+  B.BaseComposerView_buildBottomBar_closure1.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).sendEmailAction$1(this.context);
+    },
+    $signature: 0
+  };
+  B.ComposerLoadingMixin_buildInlineLoadingView_closure.prototype = {
+    call$0() {
+      var t1 = this.controller,
+        t2 = t1.uploadController.uploadInlineViewState,
+        t3 = this.$this;
+      return J.fold$2$ax(t2.get$value(t2), new B.ComposerLoadingMixin_buildInlineLoadingView__closure(t3, t1), new B.ComposerLoadingMixin_buildInlineLoadingView__closure0(t3, t1));
+    },
+    $signature: 3
+  };
+  B.ComposerLoadingMixin_buildInlineLoadingView__closure.prototype = {
+    call$1(failure) {
+      var t1 = this.controller.viewState;
+      return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure1(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure2(this.$this));
+    },
+    $signature: 172
+  };
+  B.ComposerLoadingMixin_buildInlineLoadingView___closure1.prototype = {
+    call$1(failure) {
+      return C.SizedBox_0_0_null_null;
+    },
+    $signature: 43
+  };
+  B.ComposerLoadingMixin_buildInlineLoadingView___closure2.prototype = {
+    call$1(success) {
+      if (success instanceof A.DownloadingImageAsBase64)
+        return this.$this._loadingWidgetWithSizeColor$0();
+      return C.SizedBox_0_0_null_null;
+    },
+    $signature: 87
+  };
+  B.ComposerLoadingMixin_buildInlineLoadingView__closure0.prototype = {
+    call$1(success) {
+      var t1;
+      if (success instanceof A.UploadingAttachmentUploadState)
+        return this.$this._loadingWidgetWithSizeColor$0();
+      t1 = this.controller.viewState;
+      return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure0(this.$this));
+    },
+    $signature: 87
+  };
+  B.ComposerLoadingMixin_buildInlineLoadingView___closure.prototype = {
+    call$1(failure) {
+      return C.SizedBox_0_0_null_null;
+    },
+    $signature: 43
+  };
+  B.ComposerLoadingMixin_buildInlineLoadingView___closure0.prototype = {
+    call$1(success) {
+      if (success instanceof A.DownloadingImageAsBase64)
+        return this.$this._loadingWidgetWithSizeColor$0();
+      return C.SizedBox_0_0_null_null;
+    },
+    $signature: 87
+  };
+  B.AttachmentFileComposerBuilder_build_closure.prototype = {
+    call$0() {
+    },
+    $signature: 0
+  };
+  B.AttachmentFileComposerBuilder_build_closure0.prototype = {
+    call$0() {
+      var t1 = this.$this;
+      t1.onDeleteAttachmentAction.call$1(t1.fileState);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder_build_closure.prototype = {
+    call$0() {
+      var t1 = this.$this._onAddEmailAddressTypeAction;
+      return t1 == null ? null : t1.call$1(C.PrefixEmailAddress_2);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder_build_closure0.prototype = {
+    call$0() {
+      var t1 = this.$this._onAddEmailAddressTypeAction;
+      return t1 == null ? null : t1.call$1(C.PrefixEmailAddress_3);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder_build_closure1.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = t1._onDeleteEmailAddressTypeAction;
+      return t2 == null ? null : t2.call$1(t1._prefixEmailAddress);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor_closure.prototype = {
+    call$2(context, setState) {
+      var _null = null,
+        t1 = this.$this,
+        newListEmailAddress = t1.listEmailAddress,
+        newListEmailAddress0 = t1.get$_isCollapse() ? C.JSArray_methods.sublist$2(newListEmailAddress, 0, 1) : newListEmailAddress,
+        t2 = newListEmailAddress0.length,
+        t3 = t1._prefixEmailAddress !== C.PrefixEmailAddress_1 && newListEmailAddress.length === 0;
+      return A.FocusScope$(false, A.Focus$(false, _null, F.TagEditor$(false, t3, _null, _null, t1.controller, _null, C.Duration_150000, _null, t1.get$_findSuggestions(), t1.focusNode, _null, false, D.InputDecoration_Cfr, t1.keyTagEditor, C.TextInputType_5_null_null, t2, 20, new B.EmailAddressInputBuilder__buildTagEditor__closure(t1, setState, context), new B.EmailAddressInputBuilder__buildTagEditor__closure0(t1, setState), new B.EmailAddressInputBuilder__buildTagEditor__closure1(t1, setState), new B.EmailAddressInputBuilder__buildTagEditor__closure2(t1, setState), new B.EmailAddressInputBuilder__buildTagEditor__closure3(t1, setState), _null, true, new B.EmailAddressInputBuilder__buildTagEditor__closure4(t1, setState), _null, _null, C.Color_4294967295, 20, 350, 20, new B.EmailAddressInputBuilder__buildTagEditor__closure5(t1, newListEmailAddress0, setState), 8, C.TextInputAction_2, D.TextStyle_o8I, false, type$.SuggestionEmailAddress), _null, _null, _null, _null, true, _null, new B.EmailAddressInputBuilder__buildTagEditor__closure6(t1), new B.EmailAddressInputBuilder__buildTagEditor__closure7(t1), _null, _null, _null), _null, _null, _null, _null);
+    },
+    $signature: 1459
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure6.prototype = {
+    call$1($focus) {
+      var t1 = this.$this,
+        t2 = t1._onFocusEmailAddressChangeAction;
+      return t2 == null ? null : t2.call$2(t1._prefixEmailAddress, $focus);
+    },
+    $signature: 14
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure7.prototype = {
+    call$2(focusNode, $event) {
+      var t1, t2;
+      if ($event instanceof A.RawKeyDownEvent && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294967305)) {
         t1 = this.$this;
-        t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value + 1);
-      } else if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294968068)) {
-        t1 = this.$this;
-        t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
+        t2 = t1.nextFocusNode;
+        if (t2 != null)
+          t2.requestFocus$0();
+        t1 = t1._onFocusNextAddressAction;
+        if (t1 != null)
+          t1.call$0();
+        return C.KeyEventResult_0;
+      }
+      return C.KeyEventResult_1;
+    },
+    $signature: 90
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure0.prototype = {
+    call$1(focused) {
+      this.setState.call$1(new B.EmailAddressInputBuilder__buildTagEditor___closure4(this.$this, focused));
+    },
+    $signature: 57
+  };
+  B.EmailAddressInputBuilder__buildTagEditor___closure4.prototype = {
+    call$0() {
+      this.$this.lastTagFocused = this.focused;
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure.prototype = {
+    call$0() {
+      return this.$this._handleDeleteTagAction$2(this.setState, this.context);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure1.prototype = {
+    call$1(item) {
+      var t1 = this.$this,
+        t2 = item.emailAddress.email;
+      if (!t1._email_address_input_builder$_isDuplicatedRecipient$1(t2 == null ? "" : t2)) {
+        this.setState.call$1(new B.EmailAddressInputBuilder__buildTagEditor___closure3(t1, item));
+        t2 = t1._onUpdateListEmailAddressAction;
+        if (t2 != null)
+          t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
       }
     },
-    $signature: 99
+    $signature: typesOffset + 11
   };
-  B.TagsEditorState_build_closure0.prototype = {
-    call$1(val) {
-      $.WidgetsBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B.TagsEditorState_build__closure(this.$this));
-      return true;
+  B.EmailAddressInputBuilder__buildTagEditor___closure3.prototype = {
+    call$0() {
+      return C.JSArray_methods.add$1(this.$this.listEmailAddress, this.item.emailAddress);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure2.prototype = {
+    call$1(value) {
+      var textTrim, t1, t2;
+      A.log("EmailAddressInputBuilder::_buildTagEditor():onSubmitted: value: " + value);
+      textTrim = C.JSString_methods.trim$0(value);
+      A.log("EmailAddressInputBuilder::_buildTagEditor():onSubmitted: textTrim: " + textTrim);
+      t1 = this.$this;
+      if (!t1._email_address_input_builder$_isDuplicatedRecipient$1(textTrim)) {
+        this.setState.call$1(new B.EmailAddressInputBuilder__buildTagEditor___closure2(t1, textTrim));
+        t2 = t1._onUpdateListEmailAddressAction;
+        if (t2 != null)
+          t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
+      }
+    },
+    $signature: 8
+  };
+  B.EmailAddressInputBuilder__buildTagEditor___closure2.prototype = {
+    call$0() {
+      return C.JSArray_methods.add$1(this.$this.listEmailAddress, new A.EmailAddress(null, this.textTrim));
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure5.prototype = {
+    call$2(context, index) {
+      var t5, t6, t7, t8, t9, t10, t11, t12, _null = null,
+        t1 = this.$this,
+        t2 = t1.listEmailAddress,
+        isLastEmail = index === t2.length - 1,
+        t3 = t1.get$_isCollapse() ? 50 : 0,
+        t4 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale;
+      t4 = A.Bidi_isRtlLanguage(t4.get$languageCode(t4)) ? C.EdgeInsets_0_0_0_0 : _null;
+      t5 = this.newListEmailAddress;
+      t6 = F.Bidi_hasAnyRtl(A.EmailAddressExtension_asString(t5[index])) ? 0 : 2;
+      t7 = A.Text$(A.EmailAddressExtension_asString(t5[index]), _null, 1, C.TextOverflow_1, _null, false, _null, _null, _null, _null);
+      t8 = A.SvgPicture$asset("assets/images/ic_close.svg", _null, C.BoxFit_0, _null, _null, _null);
+      t9 = t1._getTagBackgroundColor$2(t2[index], isLastEmail);
+      t10 = A.BorderRadius$circular(10);
+      t11 = t1._getTagBorderSide$2(t2[index], isLastEmail);
+      t12 = t5[index].name;
+      if ((t12 == null ? "" : t12).length !== 0) {
+        t12 = t2[index].name;
+        t12 = new B.CircleAvatar(A.Text$((t12 == null ? "" : t12)[0].toUpperCase(), _null, _null, _null, _null, _null, D.TextStyle_1Gf2, _null, _null, _null), C.Color_4278221567, _null);
+      } else
+        t12 = _null;
+      t11 = A._setArrayType([new A.Padding(new A.EdgeInsetsDirectional(0, 8, t3, 0), A.InkWell$(false, _null, true, F.Chip$(t12, t9, t8, t7, new A.EdgeInsetsDirectional(12, t6, 12, t6), C.TextStyle_oHY9, _null, new B.EmailAddressInputBuilder__buildTagEditor___closure(t1, this.setState, index), t4, new A.RoundedRectangleBorder(t10, t11)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.EmailAddressInputBuilder__buildTagEditor___closure0(t1), _null, _null, _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget);
+      if (t1.get$_isCollapse())
+        t11.push(t1._email_address_input_builder$_buildCounter$2(context, t2.length - t5.length));
+      return new A.Stack(C.AlignmentDirectional_1_0, _null, C.StackFit_0, C.Clip_1, t11, _null);
+    },
+    $signature: 1460
+  };
+  B.EmailAddressInputBuilder__buildTagEditor___closure0.prototype = {
+    call$0() {
+      var t2,
+        t1 = this.$this;
+      if (t1.get$_isCollapse()) {
+        t2 = t1._onShowFullListEmailAddressAction;
+        t1 = t2 == null ? null : t2.call$1(t1._prefixEmailAddress);
+      } else
+        t1 = null;
+      return t1;
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor___closure.prototype = {
+    call$0() {
+      var t2,
+        t1 = this.$this;
+      this.setState.call$1(new B.EmailAddressInputBuilder__buildTagEditor____closure(t1, this.index));
+      t2 = t1._onUpdateListEmailAddressAction;
+      if (t2 != null)
+        t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor____closure.prototype = {
+    call$0() {
+      return C.JSArray_methods.removeAt$1(this.$this.listEmailAddress, this.index);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure3.prototype = {
+    call$1(value) {
+      var textTrim, t1, t2;
+      A.log("EmailAddressInputBuilder::_buildTagEditor():onTagChanged: value: " + value);
+      textTrim = C.JSString_methods.trim$0(value);
+      A.log("EmailAddressInputBuilder::_buildTagEditor():onTagChanged: textTrim: " + textTrim);
+      t1 = this.$this;
+      if (!t1._email_address_input_builder$_isDuplicatedRecipient$1(textTrim)) {
+        this.setState.call$1(new B.EmailAddressInputBuilder__buildTagEditor___closure1(t1, textTrim));
+        t2 = t1._onUpdateListEmailAddressAction;
+        if (t2 != null)
+          t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
+      }
+      t1._gapBetweenTagChangedAndFindSuggestion = A.Timer_Timer(C.Duration_1000000, t1.get$_handleGapBetweenTagChangedAndFindSuggestion());
+    },
+    $signature: 8
+  };
+  B.EmailAddressInputBuilder__buildTagEditor___closure1.prototype = {
+    call$0() {
+      return C.JSArray_methods.add$1(this.$this.listEmailAddress, new A.EmailAddress(null, this.textTrim));
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildTagEditor__closure4.prototype = {
+    call$7(context, tagEditorState, suggestionEmailAddress, index, $length, highlight, suggestionValid) {
+      var t4, _null = null,
+        t1 = suggestionEmailAddress.state,
+        t2 = this.$this,
+        t3 = suggestionEmailAddress.emailAddress;
+      switch (t1.index) {
+        case 1:
+          t1 = t2._buildAvatarSuggestionItem$1(t3);
+          t4 = t2._buildTitleSuggestionItem$2(t3, suggestionValid);
+          return A.Container$(_null, A.Container$(_null, A.ListTile$(C.EdgeInsets_8_0_8_0, _null, _null, _null, t1, _null, t2._buildSubtitleSuggestionItem$2(t3, suggestionValid), t4, A.SvgPicture$asset("assets/images/ic_filter_selected.svg", _null, C.BoxFit_0, 24, _null, 24)), C.Clip_0, _null, _null, D.BoxDecoration_O1S, _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, _null, D.BoxDecoration_Y3n, _null, _null, _null, _null, C.EdgeInsets_8_8_8_8, _null, _null, _null);
+        default:
+          return t2._buildSuggestionItem$8(this.setState, context, tagEditorState, t3, index, $length, highlight, suggestionValid);
+      }
+    },
+    $signature: typesOffset + 12
+  };
+  B.EmailAddressInputBuilder__buildCounter_closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = t1._onShowFullListEmailAddressAction;
+      return t2 == null ? null : t2.call$1(t1._prefixEmailAddress);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildSuggestionItem_closure.prototype = {
+    call$0() {
+      var t2, _this = this,
+        t1 = _this.$this;
+      _this.setState.call$1(new B.EmailAddressInputBuilder__buildSuggestionItem__closure(t1, _this.emailAddress));
+      t2 = t1._onUpdateListEmailAddressAction;
+      if (t2 != null)
+        t2.call$2(t1._prefixEmailAddress, t1.listEmailAddress);
+      t1 = _this.tagEditorState;
+      t1.resetTextField$0();
+      t1.closeSuggestionBox$0();
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__buildSuggestionItem__closure.prototype = {
+    call$0() {
+      return C.JSArray_methods.add$1(this.$this.listEmailAddress, this.emailAddress);
+    },
+    $signature: 0
+  };
+  B.EmailAddressInputBuilder__findSuggestions_closure.prototype = {
+    call$1(emailAddress) {
+      var t1 = this.$this;
+      return t1._toSuggestionEmailAddress$2(emailAddress, t1.listEmailAddress);
     },
     $signature: typesOffset + 5
   };
-  B.TagsEditorState_build__closure.prototype = {
-    call$1(_) {
-      return this.$call$body$TagsEditorState_build__closure(_);
+  B.EmailAddressInputBuilder__isDuplicatedRecipient_closure.prototype = {
+    call$1(emailAddress) {
+      return emailAddress.email;
     },
-    $call$body$TagsEditorState_build__closure(_) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$self = this, t1;
-      var $async$call$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              t1 = $async$self.$this._suggestionsBoxController;
-              if (t1 != null) {
-                t1 = t1.overlayEntry;
-                if (t1 != null)
-                  t1.markNeedsBuild$0();
-              }
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$call$1, $async$completer);
-    },
-    $signature: 249
+    $signature: 231
   };
-  B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
-    call$2(result, tag) {
-      return result + tag._dx;
+  B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure.prototype = {
+    call$1(addedMail) {
+      var t1 = addedMail.email;
+      if (t1 == null)
+        t1 = "";
+      return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 543
+    $signature: 82
   };
-  B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
-    call$2(result, tag) {
-      return result + tag._dx;
+  B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0.prototype = {
+    call$1(emailAddress) {
+      return new G.SuggestionEmailAddress(emailAddress, H.SuggestionEmailState_1);
     },
-    $signature: 543
+    $signature: typesOffset + 5
+  };
+  B.EmailAddressInputBuilder__handleDeleteTagAction_closure.prototype = {
+    call$0() {
+      C.JSArray_methods.removeLast$0(this.$this.listEmailAddress);
+    },
+    $signature: 0
+  };
+  B.ListUploadFileStateExtension_get_totalSize_closure.prototype = {
+    call$1(file) {
+      return file.get$fileSize();
+    },
+    $signature: 1461
+  };
+  B.ListUploadFileStateExtension_get_totalSize_closure0.prototype = {
+    call$2(sum, size) {
+      return sum + size;
+    },
+    $signature: 398
   };
   (function aliases() {
-    var _ = B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin.prototype;
-    _.super$__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin$dispose = _.dispose$0;
-    _ = B.__AnimatedSwitcherState_State_TickerProviderStateMixin.prototype;
-    _.super$__AnimatedSwitcherState_State_TickerProviderStateMixin$dispose = _.dispose$0;
+    var _ = B.ExtendedTextRenderBox.prototype;
+    _.super$ExtendedTextRenderBox$hitTestChildren = _.hitTestChildren$2$position;
+    _ = B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin.prototype;
+    _.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin$attach = _.attach$1;
+    _.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin$detach = _.detach$0;
+    _ = B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin.prototype;
+    _.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin$attach = _.attach$1;
+    _.super$_ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin$detach = _.detach$0;
+    _ = B.__SelectionHandleOverlayState_State_SingleTickerProviderStateMixin0.prototype;
+    _.super$__SelectionHandleOverlayState_State_SingleTickerProviderStateMixin$dispose0 = _.dispose$0;
+    _ = B.SpecialTextSpan.prototype;
+    _.super$SpecialTextSpan$compareTo = _.compareTo$1;
   })();
   (function installTearOffs() {
     var _instance_1_u = hunkHelpers._instance_1u,
       _instance_0_u = hunkHelpers._instance_0u,
-      _static_2 = hunkHelpers._static_2;
+      _instance_2_u = hunkHelpers._instance_2u;
     var _;
-    _instance_1_u(_ = B._RawChipState.prototype, "get$_chip$_handleTapDown", "_chip$_handleTapDown$1", 3);
-    _instance_0_u(_, "get$_chip$_handleTapCancel", "_chip$_handleTapCancel$0", 0);
-    _instance_0_u(_, "get$_chip$_handleTap", "_chip$_handleTap$0", 0);
-    _instance_1_u(_ = B._RenderChip.prototype, "get$computeMinIntrinsicWidth", "computeMinIntrinsicWidth$1", 1);
-    _instance_1_u(_, "get$computeMaxIntrinsicWidth", "computeMaxIntrinsicWidth$1", 1);
-    _instance_1_u(_, "get$computeMinIntrinsicHeight", "computeMinIntrinsicHeight$1", 1);
+    _instance_1_u(_ = B.ExtendedTextRenderBox.prototype, "get$computeMinIntrinsicHeight", "computeMinIntrinsicHeight$1", 1);
     _instance_1_u(_, "get$computeMaxIntrinsicHeight", "computeMaxIntrinsicHeight$1", 1);
-    _static_2(B, "animated_switcher_AnimatedSwitcher_defaultTransitionBuilder$closure", "AnimatedSwitcher_defaultTransitionBuilder", 6);
-    _static_2(B, "animated_switcher_AnimatedSwitcher_defaultLayoutBuilder$closure", "AnimatedSwitcher_defaultLayoutBuilder", 7);
-    _instance_0_u(_ = B.TagsEditorState.prototype, "get$_onFocusChanged", "_onFocusChanged$0", 0);
-    _instance_0_u(_, "get$_onFocusKeyboardChanged", "_onFocusKeyboardChanged$0", 0);
-    _instance_1_u(_, "get$_onTextFieldChange", "_onTextFieldChange$1", 2);
-    _instance_1_u(_, "get$_onSearchChanged", "_onSearchChanged$1", 2);
-    _instance_1_u(_, "get$_tag_editor$_onSubmitted", "_tag_editor$_onSubmitted$1", 2);
+    _instance_1_u(_, "get$computeMinIntrinsicWidth", "computeMinIntrinsicWidth$1", 1);
+    _instance_1_u(_, "get$computeMaxIntrinsicWidth", "computeMaxIntrinsicWidth$1", 1);
+    _instance_0_u(_, "get$systemFontsDidChange", "systemFontsDidChange$0", 0);
+    _instance_1_u(_ = B.ExtendedTextSelectionRenderObject.prototype, "get$_extended_text_selection_render_object$_handleTapDown", "_extended_text_selection_render_object$_handleTapDown$1", 6);
+    _instance_0_u(_, "get$_extended_text_selection_render_object$_handleTap", "_extended_text_selection_render_object$_handleTap$0", 0);
+    _instance_0_u(_, "get$_extended_text_selection_render_object$_handleLongPress", "_extended_text_selection_render_object$_handleLongPress$0", 0);
+    _instance_0_u(_ = B.ExtendedTextSelectionOverlay.prototype, "get$_extended_text_selection_overlay$_updateTextSelectionOverlayVisibilities", "_extended_text_selection_overlay$_updateTextSelectionOverlayVisibilities$0", 0);
+    _instance_1_u(_, "get$_extended_text_selection_overlay$_handleSelectionEndHandleDragStart", "_extended_text_selection_overlay$_handleSelectionEndHandleDragStart$1", 2);
+    _instance_1_u(_, "get$_extended_text_selection_overlay$_handleSelectionEndHandleDragUpdate", "_extended_text_selection_overlay$_handleSelectionEndHandleDragUpdate$1", 3);
+    _instance_1_u(_, "get$_extended_text_selection_overlay$_handleSelectionStartHandleDragStart", "_extended_text_selection_overlay$_handleSelectionStartHandleDragStart$1", 2);
+    _instance_1_u(_, "get$_extended_text_selection_overlay$_handleSelectionStartHandleDragUpdate", "_extended_text_selection_overlay$_handleSelectionStartHandleDragUpdate$1", 3);
+    _instance_1_u(_ = B.SelectionOverlay0.prototype, "get$_extended_text_selection_overlay$_buildStartHandle", "_extended_text_selection_overlay$_buildStartHandle$1", 4);
+    _instance_1_u(_, "get$_extended_text_selection_overlay$_buildEndHandle", "_extended_text_selection_overlay$_buildEndHandle$1", 4);
+    _instance_0_u(B._SelectionHandleOverlayState0.prototype, "get$_extended_text_selection_overlay$_handleVisibilityChanged", "_extended_text_selection_overlay$_handleVisibilityChanged$0", 0);
+    _instance_2_u(B.DecorationImagePainter.prototype, "get$_handleImage", "_handleImage$2", 7);
+    _instance_1_u(B.BaseComposerView.prototype, "get$_buildItemIdentity", "_buildItemIdentity$1", 8);
+    _instance_1_u(_ = B.EmailAddressInputBuilder.prototype, "get$_findSuggestions", "_findSuggestions$1", 10);
+    _instance_0_u(_, "get$_handleGapBetweenTagChangedAndFindSuggestion", "_handleGapBetweenTagChangedAndFindSuggestion$0", 0);
   })();
   (function inheritance() {
-    var _mixinHard = hunkHelpers.mixinHard,
-      _mixin = hunkHelpers.mixin,
-      _inherit = hunkHelpers.inherit,
-      _inheritMany = hunkHelpers.inheritMany;
-    _inherit(B.Chip, A.StatelessWidget);
-    _inheritMany(A.StatefulWidget, [B.RawChip, B.AnimatedSwitcher, B.TagEditor]);
-    _inheritMany(A.State0, [B.__RawChipState_State_MaterialStateMixin, B.__AnimatedSwitcherState_State_TickerProviderStateMixin, B.TagsEditorState]);
-    _inherit(B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin, B.__RawChipState_State_MaterialStateMixin);
-    _inherit(B._RawChipState, B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin);
-    _inheritMany(A.Closure0Args, [B._RawChipState__handleTapDown_closure, B._RawChipState__handleTapCancel_closure, B._RawChipState__handleTap_closure, B._RawChipState_didUpdateWidget_closure, B._RawChipState_didUpdateWidget_closure0, B._AnimatedSwitcherState__newEntry__closure, B.SizeChangedLayoutNotifier_createRenderObject_closure, B.TagsEditorState__onFocusChanged_closure, B.TagsEditorState__onSearchChanged_closure, B.TagsEditorState__scrollToVisible_closure]);
-    _inheritMany(A.Closure2Args, [B._RawChipState_build_closure, B._RenderChipRedirectingHitDetection_hitTest_closure, B._RenderChip_hitTest_closure, B._RenderChip_performLayout_centerLayout, B._RenderChip__paintAvatar_paintWithOverlay, B._RenderChip__paintChild_closure, B.TagsEditorState__createOverlayEntry__closure, B.TagsEditorState__createOverlayEntry___closure, B.TagEditorLayoutDelegate__isOverflow_closure, B.TagEditorLayoutDelegate_performLayout_closure]);
-    _inheritMany(A.SingleChildRenderObjectWidget, [B._ChipRedirectingHitDetectionWidget, B.SizeChangedLayoutNotifier]);
-    _inherit(B._RenderChipRedirectingHitDetection, A.RenderConstrainedBox);
-    _inherit(B.__ChipRenderWidget_RenderObjectWidget_SlottedMultiChildRenderObjectWidgetMixin, A.RenderObjectWidget);
-    _inherit(B._ChipRenderWidget, B.__ChipRenderWidget_RenderObjectWidget_SlottedMultiChildRenderObjectWidgetMixin);
-    _inherit(B._ChipSlot, A._Enum);
-    _inheritMany(A.Object, [B._ChipRenderTheme, B._ChipSizes, B._ChildEntry, B.SuggestionsBoxController]);
-    _inherit(B.__RenderChip_RenderBox_SlottedContainerRenderObjectMixin, A.RenderBox);
-    _inherit(B._RenderChip, B.__RenderChip_RenderBox_SlottedContainerRenderObjectMixin);
-    _inherit(B._UnconstrainedInkSplashFactory, A.InteractiveInkFeatureFactory);
-    _inherit(B._AnimatedSwitcherState, B.__AnimatedSwitcherState_State_TickerProviderStateMixin);
-    _inheritMany(A.Closure, [B._AnimatedSwitcherState__newEntry_closure, B._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure, B._AnimatedSwitcherState_build_closure, B.TagsEditorState__initializeSuggestionBox_closure, B.TagsEditorState__createOverlayEntry_closure, B.TagsEditorState__scrollToVisible__closure, B.TagsEditorState_build_closure, B.TagsEditorState_build_closure0, B.TagsEditorState_build__closure]);
-    _inherit(B.SizeChangedLayoutNotification, A.LayoutChangedNotification);
-    _inherit(B._RenderSizeChangedWithCallback, A.RenderProxyBox);
-    _inherit(B.TagEditorLayoutDelegate, A.MultiChildLayoutDelegate);
-    _inherit(B.TagLayout, A.CustomMultiChildLayout);
-    _inherit(B.TagRenderLayoutBox, A.RenderCustomMultiChildLayoutBox);
-    _inherit(B.ValidationSuggestionItem, A.InheritedNotifier);
-    _mixinHard(B.__ChipRenderWidget_RenderObjectWidget_SlottedMultiChildRenderObjectWidgetMixin, A.SlottedMultiChildRenderObjectWidgetMixin);
-    _mixin(B.__RawChipState_State_MaterialStateMixin, A.MaterialStateMixin);
-    _mixinHard(B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin, A.TickerProviderStateMixin);
-    _mixinHard(B.__RenderChip_RenderBox_SlottedContainerRenderObjectMixin, A.SlottedContainerRenderObjectMixin);
-    _mixinHard(B.__AnimatedSwitcherState_State_TickerProviderStateMixin, A.TickerProviderStateMixin);
+    var _mixin = hunkHelpers.mixin,
+      _mixinHard = hunkHelpers.mixinHard,
+      _inheritMany = hunkHelpers.inheritMany,
+      _inherit = hunkHelpers.inherit;
+    _inheritMany(A.Object, [B._HashEnd, B.TextOverflowMixin, B._TextRange, B.WidgetSpanSize, B.ExtendedTextSelectionOverlay, B.SelectionOverlay0, B.SpecialInlineSpanBase, B.TextPainterHelper, B.DecorationImagePainter, B.ComposerLoadingMixin, B.EmailAddressInputBuilder]);
+    _inheritMany(A.Closure0Args, [B.buildTextIcon_closure, B.buildIconWithLowerMenu__closure, B.buildIconWithUpperMenu__closure, B.ExtendedTextSelectionState_userUpdateTextEditingValue_closure, B.ExtendedTextSelectionRenderObject__getWordAtOffset_closure, B.BaseComposerView_buildFromEmailAddress_closure, B.BaseComposerView_buildEmailAddress_closure, B.BaseComposerView_buildEmailAddress_closure0, B.BaseComposerView_buildEmailAddress_closure1, B.BaseComposerView_buildEmailAddress_closure2, B.BaseComposerView_buildEmailAddress_closure3, B.BaseComposerView_buildAttachmentsWidget_closure, B.BaseComposerView_buildAppBar_closure, B.BaseComposerView_buildAppBar_closure0, B.BaseComposerView_buildAppBar__closure, B.BaseComposerView_buildTitleComposer_closure, B.BaseComposerView_buildBottomBar_closure, B.BaseComposerView_buildBottomBar_closure0, B.BaseComposerView_buildBottomBar_closure1, B.ComposerLoadingMixin_buildInlineLoadingView_closure, B.AttachmentFileComposerBuilder_build_closure, B.AttachmentFileComposerBuilder_build_closure0, B.EmailAddressInputBuilder_build_closure, B.EmailAddressInputBuilder_build_closure0, B.EmailAddressInputBuilder_build_closure1, B.EmailAddressInputBuilder__buildTagEditor___closure4, B.EmailAddressInputBuilder__buildTagEditor__closure, B.EmailAddressInputBuilder__buildTagEditor___closure3, B.EmailAddressInputBuilder__buildTagEditor___closure2, B.EmailAddressInputBuilder__buildTagEditor___closure0, B.EmailAddressInputBuilder__buildTagEditor___closure, B.EmailAddressInputBuilder__buildTagEditor____closure, B.EmailAddressInputBuilder__buildTagEditor___closure1, B.EmailAddressInputBuilder__buildCounter_closure, B.EmailAddressInputBuilder__buildSuggestionItem_closure, B.EmailAddressInputBuilder__buildSuggestionItem__closure, B.EmailAddressInputBuilder__handleDeleteTagAction_closure]);
+    _inheritMany(A.Closure, [B.buildIconWithLowerMenu_closure, B.buildIconWithUpperMenu_closure, B.ExtendedRenderParagraph_describeSemanticsConfiguration_closure, B.ExtendedRichText__extractChildren_closure, B.convertTextInputPostionToTextPainterPostion_closure, B.convertTextPainterPostionToTextInputPostion_closure, B.textSpanToActualText_closure, B.ExtendedTextRenderBox_extractPlaceholderSpans_closure, B.SelectionOverlay__markNeedsBuild_closure, B.BaseComposerView__buildAttachmentsList___closure, B.ComposerLoadingMixin_buildInlineLoadingView__closure, B.ComposerLoadingMixin_buildInlineLoadingView___closure1, B.ComposerLoadingMixin_buildInlineLoadingView___closure2, B.ComposerLoadingMixin_buildInlineLoadingView__closure0, B.ComposerLoadingMixin_buildInlineLoadingView___closure, B.ComposerLoadingMixin_buildInlineLoadingView___closure0, B.EmailAddressInputBuilder__buildTagEditor__closure6, B.EmailAddressInputBuilder__buildTagEditor__closure0, B.EmailAddressInputBuilder__buildTagEditor__closure1, B.EmailAddressInputBuilder__buildTagEditor__closure2, B.EmailAddressInputBuilder__buildTagEditor__closure3, B.EmailAddressInputBuilder__buildTagEditor__closure4, B.EmailAddressInputBuilder__findSuggestions_closure, B.EmailAddressInputBuilder__isDuplicatedRecipient_closure, B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure, B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0, B.ListUploadFileStateExtension_get_totalSize_closure]);
+    _inherit(B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin, A.RenderBox);
+    _inherit(B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin, B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin);
+    _inherit(B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin, B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin);
+    _inherit(B.ExtendedTextRenderBox, B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin);
+    _inherit(B.ExtendedTextSelectionRenderObject, B.ExtendedTextRenderBox);
+    _inherit(B._ExtendedRenderParagraph_ExtendedTextSelectionRenderObject_TextOverflowMixin, B.ExtendedTextSelectionRenderObject);
+    _inherit(B.ExtendedRenderParagraph, B._ExtendedRenderParagraph_ExtendedTextSelectionRenderObject_TextOverflowMixin);
+    _inheritMany(A.Closure2Args, [B.TextOverflowMixin__paintTextOverflow_closure, B.ExtendedTextRenderBox_hitTestChild_closure, B.ExtendedTextRenderBox_paintWidgets_closure, B.ExtendedTextSelectionRenderObject_getRectForComposingRange_closure, B.BaseComposerView__buildAttachmentsList_closure, B.BaseComposerView__buildAttachmentsList__closure, B.EmailAddressInputBuilder__buildTagEditor_closure, B.EmailAddressInputBuilder__buildTagEditor__closure7, B.EmailAddressInputBuilder__buildTagEditor__closure5, B.ListUploadFileStateExtension_get_totalSize_closure0]);
+    _inherit(B.ExtendedRichText, A.MultiChildRenderObjectWidget);
+    _inheritMany(A.StatelessWidget, [B.ExtendedText, B.TextOverflowWidget, B.CircleAvatar, B.RichTextWidget, B._AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin]);
+    _inheritMany(A._Enum, [B.TextOverflowAlign, B.TextOverflowPosition, B.TextOverflowClearType]);
+    _inherit(B._SpecialTextSpan_TextSpan_SpecialInlineSpanBase, A.TextSpan);
+    _inherit(B.SpecialTextSpan, B._SpecialTextSpan_TextSpan_SpecialInlineSpanBase);
+    _inherit(B.BackgroundTextSpan, B.SpecialTextSpan);
+    _inherit(B._ExtendedWidgetSpan_WidgetSpan_SpecialInlineSpanBase, A.WidgetSpan);
+    _inherit(B.ExtendedWidgetSpan, B._ExtendedWidgetSpan_WidgetSpan_SpecialInlineSpanBase);
+    _inherit(B._SelectionHandleOverlay0, A.StatefulWidget);
+    _inherit(B.__SelectionHandleOverlayState_State_SingleTickerProviderStateMixin0, A.State0);
+    _inherit(B._SelectionHandleOverlayState0, B.__SelectionHandleOverlayState_State_SingleTickerProviderStateMixin0);
+    _inherit(B.CustomScrollBehavior, A.MaterialScrollBehavior);
+    _inherit(B._BaseComposerView_GetWidget_AppLoaderMixin, A.GetWidget);
+    _inherit(B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin, B._BaseComposerView_GetWidget_AppLoaderMixin);
+    _inherit(B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin_ComposerLoadingMixin, B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin);
+    _inherit(B.BaseComposerView, B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin_ComposerLoadingMixin);
+    _inherit(B.AttachmentFileComposerBuilder, B._AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin);
+    _mixin(B._ExtendedRenderParagraph_ExtendedTextSelectionRenderObject_TextOverflowMixin, B.TextOverflowMixin);
+    _mixin(B._ExtendedWidgetSpan_WidgetSpan_SpecialInlineSpanBase, B.SpecialInlineSpanBase);
+    _mixinHard(B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin, A.ContainerRenderObjectMixin);
+    _mixin(B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin, A.RenderBoxContainerDefaultsMixin);
+    _mixinHard(B._ExtendedTextRenderBox_RenderBox_ContainerRenderObjectMixin_RenderBoxContainerDefaultsMixin_RelayoutWhenSystemFontsChangeMixin, A.RelayoutWhenSystemFontsChangeMixin);
+    _mixinHard(B.__SelectionHandleOverlayState_State_SingleTickerProviderStateMixin0, A.SingleTickerProviderStateMixin);
+    _mixin(B._SpecialTextSpan_TextSpan_SpecialInlineSpanBase, B.SpecialInlineSpanBase);
+    _mixin(B._BaseComposerView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
+    _mixin(B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin, A.RichTextButtonMixin);
+    _mixin(B._BaseComposerView_GetWidget_AppLoaderMixin_RichTextButtonMixin_ComposerLoadingMixin, B.ComposerLoadingMixin);
+    _mixin(B._AttachmentFileComposerBuilder_StatelessWidget_AppLoaderMixin, A.AppLoaderMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChipSlot":{"Enum":[]},"_RawChipState":{"State0":["RawChip"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ChipSlot"},"_RenderChip":{"SlottedContainerRenderObjectMixin":["_ChipSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ChipSlot"},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"ExtendedRenderParagraph":{"RenderBoxContainerDefaultsMixin":["RenderBox","TextParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","TextParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"TextParentData","RenderBoxContainerDefaultsMixin.1":"TextParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ExtendedRichText":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"ExtendedText":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextOverflowAlign":{"Enum":[]},"TextOverflowPosition":{"Enum":[]},"TextOverflowClearType":{"Enum":[]},"TextOverflowWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BackgroundTextSpan":{"TextSpan":[],"InlineSpan":[],"DiagnosticableTree":[],"MouseTrackerAnnotation":[],"HitTestTarget":[],"SpecialInlineSpanBase":[]},"ExtendedWidgetSpan":{"WidgetSpan":[],"PlaceholderSpan0":[],"InlineSpan":[],"DiagnosticableTree":[],"SpecialInlineSpanBase":[]},"ExtendedTextRenderBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","TextParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","TextParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"ExtendedTextSelectionRenderObject":{"RenderBoxContainerDefaultsMixin":["RenderBox","TextParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","TextParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_SelectionHandleOverlay0":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectionHandleOverlayState0":{"State0":["_SelectionHandleOverlay0"]},"SpecialTextSpan":{"TextSpan":[],"InlineSpan":[],"DiagnosticableTree":[],"MouseTrackerAnnotation":[],"HitTestTarget":[],"SpecialInlineSpanBase":[]},"CircleAvatar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RichTextWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseComposerView":{"GetWidget":["ComposerController"],"Widget":[],"DiagnosticableTree":[]},"AttachmentFileComposerBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  var string$ = {
+    ______: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
+    assets: "assets/images/ic_request_read_receipt.svg"
+  };
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
+      AppLocalizations: findType("AppLocalizations"),
       BoxConstraints: findType("BoxConstraints"),
-      BoxParentData: findType("BoxParentData"),
-      ChipTheme: findType("ChipTheme"),
       ContainerLayer: findType("ContainerLayer0"),
+      DefaultTextStyle: findType("DefaultTextStyle"),
       Directionality: findType("Directionality"),
-      JSArray_Listenable: findType("JSArray<Listenable>"),
-      JSArray_RenderBox: findType("JSArray<RenderBox>"),
-      JSArray_Size: findType("JSArray<Size>"),
+      ExtendedWidgetSpan: findType("ExtendedWidgetSpan"),
+      HitTestEntry_HitTestTarget: findType("HitTestEntry<HitTestTarget>"),
+      HitTestTarget: findType("HitTestTarget"),
+      Identity: findType("Identity"),
+      ImagePaths: findType("ImagePaths0"),
+      JSArray_Color: findType("JSArray<Color>"),
+      JSArray_DiagnosticsNode: findType("JSArray<DiagnosticsNode>"),
+      JSArray_InlineSpan: findType("JSArray<InlineSpan>"),
+      JSArray_InlineSpanSemanticsInformation: findType("JSArray<InlineSpanSemanticsInformation>"),
+      JSArray_OverlayEntry: findType("JSArray<OverlayEntry>"),
+      JSArray_PlaceholderSpan: findType("JSArray<PlaceholderSpan0>"),
+      JSArray_PopupMenuEntry_dynamic: findType("JSArray<PopupMenuEntry<@>>"),
+      JSArray_Rect: findType("JSArray<Rect>"),
+      JSArray_SemanticsNode: findType("JSArray<SemanticsNode>"),
+      JSArray_SuggestionEmailAddress: findType("JSArray<SuggestionEmailAddress>"),
+      JSArray_TextSelectionPoint: findType("JSArray<TextSelectionPoint>"),
+      JSArray_TextSpan: findType("JSArray<TextSpan>"),
       JSArray_Widget: findType("JSArray<Widget>"),
-      MaterialLocalizations: findType("MaterialLocalizations"),
-      MaterialState: findType("MaterialState"),
+      JSArray_int: findType("JSArray<int>"),
+      List_SuggestionEmailAddress: findType("List<SuggestionEmailAddress>"),
+      MaterialStatePropertyAll_bool: findType("MaterialStatePropertyAll<bool>"),
+      MaterialStatePropertyAll_double: findType("MaterialStatePropertyAll<double>"),
       MediaQuery: findType("MediaQuery"),
-      MultiChildLayoutParentData: findType("MultiChildLayoutParentData"),
-      NotificationListener_SizeChangedLayoutNotification: findType("NotificationListener<SizeChangedLayoutNotification>"),
-      Null: findType("Null"),
       OverlayState: findType("OverlayState"),
+      PlaceholderDimensions: findType("PlaceholderDimensions"),
+      PointerDeviceKind: findType("PointerDeviceKind"),
       RenderBox: findType("RenderBox"),
+      Runes: findType("Runes"),
+      SemanticsNode: findType("SemanticsNode"),
+      SpecialInlineSpanBase: findType("SpecialInlineSpanBase"),
       String: findType("String"),
-      TagEditorLayoutDelegate: findType("TagEditorLayoutDelegate"),
-      ValidationSuggestionItem: findType("ValidationSuggestionItem"),
-      ValueKey_Key: findType("ValueKey<Key>"),
-      ValueKey_Object: findType("ValueKey<Object>"),
-      ValueKey_int: findType("ValueKey<int>"),
-      ValueKey_nullable_Key: findType("ValueKey<Key?>"),
-      Widget: findType("Widget"),
-      _ChildEntry: findType("_ChildEntry"),
-      _ChipSlot: findType("_ChipSlot"),
-      dynamic: findType("@"),
-      int: findType("int"),
-      nullable_BorderSide: findType("BorderSide?"),
-      nullable_Color: findType("Color?"),
-      nullable_OutlinedBorder: findType("OutlinedBorder?"),
-      nullable_RenderBox: findType("RenderBox?"),
-      nullable_String: findType("String?"),
-      void: findType("~")
+      SuggestionEmailAddress: findType("SuggestionEmailAddress"),
+      TextParentData: findType("TextParentData"),
+      TextSpan: findType("TextSpan"),
+      ValueKey_String: findType("ValueKey<String>"),
+      _LocalizationsScope: findType("_LocalizationsScope"),
+      bool: findType("bool")
     };
   })();
   (function constants() {
-    var makeConstList = hunkHelpers.makeConstList;
-    D.C_SizeChangedLayoutNotification = new B.SizeChangedLayoutNotification();
-    D.Color_1612257561 = new A.Color(1612257561);
-    D.Color_4292865791 = new A.Color(4292865791);
-    D.Color_4294914887 = new A.Color(4294914887);
-    D.Duration_195000 = new A.Duration(195000);
-    D.EdgeInsets_10_10_10_10 = new A.EdgeInsets(10, 10, 10, 10);
-    D.IconData_57657_false = new A.IconData(57657, false);
-    D.Icon_25o = new A.Icon(D.IconData_57657_false, 18, null, null);
-    D._ChipSlot_0 = new B._ChipSlot(0, "label");
-    D._ChipSlot_1 = new B._ChipSlot(1, "avatar");
-    D._ChipSlot_2 = new B._ChipSlot(2, "deleteIcon");
-    D.List_LlV = A._setArrayType(makeConstList([D._ChipSlot_0, D._ChipSlot_1, D._ChipSlot_2]), A.findType("JSArray<_ChipSlot>"));
-  })();
-  (function lazyInitializers() {
-    var _lazyFinal = hunkHelpers.lazyFinal;
-    _lazyFinal($, "_RenderChip_selectionScrimTween", "$get$_RenderChip_selectionScrimTween", () => A.ColorTween$(C.Color_0, D.Color_1612257561));
+    D.Radius_24_24 = new A.Radius(24, 24);
+    D.BorderRadius_tLn12 = new A.BorderRadius(D.Radius_24_24, D.Radius_24_24, D.Radius_24_24, D.Radius_24_24);
+    D.Color_342718597 = new A.Color(342718597);
+    D.BorderSide_Cbk = new A.BorderSide(D.Color_342718597, 0, C.BorderStyle_1, -1);
+    D.BoxConstraints_EcO2 = new A.BoxConstraints(0, 0, 0, 1 / 0);
+    D.BoxDecoration_G3F3 = new A.BoxDecoration(C.Color_4294967295, null, null, D.BorderRadius_tLn12, null, null, null, C.BoxShape_0);
+    D.Color_2162090727 = new A.Color(2162090727);
+    D.BoxDecoration_O1S = new A.BoxDecoration(D.Color_2162090727, null, null, C.BorderRadius_tLn18, null, null, null, C.BoxShape_0);
+    D.BoxDecoration_Y3n = new A.BoxDecoration(null, null, null, C.BorderRadius_tLn18, null, null, null, C.BoxShape_0);
+    D.C__HashEnd = new B._HashEnd();
+    D.Color_4292763230 = new A.Color(4292763230);
+    D.EdgeInsetsDirectional_0_0_20_0 = new A.EdgeInsetsDirectional(0, 0, 20, 0);
+    D.EdgeInsetsDirectional_16_0_16_0 = new A.EdgeInsetsDirectional(16, 0, 16, 0);
+    D.EdgeInsetsDirectional_16_12_16_12 = new A.EdgeInsetsDirectional(16, 12, 16, 12);
+    D.EdgeInsetsDirectional_24_0_32_0 = new A.EdgeInsetsDirectional(24, 0, 32, 0);
+    D.EdgeInsetsDirectional_24_24_24_24 = new A.EdgeInsetsDirectional(24, 24, 24, 24);
+    D.EdgeInsetsDirectional_6_0_6_0 = new A.EdgeInsetsDirectional(6, 0, 6, 0);
+    D.EdgeInsetsDirectional_78_0_38_0 = new A.EdgeInsetsDirectional(78, 0, 38, 0);
+    D.EdgeInsetsDirectional_88_0_48_0 = new A.EdgeInsetsDirectional(88, 0, 48, 0);
+    D.EdgeInsetsDirectional_8_0_0_6 = new A.EdgeInsetsDirectional(8, 0, 0, 6);
+    D.EdgeInsetsDirectional_8_0_16_0 = new A.EdgeInsetsDirectional(8, 0, 16, 0);
+    D.EdgeInsetsDirectional_8_0_8_0 = new A.EdgeInsetsDirectional(8, 0, 8, 0);
+    D.EdgeInsetsDirectional_8_12_8_12 = new A.EdgeInsetsDirectional(8, 12, 8, 12);
+    D.EdgeInsetsDirectional_8_8_0_0 = new A.EdgeInsetsDirectional(8, 8, 0, 0);
+    D.EdgeInsets_0_50_0_0 = new A.EdgeInsets(0, 50, 0, 0);
+    D.EdgeInsets_8_50_8_0 = new A.EdgeInsets(8, 50, 8, 0);
+    D.IconData_57846_false = new A.IconData(57846, false);
+    D.InputDecoration_Au4 = new A.InputDecoration(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C.EdgeInsets_0_0_0_0, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C._NoInputBorder_uXA, true, null, null, null);
+    D.InputDecoration_Cfr = new A.InputDecoration(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C._NoInputBorder_uXA, true, null, null, null);
+    D.MenuItemStyleData_djF0 = new A.MenuItemStyleData(55, C.EdgeInsets_8_0_8_0, null);
+    D.RoundedRectangleBorder_27D7 = new A.RoundedRectangleBorder(D.BorderRadius_tLn12, C.BorderSide_8xm);
+    D.TextInputConfiguration_8qt = new A.TextInputConfiguration(C.TextInputType_1_null_null, false, false, true, C.AutofillConfiguration_lYx, C.SmartDashesType_1, C.SmartQuotesType_1, true, true, null, C.TextInputAction_12, C.TextCapitalization_30, C.Brightness_1, true, false);
+    D.TextOverflowAlign_1 = new B.TextOverflowAlign(1, "right");
+    D.TextOverflowClearType_0 = new B.TextOverflowClearType(0, "clipRect");
+    D.TextOverflowClearType_1 = new B.TextOverflowClearType(1, "blendModeClear");
+    D.TextOverflowPosition_0 = new B.TextOverflowPosition(0, "start");
+    D.TextOverflowPosition_1 = new B.TextOverflowPosition(1, "middle");
+    D.TextOverflowPosition_2 = new B.TextOverflowPosition(2, "end");
+    D.TextStyle_1Gf2 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 12, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_1Gf1 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 28, C.FontWeight_5_600, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.Color_2570861635 = new A.Color(2570861635);
+    D.TextStyle_7BT = new A.TextStyle(true, D.Color_2570861635, null, null, null, null, 12, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.Color_4288325558 = new A.Color(4288325558);
+    D.TextStyle_8gI = new A.TextStyle(true, D.Color_4288325558, null, null, null, null, 17, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_8gb = new A.TextStyle(true, D.Color_2570861635, null, null, null, null, 15, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_Iyc = new A.TextStyle(true, C.Color_4293388524, null, null, null, null, 15, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, C.TextDecoration_1, null, null, null, null, null, null, null, null);
+    D.TextStyle_jjv1 = new A.TextStyle(true, C.Color_4285364357, null, null, null, null, 12, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_o8I = new A.TextStyle(true, C.Color_4281545523, null, null, null, null, 14, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_oHY8 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 14, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_pyh = new A.TextStyle(true, C.Color_4293388524, null, null, null, null, 17, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_yzp2 = new A.TextStyle(true, C.Color_4278221567, null, null, null, null, 12, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_oHY26 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 12, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.Text_qbZ = new A.Text("...", null, D.TextStyle_oHY26, null, null, null, null, null, null, null, null);
+    D.ValueKey_list_attachment_minimize = new A.ValueKey("list_attachment_minimize", type$.ValueKey_String);
+    D.ValueKey_subject_email_input = new A.ValueKey("subject_email_input", type$.ValueKey_String);
   })();
 };
 
-$__dart_deferred_initializers__["8s/CNr6EhSvasDJHmF3fJe0co90="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["x7OD9rT6AIUGNnM9/0EGlzK+Voc="] = $__dart_deferred_initializers__.current
