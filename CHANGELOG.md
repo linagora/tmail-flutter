@@ -1,3 +1,24 @@
+## [0.8.6] - 2023-07-14
+### Added
+- \#1486 Support inserting images in identity
+
+### Fixed
+- \#1868 Hide parent - show child: nothing displayed in the side bad
+- \#1898 There is no notification badge only on IOS
+- \#1985 Hoover to see the selection
+- \#1993 Has attachment checkbox is overflow once it be translated in russia
+- \#1994 Long press to copy an email address
+- \#2008 Instead of toasting for network connection, we should show a very small UI at the top of the list
+- \#2030 Turn off composer logs by defaults
+
+## [0.8.5] - 2023-07-14
+### Added
+- Translation (Arabic/Russian)
+
+### Fixed
+- \#1683 Remove Plain text option of message in VacationView
+- \#1895 \[Animation\] The screen seem be black before loading the email content successfully
+
 ## [0.8.4] - 2023-07-07
 ### Fixed
 - \#1932 Turn off notifications after emailing
@@ -169,6 +190,8 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.8.6]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.6
+[0.8.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.5
 [0.8.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.4
 [0.8.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.3
 [0.8.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.2
