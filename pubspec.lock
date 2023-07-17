@@ -897,8 +897,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: "8366fa04e852e654c98a864539f77a6edf94e642"
+      ref: "upgrade_v3.10.6"
+      resolved-ref: e268d4762b9117029ed03b2e61b384f3705d32f9
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
@@ -1082,10 +1082,10 @@ packages:
     dependency: transitive
     description:
       name: numberpicker
-      sha256: "73723bd13c940ebcd9e5f0ed56b4874588c1748a9a6a38254f97ad627715142e"
+      sha256: "4c129154944b0f6b133e693f8749c3f8bfb67c4d07ef9dcab48b595c22d1f156"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   package_config:
     dependency: transitive
     description:

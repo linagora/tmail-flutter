@@ -54,7 +54,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: email_supported
+      ref: upgrade_v3.10.6
 
   jmap_dart_client:
     git:
