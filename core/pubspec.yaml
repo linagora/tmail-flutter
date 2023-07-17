@@ -69,8 +69,7 @@ dependencies:
 
   collection: 1.17.1
 
-  # flutter_localizations depends on intl 0.17.0
-  intl: 0.17.0
+  intl: 0.18.0
 
   flutter_typeahead: 4.6.0
 

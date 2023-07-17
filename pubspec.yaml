@@ -185,8 +185,7 @@ dependencies:
 
   flutter_appauth_platform_interface: 5.2.0
 
-  # flutter_localizations depends on intl 0.17.0
-  intl: 0.17.0
+  intl: 0.18.0
 
   super_tag_editor: 0.1.3
 
