@@ -79,7 +79,7 @@ dependencies:
   flutter_date_range_picker:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
-      ref: master
+      ref: upgrade_v3.10.6
 
   super_tag_editor:
     git:
