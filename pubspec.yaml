@@ -106,8 +106,7 @@ dependencies:
 
   http_parser: 4.0.2
 
-  # flutter_test from sdk depends on collection 1.17.0
-  collection: 1.17.0
+  collection: 1.17.1
 
   filesize: 2.0.1
 
