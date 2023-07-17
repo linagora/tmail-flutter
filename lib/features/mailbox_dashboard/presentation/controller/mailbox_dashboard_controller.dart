@@ -65,7 +65,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
@@ -137,7 +137,7 @@ class MailboxDashBoardController extends ReloadableController {
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
-  final SearchController searchController = Get.find<SearchController>();
+  final search.SearchController searchController = Get.find<search.SearchController>();
   final DownloadController downloadController = Get.find<DownloadController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
