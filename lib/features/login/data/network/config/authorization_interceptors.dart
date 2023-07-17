@@ -75,32 +75,36 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    final requestOptions = err.requestOptions;
     log('AuthorizationInterceptors::onError(): $err');
-    if (_isTokenExpired() &&
-        err.response?.statusCode == 401 &&
+    try {
+      if (_isTokenExpired() &&
+        (err.response == null || err.response?.statusCode == 401) &&
         _isRefreshTokenNotEmpty() &&
-        _isAuthenticationOidcValid()) {
-      try {
+        _isAuthenticationOidcValid()
+      ) {
         final newToken = await _authenticationClient.refreshingTokensOIDC(
-            _configOIDC!.clientId,
-            _configOIDC!.redirectUrl,
-            _configOIDC!.discoveryUrl,
-            _configOIDC!.scopes,
-            _token!.refreshToken);
+          _configOIDC!.clientId,
+          _configOIDC!.redirectUrl,
+          _configOIDC!.discoveryUrl,
+          _configOIDC!.scopes,
+          _token!.refreshToken);
 
         final accountCurrent = await _accountCacheManager.getSelectedAccount();
 
+        await _accountCacheManager.deleteSelectedAccount(_token!.tokenIdHash);
+
         await Future.wait([
           _tokenOidcCacheManager.persistOneTokenOidc(newToken),
-          _accountCacheManager.deleteSelectedAccount(_token!.tokenIdHash),
-          _accountCacheManager.setSelectedAccount(PersonalAccount(
-            newToken.tokenIdHash,
-            AuthenticationType.oidc,
-            isSelected: true,
-            accountId: accountCurrent.accountId,
-            apiUrl: accountCurrent.apiUrl,
-            userName: accountCurrent.userName))
+          _accountCacheManager.setSelectedAccount(
+            PersonalAccount(
+              newToken.tokenIdHash,
+              AuthenticationType.oidc,
+              isSelected: true,
+              accountId: accountCurrent.accountId,
+              apiUrl: accountCurrent.apiUrl,
+              userName: accountCurrent.userName
+            )
+          )
         ]);
 
         log('AuthorizationInterceptors::onError(): refreshToken: $newToken');
@@ -108,16 +112,16 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
 
         _updateNewToken(newToken.toToken());
 
-        requestOptions.headers[HttpHeaders.authorizationHeader] =
-            _getTokenAsBearerHeader(newToken.token);
+        final requestOptions = err.requestOptions;
+        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
 
         final response = await _dio.fetch(requestOptions);
         return handler.resolve(response);
-      } catch(e) {
-        log('AuthorizationInterceptors::onError(): $e');
+      } else {
         super.onError(err, handler);
       }
-    } else {
+    } catch (e) {
+      log('AuthorizationInterceptors::onError():Exception: $e');
       super.onError(err, handler);
     }
   }
