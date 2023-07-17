@@ -13,7 +13,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -41,7 +41,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   MailboxDashBoardView({Key? key}) : super(key: key);
 
-  final SearchController searchController = Get.find<SearchController>();
+  final search.SearchController searchController = Get.find<search.SearchController>();
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final mailBoxDashboardController = Get.find<MailboxDashBoardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
