@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart'  as search;
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class IconOpenAdvancedSearchWidget extends StatelessWidget {
@@ -16,7 +16,7 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
   }) : super(key: key);
 
   final _imagePaths = Get.find<ImagePaths>();
-  final SearchController searchController = Get.find<SearchController>();
+  final search.SearchController searchController = Get.find<search.SearchController>();
   final AdvancedFilterController advancedFilterController = Get.find<AdvancedFilterController>();
   final BuildContext _parentContext;
 
