@@ -1,6 +1,6 @@
 # Stage 1 - Install dependencies and build the app
 # This matches the flutter version on our CI/CD pipeline on Github
-FROM cirrusci/flutter:3.7.5 AS build-env
+FROM ghcr.io/cirruslabs/flutter:3.10.6 AS build-env
 
 # Set directory to Copy App
 WORKDIR /app
