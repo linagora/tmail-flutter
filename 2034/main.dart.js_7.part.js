@@ -3852,7 +3852,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(info) {
       return info.recognizer != null;
     },
-    $signature: 278
+    $signature: 298
   };
   B.TextOverflowMixin__paintTextOverflow_closure.prototype = {
     call$2(context, offset) {
@@ -3871,7 +3871,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return true;
     },
-    $signature: 72
+    $signature: 75
   };
   B.ExtendedTextSelectionState_userUpdateTextEditingValue_closure.prototype = {
     call$0() {
@@ -3892,7 +3892,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return false;
       return true;
     },
-    $signature: 72
+    $signature: 75
   };
   B.convertTextPainterPostionToTextInputPostion_closure.prototype = {
     call$1(ts) {
@@ -3919,7 +3919,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return false;
       return true;
     },
-    $signature: 72
+    $signature: 75
   };
   B.textSpanToActualText_closure.prototype = {
     call$1(span) {
@@ -3930,7 +3930,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         span.computeToPlainText$1(t1);
       return true;
     },
-    $signature: 72
+    $signature: 75
   };
   B.ExtendedTextRenderBox_extractPlaceholderSpans_closure.prototype = {
     call$1(span) {
@@ -3944,7 +3944,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.$this._hasSpecialInlineSpanBase = true;
       return true;
     },
-    $signature: 72
+    $signature: 75
   };
   B.ExtendedTextRenderBox_hitTestChild_closure.prototype = {
     call$2(result, transformed) {
@@ -4002,7 +4002,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = accum == null ? null : accum.expandToInclude$1(new A.Rect(incoming.left, incoming.top, incoming.right, incoming.bottom));
       return t1 == null ? new A.Rect(incoming.left, incoming.top, incoming.right, incoming.bottom) : t1;
     },
-    $signature: 335
+    $signature: 336
   };
   B.SelectionOverlay__markNeedsBuild_closure.prototype = {
     call$1(duration) {
@@ -4065,7 +4065,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5.push(A.Expanded$(A.TextOverflowBuilder$(t1, D.TextStyle_8gI), 1));
       return new A.Padding(t4, A.Row$(t5, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
     },
-    $signature: 116
+    $signature: 111
   };
   B.BaseComposerView_buildEmailAddress_closure.prototype = {
     call$0() {
@@ -4349,7 +4349,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Text$(t1, _null, 1, C.TextOverflow_1, _null, false, C.TextStyle_oHY, C.TextAlign_2, _null, _null);
     },
-    $signature: 129
+    $signature: 125
   };
   B.BaseComposerView_buildBottomBar_closure.prototype = {
     call$0() {
@@ -4395,7 +4395,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure1(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure2(this.$this));
     },
-    $signature: 171
+    $signature: 176
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure1.prototype = {
     call$1(failure) {
@@ -4409,7 +4409,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 87
+    $signature: 88
   };
   B.ComposerLoadingMixin_buildInlineLoadingView__closure0.prototype = {
     call$1(success) {
@@ -4419,7 +4419,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure0(this.$this));
     },
-    $signature: 87
+    $signature: 88
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure.prototype = {
     call$1(failure) {
@@ -4433,7 +4433,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 87
+    $signature: 88
   };
   B.AttachmentFileComposerBuilder_build_closure.prototype = {
     call$0() {
@@ -4510,7 +4510,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(focused) {
       this.setState.call$1(new B.EmailAddressInputBuilder__buildTagEditor___closure4(this.$this, focused));
     },
-    $signature: 56
+    $signature: 55
   };
   B.EmailAddressInputBuilder__buildTagEditor___closure4.prototype = {
     call$0() {
@@ -4703,7 +4703,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 285
+    $signature: 241
   };
   B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -4712,7 +4712,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 82
+    $signature: 80
   };
   B.EmailAddressInputBuilder__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
@@ -4736,7 +4736,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 516
+    $signature: 399
   };
   (function aliases() {
     var _ = B.ExtendedTextRenderBox.prototype;
@@ -4934,4 +4934,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["5piraq6ZftCqq50ulFZVj0P2Lmk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["nfN0MEJUVO06nn+OPJVl7dPM3+g="] = $__dart_deferred_initializers__.current
