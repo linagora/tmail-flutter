@@ -3,6 +3,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/dom/add_tooltip_link_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/text/convert_url_string_to_html_links_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
@@ -33,8 +34,13 @@ class HtmlAnalyzer {
       case EmailContentType.textPlain:
         final htmlTransform = HtmlTransform(emailContent.content);
         final message = htmlTransform.transformToTextPlain(
-            transformConfiguration: TransformConfiguration.create(
-                customTextTransformers: [const ConvertUrlStringToHtmlLinksTransformers()]));
+          transformConfiguration: TransformConfiguration.create(
+            customTextTransformers: [
+              const ConvertUrlStringToHtmlLinksTransformers(),
+              const SanitizeHtmlTransformers(),
+            ]
+          )
+        );
         return EmailContent(emailContent.type, message);
       default:
         return emailContent;
