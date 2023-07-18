@@ -2166,14 +2166,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 110
+    $signature: 111
   };
   A.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 110
+    $signature: 111
   };
   A.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -2314,4 +2314,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["ZzKeYfQyYj7/nU/g8by5z7tRdu0="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["7zzCFiYy9ejWCSvAYHNmuDtUNaY="] = $__dart_deferred_initializers__.current

@@ -4065,7 +4065,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5.push(A.Expanded$(A.TextOverflowBuilder$(t1, D.TextStyle_8gI), 1));
       return new A.Padding(t4, A.Row$(t5, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
     },
-    $signature: 116
+    $signature: 114
   };
   B.BaseComposerView_buildEmailAddress_closure.prototype = {
     call$0() {
@@ -4934,4 +4934,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["5piraq6ZftCqq50ulFZVj0P2Lmk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["btdufVc148qVDfIGt5fjHx2xwPQ="] = $__dart_deferred_initializers__.current
