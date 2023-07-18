@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 final logHistory = _Dispatcher("");
 
 void log(String? value) {
-  String v = value ?? "";
-  logHistory.value = "$v\n${logHistory.value}";
   if (kDebugMode) {
+    String v = value ?? "";
+    logHistory.value = "$v\n${logHistory.value}";
     print(v);
   }
 }
