@@ -610,8 +610,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "upgrade_v3.10.6"
-      resolved-ref: a3b41a21e18cd0884a834c45c51d751fae391f36
+      ref: upgrade_3_10_x
+      resolved-ref: c57066ac64bca6f5f475039032da1758dacd7075
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
     version: "1.0.2"
@@ -897,8 +897,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "upgrade_v3.10.6"
-      resolved-ref: e268d4762b9117029ed03b2e61b384f3705d32f9
+      ref: upgrade_3_10_x
+      resolved-ref: "33559b23eebea37dee9e78bdbd9854d211b1fb6e"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
@@ -1504,8 +1504,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "upgrade_v3.10.6"
-      resolved-ref: "08a743cd37fd3d8cce072bd278f7d8132fe95ed1"
+      ref: upgrade_3_10_x
+      resolved-ref: b28a36844b6e8e1dd7f252570841942240bf3d9d
       url: "https://github.com/dab246/super_tag_editor.git"
     source: git
     version: "0.1.3"
