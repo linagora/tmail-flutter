@@ -2190,7 +2190,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 303
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -2298,7 +2298,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 106
+    $signature: 94
   };
   B.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -2341,7 +2341,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 303
   };
   B.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
@@ -2413,19 +2413,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 303
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 559
+    $signature: 457
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 559
+    $signature: 457
   };
   (function aliases() {
     var _ = B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin.prototype;
@@ -2554,4 +2554,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["bc40GL13hPOV6VWXf1VGBh/LLsE="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["DHh0hH4sEox33CViaqGCyRUPiF0="] = $__dart_deferred_initializers__.current

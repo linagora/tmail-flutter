@@ -586,7 +586,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 459
+    $signature: 441
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -658,12 +658,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
-      var t1 = this.$this.loginController,
-        baseUrl = t1._parseUri$1($.$get$dotenv().maybeGet$2$fallback("SERVER_URL", ""));
-      if (baseUrl != null)
-        t1.consumeState$1(t1._getOIDCIsAvailableInteractor.execute$1(new A.OIDCRequest(baseUrl.toString$0(0), baseUrl.get$origin(baseUrl))));
-      else
-        t1.viewState.set$value(0, new A.Left(new A.GetOIDCIsAvailableFailure(new A.CanNotFoundBaseUrl()), type$.Left_Failure_Success));
+      this.$this.loginController.handleSSOPressed$0();
     },
     $signature: 0
   };
@@ -693,7 +688,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 176
+    $signature: 171
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -717,7 +712,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 88
+    $signature: 87
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -837,7 +832,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ImagePaths: findType("ImagePaths0"),
       JSArray_String: findType("JSArray<String>"),
       JSArray_Widget: findType("JSArray<Widget>"),
-      Left_Failure_Success: findType("Left<Failure,Success>"),
       LoginController: findType("LoginController"),
       Map_String_dynamic: findType("Map<String,@>"),
       MaterialStatePropertyAll_nullable_OutlinedBorder: findType("MaterialStatePropertyAll<OutlinedBorder?>"),
@@ -896,4 +890,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["VDGSYu2NaDybOtlCTyrqEucqurw="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Tvrsv0upkGfamM1Ma3ed+TRMr6Y="] = $__dart_deferred_initializers__.current
