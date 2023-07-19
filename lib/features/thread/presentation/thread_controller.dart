@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -417,7 +418,7 @@ class ThreadController extends BaseController with EmailActionController {
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           mailboxId: _currentMailboxId
         ),
-        propertiesCreated: ThreadConstants.propertiesDefault,
+        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
       ));
     }
