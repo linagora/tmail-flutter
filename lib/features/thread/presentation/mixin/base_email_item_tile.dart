@@ -330,4 +330,16 @@ mixin BaseEmailItemTile {
       return null;
     }
   }
+
+  Widget buildCalendarEventIcon({required PresentationEmail presentationEmail}) {
+    return SvgPicture.asset(
+      imagePaths.icCalendarEvent,
+      width: 20,
+      height: 20,
+      fit: BoxFit.fill,
+      colorFilter: presentationEmail.hasRead
+        ? AppColor.colorCalendarEventRead.asFilter()
+        : AppColor.colorCalendarEventUnread.asFilter(),
+    );
+  }
 }
