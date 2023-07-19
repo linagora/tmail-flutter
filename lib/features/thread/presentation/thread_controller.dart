@@ -486,7 +486,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
           newEmailState,
           sort: _sortOrder,
-          propertiesCreated: ThreadConstants.propertiesDefault,
+          propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
           emailFilter: EmailFilter(
             filter: _getFilterCondition(mailboxIdSelected: _currentMailboxId),
