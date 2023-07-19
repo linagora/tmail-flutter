@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
@@ -226,7 +227,7 @@ class SearchEmailController extends BaseController
           ..add(EmailComparator(EmailComparatorProperty.receivedAt)
             ..setIsAscending(false)),
         filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
-        properties: ThreadConstants.propertiesDefault,
+        properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ));
     }
   }
@@ -299,7 +300,7 @@ class SearchEmailController extends BaseController
           ..add(EmailComparator(EmailComparatorProperty.receivedAt)
             ..setIsAscending(false)),
         filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
-        properties: ThreadConstants.propertiesDefault,
+        properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ));
     }
   }
@@ -344,7 +345,7 @@ class SearchEmailController extends BaseController
           ..add(EmailComparator(EmailComparatorProperty.receivedAt)
             ..setIsAscending(false)),
         filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
-        properties: ThreadConstants.propertiesDefault,
+        properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
         lastEmailId: lastEmail.id
       ));
     }
