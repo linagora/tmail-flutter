@@ -97,6 +97,9 @@ extension PresentationEmailExtension on PresentationEmail {
       replyTo: replyTo,
       htmlBody: htmlBody,
       bodyValues: bodyValues,
+      mailboxIds: mailboxIds,
+      headers: emailHeader?.toSet(),
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
