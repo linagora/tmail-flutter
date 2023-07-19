@@ -184,6 +184,8 @@ extension AppColor on Color {
   static const colorBackgroundDeliveringState = Color(0xFFF2F3F5);
   static const colorNetworkConnectionBannerBackground = Color(0x99EBEDF0);
   static const colorNetworkConnectionLabel = Color(0xFF818C99);
+  static const colorCalendarEventRead = Color(0xFF818C99);
+  static const colorCalendarEventUnread = Color(0xFF1C1B1F);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
