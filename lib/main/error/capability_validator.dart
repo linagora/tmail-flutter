@@ -26,11 +26,24 @@ void requireCapability(Session session, AccountId accountId, List<CapabilityIden
   }
 }
 
-extension CapabilityIdentifierExtension on List<CapabilityIdentifier> {
+extension ListCapabilityIdentifierExtension on List<CapabilityIdentifier> {
 
   bool isSupported(Session session, AccountId accountId) {
     try {
       requireCapability(session, accountId, this);
+      return true;
+    } catch (error) {
+      logError('ListCapabilityIdentifierExtension::isSupported(): $error');
+      return false;
+    }
+  }
+}
+
+extension CapabilityIdentifierExtension on CapabilityIdentifier {
+
+  bool isSupported(Session session, AccountId accountId) {
+    try {
+      requireCapability(session, accountId, [this]);
       return true;
     } catch (error) {
       logError('CapabilityIdentifierExtension::isSupported(): $error');
