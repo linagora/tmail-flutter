@@ -108,10 +108,7 @@ class EmailTileBuilder with BaseEmailItemTile {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (_presentationEmail.hasCalendarEvent)
-                          Padding(
-                            padding: const EdgeInsetsDirectional.only(end: 8),
-                            child: buildCalendarEventIcon(presentationEmail: _presentationEmail),
-                          ),
+                          buildCalendarEventIcon(context: _context, presentationEmail: _presentationEmail),
                         Expanded(child: buildEmailTitle(
                           _context,
                           _presentationEmail,
