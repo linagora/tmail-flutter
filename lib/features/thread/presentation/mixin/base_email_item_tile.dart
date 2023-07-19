@@ -18,6 +18,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
@@ -331,15 +332,21 @@ mixin BaseEmailItemTile {
     }
   }
 
-  Widget buildCalendarEventIcon({required PresentationEmail presentationEmail}) {
-    return SvgPicture.asset(
-      imagePaths.icCalendarEvent,
-      width: 20,
-      height: 20,
-      fit: BoxFit.fill,
-      colorFilter: presentationEmail.hasRead
-        ? AppColor.colorCalendarEventRead.asFilter()
-        : AppColor.colorCalendarEventUnread.asFilter(),
+  Widget buildCalendarEventIcon({
+    required BuildContext context,
+    required PresentationEmail presentationEmail
+  }) {
+    return Padding(
+      padding: ItemEmailTileStyles.getSpaceCalendarEventIcon(context, responsiveUtils),
+      child: SvgPicture.asset(
+        imagePaths.icCalendarEvent,
+        width: 20,
+        height: 20,
+        fit: BoxFit.fill,
+        colorFilter: presentationEmail.hasRead
+          ? AppColor.colorCalendarEventRead.asFilter()
+          : AppColor.colorCalendarEventUnread.asFilter(),
+      ),
     );
   }
 }
