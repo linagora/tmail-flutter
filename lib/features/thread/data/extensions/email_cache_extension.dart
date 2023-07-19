@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
@@ -31,6 +32,9 @@ extension EmailCacheExtension on EmailCache {
       mailboxIds: mailboxIds != null
         ? Map.fromIterables(mailboxIds!.keys.map((value) => MailboxId(Id(value))), mailboxIds!.values)
         : null,
+      headerCalendarEvent: headerCalendarEvent != null
+        ? Map.fromIterables(headerCalendarEvent!.keys.map((value) => IndividualHeaderIdentifier(value)), headerCalendarEvent!.values)
+        : null
     );
   }
 

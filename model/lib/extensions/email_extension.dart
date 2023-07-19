@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -38,24 +39,25 @@ extension EmailExtension on Email {
 
   Email updatedEmail({Map<KeyWordIdentifier, bool>? newKeywords, Map<MailboxId, bool>? newMailboxIds}) {
     return Email(
-        id: id,
-        keywords: newKeywords ?? keywords,
-        size: size,
-        receivedAt: receivedAt,
-        hasAttachment: hasAttachment,
-        preview: preview,
-        subject: subject,
-        sentAt: sentAt,
-        from: from,
-        to: to,
-        cc: cc,
-        bcc: bcc,
-        replyTo: replyTo,
-        mailboxIds: newMailboxIds ?? mailboxIds,
-        htmlBody: htmlBody,
-        bodyValues: bodyValues,
-        headerUserAgent: headerUserAgent,
-        attachments: attachments
+      id: id,
+      keywords: newKeywords ?? keywords,
+      size: size,
+      receivedAt: receivedAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      subject: subject,
+      sentAt: sentAt,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      mailboxIds: newMailboxIds ?? mailboxIds,
+      htmlBody: htmlBody,
+      bodyValues: bodyValues,
+      headerUserAgent: headerUserAgent,
+      attachments: attachments,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
@@ -97,6 +99,7 @@ extension EmailExtension on Email {
       bcc: updatedProperties.contain(EmailProperty.bcc) ? newEmail.bcc : bcc,
       replyTo: updatedProperties.contain(EmailProperty.replyTo) ? newEmail.replyTo : replyTo,
       mailboxIds: updatedProperties.contain(EmailProperty.mailboxIds) ? newEmail.mailboxIds : mailboxIds,
+      headerCalendarEvent: updatedProperties.contain(IndividualHeaderIdentifier.headerCalendarEvent.value) ? newEmail.headerCalendarEvent : headerCalendarEvent,
     );
   }
 
