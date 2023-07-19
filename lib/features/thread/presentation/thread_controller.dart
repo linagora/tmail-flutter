@@ -967,7 +967,8 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         emailId,
-        properties: ThreadConstants.propertiesDefault));
+        properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!)
+      ));
     }
   }
 
