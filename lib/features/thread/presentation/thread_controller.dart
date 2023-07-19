@@ -705,7 +705,7 @@ class ThreadController extends BaseController with EmailActionController {
         limit: limit ?? ThreadConstants.defaultLimit,
         sort: _sortOrder,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(moreFilterCondition: _getFilterCondition()),
-        properties: ThreadConstants.propertiesDefault,
+        properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
       ));
     }
   }
@@ -752,7 +752,7 @@ class ThreadController extends BaseController with EmailActionController {
         limit: ThreadConstants.defaultLimit,
         sort: _sortOrder,
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(moreFilterCondition: _getFilterCondition()),
-        properties: ThreadConstants.propertiesDefault,
+        properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         lastEmailId: oldestEmail?.id
       ));
     }
