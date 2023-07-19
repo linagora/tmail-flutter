@@ -52,7 +52,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
       routeWeb: routeWeb,
-      mailboxContain: mailboxContain
+      mailboxContain: mailboxContain,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
@@ -74,7 +75,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       routeWeb: routeWeb,
-      mailboxContain: mailboxContain
+      mailboxContain: mailboxContain,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
@@ -150,7 +152,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       routeWeb: routeWeb,
-      mailboxContain: matchedMailbox
+      mailboxContain: matchedMailbox,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
@@ -185,7 +188,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       routeWeb: routeWeb,
-      mailboxContain: mailboxContain
+      mailboxContain: mailboxContain,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
@@ -207,7 +211,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       routeWeb: routeWeb,
-      mailboxContain: mailboxContain
+      mailboxContain: mailboxContain,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
@@ -229,7 +234,8 @@ extension PresentationEmailExtension on PresentationEmail {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       routeWeb: routeWeb,
-      mailboxContain: mailboxContain
+      mailboxContain: mailboxContain,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 

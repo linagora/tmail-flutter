@@ -76,7 +76,8 @@ extension EmailExtension on Email {
       replyTo: replyTo,
       mailboxIds: mailboxIds,
       selectMode: selectMode,
-      emailHeader: headers?.toList()
+      emailHeader: headers?.toList(),
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 
@@ -160,7 +161,8 @@ extension EmailExtension on Email {
       selectMode: selectMode,
       emailHeader: headers?.toList(),
       bodyValues: bodyValues,
-      htmlBody: htmlBody
+      htmlBody: htmlBody,
+      headerCalendarEvent: headerCalendarEvent
     );
   }
 }

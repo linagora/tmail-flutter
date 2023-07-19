@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
@@ -38,6 +39,7 @@ class PresentationEmail with EquatableMixin {
   final List<EmailHeader>? emailHeader;
   final Set<EmailBodyPart>? htmlBody;
   final Map<PartId, EmailBodyValue>? bodyValues;
+  final Map<IndividualHeaderIdentifier, String?>? headerCalendarEvent;
 
   PresentationEmail({
     this.id,
@@ -60,6 +62,7 @@ class PresentationEmail with EquatableMixin {
     this.emailHeader,
     this.htmlBody,
     this.bodyValues,
+    this.headerCalendarEvent,
   });
 
   String getSenderName() {
@@ -99,6 +102,8 @@ class PresentationEmail with EquatableMixin {
 
   bool get pushNotificationActivated => !isDraft && !hasRead;
 
+  bool get hasCalendarEvent => headerCalendarEvent?[IndividualHeaderIdentifier.headerCalendarEvent]?.isNotEmpty == true;
+
   List<EmailContent> get emailContentList {
     final newHtmlBody = htmlBody
         ?.where((emailBody) => emailBody.partId != null && emailBody.type != null)
@@ -116,22 +121,25 @@ class PresentationEmail with EquatableMixin {
   @override
   List<Object?> get props => [
     id,
+    keywords,
+    size,
+    receivedAt,
+    hasAttachment,
+    preview,
     subject,
+    sentAt,
     from,
     to,
     cc,
     bcc,
-    keywords,
-    size,
-    receivedAt,
-    sentAt,
     replyTo,
-    preview,
-    hasAttachment,
     mailboxIds,
     selectMode,
     routeWeb,
     mailboxContain,
-    emailHeader
+    emailHeader,
+    htmlBody,
+    bodyValues,
+    headerCalendarEvent,
   ];
 }
