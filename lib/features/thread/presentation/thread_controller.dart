@@ -512,7 +512,7 @@ class ThreadController extends BaseController with EmailActionController {
           sort: _sortOrder,
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: _getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: _currentMailboxId),
-          properties: ThreadConstants.propertiesDefault,
+          properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id
         )
       ));
