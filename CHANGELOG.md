@@ -1,3 +1,7 @@
+## [0.8.8] - 2023-07-20
+### Fixed
+- \#2046 App crashes when login account information is incorrect on web
+
 ## [0.8.7] - 2023-07-19
 ### Fixed
 - \#1912 Fix rendering issue on TMail when reading an email
@@ -195,6 +199,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.8.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.8
 [0.8.7]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.7
 [0.8.6]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.6
 [0.8.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.5
