@@ -47,7 +47,7 @@ class LoginView extends BaseLoginView {
                     style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
                 )
               ),
-              Obx(() => buildLoginMessage(context, loginController.viewState.value)),
+              Obx(() => buildLoginMessage(context, controller.viewState.value)),
               Obx(() {
                 switch (controller.loginFormType.value) {
                   case LoginFormType.credentialForm:
@@ -179,7 +179,7 @@ class LoginView extends BaseLoginView {
                             style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
                           )
                         ),
-                        Obx(() => buildLoginMessage(context, loginController.viewState.value)),
+                        Obx(() => buildLoginMessage(context, controller.viewState.value)),
                         Obx(() {
                           switch (controller.loginFormType.value) {
                             case LoginFormType.credentialForm:
@@ -251,14 +251,14 @@ class LoginView extends BaseLoginView {
                 style: const TextStyle(fontSize: 16, color: Colors.white)
             ),
             onPressed: () {
-              loginController.handleSSOPressed();
+              controller.handleSSOPressed();
             }
         )
     );
   }
 
   Widget _buildLoadingProgress(BuildContext context) {
-    return Obx(() => loginController.viewState.value.fold(
+    return Obx(() => controller.viewState.value.fold(
       (failure) {
         switch (controller.loginFormType.value) {
           case LoginFormType.baseUrlForm:
