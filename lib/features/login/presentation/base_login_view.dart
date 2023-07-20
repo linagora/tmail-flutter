@@ -30,8 +30,6 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
-  final FocusNode passFocusNode = FocusNode();
-
   Widget buildLoginMessage(BuildContext context, Either<Failure, Success> viewState) {
     return Padding(
       padding: const EdgeInsets.only(top: 11, bottom: 36, left: 58, right: 58),
@@ -146,7 +144,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         itemBuilder: (context, loginUsername) => RecentItemTileWidget(loginUsername, imagePath: imagePaths),
         onSuggestionSelected: (recentUsername) {
           controller.setUsername(recentUsername.username);
-          passFocusNode.requestFocus();
+          controller.passFocusNode.requestFocus();
         },
         suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
         noItemsFoundBuilder: (context) => const SizedBox(),
@@ -174,7 +172,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
           ..onChange(controller.setPasswordText)
           ..textInputAction(TextInputAction.done)
           ..hintText(AppLocalizations.of(context).password)
-          ..setFocusNode(passFocusNode))
+          ..setFocusNode(controller.passFocusNode))
         .build()));
   }
 
