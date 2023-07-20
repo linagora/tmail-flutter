@@ -70,6 +70,7 @@ class LoginController extends BaseController {
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
+  final FocusNode passFocusNode = FocusNode();
 
   LoginController(
     this._authenticationInteractor,
@@ -378,6 +379,7 @@ class LoginController extends BaseController {
 
   @override
   void onClose() {
+    passFocusNode.dispose();
     urlInputController.dispose();
     usernameInputController.dispose();
     super.onClose();
