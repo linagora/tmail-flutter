@@ -435,7 +435,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _clearNavigationRouter();
     } else {
       _clearNavigationRouter();
-      pushAndPop(AppRoutes.unknownRoutePage);
+      popAndPush(AppRoutes.unknownRoutePage);
     }
   }
 

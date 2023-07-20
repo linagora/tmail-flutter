@@ -214,7 +214,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   void goToSettings() {
-    pushAndPop(AppRoutes.settings,
+    popAndPush(AppRoutes.settings,
         arguments: ManageAccountArguments(sessionCurrent));
   }
 
