@@ -10,6 +10,10 @@ Future<dynamic> pushAndPop(String routeName, {dynamic arguments}) async {
   return Get.offNamed(routeName, arguments: arguments);
 }
 
+Future<dynamic> popAndPush(String routeName, {dynamic arguments}) async {
+  return Get.offAndToNamed(routeName, arguments: arguments);
+}
+
 Future<dynamic> pushAndPopAll(String routeName, {dynamic arguments}) async {
   return Get.offAllNamed(routeName, arguments: arguments);
 }

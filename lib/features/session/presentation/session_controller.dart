@@ -83,7 +83,7 @@ class SessionController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    pushAndPop(
+    popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
       arguments: session);
   }
@@ -134,7 +134,7 @@ class SessionController extends ReloadableController {
     log('SessionController::_goToMailboxDashBoard():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
-      pushAndPop(
+      popAndPush(
         RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
         arguments: session);
     } else {
