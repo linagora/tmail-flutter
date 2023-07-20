@@ -279,8 +279,13 @@ abstract class BaseController extends GetxController
   bool _isFcmActivated(Session session, AccountId accountId) =>
     [FirebaseCapability.fcmIdentifier].isSupported(session, accountId) && AppConfig.fcmAvailable;
 
-  void goToLogin({LoginArguments? arguments}) {
-    pushAndPopAll(AppRoutes.login, arguments: arguments);
+  void goToLogin({LoginArguments? arguments}) async {
+    await Future.delayed(
+      const Duration(milliseconds: 500),
+      () async {
+        await pushAndPopAll(AppRoutes.login, arguments: arguments);
+      }
+    );
   }
 
   void logout(Session? session, AccountId? accountId) {
