@@ -32,8 +32,8 @@ class LoginView extends BaseLoginView {
                         scrollDirection: Axis.vertical,
                         child: _buildCenterForm(context))),
                     Obx(() {
-                      if (loginController.loginFormType.value == LoginFormType.credentialForm
-                          || loginController.loginFormType.value == LoginFormType.ssoForm) {
+                      if (controller.loginFormType.value == LoginFormType.credentialForm
+                          || controller.loginFormType.value == LoginFormType.ssoForm) {
                         return _buildBackButton(context);
                       }
                       return const SizedBox.shrink();
@@ -42,8 +42,8 @@ class LoginView extends BaseLoginView {
                 : Stack(children: [
                     _buildCenterForm(context),
                     Obx(() {
-                      if (loginController.loginFormType.value == LoginFormType.credentialForm
-                          || loginController.loginFormType.value == LoginFormType.ssoForm) {
+                      if (controller.loginFormType.value == LoginFormType.credentialForm
+                          || controller.loginFormType.value == LoginFormType.ssoForm) {
                         return _buildBackButton(context);
                       }
                       return const SizedBox.shrink();
@@ -72,7 +72,7 @@ class LoginView extends BaseLoginView {
                 style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
               )
             ),
-            Obx(() => buildLoginMessage(context, loginController.viewState.value)),
+            Obx(() => buildLoginMessage(context, controller.viewState.value)),
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.baseUrlForm:
@@ -114,7 +114,7 @@ class LoginView extends BaseLoginView {
     return Padding(
       padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24),
       child: TypeAheadFormFieldBuilder<RecentLoginUrl>(
-        controller: loginController.urlInputController,
+        controller: controller.urlInputController,
         textInputAction: TextInputAction.next,
         keyboardType: TextInputType.url,
         onTextSubmitted: (value) => controller.handleNextInUrlInputFormPress(),
@@ -124,8 +124,8 @@ class LoginView extends BaseLoginView {
          .build(),
         debounceDuration: const Duration(milliseconds: 300),
         suggestionsCallback: (pattern) async {
-          loginController.formatUrl(pattern);
-          return loginController.getAllRecentLoginUrlAction(pattern);
+          controller.formatUrl(pattern);
+          return controller.getAllRecentLoginUrlAction(pattern);
         },
         itemBuilder: (context, loginUrl) => RecentItemTileWidget(loginUrl, imagePath: imagePaths),
         onSuggestionSelected: (loginUrl) => controller.formatUrl(loginUrl.url),
@@ -165,7 +165,7 @@ class LoginView extends BaseLoginView {
           style: const TextStyle(fontSize: 16, color: Colors.white)
         ),
         onPressed: () {
-          loginController.handleNextInUrlInputFormPress();
+          controller.handleNextInUrlInputFormPress();
         }
       )
     );
@@ -188,7 +188,7 @@ class LoginView extends BaseLoginView {
   }
 
   Widget _buildLoadingProgress(BuildContext context) {
-    return Obx(() => loginController.viewState.value.fold(
+    return Obx(() => controller.viewState.value.fold(
       (failure) {
         switch (controller.loginFormType.value) {
           case LoginFormType.baseUrlForm:

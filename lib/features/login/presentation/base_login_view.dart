@@ -27,7 +27,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 abstract class BaseLoginView extends GetWidget<LoginController> {
   BaseLoginView({Key? key}) : super(key: key);
 
-  final loginController = Get.find<LoginController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
@@ -58,9 +57,9 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
               }
             },
             (success) {
-              if (loginController.loginFormType.value == LoginFormType.credentialForm) {
+              if (controller.loginFormType.value == LoginFormType.credentialForm) {
                 return AppLocalizations.of(context).loginInputCredentialMessage;
-              } else if (loginController.loginFormType.value == LoginFormType.ssoForm) {
+              } else if (controller.loginFormType.value == LoginFormType.ssoForm) {
                 return AppLocalizations.of(context).loginInputSSOMessage;
               }
               return AppLocalizations.of(context).loginInputUrlMessage;
@@ -107,7 +106,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
             side: const BorderSide(width: 0, color: AppColor.primaryColor)
           ))
         ),
-        onPressed: loginController.handleLoginPressed,
+        onPressed: controller.handleLoginPressed,
         child: Text(
           AppLocalizations.of(context).signIn,
           style: const TextStyle(fontSize: 16, color: Colors.white)
@@ -132,8 +131,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
       padding: const EdgeInsets.only(bottom: 24, right: 24, left: 24),
       child: TypeAheadFormFieldBuilder<RecentLoginUsername>(
         key: const Key('login_username_input'),
-        controller: loginController.usernameInputController,
-        onTextChange: loginController.setUserNameText,
+        controller: controller.usernameInputController,
+        onTextChange: controller.setUserNameText,
         textInputAction: TextInputAction.next,
         autocorrect: false,
         autofillHints: const [AutofillHints.email],
@@ -143,10 +142,10 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
           ..setHintText(AppLocalizations.of(context).email))
           .build(),
         debounceDuration: const Duration(milliseconds: 300),
-        suggestionsCallback: loginController.getAllRecentLoginUsernameAction,
+        suggestionsCallback: controller.getAllRecentLoginUsernameAction,
         itemBuilder: (context, loginUsername) => RecentItemTileWidget(loginUsername, imagePath: imagePaths),
         onSuggestionSelected: (recentUsername) {
-          loginController.setUsername(recentUsername.username);
+          controller.setUsername(recentUsername.username);
           passFocusNode.requestFocus();
         },
         suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
@@ -168,11 +167,11 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
             autocorrect: false,
             autofillHints: [AutofillHints.password]
           )
-          ..setOnSubmitted((value) => loginController.handleLoginPressed())
+          ..setOnSubmitted((value) => controller.handleLoginPressed())
           ..passwordInput(true)
           ..key(const Key('login_password_input'))
           ..obscureText(true)
-          ..onChange(loginController.setPasswordText)
+          ..onChange(controller.setPasswordText)
           ..textInputAction(TextInputAction.done)
           ..hintText(AppLocalizations.of(context).password)
           ..setFocusNode(passFocusNode))
