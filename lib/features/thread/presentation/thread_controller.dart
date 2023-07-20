@@ -180,7 +180,7 @@ class ThreadController extends BaseController with EmailActionController {
     } else if (failure is GetEmailByIdFailure) {
       openingEmail.value = false;
       _navigationRouter = null;
-      pushAndPop(AppRoutes.unknownRoutePage);
+      popAndPush(AppRoutes.unknownRoutePage);
     }
   }
 

@@ -302,7 +302,7 @@ class LoginController extends BaseController {
     authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
-    pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
+    popAndPush(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
   }
 
   void _loginAction({Uri? baseUrl, UserName? userName, Password? password}) {
@@ -318,7 +318,7 @@ class LoginController extends BaseController {
     _dynamicUrlInterceptors.changeBaseUrl(_getBaseUrl().toString());
     authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
-    pushAndPop(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
+    popAndPush(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
   }
 
   void formatUrl(String url) {
