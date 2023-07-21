@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -102,6 +103,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
+  ParseCalendarEventInteractor? _parseCalendarEventInteractor;
 
   final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
@@ -296,12 +298,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     injectMdnBindings(session, accountId);
     _injectCalendarEventBindings(session, accountId);
 
-    if (Get.isRegistered<CreateNewEmailRuleFilterInteractor>()) {
-      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
-    }
-    if (Get.isRegistered<SendReceiptToSenderInteractor>()) {
-      _sendReceiptToSenderInteractor = Get.find<SendReceiptToSenderInteractor>();
-    }
+    _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
+    _sendReceiptToSenderInteractor = getBinding<SendReceiptToSenderInteractor>();
+    _parseCalendarEventInteractor = getBinding<ParseCalendarEventInteractor>();
   }
 
   void _injectCalendarEventBindings(Session? session, AccountId? accountId) {
