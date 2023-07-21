@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
@@ -28,6 +29,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -66,6 +68,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/da
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -291,12 +294,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _injectAndGetInteractorBindings(Session? session, AccountId accountId) {
     injectRuleFilterBindings(session, accountId);
     injectMdnBindings(session, accountId);
+    _injectCalendarEventBindings(session, accountId);
 
     if (Get.isRegistered<CreateNewEmailRuleFilterInteractor>()) {
       _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
     }
     if (Get.isRegistered<SendReceiptToSenderInteractor>()) {
       _sendReceiptToSenderInteractor = Get.find<SendReceiptToSenderInteractor>();
+    }
+  }
+
+  void _injectCalendarEventBindings(Session? session, AccountId? accountId) {
+    if (session != null && accountId != null) {
+      if (CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId)) {
+        CalendarEventInteractorBindings().dependencies();
+      }
     }
   }
 
