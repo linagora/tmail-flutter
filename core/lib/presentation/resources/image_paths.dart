@@ -195,6 +195,9 @@ class ImagePaths {
   String get icArrowRight => _getImagePath('ic_arrow_right.svg');
   String get icAddPicture => _getImagePath('ic_add_picture.svg');
   String get icCalendarEvent => _getImagePath('ic_calendar_event.svg');
+  String get icEventInvited => _getImagePath('ic_event_invited.svg');
+  String get icEventUpdated => _getImagePath('ic_event_updated.svg');
+  String get icEventCanceled => _getImagePath('ic_event_canceled.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

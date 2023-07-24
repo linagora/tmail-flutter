@@ -6,7 +6,6 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -14,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
@@ -27,7 +27,9 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
@@ -109,6 +111,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
+  final calendarEvent = Rxn<CalendarEvent>();
+
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   String? initialEmailContents;
@@ -175,6 +179,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _sendReceiptToSenderSuccess(success);
     } else if (success is CreateNewRuleFilterSuccess) {
       _createNewRuleFilterSuccess(success);
+    } else if (success is ParseCalendarEventSuccess) {
+      _handleParseCalendarEventSuccess(success);
     }
   }
 
@@ -391,6 +397,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       initialEmailContents = success.emailContent;
       attachments.value = success.attachments;
 
+      _loadCalendarEventAction(success.attachments.calendarEventBlobIds);
+
       final isShowMessageReadReceipt = success.emailCurrent?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
       if (isShowMessageReadReceipt) {
         _handleReadReceipt();
@@ -415,6 +423,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       emailContents.value = success.emailContentDisplayed;
       initialEmailContents = success.emailContent;
       attachments.value = success.attachments;
+
+      _loadCalendarEventAction(success.attachments.calendarEventBlobIds);
 
       if (PlatformInfo.isMobile) {
         final detailedEmail = DetailedEmail(
@@ -461,6 +471,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailContents.value = null;
     initialEmailContents = null;
     attachments.clear();
+    calendarEvent.value = null;
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
@@ -1227,6 +1238,47 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _storeOpenedEmailAction(Session? session, AccountId? accountId, DetailedEmail detailedEmail) async {
     if (session != null && accountId != null) {
       consumeState(_storeOpenedEmailInteractor.execute(session, accountId, detailedEmail));
+    }
+  }
+
+  void _loadCalendarEventAction(Set<Id> blobIds) {
+    log('SingleEmailController::_loadCalendarEventAction:blobIds: $blobIds');
+    if (_isCalendarEventSupported) {
+      if (currentEmail?.hasCalendarEvent == true &&
+          blobIds.isNotEmpty &&
+          mailboxDashBoardController.accountId.value != null) {
+        _parseCalendarEventAction(
+          mailboxDashBoardController.accountId.value!,
+          blobIds
+        );
+      } else {
+        logError('SingleEmailController::_loadCalendarEventAction: not found calendar event header');
+      }
+    } else {
+      logError('SingleEmailController::_loadCalendarEventAction: calendar event not supported');
+    }
+  }
+
+  bool get _isCalendarEventSupported {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    return session != null &&
+      accountId != null &&
+      CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId);
+  }
+
+  void _parseCalendarEventAction(AccountId accountId, Set<Id> blobIds) {
+    log("SingleEmailController::_parseCalendarEventAction:blobIds: $blobIds");
+    if (_parseCalendarEventInteractor != null) {
+      consumeState(_parseCalendarEventInteractor!.execute(accountId, blobIds));
+    } else {
+      logError("SingleEmailController::_parseCalendarEventAction: _parseCalendarEventInteractor is NULL");
+    }
+  }
+
+  void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
+    if (success.calendarEventList.isNotEmpty) {
+      calendarEvent.value = success.calendarEventList.first;
     }
   }
 }

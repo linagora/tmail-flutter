@@ -3071,4 +3071,76 @@ class AppLocalizations {
       name: 'pleaseChooseAnImageSizeCorrectly',
       args: [maxSize]);
   }
+
+  String get messageEventActionBannerOrganizerInvited {
+    return Intl.message(
+      ' has invited you in to a meeting',
+      name: 'messageEventActionBannerOrganizerInvited');
+  }
+
+  String get messageEventActionBannerOrganizerUpdated {
+    return Intl.message(
+      ' has updated a meeting',
+      name: 'messageEventActionBannerOrganizerUpdated');
+  }
+
+  String get messageEventActionBannerOrganizerCanceled {
+    return Intl.message(
+      ' has canceled a meeting',
+      name: 'messageEventActionBannerOrganizerCanceled');
+  }
+
+  String get subMessageEventActionBannerUpdated {
+    return Intl.message(
+      '"The time has been updated to better suit all of you"',
+      name: 'subMessageEventActionBannerUpdated');
+  }
+
+  String get subMessageEventActionBannerCanceled {
+    return Intl.message(
+      '"We are canceling the event due to bad weather."',
+      name: 'subMessageEventActionBannerCanceled');
+  }
+
+  String get anAttendee {
+    return Intl.message(
+      'An attendee',
+      name: 'anAttendee');
+  }
+
+  String get you {
+    return Intl.message(
+      'You',
+      name: 'you');
+  }
+
+  String get messageEventActionBannerAttendeeAccepted {
+    return Intl.message(
+      ' has accepted this invitation',
+      name: 'messageEventActionBannerAttendeeAccepted');
+  }
+
+  String get messageEventActionBannerAttendeeTentative {
+    return Intl.message(
+      ' has replied "Maybe" to this invitation',
+      name: 'messageEventActionBannerAttendeeTentative');
+  }
+
+  String get messageEventActionBannerAttendeeDeclined {
+    return Intl.message(
+      ' has declined this invitation',
+      name: 'messageEventActionBannerAttendeeDeclined');
+  }
+
+  String get messageEventActionBannerAttendeeCounter {
+    return Intl.message(
+      ' has proposed changes to the event',
+      name: 'messageEventActionBannerAttendeeCounter');
+  }
+
+  String get messageEventActionBannerAttendeeCounterDeclined {
+    return Intl.message(
+      'Your counter proposal was declined',
+      name: 'messageEventActionBannerAttendeeCounterDeclined');
+  }
 }
