@@ -282,6 +282,7 @@ class MailBoxFolderTileBuilder {
 
   Widget _buildTitleFolderItem(BuildContext context, {bool showTrailingItem = true}) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
