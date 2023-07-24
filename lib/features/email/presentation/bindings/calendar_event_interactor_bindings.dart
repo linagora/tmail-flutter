@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/calendar_event_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/calendar_event_datasource_impl.dart';
@@ -17,6 +18,7 @@ class CalendarEventInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSourceImpl() {
+    Get.lazyPut(() => CalendarEventAPI(Get.find<HttpClient>()));
     Get.lazyPut(() => CalendarEventDataSourceImpl(
       Get.find<CalendarEventAPI>(),
       Get.find<RemoteExceptionThrower>()));

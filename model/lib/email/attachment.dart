@@ -50,6 +50,8 @@ class Attachment with EquatableMixin {
     }
   }
 
+  bool get isCalendarEvent => type?.subtype == 'ics' || type?.subtype == 'calendar';
+
   @override
   List<Object?> get props => [partId, blobId, size, name, type, cid, disposition];
 }

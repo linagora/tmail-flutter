@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
@@ -11,7 +10,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -21,12 +19,17 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -34,7 +37,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widg
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class EmailView extends GetWidget<SingleEmailController> {
+class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -278,38 +281,57 @@ class EmailView extends GetWidget<SingleEmailController> {
               imagePaths: imagePaths,
               responsiveUtils: responsiveUtils,
             ),
-            _buildLoadingView(),
+            _buildLoadingContentView(),
             _buildAttachments(context),
+            Obx(() {
+              if (controller.calendarEvent.value != null) {
+                return CalendarEventActionBannerWidget(
+                  calendarEvent: controller.calendarEvent.value!,
+                  listFromEmailAddress: controller.currentEmail?.from
+                );
+              } else {
+                return _buildLoadingCalendarEventBanner();
+              }
+            }),
             if (PlatformInfo.isWeb)
               Expanded(child: Padding(
-                padding: EdgeInsets.only(
-                  left: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                  right: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                  bottom: 16
-                ),
+                padding: const EdgeInsetsDirectional.only(start: 16, bottom: 16),
                 child: _buildEmailContent(context, constraints, email)
               ))
             else
               Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: _buildEmailContent(context, constraints, email))
+                padding: const EdgeInsetsDirectional.symmetric(
+                  vertical: EmailViewStyles.mobileContentVerticalMargin,
+                  horizontal: EmailViewStyles.mobileContentHorizontalMargin
+                ),
+                child: _buildEmailContent(context, constraints, email)
+              )
           ],
         );
       });
   }
 
-  Widget _buildLoadingView() {
+  Widget _buildLoadingContentView() {
     return Obx(() {
       return controller.viewState.value.fold(
         (failure) => const SizedBox.shrink(),
         (success) {
-          if (success is LoadingState) {
-            return const Align(alignment: Alignment.topCenter, child: Padding(
-                padding: EdgeInsets.all(16),
-                child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CupertinoActivityIndicator(color: AppColor.colorLoading))));
+          if (success is GetEmailContentLoading) {
+            return loadingWidget;
+          } else {
+            return const SizedBox.shrink();
+          }
+        });
+    });
+  }
+
+  Widget _buildLoadingCalendarEventBanner() {
+    return Obx(() {
+      return controller.viewState.value.fold(
+        (failure) => const SizedBox.shrink(),
+        (success) {
+          if (success is ParseCalendarEventLoading) {
+            return loadingWidget;
           } else {
             return const SizedBox.shrink();
           }
@@ -329,7 +351,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   Widget _buildAttachmentsBody(BuildContext context, List<Attachment> attachments) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12, top: 10),
+      padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildAttachmentsHeader(context, attachments),
