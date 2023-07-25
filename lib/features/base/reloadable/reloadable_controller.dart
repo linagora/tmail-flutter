@@ -140,7 +140,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
-    final apiUrl = session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors.jmapUrl);;
+    final apiUrl = session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors.jmapUrl);
     log('ReloadableController::updateAuthenticationAccount():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));

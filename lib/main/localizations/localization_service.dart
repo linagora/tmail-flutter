@@ -4,28 +4,29 @@ import 'dart:ui';
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
 
 class LocalizationService extends Translations {
 
-  static const defaultLocale = Locale('en', 'US');
-  static const fallbackLocale = Locale('en', 'US');
+  static const defaultLocale = Locale(LanguageCodeConstants.english, 'US');
+  static const fallbackLocale = Locale(LanguageCodeConstants.english, 'US');
 
   static final supportedLanguageCodes = [
-    'fr',
-    'en',
-    'vi',
-    'ru',
-    'ar',
-    'it'
+    LanguageCodeConstants.french,
+    LanguageCodeConstants.english,
+    LanguageCodeConstants.vietnamese,
+    LanguageCodeConstants.russian,
+    LanguageCodeConstants.arabic,
+    LanguageCodeConstants.italian
   ];
 
   static const List<Locale> supportedLocales = [
-    Locale('fr', 'FR'),
-    Locale('en', 'US'),
-    Locale('vi', 'VN'),
-    Locale('ru', 'RU'),
-    Locale('ar', 'TN'),
-    Locale('it', 'IT')
+    Locale(LanguageCodeConstants.french, 'FR'),
+    Locale(LanguageCodeConstants.english, 'US'),
+    Locale(LanguageCodeConstants.vietnamese, 'VN'),
+    Locale(LanguageCodeConstants.russian, 'RU'),
+    Locale(LanguageCodeConstants.arabic, 'TN'),
+    Locale(LanguageCodeConstants.italian, 'IT')
   ];
 
   static final locale = _getLocaleFromLanguage();
