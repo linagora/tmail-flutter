@@ -33,6 +33,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
       padding: const EdgeInsets.all(CalendarEventActionBannerStyles.contentPadding),
       margin: const EdgeInsets.symmetric(
         horizontal: CalendarEventActionBannerStyles.viewHorizontalMargin,
+        vertical: CalendarEventActionBannerStyles.viewVerticalMargin,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
