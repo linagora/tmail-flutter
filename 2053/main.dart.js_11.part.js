@@ -386,7 +386,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 37
+    $signature: 41
   };
   B.SearchMailboxView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -618,4 +618,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["eUExOxggJFfHnRMPo53MTF7hevs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["LRKhOU+H+cjkXZnF7HzQVSE9BvM="] = $__dart_deferred_initializers__.current

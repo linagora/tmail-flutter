@@ -523,7 +523,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return _this.$this._buildHtmlEditor$2$initialContent(_this.context, _s11_);
     },
-    $signature: 71
+    $signature: 80
   };
   B.ComposerView__buildHtmlEditor_closure0.prototype = {
     call$1(_) {
@@ -579,4 +579,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["CCqQbiNutxqv504Y+rEvXlGNje0="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["9X2HaHKQSgPuIS8vimsvRLhJ+T4="] = $__dart_deferred_initializers__.current

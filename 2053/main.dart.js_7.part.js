@@ -4401,7 +4401,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 37
+    $signature: 41
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure2.prototype = {
     call$1(success) {
@@ -4409,7 +4409,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 71
+    $signature: 80
   };
   B.ComposerLoadingMixin_buildInlineLoadingView__closure0.prototype = {
     call$1(success) {
@@ -4419,13 +4419,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.controller.viewState;
       return J.fold$2$ax(t1.get$value(t1), new B.ComposerLoadingMixin_buildInlineLoadingView___closure(), new B.ComposerLoadingMixin_buildInlineLoadingView___closure0(this.$this));
     },
-    $signature: 71
+    $signature: 80
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 37
+    $signature: 41
   };
   B.ComposerLoadingMixin_buildInlineLoadingView___closure0.prototype = {
     call$1(success) {
@@ -4433,7 +4433,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._loadingWidgetWithSizeColor$0();
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 71
+    $signature: 80
   };
   B.AttachmentFileComposerBuilder_build_closure.prototype = {
     call$0() {
@@ -4504,7 +4504,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.KeyEventResult_1;
     },
-    $signature: 74
+    $signature: 73
   };
   B.EmailAddressInputBuilder__buildTagEditor__closure0.prototype = {
     call$1(focused) {
@@ -4934,4 +4934,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["oED5IaaoJ33F8ZYx7Vu+S/WM8fs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["IAt2SJqLrXIpZDjZUevjp0EApT4="] = $__dart_deferred_initializers__.current
