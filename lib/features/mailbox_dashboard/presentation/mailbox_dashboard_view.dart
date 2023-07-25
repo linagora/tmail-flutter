@@ -61,7 +61,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 children: [
                   SizedBox(
                     width: ResponsiveUtils.defaultSizeLeftMenuMobile,
-                    child: _buildScaffoldHaveDrawer(body: SendingQueueView())),
+                    child: _buildScaffoldHaveDrawer(body: const SendingQueueView())),
                   Expanded(child: EmailView()),
                 ],
               );
@@ -70,7 +70,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 desktop: bodyView,
                 tabletLarge: bodyView,
                 landscapeTablet: bodyView,
-                mobile: _buildScaffoldHaveDrawer(body: SendingQueueView()));
+                mobile: _buildScaffoldHaveDrawer(body: const SendingQueueView()));
             case DashboardRoutes.waiting:
               return const Center(
                 child: SizedBox(
