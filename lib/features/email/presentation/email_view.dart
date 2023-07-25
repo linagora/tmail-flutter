@@ -23,7 +23,6 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
@@ -290,7 +289,7 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
                   listFromEmailAddress: controller.currentEmail?.from
                 );
               } else {
-                return _buildLoadingCalendarEventBanner();
+                return const SizedBox.shrink();
               }
             }),
             if (PlatformInfo.isWeb)
@@ -317,20 +316,6 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
         (failure) => const SizedBox.shrink(),
         (success) {
           if (success is GetEmailContentLoading) {
-            return loadingWidget;
-          } else {
-            return const SizedBox.shrink();
-          }
-        });
-    });
-  }
-
-  Widget _buildLoadingCalendarEventBanner() {
-    return Obx(() {
-      return controller.viewState.value.fold(
-        (failure) => const SizedBox.shrink(),
-        (success) {
-          if (success is ParseCalendarEventLoading) {
             return loadingWidget;
           } else {
             return const SizedBox.shrink();
