@@ -203,6 +203,8 @@ dependencies:
 
   flutter_app_badger: 1.5.0
 
+  date_format: 2.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
