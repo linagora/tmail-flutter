@@ -312,6 +312,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.1"
+  date_format:
+    dependency: "direct main"
+    description:
+      name: date_format
+      sha256: "8e5154ca363411847220c8cbc43afcf69c08e8debe40ba09d57710c25711760c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   dbus:
     dependency: transitive
     description:
@@ -971,7 +979,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "751c09a96a98f96141acdc2f592f183ac9e1a911"
+      resolved-ref: "63d47945f676adca3bf48b3940b21b77546e309e"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
