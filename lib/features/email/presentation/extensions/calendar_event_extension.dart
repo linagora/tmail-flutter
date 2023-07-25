@@ -3,12 +3,14 @@ import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_participation_status.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 extension CalendarEventExtension on CalendarEvent {
 
@@ -173,6 +175,44 @@ extension CalendarEventExtension on CalendarEvent {
       return AppColor.colorCanceledEventActionText;
     } else {
       return Colors.transparent;
+    }
+  }
+
+  DateTime? get localStartDate => startUtcDate?.value.toLocal();
+
+  String get monthStartDateAsString {
+    if (localStartDate != null) {
+      return date_format.formatDate(
+        localStartDate!,
+        [date_format.M],
+        locale: AppUtils.getCurrentDateLocale()
+      );
+    } else {
+      return '';
+    }
+  }
+
+  String get dayStartDateAsString {
+    if (localStartDate != null) {
+      return date_format.formatDate(
+        localStartDate!,
+        [date_format.d],
+        locale: AppUtils.getCurrentDateLocale()
+      );
+    } else {
+      return '';
+    }
+  }
+
+  String get weekDayStartDateAsString {
+    if (localStartDate != null) {
+      return date_format.formatDate(
+        localStartDate!,
+        [date_format.D],
+        locale: AppUtils.getCurrentDateLocale()
+      );
+    } else {
+      return '';
     }
   }
 }
