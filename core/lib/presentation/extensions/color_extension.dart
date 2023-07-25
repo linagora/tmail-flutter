@@ -191,6 +191,9 @@ extension AppColor on Color {
   static const colorUpdatedEventActionText = Color(0xFF4BB34B);
   static const colorCanceledEventActionText = Color(0xFFFF3347);
   static const colorSubTitleEventActionText = Color(0xFF939393);
+  static const colorCalendarEventInformationBackground = Color(0x0A000000);
+  static const colorCalendarEventInformationStroke = Color(0x1F000000);
+  static const colorShadowCalendarDateIcon = Color(0x26000000);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
