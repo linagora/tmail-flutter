@@ -32,7 +32,6 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(CalendarEventActionBannerStyles.contentPadding),
       margin: const EdgeInsets.symmetric(
-        vertical: CalendarEventActionBannerStyles.viewVerticalMargin,
         horizontal: CalendarEventActionBannerStyles.viewHorizontalMargin,
       ),
       child: Row(
@@ -43,8 +42,8 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
               padding: const EdgeInsetsDirectional.only(end: 8),
               child: SvgPicture.asset(
                 calendarEvent.getIconEventAction(imagePaths),
-                width: 24,
-                height: 24,
+                width: CalendarEventActionBannerStyles.iconSize,
+                height: CalendarEventActionBannerStyles.iconSize,
                 fit: BoxFit.fill,
               ),
             ),
@@ -55,7 +54,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
               RichText(
                 text: TextSpan(
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: CalendarEventActionBannerStyles.titleTextSize,
                     fontWeight: FontWeight.w400,
                     color: calendarEvent.getColorEventActionText(_getSenderEmailAddress())
                   ),
@@ -68,7 +67,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
                       ),
                       style: TextStyle(
                         color: calendarEvent.getColorEventActionText(_getSenderEmailAddress()),
-                        fontSize: 20,
+                        fontSize: CalendarEventActionBannerStyles.titleTextSize,
                         fontWeight: FontWeight.w700
                       ),
                     ),
@@ -81,7 +80,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
                   calendarEvent.getSubTitleEventAction(context),
                   style: const TextStyle(
                     color: AppColor.colorSubTitleEventActionText,
-                    fontSize: 16,
+                    fontSize: CalendarEventActionBannerStyles.subTileTextSize,
                     fontWeight: FontWeight.w400
                   ),
                 )
