@@ -21,6 +21,7 @@ class CalendarDateIconWidget extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       width: width,
+      margin: const EdgeInsets.all(CalendarIconWidgetStyles.margin),
       decoration: const ShapeDecoration(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(CalendarIconWidgetStyles.borderRadius))),
         color: Colors.white,
