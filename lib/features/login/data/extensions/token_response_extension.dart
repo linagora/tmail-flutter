@@ -4,11 +4,11 @@ import 'package:model/model.dart';
 
 extension TokenResponseExtension on TokenResponse {
 
-  TokenOIDC toTokenOIDC() {
+  TokenOIDC toTokenOIDC({String? maybeAvailableRefreshToken}) {
     return TokenOIDC(
       accessToken ?? '',
       TokenId(idToken ?? ''),
-      refreshToken ?? '',
+      refreshToken ?? maybeAvailableRefreshToken ?? '',
       expiredTime: accessTokenExpirationDateTime ?? DateTime.now());
   }
 }
