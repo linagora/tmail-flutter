@@ -9,4 +9,9 @@ class CalendarEventInformationWidgetStyles {
   static const double horizontalMargin = 16;
   static const double calendarDateIconMargin = 16;
   static const Color calendarDateIconBackgroundColor = AppColor.colorCalendarEventInformationBackground;
+  static const double calendarInformationMargin = 16;
+  static const double invitationMessageTextSize = 16;
+  static const double titleTextSize = 24;
+  static const double fieldTopPadding = 16;
+  static const double space = 8;
 }
