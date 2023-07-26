@@ -3143,4 +3143,34 @@ class AppLocalizations {
       'Your counter proposal was declined',
       name: 'messageEventActionBannerAttendeeCounterDeclined');
   }
+
+  String get invitationMessageCalendarInformation {
+    return Intl.message(
+      ' has invited you in to a meeting:',
+      name: 'invitationMessageCalendarInformation');
+  }
+
+  String get when {
+    return Intl.message(
+      'When',
+      name: 'when');
+  }
+
+  String get where {
+    return Intl.message(
+      'Where',
+      name: 'where');
+  }
+
+  String get who {
+    return Intl.message(
+      'Who',
+      name: 'who');
+  }
+
+  String get organizer {
+    return Intl.message(
+      'Organizer',
+      name: 'organizer');
+  }
 }
