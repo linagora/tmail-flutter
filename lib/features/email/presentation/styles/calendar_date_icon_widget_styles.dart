@@ -7,4 +7,5 @@ class CalendarIconWidgetStyles {
   static const double bodyDayTextSize = 40;
   static const double bodyWeekDayTextSize = 14;
   static const double bodyContentPadding = 8;
+  static const double margin = 16;
 }

@@ -1,7 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -94,9 +93,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
 
   String _getSenderEmailAddress() {
     if (listFromEmailAddress?.isNotEmpty == true) {
-      final senderEmailAddress = listFromEmailAddress!.first.emailAddress;
-      log('CalendarEventActionBannerWidget::getSenderEmailAddress: $senderEmailAddress');
-      return senderEmailAddress;
+      return listFromEmailAddress!.first.emailAddress;
     } else {
       return '';
     }
