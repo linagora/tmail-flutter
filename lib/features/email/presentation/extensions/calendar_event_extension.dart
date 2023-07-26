@@ -180,6 +180,8 @@ extension CalendarEventExtension on CalendarEvent {
 
   DateTime? get localStartDate => startUtcDate?.value.toLocal();
 
+  DateTime? get localEndDate => endUtcDate?.value.toLocal();
+
   String get monthStartDateAsString {
     if (localStartDate != null) {
       return date_format.formatDate(
@@ -211,6 +213,58 @@ extension CalendarEventExtension on CalendarEvent {
         [date_format.D],
         locale: AppUtils.getCurrentDateLocale()
       );
+    } else {
+      return '';
+    }
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    return date_format.formatDate(
+      dateTime,
+      [
+        date_format.DD,
+        ', ',
+        date_format.MM,
+        ' ',
+        date_format.dd,
+        ', ',
+        date_format.yyyy,
+        ' ',
+        date_format.hh,
+        ':',
+        date_format.ss,
+        ' ',
+        date_format.am
+      ],
+      locale: AppUtils.getCurrentDateLocale()
+    );
+  }
+
+  String formatTime(DateTime dateTime) {
+    return date_format.formatDate(
+      dateTime,
+      [
+        date_format.hh,
+        ':',
+        date_format.ss,
+        ' ',
+        date_format.am
+      ],
+      locale: AppUtils.getCurrentDateLocale()
+    );
+  }
+
+  String get dateTimeEventAsString {
+    if (localStartDate != null && localEndDate != null) {
+      final timeStart = formatDateTime(localStartDate!);
+      final timeEnd = DateUtils.isSameDay(localStartDate, localEndDate)
+        ? formatTime(localEndDate!)
+        : formatDateTime(localEndDate!);
+      return '$timeStart - $timeEnd';
+    } else if (localStartDate != null) {
+      return formatDateTime(localStartDate!);
+    } else if (localEndDate != null) {
+      return formatDateTime(localEndDate!);
     } else {
       return '';
     }

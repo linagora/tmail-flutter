@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-07-24T18:44:17.206723",
+  "@@last_modified": "2023-07-26T18:42:34.026265",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3044,6 +3044,36 @@
   },
   "messageEventActionBannerAttendeeCounterDeclined": "Your counter proposal was declined",
   "@messageEventActionBannerAttendeeCounterDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invitationMessageCalendarInformation": " has invited you in to a meeting:",
+  "@invitationMessageCalendarInformation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "when": "When",
+  "@when": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "where": "Where",
+  "@where": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "who": "Who",
+  "@who": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizer": "Organizer",
+  "@organizer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
