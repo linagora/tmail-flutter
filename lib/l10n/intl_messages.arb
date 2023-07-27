@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-07-26T18:42:34.026265",
+  "@@last_modified": "2023-07-27T12:18:46.254059",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3074,6 +3074,24 @@
   },
   "organizer": "Organizer",
   "@organizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "time": "Time",
+  "@time": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "location": "Location",
+  "@location": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attendees": "Attendees",
+  "@attendees": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
