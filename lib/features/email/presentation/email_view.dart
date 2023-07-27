@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
@@ -229,7 +230,7 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
   }
 
   Widget _buildEmailBody(BuildContext context, PresentationEmail email) {
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb && !email.hasCalendarEvent) {
       return _buildEmailMessage(context, email);
     } else {
       return SingleChildScrollView(
@@ -282,63 +283,55 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
               imagePaths: imagePaths,
               responsiveUtils: responsiveUtils,
             ),
-            _buildLoadingContentView(),
             _buildAttachments(context),
-            Obx(() {
-              if (controller.calendarEvent.value != null) {
-                return CalendarEventInformationWidget(
-                  calendarEvent: controller.calendarEvent.value!
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            Obx(() {
-              if (controller.calendarEvent.value != null) {
-                return CalendarEventActionBannerWidget(
-                  calendarEvent: controller.calendarEvent.value!,
-                  listFromEmailAddress: controller.currentEmail?.from
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            Obx(() {
-              if (controller.calendarEvent.value != null) {
-                return CalendarEventDetailWidget(
-                  calendarEvent: controller.calendarEvent.value!
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            if (PlatformInfo.isWeb)
-              Expanded(child: Padding(
-                padding: const EdgeInsetsDirectional.only(start: 16, bottom: 16),
-                child: _buildEmailContent(context, constraints, email)
-              ))
+            _buildLoadingContentView(email),
+            if (email.hasCalendarEvent)
+              Obx(() {
+                if (controller.calendarEvent.value != null) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CalendarEventInformationWidget(
+                        calendarEvent: controller.calendarEvent.value!
+                      ),
+                      CalendarEventActionBannerWidget(
+                        calendarEvent: controller.calendarEvent.value!,
+                        listFromEmailAddress: controller.currentEmail?.from
+                      ),
+                      CalendarEventDetailWidget(
+                        calendarEvent: controller.calendarEvent.value!
+                      ),
+                    ],
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              })
             else
-              Padding(
-                padding: const EdgeInsetsDirectional.symmetric(
-                  vertical: EmailViewStyles.mobileContentVerticalMargin,
-                  horizontal: EmailViewStyles.mobileContentHorizontalMargin
-                ),
-                child: _buildEmailContent(context, constraints, email)
-              )
+              _buildEmailContent(context, constraints, email)
           ],
         );
       });
   }
 
-  Widget _buildLoadingContentView() {
+  Widget _buildLoadingContentView(PresentationEmail selectedEmail) {
     return Obx(() {
       return controller.viewState.value.fold(
         (failure) => const SizedBox.shrink(),
         (success) {
-          if (success is GetEmailContentLoading) {
-            return loadingWidget;
+          if (selectedEmail.hasCalendarEvent) {
+            if ((success is GetEmailContentLoading || success is ParseCalendarEventLoading)) {
+              return loadingWidget;
+            } else {
+              return const SizedBox.shrink();
+            }
           } else {
-            return const SizedBox.shrink();
+            if (success is GetEmailContentLoading) {
+              return loadingWidget;
+            } else {
+              return const SizedBox.shrink();
+            }
           }
         });
     });
@@ -473,25 +466,36 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
         final allEmailContents = controller.emailContents.value;
 
         if (PlatformInfo.isWeb) {
-          return HtmlContentViewerOnWeb(
-            widthContent: constraints.maxWidth,
-            heightContent: responsiveUtils.getSizeScreenHeight(context),
-            contentHtml: allEmailContents ?? "",
-            controller: HtmlViewerControllerForWeb(),
-            mailtoDelegate: (uri) => controller.openMailToLink(uri),
-            direction: AppUtils.getCurrentDirection(context),
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(start: 16, bottom: 16),
+              child: HtmlContentViewerOnWeb(
+                widthContent: constraints.maxWidth,
+                heightContent: responsiveUtils.getSizeScreenHeight(context),
+                contentHtml: allEmailContents ?? "",
+                controller: HtmlViewerControllerForWeb(),
+                mailtoDelegate: (uri) => controller.openMailToLink(uri),
+                direction: AppUtils.getCurrentDirection(context),
+              ),
+            ),
           );
         } else {
-          return HtmlContentViewer(
-            heightContent: responsiveUtils.getSizeScreenHeight(context),
-            contentHtml: allEmailContents ?? "",
-            mailtoDelegate: (uri) async => controller.openMailToLink(uri),
-            onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
-            onWebViewLoaded: (isScrollPageViewActivated) {
-              log('EmailView::_buildEmailContent(): isScrollPageViewActivated: $isScrollPageViewActivated');
-              controller.emailSupervisorController.updateScrollPhysicPageView(isScrollPageViewActivated: isScrollPageViewActivated);
-            },
-            direction: AppUtils.getCurrentDirection(context),
+          return Padding(
+            padding: const EdgeInsetsDirectional.symmetric(
+              vertical: EmailViewStyles.mobileContentVerticalMargin,
+              horizontal: EmailViewStyles.mobileContentHorizontalMargin
+            ),
+            child: HtmlContentViewer(
+              heightContent: responsiveUtils.getSizeScreenHeight(context),
+              contentHtml: allEmailContents ?? "",
+              mailtoDelegate: (uri) async => controller.openMailToLink(uri),
+              onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
+              onWebViewLoaded: (isScrollPageViewActivated) {
+                log('EmailView::_buildEmailContent(): isScrollPageViewActivated: $isScrollPageViewActivated');
+                controller.emailSupervisorController.updateScrollPhysicPageView(isScrollPageViewActivated: isScrollPageViewActivated);
+              },
+              direction: AppUtils.getCurrentDirection(context),
+            ),
           );
         }
       } else {
