@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_information_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class CalendarEventInformationWidget extends StatelessWidget {
@@ -82,14 +83,8 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       )
                     ),
                     const SizedBox(height: CalendarEventInformationWidgetStyles.space),
-                    Text(
-                      calendarEvent.title ?? '',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: CalendarEventInformationWidgetStyles.titleTextSize,
-                        color: CalendarEventInformationWidgetStyles.titleColor
-                      )
-                    ),
+                    if (calendarEvent.title?.isNotEmpty == true)
+                      EventTitleWidget(title: calendarEvent.title!),
                     if (calendarEvent.dateTimeEventAsString.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
@@ -153,14 +148,8 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       )
                     ),
                     const SizedBox(height: CalendarEventInformationWidgetStyles.space),
-                    Text(
-                      calendarEvent.title ?? '',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: CalendarEventInformationWidgetStyles.titleTextSize,
-                        color: CalendarEventInformationWidgetStyles.titleColor
-                      )
-                    ),
+                    if (calendarEvent.title?.isNotEmpty == true)
+                      EventTitleWidget(title: calendarEvent.title!),
                     if (calendarEvent.dateTimeEventAsString.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
