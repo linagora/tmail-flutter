@@ -269,4 +269,20 @@ extension CalendarEventExtension on CalendarEvent {
       return '';
     }
   }
+
+  List<String> get videoConferences {
+    if (extensionFields != null && extensionFields!.mapFields.isNotEmpty) {
+      final videoConferences = extensionFields!.mapFields['X-OPENPAAS-VIDEOCONFERENCE'];
+      if (videoConferences != null) {
+        final videoConferencesNotEmpty = videoConferences
+          .whereNotNull()
+          .where((link) => link.isNotEmpty)
+          .toList();
+        log('CalendarEventExtension::getListVideoConference: $videoConferencesNotEmpty');
+        return videoConferencesNotEmpty;
+      }
+    }
+
+    return [];
+  }
 }
