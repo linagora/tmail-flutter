@@ -1,5 +1,8 @@
 
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/list_attendee_extension.dart';
@@ -19,6 +22,7 @@ class EventAttendeeInformationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -52,7 +56,11 @@ class EventAttendeeInformationWidget extends StatelessWidget {
               const TextSpan(text: ', '),
               TextSpan(text: attendees.withoutOrganizer(organizer).mailtoAsString)
             ]
-          )
+          ),
+          overflow: responsiveUtils.isPortraitMobile(context)
+            ? TextOverflow.ellipsis
+            : CommonTextStyle.defaultTextOverFlow,
+          maxLines: responsiveUtils.isPortraitMobile(context) ? null : 2,
         ))
       ],
     );
