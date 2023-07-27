@@ -6,11 +6,12 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organize
 import 'package:tmail_ui_user/features/email/presentation/extensions/list_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_attendee_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/attendee_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/organizer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EventAttendeeDetailWidget extends StatelessWidget {
 
-  static const int _maxAttendeeDisplayed = 5;
+  static const int _maxAttendeeDisplayed = 6;
 
   final List<CalendarAttendee> attendees;
   final CalendarOrganizer organizer;
@@ -40,23 +41,14 @@ class EventAttendeeDetailWidget extends StatelessWidget {
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (attendeeOrganizer != null)
-              AttendeeWidget(attendee: attendeeOrganizer!, organizer: organizer),
+            OrganizerWidget(organizer: organizer),
             ..._attendeesDisplayed
-                .map((attendee) => AttendeeWidget(attendee: attendee, organizer: organizer))
+                .map((attendee) => AttendeeWidget(attendee: attendee))
                 .toList()
           ]
         ))
       ],
     );
-  }
-
-  CalendarAttendee? get attendeeOrganizer {
-    try {
-      return attendees.firstWhere((attendee) => attendee.mailto?.mailAddress == organizer.mailto);
-    } catch (e) {
-      return null;
-    }
   }
 
   List<CalendarAttendee> get _attendeesDisplayed {

@@ -1,16 +1,17 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attendee_widget_styles.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class AttendeeWidget extends StatelessWidget {
+class OrganizerWidget extends StatelessWidget {
 
-  final CalendarAttendee attendee;
+  final CalendarOrganizer organizer;
 
-  const AttendeeWidget({
+  const OrganizerWidget({
     super.key,
-    required this.attendee
+    required this.organizer
   });
 
   @override
@@ -23,17 +24,18 @@ class AttendeeWidget extends StatelessWidget {
           color: Colors.black
         ),
         children: [
-          if (attendee.name?.name.isNotEmpty == true)
-            TextSpan(text: attendee.name!.name),
-          if (attendee.mailto?.mailAddress.value.isNotEmpty == true)
+          if (organizer.name?.isNotEmpty == true)
+            TextSpan(text: organizer.name!),
+          if (organizer.mailto?.value.isNotEmpty == true)
             TextSpan(
-              text: ' <${attendee.mailto!.mailAddress.value}> ',
+              text: ' <${organizer.mailto!.value}> ',
               style: const TextStyle(
                 color: AppColor.colorMailto,
                 fontSize: AttendeeWidgetStyles.textSize,
                 fontWeight: FontWeight.w500
               ),
             ),
+          TextSpan(text: '(${AppLocalizations.of(context).organizer})'),
           const TextSpan(text: ', '),
         ]
       )
