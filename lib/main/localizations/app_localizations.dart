@@ -3198,4 +3198,10 @@ class AppLocalizations {
       'See all attendees',
       name: 'seeAllAttendees');
   }
+
+  String get link {
+    return Intl.message(
+      'Link',
+      name: 'link');
+  }
 }

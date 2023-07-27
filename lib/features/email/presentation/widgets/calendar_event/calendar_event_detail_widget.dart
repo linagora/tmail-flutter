@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_ev
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_description_detail_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_link_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
@@ -52,6 +53,11 @@ class CalendarEventDetailWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
               child: EventTimeWidgetWidget(timeEvent: calendarEvent.dateTimeEventAsString),
+            ),
+          if (calendarEvent.videoConferences.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+              child: EventLinkDetailWidget(listHyperLink: calendarEvent.videoConferences),
             ),
           if (calendarEvent.location?.isNotEmpty == true)
             Padding(
