@@ -24,6 +24,7 @@ class EventDescriptionDetailWidget extends StatelessWidget {
         color: AppColor.colorEventDescriptionBackground,
         borderRadius: BorderRadius.all(Radius.circular(EventDescriptionDetailWidgetStyles.borderRadius)),
       ),
+      width: double.infinity,
       padding: const EdgeInsetsDirectional.all(EventDescriptionDetailWidgetStyles.contentPadding),
       child: Stack(
         children: [
