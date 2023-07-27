@@ -3192,4 +3192,10 @@ class AppLocalizations {
       'Attendees',
       name: 'attendees');
   }
+
+  String get seeAllAttendees {
+    return Intl.message(
+      'See all attendees',
+      name: 'seeAllAttendees');
+  }
 }
