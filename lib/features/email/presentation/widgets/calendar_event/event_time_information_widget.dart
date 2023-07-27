@@ -1,6 +1,8 @@
 
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_time_information_widget_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -15,6 +17,7 @@ class EventTimeInformationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,8 +34,9 @@ class EventTimeInformationWidget extends StatelessWidget {
         ),
         Expanded(child: Text(
           timeEvent,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap,
+          overflow: responsiveUtils.isPortraitMobile(context) ? null : CommonTextStyle.defaultTextOverFlow,
+          softWrap: responsiveUtils.isPortraitMobile(context) ? null : CommonTextStyle.defaultSoftWrap,
+          maxLines: responsiveUtils.isPortraitMobile(context) ? null : 1,
           style: const TextStyle(
             fontSize: EventTimeInformationWidgetStyles.textSize,
             fontWeight: FontWeight.w500,
