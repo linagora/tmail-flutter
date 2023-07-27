@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-07-28T02:01:26.243299",
+  "@@last_modified": "2023-07-28T02:46:38.430701",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3098,6 +3098,12 @@
   },
   "seeAllAttendees": "See all attendees",
   "@seeAllAttendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "link": "Link",
+  "@link": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
