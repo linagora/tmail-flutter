@@ -7,9 +7,10 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/list_attend
 import 'package:tmail_ui_user/features/email/presentation/styles/event_attendee_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/attendee_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/organizer_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/see_all_attendees_button_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class EventAttendeeDetailWidget extends StatelessWidget {
+class EventAttendeeDetailWidget extends StatefulWidget {
 
   static const int _maxAttendeeDisplayed = 6;
 
@@ -21,6 +22,24 @@ class EventAttendeeDetailWidget extends StatelessWidget {
     required this.attendees,
     required this.organizer
   });
+
+  @override
+  State<EventAttendeeDetailWidget> createState() => _EventAttendeeDetailWidgetState();
+}
+
+class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
+
+  late List<CalendarAttendee> _attendeesDisplayed;
+  bool _isShowAllAttendee = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _attendeesDisplayed = _splitAttendees(widget.attendees);
+    if (_attendeesDisplayed.length == widget.attendees.length - 1) {
+      _isShowAllAttendee = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,20 +60,32 @@ class EventAttendeeDetailWidget extends StatelessWidget {
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            OrganizerWidget(organizer: organizer),
+            OrganizerWidget(organizer: widget.organizer),
             ..._attendeesDisplayed
                 .map((attendee) => AttendeeWidget(attendee: attendee))
-                .toList()
+                .toList(),
+            if (!_isShowAllAttendee)
+              Padding(
+                padding: const EdgeInsets.only(top: EventAttendeeDetailWidgetStyles.fieldTopPadding),
+                child: SeeAllAttendeesButtonWidget(
+                  onTap: () {
+                    setState(() {
+                      _attendeesDisplayed = widget.attendees.withoutOrganizer(widget.organizer);
+                      _isShowAllAttendee = true;
+                    });
+                  }
+                ),
+              )
           ]
         ))
       ],
     );
   }
 
-  List<CalendarAttendee> get _attendeesDisplayed {
-    final attendeesWithoutOrganizer = attendees.withoutOrganizer(organizer);
-    return attendeesWithoutOrganizer.length > _maxAttendeeDisplayed
-      ? attendeesWithoutOrganizer.sublist(0, _maxAttendeeDisplayed - 1)
+  List<CalendarAttendee> _splitAttendees(List<CalendarAttendee> attendees) {
+    final attendeesWithoutOrganizer = attendees.withoutOrganizer(widget.organizer);
+    return attendeesWithoutOrganizer.length > EventAttendeeDetailWidget._maxAttendeeDisplayed
+      ? attendeesWithoutOrganizer.sublist(0, EventAttendeeDetailWidget._maxAttendeeDisplayed - 1)
       : attendeesWithoutOrganizer;
   }
 }
