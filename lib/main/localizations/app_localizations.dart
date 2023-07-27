@@ -3173,4 +3173,23 @@ class AppLocalizations {
       'Organizer',
       name: 'organizer');
   }
+
+  String get time {
+    return Intl.message(
+      'Time',
+      name: 'time',
+    );
+  }
+
+  String get location {
+    return Intl.message(
+      'Location',
+      name: 'location');
+  }
+
+  String get attendees {
+    return Intl.message(
+      'Attendees',
+      name: 'attendees');
+  }
 }

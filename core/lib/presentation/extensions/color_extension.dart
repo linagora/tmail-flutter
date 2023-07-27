@@ -195,6 +195,7 @@ extension AppColor on Color {
   static const colorCalendarEventInformationStroke = Color(0x1F000000);
   static const colorShadowCalendarDateIcon = Color(0x26000000);
   static const colorOrganizerMailto = Color(0xFFB3B3B3);
+  static const colorMailto = Color(0xFFB3B3B3);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
