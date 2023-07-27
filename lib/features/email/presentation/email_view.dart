@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_w
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
@@ -297,6 +298,15 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
                 return CalendarEventActionBannerWidget(
                   calendarEvent: controller.calendarEvent.value!,
                   listFromEmailAddress: controller.currentEmail?.from
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+            Obx(() {
+              if (controller.calendarEvent.value != null) {
+                return CalendarEventDetailWidget(
+                  calendarEvent: controller.calendarEvent.value!
                 );
               } else {
                 return const SizedBox.shrink();
