@@ -33,7 +33,7 @@ class EventDescriptionDetailWidget extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: EventDescriptionDetailWidgetStyles.textSize,
-              color: Colors.black
+              color: EventDescriptionDetailWidgetStyles.valueColor
             )
           ),
           PositionedDirectional(

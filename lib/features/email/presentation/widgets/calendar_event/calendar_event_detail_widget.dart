@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
@@ -28,8 +27,8 @@ class CalendarEventDetailWidget extends StatelessWidget {
         color: Colors.white,
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            width: 0.5,
-            color: AppColor.colorCalendarEventInformationStroke,
+            width: CalendarEventDetailWidgetStyles.borderStrokeWidth,
+            color: CalendarEventDetailWidgetStyles.borderStrokeColor,
           ),
           borderRadius: BorderRadius.all(Radius.circular(CalendarEventDetailWidgetStyles.borderRadius)),
         ),
