@@ -1110,24 +1110,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return B.formatDate(dateTime, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy", " ", "hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
     },
     CalendarEventExtension_get_dateTimeEventAsString(_this) {
-      var t1, timeStart;
-      if (B.CalendarEventExtension_get_localStartDate(_this) != null && B.CalendarEventExtension_get_localEndDate(_this) != null)
+      var t1, timeStart, timeEnd;
+      if (B.CalendarEventExtension_get_localStartDate(_this) != null && B.CalendarEventExtension_get_localEndDate(_this) != null) {
+        t1 = B.CalendarEventExtension_get_localStartDate(_this);
+        t1.toString;
+        timeStart = B.CalendarEventExtension_formatDateTime(_this, t1);
         if (A.DateUtils_isSameDay(B.CalendarEventExtension_get_localStartDate(_this), B.CalendarEventExtension_get_localEndDate(_this))) {
-          t1 = B.CalendarEventExtension_get_localStartDate(_this);
-          t1.toString;
-          timeStart = B.CalendarEventExtension_formatDateTime(_this, t1);
           t1 = B.CalendarEventExtension_get_localEndDate(_this);
           t1.toString;
-          return timeStart + " - " + B.formatDate(t1, A._setArrayType(["hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
+          timeEnd = B.formatDate(t1, A._setArrayType(["hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
         } else {
-          t1 = B.CalendarEventExtension_get_localStartDate(_this);
-          t1.toString;
-          timeStart = B.CalendarEventExtension_formatDateTime(_this, t1);
           t1 = B.CalendarEventExtension_get_localEndDate(_this);
           t1.toString;
-          return timeStart + " - " + B.CalendarEventExtension_formatDateTime(_this, t1);
+          timeEnd = B.CalendarEventExtension_formatDateTime(_this, t1);
         }
-      else if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
+        return timeStart + " - " + timeEnd;
+      } else if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
         t1 = B.CalendarEventExtension_get_localStartDate(_this);
         t1.toString;
         return B.CalendarEventExtension_formatDateTime(_this, t1);
@@ -12749,4 +12747,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["eQd/Mx8MZ/AmCFE9dcsLI/7YOQU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Pg0j+oyPW82o3BJayHCuM9ntUC0="] = $__dart_deferred_initializers__.current
