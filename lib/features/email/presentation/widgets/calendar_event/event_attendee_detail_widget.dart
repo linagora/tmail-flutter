@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
@@ -53,7 +52,7 @@ class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
             style: const TextStyle(
               fontSize: EventAttendeeDetailWidgetStyles.textSize,
               fontWeight: FontWeight.w500,
-              color: AppColor.colorSubTitleEventActionText
+              color: EventAttendeeDetailWidgetStyles.labelColor
             ),
           ),
         ),

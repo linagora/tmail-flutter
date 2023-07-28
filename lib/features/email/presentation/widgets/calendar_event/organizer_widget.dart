@@ -1,8 +1,7 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
-import 'package:tmail_ui_user/features/email/presentation/styles/attendee_widget_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/organizer_widget_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class OrganizerWidget extends StatelessWidget {
@@ -19,9 +18,9 @@ class OrganizerWidget extends StatelessWidget {
     return RichText(
       text: TextSpan(
         style: const TextStyle(
-          fontSize: AttendeeWidgetStyles.textSize,
+          fontSize: OrganizerWidgetStyles.textSize,
           fontWeight: FontWeight.w500,
-          color: Colors.black
+          color: OrganizerWidgetStyles.textColor
         ),
         children: [
           if (organizer.name?.isNotEmpty == true)
@@ -30,8 +29,8 @@ class OrganizerWidget extends StatelessWidget {
             TextSpan(
               text: ' <${organizer.mailto!.value}> ',
               style: const TextStyle(
-                color: AppColor.colorMailto,
-                fontSize: AttendeeWidgetStyles.textSize,
+                color: OrganizerWidgetStyles.mailtoColor,
+                fontSize: OrganizerWidgetStyles.textSize,
                 fontWeight: FontWeight.w500
               ),
             ),

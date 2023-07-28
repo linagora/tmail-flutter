@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/see_all_attendees_button_widget_styles.dart';
@@ -28,7 +27,7 @@ class SeeAllAttendeesButtonWidget extends StatelessWidget {
         ),
         customStyle: const TextStyle(
           fontSize: SeeAllAttendeesButtonWidgetStyles.textSize,
-          color: AppColor.colorTextButton
+          color: SeeAllAttendeesButtonWidgetStyles.textColor
         ),
       ),
     );
