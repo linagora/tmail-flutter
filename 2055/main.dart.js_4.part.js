@@ -4887,7 +4887,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       t2 = type$.JSArray_Widget;
       t3 = this.calendarEvent;
-      return A.Container$(_null, t1 ? A.Column$(A._setArrayType([A.Container$(_null, new B.CalendarDateIconWidget(t3, 1 / 0, _null), C.Clip_0, A.Color$fromARGB(10, 0, 0, 0), _null, _null, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null)], t2), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1) : A.Row$(A._setArrayType([A.Container$(_null, new B.CalendarDateIconWidget(t3, 100, _null), C.Clip_0, A.Color$fromARGB(10, 0, 0, 0), _null, _null, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null), A.Expanded$(A.Container$(_null, _null, C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1)], t2), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_2, _null, _null, D.ShapeDecoration_0, _null, _null, _null, G.EdgeInsetsDirectional_16_12_16_12, _null, _null, _null, _null);
+      return A.Container$(_null, t1 ? A.Column$(A._setArrayType([A.Container$(_null, new B.CalendarDateIconWidget(t3, 1 / 0, _null), C.Clip_0, C.Color_167772160, _null, _null, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null)], t2), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1) : A.Row$(A._setArrayType([A.Container$(_null, new B.CalendarDateIconWidget(t3, 100, _null), C.Clip_0, C.Color_167772160, _null, _null, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null), A.Expanded$(A.Container$(_null, _null, C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1)], t2), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_2, _null, _null, D.ShapeDecoration_0, _null, _null, _null, G.EdgeInsetsDirectional_16_12_16_12, _null, _null, _null, _null);
     }
   };
   B.EmailActionCupertinoActionSheetActionBuilder.prototype = {
@@ -12597,4 +12597,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["o7AmnYErrkT0OzYHqIT9QmIUfCg="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["f8w+2OWXYG8hJcE8YftJ9Nvfgdc="] = $__dart_deferred_initializers__.current
