@@ -14,4 +14,6 @@ class CalendarEventInformationWidgetStyles {
   static const double titleTextSize = 24;
   static const double fieldTopPadding = 16;
   static const double space = 8;
+  static const Color titleColor = Colors.black;
+  static const Color invitationMessageColor = Colors.black;
 }

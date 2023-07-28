@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
@@ -30,7 +29,7 @@ class EventAttendeeInformationWidget extends StatelessWidget {
             style: const TextStyle(
               fontSize: EventAttendeeInformationWidgetStyles.textSize,
               fontWeight: FontWeight.w500,
-              color: AppColor.colorSubTitleEventActionText
+              color: EventAttendeeInformationWidgetStyles.labelColor
             ),
           ),
         ),
@@ -39,13 +38,13 @@ class EventAttendeeInformationWidget extends StatelessWidget {
             style: const TextStyle(
               fontSize: EventAttendeeInformationWidgetStyles.textSize,
               fontWeight: FontWeight.w500,
-              color: Colors.black
+              color: EventAttendeeInformationWidgetStyles.valueColor
             ),
             children: [
               TextSpan(
                 text: '${organizer.mailto?.value} (${AppLocalizations.of(context).organizer})',
                 style: const TextStyle(
-                  color: AppColor.colorOrganizerMailto,
+                  color: EventAttendeeInformationWidgetStyles.valueOrganizerColor,
                   fontSize: EventAttendeeInformationWidgetStyles.textSize,
                   fontWeight: FontWeight.w500
                 ),
