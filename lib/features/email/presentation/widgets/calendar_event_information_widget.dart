@@ -39,7 +39,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(CalendarEventInformationWidgetStyles.calendarDateIconMargin),
-                color: Colors.black.withOpacity(0.04),
+                color: CalendarEventInformationWidgetStyles.calendarDateIconBackgroundColor,
                 child: CalendarDateIconWidget(
                   calendarEvent: calendarEvent,
                   width: double.infinity,
@@ -52,7 +52,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(CalendarEventInformationWidgetStyles.calendarDateIconMargin),
-                color: Colors.black.withOpacity(0.04),
+                color: CalendarEventInformationWidgetStyles.calendarDateIconBackgroundColor,
                 child: CalendarDateIconWidget(calendarEvent: calendarEvent),
               ),
               Expanded(child: Container(color: Colors.white))
