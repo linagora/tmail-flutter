@@ -66,13 +66,13 @@ class CalendarEventInformationWidget extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black
+                          color: CalendarEventInformationWidgetStyles.invitationMessageColor
                         ),
                         children: [
                           TextSpan(
                             text: calendarEvent.organizer?.name,
                             style: const TextStyle(
-                              color: Colors.black,
+                              color: CalendarEventInformationWidgetStyles.invitationMessageColor,
                               fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
                               fontWeight: FontWeight.w700
                             ),
@@ -87,7 +87,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: CalendarEventInformationWidgetStyles.titleTextSize,
-                        color: Colors.black
+                        color: CalendarEventInformationWidgetStyles.titleColor
                       )
                     ),
                     if (calendarEvent.dateTimeEventAsString.isNotEmpty)
@@ -137,13 +137,13 @@ class CalendarEventInformationWidget extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black
+                          color: CalendarEventInformationWidgetStyles.invitationMessageColor
                         ),
                         children: [
                           TextSpan(
                             text: calendarEvent.organizer?.name,
                             style: const TextStyle(
-                              color: Colors.black,
+                              color: CalendarEventInformationWidgetStyles.invitationMessageColor,
                               fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
                               fontWeight: FontWeight.w700
                             ),
@@ -158,7 +158,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: CalendarEventInformationWidgetStyles.titleTextSize,
-                        color: Colors.black
+                        color: CalendarEventInformationWidgetStyles.titleColor
                       )
                     ),
                     if (calendarEvent.dateTimeEventAsString.isNotEmpty)

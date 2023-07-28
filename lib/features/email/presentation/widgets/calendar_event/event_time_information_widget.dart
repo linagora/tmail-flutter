@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_time_information_widget_styles.dart';
@@ -26,7 +25,7 @@ class EventTimeInformationWidget extends StatelessWidget {
             style: const TextStyle(
               fontSize: EventTimeInformationWidgetStyles.textSize,
               fontWeight: FontWeight.w500,
-              color: AppColor.colorSubTitleEventActionText
+              color: EventTimeInformationWidgetStyles.labelColor
             ),
           ),
         ),
@@ -37,7 +36,7 @@ class EventTimeInformationWidget extends StatelessWidget {
           style: const TextStyle(
             fontSize: EventTimeInformationWidgetStyles.textSize,
             fontWeight: FontWeight.w500,
-            color: Colors.black
+            color: EventTimeInformationWidgetStyles.valueColor
           ),
         ))
       ],
