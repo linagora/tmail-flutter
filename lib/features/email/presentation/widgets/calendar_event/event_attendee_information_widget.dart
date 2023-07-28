@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
@@ -58,8 +57,8 @@ class EventAttendeeInformationWidget extends StatelessWidget {
             ]
           ),
           overflow: responsiveUtils.isPortraitMobile(context)
-            ? TextOverflow.ellipsis
-            : CommonTextStyle.defaultTextOverFlow,
+            ? TextOverflow.clip
+            : TextOverflow.ellipsis,
           maxLines: responsiveUtils.isPortraitMobile(context) ? null : 2,
         ))
       ],

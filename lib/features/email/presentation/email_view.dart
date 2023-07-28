@@ -22,8 +22,6 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
@@ -33,6 +31,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -284,7 +283,10 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
               responsiveUtils: responsiveUtils,
             ),
             _buildAttachments(context),
-            _buildLoadingContentView(email),
+            Obx(() => EmailViewLoadingBarWidget(
+              viewState: controller.viewState.value,
+              selectedEmail: email
+            )),
             if (email.hasCalendarEvent)
               Obx(() {
                 if (controller.calendarEvent.value != null) {
@@ -313,28 +315,6 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
           ],
         );
       });
-  }
-
-  Widget _buildLoadingContentView(PresentationEmail selectedEmail) {
-    return Obx(() {
-      return controller.viewState.value.fold(
-        (failure) => const SizedBox.shrink(),
-        (success) {
-          if (selectedEmail.hasCalendarEvent) {
-            if ((success is GetEmailContentLoading || success is ParseCalendarEventLoading)) {
-              return loadingWidget;
-            } else {
-              return const SizedBox.shrink();
-            }
-          } else {
-            if (success is GetEmailContentLoading) {
-              return loadingWidget;
-            } else {
-              return const SizedBox.shrink();
-            }
-          }
-        });
-    });
   }
 
   Widget _buildAttachments(BuildContext context) {

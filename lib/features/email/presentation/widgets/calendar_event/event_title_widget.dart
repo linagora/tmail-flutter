@@ -15,7 +15,7 @@ class EventTitleWidget extends StatelessWidget {
       style: const TextStyle(
         fontWeight: FontWeight.w500,
         fontSize: EventTitleWidgetStyles.textSize,
-        color: Colors.black
+        color: EventTitleWidgetStyles.textColor
       )
     );
   }

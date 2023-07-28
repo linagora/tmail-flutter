@@ -1,6 +1,6 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tmail_ui_user/features/base/styles/hyper_link_widget_styles.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class HyperLinkWidget extends StatelessWidget {
@@ -15,8 +15,8 @@ class HyperLinkWidget extends StatelessWidget {
       text: TextSpan(
         text: urlString,
         style: const TextStyle(
-          color: AppColor.primaryColor,
-          fontSize: 16,
+          color: HyperLinkWidgetStyles.textColor,
+          fontSize: HyperLinkWidgetStyles.textSize,
           decoration: TextDecoration.underline
         ),
         recognizer: TapGestureRecognizer()..onTap = () async {
