@@ -2904,8 +2904,210 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "inboxMailboxDisplayName": "Boite de réception",
+  "inboxMailboxDisplayName": "Boîte de réception",
   "@inboxMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogDeleteSendingEmail": "La suppression d'un message hors ligne effacera définitivement son contenu. Vous ne pourrez pas annuler cette action ni récupérer le message de la corbeille.",
+  "@messageDialogDeleteSendingEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHaveBeenDeletedSuccessfully": "Les messages ont été supprimés avec succès",
+  "@messageHaveBeenDeletedSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "error": "Erreur",
+  "@error": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "connectedToTheInternet": "Connecté à Internet",
+  "@connectedToTheInternet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrash": "Vider la corbeille",
+  "@emptyTrash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotSelectThisImage": "Impossible de sélectionner cette image.",
+  "@cannotSelectThisImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSavedToTheSendingQueue": "Le message a été enregistré dans la file d'attente.",
+  "@messageHasBeenSavedToTheSendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueView": "Les messages de la file d'attente seront envoyés ou planifiés lorsqu'ils seront en ligne.",
+  "@bannerMessageSendingQueueView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "proceed": "Procéder",
+  "@proceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreInOfflineMode": "Vous êtes en mode hors ligne",
+  "@youAreInOfflineMode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailSecond": " envoyer, répondre ou transférer ",
+  "@messageDialogWhenStoreSendingEmailSecond": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailFirst": "Heureusement, vous pouvez toujours",
+  "@messageDialogWhenStoreSendingEmailFirst": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailThird": "des messages. Ils seront délivrés lorsque vous vous connecterez à Internet. Pour modifier ces messages avant de les envoyer, rendez-vous sur ",
+  "@messageDialogWhenStoreSendingEmailThird": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleRecipientSendingEmail": "À: {recipients}",
+  "@titleRecipientSendingEmail": {
+    "type": "text",
+    "placeholders_order": [
+      "recipients"
+    ],
+    "placeholders": {
+      "recipients": {}
+    }
+  },
+  "openMailboxMenu": "Ouvrir le menu de la boîte aux lettres",
+  "@openMailboxMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSentSuccessfully": "Le message a été envoyé avec succès.",
+  "@messageHasBeenSentSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteOfflineEmail": "Supprimer les messages hors-ligne",
+  "@deleteOfflineEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingQueue": "File d'attente",
+  "@sendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailTail": " boîte aux lettres.",
+  "@messageDialogWhenStoreSendingEmailTail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delivering": "Livraison en cours",
+  "@delivering": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resend": "Renvoyer",
+  "@resend": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messagesHaveBeenResent": "Les messages ont été renvoyés",
+  "@messagesHaveBeenResent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "connectionError": "Erreur de connexion",
+  "@connectionError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamMailboxDisplayName": "Spam",
+  "@spamMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "draftsMailboxDisplayName": "Brouillons",
+  "@draftsMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "trashMailboxDisplayName": "Corbeille",
+  "@trashMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "templatesMailboxDisplayName": "Modèles",
+  "@templatesMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveMailboxDisplayName": "Archives",
+  "@archiveMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "outboxMailboxDisplayName": "Boîte d'envoi",
+  "@outboxMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardedMessage": "Message transféré",
+  "@forwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "repliedMessage": "Message répondu",
+  "@repliedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "repliedAndForwardedMessage": "Message répondu et transféré",
+  "@repliedAndForwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrashMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les éléments de la corbeille . Voulez-vous continuer?",
+  "@emptyTrashMessageDialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
