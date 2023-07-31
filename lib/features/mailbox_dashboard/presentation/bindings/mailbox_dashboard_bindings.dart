@@ -1,5 +1,4 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
-import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
@@ -207,7 +206,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
       Get.find<HtmlAnalyzer>(),
-      Get.find<DioClient>(),
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => SearchDataSourceImpl(
       Get.find<RecentSearchCacheClient>(),
