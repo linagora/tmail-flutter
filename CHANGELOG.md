@@ -1,3 +1,12 @@
+## [0.8.9] - 2023-07-31
+### Added
+- Translate Russian and French
+- Apply new view calendar event
+
+### Fixed
+- \#2052 Fix TeamMailbox email address alignment is incorrect
+- If no refreshToken return, maybe the old refreshToken still available
+
 ## [0.8.8] - 2023-07-20
 ### Fixed
 - \#2046 App crashes when login account information is incorrect on web
@@ -199,6 +208,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.8.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.9
 [0.8.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.8
 [0.8.7]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.7
 [0.8.6]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.6
