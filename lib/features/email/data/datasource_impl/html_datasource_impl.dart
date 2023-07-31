@@ -1,5 +1,4 @@
-import 'package:core/core.dart';
-import 'package:model/model.dart';
+import 'package:model/email/email_content.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -7,10 +6,9 @@ import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 class HtmlDataSourceImpl extends HtmlDataSource {
 
   final HtmlAnalyzer _htmlAnalyzer;
-  final DioClient _dioClient;
   final ExceptionThrower _exceptionThrower;
 
-  HtmlDataSourceImpl(this._htmlAnalyzer, this._dioClient, this._exceptionThrower);
+  HtmlDataSourceImpl(this._htmlAnalyzer, this._exceptionThrower);
 
   @override
   Future<EmailContent> transformEmailContent(
@@ -22,7 +20,6 @@ class HtmlDataSourceImpl extends HtmlDataSource {
       return await _htmlAnalyzer.transformEmailContent(
         emailContent,
         mapUrlDownloadCID,
-        _dioClient,
         draftsEmail: draftsEmail
       );
     }).catchError(_exceptionThrower.throwException);
