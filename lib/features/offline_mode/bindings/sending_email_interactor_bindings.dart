@@ -1,5 +1,4 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
-import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
@@ -57,7 +56,6 @@ class SendEmailInteractorBindings extends InteractorsBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
       Get.find<HtmlAnalyzer>(),
-      Get.find<DioClient>(),
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheClient>(),
