@@ -2897,5 +2897,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "sentMailboxDisplayName": "Envoyés",
+  "@sentMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "inboxMailboxDisplayName": "Boite de réception",
+  "@inboxMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
