@@ -5204,7 +5204,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t4.get$orientation(t4) === C.Orientation_0;
       } else
         t4 = false;
-      t4 = t4 ? C.TextOverflow_2 : C.TextOverflow_1;
+      t4 = t4 ? C.TextOverflow_0 : C.TextOverflow_2;
       if (context.dependOnInheritedWidgetOfExactType$1$0(t1).data.size.get$shortestSide() < 600) {
         t1 = context.dependOnInheritedWidgetOfExactType$1$0(t1).data;
         t1 = t1.get$orientation(t1) === C.Orientation_0;
@@ -13142,4 +13142,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["3e84ufTQQdkwFxGUcNb4Aqlwh/Q="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["V1fXo+eCr+YBguzt9bmIeVDvKZw="] = $__dart_deferred_initializers__.current
