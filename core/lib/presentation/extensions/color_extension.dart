@@ -169,7 +169,10 @@ extension AppColor on Color {
   static const colorOutOfStorageQuotasWarning = Color(0xffE64646);
   static const colorThumbScrollBar = Color(0xFFAEB7C2);
   static const colorCreateNewIdentityButton = Color(0xFFEBEDF0);
-  static const colorSpamReportBox = Color(0xFFBFDEFF);
+  static const colorSpamReportBannerBackground = Color(0xFFBFDEFF);
+  static const colorSpamReportBannerStrokeBorder = Color(0x1F000000);
+  static const colorSpamReportBannerLabelColor = Color(0xFF626D7A);
+  static const colorSpamReportBannerButtonBackground = Color(0xFFEBEDF0);
   static const colorSubtitle = Color(0xFF6D7885);
   static const colorBackgroundSearchMailboxInput = Color(0xFFEBEDF0);
   static const colorMailboxHovered = Color(0xFFEBEDF0);
