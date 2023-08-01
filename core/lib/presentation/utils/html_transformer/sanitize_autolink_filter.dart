@@ -56,7 +56,7 @@ class SanitizeAutolinkFilter {
   }
 
   String _buildUrlLinkTag({required String urlLink, required String value}) {
-    return '<a href="$urlLink" target="_blank">$value</a>';
+    return '<a href="$urlLink" target="_blank" rel="noreferrer">$value</a>';
   }
 
   String _buildEmailLinkTag({required String mailToLink, required String value}) {
