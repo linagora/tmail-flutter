@@ -61,7 +61,7 @@ class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
           children: [
             OrganizerWidget(organizer: widget.organizer),
             ..._attendeesDisplayed
-                .map((attendee) => AttendeeWidget(attendee: attendee))
+                .map((attendee) => AttendeeWidget(attendee: attendee, listAttendees: _attendeesDisplayed))
                 .toList(),
             if (!_isShowAllAttendee)
               Padding(
