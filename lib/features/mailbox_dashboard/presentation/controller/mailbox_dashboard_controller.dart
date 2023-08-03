@@ -1978,6 +1978,77 @@ class MailboxDashBoardController extends ReloadableController {
         AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success);
     }
   }
+
+  bool isEmptySpamBannerEnabledOnWeb(BuildContext context) {
+    return selectedMailbox.value != null &&
+      selectedMailbox.value!.isSpam &&
+      selectedMailbox.value!.countEmails > 0 &&
+      !searchController.isSearchActive() &&
+      _responsiveUtils.isWebDesktop(context);
+  }
+
+  bool isEmptySpamBannerEnabledOnMobile(BuildContext context) {
+    return selectedMailbox.value != null &&
+      selectedMailbox.value!.isSpam &&
+      selectedMailbox.value!.countEmails > 0 &&
+      !searchController.isSearchActive() &&
+      !_responsiveUtils.isWebDesktop(context);
+  }
+
+  void openDialogEmptySpamFolder(BuildContext context) {
+    final spamMailbox = selectedMailbox.value;
+    if (spamMailbox == null || !spamMailbox.isSpam) {
+      logError('MailboxDashBoardController::openDialogEmptySpamFolder: Selected mailbox is not spam');
+      return;
+
+    }
+    if (_responsiveUtils.isScreenWithShortestSide(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+        ..messageText(AppLocalizations.of(context).emptySpamMessageDialog)
+        ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
+        ..onConfirmAction(AppLocalizations.of(context).delete_all, () {
+          popBack();
+          if (spamMailbox.countEmails > 0) {
+            emptySpamFolderAction(spamFolderId: spamMailbox.id);
+          } else {
+            _appToast.showToastWarningMessage(
+              context,
+              AppLocalizations.of(context).noEmailInYourCurrentMailbox
+            );
+          }
+        }))
+          .show();
+    } else {
+      showDialog(
+        context: context,
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        builder: (context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+          ..key(const Key('confirm_dialog_empty_spam'))
+          ..title(AppLocalizations.of(context).emptySpamFolder)
+          ..content(AppLocalizations.of(context).emptySpamMessageDialog)
+          ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog, fit: BoxFit.fill))
+          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+          ..styleTextConfirmButton(const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+              color: AppColor.colorActionDeleteConfirmDialog))
+          ..onCloseButtonAction(popBack)
+          ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
+            popBack();
+            if (spamMailbox.countEmails > 0) {
+              emptySpamFolderAction(spamFolderId: spamMailbox.id);
+            } else {
+              _appToast.showToastWarningMessage(
+                context,
+                AppLocalizations.of(context).noEmailInYourCurrentMailbox
+              );
+            }
+          })
+          ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack)
+        ).build())
+      );
+    }
+  }
   
   @override
   void onClose() {
