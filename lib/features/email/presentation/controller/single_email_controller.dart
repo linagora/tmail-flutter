@@ -117,8 +117,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Identity? _identitySelected;
   String? initialEmailContents;
 
-  final ScrollController scrollControllerAttachment = ScrollController();
-
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
@@ -152,7 +150,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   @override
   void onClose() {
     _downloadProgressStateController.close();
-    scrollControllerAttachment.dispose();
     super.onClose();
   }
 
