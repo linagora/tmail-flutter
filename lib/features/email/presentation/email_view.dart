@@ -298,13 +298,21 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CalendarEventInformationWidget(calendarEvent: calendarEvent),
+                      CalendarEventInformationWidget(
+                        calendarEvent: calendarEvent,
+                        onOpenComposerAction: controller.openNewComposerAction,
+                        onOpenNewTabAction: controller.openNewTabAction,
+                      ),
                       if (calendarEvent.getTitleEventAction(context, listEmailAddressSender).isNotEmpty)
                         CalendarEventActionBannerWidget(
                           calendarEvent: calendarEvent,
                           listEmailAddressSender: listEmailAddressSender
                         ),
-                      CalendarEventDetailWidget(calendarEvent: calendarEvent),
+                      CalendarEventDetailWidget(
+                        calendarEvent: calendarEvent,
+                        onOpenComposerAction: controller.openNewComposerAction,
+                        onOpenNewTabAction: controller.openNewTabAction,
+                      ),
                     ],
                   );
                 } else {
