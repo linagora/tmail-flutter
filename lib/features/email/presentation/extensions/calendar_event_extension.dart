@@ -121,18 +121,20 @@ extension CalendarEventExtension on CalendarEvent {
       case EventMethod.refresh:
       case EventMethod.cancel:
       case EventMethod.declineCounter:
-        return getOrganizerName(context);
+        return getOrganizerNameEvent(context);
       case EventMethod.reply:
       case EventMethod.counter:
-        return getAttendeeName(context, listEmailAddressSender);
+        return getAttendeeNameEvent(context, listEmailAddressSender);
       default:
         return '';
     }
   }
 
-  String getOrganizerName(BuildContext context) => organizer?.name ?? AppLocalizations.of(context).you;
+  String getOrganizerNameEvent(BuildContext context) => organizer?.name ?? AppLocalizations.of(context).you;
 
-  String getAttendeeName(BuildContext context, List<String> listEmailAddressSender) {
+  String get organizerName => organizer?.name ?? organizer?.mailto?.value ?? '';
+
+  String getAttendeeNameEvent(BuildContext context, List<String> listEmailAddressSender) {
     final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
     if (matchedAttendee != null) {
       return matchedAttendee.name?.name ?? AppLocalizations.of(context).anAttendee;
