@@ -13,10 +13,14 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 class CalendarEventDetailWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
+  final OnOpenNewTabAction? onOpenNewTabAction;
+  final OnOpenComposerAction? onOpenComposerAction;
 
   const CalendarEventDetailWidget({
     super.key,
-    required this.calendarEvent
+    required this.calendarEvent,
+    this.onOpenNewTabAction,
+    this.onOpenComposerAction,
   });
 
   @override
@@ -61,7 +65,11 @@ class CalendarEventDetailWidget extends StatelessWidget {
           if (calendarEvent.location?.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
-              child: EventLocationDetailWidget(locationEvent: calendarEvent.location!),
+              child: EventLocationDetailWidget(
+                locationEvent: calendarEvent.location!,
+                onOpenComposerAction: onOpenComposerAction,
+                onOpenNewTabAction: onOpenNewTabAction,
+              ),
             ),
           if (calendarEvent.participants?.isNotEmpty == true && calendarEvent.organizer != null)
             Padding(

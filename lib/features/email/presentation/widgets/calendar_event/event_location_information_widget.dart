@@ -1,23 +1,26 @@
 
-import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_location_information_widget_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EventLocationInformationWidget extends StatelessWidget {
 
   final String locationEvent;
+  final OnOpenNewTabAction? onOpenNewTabAction;
+  final OnOpenComposerAction? onOpenComposerAction;
 
   const EventLocationInformationWidget({
     super.key,
-    required this.locationEvent
+    required this.locationEvent,
+    this.onOpenNewTabAction,
+    this.onOpenComposerAction,
   });
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -32,15 +35,29 @@ class EventLocationInformationWidget extends StatelessWidget {
             ),
           ),
         ),
-        Expanded(child: Text(
-          locationEvent,
-          overflow: responsiveUtils.isPortraitMobile(context) ? null : CommonTextStyle.defaultTextOverFlow,
-          softWrap: responsiveUtils.isPortraitMobile(context) ? null : CommonTextStyle.defaultSoftWrap,
-          maxLines: responsiveUtils.isPortraitMobile(context) ? null : 1,
+        Expanded(child: Linkify(
+          onOpen: (element) {
+            log('EventLocationInformationWidget::build:element: $element');
+            if (element is UrlElement) {
+              onOpenNewTabAction?.call(element.url);
+            } else if (element is EmailElement) {
+              onOpenComposerAction?.call(element.emailAddress);
+            }
+          },
+          text: locationEvent,
+          linkifiers: const [
+            EmailLinkifier(),
+            UrlLinkifier()
+          ],
           style: const TextStyle(
             fontSize: EventLocationInformationWidgetStyles.textSize,
             fontWeight: FontWeight.w500,
             color: EventLocationInformationWidgetStyles.valueColor
+          ),
+          options: const LinkifyOptions(
+            removeWww: true,
+            looseUrl: true,
+            defaultToHttps: true
           ),
         ))
       ],
