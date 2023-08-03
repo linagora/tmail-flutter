@@ -418,7 +418,6 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
                 key: const Key('list_attachment_minimize_in_email'),
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                controller: controller.scrollControllerAttachment,
                 itemCount: attachments.length,
                 itemBuilder: (context, index) =>
                   AttachmentFileTileBuilder(
