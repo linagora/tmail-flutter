@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
@@ -245,6 +246,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
           _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         } else if (success is UpdateEmailDraftsSuccess) {
+          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is EmptySpamFolderSuccess) {
           _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         }
       });
@@ -930,6 +933,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         break;
       case MailboxActions.emptyTrash:
         emptyTrashAction(context, mailbox, mailboxDashBoardController);
+        break;
+      case MailboxActions.emptySpam:
+        emptySpamAction(context, mailbox, mailboxDashBoardController);
         break;
       default:
         break;
