@@ -105,7 +105,6 @@ class CachingManager {
     log('CachingManager::onUpgradeCache():oldVersion $oldVersion | newVersion: $newVersion');
     await clearData();
     await storeCacheVersion(newVersion);
-    return Future.value();
   }
 
   Future<bool> storeCacheVersion(int newVersion) async {
