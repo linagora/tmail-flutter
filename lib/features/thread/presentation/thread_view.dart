@@ -20,8 +20,10 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
@@ -77,6 +79,20 @@ class ThreadView extends GetWidget<ThreadController>
                           _buildVacationNotificationMessage(context),
                         ],
                       _buildEmptyTrashButton(context),
+                      Obx(() {
+                        if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context)) {
+                          return Padding(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: BannerDeleteAllSpamEmailsStyles.mobileMargin
+                            ),
+                            child: BannerDeleteAllSpamEmailsWidget(
+                              onTapAction: () => controller.mailboxDashBoardController.openDialogEmptySpamFolder(context)
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
                       if (!_responsiveUtils.isDesktop(context))
                         _buildMarkAsMailboxReadLoading(context),
                       _buildLoadingView(),
