@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-08-03T15:58:37.476969",
+  "@@last_modified": "2023-08-03T18:37:14.070879",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3122,6 +3122,12 @@
   },
   "emptySpamMessageDialog": "You are about to permanently delete all items in Spam . Do you want to continue?",
   "@emptySpamMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerDeleteAllSpamEmailsMessage": "All messages in Spam will be deleted if you reach limited storage.",
+  "@bannerDeleteAllSpamEmailsMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
