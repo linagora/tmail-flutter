@@ -21,6 +21,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -124,6 +126,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       Expanded(child: Column(children: [
                         const SpamReportBannerWebWidget(),
                         _buildEmptyTrashButton(context),
+                        Obx(() {
+                          if (controller.isEmptySpamBannerEnabledOnWeb(context)) {
+                            return Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                top: BannerDeleteAllSpamEmailsStyles.webTopMargin,
+                                end: BannerDeleteAllSpamEmailsStyles.webEndMargin
+                              ),
+                              child: BannerDeleteAllSpamEmailsWidget(
+                                onTapAction: () => controller.openDialogEmptySpamFolder(context)
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
                         QuotasWarningBannerWidget(
                           margin: EdgeInsets.only(
                             right: AppUtils.isDirectionRTL(context) ? 0 : 16,
