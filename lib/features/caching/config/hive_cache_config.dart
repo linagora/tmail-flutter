@@ -56,7 +56,6 @@ class HiveCacheConfig {
     if (oldVersion != newVersion) {
       await cachingManager.onUpgradeCache(oldVersion, newVersion);
     }
-    return Future.value();
   }
 
   static Future<void> initializeEncryptionKey() async {
