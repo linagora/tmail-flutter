@@ -3204,4 +3204,22 @@ class AppLocalizations {
       'Link',
       name: 'link');
   }
+
+  String get deleteAllSpamEmails {
+    return Intl.message(
+      'Delete all spam emails',
+      name: 'deleteAllSpamEmails');
+  }
+
+  String get emptySpamFolder {
+    return Intl.message(
+      'Empty Spam folder',
+      name: 'emptySpamFolder');
+  }
+
+  String get emptySpamMessageDialog {
+    return Intl.message(
+      'You are about to permanently delete all items in Spam . Do you want to continue?',
+      name: 'emptySpamMessageDialog');
+  }
 }
