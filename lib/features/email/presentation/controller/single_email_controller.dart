@@ -1279,7 +1279,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
     if (success.calendarEventList.isNotEmpty) {
       calendarEvent.value = success.calendarEventList.first;
-      _enableScrollPageView();
+      if (PlatformInfo.isMobile) {
+        _enableScrollPageView();
+      }
     }
   }
 
