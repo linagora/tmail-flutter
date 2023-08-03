@@ -6,10 +6,12 @@ import 'package:tmail_ui_user/features/email/presentation/styles/attendee_widget
 class AttendeeWidget extends StatelessWidget {
 
   final CalendarAttendee attendee;
+  final List<CalendarAttendee> listAttendees;
 
   const AttendeeWidget({
     super.key,
-    required this.attendee
+    required this.attendee,
+    required this.listAttendees,
   });
 
   @override
@@ -33,7 +35,8 @@ class AttendeeWidget extends StatelessWidget {
                 fontWeight: FontWeight.w500
               ),
             ),
-          const TextSpan(text: ', '),
+          if (listAttendees.last != attendee)
+            const TextSpan(text: ', '),
         ]
       )
     );
