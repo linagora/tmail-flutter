@@ -42,7 +42,9 @@ mixin MailboxWidgetMixin {
       if (mailbox.getCountUnReadEmails().isNotEmpty)
         MailboxActions.markAsRead,
       if (mailbox.isTrash)
-        MailboxActions.emptyTrash
+        MailboxActions.emptyTrash,
+      if (PlatformInfo.isWeb && mailbox.isSpam)
+        MailboxActions.emptySpam,
     ];
   }
 
