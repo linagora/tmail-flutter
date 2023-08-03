@@ -155,7 +155,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Padding(B.EdgeInsets_16_0_16_0, B.Divider_I9g, null);
     },
-    $signature: 540
+    $signature: 541
   };
   C.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -191,7 +191,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 85
+    $signature: 87
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -212,4 +212,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
 };
 
-$__dart_deferred_initializers__["njLuwkDnJUzzyklCIHIM/pRdHTA="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["FP984iFQHi2nYNY7cLOQLaha45M="] = $__dart_deferred_initializers__.current
