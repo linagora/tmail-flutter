@@ -71,7 +71,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: calendarEvent.organizer?.name,
+                            text: calendarEvent.organizerName,
                             style: const TextStyle(
                               color: CalendarEventInformationWidgetStyles.invitationMessageColor,
                               fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
@@ -136,7 +136,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: calendarEvent.organizer?.name,
+                            text: calendarEvent.organizerName,
                             style: const TextStyle(
                               color: CalendarEventInformationWidgetStyles.invitationMessageColor,
                               fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
