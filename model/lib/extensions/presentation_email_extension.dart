@@ -34,6 +34,8 @@ extension PresentationEmailExtension on PresentationEmail {
     return '';
   }
 
+  Set<EmailAddress> get listEmailAddressSender => from.asSet()..addAll(replyTo.asSet());
+
   PresentationEmail toggleSelect() {
     return PresentationEmail(
       id: this.id,

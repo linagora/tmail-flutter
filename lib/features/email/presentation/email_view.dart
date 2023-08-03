@@ -17,12 +17,14 @@ import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
+import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
@@ -289,21 +291,20 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
             )),
             if (email.hasCalendarEvent)
               Obx(() {
-                if (controller.calendarEvent.value != null) {
+                final calendarEvent = controller.calendarEvent.value;
+                final listEmailAddressSender = controller.currentEmail?.listEmailAddressSender.getListAddress() ?? [];
+                if (calendarEvent != null) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      CalendarEventInformationWidget(
-                        calendarEvent: controller.calendarEvent.value!
-                      ),
-                      CalendarEventActionBannerWidget(
-                        calendarEvent: controller.calendarEvent.value!,
-                        listFromEmailAddress: controller.currentEmail?.from
-                      ),
-                      CalendarEventDetailWidget(
-                        calendarEvent: controller.calendarEvent.value!
-                      ),
+                      CalendarEventInformationWidget(calendarEvent: calendarEvent),
+                      if (calendarEvent.getTitleEventAction(context, listEmailAddressSender).isNotEmpty)
+                        CalendarEventActionBannerWidget(
+                          calendarEvent: calendarEvent,
+                          listEmailAddressSender: listEmailAddressSender
+                        ),
+                      CalendarEventDetailWidget(calendarEvent: calendarEvent),
                     ],
                   );
                 } else {
