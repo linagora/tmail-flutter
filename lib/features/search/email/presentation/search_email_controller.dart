@@ -55,6 +55,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/model/simple_se
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
@@ -204,6 +205,7 @@ class SearchEmailController extends BaseController
             success is MoveMultipleEmailToMailboxAllSuccess ||
             success is MoveMultipleEmailToMailboxHasSomeEmailFailure ||
             success is EmptyTrashFolderSuccess ||
+            success is EmptySpamFolderSuccess ||
             success is DeleteMultipleEmailsPermanentlyAllSuccess ||
             success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure
         ) {

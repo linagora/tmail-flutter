@@ -294,6 +294,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       case MailboxActions.emptyTrash:
         emptyTrashAction(context, mailbox, dashboardController);
         break;
+      case MailboxActions.emptySpam:
+        emptySpamAction(context, mailbox, dashboardController);
+        break;
       default:
         break;
     }
