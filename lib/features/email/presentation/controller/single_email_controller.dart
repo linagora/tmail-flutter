@@ -1285,4 +1285,18 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _enableScrollPageView() {
     emailSupervisorController.scrollPhysicsPageView.value = null;
   }
+
+  void openNewTabAction(String link) {
+    AppUtils.launchLink(link);
+  }
+
+  void openNewComposerAction(String mailTo) {
+    final emailAddress = EmailAddress(mailTo, mailTo);
+    final arguments = ComposerArguments(
+      emailActionType: EmailActionType.composeFromEmailAddress,
+      emailAddress: emailAddress,
+      mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role
+    );
+    mailboxDashBoardController.goToComposer(arguments);
+  }
 }
