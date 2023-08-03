@@ -14,8 +14,9 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
-import 'package:tmail_ui_user/features/thread/data/model/empty_trash_folder_arguments.dart';
+import 'package:tmail_ui_user/features/thread/data/model/empty_mailbox_folder_arguments.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class ThreadIsolateWorker {
@@ -25,29 +26,35 @@ class ThreadIsolateWorker {
 
   ThreadIsolateWorker(this._threadAPI, this._emailAPI, this._isolateExecutor);
 
-  Future<List<EmailId>> emptyTrashFolder(
+  Future<List<EmailId>> emptyMailboxFolder(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
     Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   ) async {
     if (PlatformInfo.isWeb) {
-      return _emptyTrashFolderOnWeb(session, accountId, mailboxId, updateDestroyedEmailCache);
+      return _emptyMailboxFolderOnWeb(session, accountId, mailboxId, updateDestroyedEmailCache);
     } else {
       final result = await _isolateExecutor.execute(
-          arg1: EmptyTrashFolderArguments(session, _threadAPI, _emailAPI, accountId, mailboxId),
-          fun1: _emptyTrashFolderAction,
-          notification: (value) {
-            if (value is List<EmailId>) {
-              updateDestroyedEmailCache.call(value);
-              log('ThreadIsolateWorker::emptyTrashFolder(): onUpdateProgress: PERCENT ${value.length}');
-            }
-          });
-      return result;
+        arg1: EmptyMailboxFolderArguments(session, _threadAPI, _emailAPI, accountId, mailboxId),
+        fun1: _emptyMailboxFolderAction,
+        notification: (value) {
+          if (value is List<EmailId>) {
+            updateDestroyedEmailCache.call(value);
+            log('ThreadIsolateWorker::emptyMailboxFolder(): onUpdateProgress: PERCENT ${value.length}');
+          }
+        }
+      );
+
+      if (result.isEmpty) {
+        throw NotFoundEmailsDeletedException();
+      } else {
+        return result;
+      }
     }
   }
 
-  static Future<List<EmailId>> _emptyTrashFolderAction(EmptyTrashFolderArguments args, TypeSendPort sendPort) async {
+  static Future<List<EmailId>> _emptyMailboxFolderAction(EmptyMailboxFolderArguments args, TypeSendPort sendPort) async {
     List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
       var hasEmails = true;
@@ -60,7 +67,7 @@ class ThreadIsolateWorker {
           sort: <Comparator>{}..add(
             EmailComparator(EmailComparatorProperty.receivedAt)
               ..setIsAscending(false)),
-          filter: EmailFilterCondition(inMailbox: args.trashMailboxId, before: lastEmail?.receivedAt),
+          filter: EmailFilterCondition(inMailbox: args.mailboxId, before: lastEmail?.receivedAt),
           properties: Properties({EmailProperty.id}));
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
@@ -68,7 +75,7 @@ class ThreadIsolateWorker {
           newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
         }
 
-        log('ThreadIsolateWorker::_emptyTrashFolderAction(): ${newEmailList.length}');
+        log('ThreadIsolateWorker::_emptyMailboxFolderAction(): ${newEmailList.length}');
 
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
@@ -86,16 +93,16 @@ class ThreadIsolateWorker {
         }
       }
     } catch (e) {
-      log('ThreadIsolateWorker::_emptyTrashFolderAction(): ERROR: $e');
+      log('ThreadIsolateWorker::_emptyMailboxFolderAction(): ERROR: $e');
     }
-    log('ThreadIsolateWorker::_emptyTrashFolderAction(): TOTAL_REMOVE: ${emailListCompleted.length}');
+    log('ThreadIsolateWorker::_emptyMailboxFolderAction(): TOTAL_REMOVE: ${emailListCompleted.length}');
     return emailListCompleted;
   }
 
-  Future<List<EmailId>> _emptyTrashFolderOnWeb(
+  Future<List<EmailId>> _emptyMailboxFolderOnWeb(
     Session session,
     AccountId accountId,
-    MailboxId trashMailboxId,
+    MailboxId mailboxId,
     Future<void> Function(List<EmailId> newDestroyed) updateDestroyedEmailCache,
   ) async {
     List<EmailId> emailListCompleted = List.empty(growable: true);
@@ -110,7 +117,7 @@ class ThreadIsolateWorker {
           sort: <Comparator>{}..add(
             EmailComparator(EmailComparatorProperty.receivedAt)
               ..setIsAscending(false)),
-          filter: EmailFilterCondition(inMailbox: trashMailboxId, before: lastEmail?.receivedAt),
+          filter: EmailFilterCondition(inMailbox: mailboxId, before: lastEmail?.receivedAt),
           properties: Properties({EmailProperty.id}));
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
@@ -118,7 +125,7 @@ class ThreadIsolateWorker {
           newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
         }
 
-        log('ThreadIsolateWorker::_emptyTrashFolderOnWeb(): ${newEmailList.length}');
+        log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): ${newEmailList.length}');
 
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
@@ -135,9 +142,9 @@ class ThreadIsolateWorker {
         }
       }
     } catch (e) {
-      log('ThreadIsolateWorker::_emptyTrashFolderOnWeb(): ERROR: $e');
+      log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): ERROR: $e');
     }
-    log('ThreadIsolateWorker::_emptyTrashFolderOnWeb(): TOTAL_REMOVE: ${emailListCompleted.length}');
+    log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): TOTAL_REMOVE: ${emailListCompleted.length}');
     return emailListCompleted;
   }
 }

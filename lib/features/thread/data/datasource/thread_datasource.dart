@@ -50,7 +50,7 @@ abstract class ThreadDataSource {
 
   Future<void> update(AccountId accountId, UserName userName, {List<Email>? updated, List<Email>? created, List<EmailId>? destroyed});
 
-  Future<List<EmailId>> emptyTrashFolder(
+  Future<List<EmailId>> emptyMailboxFolder(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,

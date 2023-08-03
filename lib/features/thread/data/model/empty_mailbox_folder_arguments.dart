@@ -5,19 +5,19 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 
-class EmptyTrashFolderArguments with EquatableMixin {
+class EmptyMailboxFolderArguments with EquatableMixin {
   final Session session;
   final AccountId accountId;
-  final MailboxId trashMailboxId;
+  final MailboxId mailboxId;
   final ThreadAPI threadAPI;
   final EmailAPI emailAPI;
 
-  EmptyTrashFolderArguments(
+  EmptyMailboxFolderArguments(
     this.session,
     this.threadAPI,
     this.emailAPI,
     this.accountId,
-    this.trashMailboxId,
+    this.mailboxId,
   );
 
   @override
@@ -26,6 +26,6 @@ class EmptyTrashFolderArguments with EquatableMixin {
     accountId,
     emailAPI,
     threadAPI,
-    trashMailboxId
+    mailboxId
   ];
 }
