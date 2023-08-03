@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 extension CalendarEventExtension on CalendarEvent {
 
-  Color getColorEventActionBanner(String senderEmailAddress) {
+  Color getColorEventActionBanner(List<String> listEmailAddressSender) {
     switch(method) {
       case EventMethod.request:
       case EventMethod.add:
@@ -26,7 +26,7 @@ extension CalendarEventExtension on CalendarEvent {
       case EventMethod.declineCounter:
         return AppColor.colorCanceledEventActionText;
       case EventMethod.reply:
-        final matchedAttendee = findAttendeeHasUpdatedStatus(senderEmailAddress);
+        final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
         if (matchedAttendee != null) {
           return getAttendeeMessageTextColor(matchedAttendee.participationStatus);
         } else {
@@ -37,7 +37,7 @@ extension CalendarEventExtension on CalendarEvent {
     }
   }
 
-  Color getColorEventActionText(String senderEmailAddress) {
+  Color getColorEventActionText(List<String> listEmailAddressSender) {
     switch(method) {
       case EventMethod.request:
       case EventMethod.add:
@@ -49,7 +49,7 @@ extension CalendarEventExtension on CalendarEvent {
       case EventMethod.declineCounter:
         return AppColor.colorCanceledEventActionText;
       case EventMethod.reply:
-        final matchedAttendee = findAttendeeHasUpdatedStatus(senderEmailAddress);
+        final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
         if (matchedAttendee != null) {
           return getAttendeeMessageTextColor(matchedAttendee.participationStatus);
         } else {
@@ -74,7 +74,7 @@ extension CalendarEventExtension on CalendarEvent {
     }
   }
 
-  String getTitleEventAction(BuildContext context, String senderEmailAddress) {
+  String getTitleEventAction(BuildContext context, List<String> listEmailAddressSender) {
     switch(method) {
       case EventMethod.request:
       case EventMethod.add:
@@ -84,7 +84,7 @@ extension CalendarEventExtension on CalendarEvent {
       case EventMethod.cancel:
         return AppLocalizations.of(context).messageEventActionBannerOrganizerCanceled;
       case EventMethod.reply:
-        final matchedAttendee = findAttendeeHasUpdatedStatus(senderEmailAddress);
+        final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
         if (matchedAttendee != null) {
           return getAttendeeMessageStatus(context, matchedAttendee.participationStatus);
         } else {
@@ -113,7 +113,7 @@ extension CalendarEventExtension on CalendarEvent {
   String getUserNameEventAction({
     required BuildContext context,
     required ImagePaths imagePaths,
-    required String senderEmailAddress
+    required List<String> listEmailAddressSender
   }) {
     switch(method) {
       case EventMethod.request:
@@ -124,7 +124,7 @@ extension CalendarEventExtension on CalendarEvent {
         return getOrganizerName(context);
       case EventMethod.reply:
       case EventMethod.counter:
-        return getAttendeeName(context, senderEmailAddress);
+        return getAttendeeName(context, listEmailAddressSender);
       default:
         return '';
     }
@@ -132,8 +132,8 @@ extension CalendarEventExtension on CalendarEvent {
 
   String getOrganizerName(BuildContext context) => organizer?.name ?? AppLocalizations.of(context).you;
 
-  String getAttendeeName(BuildContext context, String senderEmailAddress) {
-    final matchedAttendee = findAttendeeHasUpdatedStatus(senderEmailAddress);
+  String getAttendeeName(BuildContext context, List<String> listEmailAddressSender) {
+    final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
     if (matchedAttendee != null) {
       return matchedAttendee.name?.name ?? AppLocalizations.of(context).anAttendee;
     } else {
@@ -141,10 +141,10 @@ extension CalendarEventExtension on CalendarEvent {
     }
   }
 
-  CalendarAttendee? findAttendeeHasUpdatedStatus(String senderEmailAddress) {
+  CalendarAttendee? findAttendeeHasUpdatedStatus(List<String> listEmailAddressSender) {
     if (participants?.isNotEmpty == true) {
       final listMatchedAttendee = participants
-        !.where((attendee) => attendee.mailto?.mailAddress.value == senderEmailAddress)
+        !.where((attendee) => attendee.mailto != null && listEmailAddressSender.contains(attendee.mailto!.mailAddress.value))
         .whereNotNull();
       log('CalendarEventExtension::findAttendeeHasUpdatedStatus:listMatchedAttendee: $listMatchedAttendee');
       if (listMatchedAttendee.isNotEmpty) {
