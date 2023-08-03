@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-07-28T02:46:38.430701",
+  "@@last_modified": "2023-08-03T15:58:37.476969",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3104,6 +3104,24 @@
   },
   "link": "Link",
   "@link": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllSpamEmails": "Delete all spam emails",
+  "@deleteAllSpamEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolder": "Empty Spam folder",
+  "@emptySpamFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamMessageDialog": "You are about to permanently delete all items in Spam . Do you want to continue?",
+  "@emptySpamMessageDialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
