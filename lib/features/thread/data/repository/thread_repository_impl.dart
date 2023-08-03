@@ -1,5 +1,6 @@
 
-import 'package:core/core.dart';
+import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -300,7 +301,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Future<List<EmailId>> emptyTrashFolder(Session session, AccountId accountId, MailboxId trashMailboxId) async {
-    return mapDataSource[DataSourceType.network]!.emptyTrashFolder(
+    return mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
       session,
       accountId,
       trashMailboxId,
@@ -376,5 +377,21 @@ class ThreadRepositoryImpl extends ThreadRepository {
     {Properties? properties}
   ) {
     return mapDataSource[DataSourceType.network]!.getEmailById(session, accountId, emailId, properties: properties);
+  }
+
+  @override
+  Future<List<EmailId>> emptySpamFolder(Session session, AccountId accountId, MailboxId spamMailboxId) {
+    return mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
+      session,
+      accountId,
+      spamMailboxId,
+      (listEmailIdDeleted) async {
+        await _updateEmailCache(
+          accountId,
+          session.username,
+          newDestroyed: listEmailIdDeleted
+        );
+      },
+    );
   }
 }

@@ -64,4 +64,10 @@ abstract class ThreadRepository {
     EmailId emailId,
     {Properties? properties}
   );
+
+  Future<List<EmailId>> emptySpamFolder(
+    Session session,
+    AccountId accountId,
+    MailboxId spamMailboxId,
+  );
 }
