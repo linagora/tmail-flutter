@@ -3222,4 +3222,16 @@ class AppLocalizations {
       'You are about to permanently delete all items in Spam . Do you want to continue?',
       name: 'emptySpamMessageDialog');
   }
+
+  String get bannerDeleteAllSpamEmailsMessage {
+    return Intl.message(
+      'All messages in Spam will be deleted if you reach limited storage.',
+      name: 'bannerDeleteAllSpamEmailsMessage');
+  }
+
+  String get deleteAllSpamEmailsNow {
+    return Intl.message(
+      'Delete all spam emails now',
+      name: 'deleteAllSpamEmailsNow');
+  }
 }
