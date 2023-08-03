@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_ev
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
@@ -16,10 +17,14 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class CalendarEventInformationWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
+  final OnOpenNewTabAction? onOpenNewTabAction;
+  final OnOpenComposerAction? onOpenComposerAction;
 
   const CalendarEventInformationWidget({
     super.key,
-    required this.calendarEvent
+    required this.calendarEvent,
+    this.onOpenNewTabAction,
+    this.onOpenComposerAction,
   });
 
   @override
@@ -93,7 +98,11 @@ class CalendarEventInformationWidget extends StatelessWidget {
                     if (calendarEvent.location?.isNotEmpty == true)
                       Padding(
                         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
-                        child: EventLocationInformationWidget(locationEvent: calendarEvent.location!),
+                        child: EventLocationInformationWidget(
+                          locationEvent: calendarEvent.location!,
+                          onOpenComposerAction: onOpenComposerAction,
+                          onOpenNewTabAction: onOpenNewTabAction,
+                        ),
                       ),
                     if (calendarEvent.participants?.isNotEmpty == true && calendarEvent.organizer != null)
                       Padding(
@@ -158,7 +167,11 @@ class CalendarEventInformationWidget extends StatelessWidget {
                     if (calendarEvent.location?.isNotEmpty == true)
                       Padding(
                         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
-                        child: EventLocationInformationWidget(locationEvent: calendarEvent.location!),
+                        child: EventLocationInformationWidget(
+                          locationEvent: calendarEvent.location!,
+                          onOpenComposerAction: onOpenComposerAction,
+                          onOpenNewTabAction: onOpenNewTabAction,
+                        ),
                       ),
                     if (calendarEvent.participants?.isNotEmpty == true && calendarEvent.organizer != null)
                       Padding(
