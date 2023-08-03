@@ -8,6 +8,8 @@ extension ListEmailAddressExtension on Set<EmailAddress>? {
 
   List<EmailAddress> asList() => this != null ? this!.toList() : List.empty();
 
+  Set<EmailAddress> asSet() => this ?? {};
+
   List<String> emailAddressToListString({ExpandMode expandMode = ExpandMode.EXPAND, int limitAddress = 1, bool isFullEmailAddress = false}) {
     if (this != null) {
       if (expandMode == ExpandMode.EXPAND) {
