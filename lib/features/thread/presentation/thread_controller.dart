@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
@@ -334,7 +335,7 @@ class ThreadController extends BaseController with EmailActionController {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
         } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is EmptyTrashFolderSuccess) {
+        } else if (success is EmptyTrashFolderSuccess || success is EmptySpamFolderSuccess) {
           refreshAllEmail();
         }
       });
