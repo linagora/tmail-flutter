@@ -1468,10 +1468,20 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  bool get isMailboxTrashValid {
-    return selectedMailbox.value != null
-      && selectedMailbox.value!.isTrash
-      && selectedMailbox.value!.countEmails > 0;
+  bool isEmptyTrashBannerEnabledOnWeb(BuildContext context) {
+    return selectedMailbox.value != null &&
+      selectedMailbox.value!.isTrash &&
+      selectedMailbox.value!.countEmails > 0 &&
+      !searchController.isSearchActive() &&
+      _responsiveUtils.isWebDesktop(context);
+  }
+
+  bool isEmptyTrashBannerEnabledOnMobile(BuildContext context) {
+    return selectedMailbox.value != null &&
+      selectedMailbox.value!.isTrash &&
+      selectedMailbox.value!.countEmails > 0 &&
+      !searchController.isSearchActive() &&
+      !_responsiveUtils.isWebDesktop(context);
   }
 
   void emptyTrashAction(BuildContext context) {

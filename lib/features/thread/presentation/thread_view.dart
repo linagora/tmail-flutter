@@ -21,9 +21,11 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.da
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
@@ -31,7 +33,6 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_messag
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class ThreadView extends GetWidget<ThreadController>
   with AppLoaderMixin,
@@ -78,7 +79,20 @@ class ThreadView extends GetWidget<ThreadController>
                           const QuotasWarningBannerWidget(),
                           _buildVacationNotificationMessage(context),
                         ],
-                      _buildEmptyTrashButton(context),
+                      Obx(() {
+                        if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context)) {
+                          return Padding(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: BannerEmptyTrashStyles.mobileMargin
+                            ),
+                            child: BannerEmptyTrashWidget(
+                              onTapAction: () => controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all)
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
                       Obx(() {
                         if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context)) {
                           return Padding(
@@ -528,73 +542,6 @@ class ThreadView extends GetWidget<ThreadController>
     } else {
       return null;
     }
-  }
-
-  bool supportEmptyTrash(BuildContext context) {
-    return controller.isMailboxTrash
-        && controller.mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
-        && !controller.isSearchActive()
-        && !_responsiveUtils.isWebDesktop(context);
-  }
-
-  Widget _buildEmptyTrashButton(BuildContext context) {
-    return Obx(() {
-      if (supportEmptyTrash(context)) {
-        return Container(
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(14)),
-              border: Border.all(color: AppColor.colorLineLeftEmailView),
-              color: Colors.white),
-          margin: EdgeInsets.only(
-              left: AppUtils.isDirectionRTL(context) ? 16 : _responsiveUtils.isWebDesktop(context) ? 0 : 16,
-              right: AppUtils.isDirectionRTL(context) ? _responsiveUtils.isWebDesktop(context) ? 0 : 16 : 16,
-              bottom: _responsiveUtils.isWebDesktop(context) ? 0 : 16,
-              top: _responsiveUtils.isWebDesktop(context) ? 16 : 0),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(children: [
-            Padding(
-                padding: EdgeInsets.only(
-                  right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                  left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                ),
-                child: SvgPicture.asset(
-                    _imagePaths.icDeleteTrash,
-                    fit: BoxFit.fill)),
-            Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(
-                            left: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                            right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                          ),
-                          child: Text(
-                              AppLocalizations.of(context).message_delete_all_email_in_trash_button,
-                              style: const TextStyle(
-                                  color: AppColor.colorContentEmail,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500))),
-                      TextButton(
-                          onPressed: () =>
-                              controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all),
-                          child: Text(
-                              AppLocalizations.of(context).empty_trash_now,
-                              style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColor.colorTextButton)
-                          )
-                      )
-                    ]
-                )
-            )
-          ]),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
   }
 
   List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {

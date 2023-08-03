@@ -22,7 +22,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -125,7 +127,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       ]),
                       Expanded(child: Column(children: [
                         const SpamReportBannerWebWidget(),
-                        _buildEmptyTrashButton(context),
+                        Obx(() {
+                          if (controller.isEmptyTrashBannerEnabledOnWeb(context)) {
+                            return Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                top: BannerEmptyTrashStyles.webTopMargin,
+                                end: BannerEmptyTrashStyles.webEndMargin
+                              ),
+                              child: BannerEmptyTrashWidget(
+                                onTapAction: () => controller.emptyTrashAction(context)
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
                         Obx(() {
                           if (controller.isEmptySpamBannerEnabledOnWeb(context)) {
                             return Padding(
@@ -657,72 +673,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           onCallbackAction: () => onCallBack?.call(receiveTime),
         )))
       .toList();
-  }
-
-  bool _supportEmptyTrash(BuildContext context) {
-    return controller.isMailboxTrashValid
-      && !controller.searchController.isSearchActive()
-      && responsiveUtils.isWebDesktop(context);
-  }
-
-  Widget _buildEmptyTrashButton(BuildContext context) {
-    return Obx(() {
-      log('MailboxDashBoardView::_buildEmptyTrashButton():');
-      if (_supportEmptyTrash(context)) {
-        return Container(
-          decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(14)),
-              border: Border.all(color: AppColor.colorLineLeftEmailView),
-              color: Colors.white),
-          margin: EdgeInsets.only(
-            right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-            left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-            top: 16
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(children: [
-            Padding(
-                padding: EdgeInsets.only(
-                  right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                  left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                ),
-                child: SvgPicture.asset(
-                    imagePaths.icDeleteTrash,
-                    fit: BoxFit.fill)),
-            Expanded(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(
-                            left: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                            right: AppUtils.isDirectionRTL(context) ? 8 : 0
-                          ),
-                          child: Text(
-                              AppLocalizations.of(context).message_delete_all_email_in_trash_button,
-                              style: const TextStyle(
-                                  color: AppColor.colorContentEmail,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500))),
-                      TextButton(
-                          onPressed: () => controller.emptyTrashAction(context),
-                          child: Text(
-                              AppLocalizations.of(context).empty_trash_now,
-                              style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColor.colorTextButton)
-                          )
-                      )
-                    ]
-                )
-            )
-          ]),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
   }
 
   Widget _buildComposerButton(BuildContext context) {
