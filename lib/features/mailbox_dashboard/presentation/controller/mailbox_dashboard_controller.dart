@@ -108,11 +108,13 @@ import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_
 import 'package:tmail_ui_user/features/session/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
@@ -161,6 +163,7 @@ class MailboxDashBoardController extends ReloadableController {
   final UpdateSendingEmailInteractor _updateSendingEmailInteractor;
   final GetAllSendingEmailInteractor _getAllSendingEmailInteractor;
   final StoreSessionInteractor _storeSessionInteractor;
+  final EmptySpamFolderInteractor _emptySpamFolderInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -234,6 +237,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._updateSendingEmailInteractor,
     this._getAllSendingEmailInteractor,
     this._storeSessionInteractor,
+    this._emptySpamFolderInteractor,
   ) : super(
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
@@ -342,6 +346,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleGetAllSendingEmailsSuccess(success);
     } else if (success is UpdateSendingEmailSuccess) {
       _handleUpdateSendingEmailSuccess(success);
+    } else if (success is EmptySpamFolderSuccess) {
+      _emptySpamFolderSuccess(success);
     }
   }
 
@@ -1948,6 +1954,29 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _storeSessionAction(Session session) {
     consumeState(_storeSessionInteractor.execute(session));
+  }
+
+  void emptySpamFolderAction({Function? onCancelSelectionEmail, MailboxId? spamFolderId}) {
+    onCancelSelectionEmail?.call();
+
+    final spamMailboxId = spamFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleSpam];
+    if (sessionCurrent != null && accountId.value != null && spamMailboxId != null) {
+      consumeState(
+        _emptySpamFolderInteractor.execute(
+          sessionCurrent!,
+          accountId.value!,
+          spamMailboxId
+        )
+      );
+    }
+  }
+
+  void _emptySpamFolderSuccess(EmptySpamFolderSuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success);
+    }
   }
   
   @override

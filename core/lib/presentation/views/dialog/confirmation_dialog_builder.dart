@@ -186,7 +186,7 @@ class ConfirmDialogBuilder {
                 )),
           if (_iconWidget != null)
             Container(
-              margin: _marginIcon ?? const EdgeInsets.only(top: 24),
+              margin: _marginIcon ?? EdgeInsets.zero,
               alignment: Alignment.center,
               child: _iconWidget,
             ),

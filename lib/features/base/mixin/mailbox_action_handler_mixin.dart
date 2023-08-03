@@ -98,4 +98,64 @@ mixin MailboxActionHandlerMixin {
         .build()));
     }
   }
+
+  void emptySpamAction(
+    BuildContext context,
+    PresentationMailbox mailbox,
+    MailboxDashBoardController dashboardController
+  ) {
+    if (dashboardController.isDrawerOpen) {
+      dashboardController.closeMailboxMenuDrawer();
+    }
+
+    final responsiveUtils = Get.find<ResponsiveUtils>();
+    final imagePaths = Get.find<ImagePaths>();
+    final appToast = Get.find<AppToast>();
+
+    if (responsiveUtils.isScreenWithShortestSide(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+        ..messageText(AppLocalizations.of(context).emptySpamMessageDialog)
+        ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
+        ..onConfirmAction(AppLocalizations.of(context).delete_all, () {
+          popBack();
+          if (mailbox.countEmails > 0) {
+            dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id);
+          } else {
+            appToast.showToastWarningMessage(
+              context,
+              AppLocalizations.of(context).noEmailInYourCurrentMailbox
+            );
+          }
+        }))
+      .show();
+    } else {
+      showDialog(
+        context: context,
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        builder: (context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+          ..key(const Key('confirm_dialog_empty_spam'))
+          ..title(AppLocalizations.of(context).emptySpamFolder)
+          ..content(AppLocalizations.of(context).emptySpamMessageDialog)
+          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
+          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+          ..styleTextConfirmButton(const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+              color: AppColor.colorActionDeleteConfirmDialog))
+          ..onCloseButtonAction(popBack)
+          ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
+            popBack();
+            if (mailbox.countEmails > 0) {
+              dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id);
+            } else {
+              appToast.showToastWarningMessage(
+                context,
+                AppLocalizations.of(context).noEmailInYourCurrentMailbox
+              );
+            }
+          })
+          ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack)
+        ).build()));
+    }
+  }
 }
