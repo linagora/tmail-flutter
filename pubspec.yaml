@@ -205,6 +205,8 @@ dependencies:
 
   date_format: 2.0.7
 
+  flutter_linkify: 6.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
