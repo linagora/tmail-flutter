@@ -25,7 +25,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/s
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -118,6 +118,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       ]),
                       Expanded(child: Column(children: [
                         const SpamReportBannerWebWidget(),
+                        const QuotasBannerWidget(),
+                        _buildVacationNotificationMessage(context),
                         Obx(() {
                           if (controller.isEmptyTrashBannerEnabledOnWeb(context)) {
                             return Padding(
@@ -148,14 +150,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             return const SizedBox.shrink();
                           }
                         }),
-                        QuotasWarningBannerWidget(
-                          margin: EdgeInsets.only(
-                            right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                            left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                            top: 8
-                          ),
-                        ),
-                        _buildVacationNotificationMessage(context),
                         _buildListButtonQuickSearchFilter(context),
                         _buildMarkAsMailboxReadLoading(context),
                         Expanded(child: Obx(() {
