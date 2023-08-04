@@ -9,7 +9,8 @@ import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interac
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
-class QuotasControllerBindings extends BaseBindings {
+class QuotasBindings extends BaseBindings {
+
   @override
   void bindingsController() {
     Get.put(QuotasController(Get.find<GetQuotasInteractor>()));
@@ -39,5 +40,4 @@ class QuotasControllerBindings extends BaseBindings {
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => QuotasRepositoryImpl(Get.find<QuotasDataSource>()));
   }
-
 }

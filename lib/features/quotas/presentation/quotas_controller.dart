@@ -13,8 +13,13 @@ import 'package:tmail_ui_user/features/quotas/presentation/model/quotas_state.da
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class QuotasController extends BaseController {
-  final MailboxDashBoardController mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+
+  final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final responsiveUtils = Get.find<ResponsiveUtils>();
+  final imagePaths = Get.find<ImagePaths>();
+
   final GetQuotasInteractor _getQuotasInteractor;
+
   final usedCapacity = Rx<num>(0);
   final limitCapacity = Rx<num>(0);
   final warningLimitCapacity = Rx<num>(0);
@@ -30,9 +35,6 @@ class QuotasController extends BaseController {
       quotasState.value != QuotasState.notAvailable &&
           (quotasState.value == QuotasState.runningOutOfStorage
               || quotasState.value == QuotasState.runOutOfStorage);
-
-  final ImagePaths imagePaths = Get.find<ImagePaths>();
-  final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
 
   QuotasController(this._getQuotasInteractor);
 
