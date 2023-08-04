@@ -1,6 +1,7 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu_item_action.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -166,7 +167,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.emptySpam:
         return ContextMenuItemState.activated;
       case MailboxActions.markAsRead:
-        return mailbox.getCountUnReadEmails().isNotEmpty
+        return mailbox.countUnReadEmailsAsString.isNotEmpty
           ? ContextMenuItemState.activated
           : ContextMenuItemState.deactivated;
       default:

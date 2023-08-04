@@ -1,11 +1,16 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
+import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -58,7 +63,7 @@ mixin MailboxActionHandlerMixin {
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
             popBack();
-            if (mailbox.countEmails > 0) {
+            if (mailbox.countTotalEmails > 0) {
               dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
             } else {
               appToast.showToastWarningMessage(
@@ -85,7 +90,7 @@ mixin MailboxActionHandlerMixin {
           ..onCloseButtonAction(popBack)
           ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
               popBack();
-              if (mailbox.countEmails > 0) {
+              if (mailbox.countTotalEmails > 0) {
                 dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
               } else {
                 appToast.showToastWarningMessage(
@@ -118,7 +123,7 @@ mixin MailboxActionHandlerMixin {
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete_all, () {
           popBack();
-          if (mailbox.countEmails > 0) {
+          if (mailbox.countTotalEmails > 0) {
             dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id);
           } else {
             appToast.showToastWarningMessage(
@@ -145,7 +150,7 @@ mixin MailboxActionHandlerMixin {
           ..onCloseButtonAction(popBack)
           ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
             popBack();
-            if (mailbox.countEmails > 0) {
+            if (mailbox.countTotalEmails > 0) {
               dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id);
             } else {
               appToast.showToastWarningMessage(
