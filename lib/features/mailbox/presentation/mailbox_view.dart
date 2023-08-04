@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_s
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -65,8 +65,8 @@ class MailboxView extends BaseMailboxView {
                           ]),
                         ),
                         Obx(() => !controller.isSelectionEnabled()
-                            ? const QuotasFooterWidget()
-                            : const SizedBox.shrink(),
+                          ? const QuotasView()
+                          : const SizedBox.shrink(),
                         ),
                         Obx(() {
                           final appInformation = controller.mailboxDashBoardController.appInformation.value;
