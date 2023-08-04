@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
@@ -105,7 +106,7 @@ class SpamReportController extends BaseController {
 
   bool get notShowSpamReportBanner => _presentationSpamMailbox.value == null;
 
-  String get numberOfUnreadSpamEmails => _presentationSpamMailbox.value?.getCountUnReadEmails() ?? '';
+  String get numberOfUnreadSpamEmails => _presentationSpamMailbox.value?.countUnReadEmailsAsString ?? '';
 
   bool get enableSpamReport => _spamReportState.value == SpamReportState.enabled;
 
