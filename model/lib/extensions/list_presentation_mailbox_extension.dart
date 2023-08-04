@@ -1,5 +1,6 @@
 
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 
 extension ListPresentationMailboxExtension on List<PresentationMailbox> {
@@ -14,7 +15,7 @@ extension ListPresentationMailboxExtension on List<PresentationMailbox> {
 
   bool get isAllDefaultMailboxes => every((mailbox) => mailbox.isDefault);
 
-  bool get isAllUnreadMailboxes => every((mailbox) => mailbox.getCountUnReadEmails().isNotEmpty);
+  bool get isAllUnreadMailboxes => every((mailbox) => mailbox.countUnReadEmailsAsString.isNotEmpty);
 
   List<MailboxId> get mailboxIds => map((mailbox) => mailbox.id).toList();
 }
