@@ -9,6 +9,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
@@ -39,7 +40,7 @@ mixin MailboxWidgetMixin {
         MailboxActions.openInNewTab,
       if (mailbox.isSpam)
         _mailboxActionForSpam(spamReportEnabled),
-      if (mailbox.getCountUnReadEmails().isNotEmpty)
+      if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       if (mailbox.isTrash)
         MailboxActions.emptyTrash,
@@ -52,7 +53,7 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
-      if (mailbox.getCountUnReadEmails().isNotEmpty)
+      if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       MailboxActions.move,
       MailboxActions.rename,
@@ -68,7 +69,7 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
-      if (mailbox.getCountUnReadEmails().isNotEmpty)
+      if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       if (mailbox.isTeamMailboxes)
         if (mailbox.isSubscribedMailbox)

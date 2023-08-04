@@ -1471,7 +1471,7 @@ class MailboxDashBoardController extends ReloadableController {
   bool isEmptyTrashBannerEnabledOnWeb(BuildContext context) {
     return selectedMailbox.value != null &&
       selectedMailbox.value!.isTrash &&
-      selectedMailbox.value!.countEmails > 0 &&
+      selectedMailbox.value!.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       _responsiveUtils.isWebDesktop(context);
   }
@@ -1479,7 +1479,7 @@ class MailboxDashBoardController extends ReloadableController {
   bool isEmptyTrashBannerEnabledOnMobile(BuildContext context) {
     return selectedMailbox.value != null &&
       selectedMailbox.value!.isTrash &&
-      selectedMailbox.value!.countEmails > 0 &&
+      selectedMailbox.value!.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       !_responsiveUtils.isWebDesktop(context);
   }
@@ -1992,7 +1992,7 @@ class MailboxDashBoardController extends ReloadableController {
   bool isEmptySpamBannerEnabledOnWeb(BuildContext context) {
     return selectedMailbox.value != null &&
       selectedMailbox.value!.isSpam &&
-      selectedMailbox.value!.countEmails > 0 &&
+      selectedMailbox.value!.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       _responsiveUtils.isWebDesktop(context);
   }
@@ -2000,7 +2000,7 @@ class MailboxDashBoardController extends ReloadableController {
   bool isEmptySpamBannerEnabledOnMobile(BuildContext context) {
     return selectedMailbox.value != null &&
       selectedMailbox.value!.isSpam &&
-      selectedMailbox.value!.countEmails > 0 &&
+      selectedMailbox.value!.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       !_responsiveUtils.isWebDesktop(context);
   }
@@ -2018,7 +2018,7 @@ class MailboxDashBoardController extends ReloadableController {
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete_all, () {
           popBack();
-          if (spamMailbox.countEmails > 0) {
+          if (spamMailbox.countTotalEmails > 0) {
             emptySpamFolderAction(spamFolderId: spamMailbox.id);
           } else {
             _appToast.showToastWarningMessage(
@@ -2045,7 +2045,7 @@ class MailboxDashBoardController extends ReloadableController {
           ..onCloseButtonAction(popBack)
           ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
             popBack();
-            if (spamMailbox.countEmails > 0) {
+            if (spamMailbox.countTotalEmails > 0) {
               emptySpamFolderAction(spamFolderId: spamMailbox.id);
             } else {
               _appToast.showToastWarningMessage(

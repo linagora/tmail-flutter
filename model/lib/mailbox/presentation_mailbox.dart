@@ -68,68 +68,6 @@ class PresentationMailbox with EquatableMixin {
     }
   );
 
-  bool get isActivated => state == MailboxState.activated;
-
-  bool hasParentId() => parentId != null && parentId!.id.value.isNotEmpty;
-
-  bool hasRole() => role != null && role!.value.isNotEmpty;
-
-  bool get isDefault => hasRole();
-
-  bool get isPersonal => namespace == null || namespace == Namespace('Personal');
-
-  bool get isTeamMailboxes => !isPersonal && !hasParentId();
-
-  bool get isChildOfTeamMailboxes => !isPersonal && hasParentId();
-
-  String getCountUnReadEmails() {
-    if (unreadEmails == null || unreadEmails!.value.value <= 0) {
-      return '';
-    }
-
-    return unreadEmails!.value.value <= 999 ? '${unreadEmails!.value.value}' : '999+';
-  }
-
-  int get countEmails => totalEmails?.value.value.toInt() ?? 0;
-
-  bool get isSpam => role == roleSpam;
-  
-  bool get isTrash => role == roleTrash;
-
-  bool get isDrafts => role == roleDrafts;
-
-  bool get isTemplates => role == roleTemplates;
-
-  bool get isSent => role == roleSent;
-
-  bool get isOutbox => name == lowerCaseOutboxMailboxName || role == roleOutbox;
-
-  bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
-
-  bool matchCountingRules() {
-    if (isTrash || isDrafts || isTemplates || isSent) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  String? get emailTeamMailBoxes => namespace?.value.substring(
-    (namespace?.value.indexOf('[') ?? 0) + 1,
-    namespace?.value.indexOf(']'));
-
-  bool get allowedToDisplay => isSubscribedMailbox || isDefault;
-
-  MailboxId? get mailboxId {
-    if (id == unifiedMailbox.id) {
-      return null;
-    } else {
-      return id;
-    }
-  }
-
-  bool get pushNotificationDeactivated => isOutbox || isSent || isDrafts || isTrash || isSpam;
-
   @override
   List<Object?> get props => [
     id,
@@ -147,5 +85,6 @@ class PresentationMailbox with EquatableMixin {
     mailboxPath,
     state,
     namespace,
+    displayName,
   ];
 }

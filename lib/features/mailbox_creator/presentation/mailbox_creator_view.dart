@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/app_bar_mailbox_creator_builder.dart';

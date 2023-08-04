@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
