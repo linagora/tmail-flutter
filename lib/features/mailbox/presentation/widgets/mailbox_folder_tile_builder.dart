@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -10,15 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/count_of_emails_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class MailBoxFolderTileBuilder {
@@ -221,33 +221,30 @@ class MailBoxFolderTileBuilder {
     if (PlatformInfo.isWeb) {
       if (isHoverItem) {
         return _buildMenuIcon(context);
-      } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
-          && _mailboxNode.item.matchCountingRules()) {
+      } else if (_mailboxNode.item.countUnreadEmails > 0 && _mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
           padding: const EdgeInsetsDirectional.only(start: 10),
-          child: _buildCounter(),
+          child: CountOfEmailsWidget(value: _mailboxNode.item.countUnReadEmailsAsString),
+        );
+      } else if (_mailboxNode.item.countTotalEmails > 0 && _mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
+        return Padding(
+          padding: const EdgeInsetsDirectional.only(start: 10),
+          child: CountOfEmailsWidget(value: _mailboxNode.item.countTotalEmailsAsString),
         );
       } else {
-        return const SizedBox(width: 20);
+        return const SizedBox();
       }
     } else {
-      if (_mailboxNode.hasChildren()) {
+      if (_mailboxNode.item.countUnreadEmails > 0 && _mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
           padding: const EdgeInsetsDirectional.only(start: 12),
-          child: Row(
-            children: [
-              if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
-                && _mailboxNode.item.matchCountingRules())
-                  _buildCounter(),
-            ],
-          ),
+          child: CountOfEmailsWidget(value: _mailboxNode.item.countUnReadEmailsAsString),
         );
-      } else if (_mailboxNode.item.getCountUnReadEmails().isNotEmpty
-        && _mailboxNode.item.matchCountingRules()) {
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(start: 12),
-            child: _buildCounter(),
-          );
+      } else if (_mailboxNode.item.countTotalEmails > 0 && _mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
+        return Padding(
+          padding: const EdgeInsetsDirectional.only(start: 12),
+          child: CountOfEmailsWidget(value: _mailboxNode.item.countTotalEmailsAsString),
+        );
       } else {
         return const SizedBox();
       }
@@ -308,18 +305,6 @@ class MailBoxFolderTileBuilder {
               fontWeight: FontWeight.w400),
           )
       ],
-    );
-  }
-
-  Widget _buildCounter() {
-    return Text(
-      _mailboxNode.item.getCountUnReadEmails(),
-      maxLines: 1,
-      overflow: CommonTextStyle.defaultTextOverFlow,
-      style: const TextStyle(
-          fontSize: 13,
-          color: Colors.black,
-          fontWeight: FontWeight.normal),
     );
   }
 
