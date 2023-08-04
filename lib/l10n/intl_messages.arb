@@ -3110,7 +3110,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaWarningBannerTitle": "You are running out of storage (99%).",
+  "quotaWarningBannerTitle": "You are running out of storage (90%).",
   "@quotaWarningBannerTitle": {
     "type": "text",
     "placeholders_order": [],

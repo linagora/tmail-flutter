@@ -1,18 +1,16 @@
-import 'package:core/core.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
+
+class GetQuotasLoading extends LoadingState {}
 
 class GetQuotasSuccess extends UIState {
   final List<Quota> quotas;
-  final State? state;
 
-  GetQuotasSuccess(this.quotas, this.state);
+  GetQuotasSuccess(this.quotas);
 
   @override
-  List<Object?> get props => [
-    quotas,
-    state,
-  ];
+  List<Object?> get props => [quotas];
 }
 
 class GetQuotasFailure extends FeatureFailure {

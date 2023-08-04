@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filt
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_warning_banner_widget.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
@@ -76,7 +76,7 @@ class ThreadView extends GetWidget<ThreadController>
                             }),
                           _buildSearchBarView(context),
                           const SpamReportBannerWidget(),
-                          const QuotasWarningBannerWidget(),
+                          const QuotasBannerWidget(),
                           _buildVacationNotificationMessage(context),
                         ],
                       Obx(() {
@@ -139,7 +139,7 @@ class ThreadView extends GetWidget<ThreadController>
       padding: EdgeInsets.symmetric(
         horizontal: 16,
         vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
-      margin: EdgeInsets.only(bottom: PlatformInfo.isMobile ? 16 : 0),
+      margin: EdgeInsets.only(bottom: PlatformInfo.isMobile ? 8 : 0),
       child: SearchBarView(_imagePaths,
         hintTextSearch: AppLocalizations.of(context).search_emails,
         onOpenSearchViewAction: controller.goToSearchView));
@@ -503,7 +503,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   double? _getItemExtent(BuildContext context) {
     if (PlatformInfo.isWeb) {
-     return _responsiveUtils.isDesktop(context) ? 52 : 95;
+     return _responsiveUtils.isDesktop(context) ? 52 : 98;
     } else {
       return null;
     }
