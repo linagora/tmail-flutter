@@ -40,8 +40,8 @@ class IdentityDropListFieldBuilder extends StatelessWidget {
       DropdownButtonHideUnderline(
         child: DropdownButton2<EmailAddress>(
           isExpanded: true,
-          hint: Row(
-            children: const [
+          hint: const Row(
+            children: [
               Expanded(child: Text(
                 '',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
