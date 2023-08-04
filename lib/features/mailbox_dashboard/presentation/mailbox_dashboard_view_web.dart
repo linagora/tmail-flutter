@@ -11,10 +11,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -44,11 +40,6 @@ import 'widgets/app_dashboard/app_grid_dashboard_overlay.dart';
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   MailboxDashBoardView({Key? key}) : super(key: key);
-
-  final search.SearchController searchController = Get.find<search.SearchController>();
-  final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
-  final mailBoxDashboardController = Get.find<MailboxDashBoardController>();
-  final SpamReportController spamReportController = Get.find<SpamReportController>();
 
   @override
   Widget build(BuildContext context) {
@@ -317,10 +308,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         const Spacer(),
         AppConfig.appGridDashboardAvailable
           ? Obx(() => PortalTarget(
-              visible: appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
+              visible: controller.appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
               portalFollower: GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () => appGridDashboardController.toggleAppGridDashboard()),
+                onTap: () => controller.appGridDashboardController.toggleAppGridDashboard()),
               child: PortalTarget(
                 anchor: Aligned(
                   follower: AppUtils.isDirectionRTL(context)
@@ -331,12 +322,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     : Alignment.bottomRight
                 ),
                 portalFollower: Obx(() {
-                  if (appGridDashboardController.linagoraApplications.value != null) {
-                    return AppDashboardOverlay(appGridDashboardController.linagoraApplications.value!);
+                  if (controller.appGridDashboardController.linagoraApplications.value != null) {
+                    return AppDashboardOverlay(controller.appGridDashboardController.linagoraApplications.value!);
                   }
                   return const SizedBox.shrink();
                 }),
-                visible: appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
+                visible: controller.appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
                 child: buildIconWeb(
                   onTap: controller.showAppDashboardAction,
                   splashRadius: 20,
@@ -408,7 +399,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ..onPressActionClick(() => controller.dispatchAction(SelectionAllEmailAction()))
           ..text(AppLocalizations.of(context).select_all, isVertical: false))
         .build(),
-      if (mailBoxDashboardController.isAbleMarkAllAsRead())
+      if (controller.isAbleMarkAllAsRead())
         Padding(
           padding: EdgeInsets.only(
             left: AppUtils.isDirectionRTL(context) ? 0 : 16,
@@ -459,7 +450,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   context,
                   controller.filterMessageOption.value,
                   (option) => controller.dispatchAction(FilterMessageAction(context, option)),
-                  isSearchEmailRunning: searchController.isSearchEmailRunning
+                  isSearchEmailRunning: controller.searchController.isSearchEmailRunning
                 )
               )
             )
