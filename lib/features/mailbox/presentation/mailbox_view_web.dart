@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.da
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_footer_widget.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -21,7 +21,9 @@ class MailboxView extends BaseMailboxView {
     return Drawer(
         elevation: responsiveUtils.isDesktop(context) ? 0 : 16.0,
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: responsiveUtils.isWebDesktop(context)
+            ? AppColor.colorBgDesktop
+            : Colors.white,
           body: Column(children: [
             if (!responsiveUtils.isDesktop(context)) _buildLogoApp(context),
             if (!responsiveUtils.isDesktop(context))
@@ -45,7 +47,7 @@ class MailboxView extends BaseMailboxView {
                 ),
               ),
             )),
-            const QuotasFooterWidget(),
+            const QuotasView(),
           ]),
         )
     );
