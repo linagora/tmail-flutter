@@ -155,7 +155,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Padding(B.EdgeInsets_16_0_16_0, B.Divider_I9g, null);
     },
-    $signature: 541
+    $signature: 542
   };
   C.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -212,4 +212,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
 };
 
-$__dart_deferred_initializers__["NcY8FIkNr8mrq1PbO3vPGeTvKpU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["G1vQQPRQPDrqfObgU/gnbFCaDGs="] = $__dart_deferred_initializers__.current

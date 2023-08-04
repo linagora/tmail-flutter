@@ -5130,7 +5130,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return B.Container$(_null, child, C.Clip_0, _null, _null, new B.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1500
+    $signature: 1501
   };
   A._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -5156,7 +5156,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new B.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1501
+    $signature: 1502
   };
   A._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -5209,7 +5209,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1502
+    $signature: 1503
   };
   A._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -5259,7 +5259,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1503
+    $signature: 1504
   };
   A._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -5372,7 +5372,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1._buildModeNormal$3(context, currentVisible, scope);
     },
-    $signature: 1504
+    $signature: 1505
   };
   A._PortalTargetState__buildModeNormal_closure.prototype = {
     call$0() {
@@ -5652,13 +5652,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 548
+    $signature: 549
   };
   A.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 548
+    $signature: 549
   };
   A.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
@@ -5930,4 +5930,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["ob+b6YWJPqxc3b6ReOxqUoY8xvg="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["vPYtqaS5oTBYO8Ut6MBGfkDGA0s="] = $__dart_deferred_initializers__.current
