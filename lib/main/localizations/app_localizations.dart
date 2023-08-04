@@ -3215,7 +3215,7 @@ class AppLocalizations {
 
   String get quotaWarningBannerTitle {
     return Intl.message(
-      'You are running out of storage (99%).',
+      'You are running out of storage (90%).',
       name: 'quotaWarningBannerTitle'
     );
   }

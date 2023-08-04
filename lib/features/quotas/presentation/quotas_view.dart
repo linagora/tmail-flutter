@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/model/quotas_state.dart';
+import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_view_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -13,7 +13,8 @@ class QuotasView extends GetWidget<QuotasController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (controller.quotasState.value != QuotasState.notAvailable) {
+      if (controller.octetsQuota.value != null && controller.octetsQuota.value!.storageAvailable) {
+        final octetQuota = controller.octetsQuota.value!;
         return LayoutBuilder(builder: (context, constraints) {
           return Container(
             padding: const EdgeInsetsDirectional.only(
@@ -63,23 +64,19 @@ class QuotasView extends GetWidget<QuotasController> {
                 SizedBox(
                   width: _getProgressBarMaxWith(constraints.maxWidth),
                   child: LinearProgressIndicator(
-                    color: controller.quotasState.value.getColorProgress(),
+                    color: octetQuota.getQuotasStateProgressBarColor(),
                     minHeight: QuotasViewStyles.progressBarHeight,
                     backgroundColor: QuotasViewStyles.progressBarBackgroundColor,
-                    value: controller.progressUsedCapacity,
+                    value: octetQuota.usedStoragePercent,
                   ),
                 ),
                 const SizedBox(height: QuotasViewStyles.space),
                 Text(
-                  controller.quotasState.value.getQuotasFooterText(
-                    context,
-                    controller.usedCapacity.value,
-                    controller.limitCapacity.value,
-                  ),
+                  octetQuota.getQuotasStateTitle(context),
                   style: TextStyle(
                     fontSize: QuotasViewStyles.progressStateTextSize,
                     fontWeight: QuotasViewStyles.progressStateFontWeight,
-                    color: controller.quotasState.value.getColorQuotasFooterText(),
+                    color: octetQuota.getQuotasStateTitleColor()
                   ),
                 )
               ],
