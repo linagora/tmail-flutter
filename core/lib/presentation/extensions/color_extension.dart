@@ -164,9 +164,8 @@ extension AppColor on Color {
   static const colorDeleteContactIcon = Color(0xFFAEB7C2);
   static const colorItemRecipientSelected = Color(0xFFDFEEFF);
   static const colorBackgroundQuotasWarning = Color(0xFFFFC107);
-  static const colorTitleQuotasWarning = Color(0xFFF05C44);
-  static const colorProgressQuotasWarning = Color(0xFFFFA000);
-  static const colorOutOfStorageQuotasWarning = Color(0xffE64646);
+  static const colorQuotaWarning = Color(0xFFF05C44);
+  static const colorQuotaError = Color(0xffE64646);
   static const colorThumbScrollBar = Color(0xFFAEB7C2);
   static const colorCreateNewIdentityButton = Color(0xFFEBEDF0);
   static const colorSpamReportBannerBackground = Color(0xFFBFDEFF);

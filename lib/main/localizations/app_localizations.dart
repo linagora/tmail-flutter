@@ -2547,47 +2547,10 @@ class AppLocalizations {
     );
   }
 
-  String textQuotasUsed(double used, double softLimit) {
-    return Intl.message(
-      '$used GB of $softLimit GB Used',
-      name: 'textQuotasUsed',
-      args: [used, softLimit],
-    );
-  }
-
-  String textQuotasRunningOutOfStorageTitle(double progress) {
-    return Intl.message(
-      'You are running out of storage ($progress%).',
-      name: 'textQuotasRunningOutOfStorageTitle',
-      args: [progress],
-    );
-  }
-
-  String get textQuotasRunningOutOfStorageContent {
-    return Intl.message(
-      "Soon you won't be able to email in Team Mail. Please clean your storage or upgrade your storage to get full features in Team Mail.",
-      name: 'textQuotasRunningOutOfStorageContent',
-    );
-  }
-
   String get textQuotasOutOfStorage {
     return Intl.message(
       'Out of storage',
       name: 'textQuotasOutOfStorage',
-    );
-  }
-
-  String get textQuotasRunOutOfStorageTitle {
-    return Intl.message(
-      'You have run out of storage space',
-      name: 'textQuotasRunOutOfStorageTitle',
-    );
-  }
-
-  String get textQuotasRunOutOfStorageContent {
-    return Intl.message(
-      "Now you temporarily can't send or get an email.  Please free up or upgrade your storage to get the full features of Team Mail.",
-      name: 'textQuotasRunOutOfStorageContent',
     );
   }
 
@@ -3233,5 +3196,41 @@ class AppLocalizations {
     return Intl.message(
       'Delete all spam emails now',
       name: 'deleteAllSpamEmailsNow');
+  }
+
+  String quotaStateLabel(String used, String limit) {
+    return Intl.message(
+      '$used of $limit Used',
+      name: 'quotaStateLabel',
+      args: [used, limit],
+    );
+  }
+
+  String get quotaErrorBannerTitle {
+    return Intl.message(
+      'You have run out of storage space',
+      name: 'quotaErrorBannerTitle'
+    );
+  }
+
+  String get quotaWarningBannerTitle {
+    return Intl.message(
+      'You are running out of storage (99%).',
+      name: 'quotaWarningBannerTitle'
+    );
+  }
+
+  String get quotaWarningBannerMessage {
+    return Intl.message(
+      'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
+      name: 'quotaWarningBannerMessage'
+    );
+  }
+
+  String get quotaErrorBannerMessage {
+    return Intl.message(
+      'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
+      name: 'quotaErrorBannerMessage'
+    );
   }
 }

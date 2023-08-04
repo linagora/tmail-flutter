@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-08-03T18:37:14.070879",
+  "@@last_modified": "2023-08-04T21:19:31.613036",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2482,48 +2482,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textQuotasUsed": "{used} GB of {softLimit} GB Used",
-  "@textQuotasUsed": {
-    "type": "text",
-    "placeholders_order": [
-      "used",
-      "softLimit"
-    ],
-    "placeholders": {
-      "used": {},
-      "softLimit": {}
-    }
-  },
-  "textQuotasRunningOutOfStorageTitle": "You are running out of storage ({progress}%).",
-  "@textQuotasRunningOutOfStorageTitle": {
-    "type": "text",
-    "placeholders_order": [
-      "progress"
-    ],
-    "placeholders": {
-      "progress": {}
-    }
-  },
-  "textQuotasRunningOutOfStorageContent": "Soon you won't be able to email in Team Mail. Please clean your storage or upgrade your storage to get full features in Team Mail.",
-  "@textQuotasRunningOutOfStorageContent": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "textQuotasOutOfStorage": "Out of storage",
   "@textQuotasOutOfStorage": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "textQuotasRunOutOfStorageTitle": "You have run out of storage space",
-  "@textQuotasRunOutOfStorageTitle": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "textQuotasRunOutOfStorageContent": "Now you temporarily can't send or get an email.  Please free up or upgrade your storage to get the full features of Team Mail.",
-  "@textQuotasRunOutOfStorageContent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -3128,6 +3088,42 @@
   },
   "bannerDeleteAllSpamEmailsMessage": "All messages in Spam will be deleted if you reach limited storage.",
   "@bannerDeleteAllSpamEmailsMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaStateLabel": "{used} of {limit} Used",
+  "@quotaStateLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "limit"
+    ],
+    "placeholders": {
+      "used": {},
+      "limit": {}
+    }
+  },
+  "quotaErrorBannerTitle": "You have run out of storage space",
+  "@quotaErrorBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerTitle": "You are running out of storage (99%).",
+  "@quotaWarningBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerMessage": "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
+  "@quotaWarningBannerMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaErrorBannerMessage": "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
+  "@quotaErrorBannerMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
