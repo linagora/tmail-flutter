@@ -2497,22 +2497,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = A.PresentationMailboxExtension_getDisplayName(t2.item, context),
         t4 = t2.item,
         t5 = t4.namespace;
-      t4 = !(t5 == null || t5.$eq(0, new A.Namespace(_s8_))) && !t4.hasParentId$0() ? 16 : 15;
+      t4 = !(t5 == null || t5.$eq(0, new A.Namespace(_s8_))) && !A.PresentationMailboxExtension_hasParentId(t4) ? 16 : 15;
       t5 = t2.item;
-      if (!t5.get$isSubscribedMailbox()) {
-        t5 = t5.role;
-        t5 = t5 != null && t5.value.length !== 0;
+      if (!A.PresentationMailboxExtension_get_isSubscribedMailbox(t5)) {
+        t6 = t5.role;
+        t6 = t6 != null && t6.value.length !== 0;
       } else
-        t5 = true;
-      t5 = t5 ? B.Color_4278190080 : B.Color_4286680217;
-      t6 = t2.item;
-      t7 = t6.namespace;
+        t6 = true;
+      t6 = t6 ? B.Color_4278190080 : B.Color_4286680217;
+      t7 = t5.namespace;
       t8 = type$.JSArray_Widget;
-      t4 = A._setArrayType([A.Text$(t3, _null, _null, 1, B.TextOverflow_1, _null, _null, false, _null, A.TextStyle$(_null, _null, t5, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, !(t7 == null || t7.$eq(0, new A.Namespace(_s8_))) && !t6.hasParentId$0() ? B.FontWeight_4_500 : B.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null)], t8);
+      t4 = A._setArrayType([A.Text$(t3, _null, _null, 1, B.TextOverflow_1, _null, _null, false, _null, A.TextStyle$(_null, _null, t6, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, !(t7 == null || t7.$eq(0, new A.Namespace(_s8_))) && !A.PresentationMailboxExtension_hasParentId(t5) ? B.FontWeight_4_500 : B.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null)], t8);
       t3 = t2.item;
       t5 = t3.namespace;
-      if (!(t5 == null || t5.$eq(0, new A.Namespace(_s8_))) && !t3.hasParentId$0()) {
-        t3 = t2.item.get$emailTeamMailBoxes();
+      if (!(t5 == null || t5.$eq(0, new A.Namespace(_s8_))) && !A.PresentationMailboxExtension_hasParentId(t3)) {
+        t3 = A.PresentationMailboxExtension_get_emailTeamMailBoxes(t2.item);
         t4.push(A.Text$(t3 == null ? "" : t3, _null, _null, 1, B.TextOverflow_1, _null, _null, false, _null, B.TextStyle_chs1, _null, _null, _null, _null, _null));
       }
       t1 = A._setArrayType([B.SizedBox_8_null_null_null, t1, A.Expanded$(A.Column$(t4, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), 1)], t8);
@@ -2540,7 +2539,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t3 = A.Bidi_isRtlLanguage(t3.get$languageCode(t3)) ? "assets/images/ic_back.svg" : "assets/images/ic_collapse_folder.svg";
         }
         t4 = t2.item;
-        if (!t4.get$isSubscribedMailbox()) {
+        if (!A.PresentationMailboxExtension_get_isSubscribedMailbox(t4)) {
           t4 = t4.role;
           t4 = t4 != null && t4.value.length !== 0;
         } else
@@ -2559,7 +2558,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.push(E.SizedBox_24_null_null_null);
       t3 = t2.item;
       t4 = t3.namespace;
-      if (!(!(t4 == null || t4.$eq(0, new A.Namespace(_s8_))) && !t3.hasParentId$0())) {
+      if (!(!(t4 == null || t4.$eq(0, new A.Namespace(_s8_))) && !A.PresentationMailboxExtension_hasParentId(t3))) {
         t3 = type$._LocalizationsScope;
         t4 = context.dependOnInheritedWidgetOfExactType$1$0(t3).localizationsState._localizations$_locale;
         t4 = A.Bidi_isRtlLanguage(t4.get$languageCode(t4)) ? 0 : 8;
@@ -2567,7 +2566,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = A.Bidi_isRtlLanguage(t3.get$languageCode(t3)) ? 8 : 0;
         t5 = A.PresentationMailboxExtension_getMailboxIcon(t2.item, this._mailbox_visibility_folder_tile_builder$_imagePaths);
         t2 = t2.item;
-        if (!t2.get$isSubscribedMailbox()) {
+        if (!A.PresentationMailboxExtension_get_isSubscribedMailbox(t2)) {
           t2 = t2.role;
           t2 = t2 != null && t2.value.length !== 0;
         } else
@@ -2579,7 +2578,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _buildSubscribeButton$1(context) {
       var _null = null,
         t1 = type$.AppLocalizations;
-      if (this._mailboxNode.item.get$isSubscribedMailbox()) {
+      if (A.PresentationMailboxExtension_get_isSubscribedMailbox(this._mailboxNode.item)) {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
         t1 = A.Intl__message("Hide", _null, "hide", _null, _null);
       } else {
@@ -5537,4 +5536,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["I4hoCcu88kxFJoxid7D2FxNB4yc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["q7YD26gKh/giQqCrA7vaddfnkPc="] = $__dart_deferred_initializers__.current

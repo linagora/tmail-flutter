@@ -9656,7 +9656,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5 = true;
       if (!t5) {
         t1 = t1.selectedMailbox;
-        t1 = t1.get$value(t1) != null && J.$eq$(t1.get$value(t1).role, $.$get$PresentationMailbox_roleDrafts());
+        if (t1.get$value(t1) != null) {
+          t1 = t1.get$value(t1);
+          t1.toString;
+          t1 = J.$eq$(t1.role, $.$get$PresentationMailbox_roleDrafts());
+        } else
+          t1 = false;
       } else
         t1 = false;
       if (t1) {
@@ -10385,7 +10390,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.DragTarget$(new B._MailboxSearchedItemBuilderState_build_closure(this, context), new B._MailboxSearchedItemBuilderState_build_closure0(this), type$.List_PresentationEmail);
     },
     _mailbox_searched_item_builder$_buildMailboxItem$1(context) {
-      var t6, _this = this, _null = null,
+      var t6, t7, t8, _this = this, _null = null,
         t1 = A.BorderRadius$circular(8),
         t2 = _this.getBackgroundColorItem$1(context),
         t3 = A.SearchMailboxUtils_getPaddingItemListView(context, _this._widget._mailbox_searched_item_builder$_responsiveUtils),
@@ -10393,37 +10398,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5 = t4.mailboxPath;
       if ((t5 == null ? _null : t5.length !== 0) !== true) {
         t5 = t4.namespace;
-        t4 = !(t5 == null || t5.$eq(0, new A.Namespace("Personal"))) && !t4.hasParentId$0();
+        t4 = !(t5 == null || t5.$eq(0, new A.Namespace("Personal"))) && !A.PresentationMailboxExtension_hasParentId(t4);
       } else
         t4 = true;
       t4 = t4 ? C.CrossAxisAlignment_0 : C.CrossAxisAlignment_2;
-      t5 = _this._widget._mailbox_searched_item_builder$_presentationMailbox;
-      if (!t5.get$isSubscribedMailbox()) {
-        t5 = t5.role;
-        t5 = t5 != null && t5.value.length !== 0;
+      t5 = _this._widget;
+      t6 = t5._mailbox_searched_item_builder$_presentationMailbox;
+      if (!A.PresentationMailboxExtension_get_isSubscribedMailbox(t6)) {
+        t7 = t6.role;
+        t7 = t7 != null && t7.value.length !== 0;
       } else
-        t5 = true;
-      t6 = _this._widget;
-      if (t5)
-        t5 = A.PresentationMailboxExtension_getMailboxIcon(t6._mailbox_searched_item_builder$_presentationMailbox, t6._mailbox_searched_item_builder$_imagePaths);
-      else {
-        t6.toString;
-        t5 = "assets/images/ic_hide_folder.svg";
-      }
-      t6 = type$.JSArray_Widget;
-      return A.InkWell$(false, _null, true, A.Container$(_null, A.Row$(A._setArrayType([A.SvgPicture$asset(t5, _null, C.BoxFit_0, 20, _null, 20), A.Expanded$(new A.Padding(C.EdgeInsets_8_0_8_0, A.Column$(A._setArrayType([A.TextOverflowBuilder$(A.PresentationMailboxExtension_getDisplayName(_this._widget._mailbox_searched_item_builder$_presentationMailbox, context), C.TextStyle_cMb0), _this._mailbox_searched_item_builder$_buildSubtitleItem$0()], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), 1), _this._mailbox_searched_item_builder$_buildMenuIcon$1(context)], t6), t4, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t2, _null, _null, t1, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t3, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B._MailboxSearchedItemBuilderState__buildMailboxItem_closure(_this), _null, _this.get$_mailbox_searched_item_builder$_onTapMailboxAction(), _null, _null, _null, _null, _null, _null, _null);
+        t7 = true;
+      t8 = type$.JSArray_Widget;
+      return A.InkWell$(false, _null, true, A.Container$(_null, A.Row$(A._setArrayType([A.SvgPicture$asset(t7 ? A.PresentationMailboxExtension_getMailboxIcon(t6, t5._mailbox_searched_item_builder$_imagePaths) : "assets/images/ic_hide_folder.svg", _null, C.BoxFit_0, 20, _null, 20), A.Expanded$(new A.Padding(C.EdgeInsets_8_0_8_0, A.Column$(A._setArrayType([A.TextOverflowBuilder$(A.PresentationMailboxExtension_getDisplayName(_this._widget._mailbox_searched_item_builder$_presentationMailbox, context), C.TextStyle_cMb0), _this._mailbox_searched_item_builder$_buildSubtitleItem$0()], t8), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), 1), _this._mailbox_searched_item_builder$_buildMenuIcon$1(context)], t8), t4, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t2, _null, _null, t1, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t3, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B._MailboxSearchedItemBuilderState__buildMailboxItem_closure(_this), _null, _this.get$_mailbox_searched_item_builder$_onTapMailboxAction(), _null, _null, _null, _null, _null, _null, _null);
     },
     _mailbox_searched_item_builder$_onTapMailboxAction$0() {
-      var t1 = this._widget._mailbox_searched_item_builder$_presentationMailbox;
-      if (!t1.get$isSubscribedMailbox()) {
-        t1 = t1.role;
-        t1 = t1 != null && t1.value.length !== 0;
+      var t3,
+        t1 = this._widget,
+        t2 = t1._mailbox_searched_item_builder$_presentationMailbox;
+      if (!A.PresentationMailboxExtension_get_isSubscribedMailbox(t2)) {
+        t3 = t2.role;
+        t3 = t3 != null && t3.value.length !== 0;
       } else
-        t1 = true;
-      if (t1) {
-        t1 = this._widget;
-        t1.onClickOpenMailboxAction.call$1(t1._mailbox_searched_item_builder$_presentationMailbox);
-      }
+        t3 = true;
+      if (t3)
+        t1.onClickOpenMailboxAction.call$1(t2);
     },
     _mailbox_searched_item_builder$_buildSubtitleItem$0() {
       var t1 = this._widget._mailbox_searched_item_builder$_presentationMailbox,
@@ -10433,8 +10432,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.TextOverflowBuilder$(t3 ? "" : t2, C.TextStyle_chs2);
       else {
         t2 = t1.namespace;
-        if (!(t2 == null || t2.$eq(0, new A.Namespace("Personal"))) && !t1.hasParentId$0()) {
-          t1 = this._widget._mailbox_searched_item_builder$_presentationMailbox.get$emailTeamMailBoxes();
+        if (!(t2 == null || t2.$eq(0, new A.Namespace("Personal"))) && !A.PresentationMailboxExtension_hasParentId(t1)) {
+          t1 = A.PresentationMailboxExtension_get_emailTeamMailBoxes(this._widget._mailbox_searched_item_builder$_presentationMailbox);
           return A.TextOverflowBuilder$(t1 == null ? "" : t1, C.TextStyle_chs2);
         } else
           return C.SizedBox_0_0_null_null;
@@ -14668,16 +14667,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView_build_closure1.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t3 = this.context;
       t4 = t2.selectedMailbox;
-      if (t4.get$value(t4) != null)
-        if (J.$eq$(t4.get$value(t4).role, $.$get$PresentationMailbox_roleTrash()))
-          if (t4.get$value(t4).get$countEmails() > 0) {
+      if (t4.get$value(t4) != null) {
+        t5 = t4.get$value(t4);
+        t5.toString;
+        if (J.$eq$(t5.role, $.$get$PresentationMailbox_roleTrash())) {
+          t4 = t4.get$value(t4);
+          t4.toString;
+          if (A.PresentationMailboxExtension_get_countTotalEmails(t4) > 0) {
             t2 = t2.searchController.searchState;
             if (t2.get$value(t2).searchStatus !== C.SearchStatus_0)
               t2 = A.InheritedModel_inheritFrom(t3, null, type$.MediaQuery).data.size._dx >= 1200;
@@ -14685,9 +14688,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t2 = false;
           } else
             t2 = false;
-        else
+        } else
           t2 = false;
-      else
+      } else
         t2 = false;
       if (t2)
         return new A.Padding(D.EdgeInsetsDirectional_0_8_16_0, new B.BannerEmptyTrashWidget(new B.MailboxDashBoardView_build__closure0(t1, t3), null), null);
@@ -14711,16 +14714,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView_build_closure2.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t3 = this.context;
       t4 = t2.selectedMailbox;
-      if (t4.get$value(t4) != null)
-        if (J.$eq$(t4.get$value(t4).role, $.$get$PresentationMailbox_roleSpam()))
-          if (t4.get$value(t4).get$countEmails() > 0) {
+      if (t4.get$value(t4) != null) {
+        t5 = t4.get$value(t4);
+        t5.toString;
+        if (J.$eq$(t5.role, $.$get$PresentationMailbox_roleSpam())) {
+          t4 = t4.get$value(t4);
+          t4.toString;
+          if (A.PresentationMailboxExtension_get_countTotalEmails(t4) > 0) {
             t2 = t2.searchController.searchState;
             if (t2.get$value(t2).searchStatus !== C.SearchStatus_0)
               t2 = A.InheritedModel_inheritFrom(t3, null, type$.MediaQuery).data.size._dx >= 1200;
@@ -14728,9 +14735,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t2 = false;
           } else
             t2 = false;
-        else
+        } else
           t2 = false;
-      else
+      } else
         t2 = false;
       if (t2)
         return new A.Padding(D.EdgeInsetsDirectional_0_8_16_0, new B.BannerDeleteAllSpamEmailsWidget(new B.MailboxDashBoardView_build__closure(t1, t3), null), null);
@@ -16787,16 +16794,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView_build_closure.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController;
       t3 = this.context;
       t4 = t2.selectedMailbox;
-      if (t4.get$value(t4) != null)
-        if (J.$eq$(t4.get$value(t4).role, $.$get$PresentationMailbox_roleTrash()))
-          if (t4.get$value(t4).get$countEmails() > 0) {
+      if (t4.get$value(t4) != null) {
+        t5 = t4.get$value(t4);
+        t5.toString;
+        if (J.$eq$(t5.role, $.$get$PresentationMailbox_roleTrash())) {
+          t4 = t4.get$value(t4);
+          t4.toString;
+          if (A.PresentationMailboxExtension_get_countTotalEmails(t4) > 0) {
             t2 = t2.searchController.searchState;
             if (t2.get$value(t2).searchStatus !== C.SearchStatus_0) {
               t2 = A.InheritedModel_inheritFrom(t3, null, type$.MediaQuery).data;
@@ -16805,9 +16816,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t2 = false;
           } else
             t2 = false;
-        else
+        } else
           t2 = false;
-      else
+      } else
         t2 = false;
       if (t2)
         return new A.Padding(D.EdgeInsetsDirectional_16_0_16_0, new B.BannerEmptyTrashWidget(new B.ThreadView_build__closure0(t1, t3), null), null);
@@ -16829,16 +16840,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView_build_closure0.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController;
       t3 = this.context;
       t4 = t2.selectedMailbox;
-      if (t4.get$value(t4) != null)
-        if (J.$eq$(t4.get$value(t4).role, $.$get$PresentationMailbox_roleSpam()))
-          if (t4.get$value(t4).get$countEmails() > 0) {
+      if (t4.get$value(t4) != null) {
+        t5 = t4.get$value(t4);
+        t5.toString;
+        if (J.$eq$(t5.role, $.$get$PresentationMailbox_roleSpam())) {
+          t4 = t4.get$value(t4);
+          t4.toString;
+          if (A.PresentationMailboxExtension_get_countTotalEmails(t4) > 0) {
             t2 = t2.searchController.searchState;
             if (t2.get$value(t2).searchStatus !== C.SearchStatus_0) {
               t2 = A.InheritedModel_inheritFrom(t3, null, type$.MediaQuery).data;
@@ -16847,9 +16862,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t2 = false;
           } else
             t2 = false;
-        else
+        } else
           t2 = false;
-      else
+      } else
         t2 = false;
       if (t2)
         return new A.Padding(D.EdgeInsetsDirectional_16_0_16_0, new B.BannerDeleteAllSpamEmailsWidget(new B.ThreadView_build__closure(t1, t3), null), null);
@@ -18629,4 +18644,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["QUXeb2Ce/5zxnfrL1Sg7dmu9COU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["LPS1kNfm46v9x+6LvgC3osPyB4g="] = $__dart_deferred_initializers__.current
