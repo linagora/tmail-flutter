@@ -2,7 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:model/email/presentation_email.dart';
 
-class SearchingState extends UIState {}
+class SearchingState extends LoadingState {}
 
 class SearchEmailSuccess extends UIState {
   final List<PresentationEmail> emailList;
