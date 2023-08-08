@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/model.dart';
@@ -82,7 +81,7 @@ void main() {
 
       expect(states.length, equals(3));
       expect(states, containsAllInOrder({
-        Right(LoadingState()),
+        Right(GetAllEmailLoading()),
         Right(GetAllEmailSuccess(
           emailList: {
             EmailFixtures.email1.toPresentationEmail(),
