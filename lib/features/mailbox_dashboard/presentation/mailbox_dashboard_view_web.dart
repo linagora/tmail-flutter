@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/widget/cupertino_loading_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -17,6 +18,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
@@ -365,17 +367,35 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildListButtonTopBar(BuildContext context) {
     return Row(children: [
-      (ButtonBuilder(imagePaths.icRefresh)
-          ..key(const Key('button_reload_thread'))
-          ..decoration(const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(EdgeInsets.zero)
-          ..size(16)
-          ..radiusSplash(10)
-          ..padding(const EdgeInsets.symmetric(horizontal: 8, vertical: 8))
-          ..onPressActionClick(() => controller.dispatchAction(RefreshAllEmailAction())))
-        .build(),
+      Obx(() {
+        return controller.refreshingMailboxState.value.fold(
+          (failure) {
+            return TMailButtonWidget.fromIcon(
+              key: const Key('refresh_mailbox_button'),
+              icon: imagePaths.icRefresh,
+              borderRadius: 10,
+              iconSize: 16,
+              onTapActionCallback: controller.refreshMailboxAction,
+            );
+          },
+          (success) {
+            if (success is RefreshAllEmailLoading) {
+              return const TMailContainerWidget(
+                borderRadius: 10,
+                padding: EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8.5),
+                child: CupertinoLoadingWidget(size: 16));
+            } else {
+              return TMailButtonWidget.fromIcon(
+                key: const Key('refresh_mailbox_button'),
+                icon: imagePaths.icRefresh,
+                borderRadius: 10,
+                iconSize: 16,
+                onTapActionCallback: controller.refreshMailboxAction,
+              );
+            }
+          }
+        );
+      }),
       const SizedBox(width: 16),
       (ButtonBuilder(imagePaths.icSelectAll)
           ..key(const Key('button_select_all'))
