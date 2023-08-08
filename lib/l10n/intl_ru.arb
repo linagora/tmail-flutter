@@ -2656,8 +2656,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "personalMailboxes": "Личные почтовые ящики",
-  "@personalMailboxes": {
+  "personalFolders": "Личные папки",
+  "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

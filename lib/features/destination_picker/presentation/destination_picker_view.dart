@@ -230,7 +230,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                   const SizedBox(height: 8),
                   _buildMailboxCategory(
                     context,
-                    MailboxCategories.personalMailboxes,
+                    MailboxCategories.personalFolders,
                     controller.personalRootNode,
                     actions,
                     mailboxIdSelected

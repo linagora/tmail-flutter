@@ -2837,8 +2837,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "personalMailboxes": "Caselle di posta personali",
-  "@personalMailboxes": {
+  "personalFolders": "Cartelle personali",
+  "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

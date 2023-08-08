@@ -121,10 +121,10 @@ class AppLocalizations {
     );
   }
 
-  String get personalMailboxes {
+  String get personalFolders {
     return Intl.message(
-      'Personal mailboxes',
-      name: 'personalMailboxes',
+      'Personal folders',
+      name: 'personalFolders',
     );
   }
 
