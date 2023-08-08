@@ -13,9 +13,12 @@ class TMailContainerWidget extends StatelessWidget {
   final double? width;
   final double maxWidth;
   final double maxHeight;
+  final double minWidth;
   final String? tooltipMessage;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final List<BoxShadow>? boxShadow;
 
   const TMailContainerWidget({
     super.key,
@@ -26,14 +29,17 @@ class TMailContainerWidget extends StatelessWidget {
     this.width,
     this.maxWidth = double.infinity,
     this.maxHeight = double.infinity,
+    this.minWidth = 0,
     this.tooltipMessage,
     this.backgroundColor,
     this.padding,
+    this.boxShadow,
+    this.margin,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    final materialChild = Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTapActionCallback,
@@ -59,9 +65,14 @@ class TMailContainerWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: backgroundColor ?? AppColor.colorButtonHeaderThread,
                   borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+                  boxShadow: boxShadow
                 ),
                 width: width,
-                constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
+                constraints: BoxConstraints(
+                  maxWidth: maxWidth,
+                  maxHeight: maxHeight,
+                  minWidth: minWidth
+                ),
                 padding: padding ?? const EdgeInsetsDirectional.all(8),
                 child: child
               )
@@ -71,13 +82,24 @@ class TMailContainerWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: backgroundColor ?? AppColor.colorButtonHeaderThread,
                 borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+                boxShadow: boxShadow
               ),
               width: width,
-              constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
+              constraints: BoxConstraints(
+                maxWidth: maxWidth,
+                maxHeight: maxHeight,
+                minWidth: minWidth
+              ),
               padding: padding ?? const EdgeInsetsDirectional.all(8),
               child: child
             )
       ),
     );
+
+    if (margin != null) {
+      return Padding(padding: margin!, child: materialChild);
+    } else {
+      return materialChild;
+    }
   }
 }

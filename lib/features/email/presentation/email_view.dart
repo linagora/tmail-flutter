@@ -65,6 +65,7 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
               right: responsiveUtils.isLandscapeMobile(context),
               left: responsiveUtils.isLandscapeMobile(context),
               child: Container(
+                  clipBehavior: Clip.antiAlias,
                   decoration: responsiveUtils.isWebDesktop(context)
                       ? BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
@@ -118,8 +119,10 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
           : _buildSingleEmailView(context, email);
       }),
       ),
-      const Divider(color: AppColor.colorDividerHorizontal, height: 1),
-      _buildBottomBar(context, email),
+      BottomBarMailWidgetBuilder(
+        email,
+        onPressEmailActionClick: controller.pressEmailAction
+      ),
     ]);
   }
 
@@ -223,12 +226,6 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
         tooltip: AppLocalizations.of(context).older,
         onTap: controller.emailSupervisorController.backToPreviousEmail),
     ];
-  }
-
-  Widget _buildBottomBar(BuildContext context, PresentationEmail presentationEmail) {
-    return BottomBarMailWidgetBuilder(
-      presentationEmail,
-      onPressEmailActionClick: (emailActionType) => controller.pressEmailAction(emailActionType));
   }
 
   Widget _buildEmailBody(BuildContext context, PresentationEmail email) {

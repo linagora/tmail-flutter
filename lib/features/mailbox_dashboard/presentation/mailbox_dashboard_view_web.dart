@@ -397,81 +397,54 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         );
       }),
       const SizedBox(width: 16),
-      (ButtonBuilder(imagePaths.icSelectAll)
-          ..key(const Key('button_select_all'))
-          ..decoration(const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: AppColor.colorButtonHeaderThread))
-          ..paddingIcon(EdgeInsets.only(
-              right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-              left: AppUtils.isDirectionRTL(context) ? 8 : 0
-          ))
-          ..size(16)
-          ..radiusSplash(10)
-          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButtonHeaderThread))
-          ..onPressActionClick(() => controller.dispatchAction(SelectionAllEmailAction()))
-          ..text(AppLocalizations.of(context).select_all, isVertical: false))
-        .build(),
+      TMailButtonWidget(
+        key: const Key('select_all_emails_button'),
+        text: AppLocalizations.of(context).select_all,
+        icon: imagePaths.icSelectAll,
+        borderRadius: 10,
+        iconSize: 16,
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
+        onTapActionCallback: controller.selectAllEmailAction,
+      ),
       if (controller.isAbleMarkAllAsRead())
         Padding(
-          padding: EdgeInsets.only(
-            left: AppUtils.isDirectionRTL(context) ? 0 : 16,
-            right: AppUtils.isDirectionRTL(context) ? 16 : 0,
+          padding: const EdgeInsetsDirectional.only(start: 16),
+          child: TMailButtonWidget(
+            key: const Key('mark_as_read_emails_button'),
+            text: AppLocalizations.of(context).mark_all_as_read,
+            icon: imagePaths.icSelectAll,
+            borderRadius: 10,
+            iconSize: 16,
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
+            onTapActionCallback: () => controller.markAsReadMailboxAction(context),
           ),
-          child: (ButtonBuilder(imagePaths.icMarkAllAsRead)
-            ..key(const Key('button_mark_all_as_read'))
-            ..decoration(const BoxDecoration(
-                borderRadius:BorderRadius.all(Radius.circular(10)),
-                color: AppColor.colorButtonHeaderThread))
-            ..paddingIcon(const EdgeInsets.only(right: 8))
-            ..size(16)
-            ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-            ..radiusSplash(10)
-            ..textStyle(const TextStyle(
-                fontSize: 12,
-                color: AppColor.colorTextButtonHeaderThread))
-            ..onPressActionClick(() => controller.markAsReadMailboxAction(context))
-            ..text(AppLocalizations.of(context).mark_all_as_read, isVertical: false))
-          .build(),
         ),
       const SizedBox(width: 16),
-      Obx(() => (ButtonBuilder(controller.filterMessageOption.value.getIconSelected(imagePaths))
-          ..key(const Key('button_filter_messages'))
-          ..context(context)
-          ..decoration(BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              color: controller.filterMessageOption.value.getBackgroundColor()))
-          ..paddingIcon(EdgeInsets.only(
-              right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-              left: AppUtils.isDirectionRTL(context) ? 8 : 0,
-          ))
-          ..size(16)
-          ..padding(const EdgeInsets.symmetric(horizontal: 12, vertical: 8))
-          ..radiusSplash(10)
-          ..textStyle(controller.filterMessageOption.value.getTextStyle())
-          ..addIconAction(Padding(
-              padding: EdgeInsets.only(
-                left: AppUtils.isDirectionRTL(context) ? 0 : 8,
-                right: AppUtils.isDirectionRTL(context) ? 8 : 0,
-              ),
-              child: SvgPicture.asset(imagePaths.icArrowDown, fit: BoxFit.fill)))
-          ..addOnPressActionWithPositionClick((position) =>
-              controller.openPopupMenuAction(
-                context,
-                position,
-                popupMenuFilterEmailActionTile(
-                  context,
-                  controller.filterMessageOption.value,
-                  (option) => controller.dispatchAction(FilterMessageAction(context, option)),
-                  isSearchEmailRunning: controller.searchController.isSearchEmailRunning
-                )
-              )
+      Obx(() => TMailButtonWidget(
+        key: const Key('filter_emails_button'),
+        text: controller.filterMessageOption.value == FilterMessageOption.all
+          ? AppLocalizations.of(context).filter_messages
+          : controller.filterMessageOption.value.getTitle(context),
+        icon: controller.filterMessageOption.value.getIconSelected(imagePaths),
+        borderRadius: 10,
+        iconSize: 16,
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
+        backgroundColor: controller.filterMessageOption.value.getBackgroundColor(),
+        textStyle: controller.filterMessageOption.value.getTextStyle(),
+        trailingIcon: imagePaths.icArrowDown,
+        onTapActionAtPositionCallback: (position) {
+          return controller.openPopupMenuAction(
+            context,
+            position,
+            popupMenuFilterEmailActionTile(
+              context,
+              controller.filterMessageOption.value,
+              (option) => controller.dispatchAction(FilterMessageAction(context, option)),
+              isSearchEmailRunning: controller.searchController.isSearchEmailRunning
             )
-          ..text(controller.filterMessageOption.value == FilterMessageOption.all
-              ? AppLocalizations.of(context).filter_messages
-              : controller.filterMessageOption.value.getTitle(context), isVertical: false))
-        .build()),
+          );
+        },
+      )),
     ]);
   }
 
@@ -682,37 +655,36 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildComposerButton(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.transparent,
+      padding: const EdgeInsetsDirectional.only(
+        start: 16,
+        end: 16,
+        top: 16,
+        bottom: 8
+      ),
       width: ResponsiveUtils.defaultSizeMenu,
       alignment: Alignment.centerLeft,
-      child: (ButtonBuilder(imagePaths.icComposeWeb)
-        ..key(const Key('button_compose_email'))
-        ..decoration(BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: AppColor.colorTextButton,
-            boxShadow: const [
-              BoxShadow(
-                blurRadius: 12.0,
-                color: AppColor.colorShadowComposerButton
-              )
-            ]))
-        ..paddingIcon(EdgeInsets.only(
-            right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-            left: AppUtils.isDirectionRTL(context) ? 8 : 0,
-        ))
-        ..iconColor(Colors.white)
-        ..size(24)
-        ..radiusSplash(10)
-        ..padding(const EdgeInsets.symmetric(vertical: 8))
-        ..textStyle(const TextStyle(
-            fontSize: 15,
-            color: Colors.white,
-            fontWeight: FontWeight.w500
-        ))
-        ..onPressActionClick(() => controller.goToComposer(ComposerArguments()))
-        ..text(AppLocalizations.of(context).compose, isVertical: false)
-      ).build()
+      child: TMailButtonWidget(
+        key: const Key('compose_email_button'),
+        text: AppLocalizations.of(context).compose,
+        icon: imagePaths.icComposeWeb,
+        borderRadius: 10,
+        iconSize: 24,
+        iconColor: Colors.white,
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
+        backgroundColor: AppColor.colorTextButton,
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 12.0,
+            color: AppColor.colorShadowComposerButton
+          )
+        ],
+        textStyle: const TextStyle(
+          fontSize: 15,
+          color: Colors.white,
+          fontWeight: FontWeight.w500
+        ),
+        onTapActionCallback: () => controller.goToComposer(ComposerArguments()),
+      ),
     );
   }
 }
