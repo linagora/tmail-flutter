@@ -18,7 +18,6 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
@@ -31,6 +30,8 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_bottom_loading_bar_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -109,9 +110,9 @@ class ThreadView extends GetWidget<ThreadController>
                       }),
                       if (!_responsiveUtils.isDesktop(context))
                         _buildMarkAsMailboxReadLoading(context),
-                      _buildLoadingView(),
+                      Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
                       Expanded(child: _buildListEmail(context)),
-                      _buildLoadingViewLoadMore(),
+                      Obx(() => ThreadViewBottomLoadingBarWidget(viewState: controller.viewState.value)),
                       _buildListButtonSelectionForMobile(context),
                     ]
                 )
@@ -268,38 +269,6 @@ class ThreadView extends GetWidget<ThreadController>
                 fit: BoxFit.fill))
         ..onActionClick((option) => controller.filterMessagesAction(context, option)))
       .build()).toList();
-  }
-
-  Widget _buildLoadingView() {
-    return Obx(() => controller.viewState.value.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) {
-        if (controller.isSearchActive() || controller.searchController.advancedSearchIsActivated.isTrue) {
-          return success is SearchingState
-              ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
-              : const SizedBox.shrink();
-        } else {
-          return success is LoadingState || controller.openingEmail.isTrue
-              ? Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: loadingWidget)
-              : const SizedBox.shrink();
-        }
-      }));
-  }
-
-  Widget _buildLoadingViewLoadMore() {
-    return Obx(() => controller.viewState.value.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) {
-        if (controller.isSearchActive()) {
-          return success is SearchingMoreState
-              ? Padding(padding: const EdgeInsets.only(bottom: 16), child: loadingWidget)
-              : const SizedBox.shrink();
-        } else {
-          return success is LoadingMoreState
-              ? Padding(padding: const EdgeInsets.only(bottom: 16), child: loadingWidget)
-              : const SizedBox.shrink();
-        }
-      }));
   }
 
   Widget _buildListEmail(BuildContext context) {
