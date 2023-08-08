@@ -30,7 +30,7 @@ class QuotasView extends GetWidget<QuotasController> {
                 ? QuotasViewStyles.webBackgroundColor
                 : QuotasViewStyles.mobileBackgroundColor,
               border: const Border(
-                top: BorderSide( //                   <--- left side
+                top: BorderSide(
                   color: QuotasViewStyles.topLineColor,
                   width: QuotasViewStyles.topLineSize,
                 )

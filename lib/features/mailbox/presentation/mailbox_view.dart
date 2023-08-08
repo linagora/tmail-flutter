@@ -57,7 +57,21 @@ class MailboxView extends BaseMailboxView {
                             Obx(() {
                               if (controller.isSelectionEnabled()
                                   && controller.listActionOfMailboxSelected.isNotEmpty) {
-                                return _buildOptionSelectionMailbox(context);
+                                return SafeArea(
+                                  right: false,
+                                  top: false,
+                                  child: BottomBarSelectionMailboxWidget(
+                                    controller.listMailboxSelected,
+                                    controller.listActionOfMailboxSelected,
+                                    onMailboxActionsClick: (actions, listMailboxSelected) {
+                                      return controller.pressMailboxSelectionAction(
+                                        context,
+                                        actions,
+                                        listMailboxSelected
+                                      );
+                                    }
+                                  )
+                                );
                               } else {
                                 return const SizedBox.shrink();
                               }
@@ -367,35 +381,6 @@ class MailboxView extends BaseMailboxView {
             ).build());
           }
       }).toList() ?? <Widget>[];
-  }
-
-  Widget _buildOptionSelectionMailbox(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Divider(
-          color: AppColor.lineItemListColor,
-          height: 1,
-          thickness: 0.2
-        ),
-        SafeArea(
-          right: false,
-          top: false,
-          child: BottomBarSelectionMailboxWidget(
-            responsiveUtils,
-            imagePaths,
-            controller.listMailboxSelected,
-            controller.listActionOfMailboxSelected,
-            onMailboxActionsClick: (actions, listMailboxSelected) =>
-              controller.pressMailboxSelectionAction(
-                context,
-                actions,
-                listMailboxSelected
-              )
-          )
-        )
-      ]
-    );
   }
 
   Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {

@@ -99,32 +99,6 @@ Widget buildIconWebHasPosition(BuildContext context, {
   );
 }
 
-Widget buildTextCircleButton(String text, {
-  TextStyle? textStyle,
-  IconWebCallback? onTap,
-}) {
-  return Material(
-      shape: const CircleBorder(),
-      color: Colors.transparent,
-      child: TextButton(
-          style: ButtonStyle(
-              overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => AppColor.colorFocusButton),
-              shape: MaterialStateProperty.all(const CircleBorder()),
-              padding: MaterialStateProperty.resolveWith<EdgeInsets>((Set<MaterialState> states) => EdgeInsets.zero),
-              elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
-          onPressed: () => onTap?.call(),
-          child: Text(
-            text,
-            style: textStyle ?? const TextStyle(
-              fontWeight: FontWeight.normal,
-              fontSize: 15,
-              color: AppColor.lineItemListColor
-            )
-          )
-      )
-  );
-}
-
 Widget buildTextIcon(String text, {
   TextStyle? textStyle,
   EdgeInsetsGeometry? padding,

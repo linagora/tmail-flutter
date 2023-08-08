@@ -2,7 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/button/button_builder.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
@@ -33,49 +33,70 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(
-          color: AppColor.lineItemListColor,
-          width: 0.2,
+          color: AppColor.colorDividerHorizontal,
+          width: 0.5,
         )),
         color: Colors.white
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(child: (ButtonBuilder(imagePaths.icEdit)
-            ..key(Key(SendingEmailActionType.edit.getButtonKey()))
-            ..iconColor(SendingEmailActionType.edit.getButtonIconColor(_isEditable ? ButtonState.enabled : ButtonState.disabled))
-            ..padding(const EdgeInsets.all(8))
-            ..radiusSplash(8)
-            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.edit.getButtonTitleColor(_isEditable ? ButtonState.enabled : ButtonState.disabled)))
-            ..onPressActionClick(() {
-              if (_isEditable) {
-                onHandleSendingEmailActionType?.call(SendingEmailActionType.edit, listSendingEmailSelected);
-              }
-            })
-            ..text(SendingEmailActionType.edit.getButtonTitle(context), isVertical: responsiveUtils.isPortraitMobile(context))
-          ).build()),
-          Expanded(child: (ButtonBuilder(imagePaths.icRefresh)
-            ..key(Key(SendingEmailActionType.resend.getButtonKey()))
-            ..iconColor(SendingEmailActionType.resend.getButtonIconColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled))
-            ..padding(const EdgeInsets.all(8))
-            ..radiusSplash(8)
-            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.resend.getButtonTitleColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled)))
-            ..onPressActionClick(() {
-              if (_isCanResend) {
-                onHandleSendingEmailActionType?.call(SendingEmailActionType.resend, listSendingEmailSelected);
-              }
-            })
-            ..text(SendingEmailActionType.resend.getButtonTitle(context), isVertical: responsiveUtils.isPortraitMobile(context))
-          ).build()),
-          Expanded(child: (ButtonBuilder(imagePaths.icDeleteComposer)
-            ..key(Key(SendingEmailActionType.delete.getButtonKey()))
-            ..iconColor(SendingEmailActionType.delete.getButtonIconColor(ButtonState.enabled))
-            ..padding(const EdgeInsets.all(8))
-            ..radiusSplash(8)
-            ..textStyle(TextStyle(fontSize: 12, color: SendingEmailActionType.delete.getButtonTitleColor(ButtonState.enabled)))
-            ..onPressActionClick(() => onHandleSendingEmailActionType?.call(SendingEmailActionType.delete, listSendingEmailSelected))
-            ..text(SendingEmailActionType.delete.getButtonTitle(context), isVertical: responsiveUtils.isPortraitMobile(context))
-          ).build())
+          Expanded(
+            child: TMailButtonWidget(
+              key: Key(SendingEmailActionType.edit.getButtonKey()),
+              text: SendingEmailActionType.edit.getButtonTitle(context),
+              icon: imagePaths.icEdit,
+              borderRadius: 8,
+              iconColor: SendingEmailActionType.edit.getButtonIconColor(_isEditable ? ButtonState.enabled : ButtonState.disabled),
+              textStyle: TextStyle(
+                fontSize: 12,
+                color: SendingEmailActionType.edit.getButtonTitleColor(_isEditable ? ButtonState.enabled : ButtonState.disabled)
+              ),
+              verticalDirection: responsiveUtils.isPortraitMobile(context),
+              onTapActionCallback: () {
+                if (_isEditable) {
+                  onHandleSendingEmailActionType?.call(
+                    SendingEmailActionType.edit,
+                    listSendingEmailSelected
+                  );
+                }
+              },
+            ),
+          ),
+          Expanded(
+            child: TMailButtonWidget(
+              key: Key(SendingEmailActionType.resend.getButtonKey()),
+              text: SendingEmailActionType.resend.getButtonTitle(context),
+              icon: imagePaths.icRefresh,
+              borderRadius: 8,
+              iconColor: SendingEmailActionType.resend.getButtonIconColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled),
+              textStyle: TextStyle(
+                fontSize: 12,
+                color: SendingEmailActionType.resend.getButtonTitleColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled)
+              ),
+              verticalDirection: responsiveUtils.isPortraitMobile(context),
+              onTapActionCallback: () {
+                if (_isCanResend) {
+                  onHandleSendingEmailActionType?.call(SendingEmailActionType.resend, listSendingEmailSelected);
+                }
+              },
+            ),
+          ),
+          Expanded(
+            child: TMailButtonWidget(
+              key: Key(SendingEmailActionType.delete.getButtonKey()),
+              text: SendingEmailActionType.delete.getButtonTitle(context),
+              icon: imagePaths.icDeleteComposer,
+              borderRadius: 8,
+              iconColor: SendingEmailActionType.delete.getButtonIconColor(ButtonState.enabled),
+              textStyle: TextStyle(
+                fontSize: 12,
+                color: SendingEmailActionType.delete.getButtonTitleColor(ButtonState.enabled)
+              ),
+              verticalDirection: responsiveUtils.isPortraitMobile(context),
+              onTapActionCallback: () => onHandleSendingEmailActionType?.call(SendingEmailActionType.delete, listSendingEmailSelected),
+            ),
+          ),
         ],
       ),
     );
