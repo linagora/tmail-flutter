@@ -85,7 +85,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
         Obx(() => controller.personalMailboxIsNotEmpty
           ? _buildMailboxCategory(
               context,
-              MailboxCategories.personalMailboxes,
+              MailboxCategories.personalFolders,
               controller.personalRootNode)
           : const SizedBox.shrink()
         )
