@@ -172,11 +172,11 @@ class DestinationPickerController extends BaseMailboxController {
         mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
-      case MailboxCategories.personalMailboxes:
-        final newExpandMode = mailboxCategoriesExpandMode.value.personalMailboxes == ExpandMode.EXPAND
+      case MailboxCategories.personalFolders:
+        final newExpandMode = mailboxCategoriesExpandMode.value.personalFolders == ExpandMode.EXPAND
           ? ExpandMode.COLLAPSE
           : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.personalMailboxes = newExpandMode;
+        mailboxCategoriesExpandMode.value.personalFolders = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
       case MailboxCategories.teamMailboxes:

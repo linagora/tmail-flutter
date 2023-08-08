@@ -284,7 +284,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         && (_responsiveUtils.isMobile(currentContext!) || _responsiveUtils.isTablet(currentContext!))) {
       mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode(
           defaultMailbox: ExpandMode.COLLAPSE,
-          personalMailboxes: ExpandMode.COLLAPSE,
+          personalFolders: ExpandMode.COLLAPSE,
           teamMailboxes: ExpandMode.COLLAPSE);
     } else {
       mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode.initial();
@@ -832,9 +832,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
-      case MailboxCategories.personalMailboxes:
-        final newExpandMode = mailboxCategoriesExpandMode.value.personalMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.personalMailboxes = newExpandMode;
+      case MailboxCategories.personalFolders:
+        final newExpandMode = mailboxCategoriesExpandMode.value.personalFolders == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
+        mailboxCategoriesExpandMode.value.personalFolders = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         if (personalMailboxTree.value.root.hasChildren()) {
           _triggerToggleMailboxCategories();
