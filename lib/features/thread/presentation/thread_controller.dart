@@ -161,7 +161,7 @@ class ThreadController extends BaseController with EmailActionController {
       _searchEmailsSuccess(success);
     } else if (success is SearchMoreEmailSuccess) {
       _searchMoreEmailsSuccess(success);
-    } else if (success is SearchingMoreState || success is LoadingMoreState) {
+    } else if (success is SearchingMoreState || success is LoadingMoreEmails) {
       loadingMoreStatus = LoadingMoreStatus.running;
     } else if (success is GetEmailByIdLoading) {
       openingEmail.value = true;
@@ -175,6 +175,7 @@ class ThreadController extends BaseController with EmailActionController {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is SearchEmailFailure) {
+      mailboxDashBoardController.refreshingMailboxState.value = Left(failure);
       canSearchMore = false;
       mailboxDashBoardController.emailsInCurrentMailbox.clear();
     } else if (failure is SearchMoreEmailFailure || failure is LoadMoreEmailsFailure) {
@@ -183,6 +184,8 @@ class ThreadController extends BaseController with EmailActionController {
       openingEmail.value = false;
       _navigationRouter = null;
       popAndPush(AppRoutes.unknownRoutePage);
+    } else if (failure is GetAllEmailFailure) {
+      mailboxDashBoardController.refreshingMailboxState.value = Left(failure);
     }
   }
 
@@ -374,6 +377,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
+    mailboxDashBoardController.refreshingMailboxState.value = Right(success);
     _currentEmailState = success.currentEmailState;
     log('ThreadController::_getAllEmailSuccess():_currentEmailState: $_currentEmailState');
     final newListEmail = success.emailList.syncPresentationEmail(
@@ -724,6 +728,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _searchEmailsSuccess(SearchEmailSuccess success) {
+    mailboxDashBoardController.refreshingMailboxState.value = Right(success);
     canSearchMore = true;
     final resultEmailSearchList = success.emailList
         .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
