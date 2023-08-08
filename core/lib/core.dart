@@ -52,7 +52,6 @@ export 'presentation/views/text/rich_text_builder.dart';
 export 'presentation/views/text/text_overflow_builder.dart';
 export 'presentation/views/responsive/responsive_widget.dart';
 export 'presentation/views/list/tree_view.dart';
-export 'presentation/views/button/button_builder.dart';
 export 'presentation/views/button/icon_button_web.dart';
 export 'presentation/views/button/tmail_button_widget.dart';
 export 'presentation/views/image/avatar_builder.dart';

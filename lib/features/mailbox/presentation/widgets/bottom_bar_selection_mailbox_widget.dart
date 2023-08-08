@@ -1,8 +1,9 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/button/button_builder.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 
@@ -10,15 +11,11 @@ typedef OnMailboxActionsClick = void Function(MailboxActions, List<PresentationM
 
 class BottomBarSelectionMailboxWidget extends StatelessWidget {
 
-  final ResponsiveUtils _responsiveUtils;
-  final ImagePaths _imagePaths;
   final List<PresentationMailbox> _listSelectionMailbox;
   final List<MailboxActions> _listMailboxActions;
   final OnMailboxActionsClick onMailboxActionsClick;
 
   const BottomBarSelectionMailboxWidget(
-    this._responsiveUtils,
-    this._imagePaths,
     this._listSelectionMailbox,
     this._listMailboxActions,
     {
@@ -30,23 +27,36 @@ class BottomBarSelectionMailboxWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: _listMailboxActions
-      .map((action) => _buildMailboxActionButton(context, action))
-      .toList());
-  }
+    final responsiveUtils = Get.find<ResponsiveUtils>();
+    final imagePaths = Get.find<ImagePaths>();
 
-  Widget _buildMailboxActionButton(BuildContext context, MailboxActions actions) {
-    return Expanded(child: (ButtonBuilder(actions.getContextMenuIcon(_imagePaths))
-      ..radiusSplash(8)
-      ..padding(const EdgeInsets.all(8))
-      ..tooltip(actions.getTitleContextMenu(context))
-      ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-      ..iconColor(AppColor.colorTextButton)
-      ..onPressActionClick(() => onMailboxActionsClick.call(actions, _listSelectionMailbox))
-      ..text(
-        _responsiveUtils.isLandscapeMobile(context) ? null : actions.getTitleContextMenu(context),
-        isVertical: true
-      )
-    ).build());
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(
+          color: AppColor.colorDividerHorizontal,
+          width: 0.5,
+        )),
+      ),
+      child: IntrinsicHeight(
+        child: Row(children: _listMailboxActions
+          .map((action) {
+            return Expanded(child: TMailButtonWidget(
+              key: Key('${action.name}_button'),
+              text: responsiveUtils.isLandscapeMobile(context)
+                ? ''
+                : action.getTitleContextMenu(context),
+              icon: action.getContextMenuIcon(imagePaths),
+              borderRadius: 0,
+              backgroundColor: Colors.transparent,
+              flexibleText: true,
+              tooltipMessage: action.getTitleContextMenu(context),
+              textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+              onTapActionCallback: () => onMailboxActionsClick.call(action, _listSelectionMailbox),
+            ));
+          })
+          .toList()
+        ),
+      ),
+    );
   }
 }

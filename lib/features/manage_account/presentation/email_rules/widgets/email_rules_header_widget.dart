@@ -1,7 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/button/button_builder.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -48,51 +48,43 @@ class EmailRulesHeaderWidget extends StatelessWidget {
     if (!responsiveUtils.isMobile(context)) {
       return Row(
         children: [
-          (ButtonBuilder(imagePaths.icAddNewRules)
-            ..key(const Key('button_new_rule'))
-            ..decoration(BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: AppColor.colorTextButton))
-            ..paddingIcon(const EdgeInsets.only(right: 8))
-            ..iconColor(Colors.white)
-            ..size(20)
-            ..radiusSplash(10)
-            ..addBoxConstraints(const BoxConstraints(minWidth: 130))
-            ..padding(const EdgeInsets.symmetric(vertical: 12,horizontal: 8))
-            ..textStyle(const TextStyle(
+          TMailButtonWidget(
+            key: const Key('new_rule_button'),
+            text: AppLocalizations.of(context).addNewRule,
+            icon: imagePaths.icAddNewRules,
+            borderRadius: 10,
+            backgroundColor: AppColor.colorTextButton,
+            iconColor: Colors.white,
+            minWidth: 130,
+            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 8),
+            iconSize: 20,
+            textStyle: const TextStyle(
               fontSize: 17,
               color: Colors.white,
               fontWeight: FontWeight.w500,
-            ))
-            ..onPressActionClick(() => createRule.call())
-            ..text(
-              AppLocalizations.of(context).addNewRule,
-              isVertical: false,
-            )).build(),
+            ),
+            onTapActionCallback: createRule,
+          ),
           const Spacer(),
         ],
       );
     } else {
-      return (ButtonBuilder(imagePaths.icAddNewRules)
-        ..key(const Key('button_new_rule'))
-        ..decoration(BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: AppColor.colorTextButton))
-        ..paddingIcon(const EdgeInsets.only(right: 8))
-        ..iconColor(Colors.white)
-        ..size(20)
-        ..radiusSplash(10)
-        ..padding(const EdgeInsets.symmetric(vertical: 12))
-        ..textStyle(const TextStyle(
+      return TMailButtonWidget(
+        key: const Key('new_rule_button'),
+        text: AppLocalizations.of(context).addNewRule,
+        icon: imagePaths.icAddNewRules,
+        borderRadius: 10,
+        backgroundColor: AppColor.colorTextButton,
+        iconColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        iconSize: 20,
+        textStyle: const TextStyle(
           fontSize: 17,
           color: Colors.white,
           fontWeight: FontWeight.w500,
-        ))
-        ..onPressActionClick(() => createRule.call())
-        ..text(
-          AppLocalizations.of(context).addNewRule,
-          isVertical: false,
-        )).build();
+        ),
+        onTapActionCallback: createRule,
+      );
     }
   }
 }

@@ -2067,6 +2067,10 @@ class MailboxDashBoardController extends ReloadableController {
     await Future.delayed(const Duration(milliseconds: 500));
     dispatchAction(RefreshAllEmailAction());
   }
+
+  void selectAllEmailAction() {
+    dispatchAction(SelectionAllEmailAction());
+  }
   
   @override
   void onClose() {
