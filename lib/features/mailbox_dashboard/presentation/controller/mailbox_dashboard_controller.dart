@@ -110,6 +110,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
@@ -192,6 +193,7 @@ class MailboxDashBoardController extends ReloadableController {
   final _isDraggingMailbox = RxBool(false);
   final searchMailboxActivated = RxBool(false);
   final listSendingEmails = RxList<SendingEmail>();
+  final refreshingMailboxState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -2058,6 +2060,12 @@ class MailboxDashBoardController extends ReloadableController {
         ).build())
       );
     }
+  }
+
+  void refreshMailboxAction() async {
+    refreshingMailboxState.value = Right(RefreshAllEmailLoading());
+    await Future.delayed(const Duration(milliseconds: 500));
+    dispatchAction(RefreshAllEmailAction());
   }
   
   @override
