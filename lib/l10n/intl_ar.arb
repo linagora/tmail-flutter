@@ -1223,8 +1223,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "personalMailboxes": "صناديق البريد الشخصية",
-  "@personalMailboxes": {
+  "personalFolders": "المجلدات الشخصية",
+  "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
