@@ -497,7 +497,7 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
               textStyle: const TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 17,
-                color: AppColor.lineItemListColor
+                color: AppColor.colorLabelCancelButton
               ),
               backgroundColor: AppColor.emailAddressChipColor,
               width: 150,
