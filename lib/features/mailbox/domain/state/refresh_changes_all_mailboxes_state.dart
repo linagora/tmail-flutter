@@ -3,6 +3,8 @@ import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 
+class RefreshChangesAllMailboxLoading extends LoadingState {}
+
 class RefreshChangesAllMailboxSuccess extends UIState {
   final List<PresentationMailbox> mailboxList;
   final State? currentMailboxState;

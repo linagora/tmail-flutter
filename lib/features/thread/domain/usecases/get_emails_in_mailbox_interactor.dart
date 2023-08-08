@@ -28,7 +28,7 @@ class GetEmailsInMailboxInteractor {
     }
   ) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
+      yield Right<Failure, Success>(GetAllEmailLoading());
 
       yield* threadRepository
         .getAllEmail(
