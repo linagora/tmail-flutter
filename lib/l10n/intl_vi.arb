@@ -2672,8 +2672,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "personalMailboxes": "Hộp thư cá nhân",
-  "@personalMailboxes": {
+  "personalFolders": "Thư mục cá nhân",
+  "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -237,7 +237,7 @@ class MailboxView extends BaseMailboxView {
             if (controller.personalMailboxIsNotEmpty) {
               return _buildMailboxCategory(
                 context,
-                MailboxCategories.personalMailboxes,
+                MailboxCategories.personalFolders,
                 controller.personalRootNode
               );
             } else {

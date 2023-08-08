@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum MailboxCategories {
   exchange,
-  personalMailboxes,
+  personalFolders,
   appGrid,
   teamMailboxes
 }
@@ -17,8 +17,8 @@ extension MailboxCategoriessExtension on MailboxCategories {
     switch(this) {
       case MailboxCategories.exchange:
         return 'exchange';
-      case MailboxCategories.personalMailboxes:
-        return 'personalMailboxes';
+      case MailboxCategories.personalFolders:
+        return 'personalFolders';
       case MailboxCategories.appGrid:
         return 'appGrid';
       case MailboxCategories.teamMailboxes:
@@ -30,8 +30,8 @@ extension MailboxCategoriessExtension on MailboxCategories {
     switch(this) {
       case MailboxCategories.exchange:
         return AppLocalizations.of(context).exchange;
-      case MailboxCategories.personalMailboxes:
-        return AppLocalizations.of(context).personalMailboxes;
+      case MailboxCategories.personalFolders:
+        return AppLocalizations.of(context).personalFolders;
       case MailboxCategories.appGrid:
         return AppLocalizations.of(context).appGridTittle;
       case MailboxCategories.teamMailboxes:
@@ -43,8 +43,8 @@ extension MailboxCategoriessExtension on MailboxCategories {
     switch(this) {
       case MailboxCategories.exchange:
         return categoriesExpandMode.defaultMailbox;
-      case MailboxCategories.personalMailboxes:
-        return categoriesExpandMode.personalMailboxes;
+      case MailboxCategories.personalFolders:
+        return categoriesExpandMode.personalFolders;
       case MailboxCategories.teamMailboxes:
         return categoriesExpandMode.teamMailboxes;
       default:

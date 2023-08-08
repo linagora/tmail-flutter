@@ -1892,8 +1892,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "personalMailboxes": "Boîtes aux lettres personnelles",
-  "@personalMailboxes": {
+  "personalFolders": "Dossiers personnels",
+  "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
