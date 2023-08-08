@@ -16,29 +16,11 @@ class DashBoardAction extends UIAction {
   List<Object?> get props => [];
 }
 
-class RefreshAllEmailAction extends DashBoardAction {
+class RefreshAllEmailAction extends DashBoardAction {}
 
-  RefreshAllEmailAction();
+class SelectionAllEmailAction extends DashBoardAction {}
 
-  @override
-  List<Object?> get props => [];
-}
-
-class SelectionAllEmailAction extends DashBoardAction {
-
-  SelectionAllEmailAction();
-
-  @override
-  List<Object?> get props => [];
-}
-
-class CancelSelectionAllEmailAction extends DashBoardAction {
-
-  CancelSelectionAllEmailAction();
-
-  @override
-  List<Object?> get props => [];
-}
+class CancelSelectionAllEmailAction extends DashBoardAction {}
 
 class FilterMessageAction extends DashBoardAction {
 
@@ -74,13 +56,7 @@ class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
   List<Object?> get props => [presentationEmail];
 }
 
-class StartSearchEmailAction extends DashBoardAction {
-
-  StartSearchEmailAction();
-
-  @override
-  List<Object?> get props => [];
-}
+class StartSearchEmailAction extends DashBoardAction {}
 
 class EmptyTrashAction extends DashBoardAction {
 
@@ -92,19 +68,9 @@ class EmptyTrashAction extends DashBoardAction {
   List<Object?> get props => [];
 }
 
-class ClearSearchEmailAction extends DashBoardAction {
-  ClearSearchEmailAction();
+class ClearSearchEmailAction extends DashBoardAction {}
 
-  @override
-  List<Object?> get props => [];
-}
-
-class ClearAllFieldOfAdvancedSearchAction extends DashBoardAction {
-  ClearAllFieldOfAdvancedSearchAction();
-
-  @override
-  List<Object?> get props => [];
-}
+class ClearAllFieldOfAdvancedSearchAction extends DashBoardAction {}
 
 class SelectEmailByIdAction extends DashBoardAction {
 

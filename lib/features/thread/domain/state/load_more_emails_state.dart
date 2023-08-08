@@ -2,6 +2,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:model/email/presentation_email.dart';
 
+class LoadingMoreEmails extends LoadingState {}
+
 class LoadMoreEmailsSuccess extends UIState {
   final List<PresentationEmail> emailList;
 

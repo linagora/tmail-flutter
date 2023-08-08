@@ -27,7 +27,7 @@ class RefreshChangesEmailsInMailboxInteractor {
       EmailFilter? emailFilter,
     }
   ) async* {
-    yield Right<Failure, Success>(RefreshingState());
+    yield Right<Failure, Success>(RefreshChangesAllEmailLoading());
 
     try {
       yield* threadRepository
