@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/utils/mailbox_dashboard_constant.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/utils/mailbox_dashboard_constant.dart';
 
 class SharePreferenceSpamReportDataSource extends SpamReportDataSource {
   final SharedPreferences _sharedPreferences;
