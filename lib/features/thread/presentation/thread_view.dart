@@ -222,9 +222,9 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() {
       if (controller.isAllSearchInActive) {
         return Container(
-          padding: PlatformInfo.isWeb
-            ? EdgeInsets.zero
-            : controller.listEmailSelected.isNotEmpty ? const EdgeInsets.only(bottom: 70) : EdgeInsets.zero,
+          padding: PlatformInfo.isMobile && controller.listEmailSelected.isNotEmpty
+            ? EdgeInsets.only(bottom: _responsiveUtils.isTabletLarge(context) ? 85 : 70)
+            : EdgeInsets.zero,
           child: ComposeFloatingButton(
             scrollController: controller.listEmailController,
             onTap: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments())

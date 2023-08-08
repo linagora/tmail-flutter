@@ -200,6 +200,7 @@ extension AppColor on Color {
   static const colorMailto = Color(0xFFB3B3B3);
   static const colorEventDescriptionBackground = Color(0x05000000);
   static const colorLabelQuotas = Color(0xFF818C99);
+  static const colorLabelCancelButton = Color(0xFFAEB7C2);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

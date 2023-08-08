@@ -1,8 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/button/button_builder.dart';
-import 'package:core/utils/platform_info.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -35,86 +34,131 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      key: const Key('bottom_bar_thread_selection_widget'),
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(
-          color: AppColor.lineItemListColor,
-          width: 0.2,
+          color: AppColor.colorDividerHorizontal,
+          width: 0.5,
         )),
-        color: Colors.white
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if(_currentMailbox?.isDrafts == false)
-            Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead)
-              ..key(const Key('button_mark_read_email'))
-              ..padding(const EdgeInsets.all(8))
-              ..radiusSplash(8)
-              ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-              ..onPressActionClick(() {
-                onPressEmailSelectionActionClick?.call(
-                  _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
-                  _listSelectionEmail
-                );
-              })
-              ..text(_getTextButtonMarkAsRead(context), isVertical: _responsiveUtils.isMobile(context)))
-            .build()),
-          Expanded(child: (ButtonBuilder(_listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar)
-            ..key(const Key('button_mark_as_star_email'))
-            ..padding(const EdgeInsets.all(8))
-            ..radiusSplash(8)
-            ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-            ..onPressActionClick(() {
-              onPressEmailSelectionActionClick?.call(
-                _listSelectionEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
-                _listSelectionEmail
-              );
-            })
-            ..text(_getTextButtonMarkAsStar(context), isVertical: _responsiveUtils.isMobile(context)))
-          .build()),
-          if (_currentMailbox?.isDrafts == false)
-            Expanded(child: (ButtonBuilder(_imagePaths.icMove)
-              ..key(const Key('button_move_to_mailbox'))
-              ..padding(const EdgeInsets.all(8))
-              ..radiusSplash(8)
-              ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-              ..onPressActionClick(() {
-                onPressEmailSelectionActionClick?.call(EmailActionType.moveToMailbox, _listSelectionEmail);
-              })
-              ..text(_getTextButtonMove(context), isVertical: _responsiveUtils.isMobile(context)))
-            .build()),
-          if (_currentMailbox?.isDrafts == false)
-            Expanded(child: (ButtonBuilder(_currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam)
-              ..key(const Key('button_move_to_spam'))
-              ..padding(const EdgeInsets.all(8))
-              ..radiusSplash(8)
-              ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-              ..onPressActionClick(() {
-                if (_currentMailbox?.isSpam == true) {
-                  onPressEmailSelectionActionClick?.call(EmailActionType.unSpam, _listSelectionEmail);
-                } else {
-                  onPressEmailSelectionActionClick?.call(EmailActionType.moveToSpam, _listSelectionEmail);
-                }
-              })
-              ..text(_getTextButtonSpam(context), isVertical: _responsiveUtils.isMobile(context)))
-            .build()),
-          Expanded(child: (ButtonBuilder(canDeletePermanently ? _imagePaths.icDeleteComposer : _imagePaths.icDelete)
-            ..key(const Key('button_delete_email'))
-            ..iconColor(canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor)
-            ..padding(const EdgeInsets.all(8))
-            ..radiusSplash(8)
-            ..textStyle(const TextStyle(fontSize: 12, color: AppColor.colorTextButton))
-            ..onPressActionClick(() {
-              if (canDeletePermanently) {
-                onPressEmailSelectionActionClick?.call(EmailActionType.deletePermanently, _listSelectionEmail);
-              } else {
-                onPressEmailSelectionActionClick?.call(EmailActionType.moveToTrash, _listSelectionEmail);
-              }
-            })
-            ..text(_getTextButtonDelete(context), isVertical: _responsiveUtils.isMobile(context)))
-          .build())
-        ]
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            if (_currentMailbox?.isDrafts == false)
+              Expanded(
+                child: TMailButtonWidget(
+                  key: const Key('mark_as_read_selected_email_button'),
+                  text: _listSelectionEmail.isAllEmailRead
+                    ? AppLocalizations.of(context).unread
+                    : AppLocalizations.of(context).read,
+                  icon: _listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead,
+                  borderRadius: 0,
+                  iconSize: 20,
+                  flexibleText: true,
+                  textAlign: TextAlign.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  backgroundColor: Colors.transparent,
+                  textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                  verticalDirection: _verticalDirection(context),
+                  onTapActionCallback: () {
+                    onPressEmailSelectionActionClick?.call(
+                      _listSelectionEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+                      _listSelectionEmail
+                    );
+                  },
+                ),
+              ),
+            Expanded(
+              child: TMailButtonWidget(
+                key: const Key('mark_as_star_selected_email_button'),
+                text: _listSelectionEmail.isAllEmailStarred
+                  ? AppLocalizations.of(context).un_star
+                  : AppLocalizations.of(context).star,
+                icon: _listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar,
+                borderRadius: 0,
+                iconSize: 20,
+                flexibleText: true,
+                textAlign: TextAlign.center,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                backgroundColor: Colors.transparent,
+                textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                verticalDirection: _verticalDirection(context),
+                onTapActionCallback: () {
+                  onPressEmailSelectionActionClick?.call(
+                    _listSelectionEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred,
+                    _listSelectionEmail
+                  );
+                },
+              ),
+            ),
+            if (_currentMailbox?.isDrafts == false)
+              Expanded(
+                child: TMailButtonWidget(
+                  key: const Key('move_selected_email_to_mailbox_button'),
+                  text: AppLocalizations.of(context).move,
+                  icon: _imagePaths.icMove,
+                  borderRadius: 0,
+                  iconSize: 20,
+                  textAlign: TextAlign.center,
+                  flexibleText: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  backgroundColor: Colors.transparent,
+                  textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                  verticalDirection: _verticalDirection(context),
+                  onTapActionCallback: () {
+                    onPressEmailSelectionActionClick?.call(EmailActionType.moveToMailbox, _listSelectionEmail);
+                  },
+                ),
+              ),
+            if (_currentMailbox?.isDrafts == false)
+              Expanded(
+                child: TMailButtonWidget(
+                  key: const Key('move_selected_email_to_spam_button'),
+                  text: _currentMailbox?.isSpam == true
+                    ? AppLocalizations.of(context).un_spam
+                    : AppLocalizations.of(context).spam,
+                  icon: _currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+                  borderRadius: 0,
+                  iconSize: 20,
+                  flexibleText: true,
+                  textAlign: TextAlign.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                  backgroundColor: Colors.transparent,
+                  textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                  verticalDirection: _verticalDirection(context),
+                  onTapActionCallback: () {
+                    if (_currentMailbox?.isSpam == true) {
+                      onPressEmailSelectionActionClick?.call(EmailActionType.unSpam, _listSelectionEmail);
+                    } else {
+                      onPressEmailSelectionActionClick?.call(EmailActionType.moveToSpam, _listSelectionEmail);
+                    }
+                  },
+                ),
+              ),
+            Expanded(
+              child: TMailButtonWidget(
+                key: const Key('delete_selected_email_button'),
+                text: AppLocalizations.of(context).delete,
+                icon: canDeletePermanently ? _imagePaths.icDeleteComposer : _imagePaths.icDelete,
+                iconColor: canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor,
+                borderRadius: 0,
+                iconSize: 20,
+                flexibleText: true,
+                textAlign: TextAlign.center,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                backgroundColor: Colors.transparent,
+                textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                verticalDirection: _verticalDirection(context),
+                onTapActionCallback: () {
+                  if (canDeletePermanently) {
+                    onPressEmailSelectionActionClick?.call(EmailActionType.deletePermanently, _listSelectionEmail);
+                  } else {
+                    onPressEmailSelectionActionClick?.call(EmailActionType.moveToTrash, _listSelectionEmail);
+                  }
+                },
+              ),
+            ),
+          ]
+        ),
       )
     );
   }
@@ -123,54 +167,9 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
     return _currentMailbox?.isTrash == true || _currentMailbox?.isDrafts == true;
   }
 
-  String? _getTextButtonMarkAsRead(BuildContext context) {
-    if (!_isMailboxDashboardSplitView(context)) {
-      return _listSelectionEmail.isAllEmailRead
-        ? AppLocalizations.of(context).unread
-        : AppLocalizations.of(context).read;
-    }
-    return null;
-  }
-
-  String? _getTextButtonMarkAsStar(BuildContext context) {
-    if (!_isMailboxDashboardSplitView(context)) {
-      return _listSelectionEmail.isAllEmailStarred
-        ? AppLocalizations.of(context).un_star
-        : AppLocalizations.of(context).star;
-    }
-    return null;
-  }
-
-  String? _getTextButtonMove(BuildContext context) {
-    if (!_isMailboxDashboardSplitView(context)) {
-      return AppLocalizations.of(context).move;
-    }
-    return null;
-  }
-
-  String? _getTextButtonSpam(BuildContext context) {
-    if (!_isMailboxDashboardSplitView(context)) {
-      return _currentMailbox?.isSpam == true
-        ? AppLocalizations.of(context).un_spam
-        : AppLocalizations.of(context).spam;
-    }
-    return null;
-  }
-
-  String? _getTextButtonDelete(BuildContext context) {
-    if (!_isMailboxDashboardSplitView(context)) {
-      return AppLocalizations.of(context).delete;
-    }
-    return null;
-  }
-
-  bool _isMailboxDashboardSplitView(BuildContext context) {
-    if (PlatformInfo.isWeb) {
-      return _responsiveUtils.isTabletLarge(context);
-    } else {
-      return _responsiveUtils.isLandscapeTablet(context) ||
-        _responsiveUtils.isTabletLarge(context) ||
-        _responsiveUtils.isDesktop(context);
-    }
+  bool _verticalDirection(BuildContext context) {
+    return _responsiveUtils.isLandscapeMobile(context) ||
+      _responsiveUtils.isPortraitMobile(context) ||
+      _responsiveUtils.isTabletLarge(context);
   }
 }
