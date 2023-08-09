@@ -99,6 +99,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final _activeScrollTop = RxBool(false);
   final _activeScrollBottom = RxBool(true);
 
+  MailboxId? _newFolderId;
+
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   final mailboxListScrollController = ScrollController();
 
@@ -180,6 +182,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _createNewMailboxFailure(failure);
     } else if (failure is DeleteMultipleMailboxFailure) {
       _deleteMailboxFailure(failure);
+    } else if (failure is RefreshChangesAllMailboxFailure) {
+      _clearNewFolderId();
     }
   }
 
@@ -193,6 +197,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       } else if (success is RefreshChangesAllMailboxSuccess) {
         _initialMailboxVariableStorage(isRefreshChange: true);
         mailboxDashBoardController.refreshSpamReportBanner();
+
+        if (_newFolderId != null) {
+          _redirectToNewFolder();
+        }
       }
     });
   }
@@ -307,6 +315,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null && newMailboxState != null) {
       refreshMailboxChanges(session, accountId, newMailboxState);
+    } else {
+      _newFolderId = null;
     }
   }
 
@@ -504,9 +514,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).new_mailbox_is_created(success.newMailbox.name?.name ?? ''),
+        AppLocalizations.of(currentContext!).createFolderSuccessfullyMessage(success.newMailbox.name?.name ?? ''),
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: _imagePaths.icFolderMailbox);
+
+      _newFolderId = success.newMailbox.id;
     }
 
     _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
@@ -1191,5 +1203,18 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     mailboxDashBoardController.setSelectedMailbox(null);
     closeMailboxScreen(context);
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.sendingQueue);
+  }
+
+  void _clearNewFolderId() {
+    _newFolderId = null;
+  }
+
+  void _redirectToNewFolder() {
+    final newMailboxNode = findMailboxNodeById(_newFolderId!);
+    log('MailboxController::_redirectToNewFolder:newMailboxNode: $newMailboxNode');
+    if (newMailboxNode != null && currentContext != null) {
+      openMailbox(currentContext!, newMailboxNode.item);
+    }
+    _clearNewFolderId();
   }
 }

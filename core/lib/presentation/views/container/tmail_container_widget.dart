@@ -61,7 +61,6 @@ class TMailContainerWidget extends StatelessWidget {
           ? Tooltip(
               message: tooltipMessage,
               child: Container(
-                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: backgroundColor ?? AppColor.colorButtonHeaderThread,
                   borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
@@ -78,7 +77,6 @@ class TMailContainerWidget extends StatelessWidget {
               )
             )
           : Container(
-              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: backgroundColor ?? AppColor.colorButtonHeaderThread,
                 borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
