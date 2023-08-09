@@ -1003,4 +1003,13 @@ class ThreadController extends BaseController with EmailActionController {
   void onDragMailBox(bool isDrag) {
     mailboxDashBoardController.onDragMailbox(isDrag);
   }
+
+  bool get isNewFolderCreated {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    return currentMailbox != null &&
+      currentMailbox.isPersonal &&
+      !currentMailbox.isDefault;
+  }
+
+  void goToCreateEmailRuleView() {}
 }
