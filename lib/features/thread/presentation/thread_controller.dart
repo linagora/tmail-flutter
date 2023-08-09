@@ -37,7 +37,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
@@ -67,7 +71,9 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -87,6 +93,8 @@ class ThreadController extends BaseController with EmailActionController {
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
+
+  CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
 
   final listEmailDrag = <PresentationEmail>[].obs;
   bool _rangeSelectionMode = false;
@@ -168,6 +176,8 @@ class ThreadController extends BaseController with EmailActionController {
     } else if (success is GetEmailByIdSuccess) {
       openingEmail.value = false;
       _openEmailDetailView(success.email);
+    } else if (success is CreateNewRuleFilterSuccess) {
+      _createNewRuleFilterSuccess(success);
     }
   }
 
@@ -1011,5 +1021,47 @@ class ThreadController extends BaseController with EmailActionController {
       !currentMailbox.isDefault;
   }
 
-  void goToCreateEmailRuleView() {}
+  void goToCreateEmailRuleView() async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    if (accountId != null && session != null) {
+      final arguments = RulesFilterCreatorArguments(
+        accountId,
+        session,
+        mailboxDestination: currentMailbox
+      );
+
+      final newRuleFilterRequest = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
+        : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
+
+      if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
+        _createNewRuleFilterAction(accountId, newRuleFilterRequest);
+      }
+    } else {
+      logError('ThreadController::goToCreateEmailRuleView: Account or Session is NULL');
+    }
+  }
+
+  void _createNewRuleFilterAction(
+    AccountId accountId,
+    CreateNewEmailRuleFilterRequest ruleFilterRequest
+  ) async {
+    _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
+    if (_createNewEmailRuleFilterInteractor != null) {
+      consumeState(_createNewEmailRuleFilterInteractor!.execute(accountId, ruleFilterRequest));
+    }
+  }
+
+  void _createNewRuleFilterSuccess(CreateNewRuleFilterSuccess success) {
+    if (success.newListRules.isNotEmpty == true &&
+        currentOverlayContext != null &&
+        currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).newFilterWasCreated
+      );
+    }
+  }
 }
