@@ -225,7 +225,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
       );
     } else if (widget._presentationMailbox.isTeamMailboxes) {
       return TextOverflowBuilder(
-        (widget._presentationMailbox.emailTeamMailBoxes ?? ''),
+        widget._presentationMailbox.emailTeamMailBoxes,
         style: const TextStyle(
           fontSize: 11,
           color: AppColor.colorEmailAddressFull,
