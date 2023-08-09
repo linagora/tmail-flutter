@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.da
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
@@ -212,7 +212,7 @@ class MailboxView extends BaseMailboxView {
               children: [
                 Expanded(
                   child: Text(
-                    AppLocalizations.of(context).mailBoxes,
+                    AppLocalizations.of(context).folders,
                     style: const TextStyle(
                       fontSize: 20,
                       color: Colors.black,
@@ -338,47 +338,26 @@ class MailboxView extends BaseMailboxView {
               key: const Key('children_tree_mailbox_child'),
               isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
               paddingChild: const EdgeInsetsDirectional.only(start: 14),
-              parent: Obx(() => (MailBoxFolderTileBuilder(
-                    context,
-                    imagePaths,
-                    mailboxNode,
-                    lastNode: lastNode,
-                    allSelectMode: controller.currentSelectMode.value,
-                    mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
-                ..addOnLongPressMailboxNodeAction((mailboxNode) {
-                  openMailboxMenuActionOnMobile(
-                    context,
-                    imagePaths,
-                    mailboxNode.item,
-                    controller
-                  );
-                })
-                ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-                ..addOnClickExpandMailboxNodeAction((mailboxNode) =>
-                  controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController))
-                ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode))
-              ).build()),
+              parent: Obx(() => MailboxItemWidget(
+                mailboxNode: mailboxNode,
+                selectionMode: controller.currentSelectMode.value,
+                mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+                onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, imagePaths, mailboxNode.item, controller),
+                onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
+                onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
+                onSelectMailboxFolderClick: (mailboxNode) => controller.selectMailboxNode(mailboxNode),
+              )),
               children: _buildListChildTileWidget(context, mailboxNode)
             ).build();
           } else {
-            return Obx(() => (MailBoxFolderTileBuilder(
-                  context,
-                  imagePaths,
-                  mailboxNode,
-                  lastNode: lastNode,
-                  allSelectMode: controller.currentSelectMode.value,
-                  mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
-              ..addOnLongPressMailboxNodeAction((mailboxNode) {
-                openMailboxMenuActionOnMobile(
-                  context,
-                  imagePaths,
-                  mailboxNode.item,
-                  controller
-                );
-              })
-              ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-              ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode))
-            ).build());
+            return Obx(() => MailboxItemWidget(
+              mailboxNode: mailboxNode,
+              selectionMode: controller.currentSelectMode.value,
+              mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+              onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, imagePaths, mailboxNode.item, controller),
+              onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
+              onSelectMailboxFolderClick: (mailboxNode) => controller.selectMailboxNode(mailboxNode)
+            ));
           }
       }).toList() ?? <Widget>[];
   }
