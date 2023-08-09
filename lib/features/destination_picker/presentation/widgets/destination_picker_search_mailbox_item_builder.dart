@@ -119,7 +119,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
       );
     } else if (_presentationMailbox.isTeamMailboxes) {
       return Text(
-        _presentationMailbox.emailTeamMailBoxes ?? '',
+        _presentationMailbox.emailTeamMailBoxes,
         maxLines: 1,
         softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,

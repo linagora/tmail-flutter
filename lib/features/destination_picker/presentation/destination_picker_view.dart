@@ -27,7 +27,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -359,35 +359,29 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             key: const Key('children_tree_mailbox_child'),
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
             paddingChild: const EdgeInsetsDirectional.only(start: 14),
-            parent: (MailBoxFolderTileBuilder(
-                    context,
-                    _imagePaths,
-                    mailboxNode,
-                    lastNode: lastNode,
-                    mailboxActions: actions,
-                    mailboxIdAlreadySelected: mailboxIdSelected,
-                    mailboxDisplayed: MailboxDisplayed.destinationPicker)
-                ..addOnClickOpenMailboxNodeAction((node) => _pickMailboxNode(context, node))
-                ..addOnClickExpandMailboxNodeAction((mailboxNode) =>
-                  controller.toggleMailboxFolder(mailboxNode, controller.destinationListScrollController))
-              ).build(),
+            parent: MailboxItemWidget(
+              mailboxNode: mailboxNode,
+              mailboxActions: actions,
+              mailboxIdAlreadySelected: mailboxIdSelected,
+              mailboxDisplayed: MailboxDisplayed.destinationPicker,
+              onOpenMailboxFolderClick: (node) => _pickMailboxNode(context, node),
+              onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.destinationListScrollController),
+            ),
             children: _buildListChildTileWidget(
-                context,
-                mailboxNode,
-                mailboxIdSelected,
-                actions: actions)
+              context,
+              mailboxNode,
+              mailboxIdSelected,
+              actions: actions
+            )
           ).build();
         } else {
-          return (MailBoxFolderTileBuilder(
-                context,
-                _imagePaths,
-                mailboxNode,
-                lastNode: lastNode,
-                mailboxDisplayed: MailboxDisplayed.destinationPicker,
-                mailboxIdAlreadySelected: mailboxIdSelected,
-                mailboxActions: actions)
-            ..addOnClickOpenMailboxNodeAction((node) => _pickMailboxNode(context, node))
-          ).build();
+          return MailboxItemWidget(
+            mailboxNode: mailboxNode,
+            mailboxDisplayed: MailboxDisplayed.destinationPicker,
+            mailboxIdAlreadySelected: mailboxIdSelected,
+            mailboxActions: actions,
+            onOpenMailboxFolderClick: (node) => _pickMailboxNode(context, node),
+          );
         }})
       .toList() ?? <Widget>[];
   }
