@@ -3,7 +3,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/presentation/views/background/background_widget_builder.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/platform_info.dart';
@@ -28,6 +27,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_r
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
@@ -392,9 +392,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
     return Obx(() => controller.viewState.value.fold(
         (failure) => const SizedBox.shrink(),
         (success) => success is! SearchingState
-            ? BackgroundWidgetBuilder(
-                AppLocalizations.of(context).no_emails_matching_your_search,
-                controller.responsiveUtils,
+            ? EmptyEmailsWidget(
+                key: const Key('empty_search_email_view'),
+                title: AppLocalizations.of(context).no_emails_matching_your_search,
                 iconSVG: _imagePaths.icEmptyEmail
               )
             : const SizedBox.shrink())

@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_bottom_loading_bar_widget.dart';
@@ -482,11 +483,14 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is! LoadingState && success is! SearchingState
-        ? BackgroundWidgetBuilder(
-            _getMessageEmptyEmail(context),
-            controller.responsiveUtils,
+        ? EmptyEmailsWidget(
+            key: const Key('empty_thread_view'),
+            title: _getMessageEmptyEmail(context),
             iconSVG: _imagePaths.icEmptyEmail,
             subTitle: _getSubMessageEmptyEmail(context),
+            onCreateFiltersActionCallback: controller.isNewFolderCreated
+              ? controller.goToCreateEmailRuleView
+              : null,
           )
         : const SizedBox.shrink())
     );
@@ -496,8 +500,9 @@ class ThreadView extends GetWidget<ThreadController>
     if (controller.isSearchActive()) {
       return AppLocalizations.of(context).no_emails_matching_your_search;
     } else {
-      if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all) {
-        return AppLocalizations.of(context).noEmailInYourCurrentMailbox;
+      if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all &&
+          controller.isNewFolderCreated) {
+        return AppLocalizations.of(context).folderCreatedTitle;
       } else {
         return AppLocalizations.of(context).noEmailMatchYourCurrentFilter;
       }
@@ -508,6 +513,9 @@ class ThreadView extends GetWidget<ThreadController>
     if (!controller.isSearchActive()
       && controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all) {
       return AppLocalizations.of(context).reduceSomeFiltersAndTryAgain;
+    } else if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all &&
+        controller.isNewFolderCreated) {
+      return AppLocalizations.of(context).folderCreatedMessage;
     } else {
       return null;
     }
