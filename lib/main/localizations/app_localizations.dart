@@ -3233,4 +3233,31 @@ class AppLocalizations {
       name: 'quotaErrorBannerMessage'
     );
   }
+
+  String createFolderSuccessfullyMessage(String folderName) {
+    return Intl.message(
+      'You successfully created $folderName folder',
+      name: 'createFolderSuccessfullyMessage',
+      args: [folderName]
+    );
+  }
+
+  String get folderCreatedTitle {
+    return Intl.message(
+      'Your folder is just created',
+      name: 'folderCreatedTitle');
+  }
+
+  String get folderCreatedMessage {
+    return Intl.message(
+      'To begin using this mailbox, you should add some rules to organize all of your mail in your own way.',
+      name: 'folderCreatedMessage');
+  }
+
+  String get createFilters {
+    return Intl.message(
+      'Create filters',
+      name: 'createFilters');
+  }
+
 }
