@@ -7,7 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -262,17 +262,14 @@ class MailboxView extends BaseMailboxView {
           key: const Key('children_tree_mailbox_child'),
           isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
           paddingChild: const EdgeInsetsDirectional.only(start: 14),
-          parent: Obx(() => (MailBoxFolderTileBuilder(
-                context,
-                imagePaths,
-                mailboxNode,
-                responsiveUtils: responsiveUtils,
-                lastNode: lastNode,
-                mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
-            ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-            ..addOnClickExpandMailboxNodeAction((mailboxNode) =>
-              controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController))
-            ..addOnClickOpenMenuMailboxNodeAction((position, mailboxNode) {
+          parent: Obx(() => MailboxItemWidget(
+            mailboxNode: mailboxNode,
+            mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+            onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
+            onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
+            onSelectMailboxFolderClick: controller.selectMailboxNode,
+            onDragItemAccepted: _handleDragItemAccepted,
+            onMenuActionClick: (position, mailboxNode) {
               openMailboxMenuActionOnWeb(
                 context,
                 imagePaths,
@@ -281,22 +278,18 @@ class MailboxView extends BaseMailboxView {
                 mailboxNode.item,
                 controller
               );
-            })
-            ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode))
-            ..addOnDragEmailToMailboxAccepted(_handleDragItemAccepted)
-          ).build()),
+            },
+          )),
           children: _buildListChildTileWidget(context, mailboxNode)
         ).build();
       } else {
-        return Obx(() => (MailBoxFolderTileBuilder(
-            context,
-              imagePaths,
-              mailboxNode,
-              responsiveUtils: responsiveUtils,
-              lastNode: lastNode,
-              mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value)
-          ..addOnClickOpenMailboxNodeAction((mailboxNode) => controller.openMailbox(context, mailboxNode.item))
-          ..addOnClickOpenMenuMailboxNodeAction((position, mailboxNode) {
+        return Obx(() => MailboxItemWidget(
+          mailboxNode: mailboxNode,
+          mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+          onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
+          onSelectMailboxFolderClick: controller.selectMailboxNode,
+          onDragItemAccepted: _handleDragItemAccepted,
+          onMenuActionClick: (position, mailboxNode) {
             openMailboxMenuActionOnWeb(
               context,
               imagePaths,
@@ -305,10 +298,8 @@ class MailboxView extends BaseMailboxView {
               mailboxNode.item,
               controller
             );
-          })
-          ..addOnSelectMailboxNodeAction((mailboxNode) => controller.selectMailboxNode(mailboxNode))
-          ..addOnDragEmailToMailboxAccepted(_handleDragItemAccepted)
-        ).build());
+          },
+        ));
       }
     }).toList() ?? <Widget>[];
   }
