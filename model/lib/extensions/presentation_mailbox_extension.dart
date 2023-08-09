@@ -52,9 +52,15 @@ extension PresentationMailboxExtension on PresentationMailbox {
     return countTotalEmails <= 999 ? '$countTotalEmails' : '999+';
   }
 
-  String? get emailTeamMailBoxes => namespace?.value.substring(
-    (namespace?.value.indexOf('[') ?? 0) + 1,
-    namespace?.value.indexOf(']'));
+  String get emailTeamMailBoxes {
+    final name = namespace?.value ?? '';
+    if (name.isNotEmpty == true &&
+        name.indexOf('[') > 0 &&
+        name.indexOf(']') > name.indexOf('[')) {
+      return name.substring(name.indexOf('[') + 1, name.indexOf(']'));
+    }
+    return name;
+  }
 
   bool get allowedToDisplay => isSubscribedMailbox || isDefault;
 
