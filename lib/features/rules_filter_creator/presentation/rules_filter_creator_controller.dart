@@ -70,6 +70,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   TMailRule? _currentTMailRule;
   EmailAddress? _emailAddress;
   List<TMailRule>? _listEmailRule;
+  PresentationMailbox? _mailboxDestination;
 
   RulesFilterCreatorController(
     this._getAllMailboxInteractor,
@@ -93,6 +94,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
       _session = arguments!.session;
       _currentTMailRule = arguments!.tMailRule;
       _emailAddress = arguments!.emailAddress;
+      _mailboxDestination = arguments!.mailboxDestination;
       actionType.value = arguments!.actionType;
       injectRuleFilterBindings(_session, _accountId);
       try {
@@ -147,6 +149,9 @@ class RulesFilterCreatorController extends BaseMailboxController {
         if (_emailAddress != null) {
           _newRuleConditionValue = _emailAddress?.email;
           _setValueInputField(inputConditionValueController, _newRuleConditionValue ?? '');
+        }
+        if (_mailboxDestination != null) {
+          mailboxSelected.value = _mailboxDestination;
         }
         break;
       case CreatorActionType.edit:
