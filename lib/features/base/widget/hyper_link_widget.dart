@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/features/base/styles/hyper_link_widget_styles.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class HyperLinkWidget extends StatelessWidget {
 
@@ -19,14 +19,7 @@ class HyperLinkWidget extends StatelessWidget {
           fontSize: HyperLinkWidgetStyles.textSize,
           decoration: TextDecoration.underline
         ),
-        recognizer: TapGestureRecognizer()..onTap = () async {
-          if (await canLaunchUrlString(urlString)) {
-            launchUrlString(
-              urlString,
-              mode: LaunchMode.externalApplication
-            );
-          }
-        }
+        recognizer: TapGestureRecognizer()..onTap = () => AppUtils.launchLink(urlString)
       )
     );
   }
