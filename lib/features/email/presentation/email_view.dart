@@ -233,16 +233,15 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
       return _buildEmailMessage(context, email);
     } else {
       return SingleChildScrollView(
-          primary: true,
-          physics : const ClampingScrollPhysics(),
-          child: Container(
-              margin: EdgeInsets.zero,
-              width: double.infinity,
-              alignment: Alignment.center,
-              padding: EdgeInsets.zero,
-              color: Colors.white,
-              child: _buildEmailMessage(context, email)
-          )
+        physics : const ClampingScrollPhysics(),
+        child: Container(
+          margin: EdgeInsets.zero,
+          width: double.infinity,
+          alignment: Alignment.center,
+          padding: EdgeInsets.zero,
+          color: Colors.white,
+          child: _buildEmailMessage(context, email)
+        )
       );
     }
   }
