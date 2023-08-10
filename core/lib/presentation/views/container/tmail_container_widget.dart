@@ -19,6 +19,7 @@ class TMailContainerWidget extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final List<BoxShadow>? boxShadow;
+  final BoxBorder? border;
 
   const TMailContainerWidget({
     super.key,
@@ -35,6 +36,7 @@ class TMailContainerWidget extends StatelessWidget {
     this.padding,
     this.boxShadow,
     this.margin,
+    this.border,
   });
 
   @override
@@ -64,6 +66,7 @@ class TMailContainerWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: backgroundColor ?? AppColor.colorButtonHeaderThread,
                   borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+                  border: border,
                   boxShadow: boxShadow
                 ),
                 width: width,
@@ -80,6 +83,7 @@ class TMailContainerWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: backgroundColor ?? AppColor.colorButtonHeaderThread,
                 borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+                border: border,
                 boxShadow: boxShadow
               ),
               width: width,

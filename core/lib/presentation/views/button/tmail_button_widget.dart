@@ -32,6 +32,7 @@ class TMailButtonWidget extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
   final TextAlign? textAlign;
   final bool flexibleText;
+  final BoxBorder? border;
 
   const TMailButtonWidget({
     super.key,
@@ -59,6 +60,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.margin,
     this.textAlign,
     this.flexibleText = false,
+    this.border,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -125,6 +127,8 @@ class TMailButtonWidget extends StatelessWidget {
     List<BoxShadow>? boxShadow,
     EdgeInsetsGeometry? margin,
     TextAlign? textAlign,
+    bool flexibleText = false,
+    BoxBorder? border,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -143,6 +147,8 @@ class TMailButtonWidget extends StatelessWidget {
       boxShadow: boxShadow,
       margin: margin,
       textAlign: textAlign,
+      flexibleText: flexibleText,
+      border: border,
     );
   }
 
@@ -261,6 +267,7 @@ class TMailButtonWidget extends StatelessWidget {
       padding: padding,
       margin: margin,
       boxShadow: boxShadow,
+      border: border,
       child: childWidget,
     );
   }
