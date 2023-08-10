@@ -15,7 +15,7 @@ class GetAllMailboxInteractor {
 
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, {Properties? properties}) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
+      yield Right<Failure, Success>(GetAllMailboxLoading());
 
       yield* _mailboxRepository
         .getAllMailbox(
