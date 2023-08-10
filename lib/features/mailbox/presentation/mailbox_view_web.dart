@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_folder_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -101,7 +102,17 @@ class MailboxView extends BaseMailboxView {
               padding: EdgeInsetsDirectional.only(end: responsiveUtils.isDesktop(context) ? 16 : 0),
               child: Column(children: [
                 if (!responsiveUtils.isDesktop(context))
-                  buildUserInformation(context),
+                  Obx(() => UserInformationWidget(
+                    userProfile: controller.mailboxDashBoardController.userProfile.value,
+                    subtitle: AppLocalizations.of(context).manage_account,
+                    onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
+                    border: const Border(
+                      bottom: BorderSide(
+                        color: AppColor.colorDividerHorizontal,
+                        width: 0.5,
+                      )
+                    ),
+                  )),
                 Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
                 AppConfig.appGridDashboardAvailable && responsiveUtils.isWebNotDesktop(context)
                   ? buildAppGridDashboard(context, responsiveUtils, imagePaths, controller)
