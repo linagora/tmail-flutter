@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,13 +28,5 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         onSubtitleClick: controller.mailboxDashBoardController.goToSettings)),
       const Divider(color: AppColor.colorDividerMailbox, height: 1)
     ]);
-  }
-
-  Widget buildLoadingView() {
-    return Obx(() => controller.viewState.value.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) => success is LoadingState
-        ? Padding(padding: const EdgeInsets.only(top: 16), child: loadingWidget)
-        : const SizedBox.shrink()));
   }
 }
