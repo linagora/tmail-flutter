@@ -223,6 +223,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       log('SingleEmailController::_handleOpenEmailDetailedView(): email unselected');
       return;
     }
+    dispatchState(Right<Failure, Success>(GetEmailContentLoading()));
 
     emailSupervisorController.updateNewCurrentListEmail();
     _updateCurrentEmailId(selectedEmail.id);
@@ -364,7 +365,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final emailLoaded = emailSupervisorController.getEmailInQueueByEmailId(emailId);
 
     if (emailLoaded != null) {
-      dispatchState(Right<Failure, Success>(GetEmailContentLoading()));
       consumeState(Stream.value(Right<Failure, Success>(
         GetEmailContentSuccess(
           emailContent: emailLoaded.emailContent,
