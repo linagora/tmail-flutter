@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_detail_widget_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_description_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_link_detail_widget.dart';
@@ -13,12 +15,14 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 class CalendarEventDetailWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
+  final List<EventAction> eventActions;
   final OnOpenNewTabAction? onOpenNewTabAction;
   final OnOpenComposerAction? onOpenComposerAction;
 
   const CalendarEventDetailWidget({
     super.key,
     required this.calendarEvent,
+    required this.eventActions,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
   });
@@ -79,6 +83,8 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 organizer: calendarEvent.organizer!,
               ),
             ),
+          if (eventActions.isNotEmpty)
+            CalendarEventActionButtonWidget(eventActions: eventActions),
         ],
       ),
     );

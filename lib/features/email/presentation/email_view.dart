@@ -308,6 +308,7 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
                         ),
                       CalendarEventDetailWidget(
                         calendarEvent: calendarEvent,
+                        eventActions: controller.eventActions,
                         onOpenComposerAction: controller.openNewComposerAction,
                         onOpenNewTabAction: controller.openNewTabAction,
                       ),
