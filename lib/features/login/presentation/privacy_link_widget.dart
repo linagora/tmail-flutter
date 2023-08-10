@@ -2,7 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class PrivacyLinkWidget extends StatelessWidget {
   static const linagoraPrivacy = 'https://www.linagora.com/en/legal/privacy';
@@ -19,14 +19,7 @@ class PrivacyLinkWidget extends StatelessWidget {
         style: const TextStyle(
           color: AppColor.loginTextFieldFocusedBorder,
           fontSize: 14),
-        recognizer: TapGestureRecognizer()..onTap = () async {
-          if (await canLaunchUrlString(privacyUrlString)) {
-            launchUrlString(
-              privacyUrlString,
-              mode: LaunchMode.externalApplication
-            );
-          }
-        }
+        recognizer: TapGestureRecognizer()..onTap = () => AppUtils.launchLink(privacyUrlString)
       )
     );
   }
