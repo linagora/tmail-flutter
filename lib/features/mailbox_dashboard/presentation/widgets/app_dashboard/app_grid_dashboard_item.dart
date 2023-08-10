@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/link_browser_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_app.dart';
-import 'package:url_launcher/url_launcher.dart' as launcher;
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class AppGridDashboardItem extends StatelessWidget {
   final LinagoraApp app;
@@ -22,7 +22,7 @@ class AppGridDashboardItem extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _openApp,
+          onTap: () => AppUtils.launchLink(app.appUri.toString()),
           borderRadius: const BorderRadius.all(Radius.circular(16)),
           hoverColor: AppColor.colorBgMailboxSelected,
           child: Container(
@@ -59,12 +59,5 @@ class AppGridDashboardItem extends StatelessWidget {
         )
       )
     );
-  }
-
-  void _openApp() async {
-    final url = app.appUri;
-    if (await launcher.canLaunchUrl(url)) {
-      await launcher.launchUrl(url);
-    }
   }
 }

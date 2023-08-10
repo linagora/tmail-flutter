@@ -29,6 +29,7 @@ class AppUtils {
     await launchUrl(
       Uri.parse(url),
       webOnlyWindowName: isNewTab ? '_blank' : '_self',
+      mode: LaunchMode.externalApplication
     );
   }
 
