@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
@@ -112,6 +113,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
   final calendarEvent = Rxn<CalendarEvent>();
+  final eventActions = <EventAction>[].obs;
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -394,7 +396,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       initialEmailContents = success.emailContent;
       attachments.value = success.attachments;
 
-      _loadCalendarEventAction(success.attachments.calendarEventBlobIds);
+      _loadCalendarEventAction(
+        blobIds: success.attachments.calendarEventBlobIds,
+        emailContents: success.emailContent
+      );
 
       final isShowMessageReadReceipt = success.emailCurrent?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
       if (isShowMessageReadReceipt) {
@@ -421,7 +426,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       initialEmailContents = success.emailContent;
       attachments.value = success.attachments;
 
-      _loadCalendarEventAction(success.attachments.calendarEventBlobIds);
+      _loadCalendarEventAction(
+        blobIds: success.attachments.calendarEventBlobIds,
+        emailContents: success.emailContent
+      );
 
       if (PlatformInfo.isMobile) {
         final detailedEmail = DetailedEmail(
@@ -469,6 +477,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     initialEmailContents = null;
     attachments.clear();
     calendarEvent.value = null;
+    eventActions.clear();
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
@@ -1238,19 +1247,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _loadCalendarEventAction(Set<Id> blobIds) {
+  void _loadCalendarEventAction({
+    required Set<Id> blobIds,
+    required String emailContents
+  }) {
     log('SingleEmailController::_loadCalendarEventAction:blobIds: $blobIds');
-    if (_isCalendarEventSupported) {
-      if (currentEmail?.hasCalendarEvent == true &&
-          blobIds.isNotEmpty &&
-          mailboxDashBoardController.accountId.value != null) {
-        _parseCalendarEventAction(
-          mailboxDashBoardController.accountId.value!,
-          blobIds
-        );
-      } else {
-        logError('SingleEmailController::_loadCalendarEventAction: not found calendar event header');
-      }
+    if (_isCalendarEventSupported &&
+        currentEmail?.hasCalendarEvent == true &&
+        blobIds.isNotEmpty &&
+        mailboxDashBoardController.accountId.value != null
+    ) {
+      _parseCalendarEventAction(
+        accountId: mailboxDashBoardController.accountId.value!,
+        blobIds: blobIds,
+        emailContents: emailContents
+      );
     } else {
       logError('SingleEmailController::_loadCalendarEventAction: calendar event not supported');
     }
@@ -1264,21 +1275,24 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId);
   }
 
-  void _parseCalendarEventAction(AccountId accountId, Set<Id> blobIds) {
+  void _parseCalendarEventAction({
+    required AccountId accountId,
+    required Set<Id> blobIds,
+    required String emailContents
+  }) {
     log("SingleEmailController::_parseCalendarEventAction:blobIds: $blobIds");
     if (_parseCalendarEventInteractor != null) {
-      consumeState(_parseCalendarEventInteractor!.execute(accountId, blobIds));
+      consumeState(_parseCalendarEventInteractor!.execute(accountId, blobIds, emailContents));
     } else {
       logError("SingleEmailController::_parseCalendarEventAction: _parseCalendarEventInteractor is NULL");
     }
   }
 
   void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
-    if (success.calendarEventList.isNotEmpty) {
-      calendarEvent.value = success.calendarEventList.first;
-      if (PlatformInfo.isMobile) {
-        _enableScrollPageView();
-      }
+    calendarEvent.value = success.calendarEventList.first;
+    eventActions.value = success.eventActionList;
+    if (PlatformInfo.isMobile) {
+      _enableScrollPageView();
     }
   }
 
