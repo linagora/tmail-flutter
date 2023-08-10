@@ -3,7 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
@@ -20,9 +20,8 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(children: [
-        Obx(() => UserInformationWidgetBuilder(
-          _imagePaths,
-          controller.manageAccountDashboardController.userProfile.value,
+        Obx(() => UserInformationWidget(
+          userProfile: controller.manageAccountDashboardController.userProfile.value,
           padding: SettingsUtils.getPaddingInFirstLevel(context, _responsiveUtils),
           titlePadding: const EdgeInsetsDirectional.only(start: 16))),
         Divider(
