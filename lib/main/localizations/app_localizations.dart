@@ -3260,4 +3260,10 @@ class AppLocalizations {
       name: 'createFilters');
   }
 
+
+  String get maybe {
+    return Intl.message(
+      'Maybe',
+      name: 'maybe');
+  }
 }
