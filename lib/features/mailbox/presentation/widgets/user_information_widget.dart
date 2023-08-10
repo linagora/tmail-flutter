@@ -7,39 +7,40 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSubtitleClick = void Function();
 
-class UserInformationWidgetBuilder extends StatelessWidget {
-  final ImagePaths _imagePaths;
-  final UserProfile? _userProfile;
+class UserInformationWidget extends StatelessWidget {
+  final UserProfile? userProfile;
   final String? subtitle;
   final EdgeInsetsGeometry? titlePadding;
   final OnSubtitleClick? onSubtitleClick;
   final EdgeInsetsGeometry? padding;
+  final Border? border;
 
-  const UserInformationWidgetBuilder(
-    this._imagePaths,
-    this._userProfile,
-    {
-      Key? key,
-      this.subtitle,
-      this.titlePadding,
-      this.onSubtitleClick,
-      this.padding,
-    }
-  ) : super(key: key);
+  const UserInformationWidget({
+    Key? key,
+    this.userProfile,
+    this.subtitle,
+    this.titlePadding,
+    this.onSubtitleClick,
+    this.padding,
+    this.border,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    final imagePaths = Get.find<ImagePaths>();
+    return Container(
       padding: padding ?? const EdgeInsetsDirectional.only(start: 16, end: 4, top: 16, bottom: 16),
+      decoration: BoxDecoration(border: border),
       child: Row(children: [
         (AvatarBuilder()
-            ..text(_userProfile != null ? _userProfile!.getAvatarText() : '')
+            ..text(userProfile != null ? userProfile!.getAvatarText() : '')
             ..backgroundColor(Colors.white)
             ..textColor(Colors.black)
             ..addBoxShadows([const BoxShadow(
@@ -52,29 +53,31 @@ class UserInformationWidgetBuilder extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextOverflowBuilder(
-              _userProfile != null ? '${_userProfile?.email}' : '',
+              userProfile != null ? '${userProfile?.email}' : '',
               style: const TextStyle(
                 fontSize: 17,
                 color: AppColor.colorNameEmail,
                 fontWeight: FontWeight.w600
               )
             ),
-            const SizedBox(height: 10),
             if (subtitle != null)
-              Transform(
-                transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
-                child: MaterialTextButton(
-                  label: AppLocalizations.of(context).manage_account,
-                  onTap: onSubtitleClick,
-                  borderRadius: 20,
-                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 8, vertical: 8),
-                  customStyle: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(top: 10),
+                child: Transform(
+                  transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
+                  child: MaterialTextButton(
+                    label: AppLocalizations.of(context).manage_account,
+                    onTap: onSubtitleClick,
+                    borderRadius: 20,
+                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 8, vertical: 8),
+                    customStyle: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
+                  ),
                 ),
               )
         ])),
         if (PlatformInfo.isMobile)
           SvgPicture.asset(
-            DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
+            DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icBack : imagePaths.icCollapseFolder,
             fit: BoxFit.fill,
             colorFilter: AppColor.colorCollapseMailbox.asFilter()
           ),
