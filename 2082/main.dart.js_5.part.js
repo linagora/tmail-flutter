@@ -2026,9 +2026,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.listEmailAddressSender = t1;
       this.key = t2;
     },
-    CalendarEventActionButtonWidget: function CalendarEventActionButtonWidget(t0, t1) {
+    CalendarEventActionButtonWidget: function CalendarEventActionButtonWidget(t0, t1, t2) {
       this.eventActions = t0;
-      this.key = t1;
+      this.margin = t1;
+      this.key = t2;
     },
     CalendarEventActionButtonWidget_build_closure: function CalendarEventActionButtonWidget_build_closure(t0, t1) {
       this.context = t0;
@@ -2045,12 +2046,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onOpenComposerAction = t3;
       _.key = t4;
     },
-    CalendarEventInformationWidget: function CalendarEventInformationWidget(t0, t1, t2, t3) {
+    CalendarEventInformationWidget: function CalendarEventInformationWidget(t0, t1, t2, t3, t4) {
       var _ = this;
       _.calendarEvent = t0;
-      _.onOpenNewTabAction = t1;
-      _.onOpenComposerAction = t2;
-      _.key = t3;
+      _.eventActions = t1;
+      _.onOpenNewTabAction = t2;
+      _.onOpenComposerAction = t3;
+      _.key = t4;
     },
     EventAttendeeDetailWidget: function EventAttendeeDetailWidget(t0, t1, t2) {
       this.attendees = t0;
@@ -9145,22 +9147,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.CalendarEventActionButtonWidget.prototype = {
     build$1(context) {
-      var t1, responsiveUtils, t2, t3, _null = null;
+      var t1, responsiveUtils, t2, t3, t4, _null = null;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
       responsiveUtils = t1.find$1$1$tag(0, _null, type$.ResponsiveUtils);
-      t1 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
-        t1 = t1.get$orientation(t1) === C.Orientation_0;
+      t1 = this.margin;
+      if (t1 == null)
+        t1 = D.EdgeInsetsDirectional_0_16_0_0;
+      t2 = type$.MediaQuery;
+      if (A.InheritedModel_inheritFrom(context, _null, t2).data.size.get$shortestSide() < 600) {
+        t2 = A.InheritedModel_inheritFrom(context, _null, t2).data;
+        t2 = t2.get$orientation(t2) === C.Orientation_0;
       } else
-        t1 = false;
-      t1 = t1 ? D.EdgeInsetsDirectional_0_16_0_0 : D.EdgeInsetsDirectional_100_16_16_0;
-      t2 = this.eventActions;
-      t3 = t2.$ti._eval$1("MappedListIterable<ListBase.E,TMailButtonWidget>");
-      return A.Container$(_null, A.Wrap$(C.WrapAlignment_0, A.List_List$of(new A.MappedListIterable(t2, new B.CalendarEventActionButtonWidget_build_closure(context, responsiveUtils), t3), true, t3._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, _null, C.WrapAlignment_0, 16, 16), C.Clip_0, _null, _null, _null, _null, _null, _null, D.EdgeInsetsDirectional_0_16_0_0, t1, _null, _null, 1 / 0);
+        t2 = false;
+      t2 = t2 ? D.EdgeInsetsDirectional_0_16_0_0 : D.EdgeInsetsDirectional_100_16_16_0;
+      t3 = this.eventActions;
+      t4 = t3.$ti._eval$1("MappedListIterable<ListBase.E,TMailButtonWidget>");
+      return A.Container$(_null, A.Wrap$(C.WrapAlignment_0, A.List_List$of(new A.MappedListIterable(t3, new B.CalendarEventActionButtonWidget_build_closure(context, responsiveUtils), t4), true, t4._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, _null, C.WrapAlignment_0, 16, 16), C.Clip_0, _null, _null, _null, _null, _null, _null, t1, t2, _null, _null, 1 / 0);
     }
   };
   B.CalendarEventDetailWidget.prototype = {
@@ -9196,7 +9201,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t2 = _this.eventActions;
       if (!t2.get$isEmpty(t2))
-        t1.push(new B.CalendarEventActionButtonWidget(t2, _null));
+        t1.push(new B.CalendarEventActionButtonWidget(t2, _null, _null));
       return A.Container$(_null, A.Column$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_0, _null, _null, _null, D.EdgeInsetsDirectional_16_12_16_12, C.EdgeInsets_16_16_16_16, _null, _null, 1 / 0);
     }
   };
@@ -9243,6 +9248,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2.toString;
           t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventAttendeeInformationWidget(t1, t2, _null), _null));
         }
+        t1 = _this.eventActions;
+        if (!t1.get$isEmpty(t1))
+          t3.push(new B.CalendarEventActionButtonWidget(t1, D.EdgeInsetsDirectional_0_0_0_0, _null));
         t1 = A.Column$(A._setArrayType([new B.CalendarDateIconWidget(t5, 1 / 0, _null), A.Container$(_null, A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_5me, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
       } else {
         t1 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY15, B.CalendarEventExtension_get_organizerName(t5));
@@ -9267,6 +9275,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2.toString;
           t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventAttendeeInformationWidget(t1, t2, _null), _null));
         }
+        t1 = _this.eventActions;
+        if (!t1.get$isEmpty(t1))
+          t3.push(new B.CalendarEventActionButtonWidget(t1, D.EdgeInsetsDirectional_0_0_0_0, _null));
         t1 = A.Row$(A._setArrayType([new B.CalendarDateIconWidget(t5, 100, _null), A.Expanded$(A.Container$(_null, A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_5me0, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null), 1)], t4), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       }
       return A.Container$(_null, t1, C.Clip_2, _null, _null, D.ShapeDecoration_aL3, _null, _null, _null, D.EdgeInsetsDirectional_16_12_16_12, _null, _null, _null, _null);
@@ -13717,18 +13728,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         listEmailAddressSender = A._setArrayType([], type$.JSArray_String);
       if (calendarEvent != null) {
         A.Expando__checkType(t1);
-        t4 = t3._as(t2.get(t1)).get$openNewComposerAction();
+        t4 = t3._as(t2.get(t1)).eventActions;
         A.Expando__checkType(t1);
-        t4 = A._setArrayType([new B.CalendarEventInformationWidget(calendarEvent, t3._as(t2.get(t1)).get$openNewTabAction(), t4, _null)], type$.JSArray_Widget);
+        t5 = t3._as(t2.get(t1)).get$openNewComposerAction();
+        A.Expando__checkType(t1);
+        t5 = A._setArrayType([new B.CalendarEventInformationWidget(calendarEvent, t4, t3._as(t2.get(t1)).get$openNewTabAction(), t5, _null)], type$.JSArray_Widget);
         if (B.CalendarEventExtension_getTitleEventAction(calendarEvent, this.context, listEmailAddressSender).length !== 0)
-          t4.push(new B.CalendarEventActionBannerWidget(calendarEvent, listEmailAddressSender, _null));
+          t5.push(new B.CalendarEventActionBannerWidget(calendarEvent, listEmailAddressSender, _null));
         A.Expando__checkType(t1);
-        t5 = t3._as(t2.get(t1)).eventActions;
+        t4 = t3._as(t2.get(t1)).eventActions;
         A.Expando__checkType(t1);
         t6 = t3._as(t2.get(t1)).get$openNewComposerAction();
         A.Expando__checkType(t1);
-        t4.push(new B.CalendarEventDetailWidget(calendarEvent, t5, t3._as(t2.get(t1)).get$openNewTabAction(), t6, _null));
-        return A.Column$(t4, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1);
+        t5.push(new B.CalendarEventDetailWidget(calendarEvent, t4, t3._as(t2.get(t1)).get$openNewTabAction(), t6, _null));
+        return A.Column$(t5, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -18462,6 +18475,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_4293942340 = new A.Color(4293942340);
     D.CupertinoLoadingWidget_null_null = new B.CupertinoLoadingWidget(null, null);
     D.Duration_86400000000 = new A.Duration(864e8);
+    D.EdgeInsetsDirectional_0_0_0_0 = new A.EdgeInsetsDirectional(0, 0, 0, 0);
     D.EdgeInsetsDirectional_0_0_10_0 = new A.EdgeInsetsDirectional(0, 0, 10, 0);
     D.EdgeInsetsDirectional_0_0_20_0 = new A.EdgeInsetsDirectional(0, 0, 20, 0);
     D.EdgeInsetsDirectional_0_0_5_0 = new A.EdgeInsetsDirectional(0, 0, 5, 0);
@@ -18665,4 +18679,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["GCs6jIx9ZNETkNAufRAwOZTSKZo="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["4FymPTRY4FpWYs34nQm5FAogK1c="] = $__dart_deferred_initializers__.current
