@@ -108,26 +108,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
   ParseCalendarEventInteractor? _parseCalendarEventInteractor;
 
-  final emailAddressExpandMode = ExpandMode.COLLAPSE.obs;
-  final attachmentsExpandMode = ExpandMode.COLLAPSE.obs;
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
   final calendarEvent = Rxn<CalendarEvent>();
   final eventActions = <EventAction>[].obs;
+  final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
-  String? initialEmailContents;
+  EmailLoaded? _currentEmailLoaded;
 
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
   PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
-
-  bool get isDisplayFullEmailAddress => emailAddressExpandMode.value == ExpandMode.EXPAND;
-
-  bool get isDisplayFullAttachments => attachmentsExpandMode.value == ExpandMode.EXPAND;
 
   SingleEmailController(
     this._getEmailContentInteractor,
@@ -178,6 +173,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _sendReceiptToSenderSuccess(success);
     } else if (success is CreateNewRuleFilterSuccess) {
       _createNewRuleFilterSuccess(success);
+    } else if (success is ParseCalendarEventLoading) {
+      emailLoadedViewState.value = Right<Failure, Success>(success);
     } else if (success is ParseCalendarEventSuccess) {
       _handleParseCalendarEventSuccess(success);
     }
@@ -194,6 +191,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _exportAttachmentFailureAction(failure);
     } else if (failure is DownloadAttachmentForWebFailure) {
       _downloadAttachmentForWebFailureAction(failure);
+    } else if (failure is ParseCalendarEventFailure) {
+      _handleParseCalendarEventFailure(failure);
+    } else if (failure is GetEmailContentFailure) {
+      emailLoadedViewState.value = Left<Failure, Success>(failure);
     }
   }
 
@@ -223,7 +224,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       log('SingleEmailController::_handleOpenEmailDetailedView(): email unselected');
       return;
     }
-    dispatchState(Right<Failure, Success>(GetEmailContentLoading()));
+    emailLoadedViewState.value = Right<Failure, Success>(GetEmailContentLoading());
 
     emailSupervisorController.updateNewCurrentListEmail();
     _updateCurrentEmailId(selectedEmail.id);
@@ -367,8 +368,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (emailLoaded != null) {
       consumeState(Stream.value(Right<Failure, Success>(
         GetEmailContentSuccess(
-          emailContent: emailLoaded.emailContent,
-          emailContentDisplayed: emailLoaded.emailContentDisplayed,
+          emailContent: emailLoaded.originalContent,
+          emailContentDisplayed: emailLoaded.displayedContent,
           attachments: emailLoaded.attachments,
           emailCurrent: emailLoaded.emailCurrent
         )
@@ -379,27 +380,32 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentOfflineSuccess(GetEmailContentFromCacheSuccess success) {
+    emailLoadedViewState.value = Right<Failure, Success>(success);
     if (emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
       emailSupervisorController.popFirstEmailQueue();
     }
     emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
 
-    emailSupervisorController.pushEmailQueue(EmailLoaded(
-      success.emailContent,
-      success.emailContent,
-      success.attachments.toList(),
-      success.emailCurrent,
-    ));
+    _currentEmailLoaded = EmailLoaded(
+      originalContent: success.emailContent,
+      displayedContent: success.emailContent,
+      attachments: List.of(success.attachments),
+      emailCurrent: success.emailCurrent,
+    );
+    emailSupervisorController.pushEmailQueue(_currentEmailLoaded!);
 
     if (success.emailCurrent?.id == currentEmail?.id) {
-      emailContents.value = success.emailContent;
-      initialEmailContents = success.emailContent;
       attachments.value = success.attachments;
 
-      _loadCalendarEventAction(
-        blobIds: success.attachments.calendarEventBlobIds,
-        emailContents: success.emailContent
-      );
+      if (_canParseCalendarEvent(blobIds: success.attachments.calendarEventBlobIds)) {
+        _parseCalendarEventAction(
+          accountId: mailboxDashBoardController.accountId.value!,
+          blobIds: success.attachments.calendarEventBlobIds,
+          emailContents: success.emailContent
+        );
+      } else {
+        emailContents.value = success.emailContent;
+      }
 
       final isShowMessageReadReceipt = success.emailCurrent?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
       if (isShowMessageReadReceipt) {
@@ -409,36 +415,41 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
+    emailLoadedViewState.value = Right<Failure, Success>(success);
     if (emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
       emailSupervisorController.popFirstEmailQueue();
     }
     emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
 
-    emailSupervisorController.pushEmailQueue(EmailLoaded(
-      success.emailContent,
-      success.emailContentDisplayed,
-      success.attachments.toList(),
-      success.emailCurrent,
-    ));
+    _currentEmailLoaded = EmailLoaded(
+      originalContent: success.emailContent,
+      displayedContent: success.emailContentDisplayed,
+      attachments: List.of(success.attachments),
+      emailCurrent: success.emailCurrent,
+    );
+    emailSupervisorController.pushEmailQueue(_currentEmailLoaded!);
 
     if (success.emailCurrent?.id == currentEmail?.id) {
-      emailContents.value = success.emailContentDisplayed;
-      initialEmailContents = success.emailContent;
       attachments.value = success.attachments;
 
-      _loadCalendarEventAction(
-        blobIds: success.attachments.calendarEventBlobIds,
-        emailContents: success.emailContent
-      );
+      if (_canParseCalendarEvent(blobIds: success.attachments.calendarEventBlobIds)) {
+        _parseCalendarEventAction(
+          accountId: mailboxDashBoardController.accountId.value!,
+          blobIds: success.attachments.calendarEventBlobIds,
+          emailContents: success.emailContent
+        );
+      } else {
+        emailContents.value = success.emailContentDisplayed;
+      }
 
       if (PlatformInfo.isMobile) {
         final detailedEmail = DetailedEmail(
           emailId: currentEmail!.id!,
           createdTime: currentEmail?.receivedAt?.value ?? DateTime.now(),
-          attachments: attachments,
+          attachments: success.attachments,
           headers: currentEmail?.emailHeader?.toSet(),
           keywords: currentEmail?.keywords,
-          htmlEmailContent: emailContents.value
+          htmlEmailContent: success.emailContentDisplayed
         );
 
         _storeOpenedEmailAction(
@@ -471,10 +482,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _resetToOriginalValue() {
-    attachmentsExpandMode.value = ExpandMode.COLLAPSE;
-    emailAddressExpandMode.value = ExpandMode.COLLAPSE;
     emailContents.value = null;
-    initialEmailContents = null;
+    _currentEmailLoaded = null;
     attachments.clear();
     calendarEvent.value = null;
     eventActions.clear();
@@ -515,13 +524,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         && currentContext != null) {
       closeEmailView(currentContext!);
     }
-  }
-
-  void toggleDisplayAttachmentsAction() {
-    final newExpandMode = attachmentsExpandMode.value == ExpandMode.COLLAPSE
-        ? ExpandMode.EXPAND
-        : ExpandMode.COLLAPSE;
-    attachmentsExpandMode.value = newExpandMode;
   }
 
   void downloadAttachments(BuildContext context, List<Attachment> attachments) async {
@@ -944,14 +946,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void expandEmailAddress() {
-    emailAddressExpandMode.value = ExpandMode.EXPAND;
-  }
-
-  void collapseEmailAddress() {
-    emailAddressExpandMode.value = ExpandMode.COLLAPSE;
-  }
-
   void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (EmailAddressBottomSheetBuilder(context, imagePaths, emailAddress)
@@ -1171,7 +1165,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       final arguments = ComposerArguments(
           emailActionType: emailActionType,
           presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContents: initialEmailContents,
+          emailContents: _currentEmailLoaded?.originalContent,
           attachments: emailActionType == EmailActionType.forward ? attachments : null,
           mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role
       );
@@ -1247,24 +1241,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _loadCalendarEventAction({
-    required Set<Id> blobIds,
-    required String emailContents
-  }) {
-    log('SingleEmailController::_loadCalendarEventAction:blobIds: $blobIds');
-    if (_isCalendarEventSupported &&
-        currentEmail?.hasCalendarEvent == true &&
-        blobIds.isNotEmpty &&
-        mailboxDashBoardController.accountId.value != null
-    ) {
-      _parseCalendarEventAction(
-        accountId: mailboxDashBoardController.accountId.value!,
-        blobIds: blobIds,
-        emailContents: emailContents
-      );
-    } else {
-      logError('SingleEmailController::_loadCalendarEventAction: calendar event not supported');
-    }
+  bool _canParseCalendarEvent({required Set<Id> blobIds}) {
+    return _isCalendarEventSupported &&
+      currentEmail?.hasCalendarEvent == true &&
+      blobIds.isNotEmpty &&
+      _parseCalendarEventInteractor != null;
   }
 
   bool get _isCalendarEventSupported {
@@ -1281,19 +1262,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     required String emailContents
   }) {
     log("SingleEmailController::_parseCalendarEventAction:blobIds: $blobIds");
-    if (_parseCalendarEventInteractor != null) {
-      consumeState(_parseCalendarEventInteractor!.execute(accountId, blobIds, emailContents));
-    } else {
-      logError("SingleEmailController::_parseCalendarEventAction: _parseCalendarEventInteractor is NULL");
-    }
+    consumeState(_parseCalendarEventInteractor!.execute(accountId, blobIds, emailContents));
   }
 
   void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
+    emailLoadedViewState.value = Right<Failure, Success>(success);
     calendarEvent.value = success.calendarEventList.first;
     eventActions.value = success.eventActionList;
     if (PlatformInfo.isMobile) {
       _enableScrollPageView();
     }
+  }
+
+  void _handleParseCalendarEventFailure(ParseCalendarEventFailure failure) {
+    emailLoadedViewState.value = Left<Failure, Success>(failure);
+    emailContents.value = _currentEmailLoaded?.displayedContent;
   }
 
   void _enableScrollPageView() {

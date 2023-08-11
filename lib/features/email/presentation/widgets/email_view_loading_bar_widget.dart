@@ -23,7 +23,7 @@ class EmailViewLoadingBarWidget extends StatelessWidget {
     return viewState.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (success is GetEmailContentLoading || (success is ParseCalendarEventLoading && selectedEmail.hasCalendarEvent)) {
+        if (success is GetEmailContentLoading || success is ParseCalendarEventLoading) {
           return const CupertinoLoadingWidget();
         } else {
           return const SizedBox.shrink();

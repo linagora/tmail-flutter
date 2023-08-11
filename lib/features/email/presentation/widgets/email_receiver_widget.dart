@@ -15,46 +15,54 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class EmailReceiverBuilder extends StatelessWidget {
+typedef OnPreviewEmailAddressActionCallback = Function(BuildContext context, EmailAddress emailAddress);
 
-  static const double _maxSizeFullDisplayEmailAddressArrowDownButton = 30.0;
+class EmailReceiverWidget extends StatefulWidget {
 
   final PresentationEmail emailSelected;
-  final SingleEmailController controller;
-  final ResponsiveUtils responsiveUtils;
-  final ImagePaths imagePaths;
   final double maxWidth;
+  final OnPreviewEmailAddressActionCallback? onPreviewEmailAddressActionCallback;
 
-  const EmailReceiverBuilder({
+  const EmailReceiverWidget({
     Key? key,
     required this.emailSelected,
-    required this.controller,
-    required this.responsiveUtils,
-    required this.imagePaths,
     this.maxWidth = 200,
+    this.onPreviewEmailAddressActionCallback,
   }) : super(key: key);
 
   @override
+  State<EmailReceiverWidget> createState() => _EmailReceiverWidgetState();
+}
+
+class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
+
+  static const double _maxSizeFullDisplayEmailAddressArrowDownButton = 30.0;
+
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  bool _isDisplayAll = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Obx(() => Row(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(child: Padding(
-          padding: EdgeInsets.only(top: controller.isDisplayFullEmailAddress
+          padding: EdgeInsets.only(top: _isDisplayAll
             ? DirectionUtils.isDirectionRTLByLanguage(context) ? 3 : 5.5
             : 0),
           child: _buildEmailAddressOfReceiver(
             context,
-            emailSelected,
-            controller.isDisplayFullEmailAddress,
-            maxWidth
+            widget.emailSelected,
+            _isDisplayAll,
+            widget.maxWidth
           ),
         )),
-        if (controller.isDisplayFullEmailAddress)
+        if (_isDisplayAll)
           Padding(
             padding: EdgeInsets.symmetric(
               vertical: DirectionUtils.isDirectionRTLByLanguage(context) ? 0 : 6),
@@ -62,12 +70,12 @@ class EmailReceiverBuilder extends StatelessWidget {
               padding: DirectionUtils.isDirectionRTLByLanguage(context)
                 ? const EdgeInsets.symmetric(horizontal: 8, vertical: 4)
                 : null,
-              onTap: controller.collapseEmailAddress,
+              onTap: () => setState(() => _isDisplayAll = false),
               label: AppLocalizations.of(context).hide,
             )
           )
       ]
-    ));
+    );
   }
 
   Widget _buildEmailAddressOfReceiver(
@@ -113,7 +121,27 @@ class EmailReceiverBuilder extends StatelessWidget {
               ]
             ),
           ),
-          _buildArrowDownButton()
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => setState(() => _isDisplayAll = true),
+              customBorder: const CircleBorder(),
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                color: Colors.transparent,
+                constraints: const BoxConstraints(
+                  maxHeight: _maxSizeFullDisplayEmailAddressArrowDownButton,
+                  maxWidth: _maxSizeFullDisplayEmailAddressArrowDownButton
+                ),
+                child: SvgPicture.asset(
+                  _imagePaths.icChevronDown,
+                  width: 16,
+                  height: 16,
+                  fit: BoxFit.fill
+                ),
+              ),
+            ),
+          ),
         ]
       );
     } else {
@@ -190,7 +218,7 @@ class EmailReceiverBuilder extends StatelessWidget {
         label: lastEmailAddress == emailAddress
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
-        onTap: () => controller.openEmailAddressDialog(context, emailAddress),
+        onTap: () => widget.onPreviewEmailAddressActionCallback?.call(context, emailAddress),
         onLongPress: () {
           AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
         },
@@ -218,36 +246,12 @@ class EmailReceiverBuilder extends StatelessWidget {
   }
 
   double _getMaxWidthEmailAddressDisplayed(BuildContext context, double maxWidth) {
-    if (responsiveUtils.isPortraitMobile(context)) {
+    if (_responsiveUtils.isPortraitMobile(context)) {
       return maxWidth - _maxSizeFullDisplayEmailAddressArrowDownButton;
-    } else if (responsiveUtils.isWebDesktop(context)) {
+    } else if (_responsiveUtils.isWebDesktop(context)) {
       return maxWidth / 2;
     } else {
       return maxWidth * 3/4;
     }
-  }
-
-  Widget _buildArrowDownButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: controller.expandEmailAddress,
-        customBorder: const CircleBorder(),
-        child: Container(
-          padding: const EdgeInsets.all(5),
-          color: Colors.transparent,
-          constraints: const BoxConstraints(
-            maxHeight: _maxSizeFullDisplayEmailAddressArrowDownButton,
-            maxWidth: _maxSizeFullDisplayEmailAddressArrowDownButton
-          ),
-          child: SvgPicture.asset(
-            imagePaths.icChevronDown,
-            width: 16,
-            height: 16,
-            fit: BoxFit.fill
-          ),
-        ),
-      ),
-    );
   }
 }
