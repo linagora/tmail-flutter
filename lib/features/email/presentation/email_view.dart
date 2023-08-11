@@ -9,11 +9,10 @@ import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_w
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/email/attachment.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
@@ -21,19 +20,19 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/app_bar_mail_widget_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_file_tile_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/bottom_bar_mail_widget_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_attachments_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -41,7 +40,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widg
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
+class EmailView extends GetWidget<SingleEmailController> {
 
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
@@ -75,9 +74,24 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
                   margin: _getMarginEmailView(context),
                   child: Obx(() {
                     if (controller.currentEmail != null) {
-                      return _buildEmailView(context, controller.currentEmail!);
+                      return Column(children: [
+                        _buildAppBar(context, controller.currentEmail!),
+                        _buildVacationNotificationMessage(context),
+                        const Divider(color: AppColor.colorDividerHorizontal, height: 1),
+                        Expanded(
+                          child: Obx(() {
+                            return controller.emailSupervisorController.supportedPageView.isTrue
+                              ? _buildMultipleEmailView(controller.emailSupervisorController.currentListEmail)
+                              : _buildSingleEmailView(context, controller.currentEmail!);
+                          }),
+                        ),
+                        BottomBarMailWidgetBuilder(
+                          controller.currentEmail!,
+                          onPressEmailActionClick: controller.pressEmailAction
+                        ),
+                      ]);
                     } else {
-                      return _buildEmailViewEmpty(context);
+                      return const EmailViewEmptyWidget();
                     }
                   })
               )
@@ -104,28 +118,6 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
     }
   }
 
-  Widget _buildEmailViewEmpty(BuildContext context) {
-    return Center(child: _buildEmailEmpty(context));
-  }
-
-  Widget _buildEmailView(BuildContext context, PresentationEmail email) {
-    return Column(children: [
-      _buildAppBar(context, email),
-      _buildVacationNotificationMessage(context),
-      const Divider(color: AppColor.colorDividerHorizontal, height: 1),
-      Expanded(child: Obx(() {
-        return controller.emailSupervisorController.supportedPageView.isTrue
-          ? _buildMultipleEmailView(controller.emailSupervisorController.currentListEmail)
-          : _buildSingleEmailView(context, email);
-      }),
-      ),
-      BottomBarMailWidgetBuilder(
-        email,
-        onPressEmailActionClick: controller.pressEmailAction
-      ),
-    ]);
-  }
-
   Widget _buildMultipleEmailView(List<PresentationEmail> listEmails) {
     return Obx(
       () => PageView.builder(
@@ -137,10 +129,6 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
         itemBuilder: (context, index) => _buildSingleEmailView(context, listEmails[index])
       ),
     );
-  }
-
-  Widget _buildSingleEmailView(BuildContext context, PresentationEmail email) {
-    return _buildEmailBody(context, email);
   }
 
   bool _supportVerticalDivider(BuildContext context) {
@@ -228,224 +216,121 @@ class EmailView extends GetWidget<SingleEmailController> with AppLoaderMixin {
     ];
   }
 
-  Widget _buildEmailBody(BuildContext context, PresentationEmail email) {
-    if (PlatformInfo.isWeb && !email.hasCalendarEvent) {
-      return _buildEmailMessage(context, email);
-    } else {
+  Widget _buildSingleEmailView(BuildContext context, PresentationEmail presentationEmail) {
+    if (PlatformInfo.isMobile) {
       return SingleChildScrollView(
         physics : const ClampingScrollPhysics(),
         child: Container(
-          margin: EdgeInsets.zero,
           width: double.infinity,
           alignment: Alignment.center,
-          padding: EdgeInsets.zero,
           color: Colors.white,
-          child: _buildEmailMessage(context, email)
+          child: Obx(() => _buildEmailMessage(
+            context: context,
+            presentationEmail: presentationEmail,
+            calendarEvent: controller.calendarEvent.value
+          ))
         )
       );
+    } else {
+      return Obx(() {
+        final calendarEvent = controller.calendarEvent.value;
+        if (presentationEmail.hasCalendarEvent && calendarEvent != null) {
+          return SingleChildScrollView(
+            physics : const ClampingScrollPhysics(),
+            child: Container(
+              width: double.infinity,
+              alignment: Alignment.center,
+              color: Colors.white,
+              child: _buildEmailMessage(
+                context: context,
+                presentationEmail: presentationEmail,
+                calendarEvent: calendarEvent,
+                emailAddressSender: presentationEmail.listEmailAddressSender.getListAddress(),
+              )
+            )
+          );
+        } else {
+          return _buildEmailMessage(context: context, presentationEmail: presentationEmail);
+        }
+      });
     }
   }
 
-  Widget _buildEmailEmpty(BuildContext context) {
-    return Text(
-      AppLocalizations.of(context).no_mail_selected,
-      textAlign: TextAlign.center,
-      style: const TextStyle(fontSize: 25, color: AppColor.mailboxTextColor, fontWeight: FontWeight.bold));
-  }
-
-  Widget _buildEmailSubject(BuildContext context, PresentationEmail email) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      child: SelectableText(
-          email.getEmailTitle(),
-          maxLines: PlatformInfo.isWeb ? 2 : null,
-          minLines: PlatformInfo.isWeb ? 1 : null,
-          cursorColor: AppColor.colorTextButton,
-          style: const TextStyle(
-              fontSize: 20,
-              color: AppColor.colorNameEmail,
-              fontWeight: FontWeight.w500)
-      ));
-  }
-
-  Widget _buildEmailMessage(BuildContext context, PresentationEmail email) {
+  Widget _buildEmailMessage({
+    required BuildContext context,
+    required PresentationEmail presentationEmail,
+    CalendarEvent? calendarEvent,
+    List<String>? emailAddressSender,
+  }) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildEmailSubject(context, email),
+            EmailSubjectWidget(presentationEmail: presentationEmail),
             InformationSenderAndReceiverBuilder(
               controller: controller,
-              emailSelected: email,
+              emailSelected: presentationEmail,
               imagePaths: imagePaths,
               responsiveUtils: responsiveUtils,
             ),
-            _buildAttachments(context),
+            Obx(() {
+              final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
+              if (attachments.isNotEmpty) {
+                return EmailAttachmentsWidget(
+                  attachments: attachments,
+                  onDownloadAttachmentActionCallback: (context, attachment) {
+                    if (PlatformInfo.isWeb) {
+                      controller.downloadAttachmentForWeb(context, attachment);
+                    } else {
+                      controller.exportAttachment(context, attachment);
+                    }
+                  },
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
             Obx(() => EmailViewLoadingBarWidget(
-              viewState: controller.viewState.value,
-              selectedEmail: email
+              viewState: controller.emailLoadedViewState.value,
+              selectedEmail: presentationEmail
             )),
-            if (email.hasCalendarEvent)
-              Obx(() {
-                final calendarEvent = controller.calendarEvent.value;
-                final listEmailAddressSender = controller.currentEmail?.listEmailAddressSender.getListAddress() ?? [];
-                if (calendarEvent != null) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CalendarEventInformationWidget(
-                        calendarEvent: calendarEvent,
-                        eventActions: controller.eventActions,
-                        onOpenComposerAction: controller.openNewComposerAction,
-                        onOpenNewTabAction: controller.openNewTabAction,
-                      ),
-                      if (calendarEvent.getTitleEventAction(context, listEmailAddressSender).isNotEmpty)
-                        CalendarEventActionBannerWidget(
-                          calendarEvent: calendarEvent,
-                          listEmailAddressSender: listEmailAddressSender
-                        ),
-                      CalendarEventDetailWidget(
-                        calendarEvent: calendarEvent,
-                        eventActions: controller.eventActions,
-                        onOpenComposerAction: controller.openNewComposerAction,
-                        onOpenNewTabAction: controller.openNewTabAction,
-                      ),
-                    ],
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              })
+            if (calendarEvent != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CalendarEventInformationWidget(
+                    calendarEvent: calendarEvent,
+                    eventActions: controller.eventActions,
+                    onOpenComposerAction: controller.openNewComposerAction,
+                    onOpenNewTabAction: controller.openNewTabAction,
+                  ),
+                  if (calendarEvent.getTitleEventAction(context, emailAddressSender ?? []).isNotEmpty)
+                    CalendarEventActionBannerWidget(
+                      calendarEvent: calendarEvent,
+                      listEmailAddressSender: emailAddressSender ?? []
+                    ),
+                  CalendarEventDetailWidget(
+                    calendarEvent: calendarEvent,
+                    eventActions: controller.eventActions,
+                    onOpenComposerAction: controller.openNewComposerAction,
+                    onOpenNewTabAction: controller.openNewTabAction,
+                  ),
+                ],
+              )
             else
-              _buildEmailContent(context, constraints, email)
+              _buildEmailContentOnHtmlViewer(context, constraints, presentationEmail)
           ],
         );
       });
   }
 
-  Widget _buildAttachments(BuildContext context) {
-   return Obx(() {
-     final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
-     return attachments.isNotEmpty
-         ? _buildAttachmentsBody(context, attachments)
-         : const SizedBox.shrink();
-   });
-  }
-
-  Widget _buildAttachmentsBody(BuildContext context, List<Attachment> attachments) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildAttachmentsHeader(context, attachments),
-          _buildAttachmentsList(context, attachments, controller.isDisplayFullAttachments)
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAttachmentsHeader(BuildContext context, List<Attachment> attachments) {
-    return Container(
-      color: Colors.white,
-      child: Row(
-        children: [
-          Expanded(child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(children: [
-                SvgPicture.asset(imagePaths.icAttachment,
-                    width: 20,
-                    height: 20,
-                    colorFilter: AppColor.colorAttachmentIcon.asFilter(),
-                    fit: BoxFit.fill),
-                const SizedBox(width: 5),
-                Expanded(child: Text(
-                    AppLocalizations.of(context).titleHeaderAttachment(
-                        attachments.length,
-                        filesize(attachments.totalSize(), 1)),
-                    style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                        color: AppColor.colorTitleHeaderAttachment)))
-              ])
-          )),
-          if (attachments.length > 2)
-            Obx(() => Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: controller.toggleDisplayAttachmentsAction,
-                customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  child: Text(
-                      controller.isDisplayFullAttachments
-                          ? AppLocalizations.of(context).hide
-                          : AppLocalizations.of(context).showAll,
-                      style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColor.colorTextButton,
-                          fontWeight: FontWeight.normal)),
-                ),
-              ),
-            ))
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAttachmentsList(
-      BuildContext context,
-      List<Attachment> attachments,
-      bool isDisplayAll
+  Widget _buildEmailContentOnHtmlViewer(
+    BuildContext context,
+    BoxConstraints constraints,
+    PresentationEmail email
   ) {
-    return LayoutBuilder(builder: (context, constraints) {
-      if (isDisplayAll) {
-        return Wrap(
-          runSpacing: 12,
-          children: attachments
-            .map((attachment) => AttachmentFileTileBuilder(
-              attachment,
-              onDownloadAttachmentFileActionClick: (attachment) {
-                if (PlatformInfo.isWeb) {
-                  controller.downloadAttachmentForWeb(context, attachment);
-                } else {
-                  controller.exportAttachment(context, attachment);
-                }
-              }))
-            .toList());
-      } else {
-        return Container(
-            height: 60,
-            color: Colors.transparent,
-            child: ScrollConfiguration(
-              behavior: CustomScrollBehavior(),
-              child: ListView.builder(
-                key: const Key('list_attachment_minimize_in_email'),
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: attachments.length,
-                itemBuilder: (context, index) =>
-                  AttachmentFileTileBuilder(
-                    attachments[index],
-                    onDownloadAttachmentFileActionClick: (attachment) {
-                      if (PlatformInfo.isWeb) {
-                        controller.downloadAttachmentForWeb(context, attachment);
-                      } else {
-                        controller.exportAttachment(context, attachment);
-                      }
-                    }
-                  )
-              ),
-            )
-        );
-      }
-    });
-  }
-
-  Widget _buildEmailContent(BuildContext context, BoxConstraints constraints, PresentationEmail email) {
-    if(email.id != controller.currentEmail?.id) {
+    if (email.id != controller.currentEmail?.id) {
       return const SizedBox.shrink();
     }
     return Obx(() {

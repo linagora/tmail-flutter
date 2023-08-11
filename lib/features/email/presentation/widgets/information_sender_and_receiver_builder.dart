@@ -6,7 +6,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/email_avatar_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_receiver_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_receiver_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/received_time_builder.dart';
 
@@ -56,12 +56,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                       ReceivedTimeBuilder(emailSelected),
                     ]),
                   if (emailSelected.numberOfAllEmailAddress() > 0)
-                    EmailReceiverBuilder(
-                      controller: controller,
+                    EmailReceiverWidget(
                       emailSelected: emailSelected,
-                      responsiveUtils: responsiveUtils,
-                      imagePaths: imagePaths,
                       maxWidth: constraints.maxWidth,
+                      onPreviewEmailAddressActionCallback: controller.openEmailAddressDialog,
                     )
                 ]
               ),
