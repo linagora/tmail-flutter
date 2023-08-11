@@ -9,10 +9,12 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 class CalendarEventActionButtonWidget extends StatelessWidget {
 
   final List<EventAction> eventActions;
+  final EdgeInsetsGeometry? margin;
 
   const CalendarEventActionButtonWidget({
     super.key,
-    required this.eventActions
+    required this.eventActions,
+    this.margin,
   });
 
   @override
@@ -20,7 +22,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     return Container(
       width: double.infinity,
-      margin: CalendarEventActionButtonWidgetStyles.margin,
+      margin: margin ?? CalendarEventActionButtonWidgetStyles.margin,
       padding: responsiveUtils.isPortraitMobile(context)
         ? CalendarEventActionButtonWidgetStyles.paddingMobile
         : CalendarEventActionButtonWidgetStyles.paddingWeb,
