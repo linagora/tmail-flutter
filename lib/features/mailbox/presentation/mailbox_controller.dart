@@ -205,10 +205,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     });
   }
 
-  void handleScrollEnable() {
-    isMailboxListScrollable.value = mailboxListScrollController.hasClients && mailboxListScrollController.position.maxScrollExtent > 0;
-  }
-
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
@@ -299,7 +295,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  void refreshAllMailbox() {
+  Future<void> refreshAllMailbox() async {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {

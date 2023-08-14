@@ -45,7 +45,7 @@ class MailboxView extends BaseMailboxView {
                               color: Colors.white,
                               child: RefreshIndicator(
                                 color: AppColor.primaryColor,
-                                onRefresh: () async => controller.refreshAllMailbox(),
+                                onRefresh: controller.refreshAllMailbox,
                                 child: SafeArea(
                                   top: false,
                                   right: false,
@@ -154,124 +154,118 @@ class MailboxView extends BaseMailboxView {
   }
 
   Widget _buildListMailbox(BuildContext context) {
-    return NotificationListener(
-      onNotification: (_) {
-        controller.handleScrollEnable();
-        return true;
-      },
-      child: SingleChildScrollView(
-        controller: controller.mailboxListScrollController,
-        key: const PageStorageKey('mailbox_list'),
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 16),
-        child: Column(children: [
-          Obx(() {
-            if (controller.isSelectionEnabled() && responsiveUtils.isLandscapeMobile(context)) {
-              return const SizedBox.shrink();
-            }
-            return buildUserInformation(context);
-          }),
-          buildLoadingView(),
-          AppConfig.appGridDashboardAvailable
-            ? buildAppGridDashboard(context, responsiveUtils, imagePaths, controller)
-            : const SizedBox.shrink(),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (controller.defaultMailboxIsNotEmpty) {
-              return _buildMailboxCategory(
-                context,
-                MailboxCategories.exchange,
-                controller.defaultRootNode
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
-          Obx(() {
-            if (controller.mailboxDashBoardController.listSendingEmails.isNotEmpty &&
-                PlatformInfo.isMobile &&
-                !controller.isSelectionEnabled()) {
-              return SendingQueueMailboxWidget(
-                listSendingEmails: controller.mailboxDashBoardController.listSendingEmails,
-                onOpenSendingQueueAction: () => controller.openSendingQueueViewAction(context),
-                isSelected: controller.mailboxDashBoardController.dashboardRoute.value == DashboardRoutes.sendingQueue,
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
-          const SizedBox(height: 8),
-          const Divider(color: AppColor.colorDividerMailbox, height: 1),
-          const SizedBox(height: 12),
-          Container(
-            margin: EdgeInsetsDirectional.only(
-              start: responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
-              end: 16),
-            padding: const EdgeInsetsDirectional.only(start: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context).folders,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
+    return SingleChildScrollView(
+      controller: controller.mailboxListScrollController,
+      key: const PageStorageKey('mailbox_list'),
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(children: [
+        Obx(() {
+          if (controller.isSelectionEnabled() && responsiveUtils.isLandscapeMobile(context)) {
+            return const SizedBox.shrink();
+          }
+          return buildUserInformation(context);
+        }),
+        buildLoadingView(),
+        AppConfig.appGridDashboardAvailable
+          ? buildAppGridDashboard(context, responsiveUtils, imagePaths, controller)
+          : const SizedBox.shrink(),
+        const SizedBox(height: 8),
+        Obx(() {
+          if (controller.defaultMailboxIsNotEmpty) {
+            return _buildMailboxCategory(
+              context,
+              MailboxCategories.exchange,
+              controller.defaultRootNode
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Obx(() {
+          if (controller.mailboxDashBoardController.listSendingEmails.isNotEmpty &&
+              PlatformInfo.isMobile &&
+              !controller.isSelectionEnabled()) {
+            return SendingQueueMailboxWidget(
+              listSendingEmails: controller.mailboxDashBoardController.listSendingEmails,
+              onOpenSendingQueueAction: () => controller.openSendingQueueViewAction(context),
+              isSelected: controller.mailboxDashBoardController.dashboardRoute.value == DashboardRoutes.sendingQueue,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        const SizedBox(height: 8),
+        const Divider(color: AppColor.colorDividerMailbox, height: 1),
+        const SizedBox(height: 12),
+        Container(
+          margin: EdgeInsetsDirectional.only(
+            start: responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
+            end: 16),
+          padding: const EdgeInsetsDirectional.only(start: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context).mailBoxes,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold
+                  )
                 ),
-                Row(children: [
-                  buildIconWeb(
-                    minSize: 40,
-                    iconPadding: EdgeInsets.zero,
-                    icon: SvgPicture.asset(
-                      imagePaths.icSearchBar,
-                      colorFilter: AppColor.colorTextButton.asFilter(),
-                      fit: BoxFit.fill
-                    ),
-                    tooltip: AppLocalizations.of(context).searchForMailboxes,
-                    onTap: () => controller.openSearchViewAction(context)
+              ),
+              Row(children: [
+                buildIconWeb(
+                  minSize: 40,
+                  iconPadding: EdgeInsets.zero,
+                  icon: SvgPicture.asset(
+                    imagePaths.icSearchBar,
+                    colorFilter: AppColor.colorTextButton.asFilter(),
+                    fit: BoxFit.fill
                   ),
-                  buildIconWeb(
-                    minSize: 40,
-                    iconSize: 20,
-                    iconPadding: EdgeInsets.zero,
-                    splashRadius: 15,
-                    icon: SvgPicture.asset(
-                      imagePaths.icAddNewFolder,
-                      colorFilter: AppColor.colorTextButton.asFilter(),
-                      fit: BoxFit.fill),
-                    tooltip: AppLocalizations.of(context).new_mailbox,
-                  onTap: () => controller.goToCreateNewMailboxView(context)),
-                ]),
+                  tooltip: AppLocalizations.of(context).searchForMailboxes,
+                  onTap: () => controller.openSearchViewAction(context)
+                ),
+                buildIconWeb(
+                  minSize: 40,
+                  iconSize: 20,
+                  iconPadding: EdgeInsets.zero,
+                  splashRadius: 15,
+                  icon: SvgPicture.asset(
+                    imagePaths.icAddNewFolder,
+                    colorFilter: AppColor.colorTextButton.asFilter(),
+                    fit: BoxFit.fill),
+                  tooltip: AppLocalizations.of(context).new_mailbox,
+                onTap: () => controller.goToCreateNewMailboxView(context)),
               ]),
-            ),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (controller.personalMailboxIsNotEmpty) {
-              return _buildMailboxCategory(
-                context,
-                MailboxCategories.personalFolders,
-                controller.personalRootNode
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (controller.teamMailboxesIsNotEmpty) {
-              return _buildMailboxCategory(
-                context,
-                MailboxCategories.teamMailboxes,
-                controller.teamMailboxesRootNode
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
-        ])
-      ),
+            ]),
+          ),
+        const SizedBox(height: 8),
+        Obx(() {
+          if (controller.personalMailboxIsNotEmpty) {
+            return _buildMailboxCategory(
+              context,
+              MailboxCategories.personalFolders,
+              controller.personalRootNode
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        const SizedBox(height: 8),
+        Obx(() {
+          if (controller.teamMailboxesIsNotEmpty) {
+            return _buildMailboxCategory(
+              context,
+              MailboxCategories.teamMailboxes,
+              controller.teamMailboxesRootNode
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+      ])
     );
   }
 
