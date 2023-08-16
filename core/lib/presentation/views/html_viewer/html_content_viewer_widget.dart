@@ -65,7 +65,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   void initState() {
     super.initState();
     actualHeight = widget.heightContent;
-    _htmlData = generateHtml(widget.contentHtml, direction: widget.direction);
+    _htmlData = generateHtml(
+      widget.contentHtml,
+      direction: widget.direction,
+      javaScripts: HtmlUtils.scriptLazyLoadImage,
+    );
   }
 
   @override
@@ -76,7 +80,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         widget.direction != oldWidget.direction) {
       _htmlData = generateHtml(
         widget.contentHtml,
-        direction: widget.direction
+        direction: widget.direction,
+        javaScripts: HtmlUtils.scriptLazyLoadImage,
       );
     }
   }
@@ -176,8 +181,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         actualHeight = minHeight;
       }
     }
-
-    return Future.value(null);
   }
 
   Future<void> _setActualWidthView() async {
@@ -210,8 +213,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         widget.onWebViewLoaded?.call(isScrollActivated);
       }
     }
-
-    return Future.value(null);
   }
 
   void _hideLoadingProgress() {
