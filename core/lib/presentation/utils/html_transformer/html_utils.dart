@@ -68,6 +68,39 @@ class HtmlUtils {
     }
   ''';
 
+  static const scriptLazyLoadImage = '''
+    <script type="text/javascript">
+      const lazyImages = document.querySelectorAll("img.lazy-loading");
+      
+      const options = {
+        root: null, // Use the viewport as the root
+        rootMargin: "0px",
+        threshold: 0.1 // Specify the threshold for intersection
+      };
+      
+      const handleIntersection = (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            const src = img.getAttribute("data-src");
+      
+            // Replace the placeholder with the actual image source
+            img.src = src;
+      
+            // Stop observing the image
+            observer.unobserve(img);
+          }
+        });
+      };
+      
+      const observer = new IntersectionObserver(handleIntersection, options);
+      
+      lazyImages.forEach((image) => {
+        observer.observe(image);
+      });
+    </script>
+  ''';
+
   static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
     if (PlatformInfo.isWeb) {
       return '''
