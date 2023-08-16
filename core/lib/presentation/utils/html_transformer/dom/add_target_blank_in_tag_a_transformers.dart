@@ -6,8 +6,8 @@ class AddTargetBlankInTagATransformer extends DomTransformer {
   const AddTargetBlankInTagATransformer();
 
   @override
-  Future<void> process(
-    Document document, {
+  Future<void> process({
+    required Document document,
     Map<String, String>? mapUrlDownloadCID,
     DioClient? dioClient,
   }) async {

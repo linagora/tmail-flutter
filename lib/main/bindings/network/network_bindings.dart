@@ -110,6 +110,7 @@ class NetworkBindings extends Bindings {
 
   void _bindingTransformer() {
     Get.put(const HtmlEscape());
-    Get.put(HtmlAnalyzer(Get.find<DioClient>(), Get.find<HtmlEscape>()));
+    Get.put(HtmlTransform(Get.find<DioClient>()));
+    Get.put(HtmlAnalyzer(Get.find<HtmlTransform>(), Get.find<HtmlEscape>()));
   }
 }
