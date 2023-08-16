@@ -3,34 +3,33 @@ import 'package:core/presentation/utils/html_transformer/message_content_transfo
 
 class HtmlTransform {
 
-  final String _contentHtml;
-  Map<String, String>? mapUrlDownloadCID;
-  DioClient? dioClient;
+  final DioClient _dioClient;
 
-  HtmlTransform(
-    this._contentHtml,
-    {
-      this.mapUrlDownloadCID,
-      this.dioClient,
-    }
-  );
+  HtmlTransform(this._dioClient);
 
   /// Transforms this message to HTML code.
-  Future<String> transformToHtml({TransformConfiguration? transformConfiguration}) async {
+  Future<String> transformToHtml({
+    required String contentHtml,
+    Map<String, String>? mapUrlDownloadCID,
+    TransformConfiguration? transformConfiguration,
+  }) async {
     transformConfiguration ??= TransformConfiguration.create();
-    final transformer = MessageContentTransformer(transformConfiguration);
+    final transformer = MessageContentTransformer(transformConfiguration, _dioClient);
     final document = await transformer.toDocument(
-        _contentHtml,
-        mapUrlDownloadCID: mapUrlDownloadCID,
-        dioClient: dioClient);
+      message: contentHtml,
+      mapUrlDownloadCID: mapUrlDownloadCID
+    );
     return document.outerHtml;
   }
 
   /// Transforms this message to Text Plain.
-  String transformToTextPlain({TransformConfiguration? transformConfiguration}) {
+  String transformToTextPlain({
+    required String content,
+    TransformConfiguration? transformConfiguration
+  }) {
     transformConfiguration ??= TransformConfiguration.create();
-    final transformer = MessageContentTransformer(transformConfiguration);
-    final message = transformer.toMessage(_contentHtml);
+    final transformer = MessageContentTransformer(transformConfiguration, _dioClient);
+    final message = transformer.toMessage(content);
     return message;
   }
 }

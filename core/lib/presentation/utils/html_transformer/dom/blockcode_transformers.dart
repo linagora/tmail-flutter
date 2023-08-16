@@ -8,13 +8,11 @@ class BlockCodeTransformer extends DomTransformer {
   const BlockCodeTransformer();
 
   @override
-  Future<void> process(
-      Document document,
-      {
-        Map<String, String>? mapUrlDownloadCID,
-        DioClient? dioClient
-      }
-  ) async {
+  Future<void> process({
+    required Document document,
+    Map<String, String>? mapUrlDownloadCID,
+    DioClient? dioClient
+  }) async {
     final codeElements = document.getElementsByTagName('pre');
     await Future.wait(codeElements.map((element) async {
       element.attributes['style'] = '''

@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/identity_data_source.dart';
@@ -35,6 +36,7 @@ class IdentityInteractorsBindings extends InteractorsBindings {
   @override
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => IdentityDataSourceImpl(
+      Get.find<HtmlTransform>(),
       Get.find<IdentityAPI>(),
       Get.find<RemoteExceptionThrower>()));
   }
