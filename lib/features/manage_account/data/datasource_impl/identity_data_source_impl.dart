@@ -20,10 +20,15 @@ import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class IdentityDataSourceImpl extends IdentityDataSource {
 
+  final HtmlTransform _htmlTransform;
   final IdentityAPI _identityAPI;
   final ExceptionThrower _exceptionThrower;
 
-  IdentityDataSourceImpl(this._identityAPI, this._exceptionThrower);
+  IdentityDataSourceImpl(
+    this._htmlTransform,
+    this._identityAPI,
+    this._exceptionThrower
+  );
 
   @override
   Future<IdentitiesResponse> getAllIdentities(Session session, AccountId accountId, {Properties? properties}) {
@@ -56,7 +61,8 @@ class IdentityDataSourceImpl extends IdentityDataSource {
   @override
   Future<String> transformHtmlSignature(String signature) {
     return Future.sync(() async {
-      final signatureUnescape = await HtmlTransform(signature).transformToHtml(
+      final signatureUnescape = await _htmlTransform.transformToHtml(
+        contentHtml: signature,
         transformConfiguration: TransformConfiguration.create(customDomTransformers: [
           const RemoveScriptTransformer(),
           const BlockQuotedTransformer(),

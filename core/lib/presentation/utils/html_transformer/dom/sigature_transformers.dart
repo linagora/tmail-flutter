@@ -8,13 +8,11 @@ class SignatureTransformer extends DomTransformer {
   const SignatureTransformer();
 
   @override
-  Future<void> process(
-      Document document,
-      {
-        Map<String, String>? mapUrlDownloadCID,
-        DioClient? dioClient
-      }
-  ) async {
+  Future<void> process({
+    required Document document,
+    Map<String, String>? mapUrlDownloadCID,
+    DioClient? dioClient
+  }) async {
     final signatureElements = document.querySelectorAll('div.tmail-signature');
     await Future.wait(signatureElements.map((element) async {
       element.attributes['class'] = 'tmail-signature-blocked';

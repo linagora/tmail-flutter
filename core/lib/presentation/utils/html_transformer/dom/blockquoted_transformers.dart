@@ -8,13 +8,11 @@ class BlockQuotedTransformer extends DomTransformer {
   const BlockQuotedTransformer();
 
   @override
-  Future<void> process(
-      Document document,
-      {
-        Map<String, String>? mapUrlDownloadCID,
-        DioClient? dioClient
-      }
-  ) async {
+  Future<void> process({
+    required Document document,
+    Map<String, String>? mapUrlDownloadCID,
+    DioClient? dioClient
+  }) async {
     final quotedElements = document.getElementsByTagName('blockquote');
     await Future.wait(quotedElements.map((quotedElement) async {
       quotedElement.attributes['style'] = '''

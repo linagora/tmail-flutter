@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/data/network/dio_client.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 
@@ -6,38 +7,35 @@ import 'package:html/parser.dart' show parse;
 class MessageContentTransformer {
   /// The configuration used for the transformation
   final TransformConfiguration configuration;
+  final DioClient dioClient;
 
-  MessageContentTransformer(this.configuration);
+  MessageContentTransformer(this.configuration, this.dioClient);
 
-  Future<void> _transformDocument(
-      Document document,
-      {
-        Map<String, String>? mapUrlDownloadCID,
-        DioClient? dioClient
-      }
-  ) async {
+  Future<void> _transformDocument({
+    required Document document,
+    Map<String, String>? mapUrlDownloadCID
+  }) async {
     await Future.wait([
       if (configuration.domTransformers.isNotEmpty)
         ...configuration.domTransformers.map((domTransformer) async =>
             domTransformer.process(
-                document,
-                mapUrlDownloadCID: mapUrlDownloadCID,
-                dioClient: dioClient))
+              document: document,
+              mapUrlDownloadCID: mapUrlDownloadCID,
+              dioClient: dioClient
+            )
+        )
     ]);
   }
 
-  Future<Document> toDocument(
-      String message,
-      {
-        Map<String, String>? mapUrlDownloadCID,
-        DioClient? dioClient
-      }
-  ) async {
+  Future<Document> toDocument({
+    required String message,
+    Map<String, String>? mapUrlDownloadCID
+  }) async {
     final document = parse(message);
     await _transformDocument(
-        document,
-        mapUrlDownloadCID: mapUrlDownloadCID,
-        dioClient: dioClient);
+      document: document,
+      mapUrlDownloadCID: mapUrlDownloadCID,
+    );
     return document;
   }
 
