@@ -13,10 +13,10 @@ import 'package:model/email/email_content_type.dart';
 
 class HtmlAnalyzer {
 
-  final DioClient _dioClient;
+  final HtmlTransform _htmlTransform;
   final HtmlEscape _htmlEscape;
 
-  HtmlAnalyzer(this._dioClient, this._htmlEscape);
+  HtmlAnalyzer(this._htmlTransform, this._htmlEscape);
 
   Future<EmailContent> transformEmailContent(
     EmailContent emailContent,
@@ -25,13 +25,9 @@ class HtmlAnalyzer {
   ) async {
     switch(emailContent.type) {
       case EmailContentType.textHtml:
-        final htmlTransform = HtmlTransform(
-          emailContent.content,
-          dioClient: _dioClient,
-          mapUrlDownloadCID: mapUrlDownloadCID
-        );
-
-        final htmlContent = await htmlTransform.transformToHtml(
+        final htmlContent = await _htmlTransform.transformToHtml(
+          contentHtml: emailContent.content,
+          mapUrlDownloadCID: mapUrlDownloadCID,
           transformConfiguration: draftsEmail
             ? TransformConfiguration.create(customDomTransformers: TransformConfiguration.domTransformersForDraftEmail)
             : null
@@ -39,8 +35,8 @@ class HtmlAnalyzer {
 
         return EmailContent(emailContent.type, htmlContent);
       case EmailContentType.textPlain:
-        final htmlTransform = HtmlTransform(emailContent.content);
-        final message = htmlTransform.transformToTextPlain(
+        final message = _htmlTransform.transformToTextPlain(
+          content: emailContent.content,
           transformConfiguration: TransformConfiguration.create(
             customTextTransformers: [SanitizeAutolinkHtmlTransformers(_htmlEscape)]
           )
@@ -54,10 +50,12 @@ class HtmlAnalyzer {
   Future<EmailContent> addTooltipWhenHoverOnLink(EmailContent emailContent) async {
     switch(emailContent.type) {
       case EmailContentType.textHtml:
-        final htmlTransform = HtmlTransform(emailContent.content);
-        final htmlContent = await htmlTransform.transformToHtml(
-            transformConfiguration: TransformConfiguration.create(
-                customDomTransformers: [const AddTooltipLinkTransformer()]));
+        final htmlContent = await _htmlTransform.transformToHtml(
+          contentHtml: emailContent.content,
+          transformConfiguration: TransformConfiguration.create(
+            customDomTransformers: [const AddTooltipLinkTransformer()]
+          )
+        );
         return EmailContent(emailContent.type, htmlContent);
       default:
         return emailContent;
