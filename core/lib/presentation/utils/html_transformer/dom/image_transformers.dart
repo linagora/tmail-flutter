@@ -39,6 +39,15 @@ class ImageTransformer extends DomTransformer {
           imageSource: src
         );
         imageElement.attributes['src'] = imageBase64 ?? src;
+      } else if (src.startsWith('https://') || src.startsWith('http://')) {
+        final classAttribute = imageElement.attributes['class'];
+        if (classAttribute != null) {
+          imageElement.attributes['class'] = '$classAttribute lazy-loading';
+        } else {
+          imageElement.attributes['class'] = 'lazy-loading';
+        }
+        imageElement.attributes['data-src'] = src;
+        imageElement.attributes.remove('src');
       }
     }));
   }

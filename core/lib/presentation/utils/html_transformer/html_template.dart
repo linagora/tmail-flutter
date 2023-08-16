@@ -54,10 +54,10 @@ String generateHtml(String content, {
       ''' : ''}
       ${styleCSS ?? ''}
     </style>
-    ${javaScripts ?? ''}
     </head>
     <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden">
     <div class="tmail-content">$content</div>
+    ${javaScripts ?? ''}
     </body>
     </html> 
   ''';
