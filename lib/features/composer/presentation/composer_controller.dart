@@ -376,7 +376,9 @@ class ComposerController extends BaseController {
         _onChangeCursorOnMobile(coordinates, context);
       },
     );
-    _getAllIdentities();
+    if (identitySelected.value == null) {
+      _getAllIdentities();
+    }
   }
 
   void _initEmail() {
@@ -1196,11 +1198,6 @@ class ComposerController extends BaseController {
     _updateTextForEditor();
     screenDisplayMode.value = displayMode;
     _autoFocusFieldWhenLauncher();
-
-    Future.delayed(
-      const Duration(milliseconds: 500),
-      () => selectIdentity(identitySelected.value)
-    );
   }
 
   void _updateTextForEditor() async {
@@ -1645,7 +1642,9 @@ class ComposerController extends BaseController {
     richTextWebController.editorController.setFullScreen();
     onChangeTextEditorWeb(initContent);
     richTextWebController.setEnableCodeView();
-    _getAllIdentities();
+    if (identitySelected.value == null) {
+      _getAllIdentities();
+    }
   }
 
   void handleOnFocusHtmlEditorWeb() {
