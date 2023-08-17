@@ -111,7 +111,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, B.Type_AppLocalizations_swi, t2).toString;
       t1 = A.Positioned$(_null, A.buildIconWeb(_null, _null, t1, B.EdgeInsets_5_5_5_5, 25, 25, this.onCloseContactView, 15, A.Intl__message("Close", _null, "close", _null, _null)), _null, _null, 0, _null, _null, _null);
       A.Localizations_of(context, B.Type_AppLocalizations_swi, t2).toString;
-      return new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([t1, A.Center$(A.Text$(A.Intl__message("Contact", _null, "contact", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY, _null, _null, _null, _null, _null), _null, _null, _null)], type$.JSArray_Widget), _null);
+      return new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([t1, A.Center$(A.Text$(A.Intl__message("Contact", _null, "contact", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY, _null, _null, _null, _null, _null), _null, _null)], type$.JSArray_Widget), _null);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["ContactSuggestionBoxItem(BuildContext,int)"]);
@@ -149,13 +149,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.ContactView_build__closure0.prototype = {
     call$2(context, index) {
       return new A.Padding(B.EdgeInsets_16_0_16_0, B.Divider_I9g, null);
     },
-    $signature: 542
+    $signature: 316
   };
   C.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -191,7 +191,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 88
+    $signature: 87
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -215,4 +215,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["CNlJJLqR0BXB7i8HsW35KNIUEes="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Ih3dTXk1Wl8plhV9cl+uU7jeolo="] = $__dart_deferred_initializers__.current

@@ -1582,7 +1582,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = B.Container$(_null, _this.child, C.Clip_0, _null, new B.BoxConstraints(_this.minWidth, _this.maxWidth, 0, _this.maxHeight), new B.BoxDecoration(t3, _null, _this.border, t1, _this.boxShadow, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t4, _null, _null, _this.width);
       t1 = t4;
       materialChild = B.Material$(C.Duration_200000, true, _null, B.InkWell$(false, t2, true, t1, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onTapActionCallback, _null, new A.TMailContainerWidget_build_closure(_this, context), _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
-      return materialChild;
+      t1 = _this.margin;
+      if (t1 != null)
+        return new B.Padding(t1, materialChild, _null);
+      else
+        return materialChild;
     }
   };
   A.HtmlContentViewerOnWeb.prototype = {
@@ -1686,7 +1690,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A.PopupMenuItemWidget.prototype = {
     build$1(context) {
       var _null = null,
-        t1 = B._setArrayType([B.SvgPicture$asset(this.icon, B.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, 20), C.SizedBox_12_null_null_null, B.Expanded$(B.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY12, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
+        t1 = B._setArrayType([B.SvgPicture$asset(this.icon, B.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, 20), C.SizedBox_12_null_null_null, B.Expanded$(B.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY11, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
       return B.InkWell$(false, _null, true, new B.Padding(C.EdgeInsets_20_16_20_16, new B.SizedBox(_null, _null, B.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new A.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null);
     }
   };
@@ -1971,7 +1975,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         default:
           constraints = _null;
       }
-      t1 = B.Center$(result, 1, _null, 1);
+      t1 = B.Center$(result, 1, 1);
       return new B.Semantics(B.SemanticsProperties$(_null, _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, new A._ChipRedirectingHitDetectionWidget(constraints, t1, _null), _null);
     }
   };
@@ -4872,7 +4876,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _userInformation$2(context, userProfile) {
       var _null = null;
       if (userProfile != null)
-        return new B.SizedBox(300, _null, A.ListTile$(C.EdgeInsets_20_0_20_0, _null, _null, _null, _null, _null, B.Text$(userProfile.email, _null, _null, 1, _null, _null, _null, _null, _null, D.TextStyle_chs3, _null, _null, _null, _null, _null), _null), _null);
+        return new B.SizedBox(300, _null, A.ListTile$(C.EdgeInsets_20_0_20_0, _null, _null, _null, _null, _null, B.Text$(userProfile.email, _null, _null, 1, _null, _null, _null, _null, _null, C.TextStyle_chs3, _null, _null, _null, _null, _null), _null), _null);
       return C.SizedBox_0_0_null_null;
     },
     _settingAction$2(context, onCallBack) {
@@ -4930,7 +4934,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t3 != null)
         t2.push(t3);
       t3 = A.VacationResponseExtension_getNotificationMessage(_this.vacationResponse, context);
-      t2.push(B.Expanded$(new B.Padding(D.EdgeInsets_0_12_12_0, B.Center$(B.Text$(t3, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), _null, _null, _null), _null), 1));
+      t2.push(B.Expanded$(new B.Padding(D.EdgeInsets_0_12_12_0, B.Center$(B.Text$(t3, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), _null, _null), _null), 1));
       t2 = B.Row$(t2, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       t3 = B._setArrayType([C.Spacer_null], t1);
       if (_this.actionEndNow != null) {
@@ -4958,7 +4962,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.call$1(new B.RelativeRect(t2, t3, screenSize._dx - t2, screenSize._dy - t3));
       }
     },
-    $signature: 33
+    $signature: 32
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
@@ -4999,7 +5003,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 238
+    $signature: 288
   };
   A._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -5082,7 +5086,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 217
+    $signature: 205
   };
   A._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -5108,7 +5112,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 378
+    $signature: 504
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -5126,7 +5130,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 380
+    $signature: 501
   };
   A.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -5187,7 +5191,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return B.Container$(_null, child, C.Clip_0, _null, _null, new B.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1505
+    $signature: 1507
   };
   A._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -5213,7 +5217,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new B.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1506
+    $signature: 1508
   };
   A._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -5266,7 +5270,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1507
+    $signature: 1509
   };
   A._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -5277,7 +5281,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.context.paintChild$2(child, type$.BoxParentData._as(t1).offset.$add(0, this.offset));
       }
     },
-    $signature: 335
+    $signature: 362
   };
   A._RenderListTile_hitTestChildren_closure.prototype = {
     call$2(result, transformed) {
@@ -5316,7 +5320,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1508
+    $signature: 1510
   };
   A._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -5342,7 +5346,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new A._StreamBuilderBaseState__subscribe__closure(t1, error, stackTrace));
     },
-    $signature: 98
+    $signature: 104
   };
   A._StreamBuilderBaseState__subscribe__closure.prototype = {
     call$0() {
@@ -5383,7 +5387,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.ancestorContext = $parent;
       return false;
     },
-    $signature: 61
+    $signature: 67
   };
   A.EnhancedRenderFollowerLayer_hitTestChildren_closure.prototype = {
     call$2(result, position) {
@@ -5402,7 +5406,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.parent = element;
       return false;
     },
-    $signature: 61
+    $signature: 67
   };
   A.BuildContextPortalLinkScopeExt_getSpecificElementForInheritedWidgetsOfExactType_closure.prototype = {
     call$1(element) {
@@ -5410,7 +5414,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return this.test.call$1(this.T._as(t1));
     },
-    $signature: 151
+    $signature: 144
   };
   A._PortalTargetState_build_closure.prototype = {
     call$2(context, currentVisible) {
@@ -5429,7 +5433,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1._buildModeNormal$3(context, currentVisible, scope);
     },
-    $signature: 1509
+    $signature: 1511
   };
   A._PortalTargetState__buildModeNormal_closure.prototype = {
     call$0() {
@@ -5479,7 +5483,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 272
   };
   A.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -5587,7 +5591,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 105
+    $signature: 102
   };
   A.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -5630,7 +5634,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 272
   };
   A.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
@@ -5645,7 +5649,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
       }
     },
-    $signature: 103
+    $signature: 101
   };
   A.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -5703,33 +5707,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 272
   };
   A.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 549
+    $signature: 445
   };
   A.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 549
+    $signature: 445
   };
   A.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 75
+    $signature: 71
   };
   A.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 75
+    $signature: 71
   };
   A.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -5975,10 +5979,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.PopupMenuDivider_null = new A.PopupMenuDivider(null);
     D.SizedBox_24_null_null_null = new B.SizedBox(24, null, null, null);
     D.TextStyle_8co = new B.TextStyle(true, C.Color_4285034102, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_chs3 = new B.TextStyle(true, C.Color_4286680217, null, null, null, null, 15, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv = new B.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv3 = new B.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_oHY12 = new B.TextStyle(true, C.Color_4278190080, null, null, null, null, 15, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_oHY11 = new B.TextStyle(true, C.Color_4278190080, null, null, null, null, 15, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY2 = new B.TextStyle(true, C.Color_4278190080, null, null, null, null, 17, C.FontWeight_5_600, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY4 = new B.TextStyle(true, C.Color_4278190080, null, null, null, null, 20, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   })();
@@ -5988,4 +5991,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["46O7xVUNyvwzL2phXs4Ak3j9NPo="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["vEfvUL8CoU4okH1JngWN/Hf6FJU="] = $__dart_deferred_initializers__.current
