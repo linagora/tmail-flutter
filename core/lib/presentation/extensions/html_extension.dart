@@ -1,7 +1,8 @@
 
 extension HtmlExtension on String {
 
-  static const String editorStartTags = '<p><br></p>';
+  static const String editorStartTags = '<br><div><br></div>';
+  static const String signaturePrefix = '-- ';
 
   String addBlockTag(String tag, {String? attribute}) =>
       attribute != null
@@ -24,7 +25,9 @@ extension HtmlExtension on String {
     'blockquote',
     attribute: 'style="margin-left:8px;margin-right:8px;padding-left:12px;padding-right:12px;border-left:5px solid #eee;"');
 
-  String asSignatureHtml() => '--<br>$this<br>';
+  String signaturePrefixTagHtml() => '<span class="tmail_signature_prefix">$signaturePrefix</span>';
+
+  String asSignatureHtml() => '${signaturePrefixTagHtml()}<br>$this<br>';
 
   String removeEditorStartTag() {
     if (trim() == editorStartTags) {
