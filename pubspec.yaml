@@ -54,7 +54,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: upgrade_3_10_x
+      ref: email_supported
 
   jmap_dart_client:
     git:
@@ -79,12 +79,7 @@ dependencies:
   flutter_date_range_picker:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
-      ref: upgrade_3_10_x
-
-  super_tag_editor:
-    git:
-      url: https://github.com/dab246/super_tag_editor.git
-      ref: upgrade_3_10_x
+      ref: master
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.5
@@ -206,6 +201,8 @@ dependencies:
   date_format: 2.0.7
 
   flutter_linkify: 6.0.0
+
+  super_tag_editor: 0.2.0
 
 dev_dependencies:
   flutter_test:
