@@ -1,3 +1,27 @@
+## [0.9.0] - 2023-08-18
+### Added
+- \#1710 Delete all spam emails
+- \#2064 Display banner when the quota reaches the limit
+- \#2078 Add calendar Yes/No/Maybe options
+
+### Changed
+- Upgrade flutter version to 3.10.6
+
+### Fixed
+- \#2047 Can not see the link when type is text/plain in email view
+- \#1981 Spam banner is too big
+- \#2066 Calendar not apply on version 0.8.9 when upgrade from old version
+- \#2067 Disable swipe left/right to next/previous email in email view
+- \#2068 Calendar banner widget is gray bar
+- Change SERVER\_URL to deployment PR success
+- \#1982 Change mailboxes label to folder
+- \#1714 Refreshing mailbox: display an animation while loading
+- \#2087 \[IOS/ ANDROID\] The Status Bar is missing when user change Dark theme mode in device system
+- \#1983 Create folder - How to create filter easier
+- \#2089 Fix pull-to-refresh in mailbox view
+- \#2092 Signature delimiter should be dash - dash - space
+- \#1961 Email text content could be temporarily truncated
+
 ## [0.8.9] - 2023-07-31
 ### Added
 - Translate Russian and French
@@ -208,6 +232,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.9.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.0
 [0.8.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.9
 [0.8.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.8
 [0.8.7]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.7
