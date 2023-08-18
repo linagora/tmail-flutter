@@ -75,7 +75,7 @@ class HtmlUtils {
       const options = {
         root: null, // Use the viewport as the root
         rootMargin: "0px",
-        threshold: 0.1 // Specify the threshold for intersection
+        threshold: 0 // Specify the threshold for intersection
       };
       
       const handleIntersection = (entries, observer) => {
@@ -131,12 +131,20 @@ class HtmlUtils {
             border-radius: 4px;
             overflow: auto;
           }
+          
+          div.tmail-signature {
+            text-align: left;
+          }
         </style>
       ''';
     } else if (PlatformInfo.isMobile) {
       return '''
         #editor {
           direction: ${direction.name};
+        }
+        
+        div.tmail-signature {
+          text-align: left;
         }
       ''';
     } else {
