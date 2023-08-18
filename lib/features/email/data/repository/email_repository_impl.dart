@@ -6,6 +6,7 @@ import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -109,22 +110,16 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<List<EmailContent>> transformEmailContent(
-      List<EmailContent> emailContents,
-      List<Attachment> attachmentInlines,
-      String? baseUrlDownload,
-      AccountId accountId,
-      {bool draftsEmail = false}
-    ) async {
-    final mapUrlDownloadCID = {
-      for (var attachment in attachmentInlines)
-        attachment.cid! : attachment.getDownloadUrl(baseUrlDownload!, accountId)
-    };
+    List<EmailContent> emailContents,
+    Map<String, String> mapCidImageDownloadUrl,
+    TransformConfiguration transformConfiguration
+  ) async {
     return await Future.wait(emailContents
       .map((emailContent) async {
         return await _htmlDataSource.transformEmailContent(
           emailContent,
-          mapUrlDownloadCID,
-          draftsEmail: draftsEmail
+          mapCidImageDownloadUrl,
+          transformConfiguration,
         );
       })
       .toList());
@@ -174,13 +169,6 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<EmailContent>> addTooltipWhenHoverOnLink(List<EmailContent> emailContents) {
-    return Future.wait(emailContents
-      .map((emailContent) => _htmlDataSource.addTooltipWhenHoverOnLink(emailContent))
-      .toList());
-  }
-
-  @override
   Future<jmap.State?> getEmailState(Session session, AccountId accountId) {
     return _stateDataSource.getState(accountId, session.username, StateType.email);
   }
@@ -218,5 +206,10 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<DetailedEmail> getStoredNewEmail(Session session, AccountId accountId, EmailId emailId) {
     return emailDataSource[DataSourceType.hiveCache]!.getStoredNewEmail(session, accountId, emailId);
+  }
+
+  @override
+  Future<String> transformHtmlEmailContent(String htmlContent, TransformConfiguration configuration) {
+    return _htmlDataSource.transformHtmlEmailContent(htmlContent, configuration);
   }
 }

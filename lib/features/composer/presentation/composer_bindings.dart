@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -163,6 +164,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => DownloadImageAsBase64Interactor(Get.find<ComposerRepository>()));
+    Get.lazyPut(() => TransformHtmlEmailContentInteractor(Get.find<EmailRepository>()));
 
     IdentityInteractorsBindings().dependencies();
   }
@@ -184,6 +186,7 @@ class ComposerBindings extends BaseBindings {
         Get.find<SaveComposerCacheOnWebInteractor>(),
         Get.find<RichTextWebController>(),
         Get.find<DownloadImageAsBase64Interactor>(),
+        Get.find<TransformHtmlEmailContentInteractor>(),
     ));
   }
 
