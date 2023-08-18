@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
@@ -11,13 +12,9 @@ class SessionStorageComposerDatasourceImpl
   @override
   ComposerCache getComposerCacheOnWeb() {
     try {
-      final result = html.window.sessionStorage.entries
-          .where((e) => e.key == EmailActionType.edit.name)
-          .toList();
-      if (result.isNotEmpty) {
-        final jsonHandle =
-            json.decode(result.first.value) as Map<String, dynamic>;
-        final emailCache = ComposerCache.fromJson(jsonHandle);
+      final result = html.window.sessionStorage.entries.firstWhereOrNull((e) => e.key == EmailActionType.reopenComposerBrowser.name);
+      if (result != null) {
+        final emailCache = ComposerCache.fromJson(jsonDecode(result.value));
         return emailCache;
       } else {
         throw NotFoundInWebSessionException();
@@ -30,8 +27,7 @@ class SessionStorageComposerDatasourceImpl
   @override
   void removeComposerCacheOnWeb() {
     try {
-      html.window.sessionStorage
-          .removeWhere((key, value) => key == EmailActionType.edit.name);
+      html.window.sessionStorage.removeWhere((key, value) => key == EmailActionType.reopenComposerBrowser.name);
     } catch (e) {
       throw NotFoundInWebSessionException(errorMessage: e.toString());
     }
@@ -41,7 +37,7 @@ class SessionStorageComposerDatasourceImpl
   void saveComposerCacheOnWeb(Email email) {
     try {
       Map<String, String> entries = {
-        EmailActionType.edit.name: json.encode(email.toJson())
+        EmailActionType.reopenComposerBrowser.name: email.asString()
       };
       html.window.sessionStorage.addAll(entries);
     } catch (e) {

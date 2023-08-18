@@ -62,7 +62,7 @@ class IdentityDataSourceImpl extends IdentityDataSource {
   Future<String> transformHtmlSignature(String signature) {
     return Future.sync(() async {
       final signatureUnescape = await _htmlTransform.transformToHtml(
-        contentHtml: signature,
+        htmlContent: signature,
         transformConfiguration: TransformConfiguration.create(customDomTransformers: [
           const RemoveScriptTransformer(),
           const BlockQuotedTransformer(),

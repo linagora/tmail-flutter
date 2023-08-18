@@ -1,12 +1,16 @@
 
+import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/add_target_blank_in_tag_a_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockcode_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/remove_tooltip_link_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/replace_lazy_load_image_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sigature_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
 
 /// Contains the configuration for all transformations.
 class TransformConfiguration {
@@ -23,6 +27,45 @@ class TransformConfiguration {
   const TransformConfiguration(
     this.domTransformers,
     this.textTransformers
+  );
+
+  factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration.create(
+    customDomTransformers: [
+      const ReplaceLazyLoadImageTransformer(),
+      if (PlatformInfo.isWeb)
+        const RemoveTooltipLinkTransformer(),
+    ]
+  );
+
+  factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.create(
+    customDomTransformers: [
+      const RemoveScriptTransformer(),
+      const BlockQuotedTransformer(),
+      const BlockCodeTransformer(),
+      const AddTargetBlankInTagATransformer(),
+      const ImageTransformer(useLoadingAttribute: true),
+    ]
+  );
+
+  factory TransformConfiguration.forComposeEmailPlatformWeb() => TransformConfiguration.create(
+    customDomTransformers: [
+      const RemoveScriptTransformer(),
+      const BlockQuotedTransformer(),
+      const BlockCodeTransformer(),
+      const AddTargetBlankInTagATransformer(),
+      const ImageTransformer(useLoadingAttribute: true)
+    ]
+  );
+
+  factory TransformConfiguration.forPreviewEmailPlatformWeb() => TransformConfiguration.create(
+    customDomTransformers: [
+      const RemoveScriptTransformer(),
+      const BlockQuotedTransformer(),
+      const BlockCodeTransformer(),
+      const AddTargetBlankInTagATransformer(),
+      const ImageTransformer(),
+      const AddTooltipLinkTransformer(),
+    ]
   );
 
   /// Provides easy access to a standard configuration that does not block external images.
@@ -61,13 +104,7 @@ class TransformConfiguration {
     ImageTransformer(),
   ];
 
-  static const List<DomTransformer> domTransformersForDraftEmail = [
-    RemoveScriptTransformer(),
-    BlockQuotedTransformer(),
-    BlockCodeTransformer(),
-    AddTargetBlankInTagATransformer(),
-    ImageTransformer(),
+  static const List<TextTransformer> standardTextTransformers = [
+    SanitizeAutolinkHtmlTransformers()
   ];
-
-  static const List<TextTransformer> standardTextTransformers = [];
 }

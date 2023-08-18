@@ -10,12 +10,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/widget/cupertino_loading_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/base_composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/email_editor_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -385,46 +387,96 @@ class ComposerView extends BaseComposerView {
       switch(argsComposer.emailActionType) {
         case EmailActionType.compose:
         case EmailActionType.composeFromEmailAddress:
+        case EmailActionType.composeFromFileShared:
           return _buildHtmlEditor(
-              context,
-              currentTextEditor ?? HtmlExtension.editorStartTags);
-        case EmailActionType.edit:
-          return controller.emailContentsViewState.value.fold(
+            context,
+            currentTextEditor ?? HtmlExtension.editorStartTags
+          );
+        case EmailActionType.editDraft:
+        case EmailActionType.editSendingEmail:
+        case EmailActionType.composeFromContentShared:
+        case EmailActionType.reopenComposerBrowser:
+          final emailContentsViewState = controller.emailContentsViewState.value;
+          if (emailContentsViewState == null) {
+            return const SizedBox.shrink();
+          }
+          return emailContentsViewState.fold(
             (failure) => _buildHtmlEditor(
-                context,
-                currentTextEditor ?? HtmlExtension.editorStartTags),
+              context,
+              currentTextEditor ?? HtmlExtension.editorStartTags
+            ),
             (success) {
               if (success is GetEmailContentLoading) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: loadingWidget,
-                );
+                return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
               } else if (success is GetEmailContentSuccess) {
-                var contentHtml = success.emailContent;
+                var contentHtml = success.htmlEmailContent;
                 if (contentHtml.isEmpty == true) {
                   contentHtml = HtmlExtension.editorStartTags;
                 }
-                return _buildHtmlEditor(context, currentTextEditor ?? contentHtml);
+                return _buildHtmlEditor(
+                  context,
+                  currentTextEditor ?? contentHtml
+                );
               } else {
                 return _buildHtmlEditor(
                   context,
-                  currentTextEditor ?? HtmlExtension.editorStartTags);
+                  currentTextEditor ?? HtmlExtension.editorStartTags
+                );
               }
             });
         case EmailActionType.reply:
         case EmailActionType.replyAll:
         case EmailActionType.forward:
-          var contentHtml = controller.getEmailContentQuotedAsHtml(
-              context,
-              argsComposer);
-          if (contentHtml.isEmpty == true) {
-            contentHtml = HtmlExtension.editorStartTags;
+          final emailContentsViewState = controller.emailContentsViewState.value;
+          if (emailContentsViewState == null) {
+            return const SizedBox.shrink();
           }
-          return _buildHtmlEditor(context, currentTextEditor ?? contentHtml);
+          return emailContentsViewState.fold(
+            (failure) {
+              final emailContentQuoted = controller.getEmailContentQuotedAsHtml(
+                context: context,
+                emailContent: '',
+                emailActionType: argsComposer.emailActionType,
+                presentationEmail: argsComposer.presentationEmail!
+              );
+              return _buildHtmlEditor(
+                context,
+                currentTextEditor ?? emailContentQuoted
+              );
+            },
+            (success) {
+              if (success is TransformHtmlEmailContentLoading) {
+                return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
+              } else if (success is TransformHtmlEmailContentSuccess) {
+                final emailContentQuoted = controller.getEmailContentQuotedAsHtml(
+                  context: context,
+                  emailContent: success.htmlContent,
+                  emailActionType: argsComposer.emailActionType,
+                  presentationEmail: argsComposer.presentationEmail!
+                );
+                return _buildHtmlEditor(
+                  context,
+                  currentTextEditor ?? emailContentQuoted
+                );
+              } else {
+                final emailContentQuoted = controller.getEmailContentQuotedAsHtml(
+                  context: context,
+                  emailContent: '',
+                  emailActionType: argsComposer.emailActionType,
+                  presentationEmail: argsComposer.presentationEmail!
+                );
+                return _buildHtmlEditor(
+                  context,
+                  currentTextEditor ?? emailContentQuoted
+                );
+              }
+            }
+          );
         default:
           return _buildHtmlEditor(
-              context,
-              currentTextEditor ?? HtmlExtension.editorStartTags);
+            context,
+            currentTextEditor ?? HtmlExtension.editorStartTags
+          );
       }
     });
   }

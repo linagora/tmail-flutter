@@ -204,7 +204,8 @@ class MailboxDashBoardController extends ReloadableController {
   ComposerArguments? composerArguments;
   NavigationRouter? navigationRouter;
 
-  late StreamSubscription _emailReceiveManagerStreamSubscription;
+  late StreamSubscription _emailAddressStreamSubscription;
+  late StreamSubscription _emailContentStreamSubscription;
   late StreamSubscription _fileReceiveManagerStreamSubscription;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
@@ -267,19 +268,7 @@ class MailboxDashBoardController extends ReloadableController {
         (failure) {},
         (success) {
           if(success is GetComposerCacheSuccess){
-            final ComposerArguments composerArguments = ComposerArguments(
-              emailActionType: EmailActionType.edit,
-              presentationEmail: PresentationEmail(
-                id: success.composerCache.id,
-                subject: success.composerCache.subject,
-                from: success.composerCache.from,
-                to: success.composerCache.to,
-                cc: success.composerCache.cc,
-                bcc: success.composerCache.bcc,
-              ),
-              emailContents: success.composerCache.emailContentList.asHtmlString,
-            );
-            openComposerOverlay(composerArguments);
+            openComposerOverlay(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
           }
         },
       );    
@@ -373,49 +362,33 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _registerPendingEmailAddress() {
-    _emailReceiveManagerStreamSubscription =
-        _emailReceiveManager.pendingEmailAddressInfo.stream.listen((emailAddress) {
-          log('MailboxDashBoardController::_registerPendingEmailAddress(): ${emailAddress?.email}');
-          if (emailAddress != null && emailAddress.email?.isNotEmpty == true) {
-            _emailReceiveManager.clearPendingEmailAddress();
-            final arguments = ComposerArguments(
-                emailActionType: EmailActionType.composeFromEmailAddress,
-                emailAddress: emailAddress,
-                mailboxRole: selectedMailbox.value?.role);
-            goToComposer(arguments);
-          }
-        });
+    _emailAddressStreamSubscription =
+      _emailReceiveManager.pendingEmailAddressInfo.stream.listen((emailAddress) {
+        if (emailAddress?.email?.isNotEmpty == true) {
+          _emailReceiveManager.clearPendingEmailAddress();
+          goToComposer(ComposerArguments.fromEmailAddress(emailAddress!));
+        }
+      });
   }
 
   void _registerPendingEmailContents() {
-    _emailReceiveManagerStreamSubscription =
+    _emailContentStreamSubscription =
       _emailReceiveManager.pendingEmailContentInfo.stream.listen((emailContent) {
-        log('MailboxDashBoardController::_registerPendingEmailContents(): ${emailContent?.content}');
-        if (emailContent != null && emailContent.content.isNotEmpty == true) {
+        if (emailContent?.content.isNotEmpty == true) {
           _emailReceiveManager.clearPendingEmailContent();
-          final arguments = ComposerArguments(
-            emailActionType: EmailActionType.edit,
-            emailContents: [emailContent].asHtmlString,
-            mailboxRole: selectedMailbox.value?.role);
-          goToComposer(arguments);
-          }
-        });
+          goToComposer(ComposerArguments.fromContentShared([emailContent!].asHtmlString));
+        }
+      });
   }
 
   void _registerPendingFileInfo() {
     _fileReceiveManagerStreamSubscription =
-        _emailReceiveManager.pendingFileInfo.stream.listen((listFile) {
-          log('MailboxDashBoardController::_registerPendingFileInfo(): ${listFile.length}');
-          if (listFile.isNotEmpty && sessionCurrent != null) {
-            _emailReceiveManager.clearPendingFileInfo();
-            final arguments = ComposerArguments(
-              emailActionType: EmailActionType.edit,
-              mailboxRole: selectedMailbox.value?.role,
-              listSharedMediaFile: listFile,
-            );
-            goToComposer(arguments);
-          }
-        });
+      _emailReceiveManager.pendingFileInfo.stream.listen((listFile) {
+        if (listFile.isNotEmpty) {
+          _emailReceiveManager.clearPendingFileInfo();
+          goToComposer(ComposerArguments.fromFileShared(listFile));
+        }
+      });
   }
 
   void _registerStreamListener() {
@@ -2071,11 +2044,14 @@ class MailboxDashBoardController extends ReloadableController {
   void selectAllEmailAction() {
     dispatchAction(SelectionAllEmailAction());
   }
+
+  String get baseDownloadUrl => sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl) ?? '';
   
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
-    _emailReceiveManagerStreamSubscription.cancel();
+    _emailAddressStreamSubscription.cancel();
+    _emailContentStreamSubscription.cancel();
     _fileReceiveManagerStreamSubscription.cancel();
     _progressStateController.close();
     _refreshActionEventController.close();

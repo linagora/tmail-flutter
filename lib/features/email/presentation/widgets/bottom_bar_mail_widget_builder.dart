@@ -9,7 +9,10 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnPressEmailActionClick = void Function(EmailActionType emailActionType);
+typedef OnPressEmailActionClick = void Function(
+  EmailActionType emailActionType,
+  PresentationEmail presentationEmail
+);
 
 class BottomBarMailWidgetBuilder extends StatelessWidget {
 
@@ -60,7 +63,7 @@ class BottomBarMailWidgetBuilder extends StatelessWidget {
                     color: AppColor.colorTextButton
                   ),
                   verticalDirection: responsiveUtils.isPortraitMobile(context),
-                  onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.replyAll),
+                  onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.replyAll, _presentationEmail),
                 ),
               ),
             Expanded(
@@ -79,7 +82,7 @@ class BottomBarMailWidgetBuilder extends StatelessWidget {
                   color: AppColor.colorTextButton
                 ),
                 verticalDirection: responsiveUtils.isPortraitMobile(context),
-                onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.reply),
+                onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.reply, _presentationEmail),
               ),
             ),
             Expanded(
@@ -98,7 +101,7 @@ class BottomBarMailWidgetBuilder extends StatelessWidget {
                   color: AppColor.colorTextButton
                 ),
                 verticalDirection: responsiveUtils.isPortraitMobile(context),
-                onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.forward),
+                onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.forward, _presentationEmail),
               ),
             ),
             Expanded(
@@ -117,7 +120,7 @@ class BottomBarMailWidgetBuilder extends StatelessWidget {
                   color: AppColor.colorTextButton
                 ),
                 verticalDirection: responsiveUtils.isPortraitMobile(context),
-                onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.compose),
+                onTapActionCallback: () => onPressEmailActionClick?.call(EmailActionType.compose, _presentationEmail),
               ),
             ),
           ]

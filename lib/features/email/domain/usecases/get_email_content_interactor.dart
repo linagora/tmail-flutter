@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -20,19 +21,16 @@ class GetEmailContentInteractor {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    String? baseDownloadUrl,
-    {
-      bool composeEmail = false,
-      bool draftsEmail = false
-    }
+    String baseDownloadUrl,
+    TransformConfiguration transformConfiguration,
   ) async* {
     try {
       yield Right<Failure, Success>(GetEmailContentLoading());
 
       if (PlatformInfo.isMobile) {
-        yield* _getStoredOpenedEmail(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
+        yield* _getStoredOpenedEmail(session, accountId, emailId, baseDownloadUrl, transformConfiguration);
       } else {
-        yield* _getContentEmailFromServer(session, accountId, emailId, baseDownloadUrl, composeEmail: composeEmail, draftsEmail: draftsEmail);
+        yield* _getContentEmailFromServer(session, accountId, emailId, baseDownloadUrl, transformConfiguration);
       }
     } catch (e) {
       log('GetEmailContentInteractor::execute(): exception = $e');
@@ -44,38 +42,31 @@ class GetEmailContentInteractor {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    String? baseDownloadUrl,
-    {
-      bool composeEmail = false,
-      bool draftsEmail = false
-    }
+    String baseDownloadUrl,
+    TransformConfiguration transformConfiguration,
   ) async* {
     try {
       final email = await emailRepository.getEmailContent(session, accountId, emailId);
 
       if (email.emailContentList.isNotEmpty) {
+        final mapCidImageDownloadUrl = email.attachmentsWithCid.toMapCidImageDownloadUrl(
+          accountId: accountId,
+          downloadUrl: baseDownloadUrl
+        );
         final newEmailContents = await emailRepository.transformEmailContent(
           email.emailContentList,
-          email.allAttachments.listAttachmentsDisplayedInContent,
-          baseDownloadUrl,
-          accountId,
-          draftsEmail: draftsEmail
+          mapCidImageDownloadUrl,
+          transformConfiguration
         );
 
-        final newEmailContentsDisplayed = PlatformInfo.isWeb && !composeEmail
-          ? await emailRepository.addTooltipWhenHoverOnLink(newEmailContents)
-          : newEmailContents;
-
         yield Right<Failure, Success>(GetEmailContentSuccess(
-          emailContent: newEmailContents.asHtmlString,
-          emailContentDisplayed: newEmailContentsDisplayed.asHtmlString,
+          htmlEmailContent: newEmailContents.asHtmlString,
           attachments: email.allAttachments,
           emailCurrent: email
         ));
       } else {
         yield Right<Failure, Success>(GetEmailContentSuccess(
-          emailContent: '',
-          emailContentDisplayed: '',
+          htmlEmailContent: '',
           attachments: email.allAttachments,
           emailCurrent: email
         ));
@@ -90,17 +81,14 @@ class GetEmailContentInteractor {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    String? baseDownloadUrl,
-    {
-      bool composeEmail = false,
-      bool draftsEmail = false
-    }
+    String baseDownloadUrl,
+    TransformConfiguration transformConfiguration,
   ) async* {
     try {
       log('GetEmailContentInteractor::_getStoredOpenedEmail(): CALLED');
       final detailedEmail = await emailRepository.getStoredOpenedEmail(session, accountId, emailId);
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
-        emailContent: detailedEmail.htmlEmailContent ?? "",
+        htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],
         emailCurrent: Email(
           id: emailId,
@@ -115,8 +103,8 @@ class GetEmailContentInteractor {
         accountId,
         emailId,
         baseDownloadUrl,
-        composeEmail: composeEmail,
-        draftsEmail: draftsEmail);
+        transformConfiguration
+      );
     }
   }
 
@@ -124,17 +112,14 @@ class GetEmailContentInteractor {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    String? baseDownloadUrl,
-    {
-      bool composeEmail = false,
-      bool draftsEmail = false
-    }
+    String baseDownloadUrl,
+    TransformConfiguration transformConfiguration,
   ) async* {
     try {
       log('GetEmailContentInteractor::_getStoredNewEmail():CALLED');
       final detailedEmail = await emailRepository.getStoredNewEmail(session, accountId, emailId);
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
-        emailContent: detailedEmail.htmlEmailContent ?? "",
+        htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],
         emailCurrent: Email(
           id: emailId,
@@ -149,8 +134,8 @@ class GetEmailContentInteractor {
         accountId,
         emailId,
         baseDownloadUrl,
-        composeEmail: composeEmail,
-        draftsEmail: draftsEmail);
+        transformConfiguration
+      );
     }
   }
 }

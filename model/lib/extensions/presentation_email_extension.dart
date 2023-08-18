@@ -110,10 +110,10 @@ extension PresentationEmailExtension on PresentationEmail {
     return allEmailAddress.isNotEmpty ? allEmailAddress.join(', ') : '';
   }
 
-  Tuple3<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> generateRecipientsEmailAddressForComposer(
-      EmailActionType? emailActionType,
-      Role? mailboxRole
-  ) {
+  Tuple3<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> generateRecipientsEmailAddressForComposer({
+    required EmailActionType emailActionType,
+    Role? mailboxRole
+  }) {
     switch(emailActionType) {
       case EmailActionType.reply:
         if (mailboxRole == PresentationMailbox.roleSent) {
@@ -128,10 +128,8 @@ extension PresentationEmailExtension on PresentationEmail {
         } else {
           return Tuple3(to.asList() + from.asList(), cc.asList(), bcc.asList());
         }
-      case EmailActionType.edit:
-        return Tuple3(to.asList(), cc.asList(), bcc.asList());
       default:
-        return const Tuple3([], [], []);
+        return Tuple3(to.asList(), cc.asList(), bcc.asList());
     }
   }
 

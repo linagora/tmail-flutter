@@ -1,4 +1,6 @@
-import 'package:model/model.dart';
+
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:model/email/attachment.dart';
 
 extension ListAttachmentExtension on List<Attachment> {
 
@@ -19,5 +21,16 @@ extension ListAttachmentExtension on List<Attachment> {
   List<Attachment> get listAttachmentsDisplayedInContent {
     return where((attachment) => attachment.hasCid())
       .toList();
+  }
+
+  Map<String, String> toMapCidImageDownloadUrl({
+    required AccountId accountId,
+    required String downloadUrl
+  }) {
+    final mapUrlDownloadCID = {
+      for (var attachment in listAttachmentsDisplayedInContent)
+        attachment.cid! : attachment.getDownloadUrl(downloadUrl, accountId)
+    };
+    return mapUrlDownloadCID;
   }
 }
