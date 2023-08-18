@@ -12,7 +12,9 @@ import 'package:html/dom.dart';
 
 class ImageTransformer extends DomTransformer {
 
-  const ImageTransformer();
+  final bool useLoadingAttribute;
+
+  const ImageTransformer({this.useLoadingAttribute = false});
 
   @override
   Future<void> process({
@@ -40,14 +42,19 @@ class ImageTransformer extends DomTransformer {
         );
         imageElement.attributes['src'] = imageBase64 ?? src;
       } else if (src.startsWith('https://') || src.startsWith('http://')) {
-        final classAttribute = imageElement.attributes['class'];
-        if (classAttribute != null) {
-          imageElement.attributes['class'] = '$classAttribute lazy-loading';
+        if (useLoadingAttribute) {
+          imageElement.attributes['loading'] = 'lazy';
         } else {
-          imageElement.attributes['class'] = 'lazy-loading';
+          final classAttribute = imageElement.attributes['class'];
+          if (classAttribute != null) {
+            imageElement.attributes['class'] = '$classAttribute lazy-loading';
+          } else {
+            imageElement.attributes['class'] = 'lazy-loading';
+          }
+          imageElement.attributes['data-src'] = src;
+          imageElement.attributes.remove('src');
+          imageElement.attributes.remove('loading');
         }
-        imageElement.attributes['data-src'] = src;
-        imageElement.attributes.remove('src');
       }
     }));
   }

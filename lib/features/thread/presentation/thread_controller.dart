@@ -873,7 +873,7 @@ class ThreadController extends BaseController with EmailActionController {
     switch(actionType) {
       case EmailActionType.preview:
         if (mailboxContain?.isDrafts == true) {
-          editEmail(selectedEmail);
+          editDraftEmail(selectedEmail);
         } else {
           previewEmail(selectedEmail);
         }

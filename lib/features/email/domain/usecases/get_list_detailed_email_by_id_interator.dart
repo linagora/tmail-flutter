@@ -1,5 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/extensions/utc_date_extension.dart';
@@ -23,7 +25,7 @@ class GetListDetailedEmailByIdInteractor {
     Session session,
     AccountId accountId,
     Set<EmailId> emailIds,
-    String? baseDownloadUrl,
+    String baseDownloadUrl,
     {Set<Comparator>? sort}
   ) async* {
     try {
@@ -57,17 +59,27 @@ class GetListDetailedEmailByIdInteractor {
   Future<Tuple2<Email, DetailedEmail>> _parsingEmailToDetailedEmail(
     AccountId accountId,
     Email email,
-    String? baseDownloadUrl
+    String baseDownloadUrl
   ) async {
     String? htmlEmailContent;
 
     final listEmailContent = email.emailContentList;
     if (listEmailContent.isNotEmpty) {
+      final mapCidImageDownloadUrl = email.attachmentsWithCid.toMapCidImageDownloadUrl(
+        accountId: accountId,
+        downloadUrl: baseDownloadUrl
+      );
+      TransformConfiguration transformConfiguration = TransformConfiguration.standardConfiguration;
+      if (email.isDraft) {
+        transformConfiguration = TransformConfiguration.forDraftsEmail();
+      } else if (PlatformInfo.isWeb) {
+        transformConfiguration = TransformConfiguration.forPreviewEmailPlatformWeb();
+      }
       final newEmailContents = await _emailRepository.transformEmailContent(
-        listEmailContent,
-        email.allAttachments.listAttachmentsDisplayedInContent,
-        baseDownloadUrl,
-        accountId);
+        email.emailContentList,
+        mapCidImageDownloadUrl,
+        transformConfiguration
+      );
 
       htmlEmailContent = newEmailContents.asHtmlString;
     }

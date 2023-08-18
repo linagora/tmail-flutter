@@ -6,41 +6,38 @@ import 'package:model/email/attachment.dart';
 class GetEmailContentLoading extends LoadingState {}
 
 class GetEmailContentSuccess extends UIState {
-  final String emailContent;
-  final String emailContentDisplayed;
+  final String htmlEmailContent;
   final List<Attachment> attachments;
   final Email? emailCurrent;
 
   GetEmailContentSuccess({
-    required this.emailContent,
-    required this.emailContentDisplayed,
-    required this.attachments,
-    required this.emailCurrent
-  });
-
-  @override
-  List<Object?> get props => [
-    emailContent,
-    emailContentDisplayed,
-    attachments,
-    emailCurrent
-  ];
-}
-
-class GetEmailContentFromCacheSuccess extends UIState {
-  final String emailContent;
-  final List<Attachment> attachments;
-  final Email? emailCurrent;
-
-  GetEmailContentFromCacheSuccess({
-    required this.emailContent,
+    required this.htmlEmailContent,
     required this.attachments,
     this.emailCurrent
   });
 
   @override
   List<Object?> get props => [
-    emailContent,
+    htmlEmailContent,
+    attachments,
+    emailCurrent
+  ];
+}
+
+class GetEmailContentFromCacheSuccess extends UIState {
+  final String htmlEmailContent;
+  final List<Attachment> attachments;
+  final Email? emailCurrent;
+
+  GetEmailContentFromCacheSuccess({
+    required this.htmlEmailContent,
+    required this.attachments,
+    this.emailCurrent
+  });
+
+  @override
+  List<Object?> get props => [
+    htmlEmailContent,
     attachments,
     emailCurrent,
   ];

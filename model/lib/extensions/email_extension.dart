@@ -19,6 +19,8 @@ extension EmailExtension on Email {
 
   bool get hasMdnSent => keywords?.containsKey(KeyWordIdentifier.mdnSent) == true;
 
+  bool get isDraft => keywords?.containsKey(KeyWordIdentifier.emailDraft) == true;
+
   bool get withAttachments => hasAttachment == true;
 
   bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
@@ -125,6 +127,13 @@ extension EmailExtension on Email {
         .toList();
     }
     return [];
+  }
+
+  List<Attachment> get attachmentsWithCid {
+    return attachments
+      ?.where((element) => element.disposition != null && element.cid?.isNotEmpty == true)
+      .map((item) => item.toAttachment())
+      .toList() ?? [];
   }
 
   PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {

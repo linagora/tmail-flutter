@@ -99,7 +99,7 @@ class ComposerStyle {
     if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeMobile(context)) {
       return const EdgeInsetsDirectional.symmetric(horizontal: 16);
     } else {
-      return const EdgeInsetsDirectional.only(start: 88, end: 48);
+      return const EdgeInsetsDirectional.only(start: 88, end: 48, top: 8);
     }
   }
 

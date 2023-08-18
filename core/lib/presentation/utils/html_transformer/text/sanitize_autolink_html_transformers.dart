@@ -6,10 +6,8 @@ import 'package:core/presentation/utils/html_transformer/base/text_transformer.d
 
 class SanitizeAutolinkHtmlTransformers extends TextTransformer {
 
-  final HtmlEscape htmlEscape;
-
-  SanitizeAutolinkHtmlTransformers(this.htmlEscape);
+  const SanitizeAutolinkHtmlTransformers();
 
   @override
-  String process(String text) => SanitizeAutolinkFilter(htmlEscape).process(text);
+  String process(String text, HtmlEscape htmlEscape) => SanitizeAutolinkFilter(htmlEscape).process(text);
 }

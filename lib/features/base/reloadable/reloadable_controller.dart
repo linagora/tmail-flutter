@@ -24,7 +24,7 @@ import 'package:tmail_ui_user/features/session/domain/usecases/get_session_inter
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 abstract class ReloadableController extends BaseController {
-  final DynamicUrlInterceptors _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
+  final DynamicUrlInterceptors dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
   final UpdateAuthenticationAccountInteractor _updateAuthenticationAccountInteractor;
@@ -72,8 +72,8 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _setUpInterceptors(GetCredentialViewState credentialViewState) {
-    _dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
-    _dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
+    dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
+    dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
       credentialViewState.userName.value,
       credentialViewState.password.value,
@@ -100,10 +100,10 @@ abstract class ReloadableController extends BaseController {
   void _handleGetSessionSuccess(GetSessionSuccess success) {
     final session = success.session;
     final personalAccount = session.personalAccount;
-    final apiUrl = session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors.jmapUrl);
+    final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
     log('ReloadableController::_handleGetSessionSuccess():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
-      _dynamicUrlInterceptors.changeBaseUrl(apiUrl);
+      dynamicUrlInterceptors.changeBaseUrl(apiUrl);
       updateAuthenticationAccount(session, personalAccount.accountId, session.username);
       handleReloaded(session);
     } else {
@@ -120,8 +120,8 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
-    _dynamicUrlInterceptors.setJmapUrl(tokenOidcSuccess.baseUrl.toString());
-    _dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
+    dynamicUrlInterceptors.setJmapUrl(tokenOidcSuccess.baseUrl.toString());
+    dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: tokenOidcSuccess.tokenOidc.toToken(),
         newConfig: tokenOidcSuccess.oidcConfiguration);
@@ -140,7 +140,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
-    final apiUrl = session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors.jmapUrl);
+    final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
     log('ReloadableController::updateAuthenticationAccount():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));

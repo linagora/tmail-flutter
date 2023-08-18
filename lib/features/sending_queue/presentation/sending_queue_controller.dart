@@ -10,8 +10,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/email/email_action_type.dart';
-import 'package:model/extensions/list_email_content_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
@@ -270,16 +268,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   void _editSendingEmailAction(SendingEmail sendingEmail) {
     disableSelectionMode();
-
-    final arguments = ComposerArguments(
-      emailActionType: EmailActionType.edit,
-      presentationEmail: sendingEmail.presentationEmail,
-      mailboxRole: dashboardController?.selectedMailbox.value?.role,
-      emailContents: sendingEmail.presentationEmail.emailContentList.asHtmlString,
-      sendingEmail: sendingEmail
-    );
-
-    dashboardController?.goToComposer(arguments);
+    dashboardController?.goToComposer(ComposerArguments.fromSendingEmail(sendingEmail));
   }
 
   void _resendSendingEmailAction(List<SendingEmail> listSendingEmails) async {

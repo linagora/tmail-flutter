@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:model/email/email_content.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
@@ -13,22 +14,25 @@ class HtmlDataSourceImpl extends HtmlDataSource {
   @override
   Future<EmailContent> transformEmailContent(
     EmailContent emailContent,
-    Map<String, String>? mapUrlDownloadCID,
-    {bool draftsEmail = false}
+    Map<String, String> mapCidImageDownloadUrl,
+    TransformConfiguration transformConfiguration
   ) {
     return Future.sync(() async {
       return await _htmlAnalyzer.transformEmailContent(
         emailContent,
-        mapUrlDownloadCID,
-        draftsEmail: draftsEmail
+        mapCidImageDownloadUrl,
+        transformConfiguration
       );
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<EmailContent> addTooltipWhenHoverOnLink(EmailContent emailContent) {
+  Future<String> transformHtmlEmailContent(String htmlContent, TransformConfiguration configuration) {
     return Future.sync(() async {
-      return await _htmlAnalyzer.addTooltipWhenHoverOnLink(emailContent);
+      return await _htmlAnalyzer.transformHtmlEmailContent(
+        htmlContent,
+        configuration
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 }

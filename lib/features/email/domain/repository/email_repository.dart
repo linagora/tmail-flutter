@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -69,13 +70,9 @@ abstract class EmailRepository {
 
   Future<List<EmailContent>> transformEmailContent(
     List<EmailContent> emailContents,
-    List<Attachment> attachmentInlines,
-    String? baseUrlDownload,
-    AccountId accountId,
-    {bool draftsEmail = false}
+    Map<String, String> mapCidImageDownloadUrl,
+    TransformConfiguration transformConfiguration
   );
-
-  Future<List<EmailContent>> addTooltipWhenHoverOnLink(List<EmailContent> emailContents);
 
   Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email);
 
@@ -102,4 +99,9 @@ abstract class EmailRepository {
   Future<DetailedEmail> getStoredOpenedEmail(Session session, AccountId accountId, EmailId emailId);
 
   Future<DetailedEmail> getStoredNewEmail(Session session, AccountId accountId, EmailId emailId);
+
+  Future<String> transformHtmlEmailContent(
+    String htmlContent,
+    TransformConfiguration configuration
+  );
 }

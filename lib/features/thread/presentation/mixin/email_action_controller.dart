@@ -37,13 +37,8 @@ mixin EmailActionController {
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
-  void editEmail(PresentationEmail presentationEmail) {
-    final arguments = ComposerArguments(
-      emailActionType: EmailActionType.edit,
-      presentationEmail: presentationEmail,
-      mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
-
-    mailboxDashBoardController.goToComposer(arguments);
+  void editDraftEmail(PresentationEmail presentationEmail) {
+    mailboxDashBoardController.goToComposer(ComposerArguments.editDraftEmail(presentationEmail));
   }
 
   void previewEmail(PresentationEmail presentationEmail) {
