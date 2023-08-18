@@ -35,4 +35,9 @@ extension HtmlExtension on String {
     }
     return this;
   }
+
+  String addCiteTag() => addBlockTag(
+    'cite',
+    attribute: 'style="text-align: left;display: block;"'
+  );
 }
