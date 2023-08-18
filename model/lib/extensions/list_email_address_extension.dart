@@ -29,9 +29,9 @@ extension ListEmailAddressExtension on Set<EmailAddress>? {
 
   int numberEmailAddress() => this != null ? this!.length : 0;
 
-  List<EmailAddress> filterEmailAddress(EmailAddress emailAddressNotExist) {
+  List<EmailAddress> filterEmailAddress(String emailAddressNotExist) {
     return this != null
-      ? this!.where((emailAddress) => emailAddress.email != emailAddressNotExist.email).toList()
+      ? this!.where((emailAddress) => emailAddress.email != emailAddressNotExist).toList()
       : List.empty();
   }
 }

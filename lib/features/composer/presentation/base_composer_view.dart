@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/list/sliver_grid_delegate_fixed_height.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
@@ -321,22 +322,17 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
           )
         ),
         const Spacer(),
-        Material(
-          type: MaterialType.circle,
-          color: Colors.transparent,
-          child: TextButton(
-            onPressed: controller.toggleDisplayAttachments,
-            child: Text(
-              expandModeAttachment == ExpandMode.EXPAND
-                ? AppLocalizations.of(context).hide
-                : '${AppLocalizations.of(context).showAll} (${uploadFilesState.length})',
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 12,
-                color: AppColor.colorTextButton
-              )
-            )
-          )
+        TMailButtonWidget.fromText(
+          text: expandModeAttachment == ExpandMode.EXPAND
+            ? AppLocalizations.of(context).hide
+            : '${AppLocalizations.of(context).showAll} (${uploadFilesState.length})',
+          onTapActionCallback: controller.toggleDisplayAttachments,
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            color: AppColor.colorTextButton
+          ),
+          backgroundColor: Colors.transparent,
         )
       ],
     );

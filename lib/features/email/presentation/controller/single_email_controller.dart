@@ -360,22 +360,33 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentAction(EmailId emailId) async {
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
     final emailLoaded = emailSupervisorController.getEmailInQueueByEmailId(emailId);
 
     if (emailLoaded != null) {
       consumeState(Stream.value(Right<Failure, Success>(
         GetEmailContentSuccess(
-          emailContent: emailLoaded.originalContent,
-          emailContentDisplayed: emailLoaded.displayedContent,
+          htmlEmailContent: emailLoaded.htmlContent,
           attachments: emailLoaded.attachments,
           emailCurrent: emailLoaded.emailCurrent
         )
       )));
-    } else if (session != null && accountId != null && baseDownloadUrl != null) {
-      consumeState(_getEmailContentInteractor.execute(session, accountId, emailId, baseDownloadUrl));
+    } else {
+      final session = mailboxDashBoardController.sessionCurrent;
+      final accountId = mailboxDashBoardController.accountId.value;
+      if (session != null && accountId != null) {
+        final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl) ?? '';
+        TransformConfiguration transformConfiguration = PlatformInfo.isWeb
+          ? TransformConfiguration.forPreviewEmailPlatformWeb()
+          : TransformConfiguration.standardConfiguration;
+
+        consumeState(_getEmailContentInteractor.execute(
+          session,
+          accountId,
+          emailId,
+          baseDownloadUrl,
+          transformConfiguration
+        ));
+      }
     }
   }
 
@@ -387,8 +398,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
 
     _currentEmailLoaded = EmailLoaded(
-      originalContent: success.emailContent,
-      displayedContent: success.emailContent,
+      htmlContent: success.htmlEmailContent,
       attachments: List.of(success.attachments),
       emailCurrent: success.emailCurrent,
     );
@@ -401,10 +411,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
           blobIds: success.attachments.calendarEventBlobIds,
-          emailContents: success.emailContent
+          emailContents: success.htmlEmailContent
         );
       } else {
-        emailContents.value = success.emailContent;
+        emailContents.value = success.htmlEmailContent;
       }
 
       final isShowMessageReadReceipt = success.emailCurrent?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
@@ -422,8 +432,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
 
     _currentEmailLoaded = EmailLoaded(
-      originalContent: success.emailContent,
-      displayedContent: success.emailContentDisplayed,
+      htmlContent: success.htmlEmailContent,
       attachments: List.of(success.attachments),
       emailCurrent: success.emailCurrent,
     );
@@ -436,10 +445,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
           blobIds: success.attachments.calendarEventBlobIds,
-          emailContents: success.emailContent
+          emailContents: success.htmlEmailContent
         );
       } else {
-        emailContents.value = success.emailContentDisplayed;
+        emailContents.value = success.htmlEmailContent;
       }
 
       if (PlatformInfo.isMobile) {
@@ -449,7 +458,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           attachments: success.attachments,
           headers: currentEmail?.emailHeader?.toSet(),
           keywords: currentEmail?.keywords,
-          htmlEmailContent: success.emailContentDisplayed
+          htmlEmailContent: success.htmlEmailContent
         );
 
         _storeOpenedEmailAction(
@@ -978,13 +987,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void composeEmailFromEmailAddress(EmailAddress emailAddress) {
     popBack();
-
-    final arguments = ComposerArguments(
-        emailActionType: EmailActionType.composeFromEmailAddress,
-        emailAddress: emailAddress,
-        mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
-
-    mailboxDashBoardController.goToComposer(arguments);
+    mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
   }
 
   void openMailToLink(Uri? uri) {
@@ -993,12 +996,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     log('SingleEmailController::openMailToLink(): address: $address');
     if (address.isNotEmpty) {
       final emailAddress = EmailAddress(null, address);
-      final arguments = ComposerArguments(
-          emailActionType: EmailActionType.composeFromEmailAddress,
-          emailAddress: emailAddress,
-          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role);
-
-      mailboxDashBoardController.goToComposer(arguments);
+      mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
     }
   }
 
@@ -1158,19 +1156,43 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void pressEmailAction(EmailActionType emailActionType) {
-    if (emailActionType == EmailActionType.compose) {
-      mailboxDashBoardController.goToComposer(ComposerArguments());
-    } else {
-      final arguments = ComposerArguments(
-          emailActionType: emailActionType,
-          presentationEmail: mailboxDashBoardController.selectedEmail.value!,
-          emailContents: _currentEmailLoaded?.originalContent,
-          attachments: emailActionType == EmailActionType.forward ? attachments : null,
-          mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role
-      );
-
-      mailboxDashBoardController.goToComposer(arguments);
+  void pressEmailAction(
+    EmailActionType emailActionType,
+    PresentationEmail presentationEmail
+  ) {
+    switch(emailActionType) {
+      case EmailActionType.compose:
+        mailboxDashBoardController.goToComposer(ComposerArguments());
+        break;
+      case EmailActionType.reply:
+        mailboxDashBoardController.goToComposer(
+          ComposerArguments.replyEmail(
+            presentationEmail: presentationEmail,
+            content: _currentEmailLoaded?.htmlContent ?? '',
+            mailboxRole: presentationEmail.mailboxContain?.role
+          )
+        );
+        break;
+      case EmailActionType.replyAll:
+        mailboxDashBoardController.goToComposer(
+          ComposerArguments.replyAllEmail(
+            presentationEmail: presentationEmail,
+            content: _currentEmailLoaded?.htmlContent ?? '',
+            mailboxRole: presentationEmail.mailboxContain?.role
+          )
+        );
+        break;
+      case EmailActionType.forward:
+        mailboxDashBoardController.goToComposer(
+          ComposerArguments.forwardEmail(
+            presentationEmail: presentationEmail,
+            content: _currentEmailLoaded?.htmlContent ?? '',
+            attachments: attachments
+          )
+        );
+        break;
+      default:
+        break;
     }
   }
 
@@ -1276,7 +1298,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _handleParseCalendarEventFailure(ParseCalendarEventFailure failure) {
     emailLoadedViewState.value = Left<Failure, Success>(failure);
-    emailContents.value = _currentEmailLoaded?.displayedContent;
+    emailContents.value = _currentEmailLoaded?.htmlContent;
   }
 
   void _enableScrollPageView() {
@@ -1289,11 +1311,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void openNewComposerAction(String mailTo) {
     final emailAddress = EmailAddress(mailTo, mailTo);
-    final arguments = ComposerArguments(
-      emailActionType: EmailActionType.composeFromEmailAddress,
-      emailAddress: emailAddress,
-      mailboxRole: mailboxDashBoardController.selectedMailbox.value?.role
-    );
-    mailboxDashBoardController.goToComposer(arguments);
+    mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
   }
 }

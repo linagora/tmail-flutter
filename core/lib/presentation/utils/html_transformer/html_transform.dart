@@ -1,23 +1,26 @@
+import 'dart:convert';
+
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/message_content_transformer.dart';
 
 class HtmlTransform {
 
   final DioClient _dioClient;
+  final HtmlEscape _htmlEscape;
 
-  HtmlTransform(this._dioClient);
+  HtmlTransform(this._dioClient, this._htmlEscape);
 
   /// Transforms this message to HTML code.
   Future<String> transformToHtml({
-    required String contentHtml,
-    Map<String, String>? mapUrlDownloadCID,
+    required String htmlContent,
+    Map<String, String>? mapCidImageDownloadUrl,
     TransformConfiguration? transformConfiguration,
   }) async {
     transformConfiguration ??= TransformConfiguration.create();
-    final transformer = MessageContentTransformer(transformConfiguration, _dioClient);
+    final transformer = MessageContentTransformer(transformConfiguration, _dioClient, _htmlEscape);
     final document = await transformer.toDocument(
-      message: contentHtml,
-      mapUrlDownloadCID: mapUrlDownloadCID
+      message: htmlContent,
+      mapUrlDownloadCID: mapCidImageDownloadUrl
     );
     return document.outerHtml;
   }
@@ -28,7 +31,7 @@ class HtmlTransform {
     TransformConfiguration? transformConfiguration
   }) {
     transformConfiguration ??= TransformConfiguration.create();
-    final transformer = MessageContentTransformer(transformConfiguration, _dioClient);
+    final transformer = MessageContentTransformer(transformConfiguration, _dioClient, _htmlEscape);
     final message = transformer.toMessage(content);
     return message;
   }

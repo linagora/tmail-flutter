@@ -1,12 +1,16 @@
 
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:model/model.dart';
 
 abstract class HtmlDataSource {
   Future<EmailContent> transformEmailContent(
     EmailContent emailContent,
-    Map<String, String> mapUrlDownloadCID,
-    {bool draftsEmail = false}
+    Map<String, String> mapCidImageDownloadUrl,
+    TransformConfiguration transformConfiguration
   );
 
-  Future<EmailContent> addTooltipWhenHoverOnLink(EmailContent emailContent);
+  Future<String> transformHtmlEmailContent(
+    String htmlContent,
+    TransformConfiguration configuration
+  );
 }
