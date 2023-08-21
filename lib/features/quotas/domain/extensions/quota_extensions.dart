@@ -3,14 +3,17 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension QuotasExtensions on Quota {
 
+  UnsignedInt? get presentationHardLimit => hardLimit ?? limit;
+
   String get usedStorageAsString => used != null ? filesize(used!.value) : '';
 
-  String get hardLimitStorageAsString => hardLimit != null ? filesize(hardLimit!.value) : '';
+  String get hardLimitStorageAsString => presentationHardLimit != null ? filesize(presentationHardLimit!.value) : '';
 
   bool get isWarnLimitReached {
     if (used != null && warnLimit != null) {
@@ -21,8 +24,8 @@ extension QuotasExtensions on Quota {
   }
 
   bool get isHardLimitReached {
-    if (used != null && hardLimit != null) {
-      return used!.value >= hardLimit!.value;
+    if (used != null && presentationHardLimit != null) {
+      return used!.value >= presentationHardLimit!.value;
     } else {
       return false;
     }
@@ -38,7 +41,7 @@ extension QuotasExtensions on Quota {
 
   bool get allowedDisplayToQuotaBanner => storageAvailable && (isHardLimitReached || isWarnLimitReached);
 
-  bool get storageAvailable => used != null && hardLimit != null && warnLimit != null;
+  bool get storageAvailable => used != null && presentationHardLimit != null;
 
   String getQuotasStateTitle(BuildContext context) {
     if (isHardLimitReached) {
