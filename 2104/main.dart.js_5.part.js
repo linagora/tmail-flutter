@@ -3994,10 +3994,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return false;
     },
     QuotasExtensions_get_isHardLimitReached(_this) {
-      var t1 = _this.used;
-      if (t1 != null && _this.hardLimit != null)
-        return t1.value >= _this.hardLimit.value;
-      else
+      var t2,
+        t1 = _this.used;
+      if (t1 != null) {
+        t2 = _this.hardLimit;
+        t2 = (t2 == null ? _this.limit : t2) != null;
+      } else
+        t2 = false;
+      if (t2) {
+        t1 = t1.value;
+        t2 = _this.hardLimit;
+        return t1 >= (t2 == null ? _this.limit : t2).value;
+      } else
         return false;
     },
     QuotasExtensions_get_usedStoragePercent(_this) {
@@ -4013,11 +4021,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return 0;
     },
-    QuotasExtensions_get_storageAvailable(_this) {
-      return _this.used != null && _this.hardLimit != null && _this.warnLimit != null;
-    },
     QuotasExtensions_getQuotasStateTitle(_this, context) {
-      var t2, _null = null,
+      var t2, t3, _null = null,
         t1 = type$.AppLocalizations;
       if (B.QuotasExtensions_get_isHardLimitReached(_this)) {
         A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
@@ -4027,7 +4032,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = _this.used;
         t1 = t1 != null ? A.filesize(t1.value, 2) : "";
         t2 = _this.hardLimit;
-        t2 = t2 != null ? A.filesize(t2.value, 2) : "";
+        t3 = t2 == null;
+        if ((t3 ? _this.limit : t2) != null)
+          t2 = A.filesize((t3 ? _this.limit : t2).value, 2);
+        else
+          t2 = "";
         return A.Intl__message(t1 + " of " + t2 + " Used", _null, "quotaStateLabel", A._setArrayType([t1, t2], type$.JSArray_Object), _null);
       }
     },
@@ -15959,7 +15968,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.QuotasView_build_closure.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -15971,7 +15980,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t3._as(t2.get(t1)).octetsQuota;
         t4 = t4.get$value(t4);
         t4.toString;
-        t4 = B.QuotasExtensions_get_storageAvailable(t4);
+        if (t4.used != null) {
+          t5 = t4.hardLimit;
+          t4 = (t5 == null ? t4.limit : t5) != null;
+        } else
+          t4 = false;
       } else
         t4 = false;
       if (t4) {
@@ -16022,7 +16035,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t2.get$value(t2) != null) {
         t3 = t2.get$value(t2);
         t3.toString;
-        if (B.QuotasExtensions_get_storageAvailable(t3))
+        if (t3.used != null) {
+          t4 = t3.hardLimit;
+          t4 = (t4 == null ? t3.limit : t4) != null;
+        } else
+          t4 = false;
+        if (t4)
           t3 = B.QuotasExtensions_get_isHardLimitReached(t3) || B.QuotasExtensions_get_isWarnLimitReached(t3);
         else
           t3 = false;
@@ -18823,4 +18841,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["qOvA/YkmlpZH0Fe/sNjLZJJfCW8="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["d5kVUkj++AGwRKmkwldMi68GTEw="] = $__dart_deferred_initializers__.current
