@@ -13,7 +13,7 @@ import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.da
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 
-class AuthorizationInterceptors extends InterceptorsWrapper {
+class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
@@ -41,9 +41,7 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
-    log('AuthorizationInterceptors::setToken(): newToken: $newToken');
-    log('AuthorizationInterceptors::setToken(): tokenId: ${newToken?.tokenIdHash}');
-    log('AuthorizationInterceptors::setToken(): EXPIRE_DATE: ${newToken?.expiredTime?.toIso8601String()}');
+    log('AuthorizationInterceptors::setToken(): newToken: $newToken | configOIDC: $_configOIDC');
   }
 
   void _updateNewToken(Token newToken) {
@@ -75,19 +73,17 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    log('AuthorizationInterceptors::onError(): $err');
+    log('AuthorizationInterceptors::onError():dioType: ${err.type} | statusCode: ${err.response?.statusCode} | message: ${err.message} | statusMessage: ${err.response?.statusMessage}');
     try {
-      if (_isTokenExpired() &&
-        (err.response == null || err.response?.statusCode == 401) &&
-        _isRefreshTokenNotEmpty() &&
-        _isAuthenticationOidcValid()
-      ) {
+      if (_validateToRefreshToken(err)) {
+        log('AuthorizationInterceptors::onError:RefreshTokenCalled:configOIDC: $_configOIDC | refreshTokenCurrent: ${_token?.refreshToken}');
         final newToken = await _authenticationClient.refreshingTokensOIDC(
           _configOIDC!.clientId,
           _configOIDC!.redirectUrl,
           _configOIDC!.discoveryUrl,
           _configOIDC!.scopes,
-          _token!.refreshToken);
+          _token!.refreshToken
+        );
 
         final accountCurrent = await _accountCacheManager.getSelectedAccount();
 
@@ -106,10 +102,7 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
             )
           )
         ]);
-
-        log('AuthorizationInterceptors::onError(): refreshToken: $newToken');
-        log('AuthorizationInterceptors::setToken(): refreshTokenId: ${newToken.tokenIdHash}');
-
+        log('AuthorizationInterceptors::onError():NewToken: $newToken');
         _updateNewToken(newToken.toToken());
 
         final requestOptions = err.requestOptions;
@@ -145,6 +138,16 @@ class AuthorizationInterceptors extends InterceptorsWrapper {
   }
 
   bool _isRefreshTokenNotEmpty() => _token != null && _token!.refreshToken.isNotEmpty;
+
+  bool _validateToRefreshToken(DioError dioError) {
+    if (_isTokenExpired() &&
+        (dioError.response == null || dioError.response?.statusCode == 401) &&
+        _isRefreshTokenNotEmpty() &&
+        _isAuthenticationOidcValid()) {
+      return true;
+    }
+    return false;
+  }
 
   String _getAuthorizationAsBasicHeader(String? authorization) => 'Basic $authorization';
 
