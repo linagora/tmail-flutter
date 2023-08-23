@@ -39,9 +39,10 @@ enum AdvancedSearchFilterField {
       case AdvancedSearchFilterField.to:
         return AppLocalizations.of(context).nameOrEmailAddress;
       case AdvancedSearchFilterField.subject:
+        return AppLocalizations.of(context).enterASubject;
       case AdvancedSearchFilterField.hasKeyword:
       case AdvancedSearchFilterField.notKeyword:
-        return AppLocalizations.of(context).enterSearchTerm;
+        return AppLocalizations.of(context).enterSomeSuggestions;
       case AdvancedSearchFilterField.mailBox:
         return AppLocalizations.of(context).allMailboxes;
       case AdvancedSearchFilterField.date:
