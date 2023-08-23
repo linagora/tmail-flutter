@@ -8,9 +8,10 @@ import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/date_drop_down_button.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_auto_complete_email_adress.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_autocomplete_email_adress.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -66,14 +67,15 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
           ),
           _buildFilterField(
-              textEditingController: controller.mailBoxFilterInputController,
-              context: context,
-              advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
-              isSelectFormList: true,
-              currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
-              nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
-              mouseCursor: SystemMouseCursors.click,
-              onTap: () => controller.selectedMailBox(context)),
+            textEditingController: controller.mailBoxFilterInputController,
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
+            isSelectFormList: true,
+            currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
+            nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
+            mouseCursor: SystemMouseCursors.click,
+            onTap: () => controller.selectedMailBox(context)
+          ),
           Row(children: [
            Expanded(child: _buildFilterField(
              context: context,
@@ -253,7 +255,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       ),
       const Padding(padding: EdgeInsets.all(4)),
       _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
-          ? TextFieldAutoCompleteEmailAddress(
+          ? TextFieldAutocompleteEmailAddress(
               optionsBuilder: controller.getAutoCompleteSuggestion,
               advancedSearchFilterField: advancedSearchFilterField,
               initialTags: listTagInitial,
@@ -289,7 +291,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               },
             )
           : Expanded(
-              child: TextFieldAutoCompleteEmailAddress(
+              child: TextFieldAutocompleteEmailAddress(
                 optionsBuilder: controller.getAutoCompleteSuggestion,
                 advancedSearchFilterField: advancedSearchFilterField,
                 initialTags: listTagInitial,
@@ -363,6 +365,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         mouseCursor: mouseCursor,
         maxLines: 1,
         textInputAction: isSelectFormList ? TextInputAction.done : TextInputAction.next,
+        textStyle: AdvancedSearchInputFormStyle.inputTextStyle,
         onTap: onTap,
         onTextSubmitted: (value) {
           if (isSelectFormList) {
