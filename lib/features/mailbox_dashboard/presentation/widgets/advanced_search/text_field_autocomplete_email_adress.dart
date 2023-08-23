@@ -10,12 +10,13 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/custom_tf_tag_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/text_field_autocomplete_email_address_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_tag_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class TextFieldAutoCompleteEmailAddress extends StatefulWidget {
- const TextFieldAutoCompleteEmailAddress({
+class TextFieldAutocompleteEmailAddress extends StatefulWidget {
+ const TextFieldAutocompleteEmailAddress({
     Key? key,
     required this.advancedSearchFilterField,
     required this.initialTags,
@@ -36,12 +37,12 @@ class TextFieldAutoCompleteEmailAddress extends StatefulWidget {
   final FocusNode? nextFocusNode;
 
   @override
-  State<TextFieldAutoCompleteEmailAddress> createState() =>
-      _TextFieldAutoCompleteEmailAddressState();
+  State<TextFieldAutocompleteEmailAddress> createState() =>
+      _TextFieldAutocompleteEmailAddressState();
 }
 
-class _TextFieldAutoCompleteEmailAddressState
-    extends State<TextFieldAutoCompleteEmailAddress> {
+class _TextFieldAutocompleteEmailAddressState
+    extends State<TextFieldAutocompleteEmailAddress> {
   final double _distanceToField = 380;
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   late CustomController _controller;
@@ -138,6 +139,7 @@ class _TextFieldAutoCompleteEmailAddressState
                   focusNode: fn,
                   textInputAction: TextInputAction.next,
                   maxLines: 1,
+                  textStyle: TextFieldAutocompleteEmailAddressStyle.inputTextStyle,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
