@@ -15,6 +15,7 @@ import 'package:super_tag_editor/widgets/rich_text_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/avatar_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_constants.dart';
 
@@ -361,7 +362,7 @@ class EmailAddressInputBuilder {
           borderRadius: BorderRadius.all(Radius.circular(_suggestionBoxRadius))),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-          leading: _buildAvatarSuggestionItem(emailAddress),
+          leading: AvatarSuggestionItemWidget(emailAddress: emailAddress),
           title: _buildTitleSuggestionItem(emailAddress, suggestionValid),
           subtitle: _buildSubtitleSuggestionItem(emailAddress, suggestionValid),
           trailing: SvgPicture.asset(_imagePaths.icFilterSelected,
@@ -389,7 +390,7 @@ class EmailAddressInputBuilder {
         type: MaterialType.transparency,
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-          leading: _buildAvatarSuggestionItem(emailAddress),
+          leading: AvatarSuggestionItemWidget(emailAddress: emailAddress),
           title: _buildTitleSuggestionItem(emailAddress, suggestionValid),
           subtitle: _buildSubtitleSuggestionItem(emailAddress, suggestionValid),
           onTap: () {
@@ -400,32 +401,6 @@ class EmailAddressInputBuilder {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildAvatarSuggestionItem(EmailAddress emailAddress) {
-    return Container(
-      width: 40,
-      height: 40,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColor.avatarColor,
-        border: Border.all(
-          color: AppColor.colorShadowBgContentEmail,
-          width: 1.0
-        )
-      ),
-      child: Text(
-        emailAddress.asString().isNotEmpty
-          ? emailAddress.asString()[0].toUpperCase()
-          : '',
-        style: const TextStyle(
-          color: Colors.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w600
-        )
-      )
     );
   }
 
