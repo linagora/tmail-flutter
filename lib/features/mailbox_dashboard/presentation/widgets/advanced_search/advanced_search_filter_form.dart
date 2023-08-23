@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/date_drop_down_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_auto_complete_email_adress.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     with PopupContextMenuActionMixin {
@@ -368,6 +369,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onTap?.call();
           } else {
             FocusScope.of(context).unfocus();
+            controller.applyAdvancedSearchFilter(context);
+            popBack();
           }
         },
         decoration: InputDecoration(
