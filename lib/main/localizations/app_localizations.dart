@@ -3266,4 +3266,18 @@ class AppLocalizations {
       'Maybe',
       name: 'maybe');
   }
+
+  String get enterASubject {
+    return Intl.message(
+      'Enter a subject',
+      name: 'enterASubject',
+    );
+  }
+
+  String get enterSomeSuggestions {
+    return Intl.message(
+      'Enter some suggestions',
+      name: 'enterSomeSuggestions',
+    );
+  }
 }
