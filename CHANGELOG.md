@@ -1,3 +1,8 @@
+## [0.9.1] - 2023-08-23
+### Fixed
+- \#1974 Fix refreshToken with OIDC on jmap.linagora.com/oidc
+- \#2099 Fix quota information are missing
+
 ## [0.9.0] - 2023-08-18
 ### Added
 - \#1710 Delete all spam emails
@@ -232,6 +237,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.9.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.1
 [0.9.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.0
 [0.8.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.9
 [0.8.8]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.8
