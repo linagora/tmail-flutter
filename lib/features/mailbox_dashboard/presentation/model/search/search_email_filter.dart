@@ -108,8 +108,8 @@ class SearchEmailFilter with EquatableMixin {
             from.map((e) => EmailFilterCondition(from: e)).toSet()),
       if (notKeyword.isNotEmpty)
         LogicFilterOperator(
-            Operator.AND,
-            notKeyword.map((e) => EmailFilterCondition(notKeyword: e)).toSet()),
+          Operator.NOT,
+          notKeyword.map((e) => EmailFilterCondition(text: e)).toSet()),
       if (moreFilterCondition != null && moreFilterCondition.hasCondition)
         moreFilterCondition
     };
