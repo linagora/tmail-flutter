@@ -10946,7 +10946,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
         t6 = A.Intl__message("Mark as unread", _null, "mark_as_unread", _null, _null);
       }
-      t6 = A.Container$(_null, new A.Padding(D.EdgeInsets_16_0_0_0, new A.Align(C.Alignment_m1_0, _null, _null, A.Row$(A._setArrayType([t5, D.SizedBox_11_null_null_null, A.Text$(t6, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_kmC2, _null, _null, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), C.Clip_0, E.Color_4292865791, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+      t6 = A.Container$(_null, new A.Padding(E.EdgeInsetsDirectional_16_0_0_0, new A.Align(C.AlignmentDirectional_m1_0, _null, _null, A.Row$(A._setArrayType([t5, D.SizedBox_11_null_null_null, A.Text$(t6, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_kmC2, _null, _null, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), C.Clip_0, E.Color_4292865791, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController.searchEmailFilter;
       t5 = t5.get$value(t5).text;
@@ -18739,7 +18739,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_12_0_12_5 = new A.EdgeInsets(12, 0, 12, 5);
     D.EdgeInsets_12_12_12_6 = new A.EdgeInsets(12, 12, 12, 6);
     D.EdgeInsets_12_12_12_8 = new A.EdgeInsets(12, 12, 12, 8);
-    D.EdgeInsets_16_0_0_0 = new A.EdgeInsets(16, 0, 0, 0);
     D.EdgeInsets_5_0_2_0 = new A.EdgeInsets(5, 0, 2, 0);
     D.EdgeInsets_6_0_14_0 = new A.EdgeInsets(6, 0, 14, 0);
     D.EdgeInsets_8_0_16_0 = new A.EdgeInsets(8, 0, 16, 0);
@@ -18899,4 +18898,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["FfZJB0tasZc911KnBA8oifaZ8c8="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["7px5ZvwDcsjbKhxi+icR/MQRdQg="] = $__dart_deferred_initializers__.current
