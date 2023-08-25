@@ -10920,7 +10920,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.GestureDetector$(C.HitTestBehavior_2, new B.Draggable(t3, _this._buildEmailItemNotDraggable$2(context, presentationEmail), t1, t4, B.drag_target__pointerDragAnchorStrategy$closure(), new B.ThreadView__buildEmailItemDraggable_closure(_this, presentationEmail), new B.ThreadView__buildEmailItemDraggable_closure0(_this), new B.ThreadView__buildEmailItemDraggable_closure1(_this), _null, type$.Draggable_List_PresentationEmail), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure2(), _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure3(), _null, _null, _null, _null, _null);
     },
     _buildEmailItemNotDraggable$2(context, presentationEmail) {
-      var t2, t3, t4, isShowingEmailContent, selectModeAll, isSwiped, t5, _this = this, _null = null,
+      var t2, t3, t4, isShowingEmailContent, selectModeAll, t5, t6, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
@@ -10933,29 +10933,23 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t3 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.currentSelectMode;
       selectModeAll = t3.get$value(t3);
-      $.$get$Get();
-      t3 = $.GetInstance__getInstance;
-      if (t3 == null)
-        t3 = $.GetInstance__getInstance = C.C_GetInstance;
-      t3.find$1$1$tag(0, _null, type$.ImagePaths);
-      t3 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
-      if (t3.size._dx >= 1200)
-        isSwiped = C.DismissDirection_6;
-      else
-        isSwiped = selectModeAll === C.SelectMode_0 ? C.DismissDirection_6 : C.DismissDirection_1;
-      t3 = B.CircleAvatar$(D.Color_4290764543, !presentationEmail.get$hasRead() ? A.SvgPicture$asset("assets/images/ic_mark_as_read.svg", _null, C.BoxFit_0, _null, _null, _null) : A.SvgPicture$asset("assets/images/ic_unread_email.svg", A.ColorNullableExtension_asFilter(C.Color_4278221567), C.BoxFit_0, _null, _null, _null), 24);
-      t5 = type$.AppLocalizations;
-      if (!presentationEmail.get$hasRead()) {
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t5).toString;
-        t5 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
-      } else {
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t5).toString;
-        t5 = A.Intl__message("Mark as unread", _null, "mark_as_unread", _null, _null);
-      }
-      t5 = A.Container$(_null, new A.Padding(D.EdgeInsets_16_0_0_0, new A.Align(C.Alignment_m1_0, _null, _null, A.Row$(A._setArrayType([t3, D.SizedBox_11_null_null_null, A.Text$(t5, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_kmC2, _null, _null, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), C.Clip_0, E.Color_4292865791, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
       A.Expando__checkType(_this);
-      t3 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController.searchEmailFilter;
-      t3 = t3.get$value(t3).text;
+      t3 = t2._as(t1.get(_this));
+      t5 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+      t3 = t3.getSwipeDirection$2(t5.size._dx >= 1200, selectModeAll);
+      t5 = B.CircleAvatar$(D.Color_4290764543, !presentationEmail.get$hasRead() ? A.SvgPicture$asset("assets/images/ic_mark_as_read.svg", _null, C.BoxFit_0, _null, _null, _null) : A.SvgPicture$asset("assets/images/ic_unread_email.svg", A.ColorNullableExtension_asFilter(C.Color_4278221567), C.BoxFit_0, _null, _null, _null), 24);
+      t6 = type$.AppLocalizations;
+      if (!presentationEmail.get$hasRead()) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
+        t6 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
+      } else {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
+        t6 = A.Intl__message("Mark as unread", _null, "mark_as_unread", _null, _null);
+      }
+      t6 = A.Container$(_null, new A.Padding(D.EdgeInsets_16_0_0_0, new A.Align(C.Alignment_m1_0, _null, _null, A.Row$(A._setArrayType([t5, D.SizedBox_11_null_null_null, A.Text$(t6, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_kmC2, _null, _null, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), C.Clip_0, E.Color_4292865791, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+      A.Expando__checkType(_this);
+      t5 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController.searchEmailFilter;
+      t5 = t5.get$value(t5).text;
       A.Expando__checkType(_this);
       t1 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController;
       t2 = t1.simpleSearchIsActivated;
@@ -10964,10 +10958,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = t1.get$value(t1);
       } else
         t1 = true;
-      t1 = B.EmailTileBuilder$(context, presentationEmail, selectModeAll, t3, isShowingEmailContent, false, t1, presentationEmail.mailboxContain, _null, _null);
+      t1 = B.EmailTileBuilder$(context, presentationEmail, selectModeAll, t5, isShowingEmailContent, false, t1, presentationEmail.mailboxContain, _null, _null);
       t1._emailActionClick = new B.ThreadView__buildEmailItemNotDraggable_closure(_this, context);
       t1._onMoreActionClick = new B.ThreadView__buildEmailItemNotDraggable_closure0(_this, context);
-      return A.Dismissible$(t5, t1.build$0(), new B.ThreadView__buildEmailItemNotDraggable_closure1(_this, context, presentationEmail), isSwiped, new A.ValueKey(t4, type$.ValueKey_nullable_EmailId), _null, C.Duration_300000);
+      return A.Dismissible$(t6, t1.build$0(), new B.ThreadView__buildEmailItemNotDraggable_closure1(_this, context, presentationEmail), t3, new A.ValueKey(t4, type$.ValueKey_nullable_EmailId), _null, C.Duration_300000);
     },
     _buildFeedBackWidget$1(context) {
       var _null = null;
@@ -18905,4 +18899,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["grCEdVpRe6W68l0SD16KeGPjd1s="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["FfZJB0tasZc911KnBA8oifaZ8c8="] = $__dart_deferred_initializers__.current
