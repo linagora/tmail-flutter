@@ -2151,10 +2151,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.createRule;
       if (!(A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data.size._dx < 600)) {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
-        return A.Row$(A._setArrayType([F.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _s33_, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, _null, 1 / 0, 1 / 0, 130, _null, t2, E.EdgeInsets_8_12_8_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, B.TextStyle_1Gf0, _null, _null, _null, _null, false, _null), B.Spacer_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+        return A.Row$(A._setArrayType([A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _s33_, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, _null, 1 / 0, 1 / 0, 130, _null, t2, E.EdgeInsets_8_12_8_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, B.TextStyle_1Gf0, _null, _null, _null, _null, false, _null), B.Spacer_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
       } else {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
-        return F.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _s33_, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, _null, 1 / 0, 1 / 0, 0, _null, t2, B.EdgeInsets_0_12_0_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, B.TextStyle_1Gf0, _null, _null, _null, _null, false, _null);
+        return A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _s33_, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, _null, 1 / 0, 1 / 0, 0, _null, t2, B.EdgeInsets_0_12_0_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, B.TextStyle_1Gf0, _null, _null, _null, _null, false, _null);
       }
     }
   };
@@ -2625,7 +2625,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t9 = A.Bidi_isRtlLanguage(t9.get$languageCode(t9)) ? E.EdgeInsets_0_5_0_5 : D.EdgeInsets_0_10_0_10;
       t7 = context.dependOnInheritedWidgetOfExactType$1$0(t7).localizationsState._localizations$_locale;
       t7 = A.Bidi_isRtlLanguage(t7.get$languageCode(t7)) ? _null : 16;
-      t6 = F.TMailButtonWidget$(B.Color_2581915884, _null, 10, _null, false, t8, B.Color_4278221567, t7, 8, D.ValueKey_back_to_dashboard_button, _null, 1 / 0, 100, 0, _null, new C.ManageAccountMenuView_build_closure0(_this, context), t9, t6, _null, B.TextStyle_yzp, _null, _null, _null, _null, false, _null);
+      t6 = A.TMailButtonWidget$(B.Color_2581915884, _null, 10, _null, false, t8, B.Color_4278221567, t7, 8, D.ValueKey_back_to_dashboard_button, _null, 1 / 0, 100, 0, _null, new C.ManageAccountMenuView_build_closure0(_this, context), t9, t6, _null, B.TextStyle_yzp, _null, _null, _null, _null, false, _null);
       A.Localizations_of(context, B.Type_AppLocalizations_swi, t5).toString;
       t9 = A.Text$(A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY3, _null, _null, _null, _null, _null);
       t7 = A.BorderRadius$circular(10);
@@ -2976,7 +2976,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       it.SchedulerBinding__postFrameCallbacks.push(t1.get$_postFrameCallback());
       it.WidgetsBinding__observers.push(t1);
     },
-    $signature: 1515
+    $signature: 1518
   };
   C._FadingEdgeScrollViewState__postFrameCallback_closure.prototype = {
     call$0() {
@@ -3064,7 +3064,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7.toString;
       return new A.LinearGradient(t4, t3, B.TileMode_0, t5, t2, null).createShader$2$textDirection(0, t6, t7.textDirection);
     },
-    $signature: 1516
+    $signature: 1519
   };
   C._RadioState__widgetFillColor_closure.prototype = {
     call$1(states) {
@@ -3580,7 +3580,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1518
+    $signature: 1521
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
     call$1(isListEmailEmpty) {
@@ -3680,7 +3680,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "";
       t1.deleteRecipients$2(this.context, t2);
     },
-    $signature: 1519
+    $signature: 1522
   };
   C.ListEmailForwardsWidget__buildTitleHeader_closure.prototype = {
     call$0() {
@@ -3763,7 +3763,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 /= 2;
       return A.ResponsiveWidget$(A.Column$(A._setArrayType([A.Text$(A.Intl__message(_s8_, _null, _s8_0, _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null, new A.SizedBox(t3, _null, t1._buildLanguageMenu$2(context, t3), _null)], t4), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, t5, t1._change_language_button_widget$_responsiveUtils, _null, _null);
     },
-    $signature: 1520
+    $signature: 1523
   };
   C.ChangeLanguageButtonWidget__buildLanguageMenu_closure.prototype = {
     call$0() {
@@ -4611,7 +4611,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return t1;
     },
-    $signature: 1521
+    $signature: 1524
   };
   C.IdentitiesView__buildIdentitiesViewMobile_closure.prototype = {
     call$0() {
@@ -4645,7 +4645,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildListIdentityView$1(t5));
       return A.Column$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     },
-    $signature: 1522
+    $signature: 1525
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure.prototype = {
     call$0() {
@@ -4676,7 +4676,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(t3._buildListIdentityView$1(t5), 1));
       return A.Row$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 1523
+    $signature: 1526
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure.prototype = {
     call$0() {
@@ -5480,4 +5480,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["LKqMpFnQ3/i5OGEzYX4fAd+s7kc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["+GAXT936ovRP0rusSRpWOJ6uq5k="] = $__dart_deferred_initializers__.current

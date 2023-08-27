@@ -2,60 +2,6 @@
 self.$__dart_deferred_initializers__ = self.$__dart_deferred_initializers__ || Object.create(null);
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A = {
-    TMailButtonWidget$(backgroundColor, border, borderRadius, boxShadow, flexibleText, icon, iconColor, iconSize, iconSpace, key, margin, maxHeight, maxWidth, minWidth, onTapActionAtPositionCallback, onTapActionCallback, padding, text, textAlign, textStyle, tooltipMessage, trailingIcon, trailingIconColor, trailingIconSize, verticalDirection, width) {
-      return new A.TMailButtonWidget(onTapActionCallback, onTapActionAtPositionCallback, borderRadius, width, maxWidth, maxHeight, minWidth, tooltipMessage, backgroundColor, padding, margin, text, icon, verticalDirection, iconSize, iconSpace, iconColor, textStyle, trailingIcon, trailingIconSize, trailingIconColor, boxShadow, textAlign, flexibleText, border, key);
-    },
-    TMailButtonWidget: function TMailButtonWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25) {
-      var _ = this;
-      _.onTapActionCallback = t0;
-      _.onTapActionAtPositionCallback = t1;
-      _.borderRadius = t2;
-      _.width = t3;
-      _.maxWidth = t4;
-      _.maxHeight = t5;
-      _.minWidth = t6;
-      _.tooltipMessage = t7;
-      _.backgroundColor = t8;
-      _.padding = t9;
-      _.margin = t10;
-      _.text = t11;
-      _.icon = t12;
-      _.verticalDirection = t13;
-      _.iconSize = t14;
-      _.iconSpace = t15;
-      _.iconColor = t16;
-      _.textStyle = t17;
-      _.trailingIcon = t18;
-      _.trailingIconSize = t19;
-      _.trailingIconColor = t20;
-      _.boxShadow = t21;
-      _.textAlign = t22;
-      _.flexibleText = t23;
-      _.border = t24;
-      _.key = t25;
-    },
-    TMailContainerWidget: function TMailContainerWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) {
-      var _ = this;
-      _.onTapActionCallback = t0;
-      _.onTapActionAtPositionCallback = t1;
-      _.child = t2;
-      _.borderRadius = t3;
-      _.width = t4;
-      _.maxWidth = t5;
-      _.maxHeight = t6;
-      _.minWidth = t7;
-      _.tooltipMessage = t8;
-      _.backgroundColor = t9;
-      _.padding = t10;
-      _.margin = t11;
-      _.boxShadow = t12;
-      _.border = t13;
-      _.key = t14;
-    },
-    TMailContainerWidget_build_closure: function TMailContainerWidget_build_closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
     HtmlContentViewerOnWeb$(allowResizeToDocumentSize, contentHtml, controller, direction, heightContent, mailtoDelegate, widthContent) {
       return new A.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, controller, direction, mailtoDelegate, allowResizeToDocumentSize, null);
     },
@@ -1506,89 +1452,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return "";
     }
   },
-  B, C, D, J, E, F;
+  C, J, B, D, E, F;
   A = hunkHelpers.updateHolder(holdersList[9], A);
-  B = holdersList[0];
   C = holdersList[2];
-  D = holdersList[18];
   J = holdersList[1];
+  B = holdersList[0];
+  D = holdersList[18];
   E = holdersList[16];
   F = holdersList[15];
-  A.TMailButtonWidget.prototype = {
-    build$1(context) {
-      var t3, t4, childWidget, t5, _this = this, _null = null,
-        t1 = _this.icon,
-        t2 = t1 != null;
-      if (t2 && _this.text.length !== 0) {
-        t2 = _this.iconSize;
-        t3 = _this.iconColor;
-        if (_this.verticalDirection) {
-          t1.toString;
-          t1 = B.SvgPicture$asset(t1, t3 == null ? _null : B.ColorNullableExtension_asFilter(t3), C.BoxFit_0, t2, _null, t2);
-          t2 = _this.iconSpace;
-          t3 = _this.textStyle;
-          if (t3 == null)
-            t3 = D.TextStyle_8co;
-          t3 = B._setArrayType([t1, new B.SizedBox(_null, t2, _null, _null), B.Text$(_this.text, _null, _null, _null, _null, _null, _null, _null, _null, t3, _this.textAlign, _null, _null, _null, _null)], type$.JSArray_Widget);
-          t1 = _this.trailingIcon;
-          if (t1 != null) {
-            t4 = _this.trailingIconSize;
-            t3.push(new B.Padding(new B.EdgeInsetsDirectional(0, t2, 0, 0), B.SvgPicture$asset(t1, _null, C.BoxFit_0, t4, _null, t4), _null));
-          }
-          childWidget = B.Column$(t3, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
-        } else {
-          t1.toString;
-          t4 = _this.iconSpace;
-          t2 = B._setArrayType([B.SvgPicture$asset(t1, t3 == null ? _null : B.ColorNullableExtension_asFilter(t3), C.BoxFit_0, t2, _null, t2), new B.SizedBox(t4, _null, _null, _null)], type$.JSArray_Widget);
-          t1 = _this.text;
-          t3 = _this.textAlign;
-          t5 = _this.textStyle;
-          if (_this.flexibleText)
-            t2.push(new B.Flexible(1, C.FlexFit_1, B.Text$(t1, _null, _null, _null, _null, _null, _null, _null, _null, t5 == null ? D.TextStyle_8co : t5, t3, _null, _null, _null, _null), _null));
-          else
-            t2.push(B.Text$(t1, _null, _null, _null, _null, _null, _null, _null, _null, t5 == null ? D.TextStyle_8co : t5, t3, _null, _null, _null, _null));
-          t1 = _this.trailingIcon;
-          if (t1 != null) {
-            t3 = _this.trailingIconSize;
-            t2.push(new B.Padding(new B.EdgeInsetsDirectional(t4, 0, 0, 0), B.SvgPicture$asset(t1, _null, C.BoxFit_0, t3, _null, t3), _null));
-          }
-          childWidget = B.Row$(t2, C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_1, _null);
-        }
-      } else if (t2) {
-        t2 = _this.iconSize;
-        t3 = _this.iconColor;
-        childWidget = B.SvgPicture$asset(t1, t3 == null ? _null : B.ColorNullableExtension_asFilter(t3), C.BoxFit_0, t2, _null, t2);
-      } else {
-        t1 = _this.textStyle;
-        if (t1 == null)
-          t1 = D.TextStyle_8co;
-        childWidget = B.Text$(_this.text, _null, _null, _null, _null, _null, _null, _null, _null, t1, _this.textAlign, _null, _null, _null, _null);
-      }
-      return new A.TMailContainerWidget(_this.onTapActionCallback, _this.onTapActionAtPositionCallback, childWidget, _this.borderRadius, _this.width, _this.maxWidth, _this.maxHeight, _this.minWidth, _this.tooltipMessage, _this.backgroundColor, _this.padding, _this.margin, _this.boxShadow, _this.border, _null);
-    }
-  };
-  A.TMailContainerWidget.prototype = {
-    build$1(context) {
-      var t4, materialChild, _this = this, _null = null,
-        t1 = _this.borderRadius,
-        t2 = B.BorderRadius$all(new B.Radius(t1, t1)),
-        t3 = _this.backgroundColor;
-      if (t3 == null)
-        t3 = C.Color_2582375920;
-      t1 = B.BorderRadius$all(new B.Radius(t1, t1));
-      t4 = _this.padding;
-      if (t4 == null)
-        t4 = D.EdgeInsetsDirectional_8_8_8_8;
-      t4 = B.Container$(_null, _this.child, C.Clip_0, _null, new B.BoxConstraints(_this.minWidth, _this.maxWidth, 0, _this.maxHeight), new B.BoxDecoration(t3, _null, _this.border, t1, _this.boxShadow, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t4, _null, _null, _this.width);
-      t1 = t4;
-      materialChild = B.Material$(C.Duration_200000, true, _null, B.InkWell$(false, t2, true, t1, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onTapActionCallback, _null, new A.TMailContainerWidget_build_closure(_this, context), _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
-      t1 = _this.margin;
-      if (t1 != null)
-        return new B.Padding(t1, materialChild, _null);
-      else
-        return materialChild;
-    }
-  };
   A.HtmlContentViewerOnWeb.prototype = {
     createState$0() {
       return new A._HtmlContentViewerOnWebState(C._StateLifecycle_0);
@@ -4860,7 +4731,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (_this.subtitle != null) {
         t5 = B.Matrix4_Matrix4$translationValues(-8, 0, 0);
         B.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        t3.push(new B.Padding(D.EdgeInsetsDirectional_0_10_0_0, B.Transform$(_null, A.MaterialTextButton$(20, E.TextStyle_kmC, B.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, 15, _null, _null, _this.onSubtitleClick, _null, D.EdgeInsetsDirectional_8_8_8_8, _null), t5, true), _null));
+        t3.push(new B.Padding(D.EdgeInsetsDirectional_0_10_0_0, B.Transform$(_null, A.MaterialTextButton$(20, E.TextStyle_kmC, B.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, 15, _null, _null, _this.onSubtitleClick, _null, C.EdgeInsetsDirectional_8_8_8_8, _null), t5, true), _null));
       }
       t2 = B._setArrayType([t2, C.SizedBox_16_null_null_null, B.Expanded$(B.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t4);
       t2.push(C.SizedBox_16_null_null_null);
@@ -4950,20 +4821,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["double(double)", "~()", "~(String)", "bool(PortalLinkScope)", "~(TapDownDetails)", "Widget(BuildContext)", "Widget(_ChildEntry)", "Rect()", "Offset()", "RenderPortalTheater?()", "PortalTargetTheater(BuildContext,BoxConstraints)", "PortalLinkScope(InheritedElement)", "String(PortalLinkScope)", "bool(SizeChangedLayoutNotification)", "Widget(Widget,Animation0<double>)", "Widget(Widget?,List<Widget>)"]);
-  A.TMailContainerWidget_build_closure.prototype = {
-    call$1(detail) {
-      var screenSize, offset, t2, t3,
-        t1 = this.$this.onTapActionAtPositionCallback;
-      if (t1 != null) {
-        screenSize = B.InheritedModel_inheritFrom(this.context, null, type$.MediaQuery).data.size;
-        offset = detail.globalPosition;
-        t2 = offset._dx;
-        t3 = offset._dy;
-        t1.call$1(new B.RelativeRect(t2, t3, screenSize._dx - t2, screenSize._dy - t3));
-      }
-    },
-    $signature: 32
-  };
   A._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
       return this.$call$body$_HtmlContentViewerOnWebState__setUpWeb_closure($event);
@@ -5191,7 +5048,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return B.Container$(_null, child, C.Clip_0, _null, _null, new B.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1508
+    $signature: 1511
   };
   A._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -5217,7 +5074,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new B.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1509
+    $signature: 1512
   };
   A._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -5270,7 +5127,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1510
+    $signature: 1513
   };
   A._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -5320,7 +5177,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1511
+    $signature: 1514
   };
   A._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -5433,7 +5290,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1._buildModeNormal$3(context, currentVisible, scope);
     },
-    $signature: 1512
+    $signature: 1515
   };
   A._PortalTargetState__buildModeNormal_closure.prototype = {
     call$0() {
@@ -5803,13 +5660,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(B.StatelessWidget, [A.TMailButtonWidget, A.TMailContainerWidget, A.PopupMenuItemWidget, A.Chip, A.Drawer, A.ListTile, A.MaterialTextButton, A.UserInformationWidget, A.VacationNotificationMessageWidget]);
-    _inheritMany(B.Closure, [A.TMailContainerWidget_build_closure, A._HtmlContentViewerOnWebState__setUpWeb_closure, A._HtmlContentViewerOnWebState__setUpWeb__closure, A._HtmlContentViewerOnWebState__setUpWeb_closure0, A.ListTile_build_resolveColor, A._RenderListTile_paint_doPaint, A._AnimatedSwitcherState__newEntry_closure, A._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure, A._AnimatedSwitcherState_build_closure, A._StreamBuilderBaseState__subscribe_closure, A.Visibility_of_closure, A.PortalLinkScope_of_closure, A.BuildContextPortalLinkScopeExt_getElementsForInheritedWidgetsOfExactType_closure, A.BuildContextPortalLinkScopeExt_getSpecificElementForInheritedWidgetsOfExactType_closure, A._PortalTargetState__sanityCheckNestedPortalTarget_closure, A.TagsEditorState__initializeSuggestionBox_closure, A.TagsEditorState__createOverlayEntry_closure, A.TagsEditorState__scrollToVisible__closure, A.TagsEditorState_build_closure0, A.TagsEditorState_build_closure, A.TagsEditorState_build_closure1, A.TagsEditorState_build__closure]);
     _inheritMany(B.StatefulWidget, [A.HtmlContentViewerOnWeb, A.RawChip, A.Ink, A.AnimatedSwitcher, A.StreamBuilderBase, A.Portal, A.PortalTarget, A._PortalTargetVisibilityBuilder, A.TagEditor]);
     _inheritMany(B.State0, [A._HtmlContentViewerOnWebState, A.__RawChipState_State_MaterialStateMixin, A._InkState, A._PopupMenuDividerState, A.__AnimatedSwitcherState_State_TickerProviderStateMixin, A._StreamBuilderBaseState, A._PortalState, A._PortalTargetState, A._PortalTargetVisibilityBuilderState, A.TagsEditorState]);
+    _inheritMany(B.Closure, [A._HtmlContentViewerOnWebState__setUpWeb_closure, A._HtmlContentViewerOnWebState__setUpWeb__closure, A._HtmlContentViewerOnWebState__setUpWeb_closure0, A.ListTile_build_resolveColor, A._RenderListTile_paint_doPaint, A._AnimatedSwitcherState__newEntry_closure, A._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure, A._AnimatedSwitcherState_build_closure, A._StreamBuilderBaseState__subscribe_closure, A.Visibility_of_closure, A.PortalLinkScope_of_closure, A.BuildContextPortalLinkScopeExt_getElementsForInheritedWidgetsOfExactType_closure, A.BuildContextPortalLinkScopeExt_getSpecificElementForInheritedWidgetsOfExactType_closure, A._PortalTargetState__sanityCheckNestedPortalTarget_closure, A.TagsEditorState__initializeSuggestionBox_closure, A.TagsEditorState__createOverlayEntry_closure, A.TagsEditorState__scrollToVisible__closure, A.TagsEditorState_build_closure0, A.TagsEditorState_build_closure, A.TagsEditorState_build_closure1, A.TagsEditorState_build__closure]);
     _inheritMany(B.Closure0Args, [A._HtmlContentViewerOnWebState__setUpWeb___closure, A._HtmlContentViewerOnWebState__setUpWeb___closure0, A._HtmlContentViewerOnWebState__setUpWeb___closure1, A._HtmlContentViewerOnWebState__setUpWeb_closure1, A.PopupMenuItemWidget_build_closure, A._RawChipState__handleTapDown_closure, A._RawChipState__handleTapCancel_closure, A._RawChipState__handleTap_closure, A._RawChipState_didUpdateWidget_closure, A._RawChipState_didUpdateWidget_closure0, A._AnimatedSwitcherState__newEntry__closure, A._StreamBuilderBaseState__subscribe__closure1, A._StreamBuilderBaseState__subscribe__closure, A._StreamBuilderBaseState__subscribe_closure0, A._StreamBuilderBaseState__subscribe__closure0, A.SizeChangedLayoutNotifier_createRenderObject_closure, A._PortalTargetState__buildModeNormal_closure, A.TagsEditorState__onFocusChanged_closure, A.TagsEditorState__onSearchChanged_closure, A.TagsEditorState__scrollToVisible_closure, A.TagsEditorState_build__closure0, A.UserSettingPopupMenuMixin__settingAction_closure, A.UserSettingPopupMenuMixin__logoutAction_closure, A.VacationNotificationMessageWidget__buildBodyForDesktop_closure, A.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, A.VacationNotificationMessageWidget__buildBodyForMobile_closure, A.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
     _inheritMany(B.Closure2Args, [A._HtmlContentViewerOnWebState__buildWebView_closure, A._RawChipState_build_closure, A._RenderChipRedirectingHitDetection_hitTest_closure, A._RenderChip_hitTest_closure, A._RenderChip_performLayout_centerLayout, A._RenderChip__paintAvatar_paintWithOverlay, A._RenderChip__paintChild_closure, A._RenderListTile_hitTestChildren_closure, A._StreamBuilderBaseState__subscribe_closure1, A.EnhancedRenderFollowerLayer_hitTestChildren_closure, A._PortalTargetState_build_closure, A._PortalTargetState__buildModeNormal_closure0, A.TagsEditorState__createOverlayEntry__closure, A.TagsEditorState__createOverlayEntry___closure, A.TagEditorLayoutDelegate__isOverflow_closure, A.TagEditorLayoutDelegate_performLayout_closure]);
     _inheritMany(B.Object, [A.HtmlViewerControllerForWeb, A._ChipRenderTheme, A._ChipSizes, A._ChildEntry, A.Filled, A.EnhancedCompositedTransformAligned, A.AxisFlag, A.EnhancedLayerLink, A.PortalLabel, A.PortalLink, A.PortalLinkOverlay, A.SanityCheckNestedPortalInfo, A.SuggestionsBoxController, A.PopupMenuWidgetMixin, A.UserSettingPopupMenuMixin]);
+    _inheritMany(B.StatelessWidget, [A.PopupMenuItemWidget, A.Chip, A.Drawer, A.ListTile, A.MaterialTextButton, A.UserInformationWidget, A.VacationNotificationMessageWidget]);
     _inherit(A.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin, A.__RawChipState_State_MaterialStateMixin);
     _inherit(A._RawChipState, A.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin);
     _inheritMany(B.SingleChildRenderObjectWidget, [A._ChipRedirectingHitDetectionWidget, A.SizeChangedLayoutNotifier, A.EnhancedCompositedTransformTarget, A.EnhancedCompositedTransformFollower, A.PortalTargetTheater, A.PortalTheater]);
@@ -5849,7 +5706,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixinHard(A.__RenderListTile_RenderBox_SlottedContainerRenderObjectMixin, B.SlottedContainerRenderObjectMixin);
     _mixinHard(A.__AnimatedSwitcherState_State_TickerProviderStateMixin, B.TickerProviderStateMixin);
   })();
-  B._Universe_addRules(init.typeUniverse, JSON.parse('{"TMailButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TMailContainerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChipSlot":{"Enum":[]},"_RawChipState":{"State0":["RawChip"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ChipSlot"},"_RenderChip":{"SlottedContainerRenderObjectMixin":["_ChipSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ChipSlot"},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"_ListTileSlot":{"Enum":[]},"ListTileTitleAlignment":{"Enum":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ListTileSlot"},"_RenderListTile":{"SlottedContainerRenderObjectMixin":["_ListTileSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ListTileSlot"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"EnhancedLeaderLayer":{"ContainerLayer0":[],"Layer0":[],"DiagnosticableTree":[],"AbstractNode":[]},"EnhancedFollowerLayer":{"ContainerLayer0":[],"Layer0":[],"DiagnosticableTree":[],"AbstractNode":[]},"EnhancedRenderLeaderLayer":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"EnhancedRenderFollowerLayer":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"EnhancedCompositedTransformTarget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"EnhancedCompositedTransformFollower":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"_PortalMainLabel":{"PortalLabel":["~"],"PortalLabel.T":"~"},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTarget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalTargetVisibilityBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalTargetTheaterFollowerParent":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalTargetState":{"State0":["PortalTarget"]},"_PortalTargetVisibilityBuilderState":{"State0":["_PortalTargetVisibilityBuilder"]},"PortalNotFoundError":{"Error":[]},"SanityCheckNestedPortalError":{"Error":[]},"PortalTargetTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderPortalTargetTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_PortalTargetTheaterElement":{"RenderObjectElement":[],"Element0":[],"DiagnosticableTree":[],"BuildContext":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  B._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChipSlot":{"Enum":[]},"_RawChipState":{"State0":["RawChip"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ChipSlot"},"_RenderChip":{"SlottedContainerRenderObjectMixin":["_ChipSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ChipSlot"},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"_ListTileSlot":{"Enum":[]},"ListTileTitleAlignment":{"Enum":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ListTileSlot"},"_RenderListTile":{"SlottedContainerRenderObjectMixin":["_ListTileSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ListTileSlot"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"EnhancedLeaderLayer":{"ContainerLayer0":[],"Layer0":[],"DiagnosticableTree":[],"AbstractNode":[]},"EnhancedFollowerLayer":{"ContainerLayer0":[],"Layer0":[],"DiagnosticableTree":[],"AbstractNode":[]},"EnhancedRenderLeaderLayer":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"EnhancedRenderFollowerLayer":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"EnhancedCompositedTransformTarget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"EnhancedCompositedTransformFollower":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"_PortalMainLabel":{"PortalLabel":["~"],"PortalLabel.T":"~"},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTarget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalTargetVisibilityBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalTargetTheaterFollowerParent":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalTargetState":{"State0":["PortalTarget"]},"_PortalTargetVisibilityBuilderState":{"State0":["_PortalTargetVisibilityBuilder"]},"PortalNotFoundError":{"Error":[]},"SanityCheckNestedPortalError":{"Error":[]},"PortalTargetTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderPortalTargetTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_PortalTargetTheaterElement":{"RenderObjectElement":[],"Element0":[],"DiagnosticableTree":[],"BuildContext":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = B.findType;
     return {
@@ -5949,7 +5806,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_16_0_8_0 = new B.EdgeInsetsDirectional(16, 0, 8, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new B.EdgeInsetsDirectional(16, 16, 4, 16);
     D.EdgeInsetsDirectional_8_0_4_0 = new B.EdgeInsetsDirectional(8, 0, 4, 0);
-    D.EdgeInsetsDirectional_8_8_8_8 = new B.EdgeInsetsDirectional(8, 8, 8, 8);
     D.EdgeInsets_0_12_12_0 = new B.EdgeInsets(0, 12, 12, 0);
     D.EdgeInsets_0_4_0_0 = new B.EdgeInsets(0, 4, 0, 0);
     D.EdgeInsets_0_5_0_5 = new B.EdgeInsets(0, 5, 0, 5);
@@ -5978,7 +5834,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.PageStorageKey_mailbox_list = new B.PageStorageKey("mailbox_list", B.findType("PageStorageKey<String>"));
     D.PopupMenuDivider_null = new A.PopupMenuDivider(null);
     D.SizedBox_24_null_null_null = new B.SizedBox(24, null, null, null);
-    D.TextStyle_8co = new B.TextStyle(true, C.Color_4285034102, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv = new B.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv3 = new B.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY11 = new B.TextStyle(true, C.Color_4278190080, null, null, null, null, 15, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -5991,4 +5846,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["aoI8OE0wc8lnNh5SWFEhXulBUj4="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["rAGldI9mhUZ3fInwP1+BnLnuk3s="] = $__dart_deferred_initializers__.current
