@@ -3280,4 +3280,12 @@ class AppLocalizations {
       name: 'enterSomeSuggestions',
     );
   }
+
+  String markedSingleMessageToast(String action) {
+    return Intl.message(
+        'Message has been marked as $action',
+        name: 'markedSingleMessageToast',
+        args: [action]
+    );
+  }
 }

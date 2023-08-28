@@ -19,6 +19,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -233,8 +234,8 @@ mixin EmailActionController {
     mailboxDashBoardController.deleteEmailPermanently(email);
   }
 
-  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
-    mailboxDashBoardController.markAsEmailRead(presentationEmail, readActions);
+  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions, MarkReadAction markReadAction) async {
+    mailboxDashBoardController.markAsEmailRead(presentationEmail, readActions, markReadAction);
   }
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction action) {

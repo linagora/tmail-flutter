@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
@@ -388,18 +389,60 @@ class ThreadView extends GetWidget<ThreadController>
     final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
     final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
 
-    return (EmailTileBuilder(
-      context,
-      presentationEmail,
-      selectModeAll,
-      controller.searchQuery,
-      isShowingEmailContent,
-      mailboxContain: presentationEmail.mailboxContain,
-      isSearchEmailRunning: controller.searchController.isSearchEmailRunning
-    )
-      ..addOnPressEmailActionClick((action, email) => _handleEmailActionClicked(context, email, action))
-      ..addOnMoreActionClick((email, position) => _handleEmailContextMenuAction(context, email, position))
-    ).build();
+    return Dismissible(
+      key: ValueKey<EmailId?>(presentationEmail.id),
+      direction: controller.getSwipeDirection(_responsiveUtils.isWebDesktop(context), selectModeAll),
+      background: Container(
+        color: AppColor.colorItemRecipientSelected,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(start: 16),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppColor.colorSpamReportBannerBackground,
+                  radius: 24,
+                  child: !presentationEmail.hasRead
+                      ? SvgPicture.asset(
+                          _imagePaths.icMarkAsRead,
+                          fit: BoxFit.fill,
+                        )
+                      : SvgPicture.asset(
+                          _imagePaths.icUnreadEmail,
+                          fit: BoxFit.fill,
+                          colorFilter: AppColor.primaryColor.asFilter(),
+                        ),
+                ),
+                const SizedBox(width: 11),
+                Text(
+                  !presentationEmail.hasRead
+                    ? AppLocalizations.of(context).mark_as_read
+                    : AppLocalizations.of(context).mark_as_unread,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColor.primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      confirmDismiss: (direction) => controller.swipeEmailAction(context, presentationEmail, direction),
+      child: (EmailTileBuilder(
+        context,
+        presentationEmail,
+        selectModeAll,
+        controller.searchQuery,
+        isShowingEmailContent,
+        mailboxContain: presentationEmail.mailboxContain,
+        isSearchEmailRunning: controller.searchController.isSearchEmailRunning
+      )
+        ..addOnPressEmailActionClick((action, email) => _handleEmailActionClicked(context, email, action))
+        ..addOnMoreActionClick((email, position) => _handleEmailContextMenuAction(context, email, position))
+      ).build(),
+    );
   }
 
   void _handleEmailActionClicked(
