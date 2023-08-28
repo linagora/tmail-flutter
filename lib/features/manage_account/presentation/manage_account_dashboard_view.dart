@@ -54,7 +54,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                           text: AppLocalizations.of(context).app_name,
                           textAlign: TextAlign.center,
                           textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                          logo: _imagePaths.icLogoTMail,
+                          logoSVG: _imagePaths.icTMailLogo,
                           onTapCallback: () => controller.backToMailboxDashBoard(context),
                         ),
                         Obx(() {
