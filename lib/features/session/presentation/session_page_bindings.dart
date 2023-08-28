@@ -12,12 +12,10 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/repository/session_repository.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/usecases/get_stored_session_interactor.dart';
@@ -29,8 +27,6 @@ class SessionPageBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => SessionController(
-      Get.find<LogoutOidcInteractor>(),
-      Get.find<DeleteAuthorityOidcInteractor>(),
       Get.find<GetAuthenticatedAccountInteractor>(),
       Get.find<UpdateAuthenticationAccountInteractor>(),
       Get.find<GetSessionInteractor>(),
@@ -58,9 +54,6 @@ class SessionPageBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-        Get.find<CredentialRepository>()));
     Get.lazyPut(() => GetStoredTokenOidcInteractor(
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<CredentialRepository>(),

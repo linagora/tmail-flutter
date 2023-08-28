@@ -39,7 +39,6 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
@@ -92,7 +91,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
@@ -161,8 +159,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetSpamMailboxCachedInteractor>()));
 
     Get.put(MailboxDashBoardController(
-      Get.find<LogoutOidcInteractor>(),
-      Get.find<DeleteAuthorityOidcInteractor>(),
       Get.find<GetAuthenticatedAccountInteractor>(),
       Get.find<UpdateAuthenticationAccountInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
@@ -279,9 +275,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MailboxRepository>(),
       Get.find<EmailRepository>())
     );
-    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-        Get.find<CredentialRepository>()));
     Get.lazyPut(() => GetStoredTokenOidcInteractor(
         Get.find<AuthenticationOIDCRepository>(),
         Get.find<CredentialRepository>(),

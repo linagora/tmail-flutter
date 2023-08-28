@@ -13,14 +13,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
@@ -59,8 +57,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   Session? sessionCurrent;
 
   ManageAccountDashBoardController(
-    LogoutOidcInteractor logoutOidcInteractor,
-    DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
     UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor
   ) : super(
