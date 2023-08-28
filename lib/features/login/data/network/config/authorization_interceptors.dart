@@ -73,7 +73,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    log('AuthorizationInterceptors::onError():dioType: ${err.type} | statusCode: ${err.response?.statusCode} | message: ${err.message} | statusMessage: ${err.response?.statusMessage}');
+    logError('AuthorizationInterceptors::onError():dioType: ${err.type} | statusCode: ${err.response?.statusCode} | message: ${err.message} | statusMessage: ${err.response?.statusMessage}');
     try {
       if (_validateToRefreshToken(err)) {
         log('AuthorizationInterceptors::onError:RefreshTokenCalled:configOIDC: $_configOIDC | refreshTokenCurrent: ${_token?.refreshToken}');
@@ -114,7 +114,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         super.onError(err, handler);
       }
     } catch (e) {
-      log('AuthorizationInterceptors::onError():Exception: $e');
+      logError('AuthorizationInterceptors::onError():Exception: $e');
       super.onError(err, handler);
     }
   }
