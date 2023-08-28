@@ -171,7 +171,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleFailureViewState(Failure failure) {
-    logError('BaseController::handleFailureViewState(): $failure');
+    logError('BaseController::handleFailureViewState(): ${failure.runtimeType}');
     if (failure is LogoutOidcFailure) {
       if (_isFcmEnabled) {
         _getSubscriptionLocalAction();
@@ -186,7 +186,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleSuccessViewState(Success success) {
-    log('BaseController::handleSuccessViewState(): $success');
+    log('BaseController::handleSuccessViewState(): ${success.runtimeType}');
     if (success is LogoutOidcSuccess) {
       if (_isFcmEnabled) {
         _getSubscriptionLocalAction();
