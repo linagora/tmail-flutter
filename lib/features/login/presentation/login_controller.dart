@@ -8,13 +8,14 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/token_oidc.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/login_constants.dart';
@@ -44,14 +45,17 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:universal_html/html.dart' as html;
 
-class LoginController extends BaseController {
+class LoginController extends ReloadableController {
 
   final AuthenticationInteractor _authenticationInteractor;
   final DynamicUrlInterceptors _dynamicUrlInterceptors;
@@ -66,13 +70,14 @@ class LoginController extends BaseController {
   final GetAllRecentLoginUrlOnMobileInteractor _getAllRecentLoginUrlOnMobileInteractor;
   final SaveLoginUsernameOnMobileInteractor _saveLoginUsernameOnMobileInteractor;
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
-  final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
   final FocusNode passFocusNode = FocusNode();
 
   LoginController(
+    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
+    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
     this._authenticationInteractor,
     this._dynamicUrlInterceptors,
     this._checkOIDCIsAvailableInteractor,
@@ -86,7 +91,9 @@ class LoginController extends BaseController {
     this._getAllRecentLoginUrlOnMobileInteractor,
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
-    this._getAuthenticatedAccountInteractor,
+  ) : super(
+    getAuthenticatedAccountInteractor,
+    updateAuthenticationAccountInteractor
   );
 
   final loginFormType = LoginFormType.baseUrlForm.obs;
@@ -132,7 +139,7 @@ class LoginController extends BaseController {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is GetAuthenticationInfoFailure) {
-      _getAuthenticatedAccountAction();
+      getAuthenticatedAccountAction();
     } else if (failure is CheckOIDCIsAvailableFailure ||
         failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCIsAvailableFailure ||
@@ -173,16 +180,20 @@ class LoginController extends BaseController {
     }
   }
 
+  @override
+  void handleReloaded(Session session) {
+    popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
+      arguments: session
+    );
+  }
+
   void _getAuthenticationInfo() {
     consumeState(_getAuthenticationInfoInteractor.execute());
   }
 
   void _getStoredOidcConfiguration() {
     consumeState(_getStoredOidcConfigurationInteractor.execute());
-  }
-
-  void _getAuthenticatedAccountAction() {
-    consumeState(_getAuthenticatedAccountInteractor.execute());
   }
 
   void handleNextInUrlInputFormPress() {
