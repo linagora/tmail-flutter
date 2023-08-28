@@ -47,7 +47,6 @@ class ImagePaths {
   String get icFilterSelected => _getImagePath('ic_filter_selected.svg');
   String get icFilterMessageAll => _getImagePath('ic_filter_message_all.svg');
   String get icFilterMessageAttachments => _getImagePath('ic_filter_message_attachments.svg');
-  String get icLogoTMail => _getImagePath('logo_tmail.png');
   String get icSendToast => _getImagePath('ic_send_toast.svg');
   String get icSendSuccessToast => _getImagePath('ic_send_success_toast.svg');
   String get icClearTextSearch => _getImagePath('ic_clear_text_search.svg');
@@ -97,7 +96,6 @@ class ImagePaths {
   String get icEncrypted => _getImagePath('ic_encrypted.svg');
   String get icIntegration => _getImagePath('ic_integration.svg');
   String get icTeam => _getImagePath('ic_team.svg');
-  String get loginGraphic => _getImagePath('login_graphic.png');
   String get icPowerByLinagora => _getImagePath('power_by_linagora.svg');
   String get icAttachmentSB => _getImagePath('ic_attachment_sb.svg');
   String get icCalendarSB => _getImagePath('ic_calendar_sb.svg');
@@ -199,6 +197,8 @@ class ImagePaths {
   String get icEventUpdated => _getImagePath('ic_event_updated.svg');
   String get icEventCanceled => _getImagePath('ic_event_canceled.svg');
   String get icFormatQuote => _getImagePath('ic_format_quote.svg');
+  String get icTMailLogo => _getImagePath('ic_tmail_logo.svg');
+  String get icLoginGraphic => _getImagePath('ic_login_graphic.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

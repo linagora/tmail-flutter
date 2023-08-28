@@ -66,7 +66,7 @@ class MailboxView extends BaseMailboxView {
             text: AppLocalizations.of(context).app_name,
             textAlign: TextAlign.center,
             textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-            logo: imagePaths.icLogoTMail
+            logoSVG: imagePaths.icTMailLogo
           ),
           Obx(() {
             if (controller.mailboxDashBoardController.appInformation.value != null) {
