@@ -14,7 +14,6 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
@@ -24,7 +23,6 @@ import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manag
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_bindings.dart';
@@ -45,8 +43,6 @@ class ManageAccountDashBoardBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.put(ManageAccountDashBoardController(
-      Get.find<LogoutOidcInteractor>(),
-      Get.find<DeleteAuthorityOidcInteractor>(),
       Get.find<GetAuthenticatedAccountInteractor>(),
       Get.find<UpdateAuthenticationAccountInteractor>()
     ));
@@ -78,9 +74,6 @@ class ManageAccountDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => DeleteAuthorityOidcInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-        Get.find<CredentialRepository>()));
     Get.lazyPut(() => GetStoredTokenOidcInteractor(
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<CredentialRepository>(),
