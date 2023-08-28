@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/model/des
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
+import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
@@ -237,7 +238,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     if (!selectedEmail.hasRead) {
-      markAsEmailRead(selectedEmail, ReadActions.markAsRead);
+      markAsEmailRead(selectedEmail, ReadActions.markAsRead, MarkReadAction.tap);
     }
 
     if (_identitySelected == null) {
@@ -508,11 +509,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
+  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions, MarkReadAction markReadAction) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
-      consumeState(_markAsEmailReadInteractor.execute(session, accountId, presentationEmail.toEmail(), readActions));
+      consumeState(_markAsEmailReadInteractor.execute(session, accountId, presentationEmail.toEmail(), readActions, markReadAction));
     }
   }
 
@@ -925,7 +926,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     switch(actionType) {
       case EmailActionType.markAsUnread:
         popBack();
-        markAsEmailRead(presentationEmail, ReadActions.markAsUnread);
+        markAsEmailRead(presentationEmail, ReadActions.markAsUnread, MarkReadAction.tap);
         break;
       case EmailActionType.markAsStarred:
         markAsStarEmail(presentationEmail, MarkStarAction.markStar);

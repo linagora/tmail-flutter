@@ -30,6 +30,8 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -339,6 +341,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleUpdateSendingEmailSuccess(success);
     } else if (success is EmptySpamFolderSuccess) {
       _emptySpamFolderSuccess(success);
+    } else if (success is MarkAsEmailReadSuccess) {
+      _markAsReadEmailSuccess(success);
     }
   }
 
@@ -663,13 +667,14 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions) async {
+  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions, MarkReadAction markReadAction) async {
     if (accountId.value != null && sessionCurrent != null) {
       consumeState(_markAsEmailReadInteractor.execute(
         sessionCurrent!,
         accountId.value!,
         presentationEmail.toEmail(),
-        readActions));
+        readActions,
+        markReadAction));
     }
   }
 
@@ -717,6 +722,39 @@ class MailboxDashBoardController extends ReloadableController {
         leadingSVGIcon: readActions == ReadActions.markAsUnread
           ? _imagePaths.icUnreadToast
           : _imagePaths.icReadToast
+      );
+    }
+  }
+
+  void _markAsReadEmailSuccess(Success success) {
+    ReadActions? readActions;
+    MarkReadAction? markReadAction;
+    PresentationEmail? presentationEmail;
+
+    if (success is MarkAsEmailReadSuccess) {
+      readActions = success.readActions;
+      markReadAction = success.markReadAction;
+      presentationEmail = success.updatedEmail.toPresentationEmail();
+    }
+
+    if (readActions != null && currentContext != null && currentOverlayContext != null && markReadAction == MarkReadAction.swipeOnThread) {
+      final message = readActions == ReadActions.markAsUnread
+        ? AppLocalizations.of(currentContext!).markedSingleMessageToast(AppLocalizations.of(currentContext!).unread.toLowerCase())
+        : AppLocalizations.of(currentContext!).markedSingleMessageToast(AppLocalizations.of(currentContext!).read.toLowerCase());
+
+      final undoAction = readActions == ReadActions.markAsUnread ? ReadActions.markAsRead : ReadActions.markAsUnread;
+
+      _appToast.showToastMessage(
+        currentOverlayContext!,
+        message,
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () {
+          markAsEmailRead(presentationEmail!, undoAction, MarkReadAction.undo);
+        },
+        leadingSVGIcon: _imagePaths.icToastSuccessMessage,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(_imagePaths.icUndo),
       );
     }
   }
