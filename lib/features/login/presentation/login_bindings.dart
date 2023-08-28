@@ -55,6 +55,8 @@ class LoginBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => LoginController(
+      Get.find<GetAuthenticatedAccountInteractor>(),
+      Get.find<UpdateAuthenticationAccountInteractor>(),
       Get.find<AuthenticationInteractor>(),
       Get.find<DynamicUrlInterceptors>(),
       Get.find<CheckOIDCIsAvailableInteractor>(),
@@ -68,7 +70,6 @@ class LoginBindings extends BaseBindings {
       Get.find<GetAllRecentLoginUrlOnMobileInteractor>(),
       Get.find<SaveLoginUsernameOnMobileInteractor>(),
       Get.find<GetAllRecentLoginUsernameOnMobileInteractor>(),
-      Get.find<GetAuthenticatedAccountInteractor>(),
     ));
   }
 

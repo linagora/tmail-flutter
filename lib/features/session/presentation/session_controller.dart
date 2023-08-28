@@ -8,10 +8,8 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/session/domain/state/get_stored_session_state.dart';
@@ -31,8 +29,6 @@ class SessionController extends ReloadableController {
   final GetStoredSessionInteractor _getStoredSessionInteractor;
 
   SessionController(
-    LogoutOidcInteractor logoutOidcInteractor,
-    DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor,
     GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
     UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
     this._getSessionInteractor,
