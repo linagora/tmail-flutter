@@ -54,7 +54,7 @@ class LoginBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => LoginController(
+    Get.create(() => LoginController(
       Get.find<GetAuthenticatedAccountInteractor>(),
       Get.find<UpdateAuthenticationAccountInteractor>(),
       Get.find<AuthenticationInteractor>(),
