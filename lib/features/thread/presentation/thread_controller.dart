@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -882,10 +883,10 @@ class ThreadController extends BaseController with EmailActionController {
         selectEmail(context, selectedEmail);
         break;
       case EmailActionType.markAsRead:
-        markAsEmailRead(selectedEmail, ReadActions.markAsRead);
+        markAsEmailRead(selectedEmail, ReadActions.markAsRead, MarkReadAction.tap);
         break;
       case EmailActionType.markAsUnread:
-        markAsEmailRead(selectedEmail, ReadActions.markAsUnread);
+        markAsEmailRead(selectedEmail, ReadActions.markAsUnread, MarkReadAction.tap);
         break;
       case EmailActionType.markAsStarred:
         markAsStarEmail(selectedEmail, MarkStarAction.markStar);
@@ -1063,5 +1064,25 @@ class ThreadController extends BaseController with EmailActionController {
         AppLocalizations.of(currentContext!).newFilterWasCreated
       );
     }
+  }
+
+  Future<bool> swipeEmailAction(BuildContext context, PresentationEmail email, DismissDirection direction) async {
+    if (direction == DismissDirection.startToEnd) {
+      ReadActions readActions = !email.hasRead ? ReadActions.markAsRead : ReadActions.markAsUnread;
+      markAsEmailRead(email, readActions, MarkReadAction.swipeOnThread);
+    }
+    return false;
+  }
+
+  DismissDirection getSwipeDirection (bool isWebDesktop, SelectMode selectMode) {
+    if (isWebDesktop) {
+      return DismissDirection.none;
+    } 
+    
+    if (selectMode == SelectMode.ACTIVE) {
+      return DismissDirection.none;
+    }
+
+    return DismissDirection.horizontal;
   }
 }

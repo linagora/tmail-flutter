@@ -4,14 +4,17 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
+import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 
 class MarkAsEmailReadSuccess extends UIActionState {
   final Email updatedEmail;
   final ReadActions readActions;
+  final MarkReadAction markReadAction;
 
   MarkAsEmailReadSuccess(
     this.updatedEmail,
     this.readActions,
+    this.markReadAction,
     {
       jmap.State? currentEmailState,
       jmap.State? currentMailboxState,
@@ -19,7 +22,7 @@ class MarkAsEmailReadSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [updatedEmail, readActions, ...super.props];
+  List<Object?> get props => [updatedEmail, readActions, markReadAction, ...super.props];
 }
 
 class MarkAsEmailReadFailure extends FeatureFailure {
