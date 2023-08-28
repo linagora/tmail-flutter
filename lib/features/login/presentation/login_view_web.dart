@@ -143,8 +143,8 @@ class LoginView extends BaseLoginView {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 44),
-                  child: Image(
-                    image: AssetImage(imagePaths.loginGraphic),
+                  child: SvgPicture.asset(
+                    imagePaths.icLoginGraphic,
                     fit: BoxFit.fill,
                     alignment: Alignment.center
                   )
@@ -215,8 +215,8 @@ class LoginView extends BaseLoginView {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image(
-          image: AssetImage(imagePaths.icLogoTMail),
+        SvgPicture.asset(
+          imagePaths.icTMailLogo,
           fit: BoxFit.fill,
           width: 36,
           height: 36,

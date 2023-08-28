@@ -34,7 +34,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                               text: AppLocalizations.of(context).app_name,
                               textAlign: TextAlign.center,
                               textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                              logo: _imagePaths.icLogoTMail
+                              logoSVG: _imagePaths.icTMailLogo
                             ),
                             Obx(() {
                               if (controller.dashBoardController.appInformation.value != null) {
