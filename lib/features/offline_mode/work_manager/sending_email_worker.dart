@@ -91,7 +91,6 @@ class SendingEmailWorker extends Worker {
     if (failure is SendEmailFailure) {
       _handleSendEmailFailure(failure);
     } else if (failure is GetAuthenticatedAccountFailure ||
-        failure is NoAuthenticatedAccountFailure ||
         failure is GetSessionFailure ||
         failure is GetStoredTokenOidcFailure ||
         failure is GetCredentialFailure) {

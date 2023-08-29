@@ -43,7 +43,7 @@ abstract class ReloadableController extends BaseController {
       _handleGetSessionFailure();
     } else if (failure is GetStoredTokenOidcFailure) {
       goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
-    } else if (failure is GetAuthenticatedAccountFailure || failure is NoAuthenticatedAccountFailure) {
+    } else if (failure is GetAuthenticatedAccountFailure) {
       goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }
   }

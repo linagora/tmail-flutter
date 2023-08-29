@@ -122,8 +122,7 @@ class HomeController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) async {
     super.handleFailureViewState(failure);
-    if (failure is NoAuthenticatedAccountFailure ||
-        failure is GetAuthenticatedAccountFailure ||
+    if (failure is GetAuthenticatedAccountFailure ||
         failure is GetStoredTokenOidcFailure ||
         failure is GetCredentialFailure) {
       _goToLogin(arguments: LoginArguments(LoginFormType.baseUrlForm));
