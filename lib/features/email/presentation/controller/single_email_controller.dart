@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart'
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
@@ -213,6 +214,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       mailboxDashBoardController.selectedEmail,
       _handleOpenEmailDetailedView
     );
+
+    ever(mailboxDashBoardController.emailUIAction, (action) {
+      if (action is CloseEmailDetailedViewAction) {
+        if (emailSupervisorController.supportedPageView.isTrue) {
+          emailSupervisorController.popEmailQueue(_currentEmailId);
+          emailSupervisorController.setCurrentEmailIndex(-1);
+          emailSupervisorController.disposePageViewController();
+        }
+        _updateCurrentEmailId(null);
+        _resetToOriginalValue();
+        mailboxDashBoardController.clearSelectedEmail();
+        mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+        mailboxDashBoardController.clearEmailUIAction();
+      }
+    });
   }
 
   bool isListEmailContainSelectedEmail(PresentationEmail selectedEmail) {
