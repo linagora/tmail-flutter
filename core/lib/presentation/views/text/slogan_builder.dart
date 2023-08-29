@@ -44,56 +44,50 @@ class SloganBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!arrangedByHorizontal) {
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTapCallback,
-          hoverColor: hoverColor,
-          borderRadius: BorderRadius.all(Radius.circular(hoverRadius ?? 8)),
-          child: Padding(
-            padding: padding ?? EdgeInsets.zero,
-            child: Column(children: [
-              _logoApp(),
-              Padding(
-                padding: paddingText ?? const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
-                child: Text(
-                  text ?? '',
-                  style: textStyle,
-                  textAlign: textAlign,
-                  overflow: enableOverflow ? CommonTextStyle.defaultTextOverFlow : null,
-                  softWrap: enableOverflow ? CommonTextStyle.defaultSoftWrap : null,
-                  maxLines: enableOverflow ? 1 : null,
-                ),
+      return InkWell(
+        onTap: onTapCallback,
+        hoverColor: hoverColor,
+        borderRadius: BorderRadius.all(Radius.circular(hoverRadius ?? 8)),
+        child: Padding(
+          padding: padding ?? EdgeInsets.zero,
+          child: Column(children: [
+            _logoApp(),
+            Padding(
+              padding: paddingText ?? const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+              child: Text(
+                text ?? '',
+                style: textStyle,
+                textAlign: textAlign,
+                overflow: enableOverflow ? CommonTextStyle.defaultTextOverFlow : null,
+                softWrap: enableOverflow ? CommonTextStyle.defaultSoftWrap : null,
+                maxLines: enableOverflow ? 1 : null,
               ),
-            ]),
-          ),
+            ),
+          ]),
         ),
       );
     } else {
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTapCallback,
-          hoverColor: hoverColor,
-          radius: hoverRadius ?? 8,
-          borderRadius: BorderRadius.all(Radius.circular(hoverRadius ?? 8)),
-          child: Padding(
-            padding: padding ?? EdgeInsets.zero,
-            child: Row(children: [
-              _logoApp(),
-              Padding(
-                padding: paddingText ?? const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  text ?? '',
-                  style: textStyle,
-                  textAlign: textAlign,
-                  overflow: enableOverflow ? CommonTextStyle.defaultTextOverFlow : null,
-                  softWrap: enableOverflow ? CommonTextStyle.defaultSoftWrap : null,
-                  maxLines: enableOverflow ? 1 : null,
-                ),
+      return InkWell(
+        onTap: onTapCallback,
+        hoverColor: hoverColor,
+        radius: hoverRadius ?? 8,
+        borderRadius: BorderRadius.all(Radius.circular(hoverRadius ?? 8)),
+        child: Padding(
+          padding: padding ?? EdgeInsets.zero,
+          child: Row(children: [
+            _logoApp(),
+            Padding(
+              padding: paddingText ?? const EdgeInsets.symmetric(horizontal: 10),
+              child: Text(
+                text ?? '',
+                style: textStyle,
+                textAlign: textAlign,
+                overflow: enableOverflow ? CommonTextStyle.defaultTextOverFlow : null,
+                softWrap: enableOverflow ? CommonTextStyle.defaultSoftWrap : null,
+                maxLines: enableOverflow ? 1 : null,
               ),
-            ]),
-          ),
+            ),
+          ]),
         ),
       );
     }
