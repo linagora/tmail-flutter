@@ -1083,6 +1083,6 @@ class ThreadController extends BaseController with EmailActionController {
       return DismissDirection.none;
     }
 
-    return DismissDirection.horizontal;
+    return DismissDirection.startToEnd;
   }
 }
