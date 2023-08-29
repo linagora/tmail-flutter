@@ -276,7 +276,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is OpenMailboxAction) {
         if (currentContext != null) {
-          openMailbox(currentContext!, action.presentationMailbox);
+          _handleOpenMailbox(currentContext!, action.presentationMailbox);
+          if (action.presentationMailbox.role == PresentationMailbox.roleInbox) {
+            _autoScrollToTopMailboxList();
+          }
         }
         mailboxDashBoardController.clearMailboxUIAction();
       }
@@ -744,15 +747,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     final inboxMailbox = findMailboxNodeByRole(PresentationMailbox.roleInbox);
     mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
     _updateSelectedMailboxRouteOnBrowser();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(mailboxListScrollController.hasClients){
-        mailboxListScrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.fastOutSlowIn);
-      }
-    });
+    _autoScrollToTopMailboxList();
   }
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
@@ -1209,8 +1204,20 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     final newMailboxNode = findMailboxNodeById(_newFolderId!);
     log('MailboxController::_redirectToNewFolder:newMailboxNode: $newMailboxNode');
     if (newMailboxNode != null && currentContext != null) {
-      openMailbox(currentContext!, newMailboxNode.item);
+      _handleOpenMailbox(currentContext!, newMailboxNode.item);
     }
     _clearNewFolderId();
+  }
+
+  void _autoScrollToTopMailboxList() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mailboxListScrollController.hasClients){
+        mailboxListScrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.fastOutSlowIn
+        );
+      }
+    });
   }
 }

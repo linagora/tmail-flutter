@@ -2087,7 +2087,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   void redirectToInboxAction() {
     log('MailboxDashBoardController::redirectToInboxAction:');
-    if (selectedMailbox.value?.role == PresentationMailbox.roleInbox) return;
+    if (dashboardRoute.value == DashboardRoutes.emailDetailed) {
+      dispatchEmailUIAction(CloseEmailDetailedViewAction());
+    }
 
     final inboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
     if (inboxId == null) return;

@@ -19,3 +19,5 @@ class RefreshChangeEmailAction extends EmailUIAction {
   @override
   List<Object?> get props => [newState];
 }
+
+class CloseEmailDetailedViewAction extends EmailUIAction {}
