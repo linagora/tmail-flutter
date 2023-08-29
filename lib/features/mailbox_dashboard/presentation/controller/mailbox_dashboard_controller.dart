@@ -2084,6 +2084,19 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   String get baseDownloadUrl => sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl) ?? '';
+
+  void redirectToInboxAction() {
+    log('MailboxDashBoardController::redirectToInboxAction:');
+    if (selectedMailbox.value?.role == PresentationMailbox.roleInbox) return;
+
+    final inboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
+    if (inboxId == null) return;
+
+    final inboxPresentation = mapMailboxById[inboxId];
+    if (inboxPresentation == null) return;
+
+    openMailboxAction(inboxPresentation);
+  }
   
   @override
   void onClose() {

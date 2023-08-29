@@ -73,7 +73,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             text: AppLocalizations.of(context).app_name,
                             textAlign: TextAlign.center,
                             textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                            logo: imagePaths.icLogoTMail
+                            logo: imagePaths.icLogoTMail,
+                            onTapCallback: controller.redirectToInboxAction,
                           ),
                           Obx(() {
                             if (controller.appInformation.value != null) {
