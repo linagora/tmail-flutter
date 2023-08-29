@@ -12,12 +12,7 @@ class MailboxUIAction extends UIAction {
   List<Object?> get props => [];
 }
 
-class SelectMailboxDefaultAction extends MailboxUIAction {
-  SelectMailboxDefaultAction();
-
-  @override
-  List<Object?> get props => [];
-}
+class SelectMailboxDefaultAction extends MailboxUIAction {}
 
 class RefreshChangeMailboxAction extends MailboxUIAction {
   final jmap.State? newState;

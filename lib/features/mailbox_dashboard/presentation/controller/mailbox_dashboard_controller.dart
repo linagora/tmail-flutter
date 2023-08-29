@@ -1593,7 +1593,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleNotificationMessageFromNewState(jmap.State newState, {bool onForeground = true}) {
     if (onForeground) {
-      _openInboxMailbox();
+      _openInboxMailboxFromNotification();
     }
   }
 
@@ -1615,7 +1615,7 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute( DashboardRoutes.waiting);
   }
 
-  void _openInboxMailbox() {
+  void _openInboxMailboxFromNotification() {
     popAllRouteIfHave();
     dispatchMailboxUIAction(SelectMailboxDefaultAction());
     dispatchRoute(DashboardRoutes.thread);
