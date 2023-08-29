@@ -142,9 +142,10 @@ class LoginController extends ReloadableController {
       getAuthenticatedAccountAction();
     } else if (failure is CheckOIDCIsAvailableFailure ||
         failure is GetStoredOidcConfigurationFailure ||
-        failure is GetOIDCIsAvailableFailure ||
-        failure is GetAuthenticatedAccountFailure) {
+        failure is GetOIDCIsAvailableFailure) {
       _showFormLoginWithCredentialAction();
+    } else if (failure is GetAuthenticatedAccountFailure) {
+      _checkOIDCIsAvailable();
     }
   }
 
