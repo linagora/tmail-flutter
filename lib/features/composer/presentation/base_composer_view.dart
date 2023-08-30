@@ -513,7 +513,7 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
               width: 150,
               height: 44,
               radius: 10,
-              onTap: () => controller.saveToDraft(context)
+              onTap: () => controller.saveToDraftAction(context)
             ),
             const SizedBox(width: 12),
             buildTextButton(
