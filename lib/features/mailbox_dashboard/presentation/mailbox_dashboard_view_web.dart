@@ -292,15 +292,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   Widget _buildRightHeader(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
       return Row(children: [
-        Container(
+        SizedBox(
           width: constraint.maxWidth / 2,
           height: 52,
-          color: Colors.transparent,
-          child: SearchInputFormWidget(
-            maxWidth: constraint.maxWidth / 2,
-            dashBoardController: controller,
-            imagePaths: imagePaths
-          )
+          child: SearchInputFormWidget()
         ),
         const Spacer(),
         AppConfig.appGridDashboardAvailable
