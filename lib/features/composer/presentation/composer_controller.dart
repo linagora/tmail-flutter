@@ -31,12 +31,15 @@ import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
@@ -47,6 +50,7 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_view_event.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -147,11 +151,17 @@ class ComposerController extends BaseController {
   final ScrollController scrollControllerEmailAddress = ScrollController();
   final ScrollController scrollControllerAttachment = ScrollController();
 
+  final _saveToDraftEventController = StreamController<SaveToDraftViewEvent>();
+  Stream<SaveToDraftViewEvent> get _saveToDraftEventStream => _saveToDraftEventController.stream;
+  late StreamSubscription _saveToDraftStreamSubscription;
+
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
   String? _initTextEditor;
   double? maxWithEditor;
+  EmailId? _emailIdEditing;
   late Worker uploadInlineImageWorker;
+  late Worker dashboardViewStateWorker;
 
   void onChangeTextEditorWeb(String? text) {
     initTextEditor(text);
@@ -213,7 +223,7 @@ class ComposerController extends BaseController {
     super.onInit();
     createFocusNodeInput();
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
-    _listenWorker();
+    _listenStreamEvent();
     if (PlatformInfo.isMobile) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         await FkUserAgent.init();
@@ -258,11 +268,14 @@ class ComposerController extends BaseController {
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
     uploadInlineImageWorker.dispose();
+    dashboardViewStateWorker.dispose();
     keyboardRichTextController.dispose();
     scrollController.dispose();
     scrollControllerEmailAddress.removeListener(_scrollControllerEmailAddressListener);
     scrollControllerEmailAddress.dispose();
     scrollControllerAttachment.dispose();
+    _saveToDraftStreamSubscription.cancel();
+    _saveToDraftEventController.close();
     super.dispose();
   }
 
@@ -312,12 +325,28 @@ class ComposerController extends BaseController {
     }
   }
 
-  void _listenWorker() {
+  void _listenStreamEvent() {
     uploadInlineImageWorker = ever(uploadController.uploadInlineViewState, (state) {
-      log('ComposerController::_listenWorker(): $state');
+      log('ComposerController::_listenStreamEvent()::uploadInlineImageWorker: $state');
       state.fold((failure) => null, (success) {
         if (success is SuccessAttachmentUploadState) {
           _handleUploadInlineSuccess(success);
+        }
+      });
+    });
+
+    _saveToDraftStreamSubscription = _saveToDraftEventStream
+      .debounceTime(const Duration(milliseconds: 300))
+      .listen(_handleSaveToDraft);
+
+    dashboardViewStateWorker = ever(mailboxDashBoardController.viewState, (state) {
+      state.fold((failure) => null, (success) {
+        if (success is SaveEmailAsDraftsSuccess) {
+          _emailIdEditing = success.emailAsDrafts.id;
+          log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:SaveEmailAsDraftsSuccess:emailIdEditing: $_emailIdEditing');
+        } else if (success is UpdateEmailDraftsSuccess) {
+          _emailIdEditing = success.emailAsDrafts.id;
+          log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:UpdateEmailDraftsSuccess:emailIdEditing: $_emailIdEditing');
         }
       });
     });
@@ -415,6 +444,7 @@ class ComposerController extends BaseController {
             emailId: arguments.presentationEmail!.id!,
             isDraftEmail: arguments.presentationEmail!.isDraft
           );
+          _emailIdEditing = arguments.presentationEmail!.id!;
           break;
         case EmailActionType.editSendingEmail:
           _initEmailAddress(
@@ -426,6 +456,7 @@ class ComposerController extends BaseController {
             actionType: EmailActionType.editSendingEmail
           );
           _getEmailContentFromSendingEmail(arguments.sendingEmail!);
+          _emailIdEditing = arguments.sendingEmail!.presentationEmail.id!;
           break;
         case EmailActionType.composeFromContentShared:
           _getEmailContentFromContentShared(arguments.emailContents!);
@@ -1027,7 +1058,8 @@ class ComposerController extends BaseController {
     if (arguments == null ||
         userProfile == null ||
         session == null ||
-        accountId == null
+        accountId == null ||
+        arguments.presentationEmail?.id != _emailIdEditing
     ) {
       if (PlatformInfo.isWeb) {
         mailboxDashBoardController.closeComposerOverlay();
@@ -1083,7 +1115,57 @@ class ComposerController extends BaseController {
     }
   }
 
-  void saveToDraft(BuildContext context) {}
+  void saveToDraftAction(BuildContext context) {
+    final userProfile = mailboxDashBoardController.userProfile.value;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
+
+    if (draftMailboxId == null || userProfile == null || session == null || accountId == null) {
+      logError('ComposerController::saveToDraftAction: Param is NULL');
+      return;
+    }
+
+    _saveToDraftEventController.add(
+      SaveToDraftViewEvent(
+        context: context,
+        session: session,
+        accountId: accountId,
+        userProfile: userProfile,
+        draftMailboxId: draftMailboxId,
+        emailIdEditing: _emailIdEditing,
+      )
+    );
+  }
+
+  void _handleSaveToDraft(SaveToDraftViewEvent event) async {
+    log('ComposerController::_handleSaveToDraft:emailIdEditing: ${event.emailIdEditing}');
+    final newEmail = await _generateEmail(
+      event.context,
+      event.userProfile,
+      asDrafts: true,
+      draftMailboxId: event.draftMailboxId
+    );
+
+    if (event.emailIdEditing == null) {
+      mailboxDashBoardController.consumeState(
+        _saveEmailAsDraftsInteractor.execute(
+          event.session,
+          event.accountId,
+          newEmail
+        )
+      );
+    } else {
+      mailboxDashBoardController.consumeState(
+        _updateEmailDraftsInteractor.execute(
+          event.session,
+          event.accountId,
+          newEmail,
+          event.emailIdEditing!
+        )
+      );
+    }
+  }
 
   File _covertSharedMediaFileToFile(SharedMediaFile sharedMediaFile) {
     return File(
