@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -7,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/label_mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mailbox_item_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LabelMailboxItemWidget extends StatelessWidget {
 
@@ -41,6 +43,14 @@ class LabelMailboxItemWidget extends StatelessWidget {
                   ),
                 ),
               ),
+              if (mailboxNode.item.allowedHasEmptyAction)
+                TMailButtonWidget.fromText(
+                  text: AppLocalizations.of(context).empty,
+                  textStyle: LabelMailboxItemWidgetStyles.emptyButtonTextStyle,
+                  backgroundColor: LabelMailboxItemWidgetStyles.emptyButtonBackground,
+                  padding: LabelMailboxItemWidgetStyles.emptyButtonPadding,
+                  onTapActionCallback: () => {},
+                ),
               TrailingMailboxItemWidget(
                 mailboxNode: mailboxNode,
                 isItemHovered: isItemHovered,
