@@ -203,6 +203,9 @@ extension AppColor on Color {
   static const colorLabelCancelButton = Color(0xFFAEB7C2);
   static const colorCreateFiltersButton = Color(0xFFF3F3F7);
   static const colorTextBody = Color(0xFF818C99);
+  static const colorClosePopupDialogButton = Color(0xFFAEB7C2);
+  static const colorEmptyPopupDialogButton = Color(0xFFFFC107);
+  static const colorCancelPopupDialogButton = Color(0xFFEBEDF0);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

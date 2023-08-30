@@ -32,6 +32,7 @@ class MailboxItemWidget extends StatefulWidget {
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
   final OnDragEmailToMailboxAccepted? onDragItemAccepted;
   final OnLongPressMailboxNodeAction? onLongPressMailboxNodeAction;
+  final OnEmptyMailboxActionCallback? onEmptyMailboxActionCallback;
 
   const MailboxItemWidget({
     super.key,
@@ -47,6 +48,7 @@ class MailboxItemWidget extends StatefulWidget {
     this.onMenuActionClick,
     this.onDragItemAccepted,
     this.onLongPressMailboxNodeAction,
+    this.onEmptyMailboxActionCallback,
   });
 
   @override
@@ -87,7 +89,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     child: LabelMailboxItemWidget(
                       mailboxNode: widget.mailboxNode,
                       isItemHovered: _isItemHovered,
-                      onMenuActionClick: widget.onMenuActionClick
+                      onMenuActionClick: widget.onMenuActionClick,
+                      onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
                     )
                   ),
                 ]
@@ -122,7 +125,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     child: LabelMailboxItemWidget(
                       mailboxNode: widget.mailboxNode,
                       isItemHovered: _isItemHovered,
-                      onMenuActionClick: widget.onMenuActionClick
+                      onMenuActionClick: widget.onMenuActionClick,
+                      onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
                     )
                   ),
                 ]
@@ -161,7 +165,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                           child: LabelMailboxItemWidget(
                             mailboxNode: widget.mailboxNode,
                             isItemHovered: _isItemHovered,
-                            onMenuActionClick: widget.onMenuActionClick
+                            onMenuActionClick: widget.onMenuActionClick,
+                            onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
                         )
                         ),
                         if (_isSelectActionNoValid)
@@ -211,7 +216,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                           mailboxNode: widget.mailboxNode,
                           showTrailing: false,
                           isItemHovered: _isItemHovered,
-                          onMenuActionClick: widget.onMenuActionClick
+                          onMenuActionClick: widget.onMenuActionClick,
+                          onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
                         )
                       ),
                       if (_isSelectActionNoValid)
