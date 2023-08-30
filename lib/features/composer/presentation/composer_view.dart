@@ -39,7 +39,7 @@ class ComposerView extends BaseComposerView {
   Widget _buildComposerViewForMobile(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        controller.saveEmailAsDrafts(context, canPop: false);
+        controller.saveToDraftAndClose(context, canPop: false);
         return true;
       },
       child: GestureDetector(
@@ -91,7 +91,7 @@ class ComposerView extends BaseComposerView {
   Widget _buildComposerViewForTablet(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        controller.saveEmailAsDrafts(context, canPop: false);
+        controller.saveToDraftAndClose(context, canPop: false);
         return true;
       },
       child: GestureDetector(
