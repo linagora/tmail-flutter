@@ -82,6 +82,7 @@ export 'presentation/views/toast/tmail_toast.dart';
 export 'presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
 export 'presentation/views/checkbox/labeled_checkbox.dart';
 export 'presentation/views/container/tmail_container_widget.dart';
+export 'presentation/views/clipper/side_arrow_clipper.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

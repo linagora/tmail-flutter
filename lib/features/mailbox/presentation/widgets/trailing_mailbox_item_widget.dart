@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class TrailingMailboxItemWidget extends StatelessWidget {
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
 
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   TrailingMailboxItemWidget({
     super.key,
@@ -30,19 +32,23 @@ class TrailingMailboxItemWidget extends StatelessWidget {
     if (PlatformInfo.isWeb) {
       if (isItemHovered) {
         return TMailButtonWidget.fromIcon(
-          margin: TrailingMailboxItemWidgetStyles.menuIconMargin,
+          margin: _responsiveUtils.isDesktop(context) && mailboxNode.item.allowedHasEmptyAction
+            ? EdgeInsets.zero
+            : TrailingMailboxItemWidgetStyles.menuIconMargin,
           icon: _imagePaths.icComposerMenu,
           iconSize: TrailingMailboxItemWidgetStyles.menuIconSize,
           padding: TrailingMailboxItemWidgetStyles.menuIconPadding,
           backgroundColor: TrailingMailboxItemWidgetStyles.menuIconBackgroundColor,
           onTapActionAtPositionCallback: (position) => onMenuActionClick?.call(position, mailboxNode),
         );
-      } else if (mailboxNode.item.countUnreadEmails > 0 && mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
+      } else if (_responsiveUtils.isDesktop(context) && mailboxNode.item.allowedHasEmptyAction) {
+        return const SizedBox();
+      } else if (mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
           padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countUnReadEmailsAsString),
         );
-      } else if (mailboxNode.item.countTotalEmails > 0 && mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
+      } else if (mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
         return Padding(
           padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countTotalEmailsAsString),
@@ -51,12 +57,12 @@ class TrailingMailboxItemWidget extends StatelessWidget {
         return const SizedBox();
       }
     } else {
-      if (mailboxNode.item.countUnreadEmails > 0 && mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
+      if (mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
           padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countUnReadEmailsAsString),
         );
-      } else if (mailboxNode.item.countTotalEmails > 0 && mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
+      } else if (mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
         return Padding(
           padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countTotalEmailsAsString),
