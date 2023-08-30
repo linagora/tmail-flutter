@@ -433,7 +433,7 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
             ),
             iconPadding: EdgeInsets.zero,
             tooltip: AppLocalizations.of(context).saveAndClose,
-            onTap: () => controller.saveEmailAsDrafts(context)
+            onTap: () => controller.saveToDraftAndClose(context)
           ),
           Expanded(child: buildTitleComposer(context)),
           if (responsiveUtils.isScreenWithShortestSide(context))
@@ -513,7 +513,7 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
               width: 150,
               height: 44,
               radius: 10,
-              onTap: () => controller.saveEmailAsDrafts(context)
+              onTap: () => controller.saveToDraft(context)
             ),
             const SizedBox(width: 12),
             buildTextButton(
