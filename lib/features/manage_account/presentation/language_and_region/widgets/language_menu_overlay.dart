@@ -12,7 +12,9 @@ class LanguageRegionOverlay extends StatelessWidget {
   final double? maxWidth;
   final OnSelectLanguageAction onSelectLanguageAction;
 
-  const LanguageRegionOverlay({
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  LanguageRegionOverlay({
     Key? key,
     required this.listSupportedLanguages,
     required this.localeSelected,
@@ -54,11 +56,10 @@ class LanguageRegionOverlay extends StatelessWidget {
   }
 
   double _getHeightOverlay(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     const double maxHeightTopBar = 80;
     const double maxHeightTitleLanguage = 200;
     const double paddingBottom = 16;
-    final currentHeight = responsiveUtils.getSizeScreenHeight(context);
+    final currentHeight = _responsiveUtils.getSizeScreenHeight(context);
     double maxHeightForm = currentHeight - maxHeightTopBar - maxHeightTitleLanguage - paddingBottom;
     return maxHeightForm;
   }
