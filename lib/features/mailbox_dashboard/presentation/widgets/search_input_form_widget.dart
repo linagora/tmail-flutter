@@ -22,34 +22,28 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/em
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 
 class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
-  final MailboxDashBoardController dashBoardController;
-  final ImagePaths imagePaths;
-  final double maxWidth;
+  final _searchController = Get.find<search.SearchController>();
+  final _dashBoardController = Get.find<MailboxDashBoardController>();
+  final _imagePaths = Get.find<ImagePaths>();
 
-  SearchInputFormWidget({
-    Key? key,
-    required this.dashBoardController,
-    required this.imagePaths,
-    required this.maxWidth,
-  }) : super(key: key);
+  SearchInputFormWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final controller = dashBoardController.searchController;
-
     return Obx(() {
       return PortalTarget(
-        visible: controller.isAdvancedSearchViewOpen.isTrue,
+        visible: _searchController.isAdvancedSearchViewOpen.isTrue,
         portalFollower: PointerInterceptor(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => controller.selectOpenAdvanceSearch()
+            onTap: () => _searchController.selectOpenAdvanceSearch()
           ),
         ),
         child: PortalTarget(
-          visible: controller.isAdvancedSearchViewOpen.isTrue,
+          visible: _searchController.isAdvancedSearchViewOpen.isTrue,
           anchor: const Aligned(
             follower: Alignment.topRight,
             target: Alignment.bottomRight,
@@ -60,15 +54,14 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               widthFactor: 1,
             ),
           ),
-          portalFollower: AdvancedSearchFilterOverlay(maxWidth: maxWidth),
+          portalFollower: const AdvancedSearchFilterOverlay(),
           child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
             maxHeight: 52,
             suggestionsBoxVerticalOffset: 0.0,
             textFieldConfiguration: _createConfiguration(context),
-            suggestionsBoxDecoration: QuickSearchSuggestionsBoxDecoration(
+            suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-              constraints: BoxConstraints(maxWidth: maxWidth)
+              borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
             debounceDuration: const Duration(milliseconds: 300),
             listActionButton: QuickSearchFilter.values,
@@ -81,7 +74,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             },
             buttonActionCallback: (filterAction) {
               if (filterAction is QuickSearchFilter) {
-                dashBoardController.addFilterToSuggestionForm(filterAction);
+                _dashBoardController.addFilterToSuggestionForm(filterAction);
               }
             },
             listActionPadding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 6),
@@ -107,11 +100,11 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               padding: const EdgeInsets.only(bottom: 16),
               child: loadingWidget
             ),
-            fetchRecentActionCallback: controller.getAllRecentSearchAction,
+            fetchRecentActionCallback: _searchController.getAllRecentSearchAction,
             itemRecentBuilder: (context, recent) => RecentSearchItemTileWidget(recent),
             onRecentSelected: (recent) => _invokeSelectRecentItem(context, recent),
-            suggestionsCallback: dashBoardController.quickSearchEmails,
-            itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(email, dashBoardController.selectedMailbox.value),
+            suggestionsCallback: _dashBoardController.quickSearchEmails,
+            itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(email, _dashBoardController.selectedMailbox.value),
             onSuggestionSelected: (presentationEmail) => _invokeSelectSuggestionItem(context, presentationEmail))
         ),
       );
@@ -119,23 +112,23 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   void _invokeSearchEmailAction(BuildContext context, String query) {
-    dashBoardController.searchController.searchFocus.unfocus();
-    dashBoardController.searchController.enableSearch();
+    _searchController.searchFocus.unfocus();
+    _searchController.enableSearch();
 
     if (query.isNotEmpty) {
-      dashBoardController.searchController.saveRecentSearch(RecentSearch.now(query));
+      _searchController.saveRecentSearch(RecentSearch.now(query));
     }
 
-    if (query.isNotEmpty || dashBoardController.searchController.listFilterOnSuggestionForm.isNotEmpty) {
-      dashBoardController.searchController.applyFilterSuggestionToSearchFilter(dashBoardController.userProfile.value);
-      dashBoardController.searchEmail(context, queryString: query);
+    if (query.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
+      _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.userProfile.value);
+      _dashBoardController.searchEmail(context, queryString: query);
     } else {
-      dashBoardController.clearSearchEmail();
+      _dashBoardController.clearSearchEmail();
     }
   }
 
   void _invokeSelectSuggestionItem(BuildContext context, PresentationEmail presentationEmail) {
-    dashBoardController.dispatchAction(
+    _dashBoardController.dispatchAction(
       OpenEmailDetailedFromSuggestionQuickSearchAction(
         context,
         presentationEmail
@@ -144,12 +137,12 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   void _invokeSelectRecentItem(BuildContext context, RecentSearch recent) {
-    dashBoardController.searchController.searchInputController.text = recent.value;
-    dashBoardController.searchController.searchFocus.unfocus();
-    dashBoardController.searchController.enableSearch();
+    _searchController.searchInputController.text = recent.value;
+    _searchController.searchFocus.unfocus();
+    _searchController.enableSearch();
 
-    dashBoardController.searchController.applyFilterSuggestionToSearchFilter(dashBoardController.userProfile.value);
-    dashBoardController.searchEmail(context, queryString: recent.value);
+    _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.userProfile.value);
+    _dashBoardController.searchEmail(context, queryString: recent.value);
   }
 
   Widget _buildShowAllResultButton(BuildContext context, String keyword) {
@@ -181,11 +174,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   QuickSearchTextFieldConfiguration _createConfiguration(BuildContext context) {
-    final controller = dashBoardController.searchController;
-
     return QuickSearchTextFieldConfiguration(
-      controller: controller.searchInputController,
-      focusNode: controller.searchFocus,
+      controller: _searchController.searchInputController,
+      focusNode: _searchController.searchFocus,
       textInputAction: TextInputAction.done,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       onSubmitted: (keyword) => _invokeSearchEmailAction(context, keyword.trim()),
@@ -206,18 +197,18 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         child: buildIconWeb(
           minSize: 40,
           iconPadding: EdgeInsets.zero,
-          icon: SvgPicture.asset(imagePaths.icSearchBar, fit: BoxFit.fill),
-          onTap: () => _invokeSearchEmailAction(context, controller.searchInputController.text.trim())
+          icon: SvgPicture.asset(_imagePaths.icSearchBar, fit: BoxFit.fill),
+          onTap: () => _invokeSearchEmailAction(context, _searchController.searchInputController.text.trim())
         )
       ),
       clearTextButton: buildIconWeb(
         icon: SvgPicture.asset(
-          imagePaths.icClearTextSearch,
+          _imagePaths.icClearTextSearch,
           width: 16,
           height: 16,
           fit: BoxFit.fill
         ),
-        onTap: controller.clearTextSearch
+        onTap: _searchController.clearTextSearch
       ),
       rightButton: IconOpenAdvancedSearchWidget(context)
     );
@@ -225,7 +216,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
 
   Widget buildListButtonForQuickSearchForm(BuildContext context, QuickSearchFilter filter) {
     return Obx(() {
-      final isFilterSelected = filter.isApplied(dashBoardController.searchController.listFilterOnSuggestionForm);
+      final isFilterSelected = filter.isApplied(_searchController.listFilterOnSuggestionForm);
 
       return Chip(
         labelPadding: EdgeInsets.only(
@@ -242,7 +233,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           style: filter.getTextStyle(isFilterSelected: isFilterSelected),
         ),
         avatar: SvgPicture.asset(
-          filter.getIcon(imagePaths, isFilterSelected: isFilterSelected),
+          filter.getIcon(_imagePaths, isFilterSelected: isFilterSelected),
           width: 16,
           height: 16,
           fit: BoxFit.fill),
