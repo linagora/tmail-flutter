@@ -43,9 +43,9 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
 
-  bool get allowedToDisplayCountOfUnreadEmails => !(isTrash || isSpam || isDrafts || isTemplates || isSent);
+  bool get allowedToDisplayCountOfUnreadEmails => !(isTrash || isSpam || isDrafts || isTemplates || isSent) && countUnreadEmails > 0;
 
-  bool get allowedToDisplayCountOfTotalEmails => isTrash || isSpam;
+  bool get allowedToDisplayCountOfTotalEmails => (isTrash || isSpam) && countTotalEmails > 0;
 
   bool get allowedHasEmptyAction => (isTrash || isSpam) && countTotalEmails > 0;
 

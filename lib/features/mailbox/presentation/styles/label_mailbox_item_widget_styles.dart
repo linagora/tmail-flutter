@@ -10,17 +10,8 @@ class LabelMailboxItemWidgetStyles {
   static const Color labelTeamMailboxTextColor = Colors.black;
   static const Color labelFolderTextColor = AppColor.colorNameEmail;
   static const Color teamMailboxTextColor = AppColor.colorEmailAddressFull;
-  static const Color emptyButtonBackground = Colors.transparent;
 
   static const FontWeight labelTeamMailboxTextFontWeight = FontWeight.bold;
   static const FontWeight labelFolderTextFontWeight = FontWeight.normal;
   static const FontWeight teamMailboxTextFontWeight = FontWeight.w400;
-
-  static const EdgeInsetsGeometry emptyButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 2, horizontal: 5);
-
-  static const TextStyle emptyButtonTextStyle = TextStyle(
-    fontWeight: FontWeight.w400,
-    fontSize: 15,
-    color: AppColor.colorTextBody
-  );
 }

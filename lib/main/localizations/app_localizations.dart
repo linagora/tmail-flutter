@@ -3295,4 +3295,19 @@ class AppLocalizations {
       name: 'empty',
     );
   }
+
+  String get clearFolder {
+    return Intl.message(
+      'Clear folder',
+      name: 'clearFolder',
+    );
+  }
+
+  String messageEmptyFolderDialog(String folder) {
+    return Intl.message(
+      'The messages in $folder folder will be permanently deleted and you will not be able to restore them',
+      name: 'messageEmptyFolderDialog',
+      args: [folder]
+    );
+  }
 }

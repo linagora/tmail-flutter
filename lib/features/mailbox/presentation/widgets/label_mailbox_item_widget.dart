@@ -1,14 +1,14 @@
-
-import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/label_mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/empty_mailbox_popup_dialog_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mailbox_item_widget.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LabelMailboxItemWidget extends StatelessWidget {
 
@@ -16,13 +16,17 @@ class LabelMailboxItemWidget extends StatelessWidget {
   final bool showTrailing;
   final bool isItemHovered;
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
+  final OnEmptyMailboxActionCallback? onEmptyMailboxActionCallback;
 
-  const LabelMailboxItemWidget({
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  LabelMailboxItemWidget({
     super.key,
     required this.mailboxNode,
     this.showTrailing = true,
     this.isItemHovered = false,
     this.onMenuActionClick,
+    this.onEmptyMailboxActionCallback,
   });
 
   @override
@@ -43,13 +47,10 @@ class LabelMailboxItemWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              if (mailboxNode.item.allowedHasEmptyAction)
-                TMailButtonWidget.fromText(
-                  text: AppLocalizations.of(context).empty,
-                  textStyle: LabelMailboxItemWidgetStyles.emptyButtonTextStyle,
-                  backgroundColor: LabelMailboxItemWidgetStyles.emptyButtonBackground,
-                  padding: LabelMailboxItemWidgetStyles.emptyButtonPadding,
-                  onTapActionCallback: () => {},
+              if (_responsiveUtils.isWebDesktop(context) && mailboxNode.item.allowedHasEmptyAction)
+                EmptyMailboxPopupDialogWidget(
+                  mailboxNode: mailboxNode,
+                  onEmptyMailboxActionCallback: (mailboxNode) => onEmptyMailboxActionCallback?.call(mailboxNode),
                 ),
               TrailingMailboxItemWidget(
                 mailboxNode: mailboxNode,
