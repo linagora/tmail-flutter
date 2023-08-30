@@ -62,7 +62,9 @@ class SpamReportController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
-    if (failure is GetUnreadSpamMailboxFailure || failure is GetSpamMailboxCachedFailure) {
+    if (failure is GetUnreadSpamMailboxFailure ||
+        failure is GetSpamMailboxCachedFailure ||
+        failure is InvalidSpamReportCondition) {
       _presentationSpamMailbox.value = null;
     }
   }

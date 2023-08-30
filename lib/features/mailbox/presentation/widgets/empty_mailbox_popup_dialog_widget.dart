@@ -43,7 +43,10 @@ class _EmptyMailboxPopupDialogWidgetState extends State<EmptyMailboxPopupDialogW
         portalFollower: EmptyMailboxDialogOverlay(
           mailboxNode: widget.mailboxNode,
           onCancelActionClick: () => setState(() => _visible = false),
-          onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
+          onEmptyMailboxActionCallback: (mailboxNode) {
+            setState(() => _visible = false);
+            widget.onEmptyMailboxActionCallback.call(mailboxNode);
+          },
         ),
         visible: _visible,
         child: TMailButtonWidget.fromText(
