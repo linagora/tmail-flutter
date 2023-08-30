@@ -4460,7 +4460,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _scrollToVisible$0() {
       B.Future_Future$delayed(C.Duration_300000, new A.TagsEditorState__scrollToVisible_closure(this), type$.Null);
     },
-    _tag_editor$_onSubmitted$1(string) {
+    _onSubmitted$1(string) {
       var currentHighlightIndex, optionSelected, _this = this,
         t1 = _this._suggestions;
       if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true) {
@@ -4606,7 +4606,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t16 = t10.cursorColor;
       t17 = _this.__TagsEditorState__textDirection_A;
       t17 === $ && B.throwUnnamedLateFieldNI();
-      t8.push(B.LayoutId$(B.RawKeyboardListener$(false, B.TextField$(false, C.List_empty0, t10.autofocus, _null, B.text_field_TextField__defaultContextMenuBuilder$closure(), t13, t16, _null, _null, 2, decoration, true, _null, true, true, false, t12, _null, _null, _null, t14, _null, _null, _null, 1, _null, _null, false, "\u2022", new A.TagsEditorState_build_closure(_this), _null, _this.get$_tag_editor$_onSubmitted(), _null, _null, false, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null, _null, _null, _null, _null, t11, C.TextAlign_4, _null, C.TextCapitalization_30, t17, t15, _null), t9, new A.TagsEditorState_build_closure0(_this)), "text_field"));
+      t8.push(B.LayoutId$(B.RawKeyboardListener$(false, B.TextField$(false, C.List_empty0, t10.autofocus, _null, B.text_field_TextField__defaultContextMenuBuilder$closure(), t13, t16, _null, _null, 2, decoration, true, _null, true, true, false, t12, _null, _null, _null, t14, _null, _null, _null, 1, _null, _null, false, "\u2022", new A.TagsEditorState_build_closure(_this), _null, _this.get$_onSubmitted(), _null, _null, false, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null, _null, _null, _null, _null, t11, C.TextAlign_4, _null, C.TextCapitalization_30, t17, t15, _null), t9, new A.TagsEditorState_build_closure0(_this)), "text_field"));
       tagEditorArea = B.Container$(_null, new A.TagLayout(new A.TagEditorLayoutDelegate(t6, t7, t1, C.Size_0_0), t8, _null), C.Clip_0, _null, _null, new B.BoxDecoration(t5, _null, t4, t3, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t2, _null, _null, _null);
       _this._widget.toString;
       return new B.NotificationListener(new A.TagsEditorState_build_closure1(_this), new A.SizeChangedLayoutNotifier(B.Column$(B._setArrayType([tagEditorArea, new B.CompositedTransformTarget(_this._tag_editor$_layerLink, B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, type$.NotificationListener_SizeChangedLayoutNotification);
@@ -4859,7 +4859,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 290
+    $signature: 239
   };
   A._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -4942,7 +4942,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 208
+    $signature: 186
   };
   A._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -4968,7 +4968,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 504
+    $signature: 472
   };
   A._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -4986,7 +4986,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 501
+    $signature: 307
   };
   A.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -5108,7 +5108,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 27
+    $signature: 26
   };
   A._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -5117,7 +5117,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 27
+    $signature: 26
   };
   A.ListTile_build_resolveColor.prototype = {
     call$4(explicitColor, selectedColor, enabledColor, disabledColor) {
@@ -5137,7 +5137,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.context.paintChild$2(child, type$.BoxParentData._as(t1).offset.$add(0, this.offset));
       }
     },
-    $signature: 362
+    $signature: 324
   };
   A._RenderListTile_hitTestChildren_closure.prototype = {
     call$2(result, transformed) {
@@ -5154,7 +5154,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.controller.dispose$0();
       }
     },
-    $signature: 21
+    $signature: 23
   };
   A._AnimatedSwitcherState__newEntry__closure.prototype = {
     call$0() {
@@ -5202,7 +5202,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new A._StreamBuilderBaseState__subscribe__closure(t1, error, stackTrace));
     },
-    $signature: 95
+    $signature: 106
   };
   A._StreamBuilderBaseState__subscribe__closure.prototype = {
     call$0() {
@@ -5243,7 +5243,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.ancestorContext = $parent;
       return false;
     },
-    $signature: 70
+    $signature: 67
   };
   A.EnhancedRenderFollowerLayer_hitTestChildren_closure.prototype = {
     call$2(result, position) {
@@ -5262,7 +5262,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.parent = element;
       return false;
     },
-    $signature: 70
+    $signature: 67
   };
   A.BuildContextPortalLinkScopeExt_getSpecificElementForInheritedWidgetsOfExactType_closure.prototype = {
     call$1(element) {
@@ -5270,7 +5270,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return this.test.call$1(this.T._as(t1));
     },
-    $signature: 152
+    $signature: 138
   };
   A._PortalTargetState_build_closure.prototype = {
     call$2(context, currentVisible) {
@@ -5339,7 +5339,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 297
+    $signature: 301
   };
   A.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -5447,7 +5447,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 97
+    $signature: 99
   };
   A.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -5490,7 +5490,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 297
+    $signature: 301
   };
   A.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
@@ -5505,7 +5505,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
       }
     },
-    $signature: 103
+    $signature: 96
   };
   A.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -5563,19 +5563,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return B._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 297
+    $signature: 301
   };
   A.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 390
+    $signature: 550
   };
   A.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 390
+    $signature: 550
   };
   A.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
@@ -5652,7 +5652,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _instance_0_u(_, "get$_onFocusKeyboardChanged", "_onFocusKeyboardChanged$0", 1);
     _instance_1_u(_, "get$_onTextFieldChange", "_onTextFieldChange$1", 2);
     _instance_1_u(_, "get$_onSearchChanged", "_onSearchChanged$1", 2);
-    _instance_1_u(_, "get$_tag_editor$_onSubmitted", "_tag_editor$_onSubmitted$1", 2);
+    _instance_1_u(_, "get$_onSubmitted", "_onSubmitted$1", 2);
   })();
   (function inheritance() {
     var _mixinHard = hunkHelpers.mixinHard,
@@ -5845,4 +5845,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["UuC6i2j2lNSg33qnpXYZN6TxWu0="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["ZYnsZPw09FrmOIYwcWBk9dMpxDQ="] = $__dart_deferred_initializers__.current
