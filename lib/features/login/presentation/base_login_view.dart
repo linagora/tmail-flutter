@@ -115,65 +115,59 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
 
   Widget buildInputCredentialForm(BuildContext context) {
     return AutofillGroup(
-      child: Column(
-        children: [
-          buildUserNameInput(context),
-          buildPasswordInput(context)
-        ],
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+        child: Column(
+          children: [
+            buildUserNameInput(context),
+            const SizedBox(height: 24),
+            buildPasswordInput(context),
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
 
   Widget buildUserNameInput(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24, right: 24, left: 24),
-      child: TypeAheadFormFieldBuilder<RecentLoginUsername>(
-        key: const Key('login_username_input'),
-        controller: controller.usernameInputController,
-        onTextChange: controller.setUserNameText,
-        textInputAction: TextInputAction.next,
-        autocorrect: false,
-        autofillHints: const [AutofillHints.email],
-        keyboardType: TextInputType.emailAddress,
-        decoration: (LoginInputDecorationBuilder()
-          ..setLabelText(AppLocalizations.of(context).email)
-          ..setHintText(AppLocalizations.of(context).email))
-          .build(),
-        debounceDuration: const Duration(milliseconds: 300),
-        suggestionsCallback: controller.getAllRecentLoginUsernameAction,
-        itemBuilder: (context, loginUsername) => RecentItemTileWidget(loginUsername, imagePath: imagePaths),
-        onSuggestionSelected: (recentUsername) {
-          controller.setUsername(recentUsername.username);
-          controller.passFocusNode.requestFocus();
-        },
-        suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
-        noItemsFoundBuilder: (context) => const SizedBox(),
-        hideOnEmpty: true,
-        hideOnError: true,
-        hideOnLoading: true,
-      )
+    return TypeAheadFormFieldBuilder<RecentLoginUsername>(
+      key: const Key('login_username_input'),
+      controller: controller.usernameInputController,
+      onTextChange: controller.setUserNameText,
+      textInputAction: TextInputAction.next,
+      autocorrect: false,
+      autofillHints: const [AutofillHints.email],
+      keyboardType: TextInputType.emailAddress,
+      decoration: (LoginInputDecorationBuilder()
+        ..setLabelText(AppLocalizations.of(context).email)
+        ..setHintText(AppLocalizations.of(context).email))
+        .build(),
+      debounceDuration: const Duration(milliseconds: 300),
+      suggestionsCallback: controller.getAllRecentLoginUsernameAction,
+      itemBuilder: (context, loginUsername) => RecentItemTileWidget(loginUsername, imagePath: imagePaths),
+      onSuggestionSelected: (recentUsername) {
+        controller.setUsername(recentUsername.username);
+        controller.passFocusNode.requestFocus();
+      },
+      suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
+      noItemsFoundBuilder: (context) => const SizedBox(),
+      hideOnEmpty: true,
+      hideOnError: true,
+      hideOnLoading: true,
     );
   }
 
   Widget buildPasswordInput(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 40, right: 24, left: 24),
-      child: Container(
-        child: (LoginTextInputBuilder(
-            context,
-            imagePaths,
-            autocorrect: false,
-            autofillHints: [AutofillHints.password]
-          )
-          ..setOnSubmitted((value) => controller.handleLoginPressed())
-          ..passwordInput(true)
-          ..key(const Key('login_password_input'))
-          ..obscureText(true)
-          ..onChange(controller.setPasswordText)
-          ..textInputAction(TextInputAction.done)
-          ..hintText(AppLocalizations.of(context).password)
-          ..setFocusNode(controller.passFocusNode))
-        .build()));
+    return LoginTextInputBuilder(
+      key: const Key('login_password_input'),
+      controller: controller.passwordInputController,
+      autofillHints: const [AutofillHints.password],
+      textInputAction: TextInputAction.done,
+      hintText: AppLocalizations.of(context).password,
+      focusNode: controller.passFocusNode,
+      onTextChange: controller.setPasswordText,
+      onSubmitted: (value) => controller.handleLoginPressed(),
+    );
   }
 
   Widget buildLoadingCircularProgress() {
