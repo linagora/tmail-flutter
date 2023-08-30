@@ -13,10 +13,7 @@ class GetUnreadSpamMailboxSuccess extends UIState {
   List<Object> get props => [unreadSpamMailbox];
 }
 
-class InvalidSpamReportCondition extends FeatureFailure {
-  @override
-  List<Object?> get props => [];
-}
+class InvalidSpamReportCondition extends FeatureFailure {}
 
 class GetUnreadSpamMailboxFailure extends FeatureFailure {
 

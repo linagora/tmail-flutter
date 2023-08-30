@@ -302,6 +302,7 @@ class MailboxView extends BaseMailboxView {
                 controller
               );
             },
+            onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(context, mailboxNode.item),
           )),
           children: _buildListChildTileWidget(context, mailboxNode)
         ).build();
@@ -322,6 +323,7 @@ class MailboxView extends BaseMailboxView {
               controller
             );
           },
+          onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(context, mailboxNode.item),
         ));
       }
     }).toList() ?? <Widget>[];
