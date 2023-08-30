@@ -78,7 +78,7 @@ abstract class EmailRepository {
 
   Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId);
 
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail);
+  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId);
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
 
