@@ -98,7 +98,7 @@ class ComposerView extends BaseComposerView {
                         child: buildIconWeb(
                           icon: SvgPicture.asset(imagePaths.icCloseMailbox, fit: BoxFit.fill),
                           tooltip: AppLocalizations.of(context).saveAndClose,
-                          onTap: () => controller.saveEmailAsDrafts(context)
+                          onTap: () => controller.saveToDraftAndClose(context)
                         )),
                       buildIconWeb(
                         icon: SvgPicture.asset(imagePaths.icFullScreenComposer, fit: BoxFit.fill),
@@ -176,7 +176,7 @@ class ComposerView extends BaseComposerView {
             iconPadding: EdgeInsets.zero,
             icon: SvgPicture.asset(imagePaths.icCloseMailbox, fit: BoxFit.fill),
             tooltip: AppLocalizations.of(context).saveAndClose,
-            onTap: () => controller.saveEmailAsDrafts(context)
+            onTap: () => controller.saveToDraftAndClose(context)
           ),
           if (responsiveUtils.isDesktop(context))
             ...[

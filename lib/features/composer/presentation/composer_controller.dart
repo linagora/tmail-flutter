@@ -1016,7 +1016,7 @@ class ComposerController extends BaseController {
     return false;
   }
 
-  void saveEmailAsDrafts(BuildContext context, {bool canPop = true}) async {
+  void saveToDraftAndClose(BuildContext context, {bool canPop = true}) async {
     clearFocusEditor(context);
 
     final arguments = composerArguments.value;
@@ -1082,6 +1082,8 @@ class ComposerController extends BaseController {
       if (canPop) popBack();
     }
   }
+
+  void saveToDraft(BuildContext context) {}
 
   File _covertSharedMediaFileToFile(SharedMediaFile sharedMediaFile) {
     return File(
