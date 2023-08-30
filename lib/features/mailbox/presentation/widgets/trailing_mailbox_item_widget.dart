@@ -1,8 +1,8 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -16,7 +16,9 @@ class TrailingMailboxItemWidget extends StatelessWidget {
   final bool isItemHovered;
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
 
-  const TrailingMailboxItemWidget({
+  final _imagePaths = Get.find<ImagePaths>();
+
+  TrailingMailboxItemWidget({
     super.key,
     required this.mailboxNode,
     this.isItemHovered = false,
@@ -25,32 +27,15 @@ class TrailingMailboxItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     if (PlatformInfo.isWeb) {
       if (isItemHovered) {
-        return Padding(
+        return TMailButtonWidget.fromIcon(
+          margin: TrailingMailboxItemWidgetStyles.menuIconMargin,
+          icon: _imagePaths.icComposerMenu,
+          iconSize: TrailingMailboxItemWidgetStyles.menuIconSize,
           padding: TrailingMailboxItemWidgetStyles.menuIconPadding,
-          child: InkWell(
-            onTapDown: (detail) {
-              final screenSize = MediaQuery.of(context).size;
-              final offset = detail.globalPosition;
-              final position = RelativeRect.fromLTRB(
-                offset.dx,
-                offset.dy,
-                screenSize.width - offset.dx,
-                screenSize.height - offset.dy,
-              );
-              onMenuActionClick?.call(position, mailboxNode);
-            },
-            onTap: () => {},
-            child: SvgPicture.asset(
-              imagePaths.icComposerMenu,
-              width: TrailingMailboxItemWidgetStyles.menuIconSize,
-              height: TrailingMailboxItemWidgetStyles.menuIconSize,
-              fit: BoxFit.fill
-            )
-          ),
+          backgroundColor: TrailingMailboxItemWidgetStyles.menuIconBackgroundColor,
+          onTapActionAtPositionCallback: (position) => onMenuActionClick?.call(position, mailboxNode),
         );
       } else if (mailboxNode.item.countUnreadEmails > 0 && mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(

@@ -3288,4 +3288,11 @@ class AppLocalizations {
         args: [action]
     );
   }
+
+  String get empty {
+    return Intl.message(
+      'Empty',
+      name: 'empty',
+    );
+  }
 }

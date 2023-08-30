@@ -7,7 +7,7 @@ import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 
-class MailboxNode with EquatableMixin{
+class MailboxNode with EquatableMixin {
   static final PresentationMailbox _root = PresentationMailbox(MailboxId(Id('root')));
 
   PresentationMailbox item;

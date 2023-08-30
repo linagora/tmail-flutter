@@ -47,6 +47,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get allowedToDisplayCountOfTotalEmails => isTrash || isSpam;
 
+  bool get allowedHasEmptyAction => (isTrash || isSpam) && countTotalEmails > 0;
+
   String get countTotalEmailsAsString {
     if (countTotalEmails <= 0) return '';
     return countTotalEmails <= 999 ? '$countTotalEmails' : '999+';
