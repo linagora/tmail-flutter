@@ -73,6 +73,7 @@ class LoginController extends ReloadableController {
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
+  final TextEditingController passwordInputController = TextEditingController();
   final FocusNode passFocusNode = FocusNode();
 
   LoginController(
@@ -393,6 +394,7 @@ class LoginController extends ReloadableController {
     passFocusNode.dispose();
     urlInputController.dispose();
     usernameInputController.dispose();
+    passwordInputController.dispose();
     super.onClose();
   }
 }
