@@ -40,13 +40,13 @@ void logError(String? value) => log(value, level: Level.error);
 void initLogger(VoidCallback runApp) {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.onError = (details) {
       FlutterError.dumpErrorToConsole(details);
-      logError(details.stack.toString());
+      logError('AppLogger::initLogger::runZonedGuarded:FlutterError.onError: ${details.stack.toString()}');
     };
     runApp.call();
-  }, (Object error, StackTrace stack) {
-    logError(stack.toString());
+  }, (error, stack) {
+    logError('AppLogger::initLogger::runZonedGuarded:onError: $error | stack: $stack');
   });
 }
 
