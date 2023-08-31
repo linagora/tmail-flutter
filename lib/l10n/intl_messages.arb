@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-08-30T16:14:12.029258",
+  "@@last_modified": "2023-08-31T14:39:56.761446",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3211,5 +3211,11 @@
     "placeholders": {
       "folder": {}
     }
+  },
+  "addCondition": "Add condition",
+  "@addCondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

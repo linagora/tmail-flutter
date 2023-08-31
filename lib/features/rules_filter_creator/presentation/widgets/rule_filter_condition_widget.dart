@@ -22,7 +22,7 @@ class RuleFilterConditionWidget extends StatelessWidget {
   final FocusNode? conditionValueFocusNode;
   final OnChangeFilterInputAction? conditionValueOnChangeAction;
   final ImagePaths? imagePaths;
-  final Function()? onTapRemoveRuleFilterConditionCallback;
+  final Function()? tapRemoveRuleFilterConditionCallback;
 
   const RuleFilterConditionWidget({
     super.key,
@@ -35,7 +35,7 @@ class RuleFilterConditionWidget extends StatelessWidget {
     this.conditionValueFocusNode,
     this.conditionValueOnChangeAction,
     this.imagePaths,
-    this.onTapRemoveRuleFilterConditionCallback,
+    this.tapRemoveRuleFilterConditionCallback,
   });
 
   @override
@@ -56,7 +56,7 @@ class RuleFilterConditionWidget extends StatelessWidget {
         conditionValueEditingController,
         conditionValueFocusNode,
         conditionValueOnChangeAction,
-        onTapRemoveRuleFilterConditionCallback,
+        tapRemoveRuleFilterConditionCallback,
         imagePaths,
       )
     );
@@ -74,7 +74,7 @@ Widget _buildRuleFilterCondition(
   TextEditingController? conditionValueEditingController,
   FocusNode? conditionValueFocusNode,
   OnChangeFilterInputAction? conditionValueOnChangeAction,
-  Function()? onTapRemoveRuleFilterConditionCallback,
+  Function()? tapRemoveRuleFilterConditionCallback,
   ImagePaths? imagePaths,
 ) {
   switch (ruleFilterConditionType) {
@@ -111,7 +111,7 @@ Widget _buildRuleFilterCondition(
       case RuleFilterConditionType.tablet:
       case RuleFilterConditionType.desktop:
         return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: DropDownButtonWidget<rule_condition.Field>(
@@ -145,7 +145,7 @@ Widget _buildRuleFilterCondition(
                 editingController: conditionValueEditingController,
                 )
             ),
-            _buildRemoveRuleFilterConditionButton(onTapRemoveRuleFilterConditionCallback, imagePaths),
+            _buildRemoveRuleFilterConditionButton(tapRemoveRuleFilterConditionCallback, imagePaths),
           ],
         );
       default:
@@ -154,13 +154,14 @@ Widget _buildRuleFilterCondition(
 }
 
 Widget _buildRemoveRuleFilterConditionButton (
-  Function()? onTapRemoveRuleFilterConditionCallback,
+  Function()? tapRemoveRuleFilterConditionCallback,
   ImagePaths? imagePath,
 ) {
   return Container(
     padding: const EdgeInsets.only(left: 12),
+    alignment: Alignment.center,
     child: InkWell(
-      onTap: onTapRemoveRuleFilterConditionCallback,
+      onTap: tapRemoveRuleFilterConditionCallback,
       child: CircleAvatar(
         backgroundColor: AppColor.colorRemoveRuleFilterConditionButton,
         radius: 22,
