@@ -3310,4 +3310,11 @@ class AppLocalizations {
       args: [folder]
     );
   }
+
+  String get addCondition {
+    return Intl.message(
+      'Add condition',
+      name: 'addCondition',
+    );
+  }
 }

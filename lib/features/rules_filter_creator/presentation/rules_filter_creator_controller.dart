@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -51,8 +52,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final errorRuleName = Rxn<String>();
   final errorRuleConditionValue = Rxn<String>();
   final errorRuleActionValue = Rxn<String>();
-  final ruleConditionFieldSelected = Rxn<rule_condition.Field>();
-  final ruleConditionComparatorSelected = Rxn<rule_condition.Comparator>();
   final emailRuleFilterActionSelected = Rxn<EmailRuleFilterAction>();
   final mailboxSelected = Rxn<PresentationMailbox>();
   final actionType = CreatorActionType.create.obs;
@@ -145,8 +144,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void _setUpDefaultValueRuleFilter() {
     switch(actionType.value) {
       case CreatorActionType.create:
-        ruleConditionFieldSelected.value = rule_condition.Field.from;
-        ruleConditionComparatorSelected.value = rule_condition.Comparator.contains;
         RuleCondition newRuleCondition = RuleCondition(
           field: rule_condition.Field.from,
           comparator: rule_condition.Comparator.contains,
@@ -164,8 +161,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
         break;
       case CreatorActionType.edit:
         if (_currentTMailRule != null) {
-          ruleConditionFieldSelected.value = _currentTMailRule!.condition.field;
-          ruleConditionComparatorSelected.value = _currentTMailRule!.condition.comparator;
           RuleCondition currentRule = RuleCondition(
             field: _currentTMailRule!.condition.field,
             comparator: _currentTMailRule!.condition.comparator,
@@ -228,12 +223,22 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   void selectRuleConditionField(rule_condition.Field? newField, int? ruleConditionIndex) {
-    listRuleCondition[ruleConditionIndex!].field.obs.value = newField!;
+    RuleCondition newRuleCondition = RuleCondition(
+      field: newField!,
+      comparator: listRuleCondition[ruleConditionIndex!].comparator.obs.value,
+      value: listRuleCondition[ruleConditionIndex].value.obs.value,
+    );
+    listRuleCondition[ruleConditionIndex] = newRuleCondition;
     listRuleCondition.refresh();
   }
 
   void selectRuleConditionComparator(rule_condition.Comparator? newComparator, int? ruleConditionIndex) {
-    listRuleCondition[ruleConditionIndex!].comparator.obs.value = newComparator!;
+    RuleCondition newRuleCondition = RuleCondition(
+      field: listRuleCondition[ruleConditionIndex!].field.obs.value,
+      comparator: newComparator!,
+      value: listRuleCondition[ruleConditionIndex].value.obs.value,
+    );
+    listRuleCondition[ruleConditionIndex] = newRuleCondition;
     listRuleCondition.refresh();
   }
 
@@ -289,9 +294,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
       return;
     }
 
-    if (ruleConditionFieldSelected.value == null ||
-        ruleConditionComparatorSelected.value == null ||
-        emailRuleFilterActionSelected.value == null) {
+    if (listRuleCondition.isEmpty || emailRuleFilterActionSelected.value == null) {
       if (currentOverlayContext != null && currentContext != null) {
         _appToast.showToastErrorMessage(
           currentOverlayContext!,
@@ -300,7 +303,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
       return;
     }
 
-    final newTMailRule = TMailRule(
+    late EquatableMixin ruleFilterRequest;
+
+    if (actionType.value == CreatorActionType.create) {
+      for (var ruleCondition in listRuleCondition) {
+        final newTMailRule = TMailRule(
         id: _currentTMailRule?.id,
         name: _newRuleName!,
         action: RuleAction(
@@ -309,20 +316,46 @@ class RulesFilterCreatorController extends BaseMailboxController {
           )
         ),
         condition: rule_condition.RuleCondition(
-          field: ruleConditionFieldSelected.value!,
-          comparator: ruleConditionComparatorSelected.value!,
+          field: ruleCondition.field,
+          comparator: ruleCondition.comparator,
           value: _newRuleConditionValue!
         ));
-
-    final ruleFilterRequest =
-    actionType.value == CreatorActionType.create
-      ? CreateNewEmailRuleFilterRequest(_listEmailRule ?? [], newTMailRule)
-      : EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
+        ruleFilterRequest = CreateNewEmailRuleFilterRequest(_listEmailRule ?? [], newTMailRule);
+      }
+    } else {
+      final newTMailRule = TMailRule(
+        id: _currentTMailRule?.id,
+        name: _newRuleName!,
+        action: RuleAction(
+          appendIn: RuleAppendIn(
+            mailboxIds: [mailboxSelected.value!.id]
+          )
+        ),
+        condition: rule_condition.RuleCondition(
+          field: listRuleCondition[0].field,
+          comparator: listRuleCondition[0].comparator,
+          value: _newRuleConditionValue!
+        ));
+      ruleFilterRequest = EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
+    }
     popBack(result: ruleFilterRequest);
   }
 
   void closeView(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
     popBack();
+  }
+
+  void tapAddCondition() {
+    RuleCondition newRuleCondition = RuleCondition(
+      field: rule_condition.Field.from,
+      comparator: rule_condition.Comparator.contains,
+      value: ''
+    );
+    listRuleCondition.add(newRuleCondition);
+  }
+
+  void tapRemoveCondition(int ruleConditionIndex) {
+    listRuleCondition.removeAt(ruleConditionIndex);
   }
 }
