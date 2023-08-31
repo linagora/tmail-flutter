@@ -41,25 +41,25 @@ class RuleFilterConditionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColor.colorBackgroundFieldConditionRulesFilter,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: _buildRuleFilterCondition(
-            context,
-            ruleFilterConditionType,
-            ruleCondition,
-            tapRuleConditionFieldCallback,
-            tapRuleConditionComparatorCallback,
-            conditionValueErrorText,
-            conditionValueEditingController,
-            conditionValueFocusNode,
-            conditionValueOnChangeAction,
-            onTapRemoveRuleFilterConditionCallback,
-            imagePaths,
-          )
-        );
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColor.colorBackgroundFieldConditionRulesFilter,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: _buildRuleFilterCondition(
+        context,
+        ruleFilterConditionType,
+        ruleCondition,
+        tapRuleConditionFieldCallback,
+        tapRuleConditionComparatorCallback,
+        conditionValueErrorText,
+        conditionValueEditingController,
+        conditionValueFocusNode,
+        conditionValueOnChangeAction,
+        onTapRemoveRuleFilterConditionCallback,
+        imagePaths,
+      )
+    );
     
   }
 }
