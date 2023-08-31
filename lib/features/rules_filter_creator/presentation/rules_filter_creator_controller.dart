@@ -14,6 +14,7 @@ import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_action.dart';
 import 'package:rule_filter/rule_filter/rule_append_in.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
+import 'package:rule_filter/rule_filter/rule_condition.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -55,6 +56,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final emailRuleFilterActionSelected = Rxn<EmailRuleFilterAction>();
   final mailboxSelected = Rxn<PresentationMailbox>();
   final actionType = CreatorActionType.create.obs;
+  final listRuleCondition = RxList<RuleCondition>();
 
   final TextEditingController inputRuleNameController = TextEditingController();
   final TextEditingController inputConditionValueController = TextEditingController();
@@ -145,6 +147,12 @@ class RulesFilterCreatorController extends BaseMailboxController {
       case CreatorActionType.create:
         ruleConditionFieldSelected.value = rule_condition.Field.from;
         ruleConditionComparatorSelected.value = rule_condition.Comparator.contains;
+        RuleCondition newRuleCondition = RuleCondition(
+          field: rule_condition.Field.from,
+          comparator: rule_condition.Comparator.contains,
+          value: ''
+        );
+        listRuleCondition.add(newRuleCondition);
         emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
         if (_emailAddress != null) {
           _newRuleConditionValue = _emailAddress?.email;
@@ -158,6 +166,12 @@ class RulesFilterCreatorController extends BaseMailboxController {
         if (_currentTMailRule != null) {
           ruleConditionFieldSelected.value = _currentTMailRule!.condition.field;
           ruleConditionComparatorSelected.value = _currentTMailRule!.condition.comparator;
+          RuleCondition currentRule = RuleCondition(
+            field: _currentTMailRule!.condition.field,
+            comparator: _currentTMailRule!.condition.comparator,
+            value: _currentTMailRule!.condition.value
+          );
+          listRuleCondition.add(currentRule);
           emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
           _newRuleConditionValue = _currentTMailRule!.condition.value;
           _setValueInputField(inputConditionValueController, _newRuleConditionValue ?? '');
@@ -213,12 +227,14 @@ class RulesFilterCreatorController extends BaseMailboxController {
     );
   }
 
-  void selectRuleConditionField(rule_condition.Field? newField) {
-    ruleConditionFieldSelected.value = newField;
+  void selectRuleConditionField(rule_condition.Field? newField, int? ruleConditionIndex) {
+    listRuleCondition[ruleConditionIndex!].field.obs.value = newField!;
+    listRuleCondition.refresh();
   }
 
-  void selectRuleConditionComparator(rule_condition.Comparator? newComparator) {
-    ruleConditionComparatorSelected.value = newComparator;
+  void selectRuleConditionComparator(rule_condition.Comparator? newComparator, int? ruleConditionIndex) {
+    listRuleCondition[ruleConditionIndex!].comparator.obs.value = newComparator!;
+    listRuleCondition.refresh();
   }
 
   void selectEmailRuleFilterAction(EmailRuleFilterAction? newAction) {
