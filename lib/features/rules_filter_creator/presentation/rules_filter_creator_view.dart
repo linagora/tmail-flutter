@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
+import 'package:rule_filter/rule_filter/rule_condition.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
@@ -13,9 +14,12 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_comparator_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_field_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
+import 'model/rule_filter_condition_type.dart';
 
 class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
@@ -143,40 +147,62 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                        fontSize: 16,
                        color: Colors.black)),
                   const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColor.colorBackgroundFieldConditionRulesFilter, 
-                      borderRadius: BorderRadius.circular(12)),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: Obx(() => DropDownButtonWidget<rule_condition.Field>(
-                          items: rule_condition.Field.values,
-                          itemSelected: controller.ruleConditionFieldSelected.value,
-                          dropdownMaxHeight: 250,
-                          onChanged: (newField) =>
-                            controller.selectRuleConditionField(newField),
-                          supportSelectionIcon: true))),
-                        Container(
-                          width: 220,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Obx(() => DropDownButtonWidget<rule_condition.Comparator>(
-                            items: rule_condition.Comparator.values,
-                            itemSelected: controller.ruleConditionComparatorSelected.value,
-                            onChanged: (newComparator) =>
-                              controller.selectRuleConditionComparator(newComparator),
-                            supportSelectionIcon: true))),
-                        Expanded(child: Obx(() => RulesFilterInputField(
-                          hintText: AppLocalizations.of(context).conditionValueHintTextInput,
-                          errorText: controller.errorRuleConditionValue.value,
-                          editingController: controller.inputConditionValueController,
-                          focusNode: controller.inputRuleConditionFocusNode,
-                          onChangeAction: (value) =>
-                            controller.updateConditionValue(context, value))))
-                      ]
-                    )
-                  ),
+                  // Container(
+                  //   padding: const EdgeInsets.all(12),
+                  //   decoration: BoxDecoration(
+                  //     color: AppColor.colorBackgroundFieldConditionRulesFilter, 
+                  //     borderRadius: BorderRadius.circular(12)),
+                  //   child: Row(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Expanded(child: Obx(() => DropDownButtonWidget<rule_condition.Field>(
+                  //         items: rule_condition.Field.values,
+                  //         itemSelected: controller.ruleConditionFieldSelected.value,
+                  //         dropdownMaxHeight: 250,
+                  //         onChanged: (newField) =>
+                  //           controller.selectRuleConditionField(newField),
+                  //         supportSelectionIcon: true))),
+                  //       Container(
+                  //         width: 220,
+                  //         padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //         child: Obx(() => DropDownButtonWidget<rule_condition.Comparator>(
+                  //           items: rule_condition.Comparator.values,
+                  //           itemSelected: controller.ruleConditionComparatorSelected.value,
+                  //           onChanged: (newComparator) =>
+                  //             controller.selectRuleConditionComparator(newComparator),
+                  //           supportSelectionIcon: true))),
+                  //       Expanded(child: Obx(() => RulesFilterInputField(
+                  //         hintText: AppLocalizations.of(context).conditionValueHintTextInput,
+                  //         errorText: controller.errorRuleConditionValue.value,
+                  //         editingController: controller.inputConditionValueController,
+                  //         focusNode: controller.inputRuleConditionFocusNode,
+                  //         onChangeAction: (value) =>
+                  //           controller.updateConditionValue(context, value))))
+                  //     ]
+                  //   )
+                  // ),
+                  Obx(() {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: controller.listRuleCondition.length,
+                      itemBuilder: (context, index) {
+                        return RuleFilterConditionWidget(
+                          ruleFilterConditionType: RuleFilterConditionType.desktop,
+                          ruleCondition: controller.listRuleCondition[index],
+                          imagePaths: _imagePaths,
+                          conditionValueErrorText: controller.errorRuleConditionValue.value,
+                          conditionValueFocusNode: controller.inputRuleConditionFocusNode,
+                          conditionValueEditingController: controller.inputConditionValueController,
+                          tapRuleConditionFieldCallback: (value) =>
+                            controller.selectRuleConditionField(value, index),
+                          tapRuleConditionComparatorCallback: (value) =>
+                            controller.selectRuleConditionComparator(value, index),
+                          conditionValueOnChangeAction: (value) =>
+                            controller.updateConditionValue(context, value),
+                        );
+                      }
+                    );
+                  }),
                   const SizedBox(height: 24),
                   Text(AppLocalizations.of(context).actionTitleRulesFilter,
                     overflow: CommonTextStyle.defaultTextOverFlow,
@@ -302,40 +328,62 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               fontSize: 16,
                               color: Colors.black)),
                       const SizedBox(height: 24),
-                      Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                              color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(child: Obx(() => DropDownButtonWidget<rule_condition.Field>(
-                                    items: rule_condition.Field.values,
-                                    itemSelected: controller.ruleConditionFieldSelected.value,
-                                    dropdownMaxHeight: 250,
-                                    onChanged: (newField) =>
-                                        controller.selectRuleConditionField(newField),
-                                    supportSelectionIcon: true))),
-                                Container(
-                                    width: 220,
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                                    child: Obx(() => DropDownButtonWidget<rule_condition.Comparator>(
-                                        items: rule_condition.Comparator.values,
-                                        itemSelected: controller.ruleConditionComparatorSelected.value,
-                                        onChanged: (newComparator) =>
-                                            controller.selectRuleConditionComparator(newComparator),
-                                        supportSelectionIcon: true))),
-                                Expanded(child: Obx(() => RulesFilterInputField(
-                                    hintText: AppLocalizations.of(context).conditionValueHintTextInput,
-                                    errorText: controller.errorRuleConditionValue.value,
-                                    editingController: controller.inputConditionValueController,
-                                    focusNode: controller.inputRuleConditionFocusNode,
-                                    onChangeAction: (value) =>
-                                        controller.updateConditionValue(context, value))))
-                              ]
-                          )
-                      ),
+                      // Container(
+                      //     padding: const EdgeInsets.all(12),
+                      //     decoration: BoxDecoration(
+                      //         color: AppColor.colorBackgroundFieldConditionRulesFilter,
+                      //         borderRadius: BorderRadius.circular(12)),
+                      //     child: Row(
+                      //         crossAxisAlignment: CrossAxisAlignment.start,
+                      //         children: [
+                      //           Expanded(child: Obx(() => DropDownButtonWidget<rule_condition.Field>(
+                      //               items: rule_condition.Field.values,
+                      //               itemSelected: controller.ruleConditionFieldSelected.value,
+                      //               dropdownMaxHeight: 250,
+                      //               onChanged: (newField) =>
+                      //                   controller.selectRuleConditionField(newField),
+                      //               supportSelectionIcon: true))),
+                      //           Container(
+                      //               width: 220,
+                      //               padding: const EdgeInsets.symmetric(horizontal: 12),
+                      //               child: Obx(() => DropDownButtonWidget<rule_condition.Comparator>(
+                      //                   items: rule_condition.Comparator.values,
+                      //                   itemSelected: controller.ruleConditionComparatorSelected.value,
+                      //                   onChanged: (newComparator) =>
+                      //                       controller.selectRuleConditionComparator(newComparator),
+                      //                   supportSelectionIcon: true))),
+                      //           Expanded(child: Obx(() => RulesFilterInputField(
+                      //               hintText: AppLocalizations.of(context).conditionValueHintTextInput,
+                      //               errorText: controller.errorRuleConditionValue.value,
+                      //               editingController: controller.inputConditionValueController,
+                      //               focusNode: controller.inputRuleConditionFocusNode,
+                      //               onChangeAction: (value) =>
+                      //                   controller.updateConditionValue(context, value))))
+                      //         ]
+                      //     )
+                      // ),
+                      Obx(() {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: controller.listRuleCondition.length,
+                          itemBuilder: (context, index) {
+                            return RuleFilterConditionWidget(
+                              ruleFilterConditionType: RuleFilterConditionType.tablet,
+                              ruleCondition: controller.listRuleCondition[index],
+                              imagePaths: _imagePaths,
+                              conditionValueErrorText: controller.errorRuleConditionValue.value,
+                              conditionValueFocusNode: controller.inputRuleConditionFocusNode,
+                              conditionValueEditingController: controller.inputConditionValueController,
+                              tapRuleConditionFieldCallback: (value) =>
+                                controller.selectRuleConditionField(value, index),
+                              tapRuleConditionComparatorCallback: (value) =>
+                                controller.selectRuleConditionComparator(value, index),
+                              conditionValueOnChangeAction: (value) =>
+                                controller.updateConditionValue(context, value),
+                            );
+                          }
+                        );
+                      }),
                       const SizedBox(height: 24),
                       Text(AppLocalizations.of(context).actionTitleRulesFilter,
                           overflow: CommonTextStyle.defaultTextOverFlow,
@@ -467,53 +515,75 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               fontSize: 16,
                               color: Colors.black)),
                       const SizedBox(height: 24),
-                      Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                              color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Obx(() {
-                                  return RuleFilterButtonField<rule_condition.Field>(
-                                      value: controller.ruleConditionFieldSelected.value,
-                                      tapActionCallback: (value) {
-                                        KeyboardUtils.hideKeyboard(context);
-                                        controller.openContextMenuAction(
-                                            context,
-                                            _bottomSheetRuleConditionFieldActionTiles(
-                                                context,
-                                                controller.ruleConditionFieldSelected.value));
-                                      }
-                                  );
-                                }),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Obx(() {
-                                    return RuleFilterButtonField<rule_condition.Comparator>(
-                                        value: controller.ruleConditionComparatorSelected.value,
-                                        tapActionCallback: (value) {
-                                          KeyboardUtils.hideKeyboard(context);
-                                          controller.openContextMenuAction(
-                                              context,
-                                              _bottomSheetRuleConditionComparatorActionTiles(
-                                                  context,
-                                                  controller.ruleConditionComparatorSelected.value));
-                                        }
-                                    );
-                                  }),
-                                ),
-                                Obx(() => RulesFilterInputField(
-                                    hintText: AppLocalizations.of(context).conditionValueHintTextInput,
-                                    errorText: controller.errorRuleConditionValue.value,
-                                    editingController: controller.inputConditionValueController,
-                                    focusNode: controller.inputRuleConditionFocusNode,
-                                    onChangeAction: (value) =>
-                                        controller.updateConditionValue(context, value)))
-                              ]
-                          )
-                      ),
+                      // Container(
+                      //     padding: const EdgeInsets.all(12),
+                      //     decoration: BoxDecoration(
+                      //         color: AppColor.colorBackgroundFieldConditionRulesFilter,
+                      //         borderRadius: BorderRadius.circular(12)),
+                      //     child: Column(
+                      //         crossAxisAlignment: CrossAxisAlignment.start,
+                      //         children: [
+                      //           Obx(() {
+                      //             return RuleFilterButtonField<rule_condition.Field>(
+                      //                 value: controller.ruleConditionFieldSelected.value,
+                      //                 tapActionCallback: (value) {
+                      //                   KeyboardUtils.hideKeyboard(context);
+                      //                   controller.openContextMenuAction(
+                      //                       context,
+                      //                       _bottomSheetRuleConditionFieldActionTiles(
+                      //                           context,
+                      //                           controller.ruleConditionFieldSelected.value));
+                      //                 }
+                      //             );
+                      //           }),
+                      //           Padding(
+                      //             padding: const EdgeInsets.symmetric(vertical: 12),
+                      //             child: Obx(() {
+                      //               return RuleFilterButtonField<rule_condition.Comparator>(
+                      //                   value: controller.ruleConditionComparatorSelected.value,
+                      //                   tapActionCallback: (value) {
+                      //                     KeyboardUtils.hideKeyboard(context);
+                      //                     controller.openContextMenuAction(
+                      //                         context,
+                      //                         _bottomSheetRuleConditionComparatorActionTiles(
+                      //                             context,
+                      //                             controller.ruleConditionComparatorSelected.value));
+                      //                   }
+                      //               );
+                      //             }),
+                      //           ),
+                      //           Obx(() => RulesFilterInputField(
+                      //               hintText: AppLocalizations.of(context).conditionValueHintTextInput,
+                      //               errorText: controller.errorRuleConditionValue.value,
+                      //               editingController: controller.inputConditionValueController,
+                      //               focusNode: controller.inputRuleConditionFocusNode,
+                      //               onChangeAction: (value) =>
+                      //                   controller.updateConditionValue(context, value)))
+                      //         ]
+                      //     )
+                      // ),
+                      Obx(() {
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: controller.listRuleCondition.length,
+                          itemBuilder: (context, index) {
+                            return RuleFilterConditionWidget(
+                              ruleFilterConditionType: RuleFilterConditionType.mobile,
+                              ruleCondition: controller.listRuleCondition[index],
+                              imagePaths: _imagePaths,
+                              conditionValueErrorText: controller.errorRuleConditionValue.value,
+                              conditionValueFocusNode: controller.inputRuleConditionFocusNode,
+                              conditionValueEditingController: controller.inputConditionValueController,
+                              tapRuleConditionFieldCallback: (value) =>
+                                controller.selectRuleConditionField(value, index),
+                              tapRuleConditionComparatorCallback: (value) =>
+                                controller.selectRuleConditionComparator(value, index),
+                              conditionValueOnChangeAction: (value) =>
+                                controller.updateConditionValue(context, value),
+                            );
+                          }
+                        );
+                      }),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
                         child: Divider(
@@ -616,18 +686,20 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
   List<Widget> _bottomSheetRuleConditionFieldActionTiles(
       BuildContext context,
-      rule_condition.Field? fieldSelected
+      rule_condition.Field? fieldSelected,
+      int? ruleConditionIndex,
   ) {
     return rule_condition.Field.values
       .map((field) =>
-        _buildRuleConditionFieldWidget(context, field, fieldSelected))
+        _buildRuleConditionFieldWidget(context, field, fieldSelected, ruleConditionIndex))
       .toList();
   }
 
   Widget _buildRuleConditionFieldWidget(
       BuildContext context,
       rule_condition.Field field,
-      rule_condition.Field? fieldSelected
+      rule_condition.Field? fieldSelected,
+      int? ruleConditionIndex,
   ) {
     return (RuleConditionFieldSheetActionTileBuilder(
         field.getTitle(context),
@@ -641,7 +713,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             height: 20,
             fit: BoxFit.fill))
       ..onActionClick((field) {
-        controller.selectRuleConditionField(field);
+        controller.selectRuleConditionField(field, ruleConditionIndex);
         popBack();
       }))
     .build();
@@ -649,18 +721,20 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
   List<Widget> _bottomSheetRuleConditionComparatorActionTiles(
       BuildContext context,
-      rule_condition.Comparator? comparatorSelected
+      rule_condition.Comparator? comparatorSelected,
+      int? ruleConditionIndex,
   ) {
     return rule_condition.Comparator.values
       .map((comparator) =>
-        _buildRuleConditionComparatorWidget(context, comparator, comparatorSelected))
+        _buildRuleConditionComparatorWidget(context, comparator, comparatorSelected, ruleConditionIndex))
       .toList();
   }
 
   Widget _buildRuleConditionComparatorWidget(
       BuildContext context,
       rule_condition.Comparator comparator,
-      rule_condition.Comparator? comparatorSelected
+      rule_condition.Comparator? comparatorSelected,
+      int? ruleConditionIndex,
   ) {
     return (RuleConditionComparatorSheetActionTileBuilder(
         comparator.getTitle(context),
@@ -674,7 +748,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             height: 20,
             fit: BoxFit.fill))
       ..onActionClick((comparator) {
-        controller.selectRuleConditionComparator(comparator);
+        controller.selectRuleConditionComparator(comparator, ruleConditionIndex);
         popBack();
       }))
     .build();
