@@ -11,7 +11,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "initializing_data": "Daten werden initialisiert …",
+  "initializing_data": "Daten werden initialisiert...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
