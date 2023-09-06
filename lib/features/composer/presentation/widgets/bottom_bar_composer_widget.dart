@@ -36,6 +36,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: BottomBarComposerWidgetStyle.padding,
+      color: BottomBarComposerWidgetStyle.backgroundColor,
       child: Row(
         children: [
           TMailButtonWidget.fromIcon(

@@ -11,6 +11,7 @@ class BottomBarComposerWidgetStyle {
   static const double sendButtonRadius = 8;
   static const double sendButtonIconSpace = 5;
 
+  static const Color backgroundColor = Colors.white;
   static const Color iconColor = AppColor.colorRichButtonComposer;
   static const Color sendButtonBackgroundColor = AppColor.primaryColor;
   static const Color selectedBackgroundColor = AppColor.colorSelected;
