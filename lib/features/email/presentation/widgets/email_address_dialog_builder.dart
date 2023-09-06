@@ -56,7 +56,7 @@ class EmailAddressDialogBuilder extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 16, right: 16),
                     onPressed: () => onCloseDialogAction?.call(),
                     icon: SvgPicture.asset(
-                        imagePaths.icCloseMailbox,
+                        imagePaths.icCircleClose,
                         width: 24,
                         height: 24,
                         fit: BoxFit.fill))),

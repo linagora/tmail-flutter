@@ -41,7 +41,7 @@ class TopBarThreadSelection {
     return Row(children: [
       buildIconWeb(
           icon: SvgPicture.asset(
-              imagePaths.icCloseComposer,
+              imagePaths.icClose,
               colorFilter: AppColor.colorTextButton.asFilter(),
               fit: BoxFit.fill),
           tooltip: AppLocalizations.of(context).cancel,

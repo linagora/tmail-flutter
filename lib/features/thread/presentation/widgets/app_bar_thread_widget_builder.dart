@@ -92,7 +92,7 @@ class AppBarThreadWidgetBuilder extends StatelessWidget {
     return Row(children: [
       buildIconWeb(
           icon: SvgPicture.asset(
-            _imagePaths.icCloseComposer,
+            _imagePaths.icClose,
             colorFilter: AppColor.colorTextButton.asFilter(),
             fit: BoxFit.fill),
           minSize: 25,
