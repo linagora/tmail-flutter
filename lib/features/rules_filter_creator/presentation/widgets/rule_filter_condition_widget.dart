@@ -2,7 +2,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
@@ -13,8 +12,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 
 class RuleFilterConditionWidget extends StatelessWidget {
-  final RuleFilterConditionType? ruleFilterConditionType;
-  final RuleCondition? ruleCondition;
+  final RuleFilterConditionScreenType? ruleFilterConditionScreenType;
+  final RuleCondition ruleCondition;
   final Function(Field?)? tapRuleConditionFieldCallback;
   final Function(Comparator?)? tapRuleConditionComparatorCallback;
   final String? conditionValueErrorText;
@@ -26,8 +25,8 @@ class RuleFilterConditionWidget extends StatelessWidget {
 
   const RuleFilterConditionWidget({
     super.key,
-    this.ruleFilterConditionType,
-    this.ruleCondition,
+    this.ruleFilterConditionScreenType,
+    required this.ruleCondition,
     this.tapRuleConditionFieldCallback,
     this.tapRuleConditionComparatorCallback,
     this.conditionValueErrorText,
@@ -48,7 +47,7 @@ class RuleFilterConditionWidget extends StatelessWidget {
       ),
       child: _buildRuleFilterCondition(
         context,
-        ruleFilterConditionType,
+        ruleFilterConditionScreenType,
         ruleCondition,
         tapRuleConditionFieldCallback,
         tapRuleConditionComparatorCallback,
@@ -66,8 +65,8 @@ class RuleFilterConditionWidget extends StatelessWidget {
 
 Widget _buildRuleFilterCondition(
   BuildContext context,
-  RuleFilterConditionType? ruleFilterConditionType,
-  RuleCondition? ruleCondition,
+  RuleFilterConditionScreenType? ruleFilterConditionScreenType,
+  RuleCondition ruleCondition,
   Function(Field?)? tapRuleConditionFieldCallback,
   Function(Comparator?)? tapRuleConditionComparatorCallback,
   String? conditionValueErrorText,
@@ -77,13 +76,13 @@ Widget _buildRuleFilterCondition(
   Function()? tapRemoveRuleFilterConditionCallback,
   ImagePaths? imagePaths,
 ) {
-  switch (ruleFilterConditionType) {
-    case RuleFilterConditionType.mobile: 
+  switch (ruleFilterConditionScreenType) {
+    case RuleFilterConditionScreenType.mobile: 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           RuleFilterButtonField<rule_condition.Field>(
-            value: ruleCondition!.field.obs.value,
+            value: ruleCondition.field,
             tapActionCallback: (value) {
               KeyboardUtils.hideKeyboard(context);
               tapRuleConditionFieldCallback!(ruleCondition.field);
@@ -92,7 +91,7 @@ Widget _buildRuleFilterCondition(
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: RuleFilterButtonField<rule_condition.Comparator>(
-              value: ruleCondition!.comparator.obs.value,
+              value: ruleCondition.comparator,
               tapActionCallback: (value) {
                 KeyboardUtils.hideKeyboard(context);
                 tapRuleConditionComparatorCallback!(ruleCondition.comparator);
@@ -108,15 +107,15 @@ Widget _buildRuleFilterCondition(
           ),
         ],
       );
-      case RuleFilterConditionType.tablet:
-      case RuleFilterConditionType.desktop:
+      case RuleFilterConditionScreenType.tablet:
+      case RuleFilterConditionScreenType.desktop:
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: DropDownButtonWidget<rule_condition.Field>(
                 items: rule_condition.Field.values,
-                itemSelected: ruleCondition!.field.obs.value,
+                itemSelected: ruleCondition.field,
                 dropdownMaxHeight: 250,
                 onChanged: (newField) => {
                   tapRuleConditionFieldCallback!(newField)
@@ -129,7 +128,7 @@ Widget _buildRuleFilterCondition(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: DropDownButtonWidget<rule_condition.Comparator>(
                 items: rule_condition.Comparator.values,
-                itemSelected: ruleCondition!.comparator.obs.value,
+                itemSelected: ruleCondition.comparator,
                 onChanged: (newComparator) => {
                   tapRuleConditionComparatorCallback!(newComparator)
                 },
