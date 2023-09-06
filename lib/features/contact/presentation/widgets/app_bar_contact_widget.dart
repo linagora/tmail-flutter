@@ -25,7 +25,7 @@ class AppBarContactWidget extends StatelessWidget {
         left: 0,
         child: buildIconWeb(
             icon: SvgPicture.asset(
-              _imagePaths.icCloseComposer,
+              _imagePaths.icClose,
               colorFilter: AppColor.colorCloseButton.asFilter(),
               width: 24,
               height: 24,

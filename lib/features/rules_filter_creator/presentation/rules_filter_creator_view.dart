@@ -253,7 +253,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         Positioned(top: 8, right: 8,
             child: buildIconWeb(
               icon: SvgPicture.asset(
-                  _imagePaths.icCloseMailbox,
+                  _imagePaths.icCircleClose,
                   fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).close,
               onTap: () => controller.closeView(context)))
@@ -404,7 +404,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
           Positioned(top: 8, right: 8,
               child: buildIconWeb(
                   icon: SvgPicture.asset(
-                      _imagePaths.icCloseMailbox,
+                      _imagePaths.icCircleClose,
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).close,
                   onTap: () => controller.closeView(context)))
@@ -573,7 +573,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
           Positioned(top: 8, right: 8,
               child: buildIconWeb(
                   icon: SvgPicture.asset(
-                      _imagePaths.icCloseMailbox,
+                      _imagePaths.icCircleClose,
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).close,
                   onTap: () => controller.closeView(context)))

@@ -73,7 +73,7 @@ class SpamReportBannerWebWidget extends StatelessWidget {
                 label: AppLocalizations.of(context).dismiss,
                 labelColor: SpamReportBannerButtonStyles.negativeButtonTextColor,
                 onTap: () => spamReportController.dismissSpamReportAction(context),
-                icon: imagePaths.icCloseComposer,
+                icon: imagePaths.icClose,
                 wrapContent: true,
               ),
             )

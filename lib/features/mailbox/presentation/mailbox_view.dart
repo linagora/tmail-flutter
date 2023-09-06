@@ -132,7 +132,7 @@ class MailboxView extends BaseMailboxView {
 
   Widget _buildCloseScreenButton(BuildContext context) {
     return buildIconWeb(
-        icon: SvgPicture.asset(imagePaths.icCloseMailbox, width: 28, height: 28, fit: BoxFit.fill),
+        icon: SvgPicture.asset(imagePaths.icCircleClose, width: 28, height: 28, fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).close,
         onTap: () => controller.closeMailboxScreen(context));
   }
