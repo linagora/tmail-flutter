@@ -1,0 +1,5 @@
+
+enum PrefixRecipientState {
+  enabled,
+  disabled
+}

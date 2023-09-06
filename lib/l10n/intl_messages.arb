@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-08-31T14:39:56.761446",
+  "@@last_modified": "2023-09-06T11:36:27.238808",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1686,12 +1686,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "codeView": "Code view",
-  "@codeView": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "headerStyle": "Style",
   "@headerStyle": {
     "type": "text",
@@ -3214,6 +3208,18 @@
   },
   "addCondition": "Add condition",
   "@addCondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formattingOptions": "Formatting options",
+  "@formattingOptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "embedCode": "Embed code",
+  "@embedCode": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
