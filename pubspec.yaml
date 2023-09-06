@@ -204,6 +204,8 @@ dependencies:
 
   super_tag_editor: 0.2.0
 
+  flutter_slidable: 3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
