@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_view_event.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
@@ -95,7 +96,6 @@ class ComposerController extends BaseController {
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
-  final listEmailAddressType = <PrefixEmailAddress>[].obs;
   final subjectEmail = Rxn<String>();
   final screenDisplayMode = ScreenDisplayMode.normal.obs;
   final toAddressExpandMode = ExpandMode.EXPAND.obs;
@@ -105,6 +105,8 @@ class ComposerController extends BaseController {
   final listIdentities = <Identity>[].obs;
   final emailContentsViewState = Rxn<Either<Failure, Success>>();
   final hasRequestReadReceipt = false.obs;
+  final ccRecipientState = PrefixRecipientState.disabled.obs;
+  final bccRecipientState = PrefixRecipientState.disabled.obs;
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
@@ -584,12 +586,12 @@ class ComposerController extends BaseController {
     }
 
     if (listCcEmailAddress.isNotEmpty) {
-      listEmailAddressType.add(PrefixEmailAddress.cc);
+      ccRecipientState.value = PrefixRecipientState.enabled;
       ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
 
     if (listBccEmailAddress.isNotEmpty) {
-      listEmailAddressType.add(PrefixEmailAddress.bcc);
+      bccRecipientState.value = PrefixRecipientState.enabled;
       bccAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
 
@@ -1365,18 +1367,28 @@ class ComposerController extends BaseController {
   }
 
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
-    listEmailAddressType.add(prefixEmailAddress);
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.cc:
+        ccRecipientState.value = PrefixRecipientState.enabled;
+        break;
+      case PrefixEmailAddress.bcc:
+        bccRecipientState.value = PrefixRecipientState.enabled;
+        break;
+      default:
+        break;
+    }
   }
 
   void deleteEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
-    listEmailAddressType.remove(prefixEmailAddress);
     updateListEmailAddress(prefixEmailAddress, <EmailAddress>[]);
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.cc:
+        ccRecipientState.value = PrefixRecipientState.disabled;
         ccAddressFocusNode = FocusNode();
         ccEmailAddressController.clear();
         break;
       case PrefixEmailAddress.bcc:
+        bccRecipientState.value = PrefixRecipientState.disabled;
         bccAddressFocusNode = FocusNode();
         bccEmailAddressController.clear();
         break;
@@ -1560,8 +1572,8 @@ class ComposerController extends BaseController {
   }
 
   void _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
-    if (!listEmailAddressType.contains(PrefixEmailAddress.bcc)) {
-      listEmailAddressType.add(PrefixEmailAddress.bcc);
+    if (bccRecipientState.value == PrefixRecipientState.disabled) {
+      bccRecipientState.value = PrefixRecipientState.enabled;
     }
     listBccEmailAddress = listEmailAddress.toList();
     toAddressExpandMode.value = ExpandMode.COLLAPSE;
@@ -1575,7 +1587,7 @@ class ComposerController extends BaseController {
         .where((address) => !listEmailAddress.contains(address))
         .toList();
     if (listBccEmailAddress.isEmpty) {
-      listEmailAddressType.remove(PrefixEmailAddress.bcc);
+      bccRecipientState.value = PrefixRecipientState.disabled;
     }
     toAddressExpandMode.value = ExpandMode.COLLAPSE;
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
@@ -1813,9 +1825,9 @@ class ComposerController extends BaseController {
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {
-    if (listEmailAddressType.contains(PrefixEmailAddress.cc) == true) {
+    if (ccRecipientState.value == PrefixRecipientState.enabled) {
       return ccAddressFocusNode;
-    } else if (listEmailAddressType.contains(PrefixEmailAddress.bcc) == true) {
+    } else if (bccRecipientState.value == PrefixRecipientState.enabled) {
       return bccAddressFocusNode;
     } else {
       return subjectEmailInputFocusNode;
@@ -1823,7 +1835,7 @@ class ComposerController extends BaseController {
   }
 
   FocusNode? getNextFocusOfCcEmailAddress() {
-    if (listEmailAddressType.contains(PrefixEmailAddress.bcc) == true) {
+    if (bccRecipientState.value == PrefixRecipientState.enabled) {
       return bccAddressFocusNode;
     } else {
       return subjectEmailInputFocusNode;
@@ -1837,4 +1849,8 @@ class ComposerController extends BaseController {
   bool get isNetworkConnectionAvailable => networkConnectionController.isNetworkConnectionAvailable();
 
   UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
+
+  void openContextMenuOption(BuildContext context) {
+
+  }
 }
