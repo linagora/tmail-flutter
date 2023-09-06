@@ -181,7 +181,7 @@ class ConfirmDialogBuilder {
                 child: Padding(
                     padding: const EdgeInsets.only(top: 8, right: 8),
                     child: buildIconWeb(
-                        icon: SvgPicture.asset(_imagePath.icCloseMailbox, fit: BoxFit.fill),
+                        icon: SvgPicture.asset(_imagePath.icCircleClose, fit: BoxFit.fill),
                         onTap: () => _onCloseButtonAction?.call())
                 )),
           if (_iconWidget != null)

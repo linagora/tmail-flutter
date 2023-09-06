@@ -35,7 +35,7 @@ class ImagePaths {
   String get icForward => _getImagePath('ic_forward.svg');
   String get icMoveEmail => _getImagePath('ic_move_email.svg');
   String get icUnreadEmail => _getImagePath('ic_unread_email.svg');
-  String get icCloseMailbox => _getImagePath('ic_close_mailbox.svg');
+  String get icCircleClose => _getImagePath('ic_circle_close.svg');
   String get icAddNewFolder => _getImagePath('ic_add_new_folder.svg');
   String get icFolderMailbox => _getImagePath('ic_folder_mailbox.svg');
   String get icMailboxInbox => _getImagePath('ic_mailbox_inbox.svg');
@@ -55,9 +55,7 @@ class ImagePaths {
   String get icRemoveDialog => _getImagePath('ic_remove_dialog.svg');
   String get icNewMessage => _getImagePath('ic_new_message.svg');
   String get icUnreadStatus => _getImagePath('ic_unread_status.svg');
-  String get icAttachmentsComposer => _getImagePath('ic_attachments_composer.svg');
-  String get icCloseComposer => _getImagePath('ic_close_composer.svg');
-  String get icFullScreenComposer => _getImagePath('ic_fullscreen_composer.svg');
+  String get icFullScreen => _getImagePath('ic_fullscreen.svg');
   String get icMinimize => _getImagePath('ic_minimize.svg');
   String get icDeleteComposer => _getImagePath('ic_delete_composer.svg');
   String get icDeleteAttachment => _getImagePath('ic_delete_attachment.svg');
@@ -110,7 +108,6 @@ class ImagePaths {
   String get icFilePdf => _getImagePath('ic_file_pdf.svg');
   String get icFilePptx => _getImagePath('ic_file_pptx.svg');
   String get icFileEPup => _getImagePath('ic_file_epup.svg');
-  String get icCloseAdvancedSearch => _getImagePath('ic_close_advanced_search.svg');
   String get icLanguage => _getImagePath('ic_language.svg');
   String get icChecked => _getImagePath('ic_checked.svg');
   String get icStyleBold => _getImagePath('ic_style_bold.svg');
@@ -199,6 +196,12 @@ class ImagePaths {
   String get icFormatQuote => _getImagePath('ic_format_quote.svg');
   String get icTMailLogo => _getImagePath('ic_tmail_logo.svg');
   String get icLoginGraphic => _getImagePath('ic_login_graphic.svg');
+  String get icCancel => _getImagePath('ic_cancel.svg');
+  String get icRichToolbar => _getImagePath('ic_rich_toolbar.svg');
+  String get icSaveToDraft => _getImagePath('ic_save_to_draft.svg');
+  String get icAttachmentFile => _getImagePath('ic_attachment_file.svg');
+  String get icAttachFile => _getImagePath('ic_attach_file.svg');
+  String get icSend => _getImagePath('ic_send.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
