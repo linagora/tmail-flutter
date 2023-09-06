@@ -162,6 +162,8 @@ class ComposerController extends BaseController {
   String? _initTextEditor;
   double? maxWithEditor;
   EmailId? _emailIdEditing;
+  bool isAttachmentCollapsed = false;
+
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
 
