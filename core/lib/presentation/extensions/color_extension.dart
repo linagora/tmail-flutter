@@ -216,6 +216,8 @@ extension AppColor on Color {
   static const colorRichButtonComposer = Color(0xFFAEAEC0);
   static const colorMobileRichButtonComposer = Color(0xFF8C9CAF);
   static const colorSelected = Color(0xFFE3F1FF);
+  static const colorAttachmentBorder = Color(0xFFE5ECF3);
+  static const colorProgressLoadingBackground = Color(0xFFE3F1FF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
