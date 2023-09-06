@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -25,7 +26,7 @@ class AvatarSuggestionItemWidget extends StatelessWidget {
       ),
       child: Text(
         emailAddress.asString().isNotEmpty
-          ? emailAddress.asString()[0].toUpperCase()
+          ? emailAddress.asString().firstLetterToUpperCase
           : '',
         style: AvatarSuggestionItemStyle.labelTextStyle
       )

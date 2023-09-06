@@ -19,7 +19,7 @@ Future<void> showAdvancedSearchFilterBottomSheet(BuildContext context) async {
     cancelWidget: Padding(
       padding: const EdgeInsets.only(right: 16),
       child: SvgPicture.asset(
-        imagePaths.icCloseAdvancedSearch,
+        imagePaths.icCircleClose,
         colorFilter: AppColor.colorHintSearchBar.asFilter(),
         width: 24,
         height: 24,

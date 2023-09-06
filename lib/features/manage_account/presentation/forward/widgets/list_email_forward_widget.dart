@@ -106,7 +106,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
         children: [
           buildIconWeb(
             icon: SvgPicture.asset(
-              _imagePaths.icCloseComposer,
+              _imagePaths.icClose,
               colorFilter: AppColor.colorTextButton.asFilter(),
               fit: BoxFit.fill),
             tooltip: AppLocalizations.of(context).cancel,
