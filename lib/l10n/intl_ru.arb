@@ -3135,5 +3135,247 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "bannerDeleteAllSpamEmailsMessage": "Все сообщения в папке \"Спам\" будут удалены, если вы достигните лимита хранилища.",
+  "@bannerDeleteAllSpamEmailsMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeDeclined": " отклонил(а) это приглашение",
+  "@messageEventActionBannerAttendeeDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "link": "Ссылка",
+  "@link": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeAllAttendees": "Посмотреть всех участников",
+  "@seeAllAttendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounterDeclined": "Ваше предложение отклонено",
+  "@messageEventActionBannerAttendeeCounterDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerCanceled": " отменил(а) встречу",
+  "@messageEventActionBannerOrganizerCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizer": "Организатор",
+  "@organizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "where": "Где",
+  "@where": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerMessage": "Скоро вы не сможете писать письма в Tmail. Пожалуйста, очистите хранилище или обновите план, чтобы получить все возможности Tmail.",
+  "@quotaWarningBannerMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolder": "Очистить папку \"Спам\"",
+  "@emptySpamFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subMessageEventActionBannerCanceled": "«Мероприятие отменено из-за плохой погоды.»",
+  "@subMessageEventActionBannerCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllSpamEmails": "Удалить все письма из спама",
+  "@deleteAllSpamEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "anAttendee": "Участник",
+  "@anAttendee": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilters": "Создать фильтры",
+  "@createFilters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamMessageDialog": "Вы собираетесь безвозвратно удалить все элементы из папки \"Спам\". Продолжить?",
+  "@emptySpamMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "location": "Место встречи",
+  "@location": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeTentative": " ответил(а) \"Возможно\" на это приглашение",
+  "@messageEventActionBannerAttendeeTentative": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attendees": "Участники",
+  "@attendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invitationMessageCalendarInformation": " пригласил(а) вас на встречу:",
+  "@invitationMessageCalendarInformation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "who": "Кто",
+  "@who": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maybe": "Возможно",
+  "@maybe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllSpamEmailsNow": "Удалить все спам-письма",
+  "@deleteAllSpamEmailsNow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseChooseAnImageSizeCorrectly": "Пожалуйста, выберите размер изображения <= {maxSize} КБ",
+  "@pleaseChooseAnImageSizeCorrectly": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "quotaErrorBannerTitle": "Вы достигли лимита хранилища",
+  "@quotaErrorBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaErrorBannerMessage": "Скоро вы не сможете писать письма в Tmail. Пожалуйста, очистите хранилище или обновите план, чтобы получить все возможности Tmail.",
+  "@quotaErrorBannerMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeAccepted": " принял(а) это приглашение",
+  "@messageEventActionBannerAttendeeAccepted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you": "Вы",
+  "@you": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerInvited": " пригласил(а) вас на встречу",
+  "@messageEventActionBannerOrganizerInvited": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerTitle": "У вас заканчивается место (90%).",
+  "@quotaWarningBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subMessageEventActionBannerUpdated": "«Время изменено, теперь оно лучше подходит всем»",
+  "@subMessageEventActionBannerUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderCreatedTitle": "Ваша папка создана",
+  "@folderCreatedTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerUpdated": " обновил(а) встречу",
+  "@messageEventActionBannerOrganizerUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaStateLabel": "Использовано {used} из {limit}",
+  "@quotaStateLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "limit"
+    ],
+    "placeholders": {
+      "used": {},
+      "limit": {}
+    }
+  },
+  "createFolderSuccessfullyMessage": "Вы успешно создали папку {folderName}",
+  "@createFolderSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "time": "Время",
+  "@time": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderCreatedMessage": "Чтобы начать использовать этот почтовый ящик, добавьте несколько правил для персонализации.",
+  "@folderCreatedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "when": "Когда",
+  "@when": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounter": " предложил(а) изменения к этому событию",
+  "@messageEventActionBannerAttendeeCounter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
