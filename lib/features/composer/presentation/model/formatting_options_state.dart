@@ -1,0 +1,5 @@
+
+enum FormattingOptionsState {
+  enabled,
+  disabled
+}

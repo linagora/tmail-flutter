@@ -25,9 +25,10 @@ import 'package:tmail_ui_user/features/base/widget/custom_scroll_behavior.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/composer_loading_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/email_address_input_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -148,104 +149,65 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
   }
 
   Widget buildEmailAddress(BuildContext context) {
-    return Column(
+    return Obx(() => Column(
       children: [
-        Obx(() {
-          return (EmailAddressInputBuilder(
-            context,
-            imagePaths,
-            responsiveUtils,
-            PrefixEmailAddress.to,
-            controller.listToEmailAddress,
-            controller.listEmailAddressType,
-            expandMode: controller.toAddressExpandMode.value,
-            controller: controller.toEmailAddressController,
-            focusNode: controller.toAddressFocusNode,
+        RecipientComposerWidget(
+          prefix: PrefixEmailAddress.to,
+          listEmailAddress: controller.listToEmailAddress,
+          ccState: controller.ccRecipientState.value,
+          bccState: controller.bccRecipientState.value,
+          expandMode: controller.toAddressExpandMode.value,
+          controller: controller.toEmailAddressController,
+          focusNode: controller.toAddressFocusNode,
+          autoDisposeFocusNode: false,
+          keyTagEditor: controller.keyToEmailTagEditor,
+          isInitial: controller.isInitialRecipient.value,
+          nextFocusNode: controller.getNextFocusOfToEmailAddress(),
+          onFocusEmailAddressChangeAction: controller.onEmailAddressFocusChange,
+          onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+          onAddEmailAddressTypeAction: controller.addEmailAddressType,
+          onUpdateListEmailAddressAction: controller.updateListEmailAddress,
+          onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
+          onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+        ),
+        if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
+          RecipientComposerWidget(
+            prefix: PrefixEmailAddress.cc,
+            listEmailAddress: controller.listCcEmailAddress,
+            expandMode: controller.ccAddressExpandMode.value,
+            controller: controller.ccEmailAddressController,
+            focusNode: controller.ccAddressFocusNode,
             autoDisposeFocusNode: false,
-            keyTagEditor: controller.keyToEmailTagEditor,
+            keyTagEditor: controller.keyCcEmailTagEditor,
             isInitial: controller.isInitialRecipient.value,
-            nextFocusNode: controller.getNextFocusOfToEmailAddress()
-          )
-            ..addOnFocusEmailAddressChangeAction(controller.onEmailAddressFocusChange)
-            ..addOnShowFullListEmailAddressAction(controller.showFullEmailAddress)
-            ..addOnAddEmailAddressTypeAction(controller.addEmailAddressType)
-            ..addOnUpdateListEmailAddressAction(controller.updateListEmailAddress)
-            ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion)
-            ..addOnFocusNextAddressAction(controller.handleFocusNextAddressAction)
-          ).build();
-        }),
-        Obx(() {
-          if (controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true) {
-            return const Divider(color: AppColor.colorDividerComposer, height: 1);
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        Obx(() {
-          if (controller.listEmailAddressType.contains(PrefixEmailAddress.cc) == true) {
-            return (EmailAddressInputBuilder(
-              context,
-              imagePaths,
-              responsiveUtils,
-              PrefixEmailAddress.cc,
-              controller.listCcEmailAddress,
-              controller.listEmailAddressType,
-              focusNode: controller.ccAddressFocusNode,
-              expandMode: controller.ccAddressExpandMode.value,
-              controller: controller.ccEmailAddressController,
-              keyTagEditor: controller.keyCcEmailTagEditor,
-              autoDisposeFocusNode: false,
-              isInitial: controller.isInitialRecipient.value,
-              nextFocusNode: controller.getNextFocusOfCcEmailAddress()
-            )
-              ..addOnFocusEmailAddressChangeAction(controller.onEmailAddressFocusChange)
-              ..addOnShowFullListEmailAddressAction(controller.showFullEmailAddress)
-              ..addOnDeleteEmailAddressTypeAction(controller.deleteEmailAddressType)
-              ..addOnUpdateListEmailAddressAction(controller.updateListEmailAddress)
-              ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion)
-              ..addOnFocusNextAddressAction(controller.handleFocusNextAddressAction)
-            ).build();
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        Obx(() {
-          if (controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true) {
-            return const Divider(color: AppColor.colorDividerComposer, height: 1);
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        Obx(() {
-          if (controller.listEmailAddressType.contains(PrefixEmailAddress.bcc) == true) {
-            return (EmailAddressInputBuilder(
-              context,
-              imagePaths,
-              responsiveUtils,
-              PrefixEmailAddress.bcc,
-              controller.listBccEmailAddress,
-              controller.listEmailAddressType,
-              focusNode: controller.bccAddressFocusNode,
-              expandMode: controller.bccAddressExpandMode.value,
-              controller: controller.bccEmailAddressController,
-              autoDisposeFocusNode: false,
-              keyTagEditor: controller.keyBccEmailTagEditor,
-              isInitial: controller.isInitialRecipient.value,
-              nextFocusNode: controller.subjectEmailInputFocusNode
-            )
-              ..addOnFocusEmailAddressChangeAction(controller.onEmailAddressFocusChange)
-              ..addOnShowFullListEmailAddressAction(controller.showFullEmailAddress)
-              ..addOnDeleteEmailAddressTypeAction(controller.deleteEmailAddressType)
-              ..addOnUpdateListEmailAddressAction(controller.updateListEmailAddress)
-              ..addOnSuggestionEmailAddress(controller.getAutoCompleteSuggestion)
-              ..addOnFocusNextAddressAction(controller.handleFocusNextAddressAction)
-            ).build();
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
+            nextFocusNode: controller.getNextFocusOfCcEmailAddress(),
+            onFocusEmailAddressChangeAction: controller.onEmailAddressFocusChange,
+            onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+            onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
+            onUpdateListEmailAddressAction: controller.updateListEmailAddress,
+            onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
+            onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+          ),
+        if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
+          RecipientComposerWidget(
+            prefix: PrefixEmailAddress.bcc,
+            listEmailAddress: controller.listBccEmailAddress,
+            expandMode: controller.bccAddressExpandMode.value,
+            controller: controller.bccEmailAddressController,
+            focusNode: controller.bccAddressFocusNode,
+            autoDisposeFocusNode: false,
+            keyTagEditor: controller.keyBccEmailTagEditor,
+            isInitial: controller.isInitialRecipient.value,
+            nextFocusNode: controller.subjectEmailInputFocusNode,
+            onFocusEmailAddressChangeAction: controller.onEmailAddressFocusChange,
+            onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+            onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
+            onUpdateListEmailAddressAction: controller.updateListEmailAddress,
+            onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
+            onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+          ),
       ],
-    );
+    ));
   }
 
   Widget buildSubjectEmail(BuildContext context) {
@@ -279,7 +241,7 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
     );
   }
 
-  Widget buildDivider() => const Divider(color: AppColor.colorDividerComposer, height: 1);
+  Widget buildDivider() => const Divider(color: AppColor.colorLineComposer, height: 1);
 
   Widget buildAttachmentsWidget(BuildContext context) {
     return Obx(() {

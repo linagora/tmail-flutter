@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -35,6 +36,7 @@ class RichTextWebController extends BaseRichTextController {
   final focusMenuParagraph = RxBool(false);
   final menuFontStatus = DropdownMenuFontStatus.closed.obs;
   final menuHeaderStyleStatus = DropdownMenuFontStatus.closed.obs;
+  final formattingOptionsState = FormattingOptionsState.disabled.obs;
 
   final menuParagraphController = CustomPopupMenuController();
   final menuOrderListController = CustomPopupMenuController();
@@ -270,6 +272,16 @@ class RichTextWebController extends BaseRichTextController {
       logError("RichTextWebController::insertImageAsBase64: bytes is null");
     }
   }
+
+  void toggleFormattingOptions() {
+    final newState = isFormattingOptionsEnabled
+      ? FormattingOptionsState.disabled
+      : FormattingOptionsState.enabled;
+
+    formattingOptionsState.value = newState;
+  }
+
+  bool get isFormattingOptionsEnabled => formattingOptionsState.value == FormattingOptionsState.enabled;
 
   @override
   void onClose() {
