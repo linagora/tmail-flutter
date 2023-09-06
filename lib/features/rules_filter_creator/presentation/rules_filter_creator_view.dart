@@ -146,32 +146,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                        fontSize: 16,
                        color: Colors.black)),
                   const SizedBox(height: 24),
-                  Obx(() {
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: controller.listRuleCondition.length,
-                      itemBuilder: (context, index) {
-                        return RuleFilterConditionWidget(
-                          ruleFilterConditionScreenType: RuleFilterConditionScreenType.desktop,
-                          ruleCondition: controller.listRuleCondition[index],
-                          imagePaths: _imagePaths,
-                          conditionValueErrorText: controller.listErrorRuleConditionValue[index],
-                          conditionValueFocusNode: controller.listInputRuleConditionFocusNode[index],
-                          conditionValueEditingController: controller.listInputConditionValueController[index],
-                          tapRuleConditionFieldCallback: (value) =>
-                            controller.selectRuleConditionField(value, index),
-                          tapRuleConditionComparatorCallback: (value) =>
-                            controller.selectRuleConditionComparator(value, index),
-                          conditionValueOnChangeAction: (value) =>
-                            controller.updateConditionValue(context, value, index),
-                          tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
-                        );
-                      },
-                      separatorBuilder: (context, index) {
-                        return const SizedBox(height: 12,);
-                      },
-                    );
-                  }),
+                  _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.desktop),
                   Container(
                     padding: const EdgeInsets.only(top: 8),
                     child: InkWell(
@@ -322,32 +297,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               fontSize: 16,
                               color: Colors.black)),
                       const SizedBox(height: 24),
-                      Obx(() {
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: controller.listRuleCondition.length,
-                          itemBuilder: (context, index) {
-                            return RuleFilterConditionWidget(
-                              ruleFilterConditionScreenType: RuleFilterConditionScreenType.tablet,
-                              ruleCondition: controller.listRuleCondition[index],
-                              imagePaths: _imagePaths,
-                              conditionValueErrorText: controller.listErrorRuleConditionValue.elementAtOrNull(index),
-                              conditionValueFocusNode: controller.listInputRuleConditionFocusNode[index],
-                              conditionValueEditingController: controller.listInputConditionValueController[index],
-                              tapRuleConditionFieldCallback: (value) =>
-                                controller.selectRuleConditionField(value, index),
-                              tapRuleConditionComparatorCallback: (value) =>
-                                controller.selectRuleConditionComparator(value, index),
-                              conditionValueOnChangeAction: (value) =>
-                                controller.updateConditionValue(context, value, index),
-                              tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return const SizedBox(height: 12,);
-                          },
-                        );
-                      }),
+                      _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.tablet),
                       Container(
                         padding: const EdgeInsets.only(top: 8),
                         child: InkWell(
@@ -504,44 +454,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               fontSize: 16,
                               color: Colors.black)),
                       const SizedBox(height: 24),
-                      Obx(() {
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: controller.listRuleCondition.length,
-                          itemBuilder: (context, index) {
-                            return RuleFilterConditionWidget(
-                              ruleFilterConditionScreenType: RuleFilterConditionScreenType.mobile,
-                              ruleCondition: controller.listRuleCondition[index],
-                              imagePaths: _imagePaths,
-                              conditionValueErrorText: controller.listErrorRuleConditionValue.elementAtOrNull(index),
-                              conditionValueFocusNode: controller.listInputRuleConditionFocusNode[index],
-                              conditionValueEditingController: controller.listInputConditionValueController[index],
-                              tapRuleConditionFieldCallback: (value) => controller.openContextMenuAction(
-                                context,
-                                _bottomSheetRuleConditionFieldActionTiles(
-                                  context,
-                                  controller.listRuleCondition[index].field.obs.value,
-                                  index,
-                                )
-                              ),
-                              tapRuleConditionComparatorCallback: (value) => controller.openContextMenuAction(
-                                context,
-                                _bottomSheetRuleConditionComparatorActionTiles(
-                                  context,
-                                  controller.listRuleCondition[index].comparator.obs.value,
-                                  index,
-                                )
-                              ),
-                              conditionValueOnChangeAction: (value) =>
-                                controller.updateConditionValue(context, value, index),
-                              tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return const SizedBox(height: 12,);
-                          },
-                        );
-                      }),
+                      _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.mobile),
                       Container(
                         padding: const EdgeInsets.only(top: 12),
                         child: InkWell(
@@ -666,6 +579,63 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   onTap: () => controller.closeView(context)))
         ]
     );
+  }
+
+  Widget _buildListRuleFilterConditionList(
+    BuildContext context,
+    RuleFilterConditionScreenType ruleFilterConditionScreenType
+  ) {
+    return Obx(() {
+      return ListView.separated(
+        shrinkWrap: true,
+        itemCount: controller.listRuleCondition.length,
+        itemBuilder: (context, index) {
+          return RuleFilterConditionWidget(
+            key: ValueKey(controller.listRuleConditionValueArguments[index].inputRuleConditionValueFocusNode),
+            ruleFilterConditionScreenType: ruleFilterConditionScreenType,
+            ruleCondition: controller.listRuleCondition[index],
+            imagePaths: _imagePaths,
+            conditionValueErrorText: controller.listRuleConditionValueArguments[index].errorRuleConditionValue,
+            conditionValueFocusNode: controller.listRuleConditionValueArguments[index].inputRuleConditionValueFocusNode,
+            conditionValueEditingController: controller.listRuleConditionValueArguments[index].inputRuleConditionValueController,
+            tapRuleConditionFieldCallback: (value) => {
+              if (ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile) {
+                controller.openContextMenuAction(
+                  context,
+                  _bottomSheetRuleConditionFieldActionTiles(
+                    context,
+                    controller.listRuleCondition[index].field,
+                    index,
+                  )
+                ),
+              } else {
+                controller.selectRuleConditionField(value, index)
+              }
+            },
+            tapRuleConditionComparatorCallback: (value) => {
+              if (ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile) {
+                controller.openContextMenuAction(
+                  context,
+                  _bottomSheetRuleConditionComparatorActionTiles(
+                    context,
+                    controller.listRuleCondition[index].comparator,
+                    index,
+                  )
+                ),
+              } else {
+                controller.selectRuleConditionComparator(value, index),
+              }
+            },
+            conditionValueOnChangeAction: (value) =>
+              controller.updateConditionValue(context, value, index),
+            tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return const SizedBox(height: 12,);
+        },
+      );
+    });
   }
 
   List<Widget> _bottomSheetRuleConditionFieldActionTiles(
