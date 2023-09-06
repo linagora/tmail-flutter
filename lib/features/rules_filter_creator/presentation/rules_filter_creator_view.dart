@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
-import 'package:rule_filter/rule_filter/rule_condition.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
@@ -153,18 +152,18 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       itemCount: controller.listRuleCondition.length,
                       itemBuilder: (context, index) {
                         return RuleFilterConditionWidget(
-                          ruleFilterConditionType: RuleFilterConditionType.desktop,
+                          ruleFilterConditionScreenType: RuleFilterConditionScreenType.desktop,
                           ruleCondition: controller.listRuleCondition[index],
                           imagePaths: _imagePaths,
-                          conditionValueErrorText: controller.errorRuleConditionValue.value,
-                          conditionValueFocusNode: controller.inputRuleConditionFocusNode,
-                          conditionValueEditingController: controller.inputConditionValueController,
+                          conditionValueErrorText: controller.listErrorRuleConditionValue[index],
+                          conditionValueFocusNode: controller.listInputRuleConditionFocusNode[index],
+                          conditionValueEditingController: controller.listInputConditionValueController[index],
                           tapRuleConditionFieldCallback: (value) =>
                             controller.selectRuleConditionField(value, index),
                           tapRuleConditionComparatorCallback: (value) =>
                             controller.selectRuleConditionComparator(value, index),
                           conditionValueOnChangeAction: (value) =>
-                            controller.updateConditionValue(context, value),
+                            controller.updateConditionValue(context, value, index),
                           tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
                         );
                       },
@@ -329,18 +328,18 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           itemCount: controller.listRuleCondition.length,
                           itemBuilder: (context, index) {
                             return RuleFilterConditionWidget(
-                              ruleFilterConditionType: RuleFilterConditionType.tablet,
+                              ruleFilterConditionScreenType: RuleFilterConditionScreenType.tablet,
                               ruleCondition: controller.listRuleCondition[index],
                               imagePaths: _imagePaths,
-                              conditionValueErrorText: controller.errorRuleConditionValue.value,
-                              conditionValueFocusNode: controller.inputRuleConditionFocusNode,
-                              conditionValueEditingController: controller.inputConditionValueController,
+                              conditionValueErrorText: controller.listErrorRuleConditionValue.elementAtOrNull(index),
+                              conditionValueFocusNode: controller.listInputRuleConditionFocusNode[index],
+                              conditionValueEditingController: controller.listInputConditionValueController[index],
                               tapRuleConditionFieldCallback: (value) =>
                                 controller.selectRuleConditionField(value, index),
                               tapRuleConditionComparatorCallback: (value) =>
                                 controller.selectRuleConditionComparator(value, index),
                               conditionValueOnChangeAction: (value) =>
-                                controller.updateConditionValue(context, value),
+                                controller.updateConditionValue(context, value, index),
                               tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
                             );
                           },
@@ -511,12 +510,12 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           itemCount: controller.listRuleCondition.length,
                           itemBuilder: (context, index) {
                             return RuleFilterConditionWidget(
-                              ruleFilterConditionType: RuleFilterConditionType.mobile,
+                              ruleFilterConditionScreenType: RuleFilterConditionScreenType.mobile,
                               ruleCondition: controller.listRuleCondition[index],
                               imagePaths: _imagePaths,
-                              conditionValueErrorText: controller.errorRuleConditionValue.value,
-                              conditionValueFocusNode: controller.inputRuleConditionFocusNode,
-                              conditionValueEditingController: controller.inputConditionValueController,
+                              conditionValueErrorText: controller.listErrorRuleConditionValue.elementAtOrNull(index),
+                              conditionValueFocusNode: controller.listInputRuleConditionFocusNode[index],
+                              conditionValueEditingController: controller.listInputConditionValueController[index],
                               tapRuleConditionFieldCallback: (value) => controller.openContextMenuAction(
                                 context,
                                 _bottomSheetRuleConditionFieldActionTiles(
@@ -534,7 +533,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                 )
                               ),
                               conditionValueOnChangeAction: (value) =>
-                                controller.updateConditionValue(context, value),
+                                controller.updateConditionValue(context, value, index),
                               tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
                             );
                           },

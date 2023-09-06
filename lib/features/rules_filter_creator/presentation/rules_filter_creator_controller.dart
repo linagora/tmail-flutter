@@ -50,7 +50,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   GetAllRulesInteractor? _getAllRulesInteractor;
 
   final errorRuleName = Rxn<String>();
-  final errorRuleConditionValue = Rxn<String>();
+  final listErrorRuleConditionValue = RxList<String>();
   final errorRuleActionValue = Rxn<String>();
   final emailRuleFilterActionSelected = Rxn<EmailRuleFilterAction>();
   final mailboxSelected = Rxn<PresentationMailbox>();
@@ -58,12 +58,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final listRuleCondition = RxList<RuleCondition>();
 
   final TextEditingController inputRuleNameController = TextEditingController();
-  final TextEditingController inputConditionValueController = TextEditingController();
+  final List<TextEditingController> listInputConditionValueController = [];
   final FocusNode inputRuleNameFocusNode = FocusNode();
-  final FocusNode inputRuleConditionFocusNode = FocusNode();
+  final List<FocusNode> listInputRuleConditionFocusNode = [];
 
   String? _newRuleName;
-  String? _newRuleConditionValue;
 
   RulesFilterCreatorArguments? arguments;
   AccountId? _accountId;
@@ -112,9 +111,13 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void onClose() {
     log('RulesFilterCreatorController::onClose():');
     inputRuleNameFocusNode.dispose();
-    inputRuleConditionFocusNode.dispose();
+    for (var inputRuleConditionFocusNode in listInputRuleConditionFocusNode) {
+      inputRuleConditionFocusNode.dispose();
+    }
     inputRuleNameController.dispose();
-    inputConditionValueController.dispose();
+    for (var inputConditionValueController in listInputConditionValueController) {
+      inputConditionValueController.dispose();
+    }
     super.onClose();
   }
 
@@ -150,10 +153,19 @@ class RulesFilterCreatorController extends BaseMailboxController {
           value: ''
         );
         listRuleCondition.add(newRuleCondition);
+        listInputConditionValueController.add(TextEditingController());
+        listInputRuleConditionFocusNode.add(FocusNode());
+        listErrorRuleConditionValue.add('');
         emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
         if (_emailAddress != null) {
-          _newRuleConditionValue = _emailAddress?.email;
-          _setValueInputField(inputConditionValueController, _newRuleConditionValue ?? '');
+          RuleCondition firstRuleCondition = RuleCondition(
+            field: rule_condition.Field.from,
+            comparator: rule_condition.Comparator.contains,
+            value: _emailAddress!.email!,
+          );
+          listRuleCondition[0] = firstRuleCondition;
+          listRuleCondition.refresh();
+          _setValueInputField(listInputConditionValueController[0], listRuleCondition[0].value.obs.value);
         }
         if (_mailboxDestination != null) {
           mailboxSelected.value = _mailboxDestination;
@@ -167,9 +179,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
             value: _currentTMailRule!.condition.value
           );
           listRuleCondition.add(currentRule);
+          listInputConditionValueController.add(TextEditingController());
+          listInputRuleConditionFocusNode.add(FocusNode());
+          listErrorRuleConditionValue.add('');
           emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
-          _newRuleConditionValue = _currentTMailRule!.condition.value;
-          _setValueInputField(inputConditionValueController, _newRuleConditionValue ?? '');
+          _setValueInputField(listInputConditionValueController[0], listRuleCondition[0].value.obs.value);
           _newRuleName = _currentTMailRule!.name;
           _setValueInputField(inputRuleNameController, _newRuleName ?? '');
           _getAllMailboxAction();
@@ -204,9 +218,21 @@ class RulesFilterCreatorController extends BaseMailboxController {
     errorRuleName.value = _getErrorStringByInputValue(context, _newRuleName);
   }
 
-  void updateConditionValue(BuildContext context, String? value) {
-    _newRuleConditionValue = value;
-    errorRuleConditionValue.value = _getErrorStringByInputValue(context, _newRuleConditionValue);
+  void updateConditionValue(BuildContext context, String? value, int ruleConditionIndex) {
+    RuleCondition newRuleCondition = RuleCondition(
+      field: listRuleCondition[ruleConditionIndex].field.obs.value,
+      comparator: listRuleCondition[ruleConditionIndex].comparator.obs.value,
+      value: value!,
+    );
+    listRuleCondition[ruleConditionIndex] = newRuleCondition;
+    listRuleCondition.refresh();
+    String? errorString = _getErrorStringByInputValue(context, listRuleCondition[ruleConditionIndex].value.obs.value);
+    if (listErrorRuleConditionValue.length > ruleConditionIndex) {
+        listErrorRuleConditionValue[ruleConditionIndex] = errorString ?? '';
+    } else {
+      listErrorRuleConditionValue.add(errorString ?? '');
+    }
+    listErrorRuleConditionValue.refresh();
   }
 
   String? _getErrorStringByInputValue(BuildContext context, String? inputValue) {
@@ -276,10 +302,17 @@ class RulesFilterCreatorController extends BaseMailboxController {
       return;
     }
 
-    final errorCondition = _getErrorStringByInputValue(context, _newRuleConditionValue);
-    if (errorCondition?.isNotEmpty == true) {
-      errorRuleConditionValue.value = errorCondition;
-      inputRuleConditionFocusNode.requestFocus();
+    List<String> errorCondition = [];
+    for (var ruleCondition in listRuleCondition) {
+      if (_getErrorStringByInputValue(context, ruleCondition.value) != null) {
+        errorCondition.add(_getErrorStringByInputValue(context, ruleCondition.value)!);
+      }
+    }
+    if (errorCondition.isNotEmpty) {
+      listErrorRuleConditionValue.value = errorCondition;
+      for (var inputRuleConditionFocusNode in listInputRuleConditionFocusNode) {
+        inputRuleConditionFocusNode.requestFocus();
+      }
       return;
     }
 
@@ -318,7 +351,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         condition: rule_condition.RuleCondition(
           field: ruleCondition.field,
           comparator: ruleCondition.comparator,
-          value: _newRuleConditionValue!
+          value: ruleCondition.value
         ));
         ruleFilterRequest = CreateNewEmailRuleFilterRequest(_listEmailRule ?? [], newTMailRule);
       }
@@ -334,7 +367,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         condition: rule_condition.RuleCondition(
           field: listRuleCondition[0].field,
           comparator: listRuleCondition[0].comparator,
-          value: _newRuleConditionValue!
+          value: listRuleCondition[0].value
         ));
       ruleFilterRequest = EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
     }
@@ -353,9 +386,15 @@ class RulesFilterCreatorController extends BaseMailboxController {
       value: ''
     );
     listRuleCondition.add(newRuleCondition);
+    listInputConditionValueController.add(TextEditingController());
+    listInputRuleConditionFocusNode.add(FocusNode());
+    listErrorRuleConditionValue.add('');
   }
 
   void tapRemoveCondition(int ruleConditionIndex) {
     listRuleCondition.removeAt(ruleConditionIndex);
+    listInputConditionValueController.removeAt(ruleConditionIndex);
+    listInputRuleConditionFocusNode.removeAt(ruleConditionIndex);
+    listErrorRuleConditionValue.removeAt(ruleConditionIndex);
   }
 }

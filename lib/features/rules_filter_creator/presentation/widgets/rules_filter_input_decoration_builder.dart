@@ -41,7 +41,7 @@ class RulesFilterInputDecorationBuilder extends InputDecorationBuilder {
       contentPadding: contentPadding ?? const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 12),
-      errorText: errorText,
+      errorText: errorText != '' ? errorText : null,
       errorStyle: errorTextStyle ?? const TextStyle(
           color: AppColor.colorInputBorderErrorVerifyName,
           fontSize: 13),
