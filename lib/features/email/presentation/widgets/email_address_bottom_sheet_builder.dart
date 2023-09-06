@@ -80,8 +80,9 @@ class EmailAddressBottomSheetBuilder {
                           padding: const EdgeInsets.only(top: 16, right: 16),
                           onPressed: () => _onCloseBottomSheetAction?.call(),
                           icon: SvgPicture.asset(
-                              _imagePaths.icCloseMailbox,
-                              width: 24, height: 24,
+                              _imagePaths.icCircleClose,
+                              width: 24,
+                              height: 24,
                               fit: BoxFit.fill))),
                   (AvatarBuilder()
                       ..text(_emailAddress.asString().firstLetterToUpperCase)

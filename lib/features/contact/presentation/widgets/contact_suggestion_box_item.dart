@@ -2,13 +2,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
-import 'package:tmail_ui_user/features/contact/presentation/widgets/gradient_color_avatar_icon.dart';
 
 typedef SelectedContactCallbackAction = Function(EmailAddress contactSelected);
 
@@ -31,8 +31,8 @@ class ContactSuggestionBoxItem extends StatelessWidget {
     final imagePaths = Get.find<ImagePaths>();
 
     final itemChild = Row(children: [
-      GradientColorAvatarIcon(
-        suggestionEmailAddress.emailAddress.avatarColors,
+      GradientCircleAvatarIcon(
+        colors: suggestionEmailAddress.emailAddress.avatarColors,
         label: suggestionEmailAddress.emailAddress.labelAvatar,
       ),
       const SizedBox(width: 12),

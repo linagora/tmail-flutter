@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:tmail_ui_user/features/contact/presentation/widgets/gradient_color_avatar_icon.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef DeleteContactCallbackAction = Function(EmailAddress contactDeleted);
@@ -38,8 +38,8 @@ class ContactInputTagItem extends StatelessWidget {
     final itemChild = Chip(
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       avatar: contact.displayName.isNotEmpty
-        ? GradientColorAvatarIcon(
-            contact.avatarColors,
+        ? GradientCircleAvatarIcon(
+            colors: contact.avatarColors,
             iconSize: 20,
             labelFontSize: 11,
             label: contact.labelAvatar)
