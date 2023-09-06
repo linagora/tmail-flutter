@@ -33,6 +33,7 @@ class TMailButtonWidget extends StatelessWidget {
   final TextAlign? textAlign;
   final bool flexibleText;
   final BoxBorder? border;
+  final TextDirection iconAlignment;
 
   const TMailButtonWidget({
     super.key,
@@ -61,6 +62,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.textAlign,
     this.flexibleText = false,
     this.border,
+    this.iconAlignment = TextDirection.ltr,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -190,20 +192,31 @@ class TMailButtonWidget extends StatelessWidget {
           ]
         );
       } else {
-        childWidget = Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              icon!,
-              width: iconSize,
-              height: iconSize,
-              fit: BoxFit.fill,
-              colorFilter: iconColor?.asFilter()
-            ),
-            SizedBox(width: iconSpace),
-            if (flexibleText)
-              Flexible(
-                child: Text(
+        if (iconAlignment == TextDirection.ltr) {
+          childWidget = Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                icon!,
+                width: iconSize,
+                height: iconSize,
+                fit: BoxFit.fill,
+                colorFilter: iconColor?.asFilter()
+              ),
+              SizedBox(width: iconSpace),
+              if (flexibleText)
+                Flexible(
+                  child: Text(
+                    text,
+                    textAlign: textAlign,
+                    style: textStyle ?? const TextStyle(
+                      fontSize: 12,
+                      color: AppColor.colorTextButtonHeaderThread
+                    ),
+                  ),
+                )
+              else
+                Text(
                   text,
                   textAlign: textAlign,
                   style: textStyle ?? const TextStyle(
@@ -211,29 +224,54 @@ class TMailButtonWidget extends StatelessWidget {
                     color: AppColor.colorTextButtonHeaderThread
                   ),
                 ),
-              )
-            else
-              Text(
-                text,
-                textAlign: textAlign,
-                style: textStyle ?? const TextStyle(
-                  fontSize: 12,
-                  color: AppColor.colorTextButtonHeaderThread
+              if (trailingIcon != null)
+                Padding(
+                  padding: EdgeInsetsDirectional.only(start: iconSpace),
+                  child: SvgPicture.asset(
+                    trailingIcon!,
+                    width: trailingIconSize,
+                    height: trailingIconSize,
+                    fit: BoxFit.fill,
+                    colorFilter: trailingIconColor?.asFilter()
+                  ),
                 ),
-              ),
-            if (trailingIcon != null)
-              Padding(
-                padding: EdgeInsetsDirectional.only(start: iconSpace),
-                child: SvgPicture.asset(
-                  trailingIcon!,
-                  width: trailingIconSize,
-                  height: trailingIconSize,
-                  fit: BoxFit.fill,
-                  colorFilter: trailingIconColor?.asFilter()
+            ]
+          );
+        } else {
+          childWidget = Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (flexibleText)
+                Flexible(
+                  child: Text(
+                    text,
+                    textAlign: textAlign,
+                    style: textStyle ?? const TextStyle(
+                      fontSize: 12,
+                      color: AppColor.colorTextButtonHeaderThread
+                    ),
+                  ),
+                )
+              else
+                Text(
+                  text,
+                  textAlign: textAlign,
+                  style: textStyle ?? const TextStyle(
+                    fontSize: 12,
+                    color: AppColor.colorTextButtonHeaderThread
+                  ),
                 ),
+              SizedBox(width: iconSpace),
+              SvgPicture.asset(
+                icon!,
+                width: iconSize,
+                height: iconSize,
+                fit: BoxFit.fill,
+                colorFilter: iconColor?.asFilter()
               ),
-          ]
-        );
+            ]
+          );
+        }
       }
     } else if (icon != null) {
       childWidget = SvgPicture.asset(

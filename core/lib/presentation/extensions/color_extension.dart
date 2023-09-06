@@ -207,6 +207,15 @@ extension AppColor on Color {
   static const colorEmptyPopupDialogButton = Color(0xFFFFC107);
   static const colorCancelPopupDialogButton = Color(0xFFEBEDF0);
   static const colorRemoveRuleFilterConditionButton = Color(0xFFE6E8EC);
+  static const colorComposerShadowTop = Color(0x28000000);
+  static const colorComposerShadowBottom = Color(0x1E000000);
+  static const colorComposerAppBar = Color(0xFFF4F4F4);
+  static const colorLabelComposer = Color(0xFF8C9CAF);
+  static const colorLineComposer = Color(0xFFF4F4F4);
+  static const colorPrefixButtonComposer = Color(0xFFAEAAAE);
+  static const colorRichButtonComposer = Color(0xFFAEAEC0);
+  static const colorMobileRichButtonComposer = Color(0xFF8C9CAF);
+  static const colorSelected = Color(0xFFE3F1FF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
