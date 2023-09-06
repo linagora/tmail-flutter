@@ -1721,12 +1721,6 @@ class AppLocalizations {
         name: 'formatTextBackgroundColor');
   }
 
-  String get codeView {
-    return Intl.message(
-        'Code view',
-        name: 'codeView');
-  }
-
   String get headerStyle {
     return Intl.message(
         'Style',
@@ -3315,6 +3309,20 @@ class AppLocalizations {
     return Intl.message(
       'Add condition',
       name: 'addCondition',
+    );
+  }
+
+  String get formattingOptions {
+    return Intl.message(
+      'Formatting options',
+      name: 'formattingOptions'
+    );
+  }
+
+  String get embedCode {
+    return Intl.message(
+      'Embed code',
+      name: 'embedCode'
     );
   }
 }
