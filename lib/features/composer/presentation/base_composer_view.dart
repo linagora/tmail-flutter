@@ -27,7 +27,7 @@ import 'package:tmail_ui_user/features/composer/presentation/mixin/composer_load
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_file_composer_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_item_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
@@ -321,11 +321,11 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
                   scrollDirection: Axis.horizontal,
                   controller: controller.scrollControllerAttachment,
                   itemCount: uploadFilesState.length,
-                  itemBuilder: (context, index) => AttachmentFileComposerBuilder(
-                    uploadFilesState[index],
+                  itemBuilder: (context, index) => AttachmentItemComposerWidget(
+                    fileState: uploadFilesState[index],
                     itemMargin: const EdgeInsetsDirectional.only(end: 8),
                     maxWidth: ComposerStyle.getMaxWidthItemListAttachment(context, constraints),
-                    onDeleteAttachmentAction: (attachment) => controller.deleteAttachmentUploaded(attachment.uploadTaskId)
+                    onDeleteAttachmentAction: (attachment) => controller.deleteAttachmentUploaded(attachment.uploadTaskId),
                   )
                 ),
               )
@@ -344,8 +344,8 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
               crossAxisCount: ComposerStyle.getMaxItemRowListAttachment(context, constraints),
               crossAxisSpacing: 8.0,
               mainAxisSpacing: 8.0),
-            itemBuilder: (context, index) => AttachmentFileComposerBuilder(
-              uploadFilesState[index],
+            itemBuilder: (context, index) => AttachmentItemComposerWidget(
+              fileState: uploadFilesState[index],
               onDeleteAttachmentAction: (attachment) => controller.deleteAttachmentUploaded(attachment.uploadTaskId)
             )
           );
@@ -366,8 +366,8 @@ abstract class BaseComposerView extends GetWidget<ComposerController>
                 physics: const ClampingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: uploadFilesState.length,
-                itemBuilder: (context, index) => AttachmentFileComposerBuilder(
-                  uploadFilesState[index],
+                itemBuilder: (context, index) => AttachmentItemComposerWidget(
+                  fileState: uploadFilesState[index],
                   itemMargin: const EdgeInsetsDirectional.only(end: 8),
                   maxWidth: ComposerStyle.getMaxWidthItemListAttachment(context, constraints),
                   onDeleteAttachmentAction: (attachment) => controller.deleteAttachmentUploaded(attachment.uploadTaskId)
