@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+typedef OnOpenContextMenuAction = Function(RelativeRect position);
+
 class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
 
   final bool isCodeViewEnabled;
@@ -14,7 +16,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   final VoidCallback attachFileAction;
   final VoidCallback insertImageAction;
   final VoidCallback sendMessageAction;
-  final VoidCallback openContextMenuAction;
+  final OnOpenContextMenuAction openContextMenuAction;
   final VoidCallback openRichToolbarAction;
 
   final _imagePaths = Get.find<ImagePaths>();
@@ -109,7 +111,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
             padding: MobileAppBarComposerWidgetStyle.iconPadding,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,
             tooltipMessage: AppLocalizations.of(context).more,
-            onTapActionCallback: openContextMenuAction,
+            onTapActionAtPositionCallback: openContextMenuAction,
           ),
         ],
       ),

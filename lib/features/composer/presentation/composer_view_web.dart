@@ -1,9 +1,11 @@
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -18,10 +20,13 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _imagePaths = Get.find<ImagePaths>();
 
   ComposerView({Key? key}) : super(key: key);
 
@@ -43,7 +48,14 @@ class ComposerView extends GetWidget<ComposerController> {
                 attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                 insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                 sendMessageAction: () => controller.sendEmailAction(context),
-                openContextMenuAction: () => {},
+                openContextMenuAction: (position) {
+                  controller.openPopupMenuAction(
+                    context,
+                    position,
+                    _createMoreOptionPopupItems(context),
+                    radius: ComposerStyle.popupMenuRadius
+                  );
+                },
               )),
               ConstrainedBox(
                 constraints: BoxConstraints(
@@ -340,6 +352,14 @@ class ComposerView extends GetWidget<ComposerController> {
               deleteComposerAction: () => controller.closeComposer(context),
               saveToDraftAction: () => controller.saveToDraftAction(context),
               sendMessageAction: () => controller.sendEmailAction(context),
+              requestReadReceiptAction: (position) {
+                controller.openPopupMenuAction(
+                  context,
+                  position,
+                  _createReadReceiptPopupItems(context),
+                  radius: ComposerStyle.popupMenuRadius
+                );
+              },
             )),
           ]);
         },
@@ -510,10 +530,102 @@ class ComposerView extends GetWidget<ComposerController> {
               deleteComposerAction: () => controller.closeComposer(context),
               saveToDraftAction: () => controller.saveToDraftAction(context),
               sendMessageAction: () => controller.sendEmailAction(context),
+              requestReadReceiptAction: (position) {
+                controller.openPopupMenuAction(
+                  context,
+                  position,
+                  _createReadReceiptPopupItems(context),
+                  radius: ComposerStyle.popupMenuRadius
+                );
+              },
             )),
           ]);
         },
       )
     );
+  }
+
+  List<PopupMenuEntry> _createReadReceiptPopupItems(BuildContext context) {
+    return [
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icReadReceipt,
+          AppLocalizations.of(context).requestReadReceipt,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          selectedIcon: _imagePaths.icFilterSelected,
+          isSelected: controller.hasRequestReadReceipt.value,
+          onCallbackAction: () {
+            popBack();
+            controller.toggleRequestReadReceipt();
+          }
+        )
+      ),
+    ];
+  }
+
+  List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
+    return [
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icStyleCodeView,
+          AppLocalizations.of(context).embedCode,
+          styleName: ComposerStyle.popupItemTextStyle,
+          colorIcon: ComposerStyle.popupItemIconColor,
+          padding: ComposerStyle.popupItemPadding,
+          selectedIcon: _imagePaths.icFilterSelected,
+          isSelected: controller.richTextWebController.codeViewEnabled,
+          onCallbackAction: () {
+            popBack();
+            controller.richTextWebController.toggleCodeView();
+          }
+        )
+      ),
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icReadReceipt,
+          AppLocalizations.of(context).requestReadReceipt,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          colorIcon: ComposerStyle.popupItemIconColor,
+          selectedIcon: _imagePaths.icFilterSelected,
+          isSelected: controller.hasRequestReadReceipt.value,
+          onCallbackAction: () {
+            popBack();
+            controller.toggleRequestReadReceipt();
+          }
+        )
+      ),
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icSaveToDraft,
+          AppLocalizations.of(context).saveAsDraft,
+          colorIcon: ComposerStyle.popupItemIconColor,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          onCallbackAction: () {
+            popBack();
+            controller.saveToDraftAction(context);
+          }
+        )
+      ),
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icDeleteMailbox,
+          AppLocalizations.of(context).delete,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          onCallbackAction: () {
+            popBack();
+            controller.closeComposer(context);
+          },
+        )
+      ),
+    ];
   }
 }

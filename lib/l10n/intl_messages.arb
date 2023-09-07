@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-07T09:30:18.682623",
+  "@@last_modified": "2023-09-07T19:09:09.089986",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3233,5 +3233,11 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "saveAsDraft": "Save as draft",
+  "@saveAsDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
