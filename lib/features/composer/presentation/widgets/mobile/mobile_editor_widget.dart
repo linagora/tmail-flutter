@@ -1,0 +1,32 @@
+
+import 'package:core/presentation/utils/html_transformer/html_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
+
+typedef OnCreatedEditorAction = Function(BuildContext context, HtmlEditorApi editorApi, String content);
+
+class MobileEditorWidget extends StatelessWidget {
+
+  final String content;
+  final TextDirection direction;
+  final OnCreatedEditorAction onCreatedEditorAction;
+
+  const MobileEditorWidget({
+    super.key,
+    required this.content,
+    required this.direction,
+    required this.onCreatedEditorAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return HtmlEditor(
+      key: const Key('mobile_editor'),
+      minHeight: 550,
+      addDefaultSelectionMenuItems: false,
+      initialContent: content,
+      customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: direction),
+      onCreated: (editorApi) => onCreatedEditorAction.call(context, editorApi, content)
+    );
+  }
+}
