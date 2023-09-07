@@ -6,6 +6,7 @@ class RecipientTagItemWidgetStyle {
 
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.only(start: 4);
   static const EdgeInsetsGeometry counterPadding = EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8);
+  static const EdgeInsetsGeometry mobileCounterPadding = EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8);
   static const EdgeInsetsGeometry counterMargin = EdgeInsetsDirectional.only(top: PlatformInfo.isWeb ? 8 : 0);
 
   static const TextStyle labelTextStyle = TextStyle(

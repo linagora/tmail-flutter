@@ -7,17 +7,17 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/view/desktop_container_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/view/mobile_container_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/view/tablet_container_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/view/web_editor_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/app_bar_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/bottom_bar_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile_app_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/web/desktop_responsive_container_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/web/mobile_responsive_container_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/web/tablet_responsive_container_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/web/web_editor_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop_app_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/bottom_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/toolbar_rich_text_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -29,12 +29,12 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget build(BuildContext context) {
     return ResponsiveWidget(
       responsiveUtils: _responsiveUtils,
-      mobile: MobileContainerView(
+      mobile: MobileResponsiveContainerView(
         childBuilder: (context, constraints) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => MobileAppBarComposerWidget(
+              Obx(() => MobileResponsiveAppBarComposerWidget(
                 isCodeViewEnabled: controller.richTextWebController.codeViewEnabled,
                 isFormattingOptionsEnabled: controller.richTextWebController.isFormattingOptionsEnabled,
                 openRichToolbarAction: controller.richTextWebController.toggleFormattingOptions,
@@ -129,74 +129,57 @@ class ComposerView extends GetWidget<ComposerController> {
                 padding: ComposerStyle.mobileSubjectPadding,
                 margin: ComposerStyle.mobileSubjectMargin,
               ),
-              Expanded(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: ComposerStyle.borderColor,
-                        width: 1
-                      )
+              Obx(() => Expanded(
+                child: Padding(
+                  padding: ComposerStyle.mobileEditorPadding,
+                  child: WebEditorView(
+                    editorController: controller.richTextWebController.editorController,
+                    arguments: controller.composerArguments.value,
+                    contentViewState: controller.emailContentsViewState.value,
+                    currentWebContent: controller.textEditorWeb,
+                    onInitial: controller.handleInitHtmlEditorWeb,
+                    onChangeContent: controller.onChangeTextEditorWeb,
+                    onFocus: controller.handleOnFocusHtmlEditorWeb,
+                    onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
+                    onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                    onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                  ),
+                ),
+              )),
+              Obx(() {
+                if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                  return AttachmentComposerWidget(
+                    listFileUploaded: controller.uploadController.listUploadAttachments,
+                    isCollapsed: controller.isAttachmentCollapsed,
+                    onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                    onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
+              Obx(() {
+                if (controller.richTextWebController.isFormattingOptionsEnabled) {
+                  return ToolbarRichTextWebBuilder(
+                    richTextWebController: controller.richTextWebController,
+                    padding: ComposerStyle.richToolbarPadding,
+                    decoration: const BoxDecoration(
+                        color: ComposerStyle.richToolbarColor,
+                        boxShadow: ComposerStyle.richToolbarShadow
                     ),
-                    color: ComposerStyle.backgroundEditorColor
-                  ),
-                  child: Column(
-                    children: [
-                      Obx(() => Expanded(
-                        child: Padding(
-                          padding: ComposerStyle.mobileEditorPadding,
-                          child: WebEditorView(
-                            editorController: controller.richTextWebController.editorController,
-                            arguments: controller.composerArguments.value,
-                            contentViewState: controller.emailContentsViewState.value,
-                            currentWebContent: controller.textEditorWeb,
-                            onInitial: controller.handleInitHtmlEditorWeb,
-                            onChangeContent: controller.onChangeTextEditorWeb,
-                            onFocus: controller.handleOnFocusHtmlEditorWeb,
-                            onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
-                            onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                            onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                          ),
-                        ),
-                      )),
-                      Obx(() {
-                        if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                          return AttachmentComposerWidget(
-                            listFileUploaded: controller.uploadController.listUploadAttachments,
-                            isCollapsed: controller.isAttachmentCollapsed,
-                            onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                            onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      Obx(() {
-                        if (controller.richTextWebController.isFormattingOptionsEnabled) {
-                          return ToolbarRichTextWebBuilder(
-                            richTextWebController: controller.richTextWebController,
-                            padding: ComposerStyle.richToolbarPadding,
-                            decoration: const BoxDecoration(
-                              color: ComposerStyle.richToolbarColor,
-                              boxShadow: ComposerStyle.richToolbarShadow
-                            ),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      })
-                    ],
-                  ),
-                )
-              ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              })
             ]
           );
         }
       ),
-      desktop: Obx(() => DesktopContainerView(
+      desktop: Obx(() => DesktopResponsiveContainerView(
         childBuilder: (context, constraints) {
           return Column(children: [
-            Obx(() => AppBarComposerWidget(
+            Obx(() => DesktopAppBarComposerWidget(
               emailSubject: controller.subjectEmail.value ?? '',
               displayMode: controller.screenDisplayMode.value,
               onCloseViewAction: () => controller.saveToDraftAndClose(context),
@@ -365,10 +348,10 @@ class ComposerView extends GetWidget<ComposerController> {
         onCloseViewAction: () => controller.saveToDraftAndClose(context),
         onChangeDisplayModeAction: controller.displayScreenTypeComposerAction,
       )),
-      tablet: TabletContainerView(
+      tablet: TabletResponsiveContainerView(
         childBuilder: (context, constraints) {
           return Column(children: [
-            Obx(() => AppBarComposerWidget(
+            Obx(() => DesktopAppBarComposerWidget(
               emailSubject: controller.subjectEmail.value ?? '',
               onCloseViewAction: () => controller.saveToDraftAndClose(context),
               constraints: constraints,

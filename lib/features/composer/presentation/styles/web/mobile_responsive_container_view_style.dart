@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class MobileContainerViewStyle {
+class MobileResponsiveContainerViewStyle {
   static const double radius = 28;
   static const double elevation = 16;
 
