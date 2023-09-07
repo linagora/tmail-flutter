@@ -12,9 +12,11 @@ import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_container_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/tablet_container_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/mobile_attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/landscape_app_bar_composer_widget.dart';
@@ -49,6 +51,7 @@ class ComposerView extends GetWidget<ComposerController> {
         onInsertImageAction: (constraints) => controller.isNetworkConnectionAvailable
           ? controller.insertImage(context, constraints.maxWidth)
           : null,
+        backgroundColor: MobileAppBarComposerWidgetStyle.backgroundColor,
         childBuilder: (context) => SafeArea(
           left: !_responsiveUtils.isLandscapeMobile(context),
           right: !_responsiveUtils.isLandscapeMobile(context),
@@ -165,6 +168,13 @@ class ComposerView extends GetWidget<ComposerController> {
                             padding: ComposerStyle.mobileSubjectPadding,
                             margin: ComposerStyle.mobileSubjectMargin,
                           ),
+                          Obx(() => Center(
+                            child: InsertImageLoadingBarWidget(
+                              uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
+                              viewState: controller.viewState.value,
+                              padding: ComposerStyle.insertImageLoadingBarPadding,
+                            ),
+                          )),
                           Obx(() => GestureDetector(
                             onTapDown: (_) {
                               controller.removeFocusAllInputEditorHeader();
@@ -182,9 +192,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             if (controller.uploadController.listUploadAttachments.isNotEmpty) {
                               return MobileAttachmentComposerWidget(
                                 listFileUploaded: controller.uploadController.listUploadAttachments,
-                                isShowMore: controller.isAttachmentCollapsed,
                                 onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                                onShowMoreAttachmentAction: (isShowMore) => controller.isAttachmentCollapsed = !isShowMore,
                               );
                             } else {
                               return const SizedBox.shrink();
@@ -300,6 +308,13 @@ class ComposerView extends GetWidget<ComposerController> {
                         padding: ComposerStyle.mobileSubjectPadding,
                         margin: ComposerStyle.mobileSubjectMargin,
                       ),
+                      Obx(() => Center(
+                        child: InsertImageLoadingBarWidget(
+                          uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
+                          viewState: controller.viewState.value,
+                          padding: ComposerStyle.insertImageLoadingBarPadding,
+                        ),
+                      )),
                       Obx(() => GestureDetector(
                         onTapDown: (_) {
                           controller.removeFocusAllInputEditorHeader();
@@ -317,9 +332,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         if (controller.uploadController.listUploadAttachments.isNotEmpty) {
                           return MobileAttachmentComposerWidget(
                             listFileUploaded: controller.uploadController.listUploadAttachments,
-                            isShowMore: controller.isAttachmentCollapsed,
                             onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                            onShowMoreAttachmentAction: (isShowMore) => controller.isAttachmentCollapsed = !isShowMore,
                           );
                         } else {
                           return const SizedBox.shrink();
