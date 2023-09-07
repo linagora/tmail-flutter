@@ -91,7 +91,7 @@ class ComposerController extends BaseController {
   final _uuid = Get.find<Uuid>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
 
-  final expandModeAttachments = ExpandMode.COLLAPSE.obs;
+  final expandModeAttachments = ExpandMode.EXPAND.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
