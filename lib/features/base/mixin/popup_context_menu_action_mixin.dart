@@ -16,14 +16,24 @@ mixin PopupContextMenuActionMixin {
       .show();
   }
 
-  void openPopupMenuAction(BuildContext context, RelativeRect? position, List<PopupMenuEntry> popupMenuItems) async {
+  void openPopupMenuAction(
+    BuildContext context,
+    RelativeRect? position,
+    List<PopupMenuEntry> popupMenuItems,
+    {
+      double? radius,
+    }
+  ) async {
     await showMenu(
-        context: context,
-        position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
-        color: Colors.white,
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        items: popupMenuItems);
+      context: context,
+      position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
+      color: Colors.white,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(radius ?? 16))
+      ),
+      items: popupMenuItems
+    );
   }
 
   Widget buildCancelButton(BuildContext context) {

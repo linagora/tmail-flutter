@@ -3,6 +3,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LandscapeAppBarComposerWidget extends StatelessWidget {
@@ -10,7 +11,7 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
   final bool isSendButtonEnabled;
   final VoidCallback onCloseViewAction;
   final VoidCallback sendMessageAction;
-  final VoidCallback openContextMenuAction;
+  final OnOpenContextMenuAction openContextMenuAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -62,7 +63,7 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
               padding: MobileAppBarComposerWidgetStyle.iconPadding,
               iconSize: MobileAppBarComposerWidgetStyle.iconSize,
               tooltipMessage: AppLocalizations.of(context).more,
-              onTapActionCallback: openContextMenuAction,
+              onTapActionAtPositionCallback: openContextMenuAction,
             ),
           ],
         ),

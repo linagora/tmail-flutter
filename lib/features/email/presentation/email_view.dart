@@ -504,6 +504,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         imagePaths.icUnreadEmail,
         AppLocalizations.of(context).mark_as_unread,
         colorIcon: AppColor.colorTextButton,
+        padding: const EdgeInsetsDirectional.only(start: 12),
         styleName: const TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 16,
@@ -531,6 +532,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           ? AppLocalizations.of(context).remove_from_spam
           : AppLocalizations.of(context).mark_as_spam,
         colorIcon: AppColor.colorTextButton,
+        padding: const EdgeInsetsDirectional.only(start: 12),
         styleName: const TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 16,
@@ -552,6 +554,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         imagePaths.icQuickCreatingRule,
         AppLocalizations.of(context).quickCreatingRule,
         colorIcon: AppColor.colorTextButton,
+        padding: const EdgeInsetsDirectional.only(start: 12),
         styleName: const TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 16,
