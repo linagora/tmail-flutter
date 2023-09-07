@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
-import 'package:tmail_ui_user/features/composer/presentation/styles/desktop_container_view_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/minimize_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/web/desktop_responsive_container_view_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/minimize_composer_widget.dart';
 
-class DesktopContainerView extends StatelessWidget {
+class DesktopResponsiveContainerView extends StatelessWidget {
 
   final ScreenDisplayMode displayMode;
   final String emailSubject;
@@ -16,8 +16,8 @@ class DesktopContainerView extends StatelessWidget {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  DesktopContainerView({
-     super.key,
+  DesktopResponsiveContainerView({
+    super.key,
     required this.childBuilder,
     required this.displayMode,
     required this.emailSubject,
@@ -29,8 +29,8 @@ class DesktopContainerView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (displayMode == ScreenDisplayMode.minimize) {
       return PositionedDirectional(
-        end: DesktopContainerViewStyle.margin,
-        bottom: DesktopContainerViewStyle.margin,
+        end: DesktopResponsiveContainerViewStyle.margin,
+        bottom: DesktopResponsiveContainerViewStyle.margin,
         child: PointerInterceptor(
           child: MinimizeComposerWidget(
             emailSubject: emailSubject,
@@ -44,16 +44,16 @@ class DesktopContainerView extends StatelessWidget {
       final maxHeight = _responsiveUtils.getSizeScreenHeight(context) * 0.75;
 
       return PositionedDirectional(
-        end: DesktopContainerViewStyle.margin,
-        bottom: DesktopContainerViewStyle.margin,
+        end: DesktopResponsiveContainerViewStyle.margin,
+        bottom: DesktopResponsiveContainerViewStyle.margin,
         child: Card(
-          elevation: DesktopContainerViewStyle.elevation,
+          elevation: DesktopResponsiveContainerViewStyle.elevation,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(DesktopContainerViewStyle.radius))
+            borderRadius: BorderRadius.all(Radius.circular(DesktopResponsiveContainerViewStyle.radius))
           ),
           clipBehavior: Clip.antiAlias,
           child: Container(
-            color: DesktopContainerViewStyle.backgroundColor,
+            color: DesktopResponsiveContainerViewStyle.backgroundColor,
             width: maxWidth,
             height: maxHeight,
             child: LayoutBuilder(builder: (context, constraints) =>
@@ -69,16 +69,16 @@ class DesktopContainerView extends StatelessWidget {
       final maxHeight = _responsiveUtils.getSizeScreenHeight(context) * 0.9;
 
       return Scaffold(
-        backgroundColor: DesktopContainerViewStyle.outSideBackgroundColor,
+        backgroundColor: DesktopResponsiveContainerViewStyle.outSideBackgroundColor,
         body: Center(
           child: Card(
-            elevation: DesktopContainerViewStyle.elevation,
+            elevation: DesktopResponsiveContainerViewStyle.elevation,
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(DesktopContainerViewStyle.radius))
+              borderRadius: BorderRadius.all(Radius.circular(DesktopResponsiveContainerViewStyle.radius))
             ),
             clipBehavior: Clip.antiAlias,
             child: Container(
-              color: DesktopContainerViewStyle.backgroundColor,
+              color: DesktopResponsiveContainerViewStyle.backgroundColor,
               width: maxWidth,
               height: maxHeight,
               child: LayoutBuilder(builder: (context, constraints) =>

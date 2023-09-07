@@ -60,7 +60,7 @@ class _WebEditorState extends State<WebEditorWidget> {
   @override
   Widget build(BuildContext context) {
     return HtmlEditor(
-      key: const Key('composer_editor_web'),
+      key: const Key('web_editor'),
       controller: _editorController,
       htmlEditorOptions: HtmlEditorOptions(
         shouldEnsureVisible: true,
