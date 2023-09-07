@@ -2,7 +2,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
-import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:rich_text_composer/rich_text_composer.dart' as rich_composer;
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/mobile_container_view_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -12,11 +12,12 @@ typedef OnInsertImageAction = Function(BoxConstraints constraints);
 class MobileContainerView extends StatelessWidget {
 
   final Widget Function(BuildContext context) childBuilder;
-  final RichTextController keyboardRichTextController;
+  final rich_composer.RichTextController keyboardRichTextController;
   final VoidCallback onCloseViewAction;
   final VoidCallback? onAttachFileAction;
   final OnInsertImageAction? onInsertImageAction;
   final VoidCallback? onClearFocusAction;
+  final Color? backgroundColor;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
@@ -28,6 +29,7 @@ class MobileContainerView extends StatelessWidget {
     this.onAttachFileAction,
     this.onInsertImageAction,
     this.onClearFocusAction,
+    this.backgroundColor,
   });
 
   @override
@@ -40,11 +42,11 @@ class MobileContainerView extends StatelessWidget {
       child: GestureDetector(
         onTap: onClearFocusAction,
         child: Scaffold(
-          backgroundColor: MobileContainerViewStyle.outSideBackgroundColor,
+          backgroundColor: backgroundColor ?? MobileContainerViewStyle.outSideBackgroundColor,
           resizeToAvoidBottomInset: false,
           body: LayoutBuilder(builder: (context, constraints) {
             return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
-              return KeyboardRichText(
+              return rich_composer.KeyboardRichText(
                 richTextController: keyboardRichTextController,
                 keyBroadToolbar: RichTextKeyboardToolBar(
                   backgroundKeyboardToolBarColor: MobileContainerViewStyle.keyboardToolbarBackgroundColor,

@@ -41,6 +41,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
       ),
       width: AttachmentItemComposerWidgetStyle.width,
       padding: AttachmentItemComposerWidgetStyle.padding,
+      margin: itemMargin,
       child: Row(
         children: [
           Expanded(
