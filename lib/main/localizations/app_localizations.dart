@@ -3325,4 +3325,12 @@ class AppLocalizations {
       name: 'embedCode'
     );
   }
+
+  String showMoreAttachment(int count) {
+    return Intl.message(
+      'Show more (+$count)',
+      name: 'showMoreAttachment',
+      args: [count]
+    );
+  }
 }

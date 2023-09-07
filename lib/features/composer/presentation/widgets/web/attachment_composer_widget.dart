@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:tmail_ui_user/features/composer/presentation/styles/attachment_composer_widget_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/web/attachment_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_item_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_header_composer_widget.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';

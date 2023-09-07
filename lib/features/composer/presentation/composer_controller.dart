@@ -53,6 +53,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_view_event.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
@@ -139,8 +140,6 @@ class ComposerController extends BaseController {
   final GlobalKey<TagsEditorState> keyBccEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey headerEditorMobileWidgetKey = GlobalKey();
   final double defaultPaddingCoordinateYCursorEditor = 8;
-  final double maxKeyBoardHeight = 500;
-  final double richTextBarHeight = 200;
 
   FocusNode? subjectEmailInputFocusNode;
   FocusNode? toAddressFocusNode;
@@ -405,7 +404,7 @@ class ComposerController extends BaseController {
     });
   }
 
-  void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi, String? content) {
+  void onCreatedMobileEditorAction(BuildContext context, HtmlEditorApi editorApi, String? content) {
     initTextEditor(content);
     richTextMobileTabletController.htmlEditorApi = editorApi;
     keyboardRichTextController.onCreateHTMLEditor(
@@ -1753,7 +1752,8 @@ class ComposerController extends BaseController {
       if (coordinates?[1] != null && coordinates?[1] != 0) {
         final coordinateY = max((coordinates?[1] ?? 0) - defaultPaddingCoordinateYCursorEditor, 0);
         final realCoordinateY = coordinateY + (headerEditorMobileSize?.height ?? 0);
-        final webViewEditorClientY = max(Get.height - maxKeyBoardHeight - richTextBarHeight, 0) + scrollController.position.pixels;
+        final outsideHeight = Get.height - ComposerStyle.keyboardMaxHeight - ComposerStyle.keyboardToolBarHeight;
+        final webViewEditorClientY = max(outsideHeight, 0) + scrollController.position.pixels;
         if (scrollController.position.pixels >= realCoordinateY) {
           _scrollToCursorEditor(
             realCoordinateY.toDouble(),

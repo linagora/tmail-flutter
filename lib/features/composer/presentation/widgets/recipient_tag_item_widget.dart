@@ -92,7 +92,9 @@ class RecipientTagItemWidget extends StatelessWidget {
             onTapActionCallback: () => onShowFullAction?.call(prefix),
             borderRadius: RecipientTagItemWidgetStyle.radius,
             textStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-            padding: RecipientTagItemWidgetStyle.counterPadding,
+            padding: PlatformInfo.isWeb
+              ? RecipientTagItemWidgetStyle.counterPadding
+              : RecipientTagItemWidgetStyle.mobileCounterPadding,
             backgroundColor: AppColor.colorEmailAddressTag,
           )
       ]

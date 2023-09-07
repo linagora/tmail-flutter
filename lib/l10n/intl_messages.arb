@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-06T11:36:27.238808",
+  "@@last_modified": "2023-09-07T09:30:18.682623",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3223,5 +3223,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "showMoreAttachment": "Show more (+{count})",
+  "@showMoreAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
   }
 }
