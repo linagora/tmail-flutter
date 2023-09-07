@@ -369,11 +369,11 @@ packages:
     source: hosted
     version: "2.0.0"
   enough_html_editor:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: ed465d707389bbb959ce2898b899fabb9e9608ed
+      ref: "improvement/support-expanded-collapsed-signature"
+      resolved-ref: f69ea3c0d84c32fe291b1b6092a30af1544a3038
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -913,8 +913,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: "11cf3928c18a43ad29f6dfb3d3b0a712a41ec816"
+      ref: "improvement/support-expanded-collapsed-signature"
+      resolved-ref: "96ae5c4ce7c2f5b84bd481df3aa02b38ac527a1d"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
