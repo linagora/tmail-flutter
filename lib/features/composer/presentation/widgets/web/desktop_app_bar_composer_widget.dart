@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/app_bar_composer_widget_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/minimize_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/minimize_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/title_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class AppBarComposerWidget extends StatelessWidget {
+class DesktopAppBarComposerWidget extends StatelessWidget {
 
   final String emailSubject;
   final VoidCallback onCloseViewAction;
@@ -18,7 +18,7 @@ class AppBarComposerWidget extends StatelessWidget {
 
   final _imagePaths = Get.find<ImagePaths>();
 
-  AppBarComposerWidget({
+  DesktopAppBarComposerWidget({
     super.key,
     required this.emailSubject,
     required this.onCloseViewAction,

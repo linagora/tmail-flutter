@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MobileAppBarComposerWidget extends StatelessWidget {
+class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
 
   final bool isCodeViewEnabled;
   final bool isSendButtonEnabled;
@@ -19,7 +19,7 @@ class MobileAppBarComposerWidget extends StatelessWidget {
 
   final _imagePaths = Get.find<ImagePaths>();
 
-  MobileAppBarComposerWidget({
+  MobileResponsiveAppBarComposerWidget({
     super.key,
     required this.isCodeViewEnabled,
     required this.isFormattingOptionsEnabled,

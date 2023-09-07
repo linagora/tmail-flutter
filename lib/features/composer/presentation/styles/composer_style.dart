@@ -6,10 +6,13 @@ import 'package:flutter/material.dart';
 
 class ComposerStyle {
   static const double radius = 28;
+  static const double keyboardMaxHeight = 500;
+  static const double keyboardToolBarHeight = 200;
 
   static const Color borderColor = AppColor.colorLineComposer;
   static const Color backgroundEditorColor = Colors.white;
   static const Color richToolbarColor = Colors.white;
+  static const Color mobileBackgroundColor = Colors.white;
 
   static const EdgeInsetsGeometry richToolbarPadding = EdgeInsetsDirectional.symmetric(horizontal: 24, vertical: 8);
   static const EdgeInsetsGeometry desktopRecipientPadding = EdgeInsetsDirectional.only(end: 24);
