@@ -149,13 +149,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 4
+    $signature: 3
   };
   C.ContactView_build__closure0.prototype = {
     call$2(context, index) {
       return new A.Padding(B.EdgeInsets_16_0_16_0, B.Divider_I9g, null);
     },
-    $signature: 545
+    $signature: 553
   };
   C.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -191,7 +191,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 91
+    $signature: 95
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -211,8 +211,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ResponsiveUtils: A.findType("ResponsiveUtils0")
   };
   (function constants() {
-    G.BoxDecoration_Oi2 = new A.BoxDecoration(B.Color_2582375920, null, null, B.BorderRadius_tLn5, null, null, null, B.BoxShape_0);
+    G.BoxDecoration_Oi2 = new A.BoxDecoration(B.Color_2582375920, null, null, B.BorderRadius_tLn7, null, null, null, B.BoxShape_0);
   })();
 };
 
-$__dart_deferred_initializers__["nIuEiWeJdNHmfkJW0psNyWRW0GE="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["okB2Xksx6H4530cygIl+vqi5n58="] = $__dart_deferred_initializers__.current
