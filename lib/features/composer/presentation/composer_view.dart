@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -22,6 +23,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_c
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -59,14 +61,28 @@ class ComposerView extends GetWidget<ComposerController> {
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.saveToDraftAndClose(context),
                     sendMessageAction: () => controller.sendEmailAction(context),
-                    openContextMenuAction: () => {},
+                    openContextMenuAction: (position) {
+                      controller.openPopupMenuAction(
+                        context,
+                        position,
+                        _createMoreOptionPopupItems(context),
+                        radius: ComposerStyle.popupMenuRadius
+                      );
+                    },
                   ))
                 else
                   Obx(() => AppBarComposerWidget(
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.saveToDraftAndClose(context),
                     sendMessageAction: () => controller.sendEmailAction(context),
-                    openContextMenuAction: () => {},
+                    openContextMenuAction: (position) {
+                      controller.openPopupMenuAction(
+                        context,
+                        position,
+                        _createMoreOptionPopupItems(context),
+                        radius: ComposerStyle.popupMenuRadius
+                      );
+                    },
                   )),
                 Expanded(
                   child: SafeArea(
@@ -317,6 +333,14 @@ class ComposerView extends GetWidget<ComposerController> {
                 deleteComposerAction: () => controller.closeComposer(context),
                 saveToDraftAction: () => controller.saveToDraftAction(context),
                 sendMessageAction: () => controller.sendEmailAction(context),
+                requestReadReceiptAction: (position) {
+                  controller.openPopupMenuAction(
+                    context,
+                    position,
+                    _createReadReceiptPopupItems(context),
+                    radius: ComposerStyle.popupMenuRadius
+                  );
+                },
               ),
             ]
           )
@@ -349,5 +373,73 @@ class ComposerView extends GetWidget<ComposerController> {
             AppLocalizations.of(context).browse)
         ..onActionClick((_) => controller.openFilePickerByType(context, FileType.any)))
       .build();
+  }
+
+  List<PopupMenuEntry> _createReadReceiptPopupItems(BuildContext context) {
+    return [
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icReadReceipt,
+          AppLocalizations.of(context).requestReadReceipt,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          selectedIcon: _imagePaths.icFilterSelected,
+          isSelected: controller.hasRequestReadReceipt.value,
+          onCallbackAction: () {
+            popBack();
+            controller.toggleRequestReadReceipt();
+          }
+        )
+      ),
+    ];
+  }
+
+  List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
+    return [
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icReadReceipt,
+          AppLocalizations.of(context).requestReadReceipt,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          colorIcon: ComposerStyle.popupItemIconColor,
+          selectedIcon: _imagePaths.icFilterSelected,
+          isSelected: controller.hasRequestReadReceipt.value,
+          onCallbackAction: () {
+            popBack();
+            controller.toggleRequestReadReceipt();
+          }
+        )
+      ),
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icSaveToDraft,
+          AppLocalizations.of(context).saveAsDraft,
+          colorIcon: ComposerStyle.popupItemIconColor,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          onCallbackAction: () {
+            popBack();
+            controller.saveToDraftAction(context);
+          }
+        )
+      ),
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          _imagePaths.icDeleteMailbox,
+          AppLocalizations.of(context).delete,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          onCallbackAction: () {
+            popBack();
+            controller.closeComposer(context);
+          },
+        )
+      ),
+    ];
   }
 }

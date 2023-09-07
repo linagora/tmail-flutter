@@ -202,6 +202,7 @@ class ImagePaths {
   String get icAttachmentFile => _getImagePath('ic_attachment_file.svg');
   String get icAttachFile => _getImagePath('ic_attach_file.svg');
   String get icSend => _getImagePath('ic_send.svg');
+  String get icReadReceipt => _getImagePath('ic_read_receipt.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
