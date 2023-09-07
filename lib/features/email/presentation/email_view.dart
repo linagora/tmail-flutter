@@ -291,8 +291,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               }
             }),
             Obx(() => EmailViewLoadingBarWidget(
-              viewState: controller.emailLoadedViewState.value,
-              selectedEmail: presentationEmail
+              viewState: controller.emailLoadedViewState.value
             )),
             if (calendarEvent != null)
               Column(

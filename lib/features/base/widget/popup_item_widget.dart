@@ -38,6 +38,7 @@ class PopupItemWidget extends StatelessWidget {
         onTap: onCallbackAction,
         child: Container(
           height: PopupItemWidgetStyle.height,
+          constraints: const BoxConstraints(minWidth: PopupItemWidgetStyle.minWidth),
           padding: padding,
           child: Row(children: [
             SvgPicture.asset(
