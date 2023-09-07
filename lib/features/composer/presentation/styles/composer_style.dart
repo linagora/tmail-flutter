@@ -33,6 +33,7 @@ class ComposerStyle {
   static const EdgeInsetsGeometry mobileSubjectPadding = EdgeInsetsDirectional.only(end: 16, top: 12, bottom: 12);
   static const EdgeInsetsGeometry mobileEditorPadding = EdgeInsetsDirectional.symmetric(horizontal: 12);
   static const EdgeInsetsGeometry popupItemPadding = EdgeInsetsDirectional.symmetric(horizontal: 12);
+  static const EdgeInsetsGeometry insertImageLoadingBarPadding = EdgeInsetsDirectional.only(top: 12);
 
   static const TextStyle popupItemTextStyle = TextStyle(
     color: Colors.black,
