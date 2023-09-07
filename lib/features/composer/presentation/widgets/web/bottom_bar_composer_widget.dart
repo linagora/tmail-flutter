@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+typedef OnRequestReadReceiptAction = Function(RelativeRect position);
+
 class BottomBarComposerWidget extends StatelessWidget {
 
   final bool isCodeViewEnabled;
@@ -16,6 +18,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback deleteComposerAction;
   final VoidCallback saveToDraftAction;
   final VoidCallback sendMessageAction;
+  final OnRequestReadReceiptAction? requestReadReceiptAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -30,6 +33,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.deleteComposerAction,
     required this.saveToDraftAction,
     required this.sendMessageAction,
+    this.requestReadReceiptAction,
   });
 
   @override
@@ -104,11 +108,20 @@ class BottomBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
+            icon: _imagePaths.icReadReceipt,
+            borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+            padding: BottomBarComposerWidgetStyle.iconPadding,
+            iconSize: BottomBarComposerWidgetStyle.iconSize,
+            tooltipMessage: AppLocalizations.of(context).requestReadReceipt,
+            onTapActionAtPositionCallback: requestReadReceiptAction,
+          ),
+          const SizedBox(width: BottomBarComposerWidgetStyle.space),
+          TMailButtonWidget.fromIcon(
             icon: _imagePaths.icSaveToDraft,
             borderRadius: BottomBarComposerWidgetStyle.iconRadius,
             padding: BottomBarComposerWidgetStyle.iconPadding,
             iconSize: BottomBarComposerWidgetStyle.iconSize,
-            tooltipMessage: AppLocalizations.of(context).save_to_drafts,
+            tooltipMessage: AppLocalizations.of(context).saveAsDraft,
             onTapActionCallback: saveToDraftAction,
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.sendButtonSpace),

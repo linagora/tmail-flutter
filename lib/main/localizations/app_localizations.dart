@@ -3333,4 +3333,11 @@ class AppLocalizations {
       args: [count]
     );
   }
+
+  String get saveAsDraft {
+    return Intl.message(
+      'Save as draft',
+      name: 'saveAsDraft',
+    );
+  }
 }

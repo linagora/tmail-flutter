@@ -264,6 +264,7 @@ mixin MailboxWidgetMixin {
             contextMenuItem.action.getContextMenuIcon(imagePaths),
             contextMenuItem.action.getTitleContextMenu(context),
             colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
+            padding: const EdgeInsetsDirectional.only(start: 12),
             iconSize: 24,
             styleName: TextStyle(
               fontWeight: FontWeight.w500,

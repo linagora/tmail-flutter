@@ -8,11 +8,13 @@ class ComposerStyle {
   static const double radius = 28;
   static const double keyboardMaxHeight = 500;
   static const double keyboardToolBarHeight = 200;
+  static const double popupMenuRadius = 8;
 
   static const Color borderColor = AppColor.colorLineComposer;
   static const Color backgroundEditorColor = Colors.white;
   static const Color richToolbarColor = Colors.white;
   static const Color mobileBackgroundColor = Colors.white;
+  static const Color popupItemIconColor = AppColor.primaryColor;
 
   static const EdgeInsetsGeometry richToolbarPadding = EdgeInsetsDirectional.symmetric(horizontal: 24, vertical: 8);
   static const EdgeInsetsGeometry desktopRecipientPadding = EdgeInsetsDirectional.only(end: 24);
@@ -30,6 +32,13 @@ class ComposerStyle {
   static const EdgeInsetsGeometry mobileSubjectMargin = EdgeInsetsDirectional.only(start: 16);
   static const EdgeInsetsGeometry mobileSubjectPadding = EdgeInsetsDirectional.only(end: 16, top: 12, bottom: 12);
   static const EdgeInsetsGeometry mobileEditorPadding = EdgeInsetsDirectional.symmetric(horizontal: 12);
+  static const EdgeInsetsGeometry popupItemPadding = EdgeInsetsDirectional.symmetric(horizontal: 12);
+
+  static const TextStyle popupItemTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 16,
+    fontWeight: FontWeight.w500
+  );
 
   static const List<BoxShadow> richToolbarShadow = [
     BoxShadow(
