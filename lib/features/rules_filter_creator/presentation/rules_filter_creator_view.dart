@@ -591,13 +591,13 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         itemCount: controller.listRuleCondition.length,
         itemBuilder: (context, index) {
           return RuleFilterConditionWidget(
-            key: ValueKey(controller.listRuleConditionValueArguments[index].inputRuleConditionValueFocusNode),
+            key: ValueKey(controller.listRuleConditionValueArguments[index].focusNode),
             ruleFilterConditionScreenType: ruleFilterConditionScreenType,
             ruleCondition: controller.listRuleCondition[index],
             imagePaths: _imagePaths,
-            conditionValueErrorText: controller.listRuleConditionValueArguments[index].errorRuleConditionValue,
-            conditionValueFocusNode: controller.listRuleConditionValueArguments[index].inputRuleConditionValueFocusNode,
-            conditionValueEditingController: controller.listRuleConditionValueArguments[index].inputRuleConditionValueController,
+            conditionValueErrorText: controller.listRuleConditionValueArguments[index].errorText,
+            conditionValueFocusNode: controller.listRuleConditionValueArguments[index].focusNode,
+            conditionValueEditingController: controller.listRuleConditionValueArguments[index].controller,
             tapRuleConditionFieldCallback: (value) => {
               if (ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile) {
                 controller.openContextMenuAction(
