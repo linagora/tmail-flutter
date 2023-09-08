@@ -15,6 +15,9 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
+  static const int _maxRetryCount = 3;
+  static const String RETRY_KEY = 'Retry';
+
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
@@ -41,7 +44,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
-    log('AuthorizationInterceptors::setToken(): newToken: $newToken | configOIDC: $_configOIDC');
   }
 
   void _updateNewToken(Token newToken) {
@@ -54,6 +56,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    log('AuthorizationInterceptors::onRequest():DATA: ${options.data}');
+    log('AuthorizationInterceptors::onRequest():TOKEN_HASHCODE_CURRENT: ${_token?.token.hashCode}');
     switch(_authenticationType) {
       case AuthenticationType.basic:
         if (_authorization != null) {
@@ -73,77 +77,87 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError():dioType: ${err.type} | statusCode: ${err.response?.statusCode} | message: ${err.message} | statusMessage: ${err.response?.statusMessage}');
-    try {
-      if (_validateToRefreshToken(err)) {
-        log('AuthorizationInterceptors::onError:RefreshTokenCalled:configOIDC: $_configOIDC | refreshTokenCurrent: ${_token?.refreshToken}');
-        final newToken = await _authenticationClient.refreshingTokensOIDC(
-          _configOIDC!.clientId,
-          _configOIDC!.redirectUrl,
-          _configOIDC!.discoveryUrl,
-          _configOIDC!.scopes,
-          _token!.refreshToken
-        );
+    logError('AuthorizationInterceptors::onError(): $err');
+    logError('AuthorizationInterceptors::onError():TOKEN_HASHCODE_CURRENT: ${_token?.token.hashCode}');
 
-        final accountCurrent = await _accountCacheManager.getSelectedAccount();
+    final requestOptions = err.requestOptions;
+    final extraInRequest = requestOptions.extra;
+    var retries = extraInRequest[RETRY_KEY] ?? 0;
 
-        await _accountCacheManager.deleteSelectedAccount(_token!.tokenIdHash);
+    if (_validateToRefreshToken(err)) {
+      log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
+      final newToken = await _authenticationClient.refreshingTokensOIDC(
+        _configOIDC!.clientId,
+        _configOIDC!.redirectUrl,
+        _configOIDC!.discoveryUrl,
+        _configOIDC!.scopes,
+        _token!.refreshToken
+      );
 
-        await Future.wait([
-          _tokenOidcCacheManager.persistOneTokenOidc(newToken),
-          _accountCacheManager.setSelectedAccount(
-            PersonalAccount(
-              newToken.tokenIdHash,
-              AuthenticationType.oidc,
-              isSelected: true,
-              accountId: accountCurrent.accountId,
-              apiUrl: accountCurrent.apiUrl,
-              userName: accountCurrent.userName
-            )
+      final accountCurrent = await _accountCacheManager.getSelectedAccount();
+
+      await _accountCacheManager.deleteSelectedAccount(_token!.tokenIdHash);
+
+      await Future.wait([
+        _tokenOidcCacheManager.persistOneTokenOidc(newToken),
+        _accountCacheManager.setSelectedAccount(
+          PersonalAccount(
+            newToken.tokenIdHash,
+            AuthenticationType.oidc,
+            isSelected: true,
+            accountId: accountCurrent.accountId,
+            apiUrl: accountCurrent.apiUrl,
+            userName: accountCurrent.userName
           )
-        ]);
-        log('AuthorizationInterceptors::onError():NewToken: $newToken');
-        _updateNewToken(newToken.toToken());
+        )
+      ]);
+      _updateNewToken(newToken.toToken());
 
-        final requestOptions = err.requestOptions;
-        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+      final requestOptions = err.requestOptions;
+      requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
 
-        final response = await _dio.fetch(requestOptions);
-        return handler.resolve(response);
-      } else {
-        super.onError(err, handler);
-      }
-    } catch (e) {
-      logError('AuthorizationInterceptors::onError():Exception: $e');
+      final response = await _dio.fetch(requestOptions);
+      return handler.resolve(response);
+    } else if (_validateToRetry(err, retries)) {
+      log('AuthorizationInterceptors::onError:>> _validateToRetry | retries: $retries');
+      retries++;
+
+      final requestOptions = err.requestOptions;
+      requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
+      requestOptions.extra = {RETRY_KEY: retries};
+
+      final response = await _dio.fetch(requestOptions);
+      return handler.resolve(response);
+    } else {
       super.onError(err, handler);
     }
   }
 
-  bool _isTokenExpired() {
-    if (_token?.isExpired == true) {
-      log('AuthorizationInterceptors::_isTokenExpired(): TOKE_EXPIRED');
-      return true;
-    }
-    return false;
-  }
+  bool _isTokenExpired() => _token?.isExpired == true;
 
-  bool _isAuthenticationOidcValid() {
-    if (_authenticationType == AuthenticationType.oidc &&
-        _configOIDC != null &&
-        _token != null) {
-      log('AuthorizationInterceptors::_isAuthenticationOidcValid()');
-      return true;
-    }
-    return false;
-  }
+  bool _isAuthenticationOidcValid() => _authenticationType == AuthenticationType.oidc && _configOIDC != null;
 
-  bool _isRefreshTokenNotEmpty() => _token != null && _token!.refreshToken.isNotEmpty;
+  bool _isTokenNotEmpty() => _token?.token.isNotEmpty == true;
+
+  bool _isRefreshTokenNotEmpty() => _token?.refreshToken.isNotEmpty == true;
 
   bool _validateToRefreshToken(DioError dioError) {
-    if (_isTokenExpired() &&
-        (dioError.response == null || dioError.response?.statusCode == 401) &&
+    if (dioError.response?.statusCode == 401 &&
+        _isAuthenticationOidcValid() &&
         _isRefreshTokenNotEmpty() &&
-        _isAuthenticationOidcValid()) {
+        _isTokenExpired()
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  bool _validateToRetry(DioError dioError, int retryCount) {
+    if (dioError.type == DioErrorType.badResponse &&
+        dioError.response?.statusCode == 401 &&
+        _isTokenNotEmpty() &&
+        retryCount < _maxRetryCount
+    ) {
       return true;
     }
     return false;
