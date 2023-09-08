@@ -157,8 +157,13 @@ class UploadController extends BaseController {
         } else if (success is SuccessAttachmentUploadState) {
           log('UploadController::_handleProgressUploadInlineImageStateStream():succeed[${success.uploadId}]');
           final inlineAttachment = success.attachment.toAttachmentWithDisposition(
-              disposition: ContentDisposition.inline,
-              cid: _uuid.v1());
+            disposition: ContentDisposition.inline,
+            cid: _uuid.v1()
+          );
+
+          final uploadFileState = _uploadingStateInlineFiles.getUploadFileStateById(success.uploadId);
+          log('UploadController::_handleProgressUploadInlineImageStateStream:uploadId: ${uploadFileState?.uploadTaskId} | fromFileShared: ${uploadFileState?.fromFileShared}');
+
           _uploadingStateInlineFiles.updateElementByUploadTaskId(
             success.uploadId,
             (currentState) {
@@ -173,7 +178,9 @@ class UploadController extends BaseController {
           final newUploadSuccess = SuccessAttachmentUploadState(
             success.uploadId,
             inlineAttachment,
-            success.fileInfo);
+            success.fileInfo,
+            fromFileShared: uploadFileState?.fromFileShared ?? false
+          );
           _handleUploadInlineAttachmentsSuccess(newUploadSuccess);
         }
       }
@@ -202,13 +209,21 @@ class UploadController extends BaseController {
     });
   }
 
-  Future<void> uploadFileAction(FileInfo uploadFile, Uri uploadUri, {bool isInline = false}) {
-    log('UploadController::_uploadFile():fileName: ${uploadFile.fileName}');
+  Future<void> uploadFileAction(
+    FileInfo uploadFile,
+    Uri uploadUri,
+    {
+      bool isInline = false,
+      bool fromFileShared = false,
+    }
+  ) {
+    log('UploadController::_uploadFile():fileName: ${uploadFile.fileName} | isInline: $isInline | fromFileShared: $fromFileShared');
     consumeState(_uploadAttachmentInteractor.execute(
       uploadFile,
       uploadUri,
       cancelToken: CancelToken(),
-      isInline: isInline
+      isInline: isInline,
+      fromFileShared: fromFileShared
     ));
     return Future.value();
   }
@@ -368,7 +383,7 @@ class UploadController extends BaseController {
     super.handleSuccessViewState(success);
     if (success is UploadAttachmentSuccess) {
       if (success.isInline) {
-        _uploadingStateInlineFiles.add(success.uploadAttachment.toUploadFileState());
+        _uploadingStateInlineFiles.add(success.uploadAttachment.toUploadFileState(fromFileShared: success.fromFileShared));
         await _progressUploadInlineImageStateStreamGroup.add(success.uploadAttachment.progressState);
       } else {
         _uploadingStateFiles.add(success.uploadAttachment.toUploadFileState());
