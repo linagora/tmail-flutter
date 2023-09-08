@@ -66,4 +66,8 @@ class UploadFileStateList {
       _uploadingStateFiles.remove(fileState);
     }
   }
+
+  UploadFileState? getUploadFileStateById(UploadTaskId uploadTaskId) {
+    return _uploadingStateFiles.firstWhereOrNull((fileState) => fileState?.uploadTaskId == uploadTaskId);
+  }
 }

@@ -31,11 +31,24 @@ class SuccessAttachmentUploadState extends Success {
   final UploadTaskId uploadId;
   final Attachment attachment;
   final FileInfo fileInfo;
+  final bool fromFileShared;
 
-  SuccessAttachmentUploadState(this.uploadId, this.attachment, this.fileInfo);
+  SuccessAttachmentUploadState(
+    this.uploadId,
+    this.attachment,
+    this.fileInfo,
+    {
+      this.fromFileShared = false
+    }
+  );
 
   @override
-  List<Object?> get props => [uploadId, attachment, fileInfo];
+  List<Object?> get props => [
+    uploadId,
+    attachment,
+    fileInfo,
+    fromFileShared,
+  ];
 }
 
 class ErrorAttachmentUploadState extends Failure {
