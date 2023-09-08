@@ -311,7 +311,10 @@ class ComposerController extends BaseController {
             ImageSource.local,
             fileInfo: success.fileInfo,
             cid: success.cid,
-            base64Uri: success.base64Uri));
+            base64Uri: success.base64Uri
+          ),
+          fromFileShare: success.fromFileShared
+        );
       }
       maxWithEditor = null;
     }
@@ -1235,7 +1238,7 @@ class ComposerController extends BaseController {
     if (listImageSharedMediaFile.isNotEmpty) {
       final listInlineImage = covertListSharedMediaFileToInlineImage(listSharedMediaFile);
       for (var e in listInlineImage) {
-        _uploadInlineAttachmentsAction(e.fileInfo!);
+        _uploadInlineAttachmentsAction(e.fileInfo!, fromFileShared: true);
       }
     }
     if (listFileAttachmentSharedMediaFile.isNotEmpty) {
@@ -1681,13 +1684,18 @@ class ComposerController extends BaseController {
     }
   }
 
-  void _uploadInlineAttachmentsAction(FileInfo pickedFile) async {
+  void _uploadInlineAttachmentsAction(FileInfo pickedFile, {bool fromFileShared = false}) async {
     if (uploadController.hasEnoughMaxAttachmentSize(listFiles: [pickedFile])) {
       final session = mailboxDashBoardController.sessionCurrent;
       final accountId = mailboxDashBoardController.accountId.value;
       if (session != null && accountId != null) {
         final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
-        uploadController.uploadFileAction(pickedFile, uploadUri, isInline: true);
+        uploadController.uploadFileAction(
+          pickedFile,
+          uploadUri,
+          isInline: true,
+          fromFileShared: fromFileShared
+        );
       }
     } else {
       if (currentContext != null) {
@@ -1713,10 +1721,12 @@ class ComposerController extends BaseController {
       final imageUrl = uploadState.attachment.getDownloadUrl(baseDownloadUrl, accountId);
       log('ComposerController::_handleUploadInlineSuccess(): imageUrl: $imageUrl');
       consumeState(_downloadImageAsBase64Interactor.execute(
-          imageUrl,
-          uploadState.attachment.cid!,
-          uploadState.fileInfo,
-          maxWidth: maxWithEditor));
+        imageUrl,
+        uploadState.attachment.cid!,
+        uploadState.fileInfo,
+        maxWidth: maxWithEditor,
+        fromFileShared: uploadState.fromFileShared,
+      ));
     }
   }
 

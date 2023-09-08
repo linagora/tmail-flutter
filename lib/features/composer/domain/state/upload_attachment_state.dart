@@ -7,18 +7,40 @@ class UploadAttachmentSuccess extends UIState {
 
   final UploadAttachment uploadAttachment;
   final bool isInline;
+  final bool fromFileShared;
 
-  UploadAttachmentSuccess(this.uploadAttachment, {this.isInline = false});
+  UploadAttachmentSuccess(
+    this.uploadAttachment,
+    {
+      this.isInline = false,
+      this.fromFileShared = false,
+    }
+  );
 
   @override
-  List<Object?> get props => [uploadAttachment, isInline];
+  List<Object?> get props => [
+    uploadAttachment,
+    isInline,
+    fromFileShared,
+  ];
 }
 
 class UploadAttachmentFailure extends FeatureFailure {
   final bool isInline;
+  final bool fromFileShared;
 
-  UploadAttachmentFailure(dynamic exception, {this.isInline = false}) : super(exception: exception);
+  UploadAttachmentFailure(
+    dynamic exception,
+    {
+      this.isInline = false,
+      this.fromFileShared = false,
+    }
+  ) : super(exception: exception);
 
   @override
-  List<Object?> get props => [isInline, ...super.props];
+  List<Object?> get props => [
+    isInline,
+    fromFileShared,
+    ...super.props
+  ];
 }
