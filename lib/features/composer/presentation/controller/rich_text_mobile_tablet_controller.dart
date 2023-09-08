@@ -9,12 +9,20 @@ import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.
 class RichTextMobileTabletController extends BaseRichTextController {
   HtmlEditorApi? htmlEditorApi;
 
-  void insertImage(InlineImage image, {double? maxWithEditor}) async {
-    log('RichTextMobileTabletController::insertImage(): $image | maxWithEditor: $maxWithEditor');
+  void insertImage(
+    InlineImage image,
+    {
+      double? maxWithEditor,
+      bool fromFileShare = false
+    }
+  ) async {
+    log('RichTextMobileTabletController::insertImage(): $image | maxWithEditor: $maxWithEditor | $fromFileShare');
     if (image.source == ImageSource.network) {
       htmlEditorApi?.insertImageLink(image.link!);
     } else {
-      await htmlEditorApi?.moveCursorAtLastNode();
+      if (fromFileShare) {
+        await htmlEditorApi?.moveCursorAtLastNode();
+      }
       await htmlEditorApi?.insertHtml(image.base64Uri ?? '');
     }
   }

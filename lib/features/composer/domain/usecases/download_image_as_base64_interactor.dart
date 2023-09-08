@@ -10,24 +10,31 @@ class DownloadImageAsBase64Interactor {
   DownloadImageAsBase64Interactor(this._composerRepository);
 
   Stream<Either<Failure, Success>> execute(
-      String url,
-      String cid,
-      FileInfo fileInfo,
-      {
-        double? maxWidth,
-        bool? compress
-      }
+    String url,
+    String cid,
+    FileInfo fileInfo,
+    {
+      double? maxWidth,
+      bool? compress,
+      bool fromFileShared = false,
+    }
   ) async* {
     try {
       yield Right<Failure, Success>(DownloadingImageAsBase64());
       final result = await _composerRepository.downloadImageAsBase64(
-          url,
+        url,
+        cid,
+        fileInfo,
+        maxWidth: maxWidth,
+        compress: compress
+      );
+      if (result?.isNotEmpty == true) {
+        yield Right<Failure, Success>(DownloadImageAsBase64Success(
+          result!,
           cid,
           fileInfo,
-          maxWidth: maxWidth,
-          compress: compress);
-      if (result?.isNotEmpty == true) {
-        yield Right<Failure, Success>(DownloadImageAsBase64Success(result!, cid, fileInfo));
+          fromFileShared: fromFileShared
+        ));
       } else {
         yield Left<Failure, Success>(DownloadImageAsBase64Failure(null));
       }
