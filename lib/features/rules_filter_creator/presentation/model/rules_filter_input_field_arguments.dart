@@ -3,20 +3,20 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class RulesFilterInputFieldArguments with EquatableMixin {
-  final FocusNode inputRuleConditionValueFocusNode;
-  final String errorRuleConditionValue;
-  final TextEditingController inputRuleConditionValueController;
+  final FocusNode focusNode;
+  final String errorText;
+  final TextEditingController controller;
 
   RulesFilterInputFieldArguments({
-    required this.inputRuleConditionValueFocusNode,
-    required this.errorRuleConditionValue,
-    required this.inputRuleConditionValueController,
+    required this.focusNode,
+    required this.errorText,
+    required this.controller,
   });
   
   @override
   List<Object?> get props => [
-    inputRuleConditionValueFocusNode,
-    errorRuleConditionValue,
-    inputRuleConditionValueController,
+    focusNode,
+    errorText,
+    controller,
   ];
 }
