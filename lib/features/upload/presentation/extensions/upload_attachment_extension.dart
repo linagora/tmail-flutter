@@ -4,11 +4,12 @@ import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_sta
 
 extension UploadAttachmentExtension on UploadAttachment {
 
-  UploadFileState toUploadFileState() {
+  UploadFileState toUploadFileState({bool fromFileShared = false}) {
     return UploadFileState(
       uploadTaskId,
       file: fileInfo,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
+      fromFileShared: fromFileShared,
     );
   }
 }

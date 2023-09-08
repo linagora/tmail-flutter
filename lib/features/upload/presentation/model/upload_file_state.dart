@@ -18,14 +18,19 @@ class UploadFileState with EquatableMixin {
   final int uploadingProgress;
   final Attachment? attachment;
   final CancelToken? cancelToken;
+  final bool fromFileShared;
 
-  UploadFileState(this.uploadTaskId, {
-    this.file,
-    this.uploadStatus = UploadFileStatus.waiting,
-    this.uploadingProgress = 0,
-    this.attachment,
-    this.cancelToken,
-  });
+  UploadFileState(
+    this.uploadTaskId,
+    {
+      this.file,
+      this.uploadStatus = UploadFileStatus.waiting,
+      this.uploadingProgress = 0,
+      this.attachment,
+      this.cancelToken,
+      this.fromFileShared = false,
+    }
+  );
 
   UploadFileState copyWith({
     UploadTaskId? uploadTaskId,
@@ -33,7 +38,8 @@ class UploadFileState with EquatableMixin {
     UploadFileStatus? uploadStatus,
     int? uploadingProgress,
     Attachment? attachment,
-    CancelToken? cancelToken
+    CancelToken? cancelToken,
+    bool? fromFileShared,
   }) {
     return UploadFileState(
       uploadTaskId ?? this.uploadTaskId,
@@ -41,7 +47,8 @@ class UploadFileState with EquatableMixin {
       uploadStatus: uploadStatus ?? this.uploadStatus,
       uploadingProgress: uploadingProgress ?? this.uploadingProgress,
       attachment: attachment ?? this.attachment,
-      cancelToken: cancelToken ?? this.cancelToken
+      cancelToken: cancelToken ?? this.cancelToken,
+      fromFileShared: fromFileShared ?? this.fromFileShared
     );
   }
 
@@ -96,6 +103,8 @@ class UploadFileState with EquatableMixin {
     file,
     uploadStatus,
     uploadingProgress,
-    attachment
+    attachment,
+    cancelToken,
+    fromFileShared,
   ];
 }

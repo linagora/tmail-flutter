@@ -10,11 +10,24 @@ class DownloadImageAsBase64Success extends UIState {
   final String base64Uri;
   final String cid;
   final FileInfo fileInfo;
+  final bool fromFileShared;
 
-  DownloadImageAsBase64Success(this.base64Uri, this.cid, this.fileInfo);
+  DownloadImageAsBase64Success(
+    this.base64Uri,
+    this.cid,
+    this.fileInfo,
+    {
+      this.fromFileShared = false
+    }
+  );
 
   @override
-  List<Object?> get props => [base64Uri, cid, fileInfo];
+  List<Object?> get props => [
+    base64Uri,
+    cid,
+    fileInfo,
+    fromFileShared,
+  ];
 }
 
 class DownloadImageAsBase64Failure extends FeatureFailure {
