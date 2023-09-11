@@ -76,6 +76,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/down
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
@@ -422,26 +423,9 @@ class MailboxDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
-      sessionCurrent = arguments;
-      final personalAccount = sessionCurrent!.personalAccount;
-      accountId.value = personalAccount.accountId;
-      _getUserProfile();
-      updateAuthenticationAccount(sessionCurrent!, accountId.value!, sessionCurrent!.username);
-      injectAutoCompleteBindings(sessionCurrent, accountId.value);
-      injectRuleFilterBindings(sessionCurrent, accountId.value);
-      injectVacationBindings(sessionCurrent, accountId.value);
-      injectFCMBindings(sessionCurrent, accountId.value);
-      _getVacationResponse();
-      spamReportController.getSpamReportStateAction();
-      if (PlatformInfo.isMobile) {
-        getAllSendingEmails();
-        _storeSessionAction(sessionCurrent!);
-      }
-      if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
-        _handleClickLocalNotificationOnTerminated();
-      } else {
-        dispatchRoute(DashboardRoutes.thread);
-      }
+      _handleSession(arguments);
+    } else if (arguments is MailtoArguments) {
+      _handleMailtoURL(arguments);
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -468,6 +452,38 @@ class MailboxDashBoardController extends ReloadableController {
     } catch (e) {
       logError('MailboxDashBoardController::injectFCMBindings(): $e');
     }
+  }
+
+  void _handleSession(Session session) {
+    sessionCurrent = session;
+    final personalAccount = sessionCurrent!.personalAccount;
+    accountId.value = personalAccount.accountId;
+    _getUserProfile();
+    updateAuthenticationAccount(
+      sessionCurrent!,
+      accountId.value!,
+      sessionCurrent!.username
+    );
+    injectAutoCompleteBindings(sessionCurrent, accountId.value);
+    injectRuleFilterBindings(sessionCurrent, accountId.value);
+    injectVacationBindings(sessionCurrent, accountId.value);
+    injectFCMBindings(sessionCurrent, accountId.value);
+    _getVacationResponse();
+    spamReportController.getSpamReportStateAction();
+    if (PlatformInfo.isMobile) {
+      getAllSendingEmails();
+      _storeSessionAction(sessionCurrent!);
+    }
+    if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
+      _handleClickLocalNotificationOnTerminated();
+    } else {
+      dispatchRoute(DashboardRoutes.thread);
+    }
+  }
+
+  void _handleMailtoURL(MailtoArguments arguments) {
+    routerParameters.value = arguments.toMapRouter();
+    _handleSession(arguments.session);
   }
 
   Future<void> _getAppVersion() async {
