@@ -14,14 +14,27 @@ class NavigationRouter with EquatableMixin {
   final MailboxId? mailboxId;
   final DashboardType dashboardType;
   final SearchQuery? searchQuery;
+  final String? routeName;
+  final String? emailAddress;
 
   NavigationRouter({
     this.emailId,
     this.mailboxId,
     this.searchQuery,
-    this.dashboardType = DashboardType.normal
+    this.dashboardType = DashboardType.normal,
+    this.routeName,
+    this.emailAddress,
   });
 
+  factory NavigationRouter.initial() => NavigationRouter();
+
   @override
-  List<Object?> get props => [emailId, mailboxId, searchQuery, dashboardType];
+  List<Object?> get props => [
+    emailId,
+    mailboxId,
+    searchQuery,
+    dashboardType,
+    routeName,
+    emailAddress,
+  ];
 }
