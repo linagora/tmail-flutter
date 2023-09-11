@@ -15,6 +15,7 @@ class ComposerArguments extends RouterArguments {
   final List<Attachment>? attachments;
   final Role? mailboxRole;
   final SendingEmail? sendingEmail;
+  final String? uri;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -24,7 +25,8 @@ class ComposerArguments extends RouterArguments {
     this.mailboxRole,
     this.emailAddress,
     this.listSharedMediaFile,
-    this.sendingEmail
+    this.sendingEmail,
+    this.uri,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -49,6 +51,12 @@ class ComposerArguments extends RouterArguments {
     ComposerArguments(
       emailActionType: EmailActionType.composeFromEmailAddress,
       emailAddress: emailAddress
+    );
+
+  factory ComposerArguments.fromMailtoURL(String? uri) =>
+    ComposerArguments(
+      emailActionType: EmailActionType.composeFromMailtoURL,
+      uri: uri
     );
 
   factory ComposerArguments.editDraftEmail(PresentationEmail presentationEmail) =>
@@ -114,6 +122,7 @@ class ComposerArguments extends RouterArguments {
     mailboxRole,
     emailAddress,
     listSharedMediaFile,
-    sendingEmail
+    sendingEmail,
+    uri,
   ];
 }
