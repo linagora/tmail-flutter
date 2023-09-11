@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 void main() async {
@@ -33,6 +34,8 @@ void main() async {
        AppUtils.loadEnvFile()
     ]);
     await HiveCacheConfig.initializeEncryptionKey();
+
+    setPathUrlStrategy();
 
     runApp(const TMailApp());
   });

@@ -37,7 +37,7 @@ abstract class RouteUtils {
   }
 
   static Uri generateRouteBrowser(String route, NavigationRouter router) {
-    final baseRoutePath = '$baseOriginUrl/#$route';
+    final baseRoutePath = '$baseOriginUrl$route';
     ServicePath servicePath = ServicePath(baseRoutePath);
     if (router.emailId != null) {
       servicePath = servicePath.withPathParameter(router.emailId!.id.value);
