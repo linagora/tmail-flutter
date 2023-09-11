@@ -14,6 +14,7 @@ enum EmailActionType {
   composeFromContentShared,
   composeFromFileShared,
   composeFromEmailAddress,
+  composeFromMailtoURL,
   reopenComposerBrowser,
   moveToTrash,
   deletePermanently,

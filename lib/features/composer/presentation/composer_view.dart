@@ -278,6 +278,7 @@ class ComposerView extends BaseComposerView {
       switch(argsComposer.emailActionType) {
         case EmailActionType.compose:
         case EmailActionType.composeFromEmailAddress:
+        case EmailActionType.composeFromMailtoURL:
         case EmailActionType.composeFromFileShared:
           return _buildHtmlEditor(
             context,
