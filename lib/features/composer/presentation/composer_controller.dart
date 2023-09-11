@@ -470,6 +470,16 @@ class ComposerController extends BaseController {
           toAddressExpandMode.value = ExpandMode.COLLAPSE;
           _updateStatusEmailSendButton();
           break;
+        case EmailActionType.composeFromMailtoURL:
+          if (GetUtils.isEmail(arguments.uri ?? '')) {
+            listToEmailAddress.add(EmailAddress(null, arguments.uri));
+          } else {
+            listToEmailAddress.add(EmailAddress(null, 'invalid'));
+          }
+          isInitialRecipient.value = true;
+          toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          _updateStatusEmailSendButton();
+          break;
         case EmailActionType.reply:
         case EmailActionType.replyAll:
           _initEmailAddress(
