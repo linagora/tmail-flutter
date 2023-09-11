@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanent
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -402,6 +403,12 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     log('MailboxController::_handleDataFromNavigationRouter():navigationRouter: $navigationRouter');
 
     if (isHasDataFromRoute) {
+      if (isRedirectToMailtoURL) {
+        mailboxDashBoardController.goToComposer(
+          ComposerArguments.fromMailtoURL(navigationRouter?.emailAddress)
+        );
+      }
+
       if (mailboxIdFromNavigationRouter != null) {
         _selectMailboxFromRouter();
       } else if (emailIdFromNavigationRouter != null) {
@@ -430,6 +437,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   EmailId? get emailIdFromNavigationRouter => navigationRouter?.emailId;
 
   SearchQuery? get searchQueryFromNavigationRouter => navigationRouter?.searchQuery;
+
+  bool get isRedirectToMailtoURL => navigationRouter?.routeName == AppRoutes.mailtoURL;
 
   void _clearNavigationRouter() {
     mailboxDashBoardController.navigationRouter = null;
