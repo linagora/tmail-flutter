@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart' deferred as contact_view;
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
+import 'package:tmail_ui_user/features/mailto/presentation/mailto_url_bindings.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_bindings.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart' deferred as rules_filter_creator;
 import 'package:tmail_ui_user/features/login/presentation/login_bindings.dart';
@@ -32,6 +33,7 @@ import 'package:tmail_ui_user/features/unknown_route_page/unknown_route_page_vie
 import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart' deferred as search_mailbox_view;
+import 'package:tmail_ui_user/features/mailto/presentation/mailto_url_view.dart' deferred as mailto_url_view;
 
 class AppPages {
   static final pages = [
@@ -54,11 +56,13 @@ class AppPages {
         () => mailbox_dashboard.MailboxDashBoardView()),
       binding: MailboxDashBoardBindings()),
     GetPage(
-      name: AppRoutes.dashboardWithParameter,
+      name: AppRoutes.mailtoURL,
       page: () => DeferredWidget(
-        mailbox_dashboard.loadLibrary,
-        () => mailbox_dashboard.MailboxDashBoardView()),
-    binding: MailboxDashBoardBindings()),
+        mailto_url_view.loadLibrary,
+        () => mailto_url_view.MailtoUrlView()
+      ),
+      binding: MailtoUrlBindings()
+    ),
     GetPage(
         name: AppRoutes.settings,
         page: () => DeferredWidget(

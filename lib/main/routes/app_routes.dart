@@ -2,8 +2,7 @@ abstract class AppRoutes {
   static const home = '/';
   static const login = '/login';
   static const session = '/session';
-  static const dashboard = '/dashboard/';
-  static const dashboardWithParameter = '/dashboard/:id';
+  static const dashboard = '/dashboard';
   static const settings = '/settings';
   static const composer = '/composer';
   static const destinationPicker = '/destination_picker';
@@ -14,4 +13,5 @@ abstract class AppRoutes {
   static const emailsForwardCreator = '/emails_forward_creator';
   static const unknownRoutePage = '/notfound';
   static const searchMailbox = '/search_mailbox';
+  static const mailtoURL = '/mailto';
 }
