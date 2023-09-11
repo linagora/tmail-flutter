@@ -58,6 +58,8 @@ abstract class RouteUtils {
     final typeParam = parameters['type'];
     final contextPram = parameters['context'];
     final queryParam = parameters['q'];
+    final routeName = parameters['routeName'];
+    final emailAddress = parameters['emailAddress'];
 
     final emailId = idParam != null ? EmailId(Id(idParam)) : null;
     final mailboxId = contextPram != null ? MailboxId(Id(contextPram)) : null;
@@ -71,6 +73,8 @@ abstract class RouteUtils {
       mailboxId: mailboxId,
       searchQuery: searchQuery,
       dashboardType: dashboardType,
+      routeName: routeName,
+      emailAddress: emailAddress,
     );
   }
 
