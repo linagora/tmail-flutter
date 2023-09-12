@@ -13,10 +13,9 @@ class HtmlTransform {
   /// Transforms this message to HTML code.
   Future<String> transformToHtml({
     required String htmlContent,
+    required TransformConfiguration transformConfiguration,
     Map<String, String>? mapCidImageDownloadUrl,
-    TransformConfiguration? transformConfiguration,
   }) async {
-    transformConfiguration ??= TransformConfiguration.create();
     final transformer = MessageContentTransformer(transformConfiguration, _dioClient, _htmlEscape);
     final document = await transformer.toDocument(
       message: htmlContent,
@@ -28,9 +27,8 @@ class HtmlTransform {
   /// Transforms this message to Text Plain.
   String transformToTextPlain({
     required String content,
-    TransformConfiguration? transformConfiguration
+    required TransformConfiguration transformConfiguration
   }) {
-    transformConfiguration ??= TransformConfiguration.create();
     final transformer = MessageContentTransformer(transformConfiguration, _dioClient, _htmlEscape);
     final message = transformer.toMessage(content);
     return message;

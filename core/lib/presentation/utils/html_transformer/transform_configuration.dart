@@ -34,6 +34,7 @@ class TransformConfiguration {
       const ReplaceLazyLoadImageTransformer(),
       if (PlatformInfo.isWeb)
         const RemoveTooltipLinkTransformer(),
+      const SignatureTransformer(),
     ]
   );
 
@@ -53,7 +54,22 @@ class TransformConfiguration {
       const BlockQuotedTransformer(),
       const BlockCodeTransformer(),
       const AddTargetBlankInTagATransformer(),
-      const ImageTransformer(useLoadingAttribute: true)
+      const ImageTransformer(useLoadingAttribute: true),
+      const SignatureTransformer(),
+    ]
+  );
+
+  factory TransformConfiguration.forComposeEmail() => TransformConfiguration.create(
+    customDomTransformers: [
+      const RemoveScriptTransformer(),
+      const BlockQuotedTransformer(),
+      const BlockCodeTransformer(),
+      const AddTargetBlankInTagATransformer(),
+      const ImageTransformer(),
+      const SignatureTransformer(),
+    ],
+    customTextTransformers: [
+      const SanitizeAutolinkHtmlTransformers()
     ]
   );
 
@@ -97,7 +113,6 @@ class TransformConfiguration {
 
   static const List<DomTransformer> standardDomTransformers = [
     RemoveScriptTransformer(),
-    SignatureTransformer(),
     BlockQuotedTransformer(),
     BlockCodeTransformer(),
     AddTargetBlankInTagATransformer(),

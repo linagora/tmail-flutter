@@ -1253,7 +1253,7 @@ class ComposerController extends BaseController {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
-      TransformConfiguration transformConfiguration = TransformConfiguration.standardConfiguration;
+      TransformConfiguration transformConfiguration = TransformConfiguration.forComposeEmail();
       if (isDraftEmail) {
         transformConfiguration = TransformConfiguration.forDraftsEmail();
       } else if (PlatformInfo.isWeb) {
