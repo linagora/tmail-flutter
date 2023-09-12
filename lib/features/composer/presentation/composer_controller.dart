@@ -533,7 +533,6 @@ class ComposerController extends BaseController {
       emailActionType: actionType,
       mailboxRole: mailboxRole
     );
-    log('ComposerController::_initEmailAddress:recipients: $recipients');
     final userProfile =  mailboxDashBoardController.userProfile.value;
     if (userProfile != null) {
       final isSender = presentationEmail.from.asList().every((element) => element.email == userProfile.email);
@@ -1374,7 +1373,6 @@ class ComposerController extends BaseController {
   }
 
   void onEditorFocusChange(bool isFocus) {
-    log('ComposerController::onEditorFocusChange(): Focus: $isFocus');
     if (isFocus) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
@@ -1391,9 +1389,6 @@ class ComposerController extends BaseController {
     final inputToEmail = toEmailAddressController.text;
     final inputCcEmail = ccEmailAddressController.text;
     final inputBccEmail = bccEmailAddressController.text;
-    log('ComposerController::_autoCreateEmailTag():inputToEmail: $inputToEmail');
-    log('ComposerController::_autoCreateEmailTag():inputCcEmail: $inputCcEmail');
-    log('ComposerController::_autoCreateEmailTag():inputBccEmail: $inputBccEmail');
 
     if (inputToEmail.isNotEmpty) {
       _autoCreateToEmailTag(inputToEmail);
@@ -1595,7 +1590,6 @@ class ComposerController extends BaseController {
       maxWithEditor = maxWith - 120;
     }
     final inlineImage = await _selectFromFile();
-    log('ComposerController::insertImage(): $inlineImage');
     if (inlineImage != null) {
       if (PlatformInfo.isWeb) {
         _insertImageOnWeb(inlineImage);
@@ -1842,10 +1836,7 @@ class ComposerController extends BaseController {
   }
 
   void initTextEditor(String? text) {
-    if (_initTextEditor == null) {
-      _initTextEditor = text;
-      log('ComposerController::initTextEditor():$_initTextEditor');
-    }
+    _initTextEditor ??= text;
   }
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
