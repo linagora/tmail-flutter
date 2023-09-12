@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_dra
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -102,8 +103,6 @@ class ComposerController extends BaseController {
   final toAddressExpandMode = ExpandMode.EXPAND.obs;
   final ccAddressExpandMode = ExpandMode.EXPAND.obs;
   final bccAddressExpandMode = ExpandMode.EXPAND.obs;
-  final identitySelected = Rxn<Identity>();
-  final listIdentities = <Identity>[].obs;
   final emailContentsViewState = Rxn<Either<Failure, Success>>();
   final hasRequestReadReceipt = false.obs;
   final ccRecipientState = PrefixRecipientState.disabled.obs;
@@ -162,49 +161,10 @@ class ComposerController extends BaseController {
   double? maxWithEditor;
   EmailId? _emailIdEditing;
   bool isAttachmentCollapsed = false;
+  Identity? identitySelected;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
-
-  void onChangeTextEditorWeb(String? text) {
-    initTextEditor(text);
-    _textEditorWeb = text;
-  }
-
-  void initTextEditor(String? text) {
-   if (_initTextEditor == null) {
-     _initTextEditor = text;
-     log('ComposerController::initTextEditor():$_initTextEditor');
-   }
-  }
-
-  String? get textEditorWeb => _textEditorWeb;
-
-  HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController.htmlEditorApi;
-
-  void setSubjectEmail(String subject) => subjectEmail.value = subject;
-
-  Future<String> _getEmailBodyText(BuildContext context, {
-    bool changedEmail = false
-  }) async {
-    if (PlatformInfo.isWeb) {
-      var contentHtml = '';
-      if (_responsiveUtils.isWebDesktop(context) &&
-          screenDisplayMode.value == ScreenDisplayMode.minimize) {
-        contentHtml = textEditorWeb ?? '';
-      } else {
-        contentHtml = await richTextWebController.editorController.getText();
-      }
-      final newContentHtml = contentHtml.removeEditorStartTag();
-      log('ComposerController::_getEmailBodyText()::WEB:contentHtml: $contentHtml | newContentHtml: $newContentHtml');
-      return newContentHtml;
-    } else {
-      String contentHtml = await htmlEditorApi?.getText() ?? '';
-      final newContentHtml = contentHtml.removeEditorStartTag();
-      log('ComposerController::_getEmailBodyText()::Mobile:contentHtml: $contentHtml | newContentHtml: $newContentHtml');
-      return newContentHtml;
-    }
-  }
 
   ComposerController(
     this._deviceInfoPlugin,
@@ -419,7 +379,10 @@ class ComposerController extends BaseController {
         _onChangeCursorOnMobile(coordinates, context);
       },
     );
-    if (identitySelected.value == null) {
+  }
+
+  void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) {
+    if (identitySelected == null) {
       _getAllIdentities();
     }
   }
@@ -543,14 +506,9 @@ class ComposerController extends BaseController {
   }
 
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) async {
-    if (success.identities?.isNotEmpty == true) {
-      listIdentities.value = success.identities!
-        .where((identity) => identity.mayDelete == true)
-        .toList();
-
-      if (listIdentities.isNotEmpty) {
-        await selectIdentity(listIdentities.first);
-      }
+    final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
+    if (listIdentitiesMayDeleted.isNotEmpty) {
+      await _selectIdentity(listIdentitiesMayDeleted.first);
     }
 
     _autoFocusFieldWhenLauncher();
@@ -661,20 +619,23 @@ class ComposerController extends BaseController {
       }
   ) async {
     Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
-    if (identitySelected.value?.email?.isNotEmpty == true) {
-      listFromEmailAddress = {EmailAddress(
-          identitySelected.value?.name,
-          identitySelected.value?.email)};
+    if (identitySelected?.email?.isNotEmpty == true) {
+      listFromEmailAddress = {
+        EmailAddress(
+          identitySelected?.name,
+          identitySelected?.email
+        )
+      };
     }
     Set<EmailAddress> listReplyToEmailAddress = {EmailAddress(null, userProfile.email)};
-    if (identitySelected.value?.replyTo?.isNotEmpty == true) {
-      listReplyToEmailAddress = identitySelected.value!.replyTo!;
+    if (identitySelected?.replyTo?.isNotEmpty == true) {
+      listReplyToEmailAddress = identitySelected!.replyTo!;
     }
 
     final attachments = <EmailBodyPart>{};
     attachments.addAll(uploadController.generateAttachments() ?? []);
 
-    var emailBodyText = await _getEmailBodyText(context);
+    var emailBodyText = await _getEmailBodyText(context, asDrafts: asDrafts);
     if (uploadController.mapInlineAttachments.isNotEmpty) {
       final mapContents = await _getMapContent(emailBodyText);
       emailBodyText = mapContents.value1;
@@ -848,7 +809,7 @@ class ComposerController extends BaseController {
         : EmailRequest(
             email: createdEmail,
             sentMailboxId: sentMailboxId,
-            identityId: identitySelected.value?.id,
+            identityId: identitySelected?.id,
             emailIdDestroyed: arguments.emailActionType == EmailActionType.editDraft
               ? arguments.presentationEmail?.id
               : null,
@@ -1012,7 +973,7 @@ class ComposerController extends BaseController {
     PresentationEmail? presentationEmail,
     Role? mailboxRole,
   }) async {
-    final newEmailBody = await _getEmailBodyText(context, changedEmail: true);
+    final newEmailBody = await _getEmailBodyText(context, asDrafts: true);
     log('ComposerController::_isEmailChanged(): newEmailBody: $newEmailBody');
     final oldEmailBody = _initTextEditor ?? '';
     log('ComposerController::_isEmailChanged(): oldEmailBody: $oldEmailBody');
@@ -1054,6 +1015,7 @@ class ComposerController extends BaseController {
   }
 
   void saveToDraftAndClose(BuildContext context, {bool canPop = true}) async {
+    log('ComposerController::saveToDraftAndClose:');
     clearFocusEditor(context);
 
     final arguments = composerArguments.value;
@@ -1545,9 +1507,9 @@ class ComposerController extends BaseController {
     }
   }
 
-  Future<void> selectIdentity(Identity? newIdentity) async {
-    final formerIdentity = identitySelected.value;
-    identitySelected.value = newIdentity;
+  Future<void> _selectIdentity(Identity? newIdentity) async {
+    final formerIdentity = identitySelected;
+    identitySelected = newIdentity;
     if (newIdentity != null) {
       await _applyIdentityForAllFieldComposer(formerIdentity, newIdentity);
     }
@@ -1558,14 +1520,12 @@ class ComposerController extends BaseController {
     Identity newIdentity
   ) async {
     if (formerIdentity != null) {
-      // Remove former identity
       if (formerIdentity.bcc?.isNotEmpty == true) {
         _removeBccEmailAddressFromFormerIdentity(formerIdentity.bcc!);
       }
-
       await _removeSignature();
     }
-    // Add new identity
+
     if (newIdentity.bcc?.isNotEmpty == true) {
       _applyBccEmailAddressFromIdentity(newIdentity.bcc!);
     }
@@ -1814,7 +1774,7 @@ class ComposerController extends BaseController {
     richTextWebController.editorController.setFullScreen();
     onChangeTextEditorWeb(initContent);
     richTextWebController.setEnableCodeView();
-    if (identitySelected.value == null) {
+    if (identitySelected == null) {
       _getAllIdentities();
     }
   }
@@ -1862,7 +1822,47 @@ class ComposerController extends BaseController {
 
   UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
 
-  void openContextMenuOption(BuildContext context) {
+  String? get textEditorWeb => _textEditorWeb;
 
+  HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController.htmlEditorApi;
+
+  void onChangeTextEditorWeb(String? text) {
+    initTextEditor(text);
+    _textEditorWeb = text;
+  }
+
+  void initTextEditor(String? text) {
+    if (_initTextEditor == null) {
+      _initTextEditor = text;
+      log('ComposerController::initTextEditor():$_initTextEditor');
+    }
+  }
+
+  void setSubjectEmail(String subject) => subjectEmail.value = subject;
+
+  Future<String> _getEmailBodyText(BuildContext context, {bool asDrafts = false}) async {
+    var contentHtml = '';
+
+    if (PlatformInfo.isWeb) {
+      if (_responsiveUtils.isDesktop(context) &&
+          screenDisplayMode.value == ScreenDisplayMode.minimize) {
+        contentHtml = _textEditorWeb ?? '';
+      } else {
+        if (asDrafts) {
+          contentHtml = await richTextWebController.editorController.getText();
+        } else {
+          contentHtml = await richTextWebController.editorController.getTextWithSignatureContent();
+        }
+      }
+    } else {
+      if (asDrafts) {
+        contentHtml = (await htmlEditorApi?.getText()) ?? '';
+      } else {
+        contentHtml = (await htmlEditorApi?.getTextWithSignatureContent()) ?? '';
+      }
+    }
+
+    final newContentHtml = contentHtml.removeEditorStartTag();
+    return newContentHtml;
   }
 }

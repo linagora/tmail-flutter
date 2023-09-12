@@ -66,9 +66,9 @@ class _WebEditorState extends State<WebEditorWidget> {
         shouldEnsureVisible: true,
         hint: '',
         darkMode: false,
+        initialText: widget.content,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
       ),
-      blockQuotedContent: widget.content,
       htmlToolbarOptions: const HtmlToolbarOptions(
         toolbarType: ToolbarType.hide,
         defaultToolbarButtons: []
