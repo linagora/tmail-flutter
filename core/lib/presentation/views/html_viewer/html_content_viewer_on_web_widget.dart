@@ -123,8 +123,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         function handleOnClickLink(e) {
            let link = e.target;
            let textContent = e.target.textContent;
-           console.log("handleOnClickLink: " + link);
-           console.log("handleOnClickLink: " + textContent);
            if (link && isValidMailtoLink(link)) {
               window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: OpenLink", "url": "" + link}), "*");
               e.preventDefault();

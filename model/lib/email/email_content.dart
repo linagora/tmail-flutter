@@ -1,8 +1,5 @@
-
-import 'package:core/utils/app_logger.dart';
 import 'package:equatable/equatable.dart';
 import 'package:model/email/email_content_type.dart';
-import 'package:model/model.dart';
 
 class EmailContent with EquatableMixin {
 
@@ -41,12 +38,9 @@ extension EmailContentExtension on EmailContent {
     if (content.startsWith(firstTags) && content.endsWith(latestTags)) {
       const firstIndex = firstTags.length;
       final latestIndex = content.length - latestTags.length;
-      log('EmailContentExtension::_getContentOriginal(): firstIndex: $firstIndex');
-      log('EmailContentExtension::_getContentOriginal(): latestIndex: $latestIndex');
 
       if (latestIndex > firstIndex) {
         final contentOriginal = content.substring(firstIndex, latestIndex);
-        log('EmailContentExtension::_getContentOriginal(): contentOriginal: $contentOriginal');
         return contentOriginal;
       }
     }
