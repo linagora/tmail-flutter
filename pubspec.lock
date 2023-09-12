@@ -373,7 +373,7 @@ packages:
     description:
       path: "."
       ref: "improvement/support-expanded-collapsed-signature"
-      resolved-ref: f69ea3c0d84c32fe291b1b6092a30af1544a3038
+      resolved-ref: d1ce315373e83eedc55b3bd8ec97ae6fad0e48ce
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -914,7 +914,7 @@ packages:
     description:
       path: "."
       ref: "improvement/support-expanded-collapsed-signature"
-      resolved-ref: "96ae5c4ce7c2f5b84bd481df3aa02b38ac527a1d"
+      resolved-ref: b36f0ddfa291a9c3c291feda2834587d9df4f9a5
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"

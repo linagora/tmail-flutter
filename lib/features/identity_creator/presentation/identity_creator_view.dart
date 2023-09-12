@@ -339,9 +339,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         shouldEnsureVisible: true,
         hint: '',
         darkMode: false,
+        initialText: initContent,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
       ),
-      blockQuotedContent: initContent,
       htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
         toolbarType: html_editor_browser.ToolbarType.hide,
         defaultToolbarButtons: []

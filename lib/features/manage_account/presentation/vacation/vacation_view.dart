@@ -415,9 +415,9 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
         htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
           hint: '',
           darkMode: false,
+          initialText: controller.vacationMessageHtmlText,
           customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context))
         ),
-        blockQuotedContent: controller.vacationMessageHtmlText ?? '',
         htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
             toolbarType: html_editor_browser.ToolbarType.hide,
             defaultToolbarButtons: []),
