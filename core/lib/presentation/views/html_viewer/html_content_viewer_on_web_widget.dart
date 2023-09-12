@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/html_transformer/html_template.dart';
 import 'package:core/presentation/utils/html_transformer/html_utils.dart';
+import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,6 +55,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   bool _isLoading = true;
   double minHeight = 100;
   double minWidth = 300;
+  final jsonEncoder = const JsonEncoder();
 
   @override
   void initState() {
@@ -101,6 +103,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           if (e && e.data && e.data.includes("toIframe:")) {
             var data = JSON.parse(e.data);
             if (data["view"].includes("$createdViewId")) {
+              if (data["type"].includes("showSignature")) {
+                ${HtmlUtils.runScriptsCollapsedExpandedSignature}
+              }
+              
               if (data["type"].includes("getHeight")) {
                 var height = document.body.scrollHeight;
                 window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
@@ -142,6 +148,23 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           }
         
           return url.protocol === "mailto:";
+        }
+        
+        function handleOnClickSignature() {
+          console.log("handleOnClickSignature");
+          const contentElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-content');
+          const buttonElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-button');
+          console.log("contentElement: " + contentElement);
+          console.log("buttonElement: " + buttonElement);
+          if (contentElement && buttonElement) {
+            if (contentElement.style.display === 'block') {
+              contentElement.style.display = 'none';
+              buttonElement.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+            } else {
+              contentElement.style.display = 'block';
+              buttonElement.style.backgroundImage = `${IconUtils.chevronUpSVGIconUrlEncoded}`;
+            }
+          }
         }
       </script>
     ''';
@@ -188,15 +211,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       ..style.width = '100%'
       ..style.height = '100%'
       ..onLoad.listen((event) async {
-        final dataGetHeight = <String, Object>{'type': 'toIframe: getHeight', 'view' : createdViewId};
-        final dataGetWidth = <String, Object>{'type': 'toIframe: getWidth', 'view' : createdViewId};
-
-        const jsonEncoder = JsonEncoder();
-        final jsonGetHeight = jsonEncoder.convert(dataGetHeight);
-        final jsonGetWidth = jsonEncoder.convert(dataGetWidth);
-
-        html.window.postMessage(jsonGetHeight, '*');
-        html.window.postMessage(jsonGetWidth, '*');
+        _sendMessageToWebViewForGetHeight();
+        _sendMessageToWebViewForGetWidth();
+        _sendMessageToWebViewForShowSignature();
 
         html.window.onMessage.listen((event) {
           var data = json.decode(event.data);
@@ -232,7 +249,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           if (data['type'] != null && data['type'].contains('toDart: OpenLink') && data['view'] == createdViewId) {
             final link = data['url'];
             if (link != null && mounted) {
-              log('_HtmlContentViewerOnWebState::_setUpWeb(): OpenLink: $link');
               final urlString = link as String;
               if (urlString.startsWith('mailto:')) {
                 widget.mailtoDelegate?.call(Uri.parse(urlString));
@@ -253,45 +269,76 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SizedBox(
-          height: actualHeight,
-          width: actualWidth,
-          child: _buildWebView(),
-        ),
-        if (_isLoading) Align(alignment: Alignment.topCenter, child: _buildLoadingView())
-      ],
-    );
+    return LayoutBuilder(builder: (context, constraint) {
+      minHeight = math.max(constraint.maxHeight, minHeight);
+      return Stack(
+        children: [
+          if (_htmlData?.isNotEmpty == false)
+            const SizedBox.shrink()
+          else
+            FutureBuilder<bool>(
+              future: webInit,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return SizedBox(
+                    height: actualHeight,
+                    width: actualWidth,
+                    child: HtmlElementView(
+                      key: ValueKey(_htmlData),
+                      viewType: createdViewId,
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }
+            ),
+          if (_isLoading)
+            const Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CupertinoActivityIndicator(
+                    color: AppColor.colorLoading
+                  )
+                )
+              )
+            )
+        ],
+      );
+    });
   }
 
-  Widget _buildLoadingView() {
-    return const Padding(
-        padding: EdgeInsets.all(16),
-        child: SizedBox(
-            width: 30,
-            height: 30,
-            child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
+  void _sendMessageToWebViewForGetHeight() {
+    final dataGetHeight = <String, Object>{
+      'type': 'toIframe: getHeight',
+      'view' : createdViewId
+    };
+    final jsonGetHeight = jsonEncoder.convert(dataGetHeight);
+
+    html.window.postMessage(jsonGetHeight, '*');
   }
 
-  Widget _buildWebView() {
-    final htmlData = _htmlData;
-    if (htmlData == null || htmlData.isEmpty) {
-      return Container();
-    }
+  void _sendMessageToWebViewForGetWidth() {
+    final dataGetWidth = <String, Object>{
+      'type': 'toIframe: getWidth',
+      'view' : createdViewId
+    };
+    final jsonGetWidth = jsonEncoder.convert(dataGetWidth);
 
-    return FutureBuilder<bool>(
-      future: webInit,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return HtmlElementView(
-            key: ValueKey(htmlData),
-            viewType: createdViewId,
-          );
-        } else {
-          return Container();
-        }
-      }
-    );
+    html.window.postMessage(jsonGetWidth, '*');
+  }
+
+  void _sendMessageToWebViewForShowSignature() {
+    final dataShowSignature = <String, Object>{
+      'type': 'toIframe: showSignature',
+      'view' : createdViewId
+    };
+    final jsonShowSignature = jsonEncoder.convert(dataShowSignature);
+
+    html.window.postMessage(jsonShowSignature, '*');
   }
 }
