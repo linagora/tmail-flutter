@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
+import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
@@ -101,6 +102,83 @@ class HtmlUtils {
     </script>
   ''';
 
+  static const runScriptsCollapsedExpandedSignature = '''
+    const signatureNode = document.querySelector('.tmail-content > .tmail-signature');
+    if (signatureNode) {
+      const signatureContainer = document.createElement('div');
+      signatureContainer.setAttribute('class', 'tmail-signature');
+  
+      const signatureContent = document.createElement('div');
+      signatureContent.setAttribute('class', 'tmail-signature-content');
+      signatureContent.innerHTML = signatureNode.innerHTML;
+      signatureContent.style.display = 'none';
+  
+      const signatureButton = document.createElement('button');
+      signatureButton.setAttribute('class', 'tmail-signature-button');
+      signatureButton.textContent = 'Signature';
+      signatureButton.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+      signatureButton.setAttribute('onclick', 'handleOnClickSignature()');
+  
+      signatureContainer.appendChild(signatureButton);
+      signatureContainer.appendChild(signatureContent);
+  
+      if (signatureNode.outerHTML) {
+        signatureNode.outerHTML = signatureContainer.outerHTML;
+      } else {
+        signatureNode.parentNode.replaceChild(signatureContainer, signatureNode);
+      }
+    }
+  ''';
+
+  static const scriptCollapsedExpandedSignatureOnMobile = '''
+    <script type="text/javascript">
+      function showSignature() {
+        const signatureNode = document.querySelector('.tmail-content > .tmail-signature');
+        if (signatureNode) {
+          const signatureContainer = document.createElement('div');
+          signatureContainer.setAttribute('class', 'tmail-signature');
+      
+          const signatureContent = document.createElement('div');
+          signatureContent.setAttribute('class', 'tmail-signature-content');
+          signatureContent.innerHTML = signatureNode.innerHTML;
+          signatureContent.style.display = 'none';
+      
+          const signatureButton = document.createElement('button');
+          signatureButton.setAttribute('class', 'tmail-signature-button');
+          signatureButton.textContent = 'Signature';
+          signatureButton.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+          signatureButton.setAttribute('onclick', 'handleOnClickSignature()');
+      
+          signatureContainer.appendChild(signatureButton);
+          signatureContainer.appendChild(signatureContent);
+      
+          if (signatureNode.outerHTML) {
+            signatureNode.outerHTML = signatureContainer.outerHTML;
+          } else {
+            signatureNode.parentNode.replaceChild(signatureContainer, signatureNode);
+          }
+        }
+      }
+      
+      function handleOnClickSignature() {
+        console.log("handleOnClickSignature");
+        const contentElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-content');
+        const buttonElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-button');
+        console.log("contentElement: " + contentElement);
+        console.log("buttonElement: " + buttonElement);
+        if (contentElement && buttonElement) {
+          if (contentElement.style.display === 'block') {
+            contentElement.style.display = 'none';
+            buttonElement.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
+          } else {
+            contentElement.style.display = 'block';
+            buttonElement.style.backgroundImage = `${IconUtils.chevronUpSVGIconUrlEncoded}`;
+          }
+        }
+      }
+    </script>
+  ''';
+
   static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
     if (PlatformInfo.isWeb) {
       return '''
@@ -108,12 +186,20 @@ class HtmlUtils {
           .note-editable {
             direction: ${direction.name};
           }
+          
+          .note-editable .tmail-signature {
+            text-align: ${direction == TextDirection.rtl ? 'right' : 'left'};
+          }
         </style>
       ''';
     } else if (PlatformInfo.isMobile) {
       return '''
         #editor {
           direction: ${direction.name};
+        }
+        
+        #editor .tmail-signature {
+          text-align: ${direction == TextDirection.rtl ? 'right' : 'left'};
         }
       ''';
     } else {

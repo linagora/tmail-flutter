@@ -68,7 +68,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     _htmlData = generateHtml(
       widget.contentHtml,
       direction: widget.direction,
-      javaScripts: HtmlUtils.scriptLazyLoadImage,
+      javaScripts: HtmlUtils.scriptLazyLoadImage + HtmlUtils.scriptCollapsedExpandedSignatureOnMobile,
     );
   }
 
@@ -81,7 +81,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       _htmlData = generateHtml(
         widget.contentHtml,
         direction: widget.direction,
-        javaScripts: HtmlUtils.scriptLazyLoadImage,
+        javaScripts: HtmlUtils.scriptLazyLoadImage + HtmlUtils.scriptCollapsedExpandedSignatureOnMobile,
       );
     }
   }
@@ -91,61 +91,58 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     return LayoutBuilder(builder: (context, constraints) {
       return Stack(
         children: [
-          SizedBox(
-            height: actualHeight,
-            width: constraints.maxWidth,
-            child: _buildWebView()),
+          if (_htmlData?.isNotEmpty == false)
+            const SizedBox.shrink()
+          else
+            SizedBox(
+              height: actualHeight,
+              width: constraints.maxWidth,
+              child: InAppWebView(
+                key: ValueKey(_htmlData),
+                initialSettings: InAppWebViewSettings(
+                  transparentBackground: true,
+                ),
+                onWebViewCreated: (controller) async {
+                  _webViewController = controller;
+                  await controller.loadData(data: _htmlData ?? '');
+                  widget.onCreated?.call(controller);
+                },
+                onLoadStop: _onLoadStop,
+                shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+                gestureRecognizers: {
+                  Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
+                  if (Platform.isIOS && horizontalGestureActivated)
+                    Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
+                  if (Platform.isAndroid)
+                    Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
+                },
+                onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0)
+              ),
+            ),
           if (_isLoading)
-            Align(
-              alignment: Alignment.center,
-              child: _buildLoadingView()
+            const Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CupertinoActivityIndicator(
+                    color: AppColor.colorLoading
+                  )
+                )
+              )
             )
         ],
       );
     });
   }
 
-  Widget _buildLoadingView() {
-    return const Padding(
-        padding: EdgeInsets.all(16),
-        child: SizedBox(
-          width: 30,
-          height: 30,
-          child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
-  }
-
-  Widget _buildWebView() {
-    final htmlData = _htmlData;
-    if (htmlData == null || htmlData.isEmpty) {
-      return Container();
-    }
-    return InAppWebView(
-      key: ValueKey(htmlData),
-      initialSettings: InAppWebViewSettings(
-        transparentBackground: true,
-      ),
-      onWebViewCreated: (controller) async {
-        _webViewController = controller;
-        controller.loadData(data: htmlData);
-        widget.onCreated?.call(controller);
-      },
-      onLoadStop: _onLoadStop,
-      shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-      gestureRecognizers: {
-        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
-        if (Platform.isIOS && horizontalGestureActivated)
-          Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
-        if (Platform.isAndroid)
-          Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
-      },
-      onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0)
-    );
-  }
-
   void _onLoadStop(InAppWebViewController controller, WebUri? webUri) async {
     await Future.wait([
       _setActualHeightView(),
       _setActualWidthView(),
+      _showSignature(),
     ]);
 
     _hideLoadingProgress();
@@ -169,7 +166,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   Future<void> _setActualHeightView() async {
     final scrollHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
-    log('_HtmlContentViewState::_setActualHeightView(): scrollHeight: $scrollHeight');
     if (scrollHeight != null && mounted) {
       final scrollHeightWithBuffer = scrollHeight + 30.0;
       if (scrollHeightWithBuffer > minHeight) {
@@ -192,12 +188,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     if (result.length == 2) {
       final scrollWidth = result[0];
       final offsetWidth = result[1];
-      log('_HtmlContentViewState::_setActualWidthView():scrollWidth: $scrollWidth');
-      log('_HtmlContentViewState::_setActualWidthView():offsetWidth: $offsetWidth');
-
       if (scrollWidth != null && offsetWidth != null && mounted) {
         final isScrollActivated = scrollWidth.round() == offsetWidth.round();
-        log('_HtmlContentViewState::_setActualWidthView():isScrollActivated: $isScrollActivated');
         if (isScrollActivated) {
           setState(() {
             horizontalGestureActivated = false;
@@ -213,6 +205,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         widget.onWebViewLoaded?.call(isScrollActivated);
       }
     }
+  }
+
+  Future<void> _showSignature() async {
+    await _webViewController.evaluateJavascript(
+      source: 'showSignature();'
+    );
   }
 
   void _hideLoadingProgress() {
