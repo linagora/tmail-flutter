@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RichTextWebController extends BaseRichTextController {
 
-  final editorController = HtmlEditorController(processNewLineAsBr: true);
+  final editorController = HtmlEditorController();
 
   final listTextStyleApply = RxList<RichTextStyleType>();
   final selectedTextColor = Colors.black.obs;
