@@ -3317,4 +3317,18 @@ class AppLocalizations {
       name: 'addCondition',
     );
   }
+
+  String get all {
+    return Intl.message(
+      'All',
+      name: 'all',
+    );
+  }
+
+  String get any {
+    return Intl.message(
+      'Any',
+      name: 'any',
+    );
+  }
 }

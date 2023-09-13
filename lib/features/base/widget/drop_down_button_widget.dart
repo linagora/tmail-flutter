@@ -13,6 +13,7 @@ import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_condition_combiner.dart';
 
 class DropDownButtonWidget<T> extends StatelessWidget {
 
@@ -186,6 +187,9 @@ class DropDownButtonWidget<T> extends StatelessWidget {
       return item.getTitle(context);
     }
     if (item is EmailRuleFilterAction) {
+      return item.getTitle(context);
+    }
+    if (item is ConditionCombiner) {
       return item.getTitle(context);
     }
     return '';

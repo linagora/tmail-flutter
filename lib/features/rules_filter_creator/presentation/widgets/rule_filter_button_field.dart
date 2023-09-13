@@ -10,6 +10,7 @@ import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_condition_combiner.dart';
 
 typedef OnTapActionCallback<T> = Function(T? value);
 
@@ -69,6 +70,9 @@ class RuleFilterButtonField<T> extends StatelessWidget {
       return value.getTitle(context);
     }
     if (value is EmailRuleFilterAction) {
+      return value.getTitle(context);
+    }
+    if (value is ConditionCombiner) {
       return value.getTitle(context);
     }
     return '';

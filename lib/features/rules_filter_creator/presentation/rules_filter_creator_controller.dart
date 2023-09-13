@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_rules
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_condition_combiner.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -61,6 +62,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final TextEditingController inputRuleNameController = TextEditingController();
   final FocusNode inputRuleNameFocusNode = FocusNode();
   final listRuleConditionValueArguments = RxList<RulesFilterInputFieldArguments>();
+  final conditionCombinerType = Rxn<ConditionCombiner>();
 
   String? _newRuleName;
 
@@ -143,6 +145,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   void _setUpDefaultValueRuleFilter() {
+    conditionCombinerType.value = ConditionCombiner.and;
     switch(actionType.value) {
       case CreatorActionType.create:
         RuleCondition newRuleCondition = RuleCondition(
@@ -418,5 +421,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void tapRemoveCondition(int ruleConditionIndex) {
     listRuleCondition.removeAt(ruleConditionIndex);
     listRuleConditionValueArguments.removeAt(ruleConditionIndex);
+  }
+
+  void selectConditionCombiner(ConditionCombiner? combinerType) {
+    if (combinerType != null) {
+      conditionCombinerType.value = combinerType;
+    }
   }
 }
