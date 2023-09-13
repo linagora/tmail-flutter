@@ -300,7 +300,6 @@ flutter_native_splash:
   color: "#000000"
   branding: "assets/icons/icon_branding.png"
   image: "assets/icons/icon_logo.png"
-  web: false
 
 cider:
   link_template:
