@@ -1,8 +1,13 @@
 # Team Mail Flutter mobile application
 
 [![Gitter](https://badges.gitter.im/linagora/team-mail.svg)](https://gitter.im/linagora/team-mail?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Documentation](https://img.shields.io/badge/Documentation-green.svg)](docs)
+[![Images docker](https://img.shields.io/badge/Images-docker-blue.svg)](https://hub.docker.com/r/linagora/tmail-web)
+[![Android application](https://img.shields.io/badge/App-Android-blue.svg)](https://play.google.com/store/apps/details?id=com.linagora.android.teammail)
+[![Ios application](https://img.shields.io/badge/App-Ios-blue.svg)](https://apps.apple.com/gr/app/teammail/id1587086189)
 
 ![LOGO](https://user-images.githubusercontent.com/6462404/202656316-8b77a7b6-0c1f-4f3e-932b-72bd446b6605.png)
+
 
 This project aims at providing a multi-platform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
 features to the [Team Mail back-end](https://github.com/linagora/tmail-backend).
