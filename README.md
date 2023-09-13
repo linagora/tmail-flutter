@@ -2,7 +2,7 @@
 
 [![Gitter](https://badges.gitter.im/linagora/team-mail.svg)](https://gitter.im/linagora/team-mail?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Documentation](https://img.shields.io/badge/Documentation-green.svg)](docs)
-[![Images docker](https://img.shields.io/badge/Images-docker-blue.svg)](https://hub.docker.com/r/linagora/tmail-flutter)
+[![Images docker](https://img.shields.io/badge/Images-docker-blue.svg)](https://hub.docker.com/r/linagora/tmail-web)
 [![Android application](https://img.shields.io/badge/App-Android-blue.svg)](https://play.google.com/store/apps/details?id=com.linagora.android.teammail)
 [![Ios application](https://img.shields.io/badge/App-Ios-blue.svg)](https://apps.apple.com/gr/app/teammail/id1587086189)
 
