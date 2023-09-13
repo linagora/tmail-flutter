@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 
 typedef SelectedContactCallbackAction = Function(EmailAddress contactSelected);
 
