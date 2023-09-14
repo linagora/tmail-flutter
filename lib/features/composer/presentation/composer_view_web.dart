@@ -90,6 +90,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                         onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                         onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                        onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                       ),
                       if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
@@ -110,6 +111,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                           onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                           onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                          onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                         ),
                       if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
@@ -130,6 +132,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                           onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                           onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                          onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                         ),
                     ],
                   )),
@@ -243,6 +246,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                       onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                       onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                      onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                     ),
                     if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                       RecipientComposerWidget(
@@ -263,6 +267,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                         onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                         onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                        onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                       ),
                     if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                       RecipientComposerWidget(
@@ -283,6 +288,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                         onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                         onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                        onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                       ),
                   ],
                 )),
@@ -433,6 +439,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                       onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                       onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                      onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                     ),
                     if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                       RecipientComposerWidget(
@@ -453,6 +460,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                         onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                         onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                        onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                       ),
                     if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                       RecipientComposerWidget(
@@ -473,6 +481,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                         onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                         onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                        onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                       ),
                   ],
                 )),
