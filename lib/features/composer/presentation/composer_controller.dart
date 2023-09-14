@@ -1797,6 +1797,7 @@ class ComposerController extends BaseController {
 
   void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
     Navigator.maybePop(context);
+    FocusScope.of(context).unfocus();
     onEditorFocusChange(true);
   }
 
