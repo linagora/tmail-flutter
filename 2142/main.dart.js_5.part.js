@@ -2,6 +2,12 @@
 self.$__dart_deferred_initializers__ = self.$__dart_deferred_initializers__ || Object.create(null);
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var B = {
+    CapitalizeExtension_get_capitalizeFirstEach(_this) {
+      var t1 = A.RegExp_RegExp(" +", true, false, false);
+      return new A.MappedListIterable(A._setArrayType(A.stringReplaceAllUnchecked(_this, t1, " ").split(" "), type$.JSArray_String), new B.CapitalizeExtension_get_capitalizeFirstEach_closure(), type$.MappedListIterable_String_String).join$1(0, " ");
+    },
+    CapitalizeExtension_get_capitalizeFirstEach_closure: function CapitalizeExtension_get_capitalizeFirstEach_closure() {
+    },
     HtmlContentViewerOnWeb$(allowResizeToDocumentSize, contentHtml, controller, direction, heightContent, mailtoDelegate, widthContent) {
       return new B.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, controller, direction, mailtoDelegate, allowResizeToDocumentSize, null);
     },
@@ -21,6 +27,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.___HtmlContentViewerOnWebState_actualWidth_A = _.___HtmlContentViewerOnWebState_actualHeight_A = _.___HtmlContentViewerOnWebState_createdViewId_A = $;
       _._htmlData = _.webInit = null;
       _._html_content_viewer_on_web_widget$_isLoading = true;
+      _.minHeight = 100;
       _._widget = null;
       _._debugLifecycleState = t0;
       _._framework$_element = null;
@@ -48,9 +55,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _HtmlContentViewerOnWebState__setUpWeb_closure1: function _HtmlContentViewerOnWebState__setUpWeb_closure1(t0) {
       this.$this = t0;
     },
-    _HtmlContentViewerOnWebState__buildWebView_closure: function _HtmlContentViewerOnWebState__buildWebView_closure(t0, t1) {
+    _HtmlContentViewerOnWebState_build_closure: function _HtmlContentViewerOnWebState_build_closure(t0) {
       this.$this = t0;
-      this.htmlData = t1;
+    },
+    _HtmlContentViewerOnWebState_build__closure: function _HtmlContentViewerOnWebState_build__closure(t0) {
+      this.$this = t0;
     },
     HtmlViewerControllerForWeb: function HtmlViewerControllerForWeb() {
     },
@@ -364,8 +373,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onRemoved = t3;
       _._material$_debugDisposed = false;
     },
-    ListTile$(contentPadding, focusColor, hoverColor, leading, onTap, subtitle, title, trailing) {
-      return new B.ListTile(leading, title, subtitle, trailing, contentPadding, onTap, focusColor, hoverColor, null);
+    ListTile$(contentPadding, leading, onTap, subtitle, title, trailing) {
+      return new B.ListTile(leading, title, subtitle, trailing, contentPadding, onTap, null);
     },
     _RenderListTile__layoutBox(box, constraints) {
       var t1;
@@ -380,7 +389,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.index = t0;
       this._core$_name = t1;
     },
-    ListTile: function ListTile(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
+    ListTile: function ListTile(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
       _.leading = t0;
       _.title = t1;
@@ -388,9 +397,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.trailing = t3;
       _.contentPadding = t4;
       _.onTap = t5;
-      _.focusColor = t6;
-      _.hoverColor = t7;
-      _.key = t8;
+      _.key = t6;
     },
     ListTile_build_resolveColor: function ListTile_build_resolveColor(t0) {
       this.states = t0;
@@ -725,6 +732,29 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._depth = 0;
       _._node$_parent = _._owner = null;
     },
+    ListEmailAddressExtension_emailAddressToListString(_this, expandMode, isFullEmailAddress, limitAddress) {
+      var t1, address;
+      if (_this != null) {
+        t1 = A._instanceType(_this)._eval$1("EfficientLengthMappedIterable<SetBase.E,String>");
+        if (expandMode === C.ExpandMode_1)
+          return A.List_List$of(new A.EfficientLengthMappedIterable(_this, new B.ListEmailAddressExtension_emailAddressToListString_closure(isFullEmailAddress), t1), true, t1._eval$1("Iterable.E"));
+        else {
+          address = A.List_List$of(new A.EfficientLengthMappedIterable(_this, new B.ListEmailAddressExtension_emailAddressToListString_closure0(isFullEmailAddress), t1), true, t1._eval$1("Iterable.E"));
+          return address.length > limitAddress ? C.JSArray_methods.sublist$2(address, 0, limitAddress) : address;
+        }
+      }
+      return A._setArrayType([], type$.JSArray_String);
+    },
+    ListEmailAddressExtension_listEmailAddressToString(_this, isFullEmailAddress) {
+      var listEmail = B.ListEmailAddressExtension_emailAddressToListString(_this, C.ExpandMode_1, true, 1);
+      return listEmail.length !== 0 ? C.JSArray_methods.join$1(listEmail, ", ") : "";
+    },
+    ListEmailAddressExtension_emailAddressToListString_closure: function ListEmailAddressExtension_emailAddressToListString_closure(t0) {
+      this.isFullEmailAddress = t0;
+    },
+    ListEmailAddressExtension_emailAddressToListString_closure0: function ListEmailAddressExtension_emailAddressToListString_closure0(t0) {
+      this.isFullEmailAddress = t0;
+    },
     SuggestionsBoxController: function SuggestionsBoxController(t0) {
       this.context = t0;
       this.overlayEntry = null;
@@ -782,10 +812,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.__TagsEditorState__focusNodeKeyboard_A = _.__TagsEditorState__focusNode_A = $;
       _._suggestionsBoxController = _._suggestionsStreamController = null;
       _._tag_editor$_layerLink = t0;
-      _._suggestions = null;
+      _._tag_editor$_suggestions = null;
       _._countBackspacePressed = _._searchId = 0;
       _._deBouncer = null;
-      _._highlightedOptionIndex = t1;
+      _._tag_editor$_highlightedOptionIndex = t1;
       _._validationSuggestionItemNotifier = t2;
       _._widget = null;
       _._debugLifecycleState = t3;
@@ -971,6 +1001,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     Divider$(color, endIndent, height, indent) {
       return new A.Divider(height, null, indent, endIndent, color, null);
     },
+    EmailAddressExtension_asFullString(_this) {
+      var t3, t4,
+        t1 = _this.name,
+        t2 = t1 == null;
+      if ((t2 ? "" : t1).length !== 0) {
+        t3 = _this.email;
+        t4 = t3 == null;
+        if ((t4 ? "" : t3).length !== 0) {
+          t1 = B.CapitalizeExtension_get_capitalizeFirstEach(t2 ? "" : t1);
+          t2 = t4 ? "" : t3;
+          return t1 + " <" + t2 + ">";
+        }
+        return B.CapitalizeExtension_get_capitalizeFirstEach(t2 ? "" : t1);
+      } else {
+        t1 = _this.email;
+        t2 = t1 == null;
+        if ((t2 ? "" : t1).length !== 0)
+          return t2 ? "" : t1;
+      }
+      return "";
+    },
+    UTCDateExtension_formatDateToLocal(_this, locale, pattern) {
+      if (_this != null)
+        return A.DateFormat$(pattern, locale).format$1(_this.value.toLocal$0());
+      else
+        return "";
+    },
     VacationResponseExtension_get_vacationResponderIsReady(_this) {
       var t1, t2, startDate;
       if (_this.isEnabled === true) {
@@ -1023,23 +1080,23 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message("Your vacation responder is enabled.", _null, "yourVacationResponderIsEnabled", _null, _null);
       } else if (B.VacationResponseExtension_get_vacationResponderIsWaiting(_this)) {
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        t1 = A.UTCDateExtension_formatDateToLocal(_this.fromDate, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _s15_);
+        t1 = B.UTCDateExtension_formatDateToLocal(_this.fromDate, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _s15_);
         return A.Intl__message("Your vacation responder will be activated on " + t1, _null, "messageEnableVacationResponderAutomatically", A._setArrayType([t1], type$.JSArray_Object), _null);
       } else if (B.VacationResponseExtension_get_vacationResponderIsStopped(_this)) {
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        t1 = A.UTCDateExtension_formatDateToLocal(_this.toDate, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _s15_);
+        t1 = B.UTCDateExtension_formatDateToLocal(_this.toDate, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _s15_);
         return A.Intl__message("Your vacation responder stopped on " + t1, _null, "messageDisableVacationResponderAutomatically", A._setArrayType([t1], type$.JSArray_Object), _null);
       } else
         return "";
     }
   },
   C, A, J, D, E;
-  B = hunkHelpers.updateHolder(holdersList[9], B);
+  B = hunkHelpers.updateHolder(holdersList[10], B);
   C = holdersList[2];
   A = holdersList[0];
   J = holdersList[1];
-  D = holdersList[17];
-  E = holdersList[15];
+  D = holdersList[18];
+  E = holdersList[16];
   B.HtmlContentViewerOnWeb.prototype = {
     createState$0() {
       return new B._HtmlContentViewerOnWebState(C._StateLifecycle_0);
@@ -1084,14 +1141,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return C.Base64Codec_Base64Encoder_true.get$encoder().convert$1(values);
     },
     _setUpWeb$0() {
-      var _this = this,
+      var t4, t5, _this = this,
         t1 = _this._widget,
         t2 = t1.contentHtml,
         t3 = _this.___HtmlContentViewerOnWebState_createdViewId_A;
       t3 === $ && A.throwUnnamedLateFieldNI();
+      t4 = _this.minHeight;
       t1 = t1.direction;
-      t1 = t1 === C.TextDirection_0 ? 'dir="rtl"' : "";
-      _this._htmlData = '    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n    <style>\n      .tmail-content {\n        min-height: 100px;\n        min-width: 300px;\n        overflow: auto;\n      }\n              .tmail-content::-webkit-scrollbar {\n          display: none;\n        }\n        .tmail-content {\n          -ms-overflow-style: none;  /* IE and Edge */\n          scrollbar-width: none;  /* Firefox */\n        }\n      \n        .tmail-tooltip .tooltiptext {\n    visibility: hidden;\n    max-width: 400px;\n    background-color: black;\n    color: #fff;\n    text-align: center;\n    border-radius: 6px;\n    padding: 5px 8px 5px 8px;\n    white-space: nowrap; \n    overflow: hidden;\n    text-overflow: ellipsis;\n    position: absolute;\n    z-index: 1;\n  }\n  .tmail-tooltip:hover .tooltiptext {\n    visibility: visible;\n  }\n\n    </style>\n    </head>\n    <body ' + t1 + ' style = "overflow-x: hidden">\n    <div class="tmail-content">' + t2 + "</div>\n    " + ('      <script type="text/javascript">\n        window.parent.addEventListener(\'message\', handleMessage, false);\n        window.addEventListener(\'click\', handleOnClickLink, true);\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes("toIframe:")) {\n            var data = JSON.parse(e.data);\n            if (data["view"].includes("' + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           console.log("handleOnClickLink: " + link);\n           console.log("handleOnClickLink: " + textContent);\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n      </script>\n          <script type="text/javascript">\n        document.addEventListener(\'wheel\', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener(\'keydown\', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case \'=\':\n              case \'-\':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script type="text/javascript">\n      const lazyImages = document.querySelectorAll("img.lazy-loading");\n      \n      const options = {\n        root: null, // Use the viewport as the root\n        rootMargin: "0px",\n        threshold: 0 // Specify the threshold for intersection\n      };\n      \n      const handleIntersection = (entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const img = entry.target;\n            const src = img.getAttribute("data-src");\n      \n            // Replace the placeholder with the actual image source\n            img.src = src;\n      \n            // Stop observing the image\n            observer.unobserve(img);\n          }\n        });\n      };\n      \n      const observer = new IntersectionObserver(handleIntersection, options);\n      \n      lazyImages.forEach((image) => {\n        observer.observe(image);\n      });\n    </script>\n  ') + "\n    </body>\n    </html> \n  ";
+      t1 = t1 === C.TextDirection_0;
+      t5 = t1 ? "right" : "left";
+      t1 = t1 ? 'dir="rtl"' : "";
+      _this._htmlData = '    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n    <style>\n      .tmail-content {\n        min-height: ' + A.S(t4) + "px;\n        min-width: 300px;\n        overflow: auto;\n      }\n              .tmail-content::-webkit-scrollbar {\n          display: none;\n        }\n        .tmail-content {\n          -ms-overflow-style: none;  /* IE and Edge */\n          scrollbar-width: none;  /* Firefox */\n        }\n      \n        .tmail-tooltip .tooltiptext {\n    visibility: hidden;\n    max-width: 400px;\n    background-color: black;\n    color: #fff;\n    text-align: center;\n    border-radius: 6px;\n    padding: 5px 8px 5px 8px;\n    white-space: nowrap; \n    overflow: hidden;\n    text-overflow: ellipsis;\n    position: absolute;\n    z-index: 1;\n  }\n  .tmail-tooltip:hover .tooltiptext {\n    visibility: visible;\n  }\n\n      \n      .tmail-signature {\n        text-align: " + t5 + ";\n        margin: 16px 0px 16px 0px;\n      }\n    \n      .tmail-signature-button,\n      .tmail-signature-button * {\n        box-sizing: border-box;\n      }\n    \n      .tmail-signature-button {\n        padding: 6px 40px 6px 16px;\n        border-radius: 4px;\n        color: #fff;\n        background-image: url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10.0003 11.8319L5.53383 8.1098C5.18027 7.81516 4.6548 7.86293 4.36016 8.21649C4.06553 8.57006 4.1133 9.09553 4.46686 9.39016L9.46686 13.5568C9.7759 13.8144 10.2248 13.8144 10.5338 13.5568L15.5338 9.39016C15.8874 9.09553 15.9352 8.57006 15.6405 8.21649C15.3459 7.86293 14.8204 7.81516 14.4669 8.1098L10.0003 11.8319Z' fill='%23AEAEC0'/%3E%3C/svg%3E%0A\");\n        background-repeat: no-repeat;\n        background-position: right 16px center;\n        background-color: #FFFFFF;\n        border-radius: 36px;\n        border-style: solid;\n        border-color: var(--m-3-syslight-outline-shadow-outline-variant, #cac4d0);\n        border-width: 0.5px;\n        flex-direction: row;\n        gap: 8px;\n        align-items: center;\n        justify-content: flex-start;\n        flex-shrink: 0;\n        position: relative;\n        cursor: pointer;\n        color: var(--m-3-syslight-tetirary-tertiary, #8c9caf);\n        text-align: left;\n        font: var(--m-3-body-large-2, 400 17px/24px \"Inter\", sans-serif);\n      }\n    \n      .tmail-signature-content {\n        padding: 12px;\n        overflow: hidden;\n      }\n    </style>\n    </head>\n    <body " + t1 + ' style = "overflow-x: hidden">\n    <div class="tmail-content">' + t2 + "</div>\n    " + ('      <script type="text/javascript">\n        window.parent.addEventListener(\'message\', handleMessage, false);\n        window.addEventListener(\'click\', handleOnClickLink, true);\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes("toIframe:")) {\n            var data = JSON.parse(e.data);\n            if (data["view"].includes("' + t3 + "\")) {\n              if (data[\"type\"].includes(\"showSignature\")) {\n                    const signatureNode = document.querySelector('.tmail-content > .tmail-signature');\n    if (signatureNode) {\n      const signatureContainer = document.createElement('div');\n      signatureContainer.setAttribute('class', 'tmail-signature');\n  \n      const signatureContent = document.createElement('div');\n      signatureContent.setAttribute('class', 'tmail-signature-content');\n      signatureContent.innerHTML = signatureNode.innerHTML;\n      signatureContent.style.display = 'none';\n  \n      const signatureButton = document.createElement('button');\n      signatureButton.setAttribute('class', 'tmail-signature-button');\n      signatureButton.textContent = 'Signature';\n      signatureButton.style.backgroundImage = data['iconCollapsed'];\n  \n      signatureContainer.appendChild(signatureButton);\n      signatureContainer.appendChild(signatureContent);\n  \n      if (signatureNode.outerHTML) {\n        signatureNode.outerHTML = signatureContainer.outerHTML;\n      } else {\n        signatureNode.parentNode.replaceChild(signatureContainer, signatureNode);\n      }\n      \n      const newSignatureButton = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-button');\n      newSignatureButton.addEventListener('click', function handleClick(event) {\n        const contentElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-content');\n        const buttonElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-button');\n        if (contentElement && buttonElement) {\n          if (contentElement.style.display === 'block') {\n            contentElement.style.display = 'none';\n            buttonElement.style.backgroundImage = data['iconCollapsed'];\n          } else {\n            contentElement.style.display = 'block';\n            buttonElement.style.backgroundImage = data['iconExpanded'];\n          }\n        }\n      }, false);\n    }\n  \n              }\n              \n              if (data[\"type\"].includes(\"getHeight\")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({\"view\": \"" + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n      </script>\n          <script type="text/javascript">\n        document.addEventListener(\'wheel\', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener(\'keydown\', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case \'=\':\n              case \'-\':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script type="text/javascript">\n      const lazyImages = document.querySelectorAll("img.lazy-loading");\n      \n      const options = {\n        root: null, // Use the viewport as the root\n        rootMargin: "0px",\n        threshold: 0 // Specify the threshold for intersection\n      };\n      \n      const handleIntersection = (entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const img = entry.target;\n            const src = img.getAttribute("data-src");\n      \n            // Replace the placeholder with the actual image source\n            img.src = src;\n      \n            // Stop observing the image\n            observer.unobserve(img);\n          }\n        });\n      };\n      \n      const observer = new IntersectionObserver(handleIntersection, options);\n      \n      lazyImages.forEach((image) => {\n        observer.observe(image);\n      });\n    </script>\n  ') + "\n    </body>\n    </html> \n  ";
       t1 = document.createElement("iframe");
       t1.toString;
       t2 = _this.___HtmlContentViewerOnWebState_actualWidth_A;
@@ -1118,22 +1178,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         _this.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb_closure1(_this));
     },
     build$1(context) {
-      var t2, _this = this, _null = null,
-        t1 = _this.___HtmlContentViewerOnWebState_actualHeight_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t2 = _this.___HtmlContentViewerOnWebState_actualWidth_A;
-      t2 === $ && A.throwUnnamedLateFieldNI();
-      t1 = A._setArrayType([new A.SizedBox(t2, t1, _this._buildWebView$0(), _null)], type$.JSArray_Widget);
-      if (_this._html_content_viewer_on_web_widget$_isLoading)
-        t1.push(new A.Align(C.Alignment_0_m1, _null, _null, D.Padding_kr3, _null));
-      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t1, _null);
-    },
-    _buildWebView$0() {
-      var _null = null,
-        htmlData = this._htmlData;
-      if (htmlData == null || htmlData.length === 0)
-        return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
-      return A.FutureBuilder$(new B._HtmlContentViewerOnWebState__buildWebView_closure(this, htmlData), this.webInit, type$.bool);
+      return new A.LayoutBuilder(new B._HtmlContentViewerOnWebState_build_closure(this), null);
     }
   };
   B.HtmlViewerControllerForWeb.prototype = {};
@@ -1141,7 +1186,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var _null = null,
         t1 = A._setArrayType([A.SvgPicture$asset(this.icon, C.Alignment_0_0, A.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, 20), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY11, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
-      return A.InkWell$(false, _null, true, new A.Padding(C.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null);
+      return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B.Chip.prototype = {
@@ -1199,21 +1244,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.dispose$0();
       _this.super$__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin$dispose();
     },
-    _chip$_handleTapDown$1(details) {
+    _handleTapDown$1(details) {
       var _this = this;
       if (!_this.get$canTap())
         return;
       _this.addMaterialState$1(C.MaterialState_2);
       _this.setState$1(new B._RawChipState__handleTapDown_closure(_this));
     },
-    _chip$_handleTapCancel$0() {
+    _handleTapCancel$0() {
       var _this = this;
       if (!_this.get$canTap())
         return;
       _this.removeMaterialState$1(C.MaterialState_2);
       _this.setState$1(new B._RawChipState__handleTapCancel_closure(_this));
     },
-    _chip$_handleTap$0() {
+    _handleTap$0() {
       var _this = this;
       if (!_this.get$canTap())
         return;
@@ -1383,9 +1428,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.clipBehavior;
       t3 = _this.updateMaterialState$1(C.MaterialState_1);
       t4 = _this._widget.focusNode;
-      t5 = _this.get$canTap() ? _this.get$_chip$_handleTap() : _null;
-      t6 = _this.get$canTap() ? _this.get$_chip$_handleTapDown() : _null;
-      t7 = _this.get$canTap() ? _this.get$_chip$_handleTapCancel() : _null;
+      t5 = _this.get$canTap() ? _this.get$_handleTap() : _null;
+      t6 = _this.get$canTap() ? _this.get$_handleTapDown() : _null;
+      t7 = _this.get$canTap() ? _this.get$_handleTapCancel() : _null;
       t8 = _this.get$canTap() ? _this.updateMaterialState$1(C.MaterialState_0) : _null;
       t9 = _this.___RawChipState_selectController_A;
       t9 === $ && A.throwUnnamedLateFieldNI();
@@ -2338,7 +2383,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t10.toString;
       }
       t4 = B.Ink$(A.SafeArea$(false, A.IconTheme_merge(A.IconButtonTheme$(new B._ListTile(leadingIcon, titleText, subtitleText, trailingIcon, false, false, theme.visualDensity, t3.textDirection, t6, t7, t8, t9, t10, D.ListTileTitleAlignment_1, _null), new A.IconButtonThemeData(t2)), new A.IconThemeData(_null, _null, _null, _null, _null, effectiveIconColor, _null, _null)), true, resolvedContentPadding, true, false), new A.ShapeDecoration(t5, _null, _null, _null, t4));
-      return A.InkWell$(false, _null, true, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, t4, _null), t1, true, _this.focusColor, _null, _null, _this.hoverColor, _null, effectiveMouseCursor, _null, _null, _null, _null, _null, _this.onTap, _null, _null, _null, _null, _null, _null, _null);
+      return A.InkWell$(false, _null, true, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, false, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, t4, _null), t1, true, _null, _null, _null, _null, _null, effectiveMouseCursor, _null, _null, _null, _null, _null, _this.onTap, _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B._IndividualOverrides.prototype = {
@@ -2802,7 +2847,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.AnimatedSwitcher.prototype = {
     createState$0() {
-      return new B._AnimatedSwitcherState(A.LinkedHashSet_LinkedHashSet$_empty(type$._ChildEntry), C.List_empty19, null, null, C._StateLifecycle_0);
+      return new B._AnimatedSwitcherState(A.LinkedHashSet_LinkedHashSet$_empty(type$._ChildEntry), C.List_empty18, null, null, C._StateLifecycle_0);
     },
     transitionBuilder$2(arg0, arg1) {
       return B.animated_switcher_AnimatedSwitcher_defaultTransitionBuilder$closure().call$2(arg0, arg1);
@@ -3188,7 +3233,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 === $ && A.throwUnnamedLateFieldNI();
       t1.removeListener$1(0, _this.get$_onFocusKeyboardChanged());
       _this.__TagsEditorState__focusNodeKeyboard_A.dispose$0();
-      t1 = _this._highlightedOptionIndex;
+      t1 = _this._tag_editor$_highlightedOptionIndex;
       t2 = $.$get$ChangeNotifier__emptyListeners();
       t1.ChangeNotifier__listeners = t2;
       t1.ChangeNotifier__count = 0;
@@ -3200,15 +3245,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.cancel$0(0);
       _this.super$State$dispose();
     },
-    _updateHighlight$1(newIndex) {
-      var t1 = this._suggestions;
+    _tag_editor$_updateHighlight$1(newIndex) {
+      var t1 = this._tag_editor$_suggestions;
       if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true) {
-        t1 = this._suggestions;
+        t1 = this._tag_editor$_suggestions;
         t1.toString;
         t1 = C.JSInt_methods.$mod(newIndex, J.get$length$asx(t1));
       } else
         t1 = 0;
-      this._highlightedOptionIndex.set$value(0, t1);
+      this._tag_editor$_highlightedOptionIndex.set$value(0, t1);
     },
     _initializeSuggestionBox$0() {
       var _this = this,
@@ -3293,11 +3338,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               results = $async$result;
               if ($async$self._searchId === t1 && $async$self._framework$_element != null)
                 $async$self.setState$1(new B.TagsEditorState__onSearchChanged_closure($async$self, results));
-              $async$self._updateHighlight$1(0);
+              $async$self._tag_editor$_updateHighlight$1(0);
               $async$self._validationSuggestionItemNotifier.set$value(0, value);
               t1 = $async$self._suggestionsStreamController;
               if (t1 != null) {
-                t2 = $async$self._suggestions;
+                t2 = $async$self._tag_editor$_suggestions;
                 t1.add$1(0, t2 == null ? A._setArrayType([], $async$self.$ti._eval$1("JSArray<1>")) : t2);
               }
               t1 = $async$self._suggestionsBoxController;
@@ -3311,11 +3356,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     closeSuggestionBox$0() {
       var t1, _this = this;
-      _this._suggestions = null;
+      _this._tag_editor$_suggestions = null;
       t1 = _this._suggestionsStreamController;
       if (t1 != null)
         t1.add$1(0, A._setArrayType([], _this.$ti._eval$1("JSArray<1>")));
-      _this._updateHighlight$1(0);
+      _this._tag_editor$_updateHighlight$1(0);
       _this._validationSuggestionItemNotifier.set$value(0, null);
       t1 = _this._suggestionsBoxController;
       if (t1 != null)
@@ -3326,18 +3371,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _onSubmitted$1(string) {
       var currentHighlightIndex, optionSelected, _this = this,
-        t1 = _this._suggestions;
+        t1 = _this._tag_editor$_suggestions;
       if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true) {
         t1 = _this._suggestionsBoxController;
         t1 = (t1 == null ? null : t1._isOpened) === true;
       } else
         t1 = false;
       if (t1) {
-        currentHighlightIndex = _this._highlightedOptionIndex._change_notifier$_value;
-        t1 = _this._suggestions;
+        currentHighlightIndex = _this._tag_editor$_highlightedOptionIndex._change_notifier$_value;
+        t1 = _this._tag_editor$_suggestions;
         if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true)
           if (currentHighlightIndex >= 0) {
-            t1 = _this._suggestions;
+            t1 = _this._tag_editor$_suggestions;
             t1.toString;
             t1 = currentHighlightIndex < J.get$length$asx(t1);
           } else
@@ -3345,7 +3390,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         else
           t1 = false;
         if (t1) {
-          t1 = _this._suggestions;
+          t1 = _this._tag_editor$_suggestions;
           t1.toString;
           optionSelected = J.$index$asx(t1, currentHighlightIndex);
           _this._widget.onSelectOptionAction.call$1(optionSelected);
@@ -3368,7 +3413,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 === $ && A.throwUnnamedLateFieldNI();
       t1.set$text(0, "");
       _this._previousText = "";
-      _this._updateHighlight$1(0);
+      _this._tag_editor$_updateHighlight$1(0);
       _this._validationSuggestionItemNotifier.set$value(0, null);
     },
     _onKeyboardBackspaceListener$0() {
@@ -3539,7 +3584,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     popupItem$5$colorIcon$onCallbackAction$styleName(iconAction, nameAction, colorIcon, onCallbackAction, styleName) {
       var _null = null,
         t1 = A.SvgPicture$asset(iconAction, C.Alignment_0_0, A.ColorNullableExtension_asFilter(colorIcon), C.BoxFit_0, 20, _null, 20);
-      return A.InkWell$(false, _null, true, new A.Padding(C.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(nameAction, _null, _null, _null, _null, _null, _null, _null, _null, styleName, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onCallbackAction, _null, _null, _null, _null, _null, _null, _null);
+      return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(nameAction, _null, _null, _null, _null, _null, _null, _null, _null, styleName, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onCallbackAction, _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B.MaterialTextButton.prototype = {
@@ -3601,14 +3646,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.UserSettingPopupMenuMixin.prototype = {
     popupMenuUserSettingActionTile$4$onLogoutAction$onSettingAction(context, userProfile, onLogoutAction, onSettingAction) {
-      var _null = null,
-        t1 = type$.dynamic;
-      return A._setArrayType([A.PopupMenuItem$(this._userInformation$2(context, userProfile), false, 48, _null, C.EdgeInsets_0_0_0_0, _null, t1), D.PopupMenuDivider_null, A.PopupMenuItem$(this._settingAction$2(context, onSettingAction), true, 48, _null, C.EdgeInsets_0_0_0_0, _null, t1), D.PopupMenuDivider_null, A.PopupMenuItem$(this._user_setting_popup_menu_mixin$_logoutAction$2(context, onLogoutAction), true, 48, _null, C.EdgeInsets_0_0_0_0, _null, t1)], type$.JSArray_PopupMenuEntry_dynamic);
+      var t1 = type$.dynamic;
+      return A._setArrayType([A.PopupMenuItem$(this._userInformation$2(context, userProfile), false, 48, C.EdgeInsets_0_0_0_0, null, t1), D.PopupMenuDivider_null, A.PopupMenuItem$(this._settingAction$2(context, onSettingAction), true, 48, C.EdgeInsets_0_0_0_0, null, t1), D.PopupMenuDivider_null, A.PopupMenuItem$(this._user_setting_popup_menu_mixin$_logoutAction$2(context, onLogoutAction), true, 48, C.EdgeInsets_0_0_0_0, null, t1)], type$.JSArray_PopupMenuEntry_dynamic);
     },
     _userInformation$2(context, userProfile) {
       var _null = null;
       if (userProfile != null)
-        return new A.SizedBox(300, _null, B.ListTile$(C.EdgeInsets_20_0_20_0, _null, _null, _null, _null, _null, A.Text$(userProfile.email, _null, _null, 1, _null, _null, _null, _null, _null, C.TextStyle_chs3, _null, _null, _null, _null, _null), _null), _null);
+        return new A.SizedBox(300, _null, B.ListTile$(C.EdgeInsets_20_0_20_0, _null, _null, _null, A.Text$(userProfile.email, _null, _null, 1, _null, _null, _null, _null, _null, C.TextStyle_chs3, _null, _null, _null, _null, _null), _null), _null);
       return C.SizedBox_0_0_null_null;
     },
     _settingAction$2(context, onCallBack) {
@@ -3682,6 +3726,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["double(double)", "~()", "~(String)", "~(TapDownDetails)", "Widget(BuildContext)", "Widget(_ChildEntry)", "bool(PortalLinkScope)", "bool(SizeChangedLayoutNotification)", "Widget(Widget,Animation0<double>)", "Widget(Widget?,List<Widget>)"]);
+  B.CapitalizeExtension_get_capitalizeFirstEach_closure.prototype = {
+    call$1(str) {
+      return A.CapitalizeExtension_get_inCaps(str);
+    },
+    $signature: 35
+  };
   B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
       return this.$call$body$_HtmlContentViewerOnWebState__setUpWeb_closure($event);
@@ -3689,7 +3739,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     $call$body$_HtmlContentViewerOnWebState__setUpWeb_closure($event) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$self = this, t3, t4, dataGetHeight, dataGetWidth, jsonGetHeight, jsonGetWidth, t1, t2;
+        $async$self = this, t3, t4, jsonGetHeight, jsonGetWidth, jsonShowSignature, t1, t2;
       var $async$call$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
@@ -3702,16 +3752,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t2 === $ && A.throwUnnamedLateFieldNI();
               t3 = type$.String;
               t4 = type$.Object;
-              dataGetHeight = A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: getHeight", "view", t2], t3, t4);
-              dataGetWidth = A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: getWidth", "view", t1.___HtmlContentViewerOnWebState_createdViewId_A], t3, t4);
-              jsonGetHeight = A._JsonStringStringifier_stringify(dataGetHeight, null, null);
-              jsonGetWidth = A._JsonStringStringifier_stringify(dataGetWidth, null, null);
+              jsonGetHeight = A._JsonStringStringifier_stringify(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: getHeight", "view", t2], t3, t4), null, null);
+              t2 = window;
+              t2.toString;
+              C.Window_methods.postMessage$2(t2, jsonGetHeight, "*");
+              jsonGetWidth = A._JsonStringStringifier_stringify(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: getWidth", "view", t1.___HtmlContentViewerOnWebState_createdViewId_A], t3, t4), null, null);
+              t2 = window;
+              t2.toString;
+              C.Window_methods.postMessage$2(t2, jsonGetWidth, "*");
+              jsonShowSignature = A._JsonStringStringifier_stringify(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: showSignature", "iconCollapsed", "    url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10.0003 11.8319L5.53383 8.1098C5.18027 7.81516 4.6548 7.86293 4.36016 8.21649C4.06553 8.57006 4.1133 9.09553 4.46686 9.39016L9.46686 13.5568C9.7759 13.8144 10.2248 13.8144 10.5338 13.5568L15.5338 9.39016C15.8874 9.09553 15.9352 8.57006 15.6405 8.21649C15.3459 7.86293 14.8204 7.81516 14.4669 8.1098L10.0003 11.8319Z' fill='%23AEAEC0'/%3E%3C/svg%3E%0A\")\n  ", "iconExpanded", "    url(\"data:image/svg+xml,%3Csvg class='chevron-down' width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg' %3E%3Cpath d='M14.5352 11.9709C14.8347 12.2276 15.2857 12.193 15.5424 11.8934C15.7991 11.5939 15.7644 11.143 15.4649 10.8863L10.4649 6.60054C10.1974 6.37127 9.8027 6.37127 9.53521 6.60054L4.53521 10.8863C4.23569 11.143 4.201 11.5939 4.45773 11.8934C4.71446 12.193 5.16539 12.2276 5.46491 11.9709L10.0001 8.08364L14.5352 11.9709Z' fill='%23AEAEC0' /%3E%3C/svg%3E\")\n  ", "view", t1.___HtmlContentViewerOnWebState_createdViewId_A], t3, t4), null, null);
               t4 = window;
               t4.toString;
-              C.Window_methods.postMessage$2(t4, jsonGetHeight, "*");
-              t4 = window;
-              t4.toString;
-              C.Window_methods.postMessage$2(t4, jsonGetWidth, "*");
+              C.Window_methods.postMessage$2(t4, jsonShowSignature, "*");
               t4 = window;
               t4.toString;
               A._EventStreamSubscription$(t4, "message", new B._HtmlContentViewerOnWebState__setUpWeb__closure(t1), false, type$.MessageEvent);
@@ -3721,7 +3773,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 249
+    $signature: 294
   };
   B._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -3750,7 +3802,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t2._framework$_element;
         if (t3 != null) {
           scrollHeightWithBuffer = J.$add$ansx(docHeight, 30);
-          if (J.$gt$n(scrollHeightWithBuffer, 100))
+          if (J.$gt$n(scrollHeightWithBuffer, t2.minHeight))
             t2.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb___closure(t2, scrollHeightWithBuffer));
         }
         if (t2._framework$_element != null && t2._html_content_viewer_on_web_widget$_isLoading)
@@ -3794,7 +3846,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t2) {
         link = t1.$index(data, "url");
         if (link != null && _this.$this._framework$_element != null) {
-          A.log("_HtmlContentViewerOnWebState::_setUpWeb(): OpenLink: " + A.S(link), C.Level_3);
           A._asString(link);
           if (C.JSString_methods.startsWith$1(link, "mailto:")) {
             t1 = _this.$this._widget.mailtoDelegate;
@@ -3804,7 +3855,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 188
+    $signature: 227
   };
   B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -3830,7 +3881,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 394
+    $signature: 401
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -3838,17 +3889,40 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  B._HtmlContentViewerOnWebState__buildWebView_closure.prototype = {
-    call$2(context, snapshot) {
-      var t1, _null = null;
-      if (snapshot.data != null) {
-        t1 = this.$this.___HtmlContentViewerOnWebState_createdViewId_A;
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        return new A.HtmlElementView(t1, new A.ValueKey(this.htmlData, type$.ValueKey_String));
-      } else
-        return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+  B._HtmlContentViewerOnWebState_build_closure.prototype = {
+    call$2(context, constraint) {
+      var t2, t3,
+        t1 = this.$this;
+      t1.minHeight = Math.max(constraint.maxHeight, t1.minHeight);
+      t2 = A._setArrayType([], type$.JSArray_Widget);
+      t3 = t1._htmlData;
+      if ((t3 == null ? null : t3.length !== 0) === false)
+        t2.push(C.SizedBox_0_0_null_null);
+      else
+        t2.push(A.FutureBuilder$(new B._HtmlContentViewerOnWebState_build__closure(t1), t1.webInit, type$.bool));
+      if (t1._html_content_viewer_on_web_widget$_isLoading)
+        t2.push(D.Align_Ktb);
+      return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 312
+    $signature: 1534
+  };
+  B._HtmlContentViewerOnWebState_build__closure.prototype = {
+    call$2(context, snapshot) {
+      var t1, t2, t3, t4;
+      if (snapshot.data != null) {
+        t1 = this.$this;
+        t2 = t1.___HtmlContentViewerOnWebState_actualHeight_A;
+        t2 === $ && A.throwUnnamedLateFieldNI();
+        t3 = t1.___HtmlContentViewerOnWebState_actualWidth_A;
+        t3 === $ && A.throwUnnamedLateFieldNI();
+        t4 = t1._htmlData;
+        t1 = t1.___HtmlContentViewerOnWebState_createdViewId_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        return new A.SizedBox(t3, t2, new A.HtmlElementView(t1, new A.ValueKey(t4, type$.ValueKey_nullable_String)), null);
+      } else
+        return C.SizedBox_0_0_null_null;
+    },
+    $signature: 1535
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -3909,7 +3983,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1527
+    $signature: 1536
   };
   B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -3935,7 +4009,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1528
+    $signature: 1537
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -3970,7 +4044,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 28
+    $signature: 26
   };
   B._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -3979,7 +4053,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 28
+    $signature: 26
   };
   B.ListTile_build_resolveColor.prototype = {
     call$4(explicitColor, selectedColor, enabledColor, disabledColor) {
@@ -3988,7 +4062,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1529
+    $signature: 1538
   };
   B._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -3999,7 +4073,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.context.paintChild$2(child, type$.BoxParentData._as(t1).offset.$add(0, this.offset));
       }
     },
-    $signature: 328
+    $signature: 334
   };
   B._RenderListTile_hitTestChildren_closure.prototype = {
     call$2(result, transformed) {
@@ -4038,7 +4112,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1530
+    $signature: 1539
   };
   B._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -4064,7 +4138,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new B._StreamBuilderBaseState__subscribe__closure(t1, error, stackTrace));
     },
-    $signature: 105
+    $signature: 102
   };
   B._StreamBuilderBaseState__subscribe__closure.prototype = {
     call$0() {
@@ -4105,7 +4179,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.ancestorContext = $parent;
       return false;
     },
-    $signature: 66
+    $signature: 70
+  };
+  B.ListEmailAddressExtension_emailAddressToListString_closure.prototype = {
+    call$1(emailAddress) {
+      return this.isFullEmailAddress ? B.EmailAddressExtension_asFullString(emailAddress) : A.EmailAddressExtension_asString(emailAddress);
+    },
+    $signature: 186
+  };
+  B.ListEmailAddressExtension_emailAddressToListString_closure0.prototype = {
+    call$1(emailAddress) {
+      return this.isFullEmailAddress ? B.EmailAddressExtension_asFullString(emailAddress) : A.EmailAddressExtension_asString(emailAddress);
+    },
+    $signature: 186
   };
   B.TagsEditorState__initializeSuggestionBox_closure.prototype = {
     call$1(_) {
@@ -4129,7 +4215,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 311
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -4159,11 +4245,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         compositedTransformFollowerOffset = showTop ? new A.Offset(0, -t3) : C.Offset_0_0;
         t3 = t2._suggestionsStreamController;
         t3 = t3 == null ? _null : new A._BroadcastStream(t3, A._instanceType(t3)._eval$1("_BroadcastStream<1>"));
-        return new B.StreamBuilder(new B.TagsEditorState__createOverlayEntry__closure(t1, t2, t4, compositedTransformFollowerOffset, showTop), t2._suggestions, t3, _null, t2.$ti._eval$1("StreamBuilder<List<1>?>"));
+        return new B.StreamBuilder(new B.TagsEditorState__createOverlayEntry__closure(t1, t2, t4, compositedTransformFollowerOffset, showTop), t2._tag_editor$_suggestions, t3, _null, t2.$ti._eval$1("StreamBuilder<List<1>?>"));
       }
       return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 25
+    $signature: 29
   };
   B.TagsEditorState__createOverlayEntry__closure.prototype = {
     call$2(context, snapshot) {
@@ -4188,7 +4274,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if (t3 == null)
           t3 = C.EdgeInsets_0_0_0_0;
         t1.toString;
-        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), J.get$length$asx(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t10), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._highlightedOptionIndex)), _null, _null);
+        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), J.get$length$asx(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t10), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._tag_editor$_highlightedOptionIndex)), _null, _null);
         t1 = !_this.showTop ? suggestionsListView : A.FractionalTranslation$(suggestionsListView, true, C.Offset_0_m1);
         return A.Positioned$(_null, A.CompositedTransformFollower$(t1, t2._tag_editor$_layerLink, _this.compositedTransformFollowerOffset, false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, _this.size._dx);
       }
@@ -4202,13 +4288,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       var item, highlight, t3, t4, t5, _null = null,
         t1 = this.$this,
-        t2 = t1._suggestions;
+        t2 = t1._tag_editor$_suggestions;
       if (t2 != null)
         t2 = J.get$isNotEmpty$asx(t2) === true;
       else
         t2 = false;
       if (t2) {
-        t2 = t1._suggestions;
+        t2 = t1._tag_editor$_suggestions;
         t2.toString;
         item = J.$index$asx(t2, index);
         highlight = A.AutocompleteHighlightedOption_of(context) === index;
@@ -4237,11 +4323,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 107
+    $signature: 98
   };
   B.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
-      return this.$this._suggestions = this.results;
+      return this.$this._tag_editor$_suggestions = this.results;
     },
     $signature: 0
   };
@@ -4280,7 +4366,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 311
   };
   B.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
@@ -4289,13 +4375,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.$this._onKeyboardBackspaceListener$0();
       else if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294968065)) {
         t1 = this.$this;
-        t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value + 1);
+        t1._tag_editor$_updateHighlight$1(t1._tag_editor$_highlightedOptionIndex._change_notifier$_value + 1);
       } else if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294968068)) {
         t1 = this.$this;
-        t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
+        t1._tag_editor$_updateHighlight$1(t1._tag_editor$_highlightedOptionIndex._change_notifier$_value - 1);
       }
     },
-    $signature: 104
+    $signature: 106
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -4353,33 +4439,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 304
+    $signature: 311
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 556
+    $signature: 559
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 556
+    $signature: 559
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 73
+    $signature: 75
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 73
+    $signature: 75
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -4416,9 +4502,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _instance_0_u = hunkHelpers._instance_0u,
       _static_2 = hunkHelpers._static_2;
     var _;
-    _instance_1_u(_ = B._RawChipState.prototype, "get$_chip$_handleTapDown", "_chip$_handleTapDown$1", 3);
-    _instance_0_u(_, "get$_chip$_handleTapCancel", "_chip$_handleTapCancel$0", 1);
-    _instance_0_u(_, "get$_chip$_handleTap", "_chip$_handleTap$0", 1);
+    _instance_1_u(_ = B._RawChipState.prototype, "get$_handleTapDown", "_handleTapDown$1", 3);
+    _instance_0_u(_, "get$_handleTapCancel", "_handleTapCancel$0", 1);
+    _instance_0_u(_, "get$_handleTap", "_handleTap$0", 1);
     _instance_1_u(_ = B._RenderChip.prototype, "get$computeMinIntrinsicWidth", "computeMinIntrinsicWidth$1", 0);
     _instance_1_u(_, "get$computeMaxIntrinsicWidth", "computeMaxIntrinsicWidth$1", 0);
     _instance_1_u(_, "get$computeMinIntrinsicHeight", "computeMinIntrinsicHeight$1", 0);
@@ -4444,11 +4530,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
+    _inheritMany(A.Closure, [B.CapitalizeExtension_get_capitalizeFirstEach_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure, B._HtmlContentViewerOnWebState__setUpWeb__closure, B._HtmlContentViewerOnWebState__setUpWeb_closure0, B.ListTile_build_resolveColor, B._RenderListTile_paint_doPaint, B._AnimatedSwitcherState__newEntry_closure, B._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure, B._AnimatedSwitcherState_build_closure, B._StreamBuilderBaseState__subscribe_closure, B.Visibility_of_closure, B.ListEmailAddressExtension_emailAddressToListString_closure, B.ListEmailAddressExtension_emailAddressToListString_closure0, B.TagsEditorState__initializeSuggestionBox_closure, B.TagsEditorState__createOverlayEntry_closure, B.TagsEditorState__scrollToVisible__closure, B.TagsEditorState_build_closure0, B.TagsEditorState_build_closure, B.TagsEditorState_build_closure1, B.TagsEditorState_build__closure]);
     _inheritMany(A.StatefulWidget, [B.HtmlContentViewerOnWeb, B.RawChip, B.Ink, B.AnimatedSwitcher, B.StreamBuilderBase, B.Portal, B.TagEditor]);
     _inheritMany(A.State0, [B._HtmlContentViewerOnWebState, B.__RawChipState_State_MaterialStateMixin, B._InkState, B._PopupMenuDividerState, B.__AnimatedSwitcherState_State_TickerProviderStateMixin, B._StreamBuilderBaseState, B._PortalState, B.TagsEditorState]);
-    _inheritMany(A.Closure, [B._HtmlContentViewerOnWebState__setUpWeb_closure, B._HtmlContentViewerOnWebState__setUpWeb__closure, B._HtmlContentViewerOnWebState__setUpWeb_closure0, B.ListTile_build_resolveColor, B._RenderListTile_paint_doPaint, B._AnimatedSwitcherState__newEntry_closure, B._AnimatedSwitcherState__rebuildOutgoingWidgetsIfNeeded_closure, B._AnimatedSwitcherState_build_closure, B._StreamBuilderBaseState__subscribe_closure, B.Visibility_of_closure, B.TagsEditorState__initializeSuggestionBox_closure, B.TagsEditorState__createOverlayEntry_closure, B.TagsEditorState__scrollToVisible__closure, B.TagsEditorState_build_closure0, B.TagsEditorState_build_closure, B.TagsEditorState_build_closure1, B.TagsEditorState_build__closure]);
     _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__setUpWeb___closure, B._HtmlContentViewerOnWebState__setUpWeb___closure0, B._HtmlContentViewerOnWebState__setUpWeb___closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure1, B.PopupMenuItemWidget_build_closure, B._RawChipState__handleTapDown_closure, B._RawChipState__handleTapCancel_closure, B._RawChipState__handleTap_closure, B._RawChipState_didUpdateWidget_closure, B._RawChipState_didUpdateWidget_closure0, B._AnimatedSwitcherState__newEntry__closure, B._StreamBuilderBaseState__subscribe__closure1, B._StreamBuilderBaseState__subscribe__closure, B._StreamBuilderBaseState__subscribe_closure0, B._StreamBuilderBaseState__subscribe__closure0, B.SizeChangedLayoutNotifier_createRenderObject_closure, B.TagsEditorState__onFocusChanged_closure, B.TagsEditorState__onSearchChanged_closure, B.TagsEditorState__scrollToVisible_closure, B.TagsEditorState_build__closure0, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, B.VacationNotificationMessageWidget__buildBodyForMobile_closure, B.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
-    _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState__buildWebView_closure, B._RawChipState_build_closure, B._RenderChipRedirectingHitDetection_hitTest_closure, B._RenderChip_hitTest_closure, B._RenderChip_performLayout_centerLayout, B._RenderChip__paintAvatar_paintWithOverlay, B._RenderChip__paintChild_closure, B._RenderListTile_hitTestChildren_closure, B._StreamBuilderBaseState__subscribe_closure1, B.TagsEditorState__createOverlayEntry__closure, B.TagsEditorState__createOverlayEntry___closure, B.TagEditorLayoutDelegate__isOverflow_closure, B.TagEditorLayoutDelegate_performLayout_closure]);
+    _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure, B._RawChipState_build_closure, B._RenderChipRedirectingHitDetection_hitTest_closure, B._RenderChip_hitTest_closure, B._RenderChip_performLayout_centerLayout, B._RenderChip__paintAvatar_paintWithOverlay, B._RenderChip__paintChild_closure, B._RenderListTile_hitTestChildren_closure, B._StreamBuilderBaseState__subscribe_closure1, B.TagsEditorState__createOverlayEntry__closure, B.TagsEditorState__createOverlayEntry___closure, B.TagEditorLayoutDelegate__isOverflow_closure, B.TagEditorLayoutDelegate_performLayout_closure]);
     _inheritMany(A.Object, [B.HtmlViewerControllerForWeb, B._ChipRenderTheme, B._ChipSizes, B._ChildEntry, B.PortalLink, B.SuggestionsBoxController, B.PopupMenuWidgetMixin, B.UserSettingPopupMenuMixin]);
     _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B.Chip, B.Drawer, B.ListTile, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
     _inherit(B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin, B.__RawChipState_State_MaterialStateMixin);
@@ -4502,8 +4588,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       JSArray_PopupMenuEntry_dynamic: findType("JSArray<PopupMenuEntry<@>>"),
       JSArray_RenderBox: findType("JSArray<RenderBox>"),
       JSArray_Size: findType("JSArray<Size>"),
+      JSArray_String: findType("JSArray<String>"),
       JSArray_Widget: findType("JSArray<Widget>"),
       LabeledGlobalKey_State_StatefulWidget: findType("LabeledGlobalKey<State0<StatefulWidget>>"),
+      MappedListIterable_String_String: findType("MappedListIterable<String,String>"),
       MaterialLocalizations: findType("MaterialLocalizations"),
       MaterialState: findType("MaterialState"),
       MediaQuery: findType("MediaQuery"),
@@ -4521,9 +4609,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ValidationSuggestionItem: findType("ValidationSuggestionItem"),
       ValueKey_Key: findType("ValueKey<Key>"),
       ValueKey_Object: findType("ValueKey<Object>"),
-      ValueKey_String: findType("ValueKey<String>"),
       ValueKey_int: findType("ValueKey<int>"),
       ValueKey_nullable_Key: findType("ValueKey<Key?>"),
+      ValueKey_nullable_String: findType("ValueKey<String?>"),
       Widget: findType("Widget"),
       _ChildEntry: findType("_ChildEntry"),
       _ChipSlot: findType("_ChipSlot"),
@@ -4549,9 +4637,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var makeConstList = hunkHelpers.makeConstList;
     D.SizedBox_VEQ0 = new A.SizedBox(30, 30, C.CupertinoActivityIndicator_Color_697934509_null, null);
     D.Padding_kr3 = new A.Padding(C.EdgeInsets_16_16_16_16, D.SizedBox_VEQ0, null);
+    D.Align_Ktb = new A.Align(C.Alignment_0_m1, null, null, D.Padding_kr3, null);
     D.Alignment_1_1 = new A.Alignment(1, 1);
     D.Aligned_HRf = new A.Aligned(1, null, C.Alignment_1_m1, D.Alignment_1_1, C.Alignment_0_0, C.C_AxisFlag, C.C_AxisFlag, C.Offset_0_0, null);
     D.Aligned_2Lz = new A.Aligned(1, null, C.Alignment_1_m1, D.Alignment_1_1, C.Alignment_0_0, C.C_AxisFlag, C.C_AxisFlag, C.Offset_0_0, D.Aligned_HRf);
+    D.Color_4294914887 = new A.Color(4294914887);
     D.BorderSide_tAf2 = new A.BorderSide(C.Color_520093696, 0.5, C.BorderStyle_1, -1);
     D.Offset_chs1 = new A.Offset(0, 0.5);
     D.BoxShadow_oyn = new A.BoxShadow(1, C.BlurStyle_0, C.Color_335544320, D.Offset_chs1, 1);
@@ -4559,15 +4649,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_1555612108 = new A.Color(1555612108);
     D.Color_1612257561 = new A.Color(1612257561);
     D.Color_4292865791 = new A.Color(4292865791);
-    D.Color_4294914887 = new A.Color(4294914887);
     D.Color_4294964674 = new A.Color(4294964674);
     D.ConnectionState_2 = new A.ConnectionState(2, "active");
     D.Duration_195000 = new A.Duration(195000);
     D.EdgeInsetsDirectional_0_10_0_0 = new A.EdgeInsetsDirectional(0, 10, 0, 0);
     D.EdgeInsetsDirectional_0_24_0_24 = new A.EdgeInsetsDirectional(0, 24, 0, 24);
-    D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
-    D.EdgeInsetsDirectional_16_0_8_0 = new A.EdgeInsetsDirectional(16, 0, 8, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
     D.EdgeInsets_0_12_12_0 = new A.EdgeInsets(0, 12, 12, 0);
@@ -4575,6 +4662,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_16_12_16_12 = new A.EdgeInsets(16, 12, 16, 12);
+    D.EdgeInsets_20_16_20_16 = new A.EdgeInsets(20, 16, 20, 16);
     D.EdgeInsets_32_12_32_12 = new A.EdgeInsets(32, 12, 32, 12);
     D.EdgeInsets_32_16_32_16 = new A.EdgeInsets(32, 16, 32, 16);
     D.EdgeInsets_32_8_32_8 = new A.EdgeInsets(32, 8, 32, 8);
@@ -4608,4 +4696,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["QsD/YWMUy/L5bWrH6ICZ3qumqYM="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["JImpMs+K5PdzBfGQhuEtvRbKkhw="] = $__dart_deferred_initializers__.current

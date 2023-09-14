@@ -161,8 +161,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = hunkHelpers.updateHolder(holdersList[3], B);
   A = holdersList[0];
   C = holdersList[2];
-  D = holdersList[14];
-  E = holdersList[15];
+  D = holdersList[15];
+  E = holdersList[16];
   J = holdersList[1];
   B._AutofillScopeTextInputConfiguration.prototype = {
     toJson$0() {
@@ -269,7 +269,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t3, _null = null,
         t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data,
         t2 = type$._MaterialStatePropertyWith_Color;
-      t2 = A.ButtonStyle$(_null, _null, new A._MaterialStatePropertyWith(new B.BaseLoginView_buildLoginButton_closure(), t2), _null, _null, _null, new A._MaterialStatePropertyWith(new B.BaseLoginView_buildLoginButton_closure0(), t2), _null, _null, _null, _null, _null, _null, _null, _null, new A.MaterialStatePropertyAll(new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_PLF1), type$.MaterialStatePropertyAll_nullable_OutlinedBorder), _null, _null, _null, _null, _null, _null);
+      t2 = A.ButtonStyle$(_null, _null, new A._MaterialStatePropertyWith(new B.BaseLoginView_buildLoginButton_closure(), t2), _null, _null, _null, new A._MaterialStatePropertyWith(new B.BaseLoginView_buildLoginButton_closure0(), t2), _null, _null, _null, _null, _null, _null, _null, _null, new A.MaterialStatePropertyAll(new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_PLF0), type$.MaterialStatePropertyAll_nullable_OutlinedBorder), _null, _null, _null, _null, _null, _null);
       t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(this);
       t3 = A._instanceType(this)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(this)).get$handleLoginPressed();
@@ -325,38 +325,38 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = _this._buildAppLogo$1(context);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t2 = type$.JSArray_Widget;
-      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_EcO4, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY26, _null, _null, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildMobileForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildMobileForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, 97), _null))], t2), _null);
+      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_EcO4, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY22, _null, _null, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildMobileForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildMobileForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, 97), _null))], t2), _null);
     },
     _buildWebForm$1(context) {
       var t2, t3, t4, t5, t6, _this = this, _null = null,
         t1 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t2 = A.Text$(A.Intl__message("JMAP-based\ncollaborative team mail solution", _null, "jmapBasedMailSolution", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY24, _null, _null, _null, _null, _null);
+      t2 = A.Text$(A.Intl__message("JMAP-based\ncollaborative team mail solution", _null, "jmapBasedMailSolution", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY20, _null, _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t3 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_jmap_standard.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), _null, D.TextStyle_oHY25);
+      t3 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_jmap_standard.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), _null, D.TextStyle_oHY21);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t4 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_encrypted.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), _null, D.TextStyle_oHY25);
+      t4 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_encrypted.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), _null, D.TextStyle_oHY21);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t5 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_team.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), _null, D.TextStyle_oHY25);
+      t5 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_team.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), _null, D.TextStyle_oHY21);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
       t6 = type$.JSArray_Widget;
-      t5 = A.Column$(A._setArrayType([t2, new A.Padding(C.EdgeInsets_0_24_0_0, t3, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t4, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t5, _null), new A.Padding(C.EdgeInsets_0_16_0_0, A.SloganBuilder$(true, _null, _null, "assets/images/ic_integration.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), _null, D.TextStyle_oHY25), _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null), _null)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, C.VerticalDirection_1);
+      t5 = A.Column$(A._setArrayType([t2, new A.Padding(C.EdgeInsets_0_24_0_0, t3, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t4, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t5, _null), new A.Padding(C.EdgeInsets_0_16_0_0, A.SloganBuilder$(true, _null, _null, "assets/images/ic_integration.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), _null, D.TextStyle_oHY21), _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null), _null)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, C.VerticalDirection_1);
       t4 = A.BorderRadius$circular(20);
       t3 = _this._buildAppLogo$1(context);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t5, _null), A.Column$(A._setArrayType([new A.SizedBox(445, 690, A.Card$(true, new A.Padding(D.EdgeInsets_31_0_31_0, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t3, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY26, _null, _null, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildWebForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildWebForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t6), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, 10, _null, new A.RoundedRectangleBorder(t4, C.BorderSide_8xm)), _null), new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, 97), _null)], t6), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
+      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t5, _null), A.Column$(A._setArrayType([new A.SizedBox(445, 690, A.Card$(true, new A.Padding(D.EdgeInsets_31_0_31_0, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t3, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY22, _null, _null, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildWebForm_closure(_this, context), _null), new A.Obx(new B.LoginView__buildWebForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t6), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null, _null, 10, _null, new A.RoundedRectangleBorder(t4, C.BorderSide_8xm)), _null), new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, 97), _null)], t6), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
     },
     _buildAppLogo$1(buildContext) {
       var _null = null,
         t1 = A.SvgPicture$asset("assets/images/ic_tmail_logo.svg", C.Alignment_0_0, _null, C.BoxFit_0, 36, _null, 36);
       A.Localizations_of(buildContext, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Row$(A._setArrayType([t1, new A.Padding(C.EdgeInsets_10_0_10_0, A.Text$(A.Intl__message("Team Mail", _null, "app_name", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY27, C.TextAlign_2, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, _null);
+      return A.Row$(A._setArrayType([t1, new A.Padding(C.EdgeInsets_10_0_10_0, A.Text$(A.Intl__message("Team Mail", _null, "app_name", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY23, C.TextAlign_2, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, _null);
     },
     _buildSSOButton$1(context) {
       var _null = null,
         t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data,
         t2 = type$._MaterialStatePropertyWith_Color;
-      t2 = A.ButtonStyle$(_null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure(), t2), _null, _null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure0(), t2), _null, _null, _null, _null, _null, _null, _null, _null, new A.MaterialStatePropertyAll(new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_PLF1), type$.MaterialStatePropertyAll_nullable_OutlinedBorder), _null, _null, _null, _null, _null, _null);
+      t2 = A.ButtonStyle$(_null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure(), t2), _null, _null, _null, new A._MaterialStatePropertyWith(new B.LoginView__buildSSOButton_closure0(), t2), _null, _null, _null, _null, _null, _null, _null, _null, new A.MaterialStatePropertyAll(new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_PLF0), type$.MaterialStatePropertyAll_nullable_OutlinedBorder), _null, _null, _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Single Sign-On", _null, "singleSignOn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null, _null, _null), C.Clip_0, _null, D.ValueKey_ssoSubmitForm, _null, _null, _null, new B.LoginView__buildSSOButton_closure1(this), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsets_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
@@ -429,7 +429,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t9.errorBorder = C.OutlineInputBorder_0Qn;
       t5 = A._setArrayType([A.TextFormFieldBuilder$(false, t6, t7, t9.build$0(), t8, _null, t4, t3, t2, t5, D.TextStyle_chs4)], type$.JSArray_Widget);
       _this._widget.toString;
-      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_eye.svg", _null, 18, _null, C.EdgeInsetsDirectional_0_0_4_0, _null, new B._LoginTextInputBuilderState_build_closure(_this), _null));
+      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_eye.svg", _null, 18, _null, C.EdgeInsetsDirectional_0_0_4_0, _null, new B._LoginTextInputBuilderState_build_closure(_this), _null, _null));
       return new A.Stack(C.AlignmentDirectional_1_0, _null, C.StackFit_0, C.Clip_1, t5, _null);
     },
     dispose$0() {
@@ -442,25 +442,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1544
+    $signature: 1552
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1545
+    $signature: 1553
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1546
+    $signature: 1554
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1547
+    $signature: 1555
   };
   B.BaseLoginView_buildLoginMessage_closure.prototype = {
     call$1(failure) {
@@ -487,7 +487,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1548
+    $signature: 1556
   };
   B.BaseLoginView_buildLoginMessage_closure0.prototype = {
     call$1(success) {
@@ -512,31 +512,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
     },
-    $signature: 1549
+    $signature: 1557
   };
   B.BaseLoginView_buildLoginMessage_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1550
+    $signature: 1558
   };
   B.BaseLoginView_buildLoginMessage_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1551
+    $signature: 1559
   };
   B.BaseLoginView_buildLoginButton_closure0.prototype = {
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 13
+    $signature: 15
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 13
+    $signature: 15
   };
   B.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(context, loginUsername) {
@@ -561,13 +561,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).passFocusNode.requestFocus$0();
     },
-    $signature: 1552
+    $signature: 1560
   };
   B.BaseLoginView_buildUserNameInput_closure0.prototype = {
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 465
+    $signature: 471
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -636,13 +636,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 13
+    $signature: 15
   };
   B.LoginView__buildSSOButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 13
+    $signature: 15
   };
   B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
@@ -682,7 +682,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 159
+    $signature: 258
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -706,7 +706,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 82
+    $signature: 80
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -787,8 +787,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_58_11_58_36 = new A.EdgeInsets(58, 11, 58, 36);
     D.List_email = A._setArrayType(makeConstList(["email"]), type$.JSArray_String);
     D.List_password = A._setArrayType(makeConstList(["password"]), type$.JSArray_String);
-    D.BorderSide_PLF3 = new A.BorderSide(C.Color_4278221567, 2, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_EjN1 = new A.OutlineInputBorder(4, C.BorderRadius_tLn7, D.BorderSide_PLF3);
+    D.BorderSide_PLF2 = new A.BorderSide(C.Color_4278221567, 2, C.BorderStyle_1, -1);
+    D.OutlineInputBorder_EjN1 = new A.OutlineInputBorder(4, C.BorderRadius_tLn7, D.BorderSide_PLF2);
     D.BorderSide_A4L = new A.BorderSide(C.Color_4294112245, 1, C.BorderStyle_1, -1);
     D.OutlineInputBorder_LNn = new A.OutlineInputBorder(4, C.BorderRadius_tLn7, D.BorderSide_A4L);
     D.PrivacyLinkWidget_null = new B.PrivacyLinkWidget(null);
@@ -796,16 +796,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.SizedBox_null_150_null_null = new A.SizedBox(null, 150, null, null);
     D.SizedBox_null_40_null_null = new A.SizedBox(null, 40, null, null);
     D.ValueKey_login_loading_icon = new A.ValueKey("login_loading_icon", type$.ValueKey_String);
-    D.SizedBox_rgI = new A.SizedBox(40, 40, C.CircularProgressIndicator_Esr, D.ValueKey_login_loading_icon);
-    D.SuggestionsBoxDecoration_dLJ = new A.SuggestionsBoxDecoration(C.BorderRadius_tLn9);
+    D.SizedBox_rgI = new A.SizedBox(40, 40, C.CircularProgressIndicator_Esr0, D.ValueKey_login_loading_icon);
+    D.SuggestionsBoxDecoration_dLJ = new A.SuggestionsBoxDecoration(C.BorderRadius_tLn8);
     D.TextStyle_INA = new A.TextStyle(true, C.Color_4285887861, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_chs4 = new A.TextStyle(true, C.Color_4286680217, null, null, null, null, 16, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_etK1 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_kmg4 = new A.TextStyle(true, C.Color_4293281350, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_oHY25 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 24, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_oHY27 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 24, C.FontWeight_6_700, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_oHY26 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 32, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_oHY24 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 36, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_oHY21 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 24, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_oHY23 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 24, C.FontWeight_6_700, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_oHY22 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 32, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_oHY20 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 36, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oIa0 = new A.TextStyle(true, C.Color_4286482075, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.ValueKey_loginSubmitForm = new A.ValueKey("loginSubmitForm", type$.ValueKey_String);
     D.ValueKey_login_message = new A.ValueKey("login_message", type$.ValueKey_String);
@@ -815,4 +815,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Jy2dWKabOwSbNLZpNHPMj4Al+VE="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["dz4CcoXpHPJFPvzjvS4k79HAjvE="] = $__dart_deferred_initializers__.current
