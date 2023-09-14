@@ -1,3 +1,23 @@
+## [0.9.2] - 2023-09-14
+### Changed
+- \#2134 \[WEB\] mailto URL
+- Translate Russian/French/German
+- \#2124 Add badges for downloads (#2140)
+- \#2123 Change license to AGPL-V3 - drop the OpenPaaS clause
+
+### Fixed
+- \#1844 Fix \[AdvanceSearch\] User cannot get the advance searching result once user use Enter without the clicking Search button
+- \#1845 Fix \[AdvanceSearch\] The searching result is not correct with the condition which mention in the description
+- \#1977 Fix clickable logo
+- \#1984 Fix \[Barcamp\] Counter for Trash/Spam + empty action for Trash/Spam
+- \#2026 Fix \[COMPOSER\] Save as draft should not close the composer
+- \#2129 Fix \[Attach image\] I cannot attach image
+- \#2135 Add Splash Screen for user to prevent blank page in the first time loading TeamMail app
+- \#2089 Add dash-dash-space to signature delimiter
+- Fix the login screen freezes when pasting the link in the browser address bar
+- Fix TextEditingController was used after being disposed in LoginView
+- Fix oidc refresh token on mobile
+
 ## [0.9.1] - 2023-08-23
 ### Fixed
 - \#1974 Fix refreshToken with OIDC on jmap.linagora.com/oidc
@@ -237,6 +257,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.9.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.2
 [0.9.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.1
 [0.9.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.0
 [0.8.9]: https://github.com/linagora/tmail-flutter/releases/tag/v0.8.9
