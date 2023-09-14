@@ -147,31 +147,31 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                        color: Colors.black)),
                   const SizedBox(height: 24),
                   _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.desktop),
-                  Container(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: InkWell(
-                      onTap: controller.tapAddCondition,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            _imagePaths.icAddNewFolder,
-                            fit: BoxFit.fill,
-                          ),
-                          const SizedBox(width: 15,),
-                          Text(
-                            AppLocalizations.of(context).addCondition,
-                            maxLines: 1,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 17,
-                              color: AppColor.primaryColor
-                            )
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                  // Container(
+                  //   padding: const EdgeInsets.only(top: 8),
+                  //   child: InkWell(
+                  //     onTap: controller.tapAddCondition,
+                  //     child: Row(
+                  //       crossAxisAlignment: CrossAxisAlignment.center,
+                  //       children: [
+                  //         SvgPicture.asset(
+                  //           _imagePaths.icAddNewFolder,
+                  //           fit: BoxFit.fill,
+                  //         ),
+                  //         const SizedBox(width: 15,),
+                  //         Text(
+                  //           AppLocalizations.of(context).addCondition,
+                  //           maxLines: 1,
+                  //           style: const TextStyle(
+                  //             fontWeight: FontWeight.w500,
+                  //             fontSize: 17,
+                  //             color: AppColor.primaryColor
+                  //           )
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(height: 24),
                   Text(AppLocalizations.of(context).actionTitleRulesFilter,
                     overflow: CommonTextStyle.defaultTextOverFlow,
@@ -298,31 +298,31 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               color: Colors.black)),
                       const SizedBox(height: 24),
                       _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.tablet),
-                      Container(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: InkWell(
-                          onTap: controller.tapAddCondition,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                _imagePaths.icAddNewFolder,
-                                fit: BoxFit.fill,
-                              ),
-                              const SizedBox(width: 15,),
-                              Text(
-                                AppLocalizations.of(context).addCondition,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: AppColor.primaryColor
-                                )
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   padding: const EdgeInsets.only(top: 8),
+                      //   child: InkWell(
+                      //     onTap: controller.tapAddCondition,
+                      //     child: Row(
+                      //       crossAxisAlignment: CrossAxisAlignment.center,
+                      //       children: [
+                      //         SvgPicture.asset(
+                      //           _imagePaths.icAddNewFolder,
+                      //           fit: BoxFit.fill,
+                      //         ),
+                      //         const SizedBox(width: 15,),
+                      //         Text(
+                      //           AppLocalizations.of(context).addCondition,
+                      //           maxLines: 1,
+                      //           style: const TextStyle(
+                      //             fontWeight: FontWeight.w500,
+                      //             fontSize: 17,
+                      //             color: AppColor.primaryColor
+                      //           )
+                      //         )
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                       const SizedBox(height: 24),
                       Text(AppLocalizations.of(context).actionTitleRulesFilter,
                           overflow: CommonTextStyle.defaultTextOverFlow,
@@ -455,32 +455,32 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               color: Colors.black)),
                       const SizedBox(height: 24),
                       _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.mobile),
-                      Container(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: InkWell(
-                          onTap: controller.tapAddCondition,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                _imagePaths.icAddNewFolder,
-                                fit: BoxFit.fill,
-                              ),
-                              const SizedBox(width: 15,),
-                              Text(
-                                AppLocalizations.of(context).addCondition,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: AppColor.primaryColor
-                                )
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   padding: const EdgeInsets.only(top: 12),
+                      //   child: InkWell(
+                      //     onTap: controller.tapAddCondition,
+                      //     child: Row(
+                      //       crossAxisAlignment: CrossAxisAlignment.center,
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: [
+                      //         SvgPicture.asset(
+                      //           _imagePaths.icAddNewFolder,
+                      //           fit: BoxFit.fill,
+                      //         ),
+                      //         const SizedBox(width: 15,),
+                      //         Text(
+                      //           AppLocalizations.of(context).addCondition,
+                      //           maxLines: 1,
+                      //           style: const TextStyle(
+                      //             fontWeight: FontWeight.w500,
+                      //             fontSize: 17,
+                      //             color: AppColor.primaryColor
+                      //           )
+                      //         )
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
                         child: Divider(
