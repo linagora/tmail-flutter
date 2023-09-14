@@ -151,11 +151,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         }
         
         function handleOnClickSignature() {
-          console.log("handleOnClickSignature");
           const contentElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-content');
           const buttonElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-button');
-          console.log("contentElement: " + contentElement);
-          console.log("buttonElement: " + buttonElement);
           if (contentElement && buttonElement) {
             if (contentElement.style.display === 'block') {
               contentElement.style.display = 'none';
