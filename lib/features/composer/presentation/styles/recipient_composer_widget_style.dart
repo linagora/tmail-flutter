@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 class RecipientComposerWidgetStyle {
   static const double deleteRecipientFieldIconSize = 20;
   static const double space = 8;
+  static const double enableBorderRadius = 10;
 
   static const Color borderColor = AppColor.colorLineComposer;
   static const Color deleteRecipientFieldIconColor = AppColor.colorCollapseMailbox;
+  static const Color enableBorderColor = AppColor.primaryColor;
 
   static const EdgeInsetsGeometry deleteRecipientFieldIconPadding = EdgeInsetsDirectional.all(3);
   static const EdgeInsetsGeometry prefixButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 3, horizontal: 5);

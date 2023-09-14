@@ -7,8 +7,8 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_suggestion_item_widget_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/avatar_suggestion_item_widget.dart';
 
 typedef OnSelectedRecipientSuggestionAction = Function(EmailAddress emailAddress);

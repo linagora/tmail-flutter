@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -1866,5 +1867,29 @@ class ComposerController extends BaseController {
 
     final newContentHtml = contentHtml.removeEditorStartTag();
     return newContentHtml;
+  }
+
+  void removeDraggableEmailAddress(DraggableEmailAddress draggableEmailAddress) {
+    log('ComposerController::removeDraggableEmailAddress: $draggableEmailAddress');
+    switch(draggableEmailAddress.prefix) {
+      case PrefixEmailAddress.to:
+        listToEmailAddress.remove(draggableEmailAddress.emailAddress);
+        toAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      case PrefixEmailAddress.cc:
+        listCcEmailAddress.remove(draggableEmailAddress.emailAddress);
+        ccAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      case PrefixEmailAddress.bcc:
+        listBccEmailAddress.remove(draggableEmailAddress.emailAddress);
+        bccAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      default:
+        break;
+    }
+    isInitialRecipient.value = true;
+    isInitialRecipient.refresh();
+
+    _updateStatusEmailSendButton();
   }
 }

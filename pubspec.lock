@@ -1527,10 +1527,11 @@ packages:
   super_tag_editor:
     dependency: "direct main"
     description:
-      name: super_tag_editor
-      sha256: "1bd2e25fb147a2144b3451a8489b35f5cad09f27fe2dca3c0f5cbe4ae12d3047"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "22fcc31f816ed62ffa1ef38c2103333b7f001345"
+      url: "https://github.com/dab246/super_tag_editor.git"
+    source: git
     version: "0.2.0"
   syncfusion_flutter_core:
     dependency: transitive
