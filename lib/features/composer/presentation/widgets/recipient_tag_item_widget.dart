@@ -49,52 +49,90 @@ class RecipientTagItemWidget extends StatelessWidget {
     return Stack(
       alignment: AlignmentDirectional.centerEnd,
       children: [
-        Padding(
-          padding: EdgeInsetsDirectional.only(
-            top: PlatformInfo.isWeb ? 8 : 0,
-            end: isCollapsed ? 40 : 0),
-          child: InkWell(
-            onTap: () => isCollapsed
-              ? onShowFullAction?.call(prefix)
-              : null,
-            child: Draggable<DraggableEmailAddress>(
-              data: DraggableEmailAddress(emailAddress: currentEmailAddress, prefix: prefix),
-              feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
-              childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
-              child: MouseRegion(
-                cursor: SystemMouseCursors.grab,
-                child: Chip(
-                  labelPadding: EdgeInsetsDirectional.symmetric(
-                    horizontal: 4,
-                    vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+        if (PlatformInfo.isWeb)
+          Padding(
+            padding: EdgeInsetsDirectional.only(
+              top: 8,
+              end: isCollapsed ? 40 : 0),
+            child: InkWell(
+              onTap: () => isCollapsed
+                ? onShowFullAction?.call(prefix)
+                : null,
+              child: Draggable<DraggableEmailAddress>(
+                data: DraggableEmailAddress(emailAddress: currentEmailAddress, prefix: prefix),
+                feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
+                childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.grab,
+                  child: Chip(
+                    labelPadding: EdgeInsetsDirectional.symmetric(
+                      horizontal: 4,
+                      vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+                    ),
+                    label: Text(
+                      currentEmailAddress.asString(),
+                      maxLines: 1,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                    ),
+                    deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
+                    labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
+                    backgroundColor: _getTagBackgroundColor(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
+                      side: _getTagBorderSide(),
+                    ),
+                    avatar: currentEmailAddress.displayName.isNotEmpty
+                      ? GradientCircleAvatarIcon(
+                          colors: currentEmailAddress.avatarColors,
+                          label: currentEmailAddress.displayName.firstLetterToUpperCase,
+                          labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,
+                          iconSize: RecipientTagItemWidgetStyle.avatarIconSize,
+                        )
+                      : null,
+                    onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
                   ),
-                  label: Text(
-                    currentEmailAddress.asString(),
-                    maxLines: 1,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
-                  ),
-                  deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
-                  labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-                  backgroundColor: _getTagBackgroundColor(),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: const BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
-                    side: _getTagBorderSide(),
-                  ),
-                  avatar: currentEmailAddress.displayName.isNotEmpty
-                    ? GradientCircleAvatarIcon(
-                        colors: currentEmailAddress.avatarColors,
-                        label: currentEmailAddress.displayName.firstLetterToUpperCase,
-                        labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,
-                        iconSize: RecipientTagItemWidgetStyle.avatarIconSize,
-                      )
-                    : null,
-                  onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
                 ),
-              ),
-            )
+              )
+            ),
+          )
+        else
+          Padding(
+            padding: EdgeInsetsDirectional.only(end: isCollapsed ? 40 : 0),
+            child: InkWell(
+              onTap: () => isCollapsed
+                ? onShowFullAction?.call(prefix)
+                : null,
+              child: Chip(
+                labelPadding: EdgeInsetsDirectional.symmetric(
+                  horizontal: 4,
+                  vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+                ),
+                label: Text(
+                  currentEmailAddress.asString(),
+                  maxLines: 1,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                ),
+                deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
+                labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
+                backgroundColor: _getTagBackgroundColor(),
+                shape: RoundedRectangleBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
+                  side: _getTagBorderSide(),
+                ),
+                avatar: currentEmailAddress.displayName.isNotEmpty
+                  ? GradientCircleAvatarIcon(
+                      colors: currentEmailAddress.avatarColors,
+                      label: currentEmailAddress.displayName.firstLetterToUpperCase,
+                      labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,
+                      iconSize: RecipientTagItemWidgetStyle.avatarIconSize,
+                    )
+                  : null,
+                onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
+              )
+            ),
           ),
-        ),
         if (isCollapsed)
           TMailButtonWidget.fromText(
             margin: RecipientTagItemWidgetStyle.counterMargin,
