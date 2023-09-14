@@ -1,5 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -34,16 +36,11 @@ class DraggableRecipientTagWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (emailAddress.displayName.isNotEmpty)
-              SizedBox(
-                width: DraggableRecipientTagWidgetStyle.avatarIconSize,
-                height: DraggableRecipientTagWidgetStyle.avatarIconSize,
-                child: CircleAvatar(
-                  backgroundColor: DraggableRecipientTagWidgetStyle.avatarBackgroundColor,
-                  child: Text(
-                    emailAddress.displayName[0].toUpperCase(),
-                    style: DraggableRecipientTagWidgetStyle.avatarLabelTextStyle
-                  )
-                ),
+              GradientCircleAvatarIcon(
+                colors: emailAddress.avatarColors,
+                label: emailAddress.displayName.firstLetterToUpperCase,
+                labelFontSize: DraggableRecipientTagWidgetStyle.avatarLabelFontSize,
+                iconSize: DraggableRecipientTagWidgetStyle.avatarIconSize,
               ),
             Padding(
               padding: DraggableRecipientTagWidgetStyle.labelPadding,

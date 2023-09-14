@@ -8,6 +8,7 @@ class GradientCircleAvatarIcon extends StatelessWidget {
   final double iconSize;
   final double labelFontSize;
   final String label;
+  final TextStyle? textStyle;
 
   const GradientCircleAvatarIcon({
     Key? key,
@@ -15,6 +16,7 @@ class GradientCircleAvatarIcon extends StatelessWidget {
     this.iconSize = 40,
     this.label = '',
     this.labelFontSize = 24.0,
+    this.textStyle,
   }) : super(key: key);
 
   @override
@@ -33,13 +35,13 @@ class GradientCircleAvatarIcon extends StatelessWidget {
         ),
         color: AppColor.avatarColor
       ),
-      child: Text(
-        label,
-        style: TextStyle(
+      child: DefaultTextStyle(
+        style: textStyle ?? TextStyle(
           color: Colors.white,
           fontSize: labelFontSize,
           fontWeight: FontWeight.w600
-        )
+        ),
+        child: Text(label),
       )
     );
   }
