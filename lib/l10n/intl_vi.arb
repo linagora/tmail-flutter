@@ -2957,5 +2957,407 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "repliedMessage": "Tin nhắn đã trả lời",
+  "@repliedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreInOfflineMode": "Bạn đang ở chế độ ngoại tuyến",
+  "@youAreInOfflineMode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerDeleteAllSpamEmailsMessage": "Tất cả thư trong Thư rác sẽ bị xóa nếu bạn đạt đến giới hạn dung lượng lưu trữ.",
+  "@bannerDeleteAllSpamEmailsMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resend": "Gửi lại",
+  "@resend": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleRecipientSendingEmail": "Tới: {người nhận}",
+  "@titleRecipientSendingEmail": {
+    "type": "text",
+    "placeholders_order": [
+      "recipients"
+    ],
+    "placeholders": {
+      "recipients": {}
+    }
+  },
+  "messageDialogDeleteSendingEmail": "Xóa tin nhắn ngoại tuyến sẽ xóa nội dung của nó vĩnh viễn. Bạn sẽ không thể hoàn tác hành động này hoặc khôi phục tin nhắn từ hộp thư Thùng rác.",
+  "@messageDialogDeleteSendingEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeDeclined": " đã từ chối lời mời này",
+  "@messageEventActionBannerAttendeeDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "link": "liên kết",
+  "@link": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeAllAttendees": "Xem tất cả người tham dự",
+  "@seeAllAttendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounterDeclined": "Đề xuất phản đối của bạn đã bị từ chối",
+  "@messageEventActionBannerAttendeeCounterDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerCanceled": " đã hủy một cuộc họp",
+  "@messageEventActionBannerOrganizerCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizer": "Người tổ chức",
+  "@organizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "where": "Ở đâu",
+  "@where": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerMessage": "Bạn sẽ sớm không thể gửi email bằng Tmail. Vui lòng dọn dẹp bộ nhớ của bạn hoặc nâng cấp bộ nhớ của bạn để có được đầy đủ tính năng trong Tmail.",
+  "@quotaWarningBannerMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolder": "Làm trống thư mục Thư rác",
+  "@emptySpamFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subMessageEventActionBannerCanceled": "\"Chúng tôi đang hủy bỏ sự kiện do thời tiết xấu.\"",
+  "@subMessageEventActionBannerCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllSpamEmails": "Xóa tất cả tin nhắn rác",
+  "@deleteAllSpamEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messagesHaveBeenResent": "Tin nhắn đã được gửi lại",
+  "@messagesHaveBeenResent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "anAttendee": "Một người tham dự",
+  "@anAttendee": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHaveBeenDeletedSuccessfully": "Tin nhắn đã được xóa thành công",
+  "@messageHaveBeenDeletedSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotSelectThisImage": "Không thể chọn hình ảnh này",
+  "@cannotSelectThisImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingQueue": "Hàng đợi để gửi",
+  "@sendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilters": "Tạo bộ lọc",
+  "@createFilters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamMessageDialog": "Bạn sắp xóa vĩnh viễn tất cả các mục trong Thư rác. Bạn có muốn tiếp tục?",
+  "@emptySpamMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSentSuccessfully": "Tin nhắn đã được gửi thành công.",
+  "@messageHasBeenSentSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardedMessage": "Tin nhắn chuyển tiếp",
+  "@forwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "location": "Địa điểm",
+  "@location": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeTentative": " đã trả lời \"Có thể\" cho lời mời này",
+  "@messageEventActionBannerAttendeeTentative": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attendees": "Người tham dự",
+  "@attendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invitationMessageCalendarInformation": " đã mời bạn đến một cuộc họp:",
+  "@invitationMessageCalendarInformation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "who": "Ai",
+  "@who": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maybe": "Có thể",
+  "@maybe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllSpamEmailsNow": "Xóa tất cả thư rác ngay bây giờ",
+  "@deleteAllSpamEmailsNow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseChooseAnImageSizeCorrectly": "Vui lòng chọn kích thước hình ảnh <= {maxSize}KB",
+  "@pleaseChooseAnImageSizeCorrectly": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "quotaErrorBannerTitle": "Bạn đã hết dung lượng lưu trữ",
+  "@quotaErrorBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaErrorBannerMessage": "Bạn sẽ sớm không thể gửi email bằng Tmail. Vui lòng dọn dẹp bộ nhớ của bạn hoặc nâng cấp bộ nhớ của bạn để có được đầy đủ tính năng trong Tmail.",
+  "@quotaErrorBannerMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delivering": "Đang gửi",
+  "@delivering": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeAccepted": " đã chấp nhận lời mời này",
+  "@messageEventActionBannerAttendeeAccepted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "proceed": "Tiếp tục",
+  "@proceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you": "Bạn",
+  "@you": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "error": "Lỗi",
+  "@error": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerInvited": " đã mời bạn tham dự một cuộc họp",
+  "@messageEventActionBannerOrganizerInvited": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerTitle": "Bạn sắp hết dung lượng lưu trữ (90%).",
+  "@quotaWarningBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailFirst": "May mắn thay, bạn vẫn có thể",
+  "@messageDialogWhenStoreSendingEmailFirst": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subMessageEventActionBannerUpdated": "\"Thời gian đã được cập nhật để phù hợp hơn với tất cả các bạn\"",
+  "@subMessageEventActionBannerUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderCreatedTitle": "Bạn đã tạo thư mục {folderName} thành công",
+  "@folderCreatedTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "repliedAndForwardedMessage": "Tin nhắn được trả lời và chuyển tiếp",
+  "@repliedAndForwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerUpdated": " đã cập nhật một cuộc họp",
+  "@messageEventActionBannerOrganizerUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaStateLabel": "{used} of {limit} Đã sử dụng",
+  "@quotaStateLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "limit"
+    ],
+    "placeholders": {
+      "used": {},
+      "limit": {}
+    }
+  },
+  "emptyTrash": "Làm trống thùng rác",
+  "@emptyTrash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrashMessageDialog": "Bạn đang xóa vĩnh viễn tất cả các tin nhắn trong thư mục Rác. Bạn có muốn tiếp tục không?",
+  "@emptyTrashMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSavedToTheSendingQueue": "Tin nhắn đã được lưu vào hàng đợi để gửi",
+  "@messageHasBeenSavedToTheSendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFolderSuccessfullyMessage": "Bạn đã tạo thành công thư mục {folderName}",
+  "@createFolderSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "time": "Thời gian",
+  "@time": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueView": "Tin nhắn trong thư mục Hàng đợi để gửi sẽ được gửi hoặc lên lịch khi có kết nối mạng",
+  "@bannerMessageSendingQueueView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "connectedToTheInternet": "Đã kết nối mạng",
+  "@connectedToTheInternet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderCreatedMessage": "Để bắt đầu sử dụng hộp thư này, bạn nên thêm một số quy tắc để sắp xếp tất cả thư theo cách riêng của mình.",
+  "@folderCreatedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "when": "Khi nào",
+  "@when": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailTail": " Hôp thư",
+  "@messageDialogWhenStoreSendingEmailTail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteOfflineEmail": "Xóa tin nhắn ngoại tuyến",
+  "@deleteOfflineEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailSecond": " gửi, trả lời hoặc chuyển tiếp ",
+  "@messageDialogWhenStoreSendingEmailSecond": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openMailboxMenu": "Mở trình đơn hộp thư",
+  "@openMailboxMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounter": " đã đề xuất thay đổi sự kiện",
+  "@messageEventActionBannerAttendeeCounter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailThird": "tin nhắn. Chúng sẽ được gửi khi bạn kết nối mạng. Để chỉnh sửa những tin nhắn này trước khi gửi, hãy đi tới ",
+  "@messageDialogWhenStoreSendingEmailThird": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
