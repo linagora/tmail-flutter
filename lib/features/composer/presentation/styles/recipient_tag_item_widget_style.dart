@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 class RecipientTagItemWidgetStyle {
   static const double radius = 10;
+  static const double avatarIconSize = 24;
+  static const double avatarLabelFontSize = 12;
 
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.only(start: 4);
   static const EdgeInsetsGeometry counterPadding = EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8);
