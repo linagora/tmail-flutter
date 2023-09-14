@@ -184,11 +184,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
           );
           listRuleCondition.add(currentRule);
           RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
-          focusNode: FocusNode(),
-          errorText: '',
-          controller: TextEditingController(),
-        );
-        listRuleConditionValueArguments.add(newRuleConditionValueArguments);
+            focusNode: FocusNode(),
+            errorText: '',
+            controller: TextEditingController(),
+          );
+          listRuleConditionValueArguments.add(newRuleConditionValueArguments);
           emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
           _setValueInputField(
             listRuleConditionValueArguments[0].controller,
@@ -311,10 +311,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
-  void createNewRuleFilter(BuildContext context) async {
+  void createNewRuleFilter(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
 
     final errorName = _getErrorStringByInputValue(context, _newRuleName);
+    log('RulesFilterCreatorController::createNewRuleFilter:errorName: $errorName');
     if (errorName?.isNotEmpty == true) {
       errorRuleName.value = errorName;
       inputRuleNameFocusNode.requestFocus();
@@ -322,23 +323,28 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
 
     if (listRuleCondition.isNotEmpty) {
+      String? errorConditionString;
       for (var ruleCondition in listRuleCondition) {
-        String? errorString = _getErrorStringByInputValue(context, ruleCondition.value);
-        if (errorString != null) {
+        errorConditionString = _getErrorStringByInputValue(context, ruleCondition.value);
+        log('RulesFilterCreatorController::createNewRuleFilter:errorConditionString: $errorConditionString');
+        if (errorConditionString != null) {
           int ruleConditionIndex = listRuleCondition.indexOf(ruleCondition);
           RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
             focusNode: listRuleConditionValueArguments[ruleConditionIndex].focusNode,
-            errorText: errorString,
+            errorText: errorConditionString,
             controller: listRuleConditionValueArguments[ruleConditionIndex].controller,
           );
           listRuleConditionValueArguments[ruleConditionIndex] = newRuleConditionValueArguments;
           listRuleConditionValueArguments[listRuleCondition.indexOf(ruleCondition)].focusNode.requestFocus();
         }
       }
-      return;
+      if (errorConditionString?.isNotEmpty == true) {
+        return;
+      }
     }
 
     final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.getDisplayName(context));
+    log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
     if (errorAction?.isNotEmpty == true) {
       errorRuleActionValue.value = errorAction;
       if (currentOverlayContext != null && currentContext != null) {
