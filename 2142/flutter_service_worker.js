@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"assets/env.file": "3209b968e21c45d9385e3cde8b486d9e",
+const RESOURCES = {"assets/env.file": "3cfe90d81936bdcc72c710342eb38e79",
 "assets/assets/fonts/Inter/Inter-SemiBold.ttf": "3e87064b7567bef4ecd2ba977ce028bc",
 "assets/assets/fonts/Inter/Inter-Bold.ttf": "cef517a165e8157d9f14a0911190948d",
 "assets/assets/fonts/Inter/Inter-Regular.ttf": "eba360005eef21ac6807e45dc8422042",
@@ -291,8 +291,8 @@ const RESOURCES = {"assets/env.file": "3209b968e21c45d9385e3cde8b486d9e",
 "main.dart.js_3.part.js": "a92652edacf0a2b6138c758a0ad01c1e",
 "version.json": "8c3b2edad2908ae9db66ab523acb6905",
 "manifest.json": "349bf3eb9699317dca24e90c8c657f3c",
-"index.html": "42b64834912edcd8fda973facf32a8a5",
-"/": "42b64834912edcd8fda973facf32a8a5",
+"index.html": "cca1de5faefda865bb1319c97d024a7c",
+"/": "cca1de5faefda865bb1319c97d024a7c",
 "flutter.js": "6fef97aeca90b426343ba6c5c9dc5d4a",
 "main.dart.js_7.part.js": "34a9f6392251e4bbfd64b2ac0aa639f6",
 "firebase-messaging-sw.js": "f76c3a61d564249a1734cf3487753856",
