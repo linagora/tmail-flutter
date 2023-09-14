@@ -44,13 +44,6 @@ class HtmlUtils {
         let maxOffset = Math.round(scrollWidth - offsetWidth);
         let scrollLeftRounded = Math.round(newScrollLeft);
          
-        /*  
-          console.log('newScrollLeft: ' + newScrollLeft);
-          console.log('scrollWidth: ' + scrollWidth);
-          console.log('offsetWidth: ' + offsetWidth);
-          console.log('maxOffset: ' + maxOffset);
-          console.log('scrollLeftRounded: ' + scrollLeftRounded); */
-          
         if (xDiff > 0) {
           if (maxOffset === scrollLeftRounded || 
               maxOffset === (scrollLeftRounded + 1) || 
@@ -161,11 +154,8 @@ class HtmlUtils {
       }
       
       function handleOnClickSignature() {
-        console.log("handleOnClickSignature");
         const contentElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-content');
         const buttonElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-button');
-        console.log("contentElement: " + contentElement);
-        console.log("buttonElement: " + buttonElement);
         if (contentElement && buttonElement) {
           if (contentElement.style.display === 'block') {
             contentElement.style.display = 'none';
