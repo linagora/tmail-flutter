@@ -31,15 +31,35 @@
 
   <title>Team Mail</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" type="text/css" href="splash/style.css">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 
   <script type="application/javascript" src="assets/packages/flutter_inappwebview/assets/web/web_support.js" defer></script>
+  <script src="splash/splash.js"></script>
 </head>
 <body>
+
+    <picture id="splash-branding">
+        <source srcset="splash/img/branding-1x.png 1x, splash/img/branding-2x.png 2x, splash/img/branding-3x.png 3x, splash/img/branding-4x.png 4x" media="(prefers-color-scheme: light)">
+        <source srcset="splash/img/branding-dark-1x.png 1x, splash/img/branding-dark-2x.png 2x, splash/img/branding-dark-3x.png 3x, splash/img/branding-dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+        <img class="bottom" aria-hidden="true" src="splash/img/branding-1x.png" alt="">
+    </picture>
+
+    <div class="center">
+        <div align="center">
+            <picture id="splash">
+                <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
+                <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+                <img aria-hidden="true" src="splash/img/light-1x.png" alt="">
+            </picture>
+            <div class="loader"></div>
+        </div>
+    </div>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
-    var serviceWorkerVersion = "3145690138";
+    var serviceWorkerVersion = "3650383710";
     var scriptLoaded = false;
     function loadMainDartJs() {
       if (scriptLoaded) {

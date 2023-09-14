@@ -17,10 +17,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }, _SuggestionEmailAddress_Object_EquatableMixin: function _SuggestionEmailAddress_Object_EquatableMixin() {
     }},
   B, C, D;
-  A = hunkHelpers.updateHolder(holdersList[10], A);
+  A = hunkHelpers.updateHolder(holdersList[11], A);
   B = holdersList[0];
   C = holdersList[2];
-  D = holdersList[11];
+  D = holdersList[12];
   A.GradientCircleAvatarIcon.prototype = {
     build$1(context) {
       var _this = this, _null = null,
@@ -59,4 +59,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["fH1/e0aSEUaT9M8CFgsBJd/QnjQ="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["0ekO5dVF6NrIUMq5H2MIHusMYD0="] = $__dart_deferred_initializers__.current
