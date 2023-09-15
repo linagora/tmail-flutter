@@ -913,8 +913,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: "21ab3006789f622a5df09024741aac2f24d5e7f4"
+      ref: "bugfix/replace-all-line-break-to-br-tag-in-drop-text"
+      resolved-ref: "417501a2dd832c466aabc0914b5de13f3fec00bc"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"

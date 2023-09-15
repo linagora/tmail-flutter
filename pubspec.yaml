@@ -54,7 +54,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: email_supported
+      ref: bugfix/replace-all-line-break-to-br-tag-in-drop-text
 
   jmap_dart_client:
     git:
