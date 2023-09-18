@@ -2973,7 +2973,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       it.SchedulerBinding__postFrameCallbacks.push(t1.get$_postFrameCallback());
       it.WidgetsBinding__observers.push(t1);
     },
-    $signature: 1541
+    $signature: 1542
   };
   C._FadingEdgeScrollViewState__postFrameCallback_closure.prototype = {
     call$0() {
@@ -3061,7 +3061,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7.toString;
       return new A.LinearGradient(t4, t3, B.TileMode_0, t5, t2, null).createShader$2$textDirection(0, t6, t7.textDirection);
     },
-    $signature: 1542
+    $signature: 1543
   };
   C._RadioState__widgetFillColor_closure.prototype = {
     call$1(states) {
@@ -3577,7 +3577,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1544
+    $signature: 1545
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
     call$1(isListEmailEmpty) {
@@ -3677,7 +3677,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "";
       t1.deleteRecipients$2(this.context, t2);
     },
-    $signature: 1545
+    $signature: 1546
   };
   C.ListEmailForwardsWidget__buildTitleHeader_closure.prototype = {
     call$0() {
@@ -3760,7 +3760,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 /= 2;
       return A.ResponsiveWidget$(A.Column$(A._setArrayType([A.Text$(A.Intl__message(_s8_, _null, _s8_0, _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null, new A.SizedBox(t3, _null, t1._buildLanguageMenu$2(context, t3), _null)], t4), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, t5, t1._change_language_button_widget$_responsiveUtils, _null, _null);
     },
-    $signature: 1546
+    $signature: 1547
   };
   C.ChangeLanguageButtonWidget__buildLanguageMenu_closure.prototype = {
     call$0() {
@@ -4614,7 +4614,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return t1;
     },
-    $signature: 1547
+    $signature: 1548
   };
   C.IdentitiesView__buildIdentitiesViewMobile_closure.prototype = {
     call$0() {
@@ -4648,7 +4648,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildListIdentityView$1(t5));
       return A.Column$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     },
-    $signature: 1548
+    $signature: 1549
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure.prototype = {
     call$0() {
@@ -4679,7 +4679,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(t3._buildListIdentityView$1(t5), 1));
       return A.Row$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 1549
+    $signature: 1550
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure.prototype = {
     call$0() {
@@ -5483,4 +5483,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["zLL/l1+dlYlDpf6t6cyTbngNz8M="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["4HeQJg1kHtJtc635qmqz5/gJaj4="] = $__dart_deferred_initializers__.current
