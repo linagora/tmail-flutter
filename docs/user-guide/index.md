@@ -16,8 +16,8 @@ This guide provides information both for mobile and weg
  - [Quota](quota.md)
  - [Searching your emails](search.md)
  - [Managing your account](profile.md)
- - [Team mailboxes](team-mailboxes.md)
  - [Anti-spam](antispam.md)
+ - [Extra features](extra-features.md)
  - [Security](security.md)
 
 We also have a page for advanced users looking for [productivity tips](pro-tips.md).

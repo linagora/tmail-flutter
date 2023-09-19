@@ -1,3 +1,0 @@
-# Team-mailboxes
-
-TODO
