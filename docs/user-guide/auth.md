@@ -4,7 +4,7 @@ Team-mail supports both being integrated with an identity provider and basic aut
 
 ## Web: Login with OIDC
 
-![OIDC](oidc.md)
+![OIDC](images/oidc.md)
 
 Upon being launched Team-Mail detects that your installation supports identification through an indentity provider and redirects to its login page.
 
@@ -20,8 +20,8 @@ TODO: add a basic auth screen
 
 For mobile you need to connect to your home JMAP email server. Tmail will prompt you for its URL first. Your administrator should have provided you this value.
 
-![Provide the JMAP server URL handed over by your administrator](auth-mobile-1.jpg)
+![Provide the JMAP server URL handed over by your administrator](images/auth-mobile-1.jpg)
 
 Then Team mail would either redirect you to the auto-detected identity server or ask you directly for your credentials.
 
-![Then login with your credentials](auth-mobile-2.jpg)
+![Then login with your credentials](images/auth-mobile-2.jpg)

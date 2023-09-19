@@ -2,7 +2,7 @@
 
 This page explains how to read your emails and explains which actions can be performed on your emails.
 
-![Email list view for web, annotated](read.png)
+![Email list view for web, annotated](images/read.png)
 
 The right panels allows one to read his email. It shows emails within a folder, organized by time.
 
@@ -26,7 +26,7 @@ TODO mobile
 
 You can open emails by clicking on them:
 
-![Email detailed view on web](read.png)
+![Email detailed view on web](images/read.png)
 
 Here are the information you can see when opening an email:
 
@@ -52,7 +52,7 @@ When reading emails, a user can perform some actions on it.
 
 Quick actions are available in one click and are shown when putting the mouse on an email item:
 
-![Per email action](action1.png)
+![Per email action](images/action1.png)
 
 Available actions includes:
 
@@ -68,7 +68,7 @@ our anti-spam).
 
 One can select email by clicking on the sender icon:
 
-![Actions on selected mails](action2.png)
+![Actions on selected mails](images/action2.png)
 
 Actions on selected emails are applied on all selected mails and include:
 
@@ -81,7 +81,7 @@ in this mailbox).
 
 Actions can also be performed on opened emails:
 
-![Actions on opened mails](action3.png)
+![Actions on opened mails](images/action3.png)
 
 Actions on opened email include:
 
