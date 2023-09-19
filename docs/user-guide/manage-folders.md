@@ -5,7 +5,7 @@ The left panel of the main view displays folders of this account.
 Folders offers a way to sort and arrange your emails. By clicking on a folder you can see the emails contained in it. A given mail
 can only be in one folder.
 
-![Folder panel](folders.png)
+![Folder panel](images/folders.png)
 
 (1) Next to each folder is displayed the mailbox counter: how many emails are unseen in this folder.
 
@@ -25,15 +25,15 @@ be folded, unfolded based on your needs.
 
 (3) One can create extra folders if needed. This will open the `create folder` dialog, letting you select a base folder (defaults to `All mailboxes`) and choose a mailbox name.
 
-![Create mailbox dialog](create-mailbox.png)
+![Create mailbox dialog](images/create-folder.png)
 
 (4) Let's you find folders by name. This is convenient when you have numerous folders. Note that folder search display both visible and hidden folders.
 
-![Folder search](folder-search.png)
+![Folder search](images/folder-search.png)
 
 Users can perform the following actions on folders:
 
-![Folder actions](folder-actions.png)
+![Folder actions](images/folder-actions.png)
 
 Those actions includes:
 
