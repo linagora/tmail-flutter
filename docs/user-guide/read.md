@@ -44,6 +44,10 @@ Here are the information you can see when opening an email:
 
 (11) Note the navigation arrows allowing to come back to mailbox email list. You can also choose to go directly to next or previous email.
 
+If the sender requested a read receipt, then TMail will prompt you to send the receipt when you open the email. Team-Mail will remember your decision.
+
+![Open a mail for which read receipt is requested](images/read-receipt-open.png)
+
 TODO mobile
 
 ## Email actions
