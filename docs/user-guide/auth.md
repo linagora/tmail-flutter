@@ -20,6 +20,8 @@ TODO: add a basic auth screen
 
 For mobile you need to connect to your home JMAP email server. Tmail will prompt you for its URL first. Your administrator should have provided you this value.
 
-TODO: screen for server URL.
+![Provide the JMAP server URL handed over by your administrator](auth-mobile-1.jpg)
 
 Then Team mail would either redirect you to the auto-detected identity server or ask you directly for your credentials.
+
+![Then login with your credentials](auth-mobile-2.jpg)

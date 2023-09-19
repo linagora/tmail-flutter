@@ -17,6 +17,8 @@ This guide provides information both for mobile and weg
  - [Searching your emails](search.md)
  - [Managing your account](profile.md)
  - [Team mailboxes](team-mailboxes.md)
+ - [Anti-spam](antispam.md)
+ - [Security](security.md)
 
 We also have a page for advanced users looking for [productivity tips](pro-tips.md).
 
