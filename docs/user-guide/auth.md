@@ -4,7 +4,7 @@ Team-mail supports both being integrated with an identity provider and basic aut
 
 ## Web: Login with OIDC
 
-![OIDC](images/oidc.md)
+![OIDC](images/oidc.png)
 
 Upon being launched Team-Mail detects that your installation supports identification through an indentity provider and redirects to its login page.
 
