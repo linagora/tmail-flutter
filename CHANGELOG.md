@@ -1,3 +1,7 @@
+## [0.9.3] - 2023-09-19
+### Fixed
+- \[HOT-FIX\] Fix built release but nginx route 404 not found on web
+
 ## [0.9.2] - 2023-09-14
 ### Changed
 - \#2134 \[WEB\] mailto URL
@@ -257,6 +261,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.9.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.3
 [0.9.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.2
 [0.9.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.1
 [0.9.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.0
