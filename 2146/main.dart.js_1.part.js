@@ -157,13 +157,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
     }
   },
-  A, C, D, E, F, J;
+  A, C, D, E, J;
   B = hunkHelpers.updateHolder(holdersList[3], B);
   A = holdersList[0];
   C = holdersList[2];
   D = holdersList[15];
   E = holdersList[16];
-  F = holdersList[17];
   J = holdersList[1];
   B._AutofillScopeTextInputConfiguration.prototype = {
     toJson$0() {
@@ -334,14 +333,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
       t2 = A.Text$(A.Intl__message("JMAP-based\ncollaborative team mail solution", _null, "jmapBasedMailSolution", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY23, _null, _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t3 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_jmap_standard.svg", _null, _null, E.EdgeInsets_12_0_0_0, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), _null, D.TextStyle_oHY24);
+      t3 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_jmap_standard.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), _null, D.TextStyle_oHY24);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t4 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_encrypted.svg", _null, _null, E.EdgeInsets_12_0_0_0, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), _null, D.TextStyle_oHY24);
+      t4 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_encrypted.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), _null, D.TextStyle_oHY24);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t5 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_team.svg", _null, _null, E.EdgeInsets_12_0_0_0, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), _null, D.TextStyle_oHY24);
+      t5 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_team.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), _null, D.TextStyle_oHY24);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
       t6 = type$.JSArray_Widget;
-      t5 = A.Column$(A._setArrayType([t2, new A.Padding(C.EdgeInsets_0_24_0_0, t3, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t4, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t5, _null), new A.Padding(C.EdgeInsets_0_16_0_0, A.SloganBuilder$(true, _null, _null, "assets/images/ic_integration.svg", _null, _null, E.EdgeInsets_12_0_0_0, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), _null, D.TextStyle_oHY24), _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null), _null)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, C.VerticalDirection_1);
+      t5 = A.Column$(A._setArrayType([t2, new A.Padding(C.EdgeInsets_0_24_0_0, t3, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t4, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t5, _null), new A.Padding(C.EdgeInsets_0_16_0_0, A.SloganBuilder$(true, _null, _null, "assets/images/ic_integration.svg", _null, _null, C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), _null, D.TextStyle_oHY24), _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null), _null)], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, C.VerticalDirection_1);
       t4 = A.BorderRadius$circular(20);
       t3 = _this._buildAppLogo$1(context);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
@@ -372,7 +371,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = A.Intl__message("Privacy policy", _null, "privacyPolicy", _null, _null);
       t2 = A.TapGestureRecognizer$(_null, _null);
       t2.onTap = new B.PrivacyLinkWidget_build_closure(this);
-      return A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t2, _null, _null, F.TextStyle_kmC, t1), C.TextAlign_4, _null, _null, 1, C.TextWidthBasis_0);
+      return A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t2, _null, _null, E.TextStyle_kmC, t1), C.TextAlign_4, _null, _null, 1, C.TextWidthBasis_0);
     }
   };
   B.LoginInputDecorationBuilder.prototype = {
@@ -443,25 +442,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1553
+    $signature: 1554
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1554
+    $signature: 1555
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1555
+    $signature: 1556
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1556
+    $signature: 1557
   };
   B.BaseLoginView_buildLoginMessage_closure.prototype = {
     call$1(failure) {
@@ -488,7 +487,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1557
+    $signature: 1558
   };
   B.BaseLoginView_buildLoginMessage_closure0.prototype = {
     call$1(success) {
@@ -513,31 +512,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
     },
-    $signature: 1558
+    $signature: 1559
   };
   B.BaseLoginView_buildLoginMessage_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1559
+    $signature: 1560
   };
   B.BaseLoginView_buildLoginMessage_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1560
+    $signature: 1561
   };
   B.BaseLoginView_buildLoginButton_closure0.prototype = {
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 13
+    $signature: 14
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 13
+    $signature: 14
   };
   B.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(context, loginUsername) {
@@ -562,7 +561,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).passFocusNode.requestFocus$0();
     },
-    $signature: 1561
+    $signature: 1562
   };
   B.BaseLoginView_buildUserNameInput_closure0.prototype = {
     call$1(context) {
@@ -637,13 +636,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 13
+    $signature: 14
   };
   B.LoginView__buildSSOButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 13
+    $signature: 14
   };
   B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
@@ -816,4 +815,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["RMIFttMmVOXfCdPOViFeG2AgCHg="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["eJSbScYAz5aZWm/+0A7SE3T5X+M="] = $__dart_deferred_initializers__.current
