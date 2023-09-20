@@ -45,7 +45,10 @@ class ThreadConstants {
     EmailProperty.attachments,
     EmailProperty.headers,
     EmailProperty.keywords,
-    EmailProperty.mailboxIds
+    EmailProperty.mailboxIds,
+    EmailProperty.messageId,
+    EmailProperty.inReplyTo,
+    EmailProperty.references,
   });
 
   static final propertiesGetDetailedEmail = Properties({
