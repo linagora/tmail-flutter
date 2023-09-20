@@ -12,6 +12,8 @@
 This project aims at providing a multi-platform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
 features to the [Team Mail back-end](https://github.com/linagora/tmail-backend).
 
+Team-mail is developed with love by [Linagora](https://linagora.com).
+
 Here is how Team Mail looks like on a phone:
 
 ![Screenshots Mobile](https://user-images.githubusercontent.com/6462404/169979675-85893fa4-325a-426b-a1a8-0751a585954a.png)
