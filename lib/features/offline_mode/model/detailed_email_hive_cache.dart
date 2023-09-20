@@ -29,6 +29,12 @@ class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
   @HiveField(5)
   final Map<String, bool>? keywords;
 
+  @HiveField(6)
+  final List<String>? messageId;
+
+  @HiveField(7)
+  final List<String>? references;
+
   DetailedEmailHiveCache({
     required this.emailId,
     required this.timeSaved,
@@ -36,6 +42,8 @@ class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
     this.emailContentPath,
     this.headers,
     this.keywords,
+    this.messageId,
+    this.references,
   });
 
   @override
@@ -46,5 +54,7 @@ class DetailedEmailHiveCache extends HiveObject with EquatableMixin {
     emailContentPath,
     headers,
     keywords,
+    messageId,
+    references,
   ];
 }
