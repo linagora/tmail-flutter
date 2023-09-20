@@ -475,7 +475,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           attachments: success.attachments,
           headers: currentEmail?.emailHeader?.toSet(),
           keywords: currentEmail?.keywords,
-          htmlEmailContent: success.htmlEmailContent
+          htmlEmailContent: success.htmlEmailContent,
+          messageId: success.emailCurrent?.messageId,
+          references: success.emailCurrent?.references,
         );
 
         _storeOpenedEmailAction(

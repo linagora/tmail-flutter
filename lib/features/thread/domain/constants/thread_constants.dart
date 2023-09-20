@@ -47,7 +47,6 @@ class ThreadConstants {
     EmailProperty.keywords,
     EmailProperty.mailboxIds,
     EmailProperty.messageId,
-    EmailProperty.inReplyTo,
     EmailProperty.references,
   });
 

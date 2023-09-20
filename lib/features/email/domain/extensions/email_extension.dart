@@ -11,7 +11,9 @@ extension EmailExtension on Email {
       attachments: allAttachments,
       headers: headers,
       keywords: keywords,
-      htmlEmailContent: htmlEmailContent
+      htmlEmailContent: htmlEmailContent,
+      messageId: messageId,
+      references: references
     );
   }
 }
