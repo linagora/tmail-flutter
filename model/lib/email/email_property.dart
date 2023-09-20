@@ -19,4 +19,7 @@ class EmailProperty {
   static const String attachments = 'attachments';
   static const String headers = 'headers';
   static const String headerMdnKey = 'Disposition-Notification-To';
+  static const String messageId = 'messageId';
+  static const String inReplyTo = 'inReplyTo';
+  static const String references = 'references';
 }
