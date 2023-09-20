@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:rule_filter/rule_filter/rule_condition_group.dart' as rule_combiner;
 
 extension RuleConditionFieldExtension on rule_condition.Field {
 
@@ -33,6 +34,18 @@ extension RuleConditionComparatorExtension on rule_condition.Comparator {
         return AppLocalizations.of(context).exactlyEquals;
       case rule_condition.Comparator.notExactlyEquals:
         return AppLocalizations.of(context).notExactlyEquals;
+    }
+  }
+}
+
+extension RuleConditionCombinerExtension on rule_combiner.ConditionCombiner {
+
+  String getTitle(BuildContext context) {
+    switch(this) {
+      case rule_combiner.ConditionCombiner.AND:
+        return AppLocalizations.of(context).all;
+      case rule_combiner.ConditionCombiner.OR:
+        return AppLocalizations.of(context).any;
     }
   }
 }

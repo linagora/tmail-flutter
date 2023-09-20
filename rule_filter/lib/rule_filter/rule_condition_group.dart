@@ -24,9 +24,9 @@ class RuleConditionGroup extends FilterCondition {
 
   @override
   List<Object?> get props => [
-        conditionCombiner,
-        conditions,
-      ];
+    conditionCombiner,
+    conditions,
+  ];
 
   factory RuleConditionGroup.fromJson(Map<String, dynamic> json) =>
       _$RuleConditionGroupFromJson(json);
