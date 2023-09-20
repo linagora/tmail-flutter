@@ -1186,7 +1186,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ComposerArguments.replyEmail(
             presentationEmail: presentationEmail,
             content: _currentEmailLoaded?.htmlContent ?? '',
-            mailboxRole: presentationEmail.mailboxContain?.role
+            mailboxRole: presentationEmail.mailboxContain?.role,
+            messageId: _currentEmailLoaded?.emailCurrent?.messageId,
+            references: _currentEmailLoaded?.emailCurrent?.references,
           )
         );
         break;
@@ -1195,7 +1197,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ComposerArguments.replyAllEmail(
             presentationEmail: presentationEmail,
             content: _currentEmailLoaded?.htmlContent ?? '',
-            mailboxRole: presentationEmail.mailboxContain?.role
+            mailboxRole: presentationEmail.mailboxContain?.role,
+            messageId: _currentEmailLoaded?.emailCurrent?.messageId,
+            references: _currentEmailLoaded?.emailCurrent?.references,
           )
         );
         break;
@@ -1204,7 +1208,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ComposerArguments.forwardEmail(
             presentationEmail: presentationEmail,
             content: _currentEmailLoaded?.htmlContent ?? '',
-            attachments: attachments
+            attachments: attachments,
+            messageId: _currentEmailLoaded?.emailCurrent?.messageId,
+            references: _currentEmailLoaded?.emailCurrent?.references,
           )
         );
         break;

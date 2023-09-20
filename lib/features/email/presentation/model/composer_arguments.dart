@@ -118,12 +118,16 @@ class ComposerArguments extends RouterArguments {
     required PresentationEmail presentationEmail,
     required String content,
     required List<Attachment> attachments,
+    MessageIdsHeaderValue? messageId,
+    MessageIdsHeaderValue? references,
   }) => ComposerArguments(
     emailActionType: EmailActionType.forward,
     presentationEmail: presentationEmail,
     emailContents: content,
     attachments: attachments,
-    mailboxRole: presentationEmail.mailboxContain?.role
+    mailboxRole: presentationEmail.mailboxContain?.role,
+    messageId: messageId,
+    references: references,
   );
 
   @override
@@ -137,5 +141,7 @@ class ComposerArguments extends RouterArguments {
     listSharedMediaFile,
     sendingEmail,
     uri,
+    messageId,
+    references,
   ];
 }
