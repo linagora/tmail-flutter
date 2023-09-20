@@ -620,13 +620,14 @@ class ComposerController extends BaseController {
   }
 
   Future<Email> _generateEmail(
-      BuildContext context,
-      UserProfile userProfile,
-      {
-        bool asDrafts = false,
-        MailboxId? draftMailboxId,
-        MailboxId? outboxMailboxId
-      }
+    BuildContext context,
+    UserProfile userProfile,
+    {
+      bool asDrafts = false,
+      MailboxId? draftMailboxId,
+      MailboxId? outboxMailboxId,
+      ComposerArguments? arguments,
+    }
   ) async {
     Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
     if (identitySelected?.email?.isNotEmpty == true) {
@@ -673,6 +674,9 @@ class ComposerController extends BaseController {
       mapKeywords[KeyWordIdentifier.emailSeen] = true;
     }
 
+    final inReplyTo = _generateInReplyTo(arguments);
+    final references = _generateReferences(arguments);
+
     final generatePartId = PartId(_uuid.v1());
 
     return Email(
@@ -682,6 +686,8 @@ class ComposerController extends BaseController {
       cc: listCcEmailAddress.toSet(),
       bcc: listBccEmailAddress.toSet(),
       replyTo: listReplyToEmailAddress,
+      inReplyTo: inReplyTo,
+      references: references,
       keywords: mapKeywords.isNotEmpty ? mapKeywords : null,
       subject: subjectEmail.value,
       htmlBody: {
@@ -696,6 +702,31 @@ class ComposerController extends BaseController {
       attachments: attachments.isNotEmpty ? attachments : null,
       headerMdn: hasRequestReadReceipt.value ? {IndividualHeaderIdentifier.headerMdn: getEmailAddressSender()} : {},
     );
+  }
+
+  MessageIdsHeaderValue? _generateInReplyTo(ComposerArguments? arguments) {
+    if (arguments?.emailActionType == EmailActionType.reply ||
+        arguments?.emailActionType == EmailActionType.replyAll) {
+      return arguments?.messageId;
+    }
+    return null;
+  }
+
+  MessageIdsHeaderValue? _generateReferences(ComposerArguments? arguments) {
+    if (arguments?.emailActionType == EmailActionType.reply ||
+        arguments?.emailActionType == EmailActionType.replyAll) {
+      Set<String> ids = {};
+      if (arguments?.messageId?.ids.isNotEmpty == true) {
+        ids.addAll(arguments!.messageId!.ids);
+      }
+      if (arguments?.references?.ids.isNotEmpty == true) {
+        ids.addAll(arguments!.references!.ids);
+      }
+      if (ids.isNotEmpty) {
+        return MessageIdsHeaderValue(ids);
+      }
+    }
+    return null;
   }
 
   Future<Tuple2<String, List<Attachment>>> _getMapContent(String emailBodyText) async {
@@ -813,7 +844,13 @@ class ComposerController extends BaseController {
     final userProfile = mailboxDashBoardController.userProfile.value;
 
     if (arguments != null && accountId != null && userProfile != null && session != null) {
-      final createdEmail = await _generateEmail(context, userProfile, outboxMailboxId: outboxMailboxId);
+      final createdEmail = await _generateEmail(
+        context,
+        userProfile,
+        outboxMailboxId: outboxMailboxId,
+        arguments: arguments
+      );
+
       final emailRequest = arguments.emailActionType == EmailActionType.editSendingEmail
         ? arguments.sendingEmail!.toEmailRequest(newEmail: createdEmail)
         : EmailRequest(
@@ -1061,7 +1098,8 @@ class ComposerController extends BaseController {
         context,
         userProfile,
         asDrafts: true,
-        draftMailboxId: draftMailboxId
+        draftMailboxId: draftMailboxId,
+        arguments: arguments,
       );
 
       if (arguments.emailActionType == EmailActionType.editDraft) {
@@ -1112,6 +1150,7 @@ class ComposerController extends BaseController {
         userProfile: userProfile,
         draftMailboxId: draftMailboxId,
         emailIdEditing: _emailIdEditing,
+        arguments: mailboxDashBoardController.composerArguments,
       )
     );
   }
@@ -1122,7 +1161,8 @@ class ComposerController extends BaseController {
       event.context,
       event.userProfile,
       asDrafts: true,
-      draftMailboxId: event.draftMailboxId
+      draftMailboxId: event.draftMailboxId,
+      arguments: event.arguments
     );
 
     if (event.emailIdEditing == null) {
