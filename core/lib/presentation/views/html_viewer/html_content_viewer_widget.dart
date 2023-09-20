@@ -68,7 +68,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     _htmlData = generateHtml(
       widget.contentHtml,
       direction: widget.direction,
-      javaScripts: HtmlUtils.scriptLazyLoadImage + HtmlUtils.scriptCollapsedExpandedSignatureOnMobile,
+      javaScripts: HtmlUtils.scriptLazyLoadImage
     );
   }
 
@@ -81,7 +81,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       _htmlData = generateHtml(
         widget.contentHtml,
         direction: widget.direction,
-        javaScripts: HtmlUtils.scriptLazyLoadImage + HtmlUtils.scriptCollapsedExpandedSignatureOnMobile,
+        javaScripts: HtmlUtils.scriptLazyLoadImage
       );
     }
   }
@@ -142,7 +142,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     await Future.wait([
       _setActualHeightView(),
       _setActualWidthView(),
-      _showSignature(),
     ]);
 
     _hideLoadingProgress();
@@ -205,12 +204,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         widget.onWebViewLoaded?.call(isScrollActivated);
       }
     }
-  }
-
-  Future<void> _showSignature() async {
-    await _webViewController.evaluateJavascript(
-      source: 'showSignature();'
-    );
   }
 
   void _hideLoadingProgress() {
