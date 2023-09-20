@@ -37,8 +37,7 @@ class RuleFilterConditionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Slidable(
-      // enabled: ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile ? true : false,
-      enabled: false,
+      enabled: ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile ? true : false,
       endActionPane: ActionPane(
         extentRatio: 0.1,
         motion: const BehindMotion(),
