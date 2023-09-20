@@ -15,7 +15,9 @@ extension DetailedEmailExtension on DetailedEmail {
       attachments: attachments?.toHiveCache(),
       headers: headers?.toList().toHiveCache(),
       keywords: keywords?.toMapString(),
-      emailContentPath: emailContentPath
+      emailContentPath: emailContentPath,
+      messageId: messageId?.ids.toList(),
+      references: references?.ids.toList(),
     );
   }
 
@@ -32,6 +34,8 @@ extension DetailedEmailExtension on DetailedEmail {
       keywords: keywords,
       htmlEmailContent: htmlEmailContent,
       emailContentPath: path,
+      messageId: messageId,
+      references: references,
     );
   }
 }

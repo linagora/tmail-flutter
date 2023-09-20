@@ -12,6 +12,8 @@ class DetailedEmail with EquatableMixin {
   final String? htmlEmailContent;
   final String? emailContentPath;
   final DateTime createdTime;
+  final MessageIdsHeaderValue? messageId;
+  final MessageIdsHeaderValue? references;
 
   DetailedEmail({
     required this.emailId,
@@ -20,7 +22,9 @@ class DetailedEmail with EquatableMixin {
     this.headers,
     this.keywords,
     this.htmlEmailContent,
-    this.emailContentPath
+    this.emailContentPath,
+    this.messageId,
+    this.references,
   });
 
   @override
@@ -31,6 +35,8 @@ class DetailedEmail with EquatableMixin {
     headers,
     keywords,
     htmlEmailContent,
-    emailContentPath
+    emailContentPath,
+    messageId,
+    references,
   ];
 }
