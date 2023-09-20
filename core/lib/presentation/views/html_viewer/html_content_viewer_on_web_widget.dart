@@ -5,7 +5,6 @@ import 'dart:math' as math;
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/html_transformer/html_template.dart';
 import 'package:core/presentation/utils/html_transformer/html_utils.dart';
-import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
@@ -103,10 +102,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           if (e && e.data && e.data.includes("toIframe:")) {
             var data = JSON.parse(e.data);
             if (data["view"].includes("$createdViewId")) {
-              if (data["type"].includes("showSignature")) {
-                ${HtmlUtils.runScriptsCollapsedExpandedSignature}
-              }
-              
               if (data["type"].includes("getHeight")) {
                 var height = document.body.scrollHeight;
                 window.parent.postMessage(JSON.stringify({"view": "$createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
@@ -148,20 +143,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           }
         
           return url.protocol === "mailto:";
-        }
-        
-        function handleOnClickSignature() {
-          const contentElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-content');
-          const buttonElement = document.querySelector('.tmail-content > .tmail-signature > .tmail-signature-button');
-          if (contentElement && buttonElement) {
-            if (contentElement.style.display === 'block') {
-              contentElement.style.display = 'none';
-              buttonElement.style.backgroundImage = `${IconUtils.chevronDownSVGIconUrlEncoded}`;
-            } else {
-              contentElement.style.display = 'block';
-              buttonElement.style.backgroundImage = `${IconUtils.chevronUpSVGIconUrlEncoded}`;
-            }
-          }
         }
       </script>
     ''';
@@ -210,7 +191,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       ..onLoad.listen((event) async {
         _sendMessageToWebViewForGetHeight();
         _sendMessageToWebViewForGetWidth();
-        _sendMessageToWebViewForShowSignature();
 
         html.window.onMessage.listen((event) {
           var data = json.decode(event.data);
@@ -327,15 +307,5 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     final jsonGetWidth = jsonEncoder.convert(dataGetWidth);
 
     html.window.postMessage(jsonGetWidth, '*');
-  }
-
-  void _sendMessageToWebViewForShowSignature() {
-    final dataShowSignature = <String, Object>{
-      'type': 'toIframe: showSignature',
-      'view' : createdViewId
-    };
-    final jsonShowSignature = jsonEncoder.convert(dataShowSignature);
-
-    html.window.postMessage(jsonShowSignature, '*');
   }
 }
