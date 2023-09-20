@@ -914,7 +914,7 @@ packages:
     description:
       path: "."
       ref: email_supported
-      resolved-ref: "21ab3006789f622a5df09024741aac2f24d5e7f4"
+      resolved-ref: d4497269dc68b73d05f087a4b2a8e6caaea2236e
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
