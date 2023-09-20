@@ -1,3 +1,4 @@
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -16,6 +17,8 @@ class ComposerArguments extends RouterArguments {
   final Role? mailboxRole;
   final SendingEmail? sendingEmail;
   final String? uri;
+  final MessageIdsHeaderValue? messageId;
+  final MessageIdsHeaderValue? references;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -27,6 +30,8 @@ class ComposerArguments extends RouterArguments {
     this.listSharedMediaFile,
     this.sendingEmail,
     this.uri,
+    this.messageId,
+    this.references,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -83,22 +88,30 @@ class ComposerArguments extends RouterArguments {
     required PresentationEmail presentationEmail,
     required String content,
     Role? mailboxRole,
+    MessageIdsHeaderValue? messageId,
+    MessageIdsHeaderValue? references,
   }) => ComposerArguments(
     emailActionType: EmailActionType.reply,
     presentationEmail: presentationEmail,
     emailContents: content,
-    mailboxRole: mailboxRole
+    mailboxRole: mailboxRole,
+    messageId: messageId,
+    references: references,
   );
 
   factory ComposerArguments.replyAllEmail({
     required PresentationEmail presentationEmail,
     required String content,
     Role? mailboxRole,
+    MessageIdsHeaderValue? messageId,
+    MessageIdsHeaderValue? references,
   }) => ComposerArguments(
     emailActionType: EmailActionType.replyAll,
     presentationEmail: presentationEmail,
     emailContents: content,
-    mailboxRole: mailboxRole
+    mailboxRole: mailboxRole,
+    messageId: messageId,
+    references: references,
   );
 
   factory ComposerArguments.forwardEmail({
