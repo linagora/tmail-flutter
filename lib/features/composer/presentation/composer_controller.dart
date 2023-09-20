@@ -714,7 +714,8 @@ class ComposerController extends BaseController {
 
   MessageIdsHeaderValue? _generateReferences(ComposerArguments? arguments) {
     if (arguments?.emailActionType == EmailActionType.reply ||
-        arguments?.emailActionType == EmailActionType.replyAll) {
+        arguments?.emailActionType == EmailActionType.replyAll ||
+        arguments?.emailActionType == EmailActionType.forward) {
       Set<String> ids = {};
       if (arguments?.messageId?.ids.isNotEmpty == true) {
         ids.addAll(arguments!.messageId!.ids);
