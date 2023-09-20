@@ -16,6 +16,7 @@ import 'package:rule_filter/rule_filter/rule_action.dart';
 import 'package:rule_filter/rule_filter/rule_append_in.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:rule_filter/rule_filter/rule_condition_group.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -61,6 +62,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final TextEditingController inputRuleNameController = TextEditingController();
   final FocusNode inputRuleNameFocusNode = FocusNode();
   final listRuleConditionValueArguments = RxList<RulesFilterInputFieldArguments>();
+  final conditionCombinerType = Rxn<ConditionCombiner>();
 
   String? _newRuleName;
 
@@ -143,6 +145,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   void _setUpDefaultValueRuleFilter() {
+    conditionCombinerType.value = ConditionCombiner.AND;
     switch(actionType.value) {
       case CreatorActionType.create:
         RuleCondition newRuleCondition = RuleCondition(
@@ -177,23 +180,27 @@ class RulesFilterCreatorController extends BaseMailboxController {
         break;
       case CreatorActionType.edit:
         if (_currentTMailRule != null) {
-          RuleCondition currentRule = RuleCondition(
-            field: _currentTMailRule!.condition.field,
-            comparator: _currentTMailRule!.condition.comparator,
-            value: _currentTMailRule!.condition.value
+          RuleConditionGroup currentRule = RuleConditionGroup(
+            conditionCombiner: _currentTMailRule!.conditionGroup!.conditionCombiner,
+            conditions: _currentTMailRule!.conditionGroup!.conditions,
           );
-          listRuleCondition.add(currentRule);
-          RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
-            focusNode: FocusNode(),
-            errorText: '',
-            controller: TextEditingController(),
-          );
-          listRuleConditionValueArguments.add(newRuleConditionValueArguments);
+          for (var condition in currentRule.conditions) {
+            listRuleCondition.add(condition);
+            RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
+              focusNode: FocusNode(),
+              errorText: '',
+              controller: TextEditingController(),
+            );
+            listRuleConditionValueArguments.add(newRuleConditionValueArguments);
+            _setValueInputField(
+              newRuleConditionValueArguments.controller,
+              condition.value
+            );
+          }
+          conditionCombinerType.value = currentRule.conditionCombiner;
+          
           emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
-          _setValueInputField(
-            listRuleConditionValueArguments[0].controller,
-            listRuleCondition[0].value
-          );
+          
           _newRuleName = _currentTMailRule!.name;
           _setValueInputField(inputRuleNameController, _newRuleName ?? '');
           _getAllMailboxAction();
@@ -367,8 +374,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     late EquatableMixin ruleFilterRequest;
 
     if (actionType.value == CreatorActionType.create) {
-      for (var ruleCondition in listRuleCondition) {
-        final newTMailRule = TMailRule(
+      final newTMailRule = TMailRule(
         id: _currentTMailRule?.id,
         name: _newRuleName!,
         action: RuleAction(
@@ -376,13 +382,12 @@ class RulesFilterCreatorController extends BaseMailboxController {
             mailboxIds: [mailboxSelected.value!.id]
           )
         ),
-        condition: rule_condition.RuleCondition(
-          field: ruleCondition.field,
-          comparator: ruleCondition.comparator,
-          value: ruleCondition.value
-        ));
-        ruleFilterRequest = CreateNewEmailRuleFilterRequest(_listEmailRule ?? [], newTMailRule);
-      }
+        conditionGroup: RuleConditionGroup(
+          conditionCombiner: conditionCombinerType.value!,
+          conditions: listRuleCondition,
+        )
+      );
+      ruleFilterRequest = CreateNewEmailRuleFilterRequest(_listEmailRule ?? [], newTMailRule);
     } else {
       final newTMailRule = TMailRule(
         id: _currentTMailRule?.id,
@@ -392,10 +397,9 @@ class RulesFilterCreatorController extends BaseMailboxController {
             mailboxIds: [mailboxSelected.value!.id]
           )
         ),
-        condition: rule_condition.RuleCondition(
-          field: listRuleCondition[0].field,
-          comparator: listRuleCondition[0].comparator,
-          value: listRuleCondition[0].value
+        conditionGroup: RuleConditionGroup(
+          conditionCombiner: conditionCombinerType.value!,
+          conditions: listRuleCondition,
         ));
       ruleFilterRequest = EditEmailRuleFilterRequest(_listEmailRule?.withIds ?? [], newTMailRule);
     }
@@ -424,5 +428,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void tapRemoveCondition(int ruleConditionIndex) {
     listRuleCondition.removeAt(ruleConditionIndex);
     listRuleConditionValueArguments.removeAt(ruleConditionIndex);
+  }
+
+  void selectConditionCombiner(ConditionCombiner? combinerType) {
+    if (combinerType != null) {
+      conditionCombinerType.value = combinerType;
+    }
   }
 }
