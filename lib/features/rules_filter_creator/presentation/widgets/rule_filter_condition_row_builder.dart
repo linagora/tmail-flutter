@@ -6,6 +6,7 @@ import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_remove_button_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -105,14 +106,14 @@ class RuleFilterConditionRow extends StatelessWidget {
                 editingController: conditionValueEditingController,
                 )
             ),
-            // Container(
-            //   padding: const EdgeInsets.only(left: 12),
-            //   alignment: Alignment.center,
-            //   child: RuleFilterConditionRemoveButton(
-            //     tapRemoveRuleFilterConditionCallback: tapRemoveRuleFilterConditionCallback,
-            //     imagePath: imagePaths,
-            //   )
-            // ),
+            Container(
+              padding: const EdgeInsets.only(left: 12),
+              alignment: Alignment.center,
+              child: RuleFilterConditionRemoveButton(
+                tapRemoveRuleFilterConditionCallback: tapRemoveRuleFilterConditionCallback,
+                imagePath: imagePaths,
+              )
+            ),
           ],
         );
       default:

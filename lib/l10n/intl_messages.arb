@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-27T20:44:50.998215",
+  "@@last_modified": "2023-09-16T17:09:02.481409",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3322,6 +3322,30 @@
   },
   "sending": "Sending",
   "@sending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "all": "All",
+  "@all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "any": "Any",
+  "@any": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilterBeforeCombiner": "If",
+  "@conditionTitleRulesFilterBeforeCombiner": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilterAfterCombiner": "of the following conditions are met:",
+  "@conditionTitleRulesFilterAfterCombiner": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
