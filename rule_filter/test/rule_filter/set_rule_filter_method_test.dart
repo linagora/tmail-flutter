@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:rule_filter/rule_filter/rule_action.dart';
 import 'package:rule_filter/rule_filter/rule_append_in.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:rule_filter/rule_filter/rule_condition_group.dart';
 import 'package:rule_filter/rule_filter/rule_filter_id.dart';
 import 'package:rule_filter/rule_filter/rule_id.dart';
 import 'package:rule_filter/rule_filter/set/set_rule_filter_method.dart';
@@ -20,6 +21,21 @@ void main() {
     final expectedUpdated = TMailRule(
       id: RuleId(id: Id('1')),
       name: 'My first rule',
+      conditionGroup: RuleConditionGroup(
+        conditionCombiner: ConditionCombiner.AND,
+        conditions: [
+          RuleCondition(
+            value: 'question',
+            comparator: Comparator.contains,
+            field: Field.subject,
+          ),
+          RuleCondition(
+            field: Field.from,
+            comparator: Comparator.contains,
+            value: 'user2'
+          )
+        ]
+      ),
       condition: RuleCondition(
         value: 'question',
         comparator: Comparator.contains,
@@ -54,6 +70,21 @@ void main() {
                         "singleton": {
                           "id": "1",
                           "name": "My first rule",
+                          "conditionGroup": {
+                            "conditionCombiner": "AND",
+                            "conditions": [
+                              {
+                                "field": "subject",
+                                "comparator": "contains",
+                                "value": "question"
+                              },
+                              {
+                                "field": "from",
+                                "comparator": "contains",
+                                "value": "user2"
+                              },
+                            ]
+                          },
                           "condition": {
                             "field": "subject",
                             "comparator": "contains",
