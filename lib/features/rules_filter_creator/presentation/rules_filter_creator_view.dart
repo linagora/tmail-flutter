@@ -5,15 +5,18 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
+import 'package:rule_filter/rule_filter/rule_condition_group.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_action_bottom_sheet_action_tile_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_combiner_bottomsheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_comparator_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_field_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -137,41 +140,38 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                     focusNode: controller.inputRuleNameFocusNode,
                     onChangeAction: (value) => controller.updateRuleName(context, value),)),
                   const SizedBox(height: 24),
-                  Text(AppLocalizations.of(context).conditionTitleRulesFilter,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
-                    maxLines: 1,
-                    style: const TextStyle(
-                       fontWeight: FontWeight.w500,
-                       fontSize: 16,
-                       color: Colors.black)),
+                  Obx(() => RuleFilterTitle(
+                    conditionCombinerType: controller.conditionCombinerType.value,
+                    tapActionCallback: (value) => controller.selectConditionCombiner(value),
+                    ruleFilterConditionScreenType: RuleFilterConditionScreenType.desktop,
+                  )),
                   const SizedBox(height: 24),
                   _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.desktop),
-                  // Container(
-                  //   padding: const EdgeInsets.only(top: 8),
-                  //   child: InkWell(
-                  //     onTap: controller.tapAddCondition,
-                  //     child: Row(
-                  //       crossAxisAlignment: CrossAxisAlignment.center,
-                  //       children: [
-                  //         SvgPicture.asset(
-                  //           _imagePaths.icAddNewFolder,
-                  //           fit: BoxFit.fill,
-                  //         ),
-                  //         const SizedBox(width: 15,),
-                  //         Text(
-                  //           AppLocalizations.of(context).addCondition,
-                  //           maxLines: 1,
-                  //           style: const TextStyle(
-                  //             fontWeight: FontWeight.w500,
-                  //             fontSize: 17,
-                  //             color: AppColor.primaryColor
-                  //           )
-                  //         )
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
+                  Container(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: InkWell(
+                      onTap: controller.tapAddCondition,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            _imagePaths.icAddNewFolder,
+                            fit: BoxFit.fill,
+                          ),
+                          const SizedBox(width: 15,),
+                          Text(
+                            AppLocalizations.of(context).addCondition,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 17,
+                              color: AppColor.primaryColor
+                            )
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(AppLocalizations.of(context).actionTitleRulesFilter,
                     overflow: CommonTextStyle.defaultTextOverFlow,
@@ -288,41 +288,38 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         focusNode: controller.inputRuleNameFocusNode,
                         onChangeAction: (value) => controller.updateRuleName(context, value),)),
                       const SizedBox(height: 24),
-                      Text(AppLocalizations.of(context).conditionTitleRulesFilter,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          maxLines: 1,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.black)),
+                      Obx(() => RuleFilterTitle(
+                        conditionCombinerType: controller.conditionCombinerType.value,
+                        tapActionCallback: (value) => controller.selectConditionCombiner(value),
+                        ruleFilterConditionScreenType: RuleFilterConditionScreenType.tablet,
+                      )),
                       const SizedBox(height: 24),
                       _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.tablet),
-                      // Container(
-                      //   padding: const EdgeInsets.only(top: 8),
-                      //   child: InkWell(
-                      //     onTap: controller.tapAddCondition,
-                      //     child: Row(
-                      //       crossAxisAlignment: CrossAxisAlignment.center,
-                      //       children: [
-                      //         SvgPicture.asset(
-                      //           _imagePaths.icAddNewFolder,
-                      //           fit: BoxFit.fill,
-                      //         ),
-                      //         const SizedBox(width: 15,),
-                      //         Text(
-                      //           AppLocalizations.of(context).addCondition,
-                      //           maxLines: 1,
-                      //           style: const TextStyle(
-                      //             fontWeight: FontWeight.w500,
-                      //             fontSize: 17,
-                      //             color: AppColor.primaryColor
-                      //           )
-                      //         )
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: InkWell(
+                          onTap: controller.tapAddCondition,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                _imagePaths.icAddNewFolder,
+                                fit: BoxFit.fill,
+                              ),
+                              const SizedBox(width: 15,),
+                              Text(
+                                AppLocalizations.of(context).addCondition,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: AppColor.primaryColor
+                                )
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 24),
                       Text(AppLocalizations.of(context).actionTitleRulesFilter,
                           overflow: CommonTextStyle.defaultTextOverFlow,
@@ -445,42 +442,47 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             height: 1,
                             thickness: 0.2),
                       ),
-                      Text(AppLocalizations.of(context).conditionTitleRulesFilter,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          maxLines: 1,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.black)),
+                      Obx(() => RuleFilterTitle(
+                        conditionCombinerType: controller.conditionCombinerType.value,
+                        ruleFilterConditionScreenType: RuleFilterConditionScreenType.mobile,
+                        tapActionCallback: (value) => {
+                          controller.openContextMenuAction(
+                            context,
+                            _bottomSheetRuleConditionCombinerActionTiles(
+                              context,
+                              controller.conditionCombinerType.value,
+                            )
+                          ),
+                        },
+                      )),
                       const SizedBox(height: 24),
                       _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.mobile),
-                      // Container(
-                      //   padding: const EdgeInsets.only(top: 12),
-                      //   child: InkWell(
-                      //     onTap: controller.tapAddCondition,
-                      //     child: Row(
-                      //       crossAxisAlignment: CrossAxisAlignment.center,
-                      //       mainAxisAlignment: MainAxisAlignment.center,
-                      //       children: [
-                      //         SvgPicture.asset(
-                      //           _imagePaths.icAddNewFolder,
-                      //           fit: BoxFit.fill,
-                      //         ),
-                      //         const SizedBox(width: 15,),
-                      //         Text(
-                      //           AppLocalizations.of(context).addCondition,
-                      //           maxLines: 1,
-                      //           style: const TextStyle(
-                      //             fontWeight: FontWeight.w500,
-                      //             fontSize: 17,
-                      //             color: AppColor.primaryColor
-                      //           )
-                      //         )
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+                      Container(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: InkWell(
+                          onTap: controller.tapAddCondition,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                _imagePaths.icAddNewFolder,
+                                fit: BoxFit.fill,
+                              ),
+                              const SizedBox(width: 15,),
+                              Text(
+                                AppLocalizations.of(context).addCondition,
+                                maxLines: 1,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 17,
+                                  color: AppColor.primaryColor
+                                )
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
                         child: Divider(
@@ -703,6 +705,39 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             fit: BoxFit.fill))
       ..onActionClick((comparator) {
         controller.selectRuleConditionComparator(comparator, ruleConditionIndex);
+        popBack();
+      }))
+    .build();
+  }
+
+  List<Widget> _bottomSheetRuleConditionCombinerActionTiles(
+      BuildContext context,
+      ConditionCombiner? combinerSelected,
+  ) {
+    return ConditionCombiner.values
+      .map((combiner) =>
+        _buildRuleConditionCombinerWidget(context, combiner, combinerSelected))
+      .toList();
+  }
+
+  Widget _buildRuleConditionCombinerWidget(
+      BuildContext context,
+      ConditionCombiner combiner,
+      ConditionCombiner? combinerSelected,
+  ) {
+    return (RuleConditionCombinerSheetActionTileBuilder(
+        combiner.getTitle(context),
+        combiner,
+        combinerSelected,
+        iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
+        iconRightPadding: const EdgeInsets.only(right: 12),
+        actionSelected: SvgPicture.asset(
+            _imagePaths.icFilterSelected,
+            width: 20,
+            height: 20,
+            fit: BoxFit.fill))
+      ..onActionClick((combiner) {
+        controller.selectConditionCombiner(combiner);
         popBack();
       }))
     .build();
