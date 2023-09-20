@@ -15,7 +15,9 @@ part 'tmail_rule.g.dart';
 class TMailRule extends Rule {
   final RuleId? id;
   final String name;
+  @JsonKey(includeIfNull: false)
   final RuleCondition? condition;
+  @JsonKey(includeIfNull: false)
   final RuleConditionGroup? conditionGroup;
   final RuleAction action;
 
@@ -30,17 +32,7 @@ class TMailRule extends Rule {
   factory TMailRule.fromJson(Map<String, dynamic> json) =>
       _$TMailRuleFromJson(json);
 
-  Map<String, dynamic> toJson() {
-    final result = _$TMailRuleToJson(this);
-
-    if (result['condition'] != null) {
-      result.remove('conditionGroup');
-    } else {
-      result.remove('condition');
-    }
-
-    return result;
-  }
+  Map<String, dynamic> toJson() => _$TMailRuleToJson(this);
 
   @override
   List<Object?> get props => [

@@ -3428,4 +3428,32 @@ class AppLocalizations {
       name: 'sending',
     );
   }
+
+  String get all {
+    return Intl.message(
+      'All',
+      name: 'all',
+    );
+  }
+
+  String get any {
+    return Intl.message(
+      'Any',
+      name: 'any',
+    );
+  }
+
+  String get conditionTitleRulesFilterBeforeCombiner {
+    return Intl.message(
+      'If',
+      name: 'conditionTitleRulesFilterBeforeCombiner',
+    );
+  }
+
+  String get conditionTitleRulesFilterAfterCombiner {
+    return Intl.message(
+      'of the following conditions are met:',
+      name: 'conditionTitleRulesFilterAfterCombiner',
+    );
+  }
 }
