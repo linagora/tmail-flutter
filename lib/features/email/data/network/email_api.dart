@@ -93,13 +93,15 @@ class EmailAPI with HandleSetErrorMixin {
       .execute();
 
     final resultList = result.parse<GetEmailResponse>(
-        getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize
+    );
 
-    return Future.sync(() async {
+    if (resultList?.list.isNotEmpty == true) {
       return resultList!.list.first;
-    }).catchError((error) {
-      throw error;
-    });
+    } else {
+      throw NotFoundEmailException();
+    }
   }
 
   Future<bool> sendEmail(
