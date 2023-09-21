@@ -11,7 +11,19 @@ class CreateNewEmailRuleFilterRequest with EquatableMixin {
   CreateNewEmailRuleFilterRequest(this.currentListTMailRules, this.newTMailRule);
 
   List<TMailRule> get newListTMailRules {
-    final newListRules = currentListTMailRules;
+    final newListRules = <TMailRule>[];
+    for (var rule in currentListTMailRules) {
+      if (rule.conditionGroup != null) {
+        final newRule = TMailRule(
+          name: rule.name,
+          action: rule.action,
+          conditionGroup: rule.conditionGroup,
+        );
+        newListRules.add(newRule);
+      } else {
+        newListRules.add(rule);
+      }
+    }
     newListRules.insert(0, newTMailRule);
     log('CreateNewEmailRuleFilterRequest::newListTMailRules(): $newListRules');
     return newListRules;
