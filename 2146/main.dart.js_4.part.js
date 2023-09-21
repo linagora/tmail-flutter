@@ -11925,7 +11925,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 5
+    $signature: 6
   };
   B._SuggestionsListState__closure.prototype = {
     call$0() {
@@ -11993,7 +11993,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 5
+    $signature: 6
   };
   B._SuggestionsListState__getSuggestions_closure.prototype = {
     call$0() {
@@ -17305,7 +17305,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 5
+    $signature: 6
   };
   B.ThreadView__buildResultListEmail_closure0.prototype = {
     call$0() {
@@ -17333,7 +17333,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$0, $async$completer);
     },
-    $signature: 5
+    $signature: 6
   };
   B.ThreadView__buildListEmailBody_closure.prototype = {
     call$1(scrollInfo) {
@@ -18266,7 +18266,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$0() {
       return this.$this._followLink$1(this.context);
     },
-    $signature: 5
+    $signature: 6
   };
   (function aliases() {
     var _ = B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin.prototype;
@@ -18798,4 +18798,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Yt2By139C4IHFMJODBgQirOjJNY="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["HvzFa2LQnfsl75wwnarHIKuWkEo="] = $__dart_deferred_initializers__.current
