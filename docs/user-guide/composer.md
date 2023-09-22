@@ -4,7 +4,7 @@
  ###  Creating a New Email in web
 1. Click on the "New Email" button.
 2. A new email composer will appear.
-. From: By default it will display your default identity. When you click on `Edit` icon (3.1)- a drop-down list of your identities will be shown and you can select one of them. 
+. From: By default it will display your default identity. When you click on `Edit` icon (3.1)- a drop-down list of your identities will be shown and you can select one of them. The identities you can use in the `From` field can be edited on the [profile page](profile.md).
 3. Fill in the recipient's email address in the "To" field.
 4. Enter a subject for your email in the "Subject" field.
 5. Adding Recipients
@@ -47,7 +47,7 @@ When you click on `Code view button`, the email your are writing is displayed in
 
 14. Managing Sent Emails
 
-To access sent emails or track the status of your sent email, navigate to the `Sent` (14)folder within your email client. Email currently being sent are located within  the `Outbox` (15) and will eventually be moved into the `Sent` folder.
+To access sent emails or track the status of your sent email, navigate to the `Sent` folder (14) within your email client. Email currently being sent are located within  the `Outbox` (15) and will eventually be moved into the `Sent` folder.
 
 16. Read receipt
 
