@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-24T21:58:41.292766",
+  "@@last_modified": "2023-09-24T22:04:38.879050",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3376,6 +3376,12 @@
   },
   "forwardTo": "Forward to",
   "@forwardTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectAction": "Select action",
+  "@selectAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

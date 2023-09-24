@@ -32,6 +32,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final String tooltip;
   final double? dropdownWidth;
   final double? dropdownMaxHeight;
+  final String? hintText;
 
   const DropDownButtonWidget({
     Key? key,
@@ -50,6 +51,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.dropdownMaxHeight,
     this.colorButton = Colors.white,
     this.tooltip = '',
+    this.hintText,
   }) : super(key: key);
 
   @override
@@ -120,7 +122,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                       _getTextItemDropdown(context, item: itemSelected),
                       style: TextStyle(fontSize: 16,
                           fontWeight: FontWeight.normal,
-                          color: Colors.black.withOpacity(opacity)),
+                          color: itemSelected != null ? Colors.black.withOpacity(opacity) : AppColor.textFieldHintColor),
                       maxLines: 1,
                       softWrap: CommonTextStyle.defaultSoftWrap,
                       overflow: CommonTextStyle.defaultTextOverFlow,
@@ -192,6 +194,6 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     if (item is ConditionCombiner) {
       return item.getTitle(context);
     }
-    return '';
+    return hintText ?? '';
   }
 }
