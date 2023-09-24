@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-16T17:09:02.481409",
+  "@@last_modified": "2023-09-24T21:58:41.292766",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3346,6 +3346,36 @@
   },
   "conditionTitleRulesFilterAfterCombiner": "of the following conditions are met:",
   "@conditionTitleRulesFilterAfterCombiner": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maskAsSeen": "Mark as seen",
+  "@maskAsSeen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startIt": "Start it",
+  "@startIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rejectIt": "Reject it",
+  "@rejectIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpam": "Mark as spam",
+  "@markAsSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardTo": "Forward to",
+  "@forwardTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
