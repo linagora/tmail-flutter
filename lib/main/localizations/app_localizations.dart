@@ -3456,4 +3456,39 @@ class AppLocalizations {
       name: 'conditionTitleRulesFilterAfterCombiner',
     );
   }
+
+  String get maskAsSeen {
+    return Intl.message(
+      'Mark as seen',
+      name: 'maskAsSeen',
+    );
+  }
+
+  String get startIt {
+    return Intl.message(
+      'Start it',
+      name: 'startIt',
+    );
+  }
+
+  String get rejectIt {
+    return Intl.message(
+      'Reject it',
+      name: 'rejectIt',
+    );
+  }
+
+  String get markAsSpam {
+    return Intl.message(
+      'Mark as spam',
+      name: 'markAsSpam',
+    );
+  }
+
+  String get forwardTo {
+    return Intl.message(
+      'Forward to',
+      name: 'forwardTo',
+    );
+  }
 }
