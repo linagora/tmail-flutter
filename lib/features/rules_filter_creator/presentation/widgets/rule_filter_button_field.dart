@@ -19,17 +19,20 @@ class RuleFilterButtonField<T> extends StatelessWidget {
   final T? value;
   final OnTapActionCallback? tapActionCallback;
   final Color? borderColor;
+  final String? hintText;
 
   const RuleFilterButtonField({
     super.key,
     this.value,
     this.tapActionCallback,
     this.borderColor,
+    this.hintText,
   });
 
   @override
   Widget build(BuildContext context) {
     final imagePaths = Get.find<ImagePaths>();
+    final Color textColor = value != null ? Colors.black : AppColor.textFieldHintColor;
 
     return InkWell(
       onTap: () => tapActionCallback?.call(value),
@@ -45,10 +48,10 @@ class RuleFilterButtonField<T> extends StatelessWidget {
         child: Row(children: [
           Expanded(child: Text(
             _getName(context, value),
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
-                color: Colors.black),
+                color: textColor),
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
@@ -75,6 +78,6 @@ class RuleFilterButtonField<T> extends StatelessWidget {
     if (value is ConditionCombiner) {
       return value.getTitle(context);
     }
-    return '';
+    return hintText ?? '';
   }
 }
