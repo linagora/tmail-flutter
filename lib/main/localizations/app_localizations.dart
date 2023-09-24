@@ -3380,4 +3380,11 @@ class AppLocalizations {
       name: 'forwardTo',
     );
   }
+
+  String get selectAction {
+    return Intl.message(
+      'Select action',
+      name: 'selectAction',
+    );
+  }
 }
