@@ -25,23 +25,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
-import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
-import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
-import 'package:tmail_ui_user/features/login/data/datasource_impl/authentication_oidc_datasource_impl.dart';
-import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
-import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
-import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
-import 'package:tmail_ui_user/features/login/data/repository/authentication_oidc_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -191,8 +176,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
-    Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
-    Get.lazyPut<AuthenticationOIDCDataSource>(() => Get.find<AuthenticationOIDCDataSourceImpl>());
     Get.lazyPut<SessionStorageComposerDatasource>(() => Get.find<SessionStorageComposerDatasourceImpl>());
     Get.lazyPut<SpamReportDataSource>(() => Get.find<SpamReportDataSourceImpl>());
   }
@@ -221,16 +204,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => MailboxCacheDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
-    Get.lazyPut(() => HiveAccountDatasourceImpl(
-      Get.find<AccountCacheManager>(),
-      Get.find<CacheExceptionThrower>()));
-    Get.lazyPut(() => AuthenticationOIDCDataSourceImpl(
-      Get.find<OIDCHttpClient>(),
-      Get.find<AuthenticationClientBase>(),
-      Get.find<TokenOidcCacheManager>(),
-      Get.find<OidcConfigurationCacheManager>(),
-      Get.find<RemoteExceptionThrower>(),
-    ));
     Get.lazyPut(() => SessionStorageComposerDatasourceImpl());
      Get.lazyPut(() => SpamReportDataSourceImpl(
       Get.find<SpamReportApi>(),
@@ -275,15 +248,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MailboxRepository>(),
       Get.find<EmailRepository>())
     );
-    Get.lazyPut(() => GetStoredTokenOidcInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-        Get.find<CredentialRepository>(),
-    ));
-    Get.lazyPut(() => GetAuthenticatedAccountInteractor(
-        Get.find<AccountRepository>(),
-        Get.find<GetCredentialInteractor>(),
-        Get.find<GetStoredTokenOidcInteractor>(),
-    ));
     Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
@@ -343,8 +307,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<SearchRepository>(() => Get.find<SearchRepositoryImpl>());
     Get.lazyPut<ThreadRepository>(() => Get.find<ThreadRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
-    Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
-    Get.lazyPut<AuthenticationOIDCRepository>(() => Get.find<AuthenticationOIDCRepositoryImpl>());
     Get.lazyPut<ComposerCacheRepository>(() => Get.find<ComposerCacheRepositoryImpl>());
     Get.lazyPut<SpamReportRepository>(() => Get.find<SpamReportRepositoryImpl>());
   }
@@ -374,8 +336,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       },
       Get.find<StateDataSource>(),
     ));
-    Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
-    Get.lazyPut(() => AuthenticationOIDCRepositoryImpl(Get.find<AuthenticationOIDCDataSource>()));
     Get.lazyPut(() => ComposerCacheRepositoryImpl(Get.find<SessionStorageComposerDatasource>()));
     Get.lazyPut(() => SpamReportRepositoryImpl(
       {

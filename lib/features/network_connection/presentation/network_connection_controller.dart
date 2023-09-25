@@ -4,21 +4,25 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class NetworkConnectionController extends BaseController {
+class NetworkConnectionController extends GetxController {
   final connectivityResult = Rxn<ConnectivityResult>();
-  final _imagePaths = Get.find<ImagePaths>();
+
   final Connectivity _connectivity;
-  final AppToast _appToast = Get.find<AppToast>();
+  final ImagePaths _imagePaths;
+  final AppToast _appToast;
 
   bool _isEnableShowToastDisconnection = true;
 
   late StreamSubscription<ConnectivityResult> subscription;
 
-  NetworkConnectionController(this._connectivity);
+  NetworkConnectionController(
+    this._connectivity,
+    this._imagePaths,
+    this._appToast
+  );
 
   @override
   void onInit() {

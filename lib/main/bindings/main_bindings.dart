@@ -15,7 +15,7 @@ class MainBindings extends Bindings {
     NetworkBindings().dependencies();
     NetworkIsolateBindings().dependencies();
     CredentialBindings().dependencies();
-    NetWorkConnectionBindings().dependencies();
     SessionBindings().dependencies();
+    NetWorkConnectionBindings().dependencies();
   }
 }
