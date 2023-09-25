@@ -23,11 +23,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
-import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
-import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_datasource_impl.dart';
-import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -77,7 +73,6 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
-    Get.lazyPut<AccountDatasource>(() => Get.find<HiveAccountDatasourceImpl>());
   }
 
   @override
@@ -92,9 +87,6 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => EmailDataSourceImpl(
       Get.find<EmailAPI>(),
       Get.find<RemoteExceptionThrower>()));
-    Get.lazyPut(() => HiveAccountDatasourceImpl(
-      Get.find<AccountCacheManager>(),
-      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
       Get.find<HtmlAnalyzer>(),
       Get.find<RemoteExceptionThrower>()));
@@ -147,7 +139,6 @@ class EmailBindings extends BaseBindings {
   void bindingsRepository() {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
-    Get.lazyPut<AccountRepository>(() => Get.find<AccountRepositoryImpl>());
   }
 
   @override
@@ -167,6 +158,5 @@ class EmailBindings extends BaseBindings {
       Get.find<HtmlDataSource>(),
       Get.find<StateDataSource>()
     ));
-    Get.lazyPut(() => AccountRepositoryImpl(Get.find<AccountDatasource>()));
   }
 }
