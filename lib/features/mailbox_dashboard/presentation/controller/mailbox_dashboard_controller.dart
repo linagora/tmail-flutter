@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -256,22 +255,20 @@ class MailboxDashBoardController extends ReloadableController {
     _registerPendingEmailAddress();
     _registerPendingEmailContents();
     _registerPendingFileInfo();
-    _getSessionCurrent();
+    _handleArguments();
     _getAppVersion();
     super.onReady();
   }
 
   void _handleComposerCache() async {
-    if (kIsWeb && userProfile.value != null) {
-      _getEmailCacheOnWebInteractor.execute().fold(
-        (failure) {},
-        (success) {
-          if(success is GetComposerCacheSuccess){
-            openComposerOverlay(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
-          }
-        },
-      );    
-    }
+    _getEmailCacheOnWebInteractor.execute().fold(
+      (failure) {},
+      (success) {
+        if(success is GetComposerCacheSuccess){
+          openComposerOverlay(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
+        }
+      },
+    );
   }
 
   @override
@@ -415,11 +412,7 @@ class MailboxDashBoardController extends ReloadableController {
     _handleMessageFromNotification(notificationResponse?.payload, onForeground: false);
   }
 
-  void _getUserProfile() async {
-    userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
-  }
-
-  void _getSessionCurrent() {
+  void _handleArguments() {
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
@@ -455,25 +448,15 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleSession(Session session) {
-    sessionCurrent = session;
-    final personalAccount = sessionCurrent!.personalAccount;
-    accountId.value = personalAccount.accountId;
-    _getUserProfile();
+    log('MailboxDashBoardController::_handleSession:');
+    _setUpComponentsFromSession(session);
+
     updateAuthenticationAccount(
       sessionCurrent!,
       accountId.value!,
       sessionCurrent!.username
     );
-    injectAutoCompleteBindings(sessionCurrent, accountId.value);
-    injectRuleFilterBindings(sessionCurrent, accountId.value);
-    injectVacationBindings(sessionCurrent, accountId.value);
-    injectFCMBindings(sessionCurrent, accountId.value);
-    _getVacationResponse();
-    spamReportController.getSpamReportStateAction();
-    if (PlatformInfo.isMobile) {
-      getAllSendingEmails();
-      _storeSessionAction(sessionCurrent!);
-    }
+
     if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
       _handleClickLocalNotificationOnTerminated();
     } else {
@@ -481,7 +464,27 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
+  void _setUpComponentsFromSession(Session session) {
+    sessionCurrent = session;
+    accountId.value = sessionCurrent!.personalAccount.accountId;
+    userProfile.value = UserProfile(sessionCurrent!.username.value);
+
+    injectAutoCompleteBindings(sessionCurrent, accountId.value);
+    injectRuleFilterBindings(sessionCurrent, accountId.value);
+    injectVacationBindings(sessionCurrent, accountId.value);
+    injectFCMBindings(sessionCurrent, accountId.value);
+
+    _getVacationResponse();
+    spamReportController.getSpamReportStateAction();
+
+    if (PlatformInfo.isMobile) {
+      getAllSendingEmails();
+      _storeSessionAction(sessionCurrent!);
+    }
+  }
+
   void _handleMailtoURL(MailtoArguments arguments) {
+    log('MailboxDashBoardController::_handleMailtoURL:');
     routerParameters.value = arguments.toMapRouter();
     _handleSession(arguments.session);
   }
@@ -1244,19 +1247,9 @@ class MailboxDashBoardController extends ReloadableController {
   void handleReloaded(Session session) {
     log('MailboxDashBoardController::handleReloaded():');
     _getRouteParameters();
-    sessionCurrent = session;
-    accountId.value = sessionCurrent?.accounts.keys.first;
-    _getUserProfile();
-    _handleComposerCache();
-    injectAutoCompleteBindings(sessionCurrent, accountId.value);
-    injectRuleFilterBindings(sessionCurrent, accountId.value);
-    injectFCMBindings(sessionCurrent, accountId.value);
-    injectVacationBindings(sessionCurrent, accountId.value);
-    _getVacationResponse();
-    spamReportController.getSpamReportStateAction();
-    if (PlatformInfo.isMobile) {
-      getAllSendingEmails();
-      _storeSessionAction(sessionCurrent!);
+    _setUpComponentsFromSession(session);
+    if (PlatformInfo.isWeb) {
+      _handleComposerCache();
     }
   }
 
