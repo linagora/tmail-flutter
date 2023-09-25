@@ -15,8 +15,7 @@ class LogoutOidcInteractor {
   final AccountRepository _accountRepository;
   final AuthenticationOIDCRepository _authenticationOIDCRepository;
 
-  LogoutOidcInteractor(
-      this._accountRepository, this._authenticationOIDCRepository);
+  LogoutOidcInteractor(this._accountRepository, this._authenticationOIDCRepository);
 
   Stream<Either<Failure, Success>> execute() async* {
     try {
