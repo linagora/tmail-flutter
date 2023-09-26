@@ -10,8 +10,8 @@ class BlockCodeTransformer extends DomTransformer {
   @override
   Future<void> process({
     required Document document,
+    required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
-    DioClient? dioClient
   }) async {
     final codeElements = document.getElementsByTagName('pre');
     await Future.wait(codeElements.map((element) async {

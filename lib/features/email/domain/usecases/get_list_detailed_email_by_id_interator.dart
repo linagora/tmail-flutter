@@ -69,11 +69,11 @@ class GetListDetailedEmailByIdInteractor {
         accountId: accountId,
         downloadUrl: baseDownloadUrl
       );
-      TransformConfiguration transformConfiguration = TransformConfiguration.standardConfiguration;
+      TransformConfiguration transformConfiguration = TransformConfiguration.forPreviewEmail();
       if (email.isDraft) {
         transformConfiguration = TransformConfiguration.forDraftsEmail();
       } else if (PlatformInfo.isWeb) {
-        transformConfiguration = TransformConfiguration.forPreviewEmailPlatformWeb();
+        transformConfiguration = TransformConfiguration.forPreviewEmailOnWeb();
       }
       final newEmailContents = await _emailRepository.transformEmailContent(
         email.emailContentList,
