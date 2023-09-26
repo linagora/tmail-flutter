@@ -7,7 +7,7 @@ After logged in your Tmail account, click on avatar on top right then select opt
 
 The profile page allows you to:
 
- - [Manage your senders identities and signatures](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#identities)
+ - [Manage your senders identities and signatures](#identities)
  - [Set up email rules to automatically sort your mails](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#email-rules)
  - [Set up forwards to a third party email service](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#forwards)
  - [Enable your vacation mode](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#vacation-mode)
