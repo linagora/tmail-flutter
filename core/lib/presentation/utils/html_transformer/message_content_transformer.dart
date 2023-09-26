@@ -27,8 +27,8 @@ class MessageContentTransformer {
         ..._configuration.domTransformers.map((domTransformer) async =>
             domTransformer.process(
               document: document,
+              dioClient: _dioClient,
               mapUrlDownloadCID: mapUrlDownloadCID,
-              dioClient: _dioClient
             )
         )
     ]);

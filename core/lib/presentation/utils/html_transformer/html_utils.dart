@@ -79,6 +79,7 @@ class HtmlUtils {
       
             // Replace the placeholder with the actual image source
             img.src = src;
+            img.removeAttribute("data-src");
       
             // Stop observing the image
             observer.unobserve(img);

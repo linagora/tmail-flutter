@@ -12,8 +12,8 @@ class RemoveTooltipLinkTransformer extends DomTransformer {
   @override
   Future<void> process({
     required Document document,
+    required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
-    DioClient? dioClient
   }) async {
     final linkElements = document.querySelectorAll('a.$nameClassToolTip');
     await Future.wait(linkElements.map((linkElement) async {

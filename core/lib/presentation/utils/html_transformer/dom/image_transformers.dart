@@ -12,29 +12,33 @@ import 'package:html/dom.dart';
 
 class ImageTransformer extends DomTransformer {
 
-  final bool useLoadingAttribute;
-
-  const ImageTransformer({this.useLoadingAttribute = false});
+  const ImageTransformer();
 
   @override
   Future<void> process({
     required Document document,
+    required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
-    DioClient? dioClient
   }) async {
     final imageElements = document.querySelectorAll('img');
     await Future.wait(imageElements.map((imageElement) async {
-      final exStyle = imageElement.attributes['style'];
+      var exStyle = imageElement.attributes['style'];
       if (exStyle != null) {
-        imageElement.attributes['style'] = '$exStyle display: inline;max-width: 100%;';
+        if (!exStyle.contains('display')) {
+          exStyle = '$exStyle display:inline;';
+        }
+        if (!exStyle.contains('max-width')) {
+          exStyle = '$exStyle max-width:100%;';
+        }
+        imageElement.attributes['style'] = exStyle;
       } else {
-        imageElement.attributes['style'] = 'display: inline;max-width: 100%;';
+        imageElement.attributes['style'] = 'display:inline;max-width:100%;';
       }
       final src = imageElement.attributes['src'];
 
       if (src == null) return;
 
-      if (src.startsWith('cid:') && dioClient != null && mapUrlDownloadCID != null) {
+      if (src.startsWith('cid:') && mapUrlDownloadCID != null) {
         final imageBase64 = await _convertCidToBase64Image(
           dioClient: dioClient,
           mapUrlDownloadCID: mapUrlDownloadCID,
@@ -42,18 +46,8 @@ class ImageTransformer extends DomTransformer {
         );
         imageElement.attributes['src'] = imageBase64 ?? src;
       } else if (src.startsWith('https://') || src.startsWith('http://')) {
-        if (useLoadingAttribute) {
+        if (!imageElement.attributes.containsKey('loading')) {
           imageElement.attributes['loading'] = 'lazy';
-        } else {
-          final classAttribute = imageElement.attributes['class'];
-          if (classAttribute != null) {
-            imageElement.attributes['class'] = '$classAttribute lazy-loading';
-          } else {
-            imageElement.attributes['class'] = 'lazy-loading';
-          }
-          imageElement.attributes['data-src'] = src;
-          imageElement.attributes.remove('src');
-          imageElement.attributes.remove('loading');
         }
       }
     }));

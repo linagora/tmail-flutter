@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
@@ -54,7 +55,6 @@ class HtmlContentViewer extends StatefulWidget {
 class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   late double actualHeight;
-  double minHeight = 100;
   double minWidth = 300;
   String? _htmlData;
   late InAppWebViewController _webViewController;
@@ -108,6 +108,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
                   widget.onCreated?.call(controller);
                 },
                 onLoadStop: _onLoadStop,
+                onContentSizeChanged: _onContentSizeChanged,
                 shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
                 gestureRecognizers: {
                   Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
@@ -152,6 +153,21 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     );
   }
 
+  void _onContentSizeChanged(
+    InAppWebViewController controller,
+    Size oldContentSize,
+    Size newContentSize
+  ) async {
+    log('_HtmlContentViewState::_onContentSizeChanged:oldContentSize: $oldContentSize | newContentSize: $newContentSize');
+    final maxContentHeight = max(oldContentSize.height, newContentSize.height);
+    log('_HtmlContentViewState::_onContentSizeChanged:maxContentHeight: $maxContentHeight');
+    if (maxContentHeight > actualHeight) {
+      setState(() {
+        actualHeight = maxContentHeight;
+      });
+    }
+  }
+
   void _onHandleScrollEvent(List<dynamic> parameters) {
     log('_HtmlContentViewState::_onHandleScrollRightEvent():parameters: $parameters');
     final message = parameters.first;
@@ -167,13 +183,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     final scrollHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
     if (scrollHeight != null && mounted) {
       final scrollHeightWithBuffer = scrollHeight + 30.0;
-      if (scrollHeightWithBuffer > minHeight) {
+      if (scrollHeightWithBuffer > actualHeight) {
         setState(() {
           actualHeight = scrollHeightWithBuffer;
           _isLoading = false;
         });
-      } else {
-        actualHeight = minHeight;
       }
     }
   }
