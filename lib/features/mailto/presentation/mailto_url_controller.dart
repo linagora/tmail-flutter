@@ -39,7 +39,7 @@ class MailtoUrlController extends ReloadableController {
     if (parameters.containsKey('uri')) {
       final mailtoArgument = MailtoArguments(
         session: session,
-        emailAddress: parameters['uri']
+        mailtoUri: parameters['uri']
       );
       popAndPush(
         RouteUtils.generateNavigationRoute(
