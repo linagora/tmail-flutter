@@ -1,22 +1,17 @@
 
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
 class MailtoArguments extends RouterArguments {
 
   final Session session;
-  final String? emailAddress;
+  final String? mailtoUri;
 
-  MailtoArguments({required this.session, this.emailAddress});
+  MailtoArguments({required this.session, this.mailtoUri});
 
-  Map<String, String?> toMapRouter() {
-    return {
-      'routeName': AppRoutes.mailtoURL,
-      'emailAddress': emailAddress
-    };
-  }
+  Map<String, String?> toMapRouter() => RouteUtils.parseMapMailtoFromUri(mailtoUri);
 
   @override
-  List<Object?> get props => [session, emailAddress];
+  List<Object?> get props => [session, mailtoUri];
 }
