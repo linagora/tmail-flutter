@@ -405,7 +405,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (isHasDataFromRoute) {
       if (isRedirectToMailtoURL) {
         mailboxDashBoardController.goToComposer(
-          ComposerArguments.fromMailtoURL(navigationRouter?.emailAddress)
+          ComposerArguments.fromMailtoUri(
+            emailAddress: navigationRouter?.emailAddress,
+            subject: navigationRouter?.subject
+          )
         );
       }
 
