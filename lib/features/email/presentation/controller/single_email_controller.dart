@@ -393,8 +393,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (session != null && accountId != null) {
         final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl) ?? '';
         TransformConfiguration transformConfiguration = PlatformInfo.isWeb
-          ? TransformConfiguration.forPreviewEmailPlatformWeb()
-          : TransformConfiguration.standardConfiguration;
+          ? TransformConfiguration.forPreviewEmailOnWeb()
+          : TransformConfiguration.forPreviewEmail();
 
         consumeState(_getEmailContentInteractor.execute(
           session,

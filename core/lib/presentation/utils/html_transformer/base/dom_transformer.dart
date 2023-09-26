@@ -12,8 +12,8 @@ abstract class DomTransformer {
   /// All changes will be visible to subsequent transformers.
   Future<void> process({
     required Document document,
+    required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
-    DioClient? dioClient,
   });
 
   /// Adds a HEAD element if necessary
