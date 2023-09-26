@@ -68,7 +68,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     _htmlData = generateHtml(
       widget.contentHtml,
       direction: widget.direction,
-      javaScripts: HtmlUtils.scriptLazyLoadImage
     );
   }
 
@@ -81,7 +80,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       _htmlData = generateHtml(
         widget.contentHtml,
         direction: widget.direction,
-        javaScripts: HtmlUtils.scriptLazyLoadImage
       );
     }
   }
