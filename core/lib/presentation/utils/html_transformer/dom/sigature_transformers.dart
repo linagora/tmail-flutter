@@ -10,8 +10,8 @@ class SignatureTransformer extends DomTransformer {
   @override
   Future<void> process({
     required Document document,
+    required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
-    DioClient? dioClient
   }) async {
     final signatureElements = document.querySelectorAll('div.tmail-signature');
     await Future.wait(signatureElements.map((element) async {

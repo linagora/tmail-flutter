@@ -10,8 +10,8 @@ class RemoveScriptTransformer extends DomTransformer {
   @override
   Future<void> process({
     required Document document,
+    required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
-    DioClient? dioClient
   }) async {
     final scriptElements = document.getElementsByTagName('script');
     await Future.wait(scriptElements.map((scriptElement) async {
