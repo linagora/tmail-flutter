@@ -4,7 +4,6 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/html_transformer/html_template.dart';
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
@@ -171,7 +170,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       minHeight: minHeight,
       minWidth: minWidth,
       styleCSS: tooltipLinkCss,
-      javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlUtils.scriptLazyLoadImage,
+      javaScripts: webViewActionScripts + scriptsDisableZoom,
       direction: widget.direction);
 
     return htmlTemplate;
