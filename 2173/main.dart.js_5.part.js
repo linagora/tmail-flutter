@@ -14211,7 +14211,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return this.$this.get$_handleDeleteTagAction().call$2(emailAddress, this.stateSetter);
     },
-    $signature: 72
+    $signature: 82
   };
   B._RecipientComposerWidgetState_build___closure5.prototype = {
     call$1(value) {
@@ -14329,7 +14329,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 82
+    $signature: 83
   };
   B._RecipientComposerWidgetState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
@@ -17389,7 +17389,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return false;
     },
-    $signature: 89
+    $signature: 88
   };
   B.SearchEmailView__buildListEmailBody_closure0.prototype = {
     call$2(context, index) {
@@ -18374,7 +18374,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return false;
     },
-    $signature: 89
+    $signature: 88
   };
   B.ThreadView__buildListEmailBody_closure0.prototype = {
     call$2(context, index) {
@@ -19730,4 +19730,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["lUGYQ5CF6PwbIc5Nbzrjlk0pwwQ="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["9RjLkF+uA8QrXakPgNnHrTaydxQ="] = $__dart_deferred_initializers__.current

@@ -3069,7 +3069,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return this.$this._widget.activeColor;
       return null;
     },
-    $signature: 92
+    $signature: 106
   };
   C._RadioState_build_closure.prototype = {
     call$1(states) {
@@ -3312,7 +3312,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return B.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 82
+    $signature: 83
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
@@ -3336,7 +3336,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = true;
       return t1;
     },
-    $signature: 82
+    $signature: 83
   };
   C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure.prototype = {
     call$0() {
@@ -5482,4 +5482,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["47OGWxmzx3dBQhvuT9OT8Ba/iZU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["GtYHn92Yj0Izc1+Q7ESiurPz5H8="] = $__dart_deferred_initializers__.current
