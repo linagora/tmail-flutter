@@ -30,7 +30,7 @@ When you're in Profle page, you can see your identity list
 - (4) Reply to:  Specify the email address that will appear on recepient's composer when he reply to your email 
 - (5) BCC: When you compose a new email wiht this identity, the emails in this field will be added to "Bcc" field of composer automatically
 - (6) Customize the signature if needed.
-- (7) Set as default identity: When an identity is set as dedault, its settings such as signature, BCC... will be used when you compose a new email. 
+- (7) Set as default identity: When an identity is set as dedault, its settings such as signature, BCC... will be used when you compose a new email. You can still change to a non default identity by selecting it in the composer.
 - (8) Click button Create to save the new identity.
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/44f74874-2eff-4aa5-97e5-a267d5a26b71)
