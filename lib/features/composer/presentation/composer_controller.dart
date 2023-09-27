@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:html_editor_enhanced/html_editor.dart' as web_html_editor;
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -1836,6 +1837,62 @@ class ComposerController extends BaseController {
     Navigator.maybePop(context);
     FocusScope.of(context).unfocus();
     onEditorFocusChange(true);
+  }
+
+  void handleImageUploadSuccess(
+    BuildContext context,
+    web_html_editor.FileUpload fileUpload
+  ) {
+    log('ComposerController::handleImageUploadSuccess:NAME: ${fileUpload.name} | TYPE: ${fileUpload.type} | SIZE: ${fileUpload.size}');
+    if (fileUpload.base64 == null) {
+      _appToast.showToastErrorMessage(
+        context,
+        AppLocalizations.of(context).can_not_upload_this_file_as_attachments
+      );
+      return;
+    }
+
+    if (fileUpload.type == null) {
+      return;
+    }
+
+    final mediaType = MediaType.parse(fileUpload.type!);
+    if (mediaType.isImageValid()) {
+      _addInlineImageFromDragAndDrop(
+        base64Data: fileUpload.base64!,
+        name: fileUpload.name,
+        type: mediaType,
+        size: fileUpload.size,
+      );
+    }
+  }
+
+  void _addInlineImageFromDragAndDrop({
+    required String base64Data,
+    String? name,
+    MediaType? type,
+    int? size
+  }) {
+    log('ComposerController::_addInlineImageFromDragAndDrop:name: $name');
+    richTextWebController.insertInlineImage(
+      base64Data: base64Data,
+      name: name,
+      type: type,
+      size: size,
+    );
+  }
+
+  void handleImageUploadFailure({
+    required BuildContext context,
+    required web_html_editor.UploadError uploadError,
+    web_html_editor.FileUpload? fileUpload,
+    String? base64Str,
+  }) {
+    logError('ComposerController::handleImageUploadFailure:fileUpload: $fileUpload | uploadError: $uploadError');
+    _appToast.showToastErrorMessage(
+      context,
+      '${AppLocalizations.of(context).can_not_upload_this_file_as_attachments}. (${uploadError.name})'
+    );
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {

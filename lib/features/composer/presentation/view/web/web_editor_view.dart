@@ -26,6 +26,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final VoidCallback? onUnFocus;
   final OnMouseDownEditorAction? onMouseDown;
   final OnEditorSettingsChange? onEditorSettings;
+  final OnImageUploadSuccessAction? onImageUploadSuccessAction;
+  final OnImageUploadFailureAction? onImageUploadFailureAction;
 
   const WebEditorView({
     super.key,
@@ -39,6 +41,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onUnFocus,
     this.onMouseDown,
     this.onEditorSettings,
+    this.onImageUploadSuccessAction,
+    this.onImageUploadFailureAction,
   });
 
   @override
@@ -61,6 +65,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onUnFocus: onUnFocus,
           onMouseDown: onMouseDown,
           onEditorSettings: onEditorSettings,
+          onImageUploadSuccessAction: onImageUploadSuccessAction,
+          onImageUploadFailureAction: onImageUploadFailureAction,
         );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
@@ -80,6 +86,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onUnFocus: onUnFocus,
             onMouseDown: onMouseDown,
             onEditorSettings: onEditorSettings,
+            onImageUploadSuccessAction: onImageUploadSuccessAction,
+            onImageUploadFailureAction: onImageUploadFailureAction,
           ),
           (success) {
             if (success is GetEmailContentLoading) {
@@ -101,6 +109,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onUnFocus: onUnFocus,
                 onMouseDown: onMouseDown,
                 onEditorSettings: onEditorSettings,
+                onImageUploadSuccessAction: onImageUploadSuccessAction,
+                onImageUploadFailureAction: onImageUploadFailureAction,
               );
             }
           }
@@ -129,6 +139,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onUnFocus: onUnFocus,
               onMouseDown: onMouseDown,
               onEditorSettings: onEditorSettings,
+              onImageUploadSuccessAction: onImageUploadSuccessAction,
+              onImageUploadFailureAction: onImageUploadFailureAction,
             );
           },
           (success) {
@@ -153,6 +165,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onUnFocus: onUnFocus,
                 onMouseDown: onMouseDown,
                 onEditorSettings: onEditorSettings,
+                onImageUploadSuccessAction: onImageUploadSuccessAction,
+                onImageUploadFailureAction: onImageUploadFailureAction,
               );
             }
           }
@@ -168,6 +182,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onUnFocus: onUnFocus,
           onMouseDown: onMouseDown,
           onEditorSettings: onEditorSettings,
+          onImageUploadSuccessAction: onImageUploadSuccessAction,
+          onImageUploadFailureAction: onImageUploadFailureAction,
         );
     }
   }
