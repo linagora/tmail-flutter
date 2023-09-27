@@ -8,6 +8,8 @@ typedef OnChangeContentEditorAction = Function(String? text);
 typedef OnInitialContentEditorAction = Function(String text);
 typedef OnMouseDownEditorAction = Function(BuildContext context);
 typedef OnEditorSettingsChange = Function(EditorSettings settings);
+typedef OnImageUploadSuccessAction = Function(FileUpload fileUpload);
+typedef OnImageUploadFailureAction = Function(FileUpload? fileUpload, String? base64Str, UploadError error);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -20,6 +22,8 @@ class WebEditorWidget extends StatefulWidget {
   final VoidCallback? onUnFocus;
   final OnMouseDownEditorAction? onMouseDown;
   final OnEditorSettingsChange? onEditorSettings;
+  final OnImageUploadSuccessAction? onImageUploadSuccessAction;
+  final OnImageUploadFailureAction? onImageUploadFailureAction;
 
   const WebEditorWidget({
     super.key,
@@ -32,6 +36,8 @@ class WebEditorWidget extends StatefulWidget {
     this.onUnFocus,
     this.onMouseDown,
     this.onEditorSettings,
+    this.onImageUploadSuccessAction,
+    this.onImageUploadFailureAction,
   });
 
   @override
@@ -82,7 +88,9 @@ class _WebEditorState extends State<WebEditorWidget> {
         onBlur: widget.onUnFocus,
         onMouseDown: () => widget.onMouseDown?.call(context),
         onChangeSelection: widget.onEditorSettings,
-        onChangeCodeview: widget.onChangeContent
+        onChangeCodeview: widget.onChangeContent,
+        onImageUpload: widget.onImageUploadSuccessAction,
+        onImageUploadError: widget.onImageUploadFailureAction,
       ),
     );
   }
