@@ -682,7 +682,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 166
+    $signature: 167
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -815,4 +815,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["eJSbScYAz5aZWm/+0A7SE3T5X+M="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["7zG/ljLvq5uzb5r8zdSb/f2pMa4="] = $__dart_deferred_initializers__.current
