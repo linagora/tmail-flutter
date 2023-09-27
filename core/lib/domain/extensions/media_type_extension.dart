@@ -9,6 +9,8 @@ extension MediaTypeExtension on MediaType {
 
   bool isImageFile() => SupportedPreviewFileTypes.imageMimeTypes.contains(mimeType);
 
+  bool isImageValid() => type == 'image';
+
   bool isDocFile() => SupportedPreviewFileTypes.docMimeTypes.contains(mimeType);
 
   bool isPowerPointFile() => SupportedPreviewFileTypes.pptMimeTypes.contains(mimeType);

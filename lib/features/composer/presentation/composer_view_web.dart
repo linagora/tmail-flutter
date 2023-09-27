@@ -161,6 +161,15 @@ class ComposerView extends GetWidget<ComposerController> {
                         onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
                         onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
                         onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                        onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
+                        onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
+                          return controller.handleImageUploadFailure(
+                            context: context,
+                            uploadError: uploadError,
+                            fileUpload: fileUpload,
+                            base64Str: base64Str,
+                          );
+                        }
                       ),
                     ),
                     Obx(() => Align(
@@ -330,6 +339,15 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
                               onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
                               onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                              onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
+                              onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
+                                return controller.handleImageUploadFailure(
+                                  context: context,
+                                  uploadError: uploadError,
+                                  fileUpload: fileUpload,
+                                  base64Str: base64Str,
+                                );
+                              }
                             ),
                           ),
                         )),
@@ -523,6 +541,15 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
                               onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
                               onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                              onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
+                              onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
+                                return controller.handleImageUploadFailure(
+                                  context: context,
+                                  uploadError: uploadError,
+                                  fileUpload: fileUpload,
+                                  base64Str: base64Str,
+                                );
+                              }
                             ),
                           ),
                         )),
