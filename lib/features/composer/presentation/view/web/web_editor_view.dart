@@ -28,6 +28,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final OnEditorSettingsChange? onEditorSettings;
   final OnImageUploadSuccessAction? onImageUploadSuccessAction;
   final OnImageUploadFailureAction? onImageUploadFailureAction;
+  final double? width;
+  final double? height;
 
   const WebEditorView({
     super.key,
@@ -43,6 +45,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onEditorSettings,
     this.onImageUploadSuccessAction,
     this.onImageUploadFailureAction,
+    this.width,
+    this.height,
   });
 
   @override
@@ -67,6 +71,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorSettings: onEditorSettings,
           onImageUploadSuccessAction: onImageUploadSuccessAction,
           onImageUploadFailureAction: onImageUploadFailureAction,
+          width: width,
+          height: height,
         );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
@@ -88,6 +94,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onEditorSettings: onEditorSettings,
             onImageUploadSuccessAction: onImageUploadSuccessAction,
             onImageUploadFailureAction: onImageUploadFailureAction,
+            width: width,
+            height: height,
           ),
           (success) {
             if (success is GetEmailContentLoading) {
@@ -111,6 +119,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorSettings: onEditorSettings,
                 onImageUploadSuccessAction: onImageUploadSuccessAction,
                 onImageUploadFailureAction: onImageUploadFailureAction,
+                width: width,
+                height: height,
               );
             }
           }
@@ -141,6 +151,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onEditorSettings: onEditorSettings,
               onImageUploadSuccessAction: onImageUploadSuccessAction,
               onImageUploadFailureAction: onImageUploadFailureAction,
+              width: width,
+              height: height,
             );
           },
           (success) {
@@ -167,6 +179,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorSettings: onEditorSettings,
                 onImageUploadSuccessAction: onImageUploadSuccessAction,
                 onImageUploadFailureAction: onImageUploadFailureAction,
+                width: width,
+                height: height,
               );
             }
           }
@@ -184,6 +198,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorSettings: onEditorSettings,
           onImageUploadSuccessAction: onImageUploadSuccessAction,
           onImageUploadFailureAction: onImageUploadFailureAction,
+          width: width,
+          height: height,
         );
     }
   }

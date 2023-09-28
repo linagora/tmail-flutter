@@ -24,6 +24,8 @@ class WebEditorWidget extends StatefulWidget {
   final OnEditorSettingsChange? onEditorSettings;
   final OnImageUploadSuccessAction? onImageUploadSuccessAction;
   final OnImageUploadFailureAction? onImageUploadFailureAction;
+  final double? width;
+  final double? height;
 
   const WebEditorWidget({
     super.key,
@@ -38,6 +40,8 @@ class WebEditorWidget extends StatefulWidget {
     this.onEditorSettings,
     this.onImageUploadSuccessAction,
     this.onImageUploadFailureAction,
+    this.width,
+    this.height,
   });
 
   @override
@@ -46,12 +50,24 @@ class WebEditorWidget extends StatefulWidget {
 
 class _WebEditorState extends State<WebEditorWidget> {
 
+  static const double _offsetHeight = 50;
+  static const double _offsetWidth = 90;
+
   late HtmlEditorController _editorController;
+  double? dropZoneWidth;
+  double? dropZoneHeight;
 
   @override
   void initState() {
-    _editorController = widget.editorController;
     super.initState();
+    _editorController = widget.editorController;
+    if (widget.height != null) {
+      dropZoneHeight = widget.height! - _offsetHeight;
+    }
+    if (widget.width != null) {
+      dropZoneWidth = widget.width! - _offsetWidth;
+    }
+    log('_WebEditorState::initState:dropZoneWidth: $dropZoneWidth | dropZoneHeight: $dropZoneHeight');
   }
 
   @override
@@ -77,9 +93,13 @@ class _WebEditorState extends State<WebEditorWidget> {
       ),
       htmlToolbarOptions: const HtmlToolbarOptions(
         toolbarType: ToolbarType.hide,
-        defaultToolbarButtons: []
+        defaultToolbarButtons: [],
       ),
-      otherOptions: const OtherOptions(height: 550),
+      otherOptions: OtherOptions(
+        height: 550,
+        dropZoneWidth: dropZoneWidth,
+        dropZoneHeight: dropZoneHeight,
+      ),
       callbacks: Callbacks(
         onBeforeCommand: widget.onChangeContent,
         onChangeContent: widget.onChangeContent,
