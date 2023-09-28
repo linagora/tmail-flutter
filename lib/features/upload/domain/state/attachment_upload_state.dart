@@ -51,13 +51,16 @@ class SuccessAttachmentUploadState extends Success {
   ];
 }
 
-class ErrorAttachmentUploadState extends Failure {
+class ErrorAttachmentUploadState extends FeatureFailure {
   final UploadTaskId uploadId;
 
-  ErrorAttachmentUploadState(this.uploadId);
+  ErrorAttachmentUploadState({
+    required this.uploadId,
+    dynamic exception
+  }) : super(exception: exception);
 
   @override
-  List<Object?> get props => [uploadId];
+  List<Object?> get props => [uploadId, ...super.props];
 }
 
 class CancelAttachmentUploadState extends Failure {

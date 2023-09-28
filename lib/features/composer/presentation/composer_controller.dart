@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_dra
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upload_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
@@ -1839,10 +1840,10 @@ class ComposerController extends BaseController {
     onEditorFocusChange(true);
   }
 
-  void handleImageUploadSuccess(
+  void handleImageUploadSuccess (
     BuildContext context,
     web_html_editor.FileUpload fileUpload
-  ) {
+  ) async {
     log('ComposerController::handleImageUploadSuccess:NAME: ${fileUpload.name} | TYPE: ${fileUpload.type} | SIZE: ${fileUpload.size}');
     if (fileUpload.base64 == null) {
       _appToast.showToastErrorMessage(
@@ -1853,6 +1854,15 @@ class ComposerController extends BaseController {
     }
 
     if (fileUpload.type == null) {
+      final fileInfo = await fileUpload.toFileInfo();
+      if (fileInfo != null) {
+        _addAttachmentFromDragAndDrop(fileInfo: fileInfo);
+      } else if (context.mounted) {
+        _appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).can_not_upload_this_file_as_attachments
+        );
+      }
       return;
     }
 
@@ -1864,6 +1874,16 @@ class ComposerController extends BaseController {
         type: mediaType,
         size: fileUpload.size,
       );
+    } else {
+      final fileInfo = await fileUpload.toFileInfo();
+      if (fileInfo != null) {
+        _addAttachmentFromDragAndDrop(fileInfo: fileInfo);
+      } else if (context.mounted) {
+        _appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).can_not_upload_this_file_as_attachments
+        );
+      }
     }
   }
 
@@ -1893,6 +1913,23 @@ class ComposerController extends BaseController {
       context,
       '${AppLocalizations.of(context).can_not_upload_this_file_as_attachments}. (${uploadError.name})'
     );
+  }
+
+  void _addAttachmentFromDragAndDrop({required FileInfo fileInfo}) {
+    if (uploadController.hasEnoughMaxAttachmentSize(listFiles: [fileInfo])) {
+      _uploadAttachmentsAction([fileInfo]);
+    } else {
+      if (currentContext != null) {
+        showConfirmDialogAction(
+          currentContext!,
+          AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+            filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
+          AppLocalizations.of(currentContext!).got_it,
+          title: AppLocalizations.of(currentContext!).maximum_files_size,
+          hasCancelButton: false,
+        );
+      }
+    }
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {

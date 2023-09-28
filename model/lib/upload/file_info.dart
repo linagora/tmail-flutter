@@ -16,6 +16,14 @@ class FileInfo with EquatableMixin {
     return FileInfo('', '', 0);
   }
 
+  factory FileInfo.fromStream({
+    required Stream<List<int>> stream,
+    String? name,
+    int? size
+  }) {
+    return FileInfo(name ?? '', '', size ?? 0, readStream: stream);
+  }
+
   String get fileExtension => fileName.split('.').last;
 
   String get mimeType => lookupMimeType(kIsWeb ? fileName : filePath) ?? 'application/json; charset=UTF-8';
