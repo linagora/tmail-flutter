@@ -8,12 +8,12 @@ After logged in your Tmail account, click on avatar on top right then select opt
 The profile page allows you to:
 
  - [Manage your senders identities and signatures](#identities)
- - [Set up email rules to automatically sort your mails](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#email-rules)
- - [Set up forwards to a third party email service](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#forwards)
- - [Enable your vacation mode](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#vacation-mode)
- - [Manage folder visibility](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#folder-visibility)
- - [Change your language settings](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#language-settings)
- - [This menu also enables you to log out from tmail](https://github.com/linagora/tmail-flutter/edit/user-guide-skeleton/docs/user-guide/profile.md#logout)
+ - [Set up email rules to automatically sort your mails](#email-rules)
+ - [Set up forwards to a third party email service](md#forwards)
+ - [Enable your vacation mode](#vacation-mode)
+ - [Manage folder visibility](#folder-visibility)
+ - [Change your language settings](#language-settings)
+ - [This menu also enables you to log out from tmail](#logout)
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/16c6182e-f434-43e8-ab45-b4c6d757b1ff)
 
@@ -103,7 +103,16 @@ When you're in Profle page, you can see your identity list
 ### 1. Add the forwarding addesses
 
 (1) Enter the email address to which you want to forward your emails.
-(2) Choose whether to keep a copy of forwarded emails in your original inbox (recommended for backup).
+
+(2) Choose whether to keep a copy of forwarded emails in your original inbox : 
+   - When you enable this toggele, when a new email arrives in your inbox, it is automatically forwaded to the list of recipients below and the email is till in your inbox. This could be helpful in some cases as:
+      -  Consolidating Emails: Forward emails from multiple accounts to a central inbox for easier management.
+      -  Backup: Automatically forward emails to a backup email address 
+      -  Forward emails at work to a personal mailbox in your vacation to ensure you don't lose important messages.
+      -  Handle your departure
+      - ...
+   - When you disable the toggle, when a new email from one of the recepients in the list below arrives in, it will be forwarded, it is automatically forwaded to the list of recipients below and the email is not kept in your inbox.
+
 (3) Click `Add recipient` buton to save your changes.
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/991f8824-a22f-4848-9efc-f3a1f9b32e43)
@@ -119,24 +128,70 @@ When you're in Profle page, you can see your identity list
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/5e50a51d-024f-4bb1-abd9-2dd10dbb0ca0)
 
 
-## Vacation
+## Vacation mode
 
 - Automatic vacation replies are messages that are sent automatically to anyone who emails you while you're on vacation.
 - Setting up automatic vacation reply is a convenient way to inform your contacts that you're away and won't be able to respond to emails promptly.
-- On Manage accout page, YOu can select tab "Vacation" on left meny to access vacation reply settings
+- On Manage accout page, YOu can select tab "Vacation" on left menu to access vacation reply settings
+
+![image](https://github.com/linagora/tmail-flutter/assets/68209176/f2743333-bc42-4cc7-a50e-81121c43a355)
+  
+### 1. Vacation setting 
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/f2743333-bc42-4cc7-a50e-81121c43a355)
 
+- (1) Turn on the toggle :`Automatically reply to messages when they are received`
+- (2) Setting the Date Range: Specify the start and end dates/times for your automatic replies. This ensures that the messages are sent only during your vacation period.
+- (3) Subject: Input the automatic reply email's subject 
+- (4) Compose your vacation reply message.
+- (5) Save changes
+
+![image](https://github.com/linagora/tmail-flutter/assets/68209176/8bf8aba2-4a1c-4e0f-baca-af02c9fe9ebf)
+
+When the vacation is enabled, there will be a vacation banner in every screen until the vacation ends or you turn off it:
+- (1) When you click on `Turn off`, the vacation responder is disabled immediately and the banner disappears
+- (2) When you click on `Vacation setting`, it will open vacation setting page.
+
+![image](https://github.com/linagora/tmail-flutter/assets/68209176/6ddff98e-daf3-42e4-bb46-5b70f11d455a)
+
+### 2. Receive vacation automatic reply 
+
+- When a person sends an email when your vacation mode is enabled, he will receive an automatic reply with the subject and message body which are inputed in your vacation setting screen
+
+TODO: Add a screenshot of receiver's email 
 
 ## Folder visibility
 
-TODO
+- Hiding and showing folders is a useful feature that allows you to customize the view of your mailbox and focus on the folders that are most important to you.
+- This feature is particularly useful when you have numerous folders but want to focus on specific ones.
+- On Manage accout page, YOu can select tab "Vacation" on left menu to access Folder visibility settings
+- You can change the visibility of personal foder and team-mailbox
+- You cannot change the visibility of system folder (Inbox, Archive, Draft, Outbox, Sent, Trash, Spam, Templates)
+- In the folder list, If a folder is currently hiden, there will be a button `Show` next to it. If you click on this button, the folder will be shown on the left folder menu of your mailbox
+- In the folder list, If a folder is currently shown, there will be a button `Hide` next to it. If you click on this button, the folder will be hidden on the left folder menu of your mailbox
+
+![Group 885 (1)](https://github.com/linagora/tmail-flutter/assets/68209176/56867c86-4ee1-4ce8-b970-8a9ee4cf5fa4)
+
+- You can also click on 3-dot button of a folder then select option "Hide folder, the folder will be hidden immediately
+
+![Group 884 (1)](https://github.com/linagora/tmail-flutter/assets/68209176/741e11b9-23b5-4907-be15-271f5b4ffa76)
+
 
 ## Language settings
 
-TODO
+- Language setting determinse the language in which you view content, communicate, and interact with TeamMail application
+- On Manage accout page, YOu can select tab "Language and regions" on left menu to access Language settings
+- Then you can select the language that you want, it will be applied immediately to your Team-Mail account. 
+
+![image](https://github.com/linagora/tmail-flutter/assets/68209176/9b231860-549f-4f0f-a006-acb2a7fad7a2)
+
 
 ## Logout
 
-TODO
+- When you click on Sign-out button on Left menu of Manage account page, you will be logged out immedialtely and redirected to Log-in screen:
+
+![image](https://github.com/linagora/tmail-flutter/assets/68209176/cfbf7a41-7e02-4055-b6ec-a0d40ad62c9f)
+
+
+
 
