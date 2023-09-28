@@ -57,11 +57,15 @@ class UploadAttachment with EquatableMixin {
       if (attachment != null) {
         _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
       } else {
-        _updateEvent(Left(ErrorAttachmentUploadState(uploadTaskId)));
+        _updateEvent(Left(ErrorAttachmentUploadState(uploadId: uploadTaskId)));
       }
     } catch (e) {
       logError('UploadAttachment::upload():ERROR: $e');
-      _updateEvent(Left(ErrorAttachmentUploadState(uploadTaskId)));
+      if (e is DioError && e.type == DioErrorType.cancel) {
+        _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
+      } else {
+        _updateEvent(Left(ErrorAttachmentUploadState(uploadId: uploadTaskId, exception: e)));
+      }
     } finally {
       await _progressStateController.close();
     }
