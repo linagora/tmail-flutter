@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/action/action_callback_define.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/container/tmail_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,6 +35,8 @@ class TMailButtonWidget extends StatelessWidget {
   final bool flexibleText;
   final BoxBorder? border;
   final TextDirection iconAlignment;
+  final int? maxLines;
+  final MainAxisSize mainAxisSize;
 
   const TMailButtonWidget({
     super.key,
@@ -63,6 +66,8 @@ class TMailButtonWidget extends StatelessWidget {
     this.flexibleText = false,
     this.border,
     this.iconAlignment = TextDirection.ltr,
+    this.maxLines,
+    this.mainAxisSize = MainAxisSize.max,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -131,6 +136,7 @@ class TMailButtonWidget extends StatelessWidget {
     TextAlign? textAlign,
     bool flexibleText = false,
     BoxBorder? border,
+    int? maxLines,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -151,6 +157,7 @@ class TMailButtonWidget extends StatelessWidget {
       textAlign: textAlign,
       flexibleText: flexibleText,
       border: border,
+      maxLines: maxLines,
     );
   }
 
@@ -161,6 +168,7 @@ class TMailButtonWidget extends StatelessWidget {
     if (icon != null && text.isNotEmpty) {
       if (verticalDirection) {
         childWidget = Column(
+          mainAxisSize: mainAxisSize,
           children: [
             SvgPicture.asset(
               icon!,
@@ -177,6 +185,9 @@ class TMailButtonWidget extends StatelessWidget {
                 fontSize: 12,
                 color: AppColor.colorTextButtonHeaderThread
               ),
+              maxLines: maxLines,
+              overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+              softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
             ),
             if (trailingIcon != null)
               Padding(
@@ -195,6 +206,7 @@ class TMailButtonWidget extends StatelessWidget {
         if (iconAlignment == TextDirection.ltr) {
           childWidget = Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: mainAxisSize,
             children: [
               SvgPicture.asset(
                 icon!,
@@ -213,6 +225,9 @@ class TMailButtonWidget extends StatelessWidget {
                       fontSize: 12,
                       color: AppColor.colorTextButtonHeaderThread
                     ),
+                    maxLines: maxLines,
+                    overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                    softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                   ),
                 )
               else
@@ -223,6 +238,9 @@ class TMailButtonWidget extends StatelessWidget {
                     fontSize: 12,
                     color: AppColor.colorTextButtonHeaderThread
                   ),
+                  maxLines: maxLines,
+                  overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                  softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                 ),
               if (trailingIcon != null)
                 Padding(
@@ -240,6 +258,7 @@ class TMailButtonWidget extends StatelessWidget {
         } else {
           childWidget = Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: mainAxisSize,
             children: [
               if (flexibleText)
                 Flexible(
@@ -250,6 +269,9 @@ class TMailButtonWidget extends StatelessWidget {
                       fontSize: 12,
                       color: AppColor.colorTextButtonHeaderThread
                     ),
+                    maxLines: maxLines,
+                    overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                    softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                   ),
                 )
               else
@@ -260,6 +282,9 @@ class TMailButtonWidget extends StatelessWidget {
                     fontSize: 12,
                     color: AppColor.colorTextButtonHeaderThread
                   ),
+                  maxLines: maxLines,
+                  overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                  softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                 ),
               SizedBox(width: iconSpace),
               SvgPicture.asset(
@@ -289,6 +314,9 @@ class TMailButtonWidget extends StatelessWidget {
           fontSize: 12,
           color: AppColor.colorTextButtonHeaderThread
         ),
+        maxLines: maxLines,
+        overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+        softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
       );
     }
 
