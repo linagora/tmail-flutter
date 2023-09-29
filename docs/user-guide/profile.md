@@ -9,7 +9,7 @@ The profile page allows you to:
 
  - [Manage your senders identities and signatures](#identities)
  - [Set up email rules to automatically sort your mails](#email-rules)
- - [Set up forwards to a third party email service](md#forwards)
+ - [Set up forwards to a third party email service](#forwarding)
  - [Enable your vacation mode](#vacation-mode)
  - [Manage folder visibility](#folder-visibility)
  - [Change your language settings](#language-settings)
@@ -142,9 +142,10 @@ When you're in Profle page, you can see your identity list
 
 - (1) Turn on the toggle :`Automatically reply to messages when they are received`
 - (2) Setting the Date Range: Specify the start and end dates/times for your automatic replies. This ensures that the messages are sent only during your vacation period.
+- End date is optional. If you can turn off the toggle `Vacation stops at', it means the vacation does not have an end date and your vacation responder will work until you turn it off or change the setting. 
 - (3) Subject: Input the automatic reply email's subject 
-- (4) Compose your vacation reply message.
-- (5) Save changes
+- (4) Compose your vacation reply message. Rich-text options are available 
+- (5) Save changes. You need to click this button so that your input is applied.
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/8bf8aba2-4a1c-4e0f-baca-af02c9fe9ebf)
 
@@ -180,6 +181,7 @@ TODO: Add a screenshot of receiver's email
 ## Language settings
 
 - Language setting determinse the language in which you view content, communicate, and interact with TeamMail application
+- By default, the language of the browser will be used when you first logged-in TeamMail and you can change it to your prefered language
 - On Manage accout page, YOu can select tab "Language and regions" on left menu to access Language settings
 - Then you can select the language that you want, it will be applied immediately to your Team-Mail account. 
 
