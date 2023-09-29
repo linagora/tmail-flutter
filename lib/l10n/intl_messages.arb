@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-24T22:04:38.879050",
+  "@@last_modified": "2023-09-29T10:43:27.382543",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1848,7 +1848,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTitleRulesFilter": "Perform the following action:",
+  "actionTitleRulesFilter": "Perform the following actions:",
   "@actionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],
@@ -3382,6 +3382,30 @@
   },
   "selectAction": "Select action",
   "@selectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardEmailHintText": "Add forwarding address",
+  "@forwardEmailHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAction": "Add action",
+  "@addAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "duplicatedActionError": "This action is already added",
+  "@duplicatedActionError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelectedMailboxToMoveMessage": "Please select a mailbox to move the message",
+  "@notSelectedMailboxToMoveMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
