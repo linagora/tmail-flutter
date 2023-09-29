@@ -1,0 +1,78 @@
+
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/app_bar/default_web_app_bar_thread_widget_style.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+class DefaultWebAppBarThreadWidget extends StatelessWidget {
+  final _imagePaths = Get.find<ImagePaths>();
+
+  final PresentationMailbox? mailboxSelected;
+  final FilterMessageOption filterOption;
+  final OnOpenMailboxMenuActionClick openMailboxAction;
+  final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
+  final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
+
+  DefaultWebAppBarThreadWidget({
+    super.key,
+    required this.mailboxSelected,
+    required this.filterOption,
+    required this.openMailboxAction,
+    this.onPopupMenuFilterEmailAction,
+    this.onContextMenuFilterEmailAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        color: DefaultWebAppBarThreadWidgetStyle.backgroundColor,
+        padding: DefaultWebAppBarThreadWidgetStyle.padding,
+        constraints: const BoxConstraints(minHeight: DefaultWebAppBarThreadWidgetStyle.minHeight),
+        child: Row(
+          children: [
+            TMailButtonWidget.fromIcon(
+              key: const Key('mailbox_menu_button'),
+              icon: _imagePaths.icMenuDrawer,
+              backgroundColor: Colors.transparent,
+              padding: DefaultWebAppBarThreadWidgetStyle.mailboxMenuPadding,
+              maxWidth: DefaultWebAppBarThreadWidgetStyle.buttonMaxWidth,
+              tooltipMessage: AppLocalizations.of(context).openMailboxMenu,
+              onTapActionCallback: openMailboxAction,
+            ),
+            Expanded(
+              child: Padding(
+                padding: DefaultWebAppBarThreadWidgetStyle.titlePadding,
+                child: Text(
+                  mailboxSelected?.getDisplayName(context) ?? '',
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                  style: DefaultWebAppBarThreadWidgetStyle.titleTextStyle
+                ),
+              ),
+            ),
+            TMailButtonWidget.fromIcon(
+              key: const Key('filter_message_button'),
+              icon: _imagePaths.icFilter,
+              iconColor: DefaultWebAppBarThreadWidgetStyle.getFilterButtonColor(filterOption),
+              backgroundColor: Colors.transparent,
+              maxWidth: DefaultWebAppBarThreadWidgetStyle.buttonMaxWidth,
+              tooltipMessage: AppLocalizations.of(context).filter_messages,
+              onTapActionCallback: () => onContextMenuFilterEmailAction?.call(filterOption),
+              onTapActionAtPositionCallback: (position) => onPopupMenuFilterEmailAction?.call(filterOption, position),
+            ),
+          ]
+        ),
+      );
+    });
+  }
+}
