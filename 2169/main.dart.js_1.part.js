@@ -442,25 +442,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1558
+    $signature: 1559
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1559
+    $signature: 1560
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1560
+    $signature: 1561
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1561
+    $signature: 1562
   };
   B.BaseLoginView_buildLoginMessage_closure.prototype = {
     call$1(failure) {
@@ -487,7 +487,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1562
+    $signature: 1563
   };
   B.BaseLoginView_buildLoginMessage_closure0.prototype = {
     call$1(success) {
@@ -512,31 +512,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(_this.context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
     },
-    $signature: 1563
+    $signature: 1564
   };
   B.BaseLoginView_buildLoginMessage_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1564
+    $signature: 1565
   };
   B.BaseLoginView_buildLoginMessage_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1565
+    $signature: 1566
   };
   B.BaseLoginView_buildLoginButton_closure0.prototype = {
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 14
+    $signature: 13
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 14
+    $signature: 13
   };
   B.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(context, loginUsername) {
@@ -561,13 +561,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).passFocusNode.requestFocus$0();
     },
-    $signature: 1566
+    $signature: 1567
   };
   B.BaseLoginView_buildUserNameInput_closure0.prototype = {
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 501
+    $signature: 510
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -636,13 +636,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 14
+    $signature: 13
   };
   B.LoginView__buildSSOButton_closure.prototype = {
     call$1(states) {
       return C.Color_4278221567;
     },
-    $signature: 14
+    $signature: 13
   };
   B.LoginView__buildSSOButton_closure1.prototype = {
     call$0() {
@@ -682,7 +682,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 169
+    $signature: 158
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -706,7 +706,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 82
+    $signature: 77
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -815,4 +815,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["VUmX1WrNrVR1aIRGkVKs+F2cjbU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["qH04obGYV3HzZ77NR4L9so27arg="] = $__dart_deferred_initializers__.current
