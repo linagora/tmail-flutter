@@ -1891,7 +1891,7 @@ class AppLocalizations {
 
   String get actionTitleRulesFilter {
     return Intl.message(
-        'Perform the following action:',
+        'Perform the following actions:',
         name: 'actionTitleRulesFilter');
   }
 
@@ -3496,6 +3496,34 @@ class AppLocalizations {
     return Intl.message(
       'Select action',
       name: 'selectAction',
+    );
+  }
+
+  String get forwardEmailHintText {
+    return Intl.message(
+      'Add forwarding address',
+      name: 'forwardEmailHintText',
+    );
+  }
+
+  String get addAction {
+    return Intl.message(
+      'Add action',
+      name: 'addAction',
+    );
+  }
+
+  String get duplicatedActionError {
+    return Intl.message(
+      'This action is already added',
+      name: 'duplicatedActionError',
+    );
+  }
+
+  String get notSelectedMailboxToMoveMessage {
+    return Intl.message(
+      'Please select a mailbox to move the message',
+      name: 'notSelectedMailboxToMoveMessage',
     );
   }
 }
