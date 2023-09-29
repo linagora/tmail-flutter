@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar_thread_widget_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
@@ -66,7 +66,41 @@ class ThreadView extends GetWidget<ThreadController>
                     children: [
                       if (!_responsiveUtils.isWebDesktop(context))
                         ... [
-                          _buildAppBarNormal(context),
+                          Obx(() {
+                            return AppBarThreadWidget(
+                              mailboxSelected: controller.currentMailbox,
+                              listEmailSelected: controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
+                              selectMode: controller.mailboxDashBoardController.currentSelectMode.value,
+                              filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
+                              openMailboxAction: controller.openMailboxLeftMenu,
+                              cancelEditThreadAction: controller.cancelSelectEmail,
+                              editThreadAction: controller.enableSelectionEmail,
+                              emailSelectionAction: (actionType, selectionEmail) {
+                                return controller.pressEmailSelectionAction(
+                                  context,
+                                  actionType,
+                                  selectionEmail
+                                );
+                              },
+                              onContextMenuFilterEmailAction: _responsiveUtils.isScreenWithShortestSide(context)
+                                ? (filterOption) => controller.openContextMenuAction(
+                                    context,
+                                    _filterMessagesCupertinoActionTile(context, filterOption)
+                                  )
+                                : null,
+                              onPopupMenuFilterEmailAction: !_responsiveUtils.isScreenWithShortestSide(context)
+                                ? (filterOption, position) => controller.openPopupMenuAction(
+                                    context,
+                                    position,
+                                    popupMenuFilterEmailActionTile(
+                                      context,
+                                      filterOption,
+                                      (option) => controller.filterMessagesAction(context, option)
+                                    )
+                                  )
+                                : null
+                            );
+                          }),
                           if (!PlatformInfo.isWeb)
                             Obx(() {
                               if (!controller.networkConnectionController.isNetworkConnectionAvailable()) {
@@ -183,36 +217,6 @@ class ThreadView extends GetWidget<ThreadController>
       } else {
         return const SizedBox.shrink();
       }
-    });
-  }
-
-  Widget _buildAppBarNormal(BuildContext context) {
-    return Obx(() {
-      return AppBarThreadWidgetBuilder(
-        controller.currentMailbox,
-        controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
-        controller.mailboxDashBoardController.currentSelectMode.value,
-        controller.mailboxDashBoardController.filterMessageOption.value,
-        onOpenMailboxMenuActionClick: controller.openMailboxLeftMenu,
-        onCancelEditThread: controller.cancelSelectEmail,
-        onEditThreadAction: controller.enableSelectionEmail,
-        onEmailSelectionAction: (actionType, selectionEmail) =>
-            controller.pressEmailSelectionAction(context, actionType, selectionEmail),
-        onFilterEmailAction: (filterMessageOption, position) {
-          if (_responsiveUtils.isScreenWithShortestSide(context)) {
-            controller.openContextMenuAction(
-                context,
-                _filterMessagesCupertinoActionTile(context, filterMessageOption));
-          } else {
-            controller.openPopupMenuAction(
-                context,
-                position,
-                popupMenuFilterEmailActionTile(
-                    context,
-                    filterMessageOption,
-                        (option) => controller.filterMessagesAction(context, option)));
-          }
-        });
     });
   }
 
