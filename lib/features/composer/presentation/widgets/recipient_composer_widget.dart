@@ -1,8 +1,10 @@
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -111,216 +113,220 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: RecipientComposerWidgetStyle.borderColor,
-            width: 1
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: RecipientComposerWidgetStyle.borderColor,
+              width: 1
+            )
           )
-        )
-      ),
-      padding: widget.padding,
-      margin: widget.margin,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: RecipientComposerWidgetStyle.labelMargin,
-            child: Text(
-              '${widget.prefix.asName(context)}:',
-              style: RecipientComposerWidgetStyle.labelTextStyle
+        ),
+        padding: widget.padding,
+        margin: widget.margin,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: RecipientComposerWidgetStyle.labelMargin,
+              child: Text(
+                '${widget.prefix.asName(context)}:',
+                style: RecipientComposerWidgetStyle.labelTextStyle
+              ),
             ),
-          ),
-          const SizedBox(width: RecipientComposerWidgetStyle.space),
-          Expanded(
-            child: FocusScope(
-              child: Focus(
-                onFocusChange: (focus) => widget.onFocusEmailAddressChangeAction?.call(widget.prefix, focus),
-                onKey: (focusNode, event) {
-                  if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
-                    widget.nextFocusNode?.requestFocus();
-                    widget.onFocusNextAddressAction?.call();
-                    return KeyEventResult.handled;
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: StatefulBuilder(
-                  builder: (context, stateSetter) {
-                    if (PlatformInfo.isWeb) {
-                      return DragTarget<DraggableEmailAddress>(
-                        builder: (context, candidateData, rejectedData) {
-                          return TagEditor<SuggestionEmailAddress>(
-                            key: widget.keyTagEditor,
-                            length: _collapsedListEmailAddress.length,
-                            controller: widget.controller,
-                            focusNode: widget.focusNode,
-                            enableBorder: _isDragging,
-                            borderRadius: RecipientComposerWidgetStyle.enableBorderRadius,
-                            enableBorderColor: RecipientComposerWidgetStyle.enableBorderColor,
-                            autoDisposeFocusNode: widget.autoDisposeFocusNode,
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.done,
-                            debounceDuration: const Duration(milliseconds: 150),
-                            hasAddButton: false,
-                            tagSpacing: 8,
-                            autofocus: widget.prefix != PrefixEmailAddress.to && _currentListEmailAddress.isEmpty,
-                            minTextFieldWidth: 20,
-                            resetTextOnSubmitted: true,
-                            suggestionsBoxElevation: 20.0,
-                            suggestionsBoxBackgroundColor: Colors.white,
-                            suggestionsBoxRadius: 20,
-                            suggestionsBoxMaxHeight: 350,
-                            textStyle: RecipientComposerWidgetStyle.inputTextStyle,
-                            onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, stateSetter),
-                            onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
-                            onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
-                            onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
-                            inputDecoration: const InputDecoration(border: InputBorder.none),
-                            tagBuilder: (context, index) {
-                              final currentEmailAddress = _currentListEmailAddress[index];
-                              final isLatestEmail = currentEmailAddress == _currentListEmailAddress.last;
-
-                              return RecipientTagItemWidget(
-                                prefix: widget.prefix,
-                                currentEmailAddress: currentEmailAddress,
-                                currentListEmailAddress: _currentListEmailAddress,
-                                collapsedListEmailAddress: _collapsedListEmailAddress,
-                                isLatestEmail: isLatestEmail,
-                                isCollapsed: _isCollapse,
-                                isLatestTagFocused: _lastTagFocused,
-                                onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
-                                onShowFullAction: widget.onShowFullListEmailAddressAction,
-                              );
-                            },
-                            onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
-                            findSuggestions: _findSuggestions,
-                            useDefaultHighlight: false,
-                            suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
-                              return RecipientSuggestionItemWidget(
-                                suggestionState: suggestionEmailAddress.state,
-                                emailAddress: suggestionEmailAddress.emailAddress,
-                                suggestionValid: suggestionValid,
-                                highlight: highlight,
-                                onSelectedAction: (emailAddress) {
-                                  stateSetter(() => _currentListEmailAddress.add(emailAddress));
-                                  _updateListEmailAddressAction();
-                                  tagEditorState.resetTextField();
-                                  tagEditorState.closeSuggestionBox();
-                                },
-                              );
-                            },
-                          );
-                        },
-                        onAccept: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress, stateSetter),
-                        onLeave: (draggableEmailAddress) {
-                          if (_isDragging) {
-                            stateSetter(() => _isDragging = false);
-                          }
-                        },
-                        onMove: (details) {
-                          if (!_isDragging) {
-                            stateSetter(() => _isDragging = true);
-                          }
-                        },
-                      );
-                    } else {
-                      return TagEditor<SuggestionEmailAddress>(
-                        key: widget.keyTagEditor,
-                        length: _collapsedListEmailAddress.length,
-                        controller: widget.controller,
-                        focusNode: widget.focusNode,
-                        autoDisposeFocusNode: widget.autoDisposeFocusNode,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.done,
-                        debounceDuration: const Duration(milliseconds: 150),
-                        hasAddButton: false,
-                        tagSpacing: 8,
-                        autofocus: widget.prefix != PrefixEmailAddress.to && _currentListEmailAddress.isEmpty,
-                        minTextFieldWidth: 20,
-                        resetTextOnSubmitted: true,
-                        suggestionsBoxElevation: 20.0,
-                        suggestionsBoxBackgroundColor: Colors.white,
-                        suggestionsBoxRadius: 20,
-                        suggestionsBoxMaxHeight: 350,
-                        textStyle: RecipientComposerWidgetStyle.inputTextStyle,
-                        onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, stateSetter),
-                        onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
-                        onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
-                        onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
-                        inputDecoration: const InputDecoration(border: InputBorder.none),
-                        tagBuilder: (context, index) {
-                          final currentEmailAddress = _currentListEmailAddress[index];
-                          final isLatestEmail = currentEmailAddress == _currentListEmailAddress.last;
-
-                          return RecipientTagItemWidget(
-                            prefix: widget.prefix,
-                            currentEmailAddress: currentEmailAddress,
-                            currentListEmailAddress: _currentListEmailAddress,
-                            collapsedListEmailAddress: _collapsedListEmailAddress,
-                            isLatestEmail: isLatestEmail,
-                            isCollapsed: _isCollapse,
-                            isLatestTagFocused: _lastTagFocused,
-                            onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
-                            onShowFullAction: widget.onShowFullListEmailAddressAction,
-                          );
-                        },
-                        onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
-                        findSuggestions: _findSuggestions,
-                        useDefaultHighlight: false,
-                        suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
-                          return RecipientSuggestionItemWidget(
-                            suggestionState: suggestionEmailAddress.state,
-                            emailAddress: suggestionEmailAddress.emailAddress,
-                            suggestionValid: suggestionValid,
-                            highlight: highlight,
-                            onSelectedAction: (emailAddress) {
-                              stateSetter(() => _currentListEmailAddress.add(emailAddress));
-                              _updateListEmailAddressAction();
-                              tagEditorState.resetTextField();
-                              tagEditorState.closeSuggestionBox();
-                            },
-                          );
-                        },
-                      );
+            const SizedBox(width: RecipientComposerWidgetStyle.space),
+            Expanded(
+              child: FocusScope(
+                child: Focus(
+                  onFocusChange: (focus) => widget.onFocusEmailAddressChangeAction?.call(widget.prefix, focus),
+                  onKey: (focusNode, event) {
+                    if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+                      widget.nextFocusNode?.requestFocus();
+                      widget.onFocusNextAddressAction?.call();
+                      return KeyEventResult.handled;
                     }
+                    return KeyEventResult.ignored;
                   },
+                  child: StatefulBuilder(
+                    builder: (context, stateSetter) {
+                      if (PlatformInfo.isWeb) {
+                        return DragTarget<DraggableEmailAddress>(
+                          builder: (context, candidateData, rejectedData) {
+                            return TagEditor<SuggestionEmailAddress>(
+                              key: widget.keyTagEditor,
+                              length: _collapsedListEmailAddress.length,
+                              controller: widget.controller,
+                              focusNode: widget.focusNode,
+                              enableBorder: _isDragging,
+                              borderRadius: RecipientComposerWidgetStyle.enableBorderRadius,
+                              enableBorderColor: RecipientComposerWidgetStyle.enableBorderColor,
+                              autoDisposeFocusNode: widget.autoDisposeFocusNode,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.done,
+                              debounceDuration: RecipientComposerWidgetStyle.suggestionDebounceDuration,
+                              hasAddButton: false,
+                              tagSpacing: RecipientComposerWidgetStyle.tagSpacing,
+                              autofocus: widget.prefix != PrefixEmailAddress.to && _currentListEmailAddress.isEmpty,
+                              minTextFieldWidth: RecipientComposerWidgetStyle.minTextFieldWidth,
+                              resetTextOnSubmitted: true,
+                              suggestionsBoxElevation: RecipientComposerWidgetStyle.suggestionsBoxElevation,
+                              suggestionsBoxBackgroundColor: RecipientComposerWidgetStyle.suggestionsBoxBackgroundColor,
+                              suggestionsBoxRadius: RecipientComposerWidgetStyle.suggestionsBoxRadius,
+                              suggestionsBoxMaxHeight: RecipientComposerWidgetStyle.suggestionsBoxMaxHeight,
+                              suggestionBoxWidth: _getSuggestionBoxWidth(constraints.maxWidth),
+                              textStyle: RecipientComposerWidgetStyle.inputTextStyle,
+                              onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, stateSetter),
+                              onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
+                              onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
+                              onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
+                              inputDecoration: const InputDecoration(border: InputBorder.none),
+                              tagBuilder: (context, index) {
+                                final currentEmailAddress = _currentListEmailAddress[index];
+                                final isLatestEmail = currentEmailAddress == _currentListEmailAddress.last;
+
+                                return RecipientTagItemWidget(
+                                  prefix: widget.prefix,
+                                  currentEmailAddress: currentEmailAddress,
+                                  currentListEmailAddress: _currentListEmailAddress,
+                                  collapsedListEmailAddress: _collapsedListEmailAddress,
+                                  isLatestEmail: isLatestEmail,
+                                  isCollapsed: _isCollapse,
+                                  isLatestTagFocused: _lastTagFocused,
+                                  onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
+                                  onShowFullAction: widget.onShowFullListEmailAddressAction,
+                                );
+                              },
+                              onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
+                              findSuggestions: _findSuggestions,
+                              useDefaultHighlight: false,
+                              suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
+                                return RecipientSuggestionItemWidget(
+                                  suggestionState: suggestionEmailAddress.state,
+                                  emailAddress: suggestionEmailAddress.emailAddress,
+                                  suggestionValid: suggestionValid,
+                                  highlight: highlight,
+                                  onSelectedAction: (emailAddress) {
+                                    stateSetter(() => _currentListEmailAddress.add(emailAddress));
+                                    _updateListEmailAddressAction();
+                                    tagEditorState.resetTextField();
+                                    tagEditorState.closeSuggestionBox();
+                                  },
+                                );
+                              },
+                            );
+                          },
+                          onAccept: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress, stateSetter),
+                          onLeave: (draggableEmailAddress) {
+                            if (_isDragging) {
+                              stateSetter(() => _isDragging = false);
+                            }
+                          },
+                          onMove: (details) {
+                            if (!_isDragging) {
+                              stateSetter(() => _isDragging = true);
+                            }
+                          },
+                        );
+                      } else {
+                        return TagEditor<SuggestionEmailAddress>(
+                          key: widget.keyTagEditor,
+                          length: _collapsedListEmailAddress.length,
+                          controller: widget.controller,
+                          focusNode: widget.focusNode,
+                          autoDisposeFocusNode: widget.autoDisposeFocusNode,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.done,
+                          debounceDuration: RecipientComposerWidgetStyle.suggestionDebounceDuration,
+                          hasAddButton: false,
+                          tagSpacing: RecipientComposerWidgetStyle.tagSpacing,
+                          autofocus: widget.prefix != PrefixEmailAddress.to && _currentListEmailAddress.isEmpty,
+                          minTextFieldWidth: RecipientComposerWidgetStyle.minTextFieldWidth,
+                          resetTextOnSubmitted: true,
+                          suggestionsBoxElevation: RecipientComposerWidgetStyle.suggestionsBoxElevation,
+                          suggestionsBoxBackgroundColor: RecipientComposerWidgetStyle.suggestionsBoxBackgroundColor,
+                          suggestionsBoxRadius: RecipientComposerWidgetStyle.suggestionsBoxRadius,
+                          suggestionsBoxMaxHeight: RecipientComposerWidgetStyle.suggestionsBoxMaxHeight,
+                          suggestionBoxWidth: _getSuggestionBoxWidth(constraints.maxWidth),
+                          textStyle: RecipientComposerWidgetStyle.inputTextStyle,
+                          onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, stateSetter),
+                          onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
+                          onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
+                          onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
+                          inputDecoration: const InputDecoration(border: InputBorder.none),
+                          tagBuilder: (context, index) {
+                            final currentEmailAddress = _currentListEmailAddress[index];
+                            final isLatestEmail = currentEmailAddress == _currentListEmailAddress.last;
+
+                            return RecipientTagItemWidget(
+                              prefix: widget.prefix,
+                              currentEmailAddress: currentEmailAddress,
+                              currentListEmailAddress: _currentListEmailAddress,
+                              collapsedListEmailAddress: _collapsedListEmailAddress,
+                              isLatestEmail: isLatestEmail,
+                              isCollapsed: _isCollapse,
+                              isLatestTagFocused: _lastTagFocused,
+                              onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
+                              onShowFullAction: widget.onShowFullListEmailAddressAction,
+                            );
+                          },
+                          onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
+                          findSuggestions: _findSuggestions,
+                          useDefaultHighlight: false,
+                          suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
+                            return RecipientSuggestionItemWidget(
+                              suggestionState: suggestionEmailAddress.state,
+                              emailAddress: suggestionEmailAddress.emailAddress,
+                              suggestionValid: suggestionValid,
+                              highlight: highlight,
+                              onSelectedAction: (emailAddress) {
+                                stateSetter(() => _currentListEmailAddress.add(emailAddress));
+                                _updateListEmailAddressAction();
+                                tagEditorState.resetTextField();
+                                tagEditorState.closeSuggestionBox();
+                              },
+                            );
+                          },
+                        );
+                      }
+                    },
+                  )
                 )
               )
-            )
-          ),
-          const SizedBox(width: RecipientComposerWidgetStyle.space),
-          if (widget.prefix == PrefixEmailAddress.to && widget.ccState == PrefixRecipientState.disabled)
-            TMailButtonWidget.fromText(
-              text: AppLocalizations.of(context).cc_email_address_prefix,
-              textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-              backgroundColor: Colors.transparent,
-              padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-              margin: RecipientComposerWidgetStyle.recipientMargin,
-              onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc),
             ),
-          if (widget.prefix == PrefixEmailAddress.to && widget.bccState == PrefixRecipientState.disabled)
-            TMailButtonWidget.fromText(
-              text: AppLocalizations.of(context).bcc_email_address_prefix,
-              textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-              backgroundColor: Colors.transparent,
-              padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-              margin: RecipientComposerWidgetStyle.recipientMargin,
-              onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
-            ),
-          if (widget.prefix != PrefixEmailAddress.to)
-            TMailButtonWidget.fromIcon(
-              icon: _imagePaths.icClose,
-              backgroundColor: Colors.transparent,
-              iconColor: RecipientComposerWidgetStyle.deleteRecipientFieldIconColor,
-              iconSize: RecipientComposerWidgetStyle.deleteRecipientFieldIconSize,
-              padding: RecipientComposerWidgetStyle.deleteRecipientFieldIconPadding,
-              margin: RecipientComposerWidgetStyle.recipientMargin,
-              onTapActionCallback: () => widget.onDeleteEmailAddressTypeAction?.call(widget.prefix),
-            )
-        ]
-      ),
-    );
+            const SizedBox(width: RecipientComposerWidgetStyle.space),
+            if (widget.prefix == PrefixEmailAddress.to && widget.ccState == PrefixRecipientState.disabled)
+              TMailButtonWidget.fromText(
+                text: AppLocalizations.of(context).cc_email_address_prefix,
+                textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                backgroundColor: Colors.transparent,
+                padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                margin: RecipientComposerWidgetStyle.recipientMargin,
+                onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc),
+              ),
+            if (widget.prefix == PrefixEmailAddress.to && widget.bccState == PrefixRecipientState.disabled)
+              TMailButtonWidget.fromText(
+                text: AppLocalizations.of(context).bcc_email_address_prefix,
+                textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                backgroundColor: Colors.transparent,
+                padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                margin: RecipientComposerWidgetStyle.recipientMargin,
+                onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
+              ),
+            if (widget.prefix != PrefixEmailAddress.to)
+              TMailButtonWidget.fromIcon(
+                icon: _imagePaths.icClose,
+                backgroundColor: Colors.transparent,
+                iconColor: RecipientComposerWidgetStyle.deleteRecipientFieldIconColor,
+                iconSize: RecipientComposerWidgetStyle.deleteRecipientFieldIconSize,
+                padding: RecipientComposerWidgetStyle.deleteRecipientFieldIconPadding,
+                margin: RecipientComposerWidgetStyle.recipientMargin,
+                onTapActionCallback: () => widget.onDeleteEmailAddressTypeAction?.call(widget.prefix),
+              )
+          ]
+        ),
+      );
+    });
   }
 
   bool get _isCollapse => _currentListEmailAddress.length > 1 && widget.expandMode == ExpandMode.COLLAPSE;
@@ -471,6 +477,15 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
       if (_isDragging) {
         stateSetter(() => _isDragging = false);
       }
+    }
+  }
+
+  double? _getSuggestionBoxWidth(double maxWidth) {
+    if (maxWidth < ResponsiveUtils.minTabletWidth) {
+      final newWidth = min(maxWidth, RecipientComposerWidgetStyle.suggestionBoxWidth);
+      return newWidth;
+    } else {
+      return null;
     }
   }
 }
