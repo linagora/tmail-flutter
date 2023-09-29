@@ -53,7 +53,6 @@ class DefaultWebAppBarThreadWidget extends StatelessWidget {
                 child: Text(
                   mailboxSelected?.getDisplayName(context) ?? '',
                   maxLines: 1,
-                  textAlign: TextAlign.center,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   softWrap: CommonTextStyle.defaultSoftWrap,
                   style: DefaultWebAppBarThreadWidgetStyle.titleTextStyle
