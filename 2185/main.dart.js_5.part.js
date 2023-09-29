@@ -18695,7 +18695,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_menu_drawer.svg", _null, _null, D.ValueKey_mailbox_menu_button, _null, 80, _null, t2.openMailboxAction, C.EdgeInsets_5_5_5_5, A.Intl__message("Open mailbox menu", _null, "openMailboxMenu", _null, _null));
       t4 = t2.mailboxSelected;
       t4 = t4 == null ? _null : A.PresentationMailboxExtension_getDisplayName(t4, context);
-      t4 = A.Expanded$(new A.Padding(C.EdgeInsets_16_0_16_0, A.Text$(t4 == null ? "" : t4, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, D.TextStyle_oHY12, C.TextAlign_2, _null, _null, _null, _null), _null), 1);
+      t4 = A.Expanded$(new A.Padding(C.EdgeInsets_16_0_16_0, A.Text$(t4 == null ? "" : t4, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, D.TextStyle_oHY12, _null, _null, _null, _null, _null), _null), 1);
       t5 = t2.filterOption === C.FilterMessageOption_0 ? C.Color_4288258733 : C.Color_4278221567;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
       return A.Container$(_null, A.Row$(A._setArrayType([t3, t4, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_filter.svg", t5, _null, D.ValueKey_filter_message_button, _null, 80, new B.DefaultWebAppBarThreadWidget_build__closure(t2), new B.DefaultWebAppBarThreadWidget_build__closure0(t2), _null, A.Intl__message("Filter messages", _null, "filter_messages", _null, _null))], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, C.BoxConstraints_mlX2, _null, _null, _null, _null, _null, C.EdgeInsets_16_8_16_8, _null, _null, _null);
@@ -19747,4 +19747,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["BumlKQ7+k4kWt6maehIOczB7y6o="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["WORjDJ8Z6cggQk9Tu/AhqYwyros="] = $__dart_deferred_initializers__.current
