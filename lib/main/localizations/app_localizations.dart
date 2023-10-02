@@ -3340,4 +3340,11 @@ class AppLocalizations {
       name: 'saveAsDraft',
     );
   }
+
+  String get dropFileHereToAttachThem {
+    return Intl.message(
+      'Drop file here to attach them',
+      name: 'dropFileHereToAttachThem',
+    );
+  }
 }
