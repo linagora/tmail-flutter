@@ -20,6 +20,7 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
@@ -348,14 +349,27 @@ class EmailView extends GetWidget<SingleEmailController> {
           return Expanded(
             child: Padding(
               padding: const EdgeInsetsDirectional.only(start: 16, bottom: 16),
-              child: HtmlContentViewerOnWeb(
-                widthContent: constraints.maxWidth,
-                heightContent: responsiveUtils.getSizeScreenHeight(context),
-                contentHtml: allEmailContents ?? "",
-                controller: HtmlViewerControllerForWeb(),
-                mailtoDelegate: (uri) => controller.openMailToLink(uri),
-                direction: AppUtils.getCurrentDirection(context),
-              ),
+              child: Obx(() {
+                return Stack(
+                  children: [
+                    HtmlContentViewerOnWeb(
+                      widthContent: constraints.maxWidth,
+                      heightContent: responsiveUtils.getSizeScreenHeight(context),
+                      contentHtml: allEmailContents ?? "",
+                      controller: HtmlViewerControllerForWeb(),
+                      mailtoDelegate: (uri) => controller.openMailToLink(uri),
+                      direction: AppUtils.getCurrentDirection(context),
+                    ),
+                    if (controller.mailboxDashBoardController.isDraggableAppActive)
+                      PointerInterceptor(
+                        child: SizedBox(
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
+                        )
+                      )
+                  ],
+                );
+              }),
             ),
           );
         } else {
