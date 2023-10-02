@@ -218,6 +218,8 @@ extension AppColor on Color {
   static const colorSelected = Color(0xFFE3F1FF);
   static const colorAttachmentBorder = Color(0xFFE5ECF3);
   static const colorProgressLoadingBackground = Color(0xFFE3F1FF);
+  static const colorDropZoneBackground = Color(0xFFF6FAFF);
+  static const colorDropZoneBorder = Color(0xFF46A2FF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
