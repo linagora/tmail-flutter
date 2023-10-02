@@ -1,0 +1,5 @@
+
+enum DraggableAppState {
+  active,
+  inActive
+}
