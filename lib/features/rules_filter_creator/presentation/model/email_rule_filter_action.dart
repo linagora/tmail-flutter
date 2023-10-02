@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -26,5 +24,9 @@ enum EmailRuleFilterAction {
       case EmailRuleFilterAction.forwardTo:
         return AppLocalizations.of(context).forwardTo;
     }
+  }
+
+  bool getSupported() {
+    return this != EmailRuleFilterAction.forwardTo;
   }
 }
