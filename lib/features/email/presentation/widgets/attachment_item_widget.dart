@@ -10,56 +10,61 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_item_widget_style.dart';
 
 typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
-typedef OnExpandAttachmentActionClick = void Function();
 
-class AttachmentFileTileBuilder extends StatelessWidget{
+class AttachmentItemWidget extends StatelessWidget {
 
-  final Attachment _attachment;
-  final OnDownloadAttachmentFileActionClick? onDownloadAttachmentFileActionClick;
+  final Attachment attachment;
+  final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
 
-  const AttachmentFileTileBuilder(
-    this._attachment, {
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  AttachmentItemWidget({
     Key? key,
-    this.onDownloadAttachmentFileActionClick,
+    required this.attachment,
+    this.downloadAttachmentAction,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-    final responsiveUtils = Get.find<ResponsiveUtils>();
-
     return Padding(
-      padding: const EdgeInsetsDirectional.only(end: 12),
+      padding: AttachmentItemWidgetStyle.padding,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => onDownloadAttachmentFileActionClick?.call(_attachment),
-          customBorder: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          onTap: () => downloadAttachmentAction?.call(attachment),
+          customBorder: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
+          ),
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: AttachmentItemWidgetStyle.contentPadding,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColor.attachmentFileBorderColor),
-              color: Colors.transparent),
-            width: responsiveUtils.isMobile(context) ? 224 : 250,
-            height: 60,
+              borderRadius: const BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius)),
+              border: Border.all(color: AttachmentItemWidgetStyle.borderColor),
+            ),
+            width: _responsiveUtils.isMobile(context)
+              ? AttachmentItemWidgetStyle.mobileWidth
+              : AttachmentItemWidgetStyle.width,
+            height: AttachmentItemWidgetStyle.height,
             child: Stack(
               children: [
                 Positioned.fill(
                   child: Row(children: [
                     SvgPicture.asset(
-                        _attachment.getIcon(imagePaths),
-                        width: 44,
-                        height: 44,
-                        fit: BoxFit.fill),
-                    const SizedBox(width: 8),
+                      attachment.getIcon(_imagePaths),
+                      width: AttachmentItemWidgetStyle.iconSize,
+                      height: AttachmentItemWidgetStyle.iconSize,
+                      fit: BoxFit.fill
+                    ),
+                    const SizedBox(width: AttachmentItemWidgetStyle.space),
                     Expanded(child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ExtendedText(
-                          (_attachment.name ?? ''),
+                          (attachment.name ?? ''),
                           maxLines: 1,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
@@ -69,29 +74,18 @@ class AttachmentFileTileBuilder extends StatelessWidget{
                               : TextOverflowPosition.end,
                             child: const Text(
                               "...",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColor.attachmentFileNameColor,
-                                fontWeight: FontWeight.normal
-                              ),
+                              style: AttachmentItemWidgetStyle.dotsLabelTextStyle,
                             ),
                           ),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColor.attachmentFileNameColor,
-                            fontWeight: FontWeight.normal
-                          ),
+                          style: AttachmentItemWidgetStyle.labelTextStyle,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          filesize(_attachment.size?.value),
+                          filesize(attachment.size?.value),
                           maxLines: 1,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColor.attachmentFileSizeColor,
-                            fontWeight: FontWeight.normal),
+                          style: AttachmentItemWidgetStyle.sizeLabelTextStyle,
                         )
                       ]
                     ))
@@ -104,12 +98,13 @@ class AttachmentFileTileBuilder extends StatelessWidget{
                     child: InkWell(
                       customBorder: const CircleBorder(),
                       child: SvgPicture.asset(
-                        imagePaths.icDownloadAttachment,
-                        width: 24,
-                        height: 24,
-                        colorFilter: AppColor.primaryColor.asFilter(),
-                        fit: BoxFit.fill),
-                      onTap: () => onDownloadAttachmentFileActionClick?.call(_attachment)
+                        _imagePaths.icDownloadAttachment,
+                        width: AttachmentItemWidgetStyle.downloadIconSize,
+                        height: AttachmentItemWidgetStyle.downloadIconSize,
+                        colorFilter: AttachmentItemWidgetStyle.downloadIconColor.asFilter(),
+                        fit: BoxFit.fill
+                      ),
+                      onTap: () => downloadAttachmentAction?.call(attachment)
                     ),
                   ),
                 ),
