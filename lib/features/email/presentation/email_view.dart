@@ -278,7 +278,15 @@ class EmailView extends GetWidget<SingleEmailController> {
               if (attachments.isNotEmpty) {
                 return EmailAttachmentsWidget(
                   attachments: attachments,
-                  onDownloadAttachmentActionCallback: (context, attachment) {
+                  onDragStarted: () {
+                    log('EmailView::_buildEmailMessage:onDragStarted:');
+                    controller.mailboxDashBoardController.enableDraggableApp();
+                  },
+                  onDragEnd: (details) {
+                    log('EmailView::_buildEmailMessage:onDragEnd:');
+                    controller.mailboxDashBoardController.disableDraggableApp();
+                  },
+                  downloadAttachmentAction: (attachment) {
                     if (PlatformInfo.isWeb) {
                       controller.downloadAttachmentForWeb(context, attachment);
                     } else {
