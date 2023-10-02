@@ -2022,4 +2022,9 @@ class ComposerController extends BaseController {
 
     _updateStatusEmailSendButton();
   }
+
+  void addAttachmentFromDropZone(Attachment attachment) {
+    log('ComposerController::addAttachmentFromDropZone: $attachment');
+    uploadController.initializeUploadAttachments([attachment]);
+  }
 }
