@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -18,6 +19,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_imag
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/bottom_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
@@ -336,29 +338,42 @@ class ComposerView extends GetWidget<ComposerController> {
                           Expanded(
                             child: Padding(
                               padding: ComposerStyle.desktopEditorPadding,
-                              child: Obx(() => WebEditorView(
-                                editorController: controller.richTextWebController.editorController,
-                                arguments: controller.composerArguments.value,
-                                contentViewState: controller.emailContentsViewState.value,
-                                currentWebContent: controller.textEditorWeb,
-                                onInitial: controller.handleInitHtmlEditorWeb,
-                                onChangeContent: controller.onChangeTextEditorWeb,
-                                onFocus: controller.handleOnFocusHtmlEditorWeb,
-                                onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
-                                onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                                onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
-                                onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
-                                  return controller.handleImageUploadFailure(
-                                    context: context,
-                                    uploadError: uploadError,
-                                    fileUpload: fileUpload,
-                                    base64Str: base64Str,
-                                  );
-                                },
-                                width: constraints.maxWidth,
-                                height: constraints.maxHeight,
-                              )),
+                              child: Obx(() {
+                                return Stack(
+                                  children: [
+                                    WebEditorView(
+                                      editorController: controller.richTextWebController.editorController,
+                                      arguments: controller.composerArguments.value,
+                                      contentViewState: controller.emailContentsViewState.value,
+                                      currentWebContent: controller.textEditorWeb,
+                                      onInitial: controller.handleInitHtmlEditorWeb,
+                                      onChangeContent: controller.onChangeTextEditorWeb,
+                                      onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                      onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
+                                      onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                                      onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                                      onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
+                                      onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
+                                        return controller.handleImageUploadFailure(
+                                          context: context,
+                                          uploadError: uploadError,
+                                          fileUpload: fileUpload,
+                                          base64Str: base64Str,
+                                        );
+                                      },
+                                      width: constraints.maxWidth,
+                                      height: constraints.maxHeight,
+                                    ),
+                                    if (controller.mailboxDashBoardController.isDraggableAppActive)
+                                      PointerInterceptor(
+                                        child: DropZoneWidget(
+                                          width: constraints.maxWidth,
+                                          height: constraints.maxHeight,
+                                        )
+                                      )
+                                  ],
+                                );
+                              }),
                             ),
                           ),
                           Obx(() {

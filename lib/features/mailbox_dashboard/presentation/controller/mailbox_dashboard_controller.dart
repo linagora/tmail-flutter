@@ -72,6 +72,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -194,6 +195,7 @@ class MailboxDashBoardController extends ReloadableController {
   final searchMailboxActivated = RxBool(false);
   final listSendingEmails = RxList<SendingEmail>();
   final refreshingMailboxState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final draggableAppState = Rxn<DraggableAppState>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -2103,6 +2105,16 @@ class MailboxDashBoardController extends ReloadableController {
     if (inboxPresentation == null) return;
 
     openMailboxAction(inboxPresentation);
+  }
+
+  bool get isDraggableAppActive => draggableAppState.value == DraggableAppState.active;
+
+  void enableDraggableApp() {
+    draggableAppState.value = DraggableAppState.active;
+  }
+
+  void disableDraggableApp() {
+    draggableAppState.value = DraggableAppState.inActive;
   }
   
   @override
