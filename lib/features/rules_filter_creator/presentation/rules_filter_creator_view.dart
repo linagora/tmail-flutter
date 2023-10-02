@@ -2,25 +2,23 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
-import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/styles/rule_filter_action_styles.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_action_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_combiner_bottomsheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_comparator_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_field_bottom_sheet_action_tile_builder.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_list.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-
 import 'model/rule_filter_condition_type.dart';
 
 class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
@@ -182,40 +180,53 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       fontSize: 16,
                       color: Colors.black)),
                   const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                      borderRadius: BorderRadius.circular(12)),
-                    child: Row(children: [
-                      Expanded(child: Obx(() => DropDownButtonWidget<EmailRuleFilterAction>(
-                        items: EmailRuleFilterAction.values,
-                        itemSelected: controller.emailRuleFilterActionSelected.value,
-                        onChanged: (newAction) =>
-                          controller.selectEmailRuleFilterAction(newAction),
-                        supportSelectionIcon: true))),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          AppLocalizations.of(context).toFolder,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          maxLines: 1,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 16,
-                            color: Colors.black)),
-                      ),
-                      Expanded(child: Obx(() =>
-                        RuleFilterButtonField<PresentationMailbox>(
-                          value: controller.mailboxSelected.value,
-                          borderColor: _getBorderColorMailboxSelected(),
-                          tapActionCallback: (value) {
-                            KeyboardUtils.hideKeyboard(context);
-                            controller.selectMailbox(context);
-                          }))),
-                    ])
-                  ),
+                  Obx(() {
+                    return RuleFilterActionListWidget(
+                      responsiveUtils: _responsiveUtils,
+                      actionList: controller.listEmailRuleFilterActionSelected,
+                      onActionChanged: (newAction, index) {
+                        controller.selectEmailRuleFilterAction(newAction, index);
+                      },
+                      forwardEmailEditingController: controller.forwardEmailController,
+                      forwardEmailFocusNode: controller.forwardEmailFocusNode,
+                      onChangeForwardEmail: (value, index) => controller.updateForwardEmailValue(context, value, index),
+                      tapActionDetailedCallback: (index) {
+                        KeyboardUtils.hideKeyboard(context);
+                        controller.selectMailbox(context, index);
+                      },
+                      tapRemoveCallback: (index) => controller.tapRemoveAction(index),
+                      imagePaths: _imagePaths,
+                      errorForwardEmail: controller.errorForwardEmailValue.value,
+                      errorMailboxSelected: controller.errorMailboxSelectedValue.value,
+                    );
+                  }),
+                  Obx(() {
+                    if (controller.isShowAddAction.value == true) {
+                      return Container(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: InkWell(
+                          onTap: controller.tapAddAction,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                _imagePaths.icAddNewFolder,
+                                fit: BoxFit.fill,
+                              ),
+                              const SizedBox(width: 15,),
+                              Text(
+                                AppLocalizations.of(context).addAction,
+                                maxLines: RuleFilterActionStyles.maxLines,
+                                style: RuleFilterActionStyles.addActionButtonTextStyle
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  })
                 ]
               ),
             ),
@@ -330,41 +341,53 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               fontSize: 16,
                               color: Colors.black)),
                       const SizedBox(height: 24),
-                      Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                              color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Row(children: [
-                            Expanded(child: Obx(() => DropDownButtonWidget<EmailRuleFilterAction>(
-                                items: EmailRuleFilterAction.values,
-                                itemSelected: controller.emailRuleFilterActionSelected.value,
-                                onChanged: (newAction) =>
-                                    controller.selectEmailRuleFilterAction(newAction),
-                                supportSelectionIcon: true))),
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                  AppLocalizations.of(context).toFolder,
-                                  overflow: CommonTextStyle.defaultTextOverFlow,
-                                  softWrap: CommonTextStyle.defaultSoftWrap,
-                                  maxLines: 1,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 16,
-                                      color: Colors.black)),
+                      Obx(() {
+                        return RuleFilterActionListWidget(
+                          responsiveUtils: _responsiveUtils,
+                          actionList: controller.listEmailRuleFilterActionSelected,
+                          onActionChanged: (newAction, index) {
+                            controller.selectEmailRuleFilterAction(newAction, index);
+                          },
+                          forwardEmailEditingController: controller.forwardEmailController,
+                          forwardEmailFocusNode: controller.forwardEmailFocusNode,
+                          onChangeForwardEmail: (value, index) => controller.updateForwardEmailValue(context, value, index),
+                          tapActionDetailedCallback: (index) {
+                            KeyboardUtils.hideKeyboard(context);
+                            controller.selectMailbox(context, index);
+                          },
+                          tapRemoveCallback: (index) => controller.tapRemoveAction(index),
+                          imagePaths: _imagePaths,
+                          errorForwardEmail: controller.errorForwardEmailValue.value,
+                          errorMailboxSelected: controller.errorMailboxSelectedValue.value,
+                        );
+                      }),
+                      Obx(() {
+                        if (controller.isShowAddAction.value == true) {
+                          return Container(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: InkWell(
+                              onTap: controller.tapAddAction,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    _imagePaths.icAddNewFolder,
+                                    fit: BoxFit.fill,
+                                  ),
+                                  const SizedBox(width: 15,),
+                                  Text(
+                                    AppLocalizations.of(context).addAction,
+                                    maxLines: RuleFilterActionStyles.maxLines,
+                                    style: RuleFilterActionStyles.addActionButtonTextStyle
+                                  )
+                                ],
+                              ),
                             ),
-                            Expanded(child: Obx(() =>
-                              RuleFilterButtonField<PresentationMailbox>(
-                                value: controller.mailboxSelected.value,
-                                borderColor: _getBorderColorMailboxSelected(),
-                                tapActionCallback: (value) {
-                                  KeyboardUtils.hideKeyboard(context);
-                                  controller.selectMailbox(context);
-                                }))),
-                          ])
-                      ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      })
                     ]
                 ),
               ),
@@ -498,47 +521,62 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               fontSize: 16,
                               color: Colors.black)),
                       const SizedBox(height: 24),
-                      Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                              color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Column(children: [
-                            Obx(() {
-                              return RuleFilterButtonField<EmailRuleFilterAction>(
-                                value: controller.emailRuleFilterActionSelected.value,
-                                tapActionCallback: (value) {
-                                  KeyboardUtils.hideKeyboard(context);
-                                  controller.openContextMenuAction(
-                                      context,
-                                      _bottomSheetActionRuleFilterActionTiles(
-                                          context,
-                                          controller.emailRuleFilterActionSelected.value));
-                                }
-                              );
-                            }),
-                            Container(
-                              alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              child: Text(
-                                  AppLocalizations.of(context).toFolder,
-                                  overflow: CommonTextStyle.defaultTextOverFlow,
-                                  softWrap: CommonTextStyle.defaultSoftWrap,
-                                  maxLines: 1,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 16,
-                                      color: Colors.black)),
+                      Obx(() {
+                        return RuleFilterActionListWidget(
+                          responsiveUtils: _responsiveUtils,
+                          actionList: controller.listEmailRuleFilterActionSelected,
+                          onActionChangeMobile: (currentAction, index) {
+                            KeyboardUtils.hideKeyboard(context);
+                            controller.openContextMenuAction(
+                              context,
+                              _bottomSheetActionRuleFilterActionTiles(
+                                context,
+                                currentAction,
+                                index
+                              )
+                            );
+                          },
+                          forwardEmailEditingController: controller.forwardEmailController,
+                          forwardEmailFocusNode: controller.forwardEmailFocusNode,
+                          onChangeForwardEmail: (value, index) => controller.updateForwardEmailValue(context, value, index),
+                          tapActionDetailedCallback: (index) {
+                            KeyboardUtils.hideKeyboard(context);
+                            controller.selectMailbox(context, index);
+                          },
+                          tapRemoveCallback: (index) => controller.tapRemoveAction(index),
+                          imagePaths: _imagePaths,
+                          errorForwardEmail: controller.errorForwardEmailValue.value,
+                          errorMailboxSelected: controller.errorMailboxSelectedValue.value,
+                        );
+                      }),
+                      Obx(() {
+                        if (controller.isShowAddAction.value == true) {
+                          return Container(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: InkWell(
+                              onTap: controller.tapAddAction,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    _imagePaths.icAddNewFolder,
+                                    fit: BoxFit.fill,
+                                  ),
+                                  const SizedBox(width: 15,),
+                                  Text(
+                                    AppLocalizations.of(context).addAction,
+                                    maxLines: RuleFilterActionStyles.maxLines,
+                                    style: RuleFilterActionStyles.addActionButtonTextStyle
+                                  )
+                                ],
+                              ),
                             ),
-                            Obx(() => RuleFilterButtonField<PresentationMailbox>(
-                              value: controller.mailboxSelected.value,
-                              borderColor: _getBorderColorMailboxSelected(),
-                              tapActionCallback: (value) {
-                                KeyboardUtils.hideKeyboard(context);
-                                controller.selectMailbox(context);
-                              }))
-                          ])
-                      ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      })
                     ]
                 ),
               ),
@@ -745,18 +783,23 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
   List<Widget> _bottomSheetActionRuleFilterActionTiles(
       BuildContext context,
-      EmailRuleFilterAction? ruleActionSelected
+      EmailRuleFilterAction? ruleActionSelected,
+      int ruleActionIndex,
   ) {
-    return EmailRuleFilterAction.values
+    final supportedAction = EmailRuleFilterAction.values
+      .where((ruleAction) => ruleAction.getSupported() == true)
+      .toList();
+    return supportedAction
       .map((ruleAction) =>
-        _buildRuleActionWidget(context, ruleAction, ruleActionSelected))
+        _buildRuleActionWidget(context, ruleAction, ruleActionSelected, ruleActionIndex))
       .toList();
   }
 
   Widget _buildRuleActionWidget(
       BuildContext context,
       EmailRuleFilterAction ruleAction,
-      EmailRuleFilterAction? ruleActionSelected
+      EmailRuleFilterAction? ruleActionSelected,
+      int ruleActionIndex,
   ) {
     return (RuleActionSheetActionTileBuilder(
         ruleAction.getTitle(context),
@@ -770,17 +813,11 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             height: 20,
             fit: BoxFit.fill))
       ..onActionClick((ruleAction) {
-        controller.selectEmailRuleFilterAction(ruleAction);
+        if (ruleAction != controller.listEmailRuleFilterActionSelected[ruleActionIndex].action) {
+          controller.selectEmailRuleFilterAction(ruleAction, ruleActionIndex);
+        }
         popBack();
       }))
     .build();
-  }
-
-  Color _getBorderColorMailboxSelected() {
-    if (controller.errorRuleActionValue.value?.isNotEmpty == true) {
-      return AppColor.colorInputBorderErrorVerifyName;
-    } else {
-      return AppColor.colorInputBorderCreateMailbox;
-    }
   }
 }
