@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,12 +8,20 @@ import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/drop_zone_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+typedef OnAddAttachmentFromDropZone = Function(Attachment attachment);
+
 class DropZoneWidget extends StatefulWidget {
 
   final double? width;
   final double? height;
+  final OnAddAttachmentFromDropZone? addAttachmentFromDropZone;
 
-  const DropZoneWidget({super.key, this.width, this.height});
+  const DropZoneWidget({
+    super.key,
+    this.width,
+    this.height,
+    this.addAttachmentFromDropZone
+  });
 
   @override
   State<DropZoneWidget> createState() => _DropZoneWidgetState();
@@ -69,9 +76,7 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
           return SizedBox(width: widget.width, height: widget.height);
         }
       },
-      onAccept: (attachment) {
-        log('_DropZoneWidgetState::build:onAccept: $attachment');
-      },
+      onAccept: widget.addAttachmentFromDropZone,
       onLeave: (attachment) {
         if (_isDragging) {
           setState(() => _isDragging = false);
