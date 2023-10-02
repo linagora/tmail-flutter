@@ -203,6 +203,7 @@ class ImagePaths {
   String get icAttachFile => _getImagePath('ic_attach_file.svg');
   String get icSend => _getImagePath('ic_send.svg');
   String get icReadReceipt => _getImagePath('ic_read_receipt.svg');
+  String get icDropZoneIcon => _getImagePath('ic_drop_zone_icon.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
