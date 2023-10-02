@@ -430,7 +430,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t9.errorBorder = C.OutlineInputBorder_0Qn;
       t5 = A._setArrayType([A.TextFormFieldBuilder$(false, t6, t7, t9.build$0(), t8, _null, t4, t3, t2, t5, D.TextStyle_chs4)], type$.JSArray_Widget);
       _this._widget.toString;
-      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_eye.svg", _null, 18, _null, C.EdgeInsetsDirectional_0_0_4_0, _null, new B._LoginTextInputBuilderState_build_closure(_this), _null, _null));
+      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_eye.svg", _null, 18, _null, C.EdgeInsetsDirectional_0_0_4_0, 1 / 0, _null, new B._LoginTextInputBuilderState_build_closure(_this), _null, _null));
       return new A.Stack(C.AlignmentDirectional_1_0, _null, C.StackFit_0, C.Clip_1, t5, _null);
     },
     dispose$0() {
@@ -568,7 +568,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 466
+    $signature: 336
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(value) {
@@ -683,7 +683,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 252
+    $signature: 230
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -707,7 +707,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 78
+    $signature: 72
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -816,4 +816,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["545S3SkuZnPGENQkJf8WGd8w+Ik="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["eRjnEEKN3eEmU64xa9eUSJYl7MA="] = $__dart_deferred_initializers__.current
