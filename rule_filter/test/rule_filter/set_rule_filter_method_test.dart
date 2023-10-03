@@ -47,6 +47,9 @@ void main() {
             MailboxId(Id('42')),
           ],
         ),
+        markAsImportant: true,
+        markAsSeen: true,
+        reject: false,
       ),
     );
 
@@ -93,7 +96,10 @@ void main() {
                           "action": {
                             "appendIn": {
                               "mailboxIds": ["42"]
-                            }
+                            },
+                            "markAsSeen": true,
+                            "markAsImportant": true,
+                            "reject": false
                           }
                         }
                       }
