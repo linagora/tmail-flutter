@@ -14,6 +14,7 @@ mixin MessageDialogActionMixin {
       String actionName,
       {
         Function? onConfirmAction,
+        Function? onCancelAction,
         String? title,
         String? cancelTitle,
         bool hasCancelButton = true,
@@ -56,7 +57,13 @@ mixin MessageDialogActionMixin {
                 popBack();
                 onConfirmAction?.call();
             })
-            ..onCancelButtonAction(hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '', () => popBack())
+            ..onCancelButtonAction(
+                hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+                () {
+                  popBack();
+                  onCancelAction?.call();
+                }
+            )
           ).build()
         )
       );
@@ -91,7 +98,13 @@ mixin MessageDialogActionMixin {
                     popBack();
                     onConfirmAction?.call();
                 })
-                ..onCancelButtonAction(hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '', () => popBack())
+                ..onCancelButtonAction(
+                    hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+                    () {
+                      popBack();
+                      onCancelAction?.call();
+                    }
+                )
                 ..onCloseButtonAction(() => popBack()))
               .build()));
         } else {
@@ -100,7 +113,13 @@ mixin MessageDialogActionMixin {
             ..styleConfirmButton(const TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
             ..styleMessage(messageStyle)
             ..styleCancelButton(cancelStyle)
-            ..onCancelAction(cancelTitle ?? AppLocalizations.of(context).cancel, () => popBack())
+            ..onCancelAction(
+                cancelTitle ?? AppLocalizations.of(context).cancel,
+                () {
+                  popBack();
+                  onCancelAction?.call();
+                }
+            )
             ..onConfirmAction(actionName, () {
                 popBack();
                 onConfirmAction?.call();
@@ -130,7 +149,13 @@ mixin MessageDialogActionMixin {
                 popBack();
                 onConfirmAction?.call();
               })
-              ..onCancelButtonAction(hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '', () => popBack())
+              ..onCancelButtonAction(
+                  hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+                  () {
+                    popBack();
+                    onCancelAction?.call();
+                  }
+              )
               ..onCloseButtonAction(() => popBack()))
             .build()
           )

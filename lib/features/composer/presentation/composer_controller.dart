@@ -936,6 +936,10 @@ class ComposerController extends BaseController {
         uploadController.clearInlineFileUploaded();
         _closeComposerAction(result: sendingEmailArguments);
       },
+      onCancelAction: () {
+        uploadController.clearInlineFileUploaded();
+        _closeComposerAction();
+      },
       title: AppLocalizations.of(currentContext!).youAreInOfflineMode,
       icon: SvgPicture.asset(_imagePaths.icDialogOfflineMode),
       alignCenter: true,
