@@ -51,6 +51,7 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upload_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -872,29 +873,99 @@ class ComposerController extends BaseController {
         ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)
         : null;
 
-      final sendingEmailArguments = SendingEmailArguments(
-        session,
-        accountId,
-        emailRequest,
-        mailboxRequest,
-        sendingEmailActionType: arguments.sendingEmail != null
-          ? SendingEmailActionType.edit
-          : SendingEmailActionType.create,
-      );
-      uploadController.clearInlineFileUploaded();
-
-      if (PlatformInfo.isWeb) {
-        closeComposerWeb(result: sendingEmailArguments);
+      if (PlatformInfo.isMobile && !networkConnectionController.isNetworkConnectionAvailable()) {
+        switch(arguments.sendingEmailActionType) {
+          case SendingEmailActionType.create:
+            _showConfirmDialogStoreSendingEmail(
+              SendingEmailArguments(
+                session,
+                accountId,
+                emailRequest,
+                mailboxRequest,
+                actionMode: ComposeActionMode.pushQueue
+              )
+            );
+            break;
+          case SendingEmailActionType.edit:
+            uploadController.clearInlineFileUploaded();
+            _closeComposerAction(
+              result: SendingEmailArguments(
+                session,
+                accountId,
+                emailRequest,
+                mailboxRequest,
+                actionMode: ComposeActionMode.editQueue
+              )
+            );
+            break;
+          default:
+            uploadController.clearInlineFileUploaded();
+            _closeComposerAction(
+              result: SendingEmailArguments(
+                session,
+                accountId,
+                emailRequest,
+                mailboxRequest,
+              )
+            );
+        }
       } else {
-        popBack(result: sendingEmailArguments);
+        uploadController.clearInlineFileUploaded();
+        _closeComposerAction(
+          result: SendingEmailArguments(
+            session,
+            accountId,
+            emailRequest,
+            mailboxRequest,
+          )
+        );
       }
     } else {
-      if (PlatformInfo.isWeb) {
-        closeComposerWeb();
-      } else {
-        popBack();
-      }
+      logError('ComposerController::_handleSendMessages: arguments/accountId/userProfile/session is NULL');
+      uploadController.clearInlineFileUploaded();
+      _closeComposerAction();
     }
+  }
+
+  void _showConfirmDialogStoreSendingEmail(SendingEmailArguments sendingEmailArguments) {
+    showConfirmDialogAction(
+      currentContext!,
+      '',
+      AppLocalizations.of(currentContext!).proceed,
+      onConfirmAction: () {
+        uploadController.clearInlineFileUploaded();
+        _closeComposerAction(result: sendingEmailArguments);
+      },
+      title: AppLocalizations.of(currentContext!).youAreInOfflineMode,
+      icon: SvgPicture.asset(_imagePaths.icDialogOfflineMode),
+      alignCenter: true,
+      messageStyle: const TextStyle(
+        color: AppColor.colorTitleSendingItem,
+        fontSize: 15,
+        fontWeight: FontWeight.normal
+      ),
+      listTextSpan: [
+        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailFirst),
+        TextSpan(
+          text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailSecond,
+          style: const TextStyle(
+            color: AppColor.colorTitleSendingItem,
+            fontSize: 15,
+            fontWeight: FontWeight.w600
+          ),
+        ),
+        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailThird),
+        TextSpan(
+          text: AppLocalizations.of(currentContext!).sendingQueue,
+          style: const TextStyle(
+            color: AppColor.colorTitleSendingItem,
+            fontSize: 15,
+            fontWeight: FontWeight.w600
+          ),
+        ),
+        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailTail)
+      ]
+    );
   }
 
   void _checkContactPermission() async {
@@ -1369,7 +1440,15 @@ class ComposerController extends BaseController {
     FocusScope.of(context).unfocus();
   }
 
-  void closeComposerWeb({dynamic result}) {
+  void _closeComposerAction({dynamic result}) {
+    if (PlatformInfo.isWeb) {
+      _closeComposerWeb(result: result);
+    } else {
+      popBack(result: result);
+    }
+  }
+
+  void _closeComposerWeb({dynamic result}) {
     FocusManager.instance.primaryFocus?.unfocus();
     mailboxDashBoardController.closeComposerOverlay(result: result);
   }
