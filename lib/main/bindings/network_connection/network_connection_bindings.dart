@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:get/get.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
 
 class NetWorkConnectionBindings extends Bindings {
@@ -10,6 +11,7 @@ class NetWorkConnectionBindings extends Bindings {
   void dependencies() {
     Get.put(NetworkConnectionController(
       Get.find<Connectivity>(),
+      Get.find<InternetConnectionChecker>(),
       Get.find<ImagePaths>(),
       Get.find<AppToast>(),
     ));
