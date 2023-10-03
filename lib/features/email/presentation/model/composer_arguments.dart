@@ -5,6 +5,7 @@ import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
 class ComposerArguments extends RouterArguments {
@@ -130,6 +131,10 @@ class ComposerArguments extends RouterArguments {
     messageId: messageId,
     references: references,
   );
+
+  SendingEmailActionType get sendingEmailActionType => sendingEmail != null
+    ? SendingEmailActionType.edit
+    : SendingEmailActionType.create;
 
   @override
   List<Object?> get props => [
