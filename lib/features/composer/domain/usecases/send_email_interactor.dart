@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 
 class SendEmailInteractor {
   final EmailRepository _emailRepository;
@@ -19,7 +20,10 @@ class SendEmailInteractor {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
+    {
+      CreateNewMailboxRequest? mailboxRequest,
+      SendingEmailActionType? sendingEmailActionType
+    }
   ) async* {
     try {
       yield Right<Failure, Success>(SendEmailLoading());
@@ -51,10 +55,23 @@ class SendEmailInteractor {
           )
         );
       } else {
-        yield Left<Failure, Success>(SendEmailFailure(null));
+        yield Left<Failure, Success>(SendEmailFailure(
+          session: session,
+          accountId: accountId,
+          emailRequest: emailRequest,
+          mailboxRequest: mailboxRequest,
+          sendingEmailActionType: sendingEmailActionType,
+        ));
       }
     } catch (e) {
-      yield Left<Failure, Success>(SendEmailFailure(e));
+      yield Left<Failure, Success>(SendEmailFailure(
+        exception: e,
+        session: session,
+        accountId: accountId,
+        emailRequest: emailRequest,
+        mailboxRequest: mailboxRequest,
+        sendingEmailActionType: sendingEmailActionType,
+      ));
     }
   }
 }
