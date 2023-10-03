@@ -7,9 +7,18 @@ part 'rule_action.g.dart';
 @JsonSerializable(explicitToJson: true)
 class RuleAction with EquatableMixin {
   final RuleAppendIn appendIn;
+  @JsonKey(includeIfNull: false)
+  final bool? markAsSeen;
+  @JsonKey(includeIfNull: false)
+  final bool? markAsImportant;
+  @JsonKey(includeIfNull: false)
+  final bool? reject;
 
   RuleAction({
     required this.appendIn,
+    this.markAsSeen,
+    this.markAsImportant,
+    this.reject,
   });
 
   @override
