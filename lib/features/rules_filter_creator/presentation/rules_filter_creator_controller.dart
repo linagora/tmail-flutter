@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_action.dart';
@@ -209,8 +210,46 @@ class RulesFilterCreatorController extends BaseMailboxController {
             );
           }
           conditionCombinerType.value = currentRule.conditionCombiner;
-          
-          emailRuleFilterActionSelected.value = EmailRuleFilterAction.moveMessage;
+          RuleAction currentAction = RuleAction(
+            appendIn: _currentTMailRule!.action.appendIn,
+            markAsImportant: _currentTMailRule!.action.markAsImportant,
+            markAsSeen: _currentTMailRule!.action.markAsSeen,
+            reject: _currentTMailRule!.action.reject,
+          );
+          if (currentAction.reject == true) {
+            EmailRuleFilterAction? action = EmailRuleFilterAction.rejectIt;
+            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
+            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
+          }
+          if (currentAction.markAsSeen == true) {
+            EmailRuleFilterAction? action = EmailRuleFilterAction.maskAsSeen;
+            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
+            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
+          }
+          if (currentAction.markAsImportant == true) {
+            EmailRuleFilterAction? action = EmailRuleFilterAction.startIt;
+            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
+            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
+          }
+          if (currentAction.appendIn.mailboxIds.isNotEmpty == true) {
+            for (var mailboxId in currentAction.appendIn.mailboxIds) {
+              if (mailboxId == findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id) {
+                EmailRuleFilterAction? action = EmailRuleFilterAction.markAsSpam;
+                RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
+                listEmailRuleFilterActionSelected.add(newRuleFilterAction);
+              } else {
+                EmailRuleFilterAction? action = EmailRuleFilterAction.moveMessage;
+                RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
+                listEmailRuleFilterActionSelected.add(newRuleFilterAction);
+              }
+            }
+          }
+
+          if (listEmailRuleFilterActionSelected.length >= maxCountAction) {
+            isShowAddAction.value = false;
+          } else {
+            isShowAddAction.value = true;
+          }
           
           _newRuleName = _currentTMailRule!.name;
           _setValueInputField(inputRuleNameController, _newRuleName ?? '');
@@ -229,9 +268,22 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   void _setUpMailboxSelected() {
     if (_currentTMailRule != null) {
-      final mailboxIdOfRule = _currentTMailRule!.action.appendIn.mailboxIds.first;
-      final mailboxNode = findMailboxNodeById(mailboxIdOfRule);
-      mailboxSelected.value = mailboxNode?.item;
+      final mailboxIdsOfRule = _currentTMailRule!.action.appendIn.mailboxIds;
+      for (var mailboxId in mailboxIdsOfRule) {
+        if (mailboxId != findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id) {
+          final mailboxNode = findMailboxNodeById(mailboxId);
+          if (mailboxNode != null) {
+            mailboxSelected.value = mailboxNode.item;
+          }
+        }
+      }
+      RuleFilterActionArguments newRuleFilterAction = MoveMessageActionArguments(mailbox: mailboxSelected.value);
+      for (var filterAction in listEmailRuleFilterActionSelected) {
+        if (filterAction is MoveMessageActionArguments) {
+          listEmailRuleFilterActionSelected[listEmailRuleFilterActionSelected.indexOf(filterAction)] = newRuleFilterAction;
+        }
+      }
+      listEmailRuleFilterActionSelected.refresh();
     }
   }
 
@@ -423,14 +475,45 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
     late EquatableMixin ruleFilterRequest;
 
+    List<MailboxId> mailboxIds = [];
+    bool markAsSeen = false;
+    bool markAsImportant = false;
+    bool reject = false;
+
+    for (var ruleFilterAction in listEmailRuleFilterActionSelected) {
+      if (ruleFilterAction is MoveMessageActionArguments) {
+        mailboxIds.add(ruleFilterAction.mailbox!.id);
+      }
+      if (ruleFilterAction.action is MarAsSpamActionArguments) {
+        MailboxId? spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
+        if (spamMailboxId != null) {
+          mailboxIds.add(spamMailboxId);
+        }
+      }
+      if (ruleFilterAction is MarkAsSeenActionArguments) {
+        markAsSeen = true;
+      }
+      if (ruleFilterAction is StarItActionArguments) {
+        markAsImportant = true;
+      }
+      if (ruleFilterAction is RejectItActionArguments) {
+        reject = true;
+        markAsSeen = false;
+        markAsImportant = false;
+      }
+    }
+
     if (actionType.value == CreatorActionType.create) {
       final newTMailRule = TMailRule(
         id: _currentTMailRule?.id,
         name: _newRuleName!,
         action: RuleAction(
           appendIn: RuleAppendIn(
-            mailboxIds: [mailboxSelected.value!.id]
-          )
+            mailboxIds: mailboxIds
+          ),
+          markAsSeen: markAsSeen,
+          markAsImportant: markAsImportant,
+          reject: reject,
         ),
         conditionGroup: RuleConditionGroup(
           conditionCombiner: conditionCombinerType.value!,
@@ -444,8 +527,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
         name: _newRuleName!,
         action: RuleAction(
           appendIn: RuleAppendIn(
-            mailboxIds: [mailboxSelected.value!.id]
-          )
+            mailboxIds: mailboxIds
+          ),
+          markAsSeen: markAsSeen,
+          markAsImportant: markAsImportant,
+          reject: reject,
         ),
         conditionGroup: RuleConditionGroup(
           conditionCombiner: conditionCombinerType.value!,
