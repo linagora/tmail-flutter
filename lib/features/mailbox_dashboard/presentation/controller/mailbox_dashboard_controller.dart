@@ -123,6 +123,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -358,6 +359,22 @@ class MailboxDashBoardController extends ReloadableController {
       _markAsReadMailboxFailure(failure);
     } else if (failure is GetEmailByIdFailure) {
       _handleGetEmailDetailedFailed(failure);
+    }
+  }
+
+  @override
+  void handleExceptionAction({Failure? failure, Exception? exception}) {
+    super.handleExceptionAction(failure: failure, exception: exception);
+    if (PlatformInfo.isMobile &&
+        failure is SendEmailFailure &&
+        exception is NoNetworkError) {
+      _handleSendingEmailWhenNoNetwork(
+        failure.session,
+        failure.accountId,
+        failure.emailRequest,
+        failure.mailboxRequest,
+        failure.sendingEmailActionType
+      );
     }
   }
 
@@ -1796,30 +1813,22 @@ class MailboxDashBoardController extends ReloadableController {
     CreateNewMailboxRequest? mailboxRequest,
     SendingEmailActionType sendingEmailActionType
   ) {
-    if (PlatformInfo.isMobile) {
-      if (networkConnectionController.isNetworkConnectionAvailable()) {
-        consumeState(_sendEmailInteractor.execute(
-          session,
-          accountId,
-          emailRequest,
-          mailboxRequest: mailboxRequest
-        ));
-      } else {
-        _handleSendingEmailWhenNoNetwork(
-          session,
-          accountId,
-          emailRequest,
-          mailboxRequest,
-          sendingEmailActionType
-        );
-      }
-    } else {
+    if (PlatformInfo.isWeb ||
+        (PlatformInfo.isMobile && networkConnectionController.isNetworkConnectionAvailable())) {
       consumeState(_sendEmailInteractor.execute(
         session,
         accountId,
         emailRequest,
         mailboxRequest: mailboxRequest
       ));
+    } else {
+      _handleSendingEmailWhenNoNetwork(
+        session,
+        accountId,
+        emailRequest,
+        mailboxRequest,
+        sendingEmailActionType
+      );
     }
   }
 
@@ -1828,7 +1837,7 @@ class MailboxDashBoardController extends ReloadableController {
     AccountId accountId,
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest,
-    SendingEmailActionType sendingEmailActionType
+    SendingEmailActionType? sendingEmailActionType
   ) {
     switch(sendingEmailActionType) {
       case SendingEmailActionType.create:
@@ -1837,8 +1846,7 @@ class MailboxDashBoardController extends ReloadableController {
       case SendingEmailActionType.edit:
         _handleUpdateSendingEmail(session, accountId, emailRequest, mailboxRequest);
         break;
-      case SendingEmailActionType.delete:
-      case SendingEmailActionType.resend:
+      default:
         break;
     }
   }
