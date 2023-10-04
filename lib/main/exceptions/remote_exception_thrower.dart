@@ -6,7 +6,8 @@ import 'package:get/get_connect/http/src/status/http_status.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
-import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
