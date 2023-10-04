@@ -58,7 +58,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(A.SuggestionEmailState, B._Enum);
     _mixin(A._SuggestionEmailAddress_Object_EquatableMixin, B.EquatableMixin);
   })();
-  B._Universe_addRules(init.typeUniverse, JSON.parse('{"GradientCircleAvatarIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SuggestionEmailAddress":{"EquatableMixin":[]},"SuggestionEmailState":{"Enum":[]}}'));
+  B._Universe_addRules(init.typeUniverse, JSON.parse('{"GradientCircleAvatarIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SuggestionEmailAddress":{"EquatableMixin":[]},"SuggestionEmailState":{"_Enum":[],"Enum":[]}}'));
   (function constants() {
     D.Color_4291217096 = new B.Color(4291217096);
     D.Divider_6xV = new B.Divider(1, null, null, null, D.Color_4291217096, null);
@@ -68,4 +68,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["yAT2r/ASFJIKFBdgdBQ0LmbjTbs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["4YgeyT0wjjzRyv2ZZGz1p1AE+HA="] = $__dart_deferred_initializers__.current
