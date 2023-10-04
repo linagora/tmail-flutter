@@ -119,22 +119,9 @@ extension EmailExtension on Email {
     return emailContents ?? [];
   }
 
-  List<Attachment> get allAttachments {
-    if (attachments != null) {
-      return attachments!
-        .where((element) => element.disposition != null)
-        .map((item) => item.toAttachment())
-        .toList();
-    }
-    return [];
-  }
+  List<Attachment> get allAttachments => attachments?.map((item) => item.toAttachment()).toList() ?? [];
 
-  List<Attachment> get attachmentsWithCid {
-    return attachments
-      ?.where((element) => element.disposition != null && element.cid?.isNotEmpty == true)
-      .map((item) => item.toAttachment())
-      .toList() ?? [];
-  }
+  List<Attachment> get attachmentsWithCid => allAttachments.where((attachment) => attachment.hasCid()).toList();
 
   PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final newMailboxIds = mailboxIds;

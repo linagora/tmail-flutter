@@ -5,7 +5,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 
 abstract class CalendarEventRepository {
-  Future<List<CalendarEvent>> parse(AccountId accountId, Set<Id> blobIds);
+  Future<Map<Id, List<CalendarEvent>>> parse(AccountId accountId, Set<Id> blobIds);
 
   Future<List<EventAction>> getListEventAction(String emailContents);
 }

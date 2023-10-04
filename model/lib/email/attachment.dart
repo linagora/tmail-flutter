@@ -9,6 +9,9 @@ import 'package:uri/uri.dart';
 
 class Attachment with EquatableMixin {
 
+  static const String eventICSSubtype = 'ics';
+  static const String eventCalendarSubtype = 'calendar';
+
   final PartId? partId;
   final Id? blobId;
   final UnsignedInt? size;
@@ -49,8 +52,6 @@ class Attachment with EquatableMixin {
       return '${blobId?.value}.${type?.subtype}';
     }
   }
-
-  bool get isCalendarEvent => type?.subtype == 'ics' || type?.subtype == 'calendar';
 
   @override
   List<Object?> get props => [partId, blobId, size, name, type, cid, disposition];

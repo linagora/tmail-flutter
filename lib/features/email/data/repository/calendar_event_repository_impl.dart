@@ -14,7 +14,7 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   CalendarEventRepositoryImpl(this._calendarEventDataSource);
 
   @override
-  Future<List<CalendarEvent>> parse(AccountId accountId, Set<Id> blobIds) {
+  Future<Map<Id, List<CalendarEvent>>> parse(AccountId accountId, Set<Id> blobIds) {
     return _calendarEventDataSource[DataSourceType.network]!.parse(accountId, blobIds);
   }
 

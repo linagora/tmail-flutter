@@ -16,7 +16,7 @@ class LocalCalendarEventDataSourceImpl extends CalendarEventDataSource {
   LocalCalendarEventDataSourceImpl(this._htmlAnalyzer, this._exceptionThrower);
 
   @override
-  Future<List<CalendarEvent>> parse(AccountId accountId, Set<Id> blobIds) {
+  Future<Map<Id, List<CalendarEvent>>> parse(AccountId accountId, Set<Id> blobIds) {
     throw UnimplementedError();
   }
 

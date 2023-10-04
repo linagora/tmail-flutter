@@ -8,9 +8,14 @@ import 'package:tmail_ui_user/features/offline_mode/model/attachment_hive_cache.
 extension ListAttachmentsExtension on List<Attachment> {
   List<AttachmentHiveCache> toHiveCache() => map((attachment) => attachment.toHiveCache()).toList();
 
-  Set<Attachment> get calendarAttachments => where((attachment) => attachment.isCalendarEvent).toSet();
+  Set<Id> get calendarEventBlobIds => subtypeICSBlobIds.isEmpty ? subtypeCalendarBlobIds : subtypeICSBlobIds;
 
-  Set<Id> get calendarEventBlobIds => calendarAttachments
+  Set<Id> get subtypeICSBlobIds => where((attachment) => attachment.type?.subtype == Attachment.eventICSSubtype)
+    .map((attachment) => attachment.blobId)
+    .whereNotNull()
+    .toSet();
+
+  Set<Id> get subtypeCalendarBlobIds => where((attachment) => attachment.type?.subtype == Attachment.eventCalendarSubtype)
     .map((attachment) => attachment.blobId)
     .whereNotNull()
     .toSet();
