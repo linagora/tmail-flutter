@@ -13,15 +13,9 @@ extension ListAttachmentExtension on List<Attachment> {
     return 0;
   }
 
-  List<Attachment> get listAttachmentsDisplayedOutSide {
-    return where((attachment) => attachment.disposition == ContentDisposition.attachment || attachment.noCid())
-        .toList();
-  }
+  List<Attachment> get listAttachmentsDisplayedOutSide => where((attachment) => attachment.noCid()).toList();
 
-  List<Attachment> get listAttachmentsDisplayedInContent {
-    return where((attachment) => attachment.hasCid())
-      .toList();
-  }
+  List<Attachment> get listAttachmentsDisplayedInContent => where((attachment) => attachment.hasCid()).toList();
 
   Map<String, String> toMapCidImageDownloadUrl({
     required AccountId accountId,

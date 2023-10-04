@@ -15,7 +15,7 @@ class CalendarEventAPI {
 
   CalendarEventAPI(this._httpClient);
 
-  Future<List<CalendarEvent>> parse(AccountId accountId, Set<Id> blobIds) async {
+  Future<Map<Id, List<CalendarEvent>>> parse(AccountId accountId, Set<Id> blobIds) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final calendarEventParseMethod = CalendarEventParseMethod(accountId, blobIds);
     final calendarEventParseInvocation = requestBuilder.invocation(calendarEventParseMethod);
@@ -29,7 +29,7 @@ class CalendarEventAPI {
       CalendarEventParseResponse.deserialize);
 
     if (calendarEventParseResponse?.parsed?.isNotEmpty == true) {
-      return calendarEventParseResponse!.parsed!.values.toList();
+      return calendarEventParseResponse!.parsed!;
     } else if (calendarEventParseResponse?.notParsable?.isNotEmpty == true) {
       throw NotParsableCalendarEventException();
     } else if (calendarEventParseResponse?.notFound?.isNotEmpty == true) {
