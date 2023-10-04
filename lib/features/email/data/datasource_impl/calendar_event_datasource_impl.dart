@@ -15,7 +15,7 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
   CalendarEventDataSourceImpl(this._calendarEventAPI, this._exceptionThrower);
 
   @override
-  Future<List<CalendarEvent>> parse(AccountId accountId, Set<Id> blobIds) {
+  Future<Map<Id, List<CalendarEvent>>> parse(AccountId accountId, Set<Id> blobIds) {
     return Future.sync(() async {
       return await _calendarEventAPI.parse(accountId, blobIds);
     }).catchError(_exceptionThrower.throwException);
