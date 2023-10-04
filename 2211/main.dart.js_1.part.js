@@ -683,7 +683,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 301
+    $signature: 241
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -707,7 +707,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 73
+    $signature: 82
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -816,4 +816,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["xl3+UtZB7L1E6cGa8iG3bodTW+s="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["dbsRB2m61U3gMq42fCMFHSJJrQE="] = $__dart_deferred_initializers__.current
