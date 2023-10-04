@@ -1,38 +1,29 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class NetworkConnectionController extends GetxController {
+  static const Duration _timeoutInternetConnection = Duration(milliseconds: 5000);
+  static const Duration _timeIntervalInternetConnection = Duration(milliseconds: 5000);
+
   final _connectivityResult = Rxn<ConnectivityResult>();
   final _internetConnectionStatus = Rxn<InternetConnectionStatus>();
 
   final Connectivity _connectivity;
-  final InternetConnectionChecker _internetConnectionChecker;
-  final ImagePaths _imagePaths;
-  final AppToast _appToast;
 
-  bool _isEnableShowToastDisconnection = true;
+  final _internetConnectionChecker = InternetConnectionChecker.createInstance(
+    checkTimeout: _timeoutInternetConnection,
+    checkInterval: _timeIntervalInternetConnection
+  );
 
   StreamSubscription<ConnectivityResult>? _subscription;
   StreamSubscription<InternetConnectionStatus>? _internetSubscription;
 
-  NetworkConnectionController(
-    this._connectivity,
-    this._internetConnectionChecker,
-    this._imagePaths,
-    this._appToast,
-  );
+  NetworkConnectionController(this._connectivity);
 
   @override
   void onInit() {
@@ -58,8 +49,7 @@ class NetworkConnectionController extends GetxController {
   void _getCurrentNetworkConnectionState() async {
     final listConnectionResult = await Future.wait([
       _connectivity.checkConnectivity(),
-      if (PlatformInfo.isMobile)
-        _internetConnectionChecker.connectionStatus,
+      _internetConnectionChecker.connectionStatus,
     ]);
     log('NetworkConnectionController::_getCurrentNetworkConnectionState():listConnectionResult: $listConnectionResult');
 
@@ -67,11 +57,9 @@ class NetworkConnectionController extends GetxController {
       _setNetworkConnectivityState(listConnectionResult[0] as ConnectivityResult);
     }
 
-    if (PlatformInfo.isMobile && listConnectionResult[1] is InternetConnectionStatus) {
+    if (listConnectionResult[1] is InternetConnectionStatus) {
       _setInternetConnectivityStatus(listConnectionResult[1] as InternetConnectionStatus);
     }
-
-    _handleNetworkConnectionState();
   }
 
   void _listenNetworkConnectionChanged() {
@@ -79,24 +67,21 @@ class NetworkConnectionController extends GetxController {
       (result) {
         log('NetworkConnectionController::_listenNetworkConnectionChanged()::onConnectivityChanged: $result');
         _setNetworkConnectivityState(result);
-        _handleNetworkConnectionState();
       },
       onError: (error, stackTrace) {
         logError('NetworkConnectionController::_listenNetworkConnectionChanged()::onConnectivityChanged:error: $error | stackTrace: $stackTrace');
       }
     );
 
-    if (PlatformInfo.isMobile) {
-      _internetSubscription = _internetConnectionChecker.onStatusChange.listen(
-        (status) {
-          log('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange: $status');
-          _setInternetConnectivityStatus(status);
-        },
-        onError: (error, stackTrace) {
-          logError('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange:error: $error | stackTrace: $stackTrace');
-        }
-      );
-    }
+    _internetSubscription = _internetConnectionChecker.onStatusChange.listen(
+      (status) {
+        log('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange: $status');
+        _setInternetConnectivityStatus(status);
+      },
+      onError: (error, stackTrace) {
+        logError('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange:error: $error | stackTrace: $stackTrace');
+      }
+    );
   }
 
   void _setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
@@ -108,39 +93,7 @@ class NetworkConnectionController extends GetxController {
   }
 
   bool isNetworkConnectionAvailable() {
-    if (PlatformInfo.isWeb) {
-      return _connectivityResult.value != ConnectivityResult.none;
-    } else {
-      return _connectivityResult.value != ConnectivityResult.none &&
-        _internetConnectionStatus.value == InternetConnectionStatus.connected;
-    }
-  }
-
-  void _handleNetworkConnectionState() {
-    if (PlatformInfo.isWeb) {
-      if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {
-        _showToastLostConnection();
-      } else {
-        ToastView.dismiss();
-      }
-    }
-  }
-
-  void _showToastLostConnection() {
-    if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).no_internet_connection,
-        actionName: AppLocalizations.of(currentContext!).skip,
-        onActionClick: () {
-          _isEnableShowToastDisconnection = false;
-          ToastView.dismiss();
-        },
-        leadingSVGIcon: _imagePaths.icNotConnection,
-        backgroundColor: AppColor.textFieldErrorBorderColor,
-        textColor: Colors.white,
-        infinityToast: true,
-      );
-    }
+    return _connectivityResult.value != ConnectivityResult.none &&
+      _internetConnectionStatus.value == InternetConnectionStatus.connected;
   }
 }
