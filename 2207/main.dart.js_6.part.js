@@ -3730,7 +3730,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(str) {
       return A.CapitalizeExtension_get_inCaps(str);
     },
-    $signature: 34
+    $signature: 33
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
@@ -3769,7 +3769,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 238
+    $signature: 297
   };
   B._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -3851,7 +3851,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 210
+    $signature: 182
   };
   B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -3877,7 +3877,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 385
+    $signature: 502
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -3900,7 +3900,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 184
+    $signature: 187
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -3918,7 +3918,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1534
+    $signature: 1531
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -3979,7 +3979,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1535
+    $signature: 1532
   };
   B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -4005,7 +4005,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1536
+    $signature: 1533
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -4040,7 +4040,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._paintCheck$3(context.get$canvas(context), offset.$add(0, checkOffset), t3 * 0.75);
       }
     },
-    $signature: 25
+    $signature: 26
   };
   B._RenderChip__paintChild_closure.prototype = {
     call$2(context, offset) {
@@ -4049,7 +4049,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       context.paintChild$2(t1, type$.BoxParentData._as(t2).offset.$add(0, offset));
     },
-    $signature: 25
+    $signature: 26
   };
   B.ListTile_build_resolveColor.prototype = {
     call$4(explicitColor, selectedColor, enabledColor, disabledColor) {
@@ -4058,7 +4058,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1537
+    $signature: 1534
   };
   B._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -4069,7 +4069,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.context.paintChild$2(child, type$.BoxParentData._as(t1).offset.$add(0, this.offset));
       }
     },
-    $signature: 327
+    $signature: 364
   };
   B._RenderListTile_hitTestChildren_closure.prototype = {
     call$2(result, transformed) {
@@ -4108,7 +4108,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1538
+    $signature: 1535
   };
   B._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -4134,7 +4134,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new B._StreamBuilderBaseState__subscribe__closure(t1, error, stackTrace));
     },
-    $signature: 100
+    $signature: 102
   };
   B._StreamBuilderBaseState__subscribe__closure.prototype = {
     call$0() {
@@ -4211,7 +4211,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 312
+    $signature: 261
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -4321,7 +4321,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 99
+    $signature: 101
   };
   B.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -4333,7 +4333,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$0() {
       $.WidgetsBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B.TagsEditorState__scrollToVisible__closure(this.$this));
     },
-    $signature: 5
+    $signature: 7
   };
   B.TagsEditorState__scrollToVisible__closure.prototype = {
     call$1(_) {
@@ -4364,7 +4364,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 312
+    $signature: 261
   };
   B.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
@@ -4379,7 +4379,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._tag_editor$_updateHighlight$1(t1._tag_editor$_highlightedOptionIndex._change_notifier$_value - 1);
       }
     },
-    $signature: 104
+    $signature: 99
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -4437,33 +4437,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 312
+    $signature: 261
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 548
+    $signature: 538
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 548
+    $signature: 538
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 67
+    $signature: 68
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 67
+    $signature: 68
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -4569,7 +4569,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixinHard(B.__RenderListTile_RenderBox_SlottedContainerRenderObjectMixin, A.SlottedContainerRenderObjectMixin);
     _mixinHard(B.__AnimatedSwitcherState_State_TickerProviderStateMixin, A.TickerProviderStateMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChipSlot":{"_Enum":[],"Enum":[]},"_RawChipState":{"State0":["RawChip"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ChipSlot"},"_RenderChip":{"SlottedContainerRenderObjectMixin":["_ChipSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ChipSlot"},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"_ListTileSlot":{"_Enum":[],"Enum":[]},"ListTileTitleAlignment":{"_Enum":[],"Enum":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ListTileSlot"},"_RenderListTile":{"SlottedContainerRenderObjectMixin":["_ListTileSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ListTileSlot"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChipSlot":{"Enum":[]},"_RawChipState":{"State0":["RawChip"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ChipSlot"},"_RenderChip":{"SlottedContainerRenderObjectMixin":["_ChipSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ChipSlot"},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"_ListTileSlot":{"Enum":[]},"ListTileTitleAlignment":{"Enum":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ListTileSlot"},"_RenderListTile":{"SlottedContainerRenderObjectMixin":["_ListTileSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ListTileSlot"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -4694,4 +4694,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Mvg92uvE8/EANDkw+Cf1pNbYfTs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["h19pzdGcCNQBg56DOaBR4Wg/e4E="] = $__dart_deferred_initializers__.current
