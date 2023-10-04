@@ -964,6 +964,14 @@ class ComposerController extends BaseController {
         final unknownEmailAddress = EmailAddress(word, word);
         return <EmailAddress>[unknownEmailAddress];
       }
+      if (GetUtils.isEmail(word)) {
+        bool isContainsTypedEmail = success.listEmailAddress.any((emailAddress) => emailAddress.email == word);
+        if (!isContainsTypedEmail) {
+          final unknownEmailAddress = EmailAddress(word, word);
+          success.listEmailAddress.insert(0, unknownEmailAddress);
+          return success.listEmailAddress;
+        }
+      }
       return success.listEmailAddress;
     } else {
       return <EmailAddress>[];
