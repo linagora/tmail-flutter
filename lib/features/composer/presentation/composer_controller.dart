@@ -940,9 +940,8 @@ class ComposerController extends BaseController {
         .execute(AutoCompletePattern(word: word, accountId: accountId))
         .then((value) => value.fold(
           (failure) => <EmailAddress>[],
-          (success) => success is GetAutoCompleteSuccess
-              ? success.listEmailAddress
-              : <EmailAddress>[]));
+          (success) => _getAutoCompleteSuccess(success, word)
+        ));
       return listEmailAddress;
     } else {
       if (_getAutoCompleteInteractor == null) {
@@ -952,11 +951,22 @@ class ComposerController extends BaseController {
       final listEmailAddress = await _getAutoCompleteInteractor!
           .execute(AutoCompletePattern(word: word, accountId: accountId))
           .then((value) => value.fold(
-              (failure) => <EmailAddress>[],
-              (success) => success is GetAutoCompleteSuccess
-                  ? success.listEmailAddress
-                  : <EmailAddress>[]));
+            (failure) => <EmailAddress>[],
+            (success) => _getAutoCompleteSuccess(success, word)
+          ));
       return listEmailAddress;
+    }
+  }
+
+  List<EmailAddress> _getAutoCompleteSuccess(Success success, String word) {
+    if (success is GetAutoCompleteSuccess) {
+      if (success.listEmailAddress.isEmpty == true && GetUtils.isEmail(word)) {
+        final unknownEmailAddress = EmailAddress(word, word);
+        return <EmailAddress>[unknownEmailAddress];
+      }
+      return success.listEmailAddress;
+    } else {
+      return <EmailAddress>[];
     }
   }
 
