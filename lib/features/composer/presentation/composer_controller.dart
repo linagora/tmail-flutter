@@ -874,7 +874,7 @@ class ComposerController extends BaseController {
         ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)
         : null;
 
-      if (PlatformInfo.isMobile && !networkConnectionController.isNetworkConnectionAvailable()) {
+      if (PlatformInfo.isAndroid && !networkConnectionController.isNetworkConnectionAvailable()) {
         switch(arguments.sendingEmailActionType) {
           case SendingEmailActionType.create:
             _showConfirmDialogStoreSendingEmail(

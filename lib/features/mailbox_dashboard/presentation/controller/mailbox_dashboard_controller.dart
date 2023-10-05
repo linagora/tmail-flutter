@@ -366,23 +366,25 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     super.handleExceptionAction(failure: failure, exception: exception);
-    if (PlatformInfo.isMobile &&
-        failure is SendEmailFailure &&
-        exception is NoNetworkError) {
-      if (failure.emailRequest.storedSendingId != null) {
-        _handleStoreSendingEmail(
-          failure.session,
-          failure.accountId,
-          failure.emailRequest,
-          failure.mailboxRequest
-        );
-      } else {
-        _handleUpdateSendingEmail(
-          failure.session,
-          failure.accountId,
-          failure.emailRequest,
-          failure.mailboxRequest
-        );
+    if (failure is SendEmailFailure && exception is NoNetworkError) {
+      if (PlatformInfo.isIOS && currentContext != null) {
+        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailure);
+      } else if (PlatformInfo.isAndroid) {
+        if (failure.emailRequest.storedSendingId != null) {
+          _handleStoreSendingEmail(
+            failure.session,
+            failure.accountId,
+            failure.emailRequest,
+            failure.mailboxRequest
+          );
+        } else {
+          _handleUpdateSendingEmail(
+            failure.session,
+            failure.accountId,
+            failure.emailRequest,
+            failure.mailboxRequest
+          );
+        }
       }
     }
   }
