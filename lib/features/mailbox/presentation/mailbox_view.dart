@@ -249,7 +249,7 @@ class MailboxView extends BaseMailboxView {
                     colorFilter: AppColor.colorTextButton.asFilter(),
                     fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).new_mailbox,
-                onTap: () => controller.goToCreateNewMailboxView(context, null)),
+                onTap: () => controller.goToCreateNewMailboxView(context)),
               ]),
             ]),
           ),

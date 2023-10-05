@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
@@ -21,6 +23,7 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
@@ -28,6 +31,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_reque
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -37,6 +41,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_multiple_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
@@ -51,13 +56,18 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:uuid/uuid.dart';
 
 class SearchMailboxController extends BaseMailboxController with MailboxActionHandlerMixin {
 
@@ -67,11 +77,13 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
   final SubscribeMailboxInteractor _subscribeMailboxInteractor;
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
+  final CreateNewMailboxInteractor _createNewMailboxInteractor;
 
   final dashboardController = Get.find<MailboxDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
+  final _uuid = Get.find<Uuid>();
 
   final currentSearchQuery = RxString('');
   final listMailboxSearched = RxList<PresentationMailbox>();
@@ -89,6 +101,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     this._deleteMultipleMailboxInteractor,
     this._subscribeMailboxInteractor,
     this._subscribeMultipleMailboxInteractor,
+    this._createNewMailboxInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
@@ -112,6 +125,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     super.handleFailureViewState(failure);
     if (failure is SearchMailboxFailure) {
       _handleSearchMailboxFailure(failure);
+    } else if (failure is CreateNewMailboxFailure) {
+      _createNewMailboxFailure(failure);
     }
   }
 
@@ -151,6 +166,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       _handleSubscribeMultipleMailboxAllSuccess(success);
     } else if (success is SubscribeMultipleMailboxHasSomeSuccess) {
       _handleSubscribeMultipleMailboxHasSomeSuccess(success);
+    } else if (success is CreateNewMailboxSuccess) {
+      _createNewMailboxSuccess(success);
     }
   }
 
@@ -296,6 +313,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         break;
       case MailboxActions.emptySpam:
         emptySpamAction(context, mailbox, dashboardController);
+        break;
+      case MailboxActions.newSubfolder:
+        goToCreateNewMailboxView(context, parentMailbox: mailbox);
         break;
       default:
         break;
@@ -619,6 +639,60 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     if (mailboxContain != null && mailboxIdsDisabled.contains(mailboxContain.id)) {
       dashboardController.clearSelectedEmail();
       dashboardController.dispatchRoute(DashboardRoutes.thread);
+    }
+  }
+
+  void goToCreateNewMailboxView(BuildContext context, {PresentationMailbox? parentMailbox}) async {
+    final accountId = dashboardController.accountId.value;
+    final session = dashboardController.sessionCurrent;
+    if (session != null && accountId != null) {
+      final arguments = MailboxCreatorArguments(
+          accountId,
+          defaultMailboxTree.value,
+          personalMailboxTree.value,
+          teamMailboxesTree.value,
+          dashboardController.sessionCurrent!,
+          parentMailbox
+        );
+
+      final result = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.mailboxCreator, arguments: arguments)
+        : await push(AppRoutes.mailboxCreator, arguments: arguments);
+
+      if (result != null && result is NewMailboxArguments) {
+        final generateCreateId = Id(_uuid.v1());
+        _createNewMailboxAction(session, accountId, CreateNewMailboxRequest(
+          generateCreateId,
+          result.newName,
+          parentId: result.mailboxLocation?.id));
+      }
+    }
+  }
+
+  void _createNewMailboxAction(Session session, AccountId accountId, CreateNewMailboxRequest request) async {
+    consumeState(_createNewMailboxInteractor.execute(session, accountId, request));
+  }
+
+  void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).createFolderSuccessfullyMessage(success.newMailbox.name?.name ?? ''),
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: imagePaths.icFolderMailbox);
+    }
+
+    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
+  }
+
+  void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
+    if (currentOverlayContext != null && currentContext != null) {
+      final exception = failure.exception;
+      var messageError = AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+      if (exception is ErrorMethodResponse) {
+        messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+      }
+      _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
   }
 
