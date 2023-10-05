@@ -49,113 +49,116 @@ class ThreadView extends GetWidget<ThreadController>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
-        body: Portal(
-          child: Row(children: [
-            if (supportVerticalDivider(context))
-              const VerticalDivider(color: AppColor.colorDividerVertical, width: 1),
-            Expanded(child: SafeArea(
-                right: _responsiveUtils.isLandscapeMobile(context),
-                left: _responsiveUtils.isLandscapeMobile(context),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (!_responsiveUtils.isWebDesktop(context))
-                        ... [
-                          Obx(() {
-                            return AppBarThreadWidget(
-                              mailboxSelected: controller.currentMailbox,
-                              listEmailSelected: controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
-                              selectMode: controller.mailboxDashBoardController.currentSelectMode.value,
-                              filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
-                              openMailboxAction: controller.openMailboxLeftMenu,
-                              cancelEditThreadAction: controller.cancelSelectEmail,
-                              editThreadAction: controller.enableSelectionEmail,
-                              emailSelectionAction: (actionType, selectionEmail) {
-                                return controller.pressEmailSelectionAction(
-                                  context,
-                                  actionType,
-                                  selectionEmail
-                                );
-                              },
-                              onContextMenuFilterEmailAction: _responsiveUtils.isScreenWithShortestSide(context)
-                                ? (filterOption) => controller.openContextMenuAction(
-                                    context,
-                                    _filterMessagesCupertinoActionTile(context, filterOption)
-                                  )
-                                : null,
-                              onPopupMenuFilterEmailAction: !_responsiveUtils.isScreenWithShortestSide(context)
-                                ? (filterOption, position) => controller.openPopupMenuAction(
-                                    context,
-                                    position,
-                                    popupMenuFilterEmailActionTile(
-                                      context,
-                                      filterOption,
-                                      (option) => controller.filterMessagesAction(context, option)
-                                    )
-                                  )
-                                : null
-                            );
-                          }),
-                          if (!PlatformInfo.isWeb)
+    return WillPopScope(
+      onWillPop: () => controller.backButtonPressedCallbackAction(context),
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: Colors.white,
+          body: Portal(
+            child: Row(children: [
+              if (supportVerticalDivider(context))
+                const VerticalDivider(color: AppColor.colorDividerVertical, width: 1),
+              Expanded(child: SafeArea(
+                  right: _responsiveUtils.isLandscapeMobile(context),
+                  left: _responsiveUtils.isLandscapeMobile(context),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!_responsiveUtils.isWebDesktop(context))
+                          ... [
                             Obx(() {
-                              if (!controller.networkConnectionController.isNetworkConnectionAvailable()) {
-                                return const Padding(
-                                  padding: EdgeInsetsDirectional.only(bottom: 8),
-                                  child: NetworkConnectionBannerWidget());
-                              } else {
-                                return const SizedBox.shrink();
-                              }
+                              return AppBarThreadWidget(
+                                mailboxSelected: controller.currentMailbox,
+                                listEmailSelected: controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
+                                selectMode: controller.mailboxDashBoardController.currentSelectMode.value,
+                                filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
+                                openMailboxAction: controller.openMailboxLeftMenu,
+                                cancelEditThreadAction: controller.cancelSelectEmail,
+                                editThreadAction: controller.enableSelectionEmail,
+                                emailSelectionAction: (actionType, selectionEmail) {
+                                  return controller.pressEmailSelectionAction(
+                                    context,
+                                    actionType,
+                                    selectionEmail
+                                  );
+                                },
+                                onContextMenuFilterEmailAction: _responsiveUtils.isScreenWithShortestSide(context)
+                                  ? (filterOption) => controller.openContextMenuAction(
+                                      context,
+                                      _filterMessagesCupertinoActionTile(context, filterOption)
+                                    )
+                                  : null,
+                                onPopupMenuFilterEmailAction: !_responsiveUtils.isScreenWithShortestSide(context)
+                                  ? (filterOption, position) => controller.openPopupMenuAction(
+                                      context,
+                                      position,
+                                      popupMenuFilterEmailActionTile(
+                                        context,
+                                        filterOption,
+                                        (option) => controller.filterMessagesAction(context, option)
+                                      )
+                                    )
+                                  : null
+                              );
                             }),
-                          _buildSearchBarView(context),
-                          const SpamReportBannerWidget(),
-                          const QuotasBannerWidget(),
-                          _buildVacationNotificationMessage(context),
-                        ],
-                      Obx(() {
-                        if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context)) {
-                          return Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: BannerEmptyTrashStyles.mobileMargin
-                            ),
-                            child: BannerEmptyTrashWidget(
-                              onTapAction: () => controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all)
-                            ),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      Obx(() {
-                        if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context)) {
-                          return Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: BannerDeleteAllSpamEmailsStyles.mobileMargin
-                            ),
-                            child: BannerDeleteAllSpamEmailsWidget(
-                              onTapAction: () => controller.mailboxDashBoardController.openDialogEmptySpamFolder(context)
-                            ),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      if (!_responsiveUtils.isDesktop(context))
-                        _buildMarkAsMailboxReadLoading(context),
-                      Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
-                      Expanded(child: _buildListEmail(context)),
-                      Obx(() => ThreadViewBottomLoadingBarWidget(viewState: controller.viewState.value)),
-                      _buildListButtonSelectionForMobile(context),
-                    ]
-                )
-            ))
-          ]),
+                            if (!PlatformInfo.isWeb)
+                              Obx(() {
+                                if (!controller.networkConnectionController.isNetworkConnectionAvailable()) {
+                                  return const Padding(
+                                    padding: EdgeInsetsDirectional.only(bottom: 8),
+                                    child: NetworkConnectionBannerWidget());
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                            _buildSearchBarView(context),
+                            const SpamReportBannerWidget(),
+                            const QuotasBannerWidget(),
+                            _buildVacationNotificationMessage(context),
+                          ],
+                        Obx(() {
+                          if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context)) {
+                            return Padding(
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                horizontal: BannerEmptyTrashStyles.mobileMargin
+                              ),
+                              child: BannerEmptyTrashWidget(
+                                onTapAction: () => controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all)
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                        Obx(() {
+                          if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context)) {
+                            return Padding(
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                horizontal: BannerDeleteAllSpamEmailsStyles.mobileMargin
+                              ),
+                              child: BannerDeleteAllSpamEmailsWidget(
+                                onTapAction: () => controller.mailboxDashBoardController.openDialogEmptySpamFolder(context)
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                        if (!_responsiveUtils.isDesktop(context))
+                          _buildMarkAsMailboxReadLoading(context),
+                        Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
+                        Expanded(child: _buildListEmail(context)),
+                        Obx(() => ThreadViewBottomLoadingBarWidget(viewState: controller.viewState.value)),
+                        _buildListButtonSelectionForMobile(context),
+                      ]
+                  )
+              ))
+            ]),
+          ),
+          floatingActionButton: _buildFloatingButtonCompose(context),
         ),
-        floatingActionButton: _buildFloatingButtonCompose(context),
       ),
     );
   }
