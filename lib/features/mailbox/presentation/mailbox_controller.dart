@@ -490,16 +490,18 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     _openMailboxEventController.add(OpenMailboxViewEvent(context, presentationMailboxSelected));
   }
 
-  void goToCreateNewMailboxView(BuildContext context) async {
+  void goToCreateNewMailboxView(BuildContext context, PresentationMailbox? parentMailbox) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (session !=null && accountId != null) {
       final arguments = MailboxCreatorArguments(
-        accountId,
-        defaultMailboxTree.value,
-        personalMailboxTree.value,
-        teamMailboxesTree.value,
-        mailboxDashBoardController.sessionCurrent!);
+          accountId,
+          defaultMailboxTree.value,
+          personalMailboxTree.value,
+          teamMailboxesTree.value,
+          mailboxDashBoardController.sessionCurrent!,
+          parentMailbox
+        );
 
       final result = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.mailboxCreator, arguments: arguments)
@@ -949,6 +951,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         break;
       case MailboxActions.emptySpam:
         emptySpamAction(context, mailbox, mailboxDashBoardController);
+        break;
+      case MailboxActions.newSubfolder:
+        goToCreateNewMailboxView(context, mailbox);
         break;
       default:
         break;
