@@ -3354,4 +3354,11 @@ class AppLocalizations {
       name: 'canceled',
     );
   }
+
+  String get newSubfolder {
+    return Intl.message(
+      'New subfolder',
+      name: 'newSubfolder',
+    );
+  }
 }

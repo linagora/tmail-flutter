@@ -3251,5 +3251,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "newSubfolder": "New subfolder",
+  "@newSubfolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
