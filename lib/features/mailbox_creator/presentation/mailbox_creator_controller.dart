@@ -63,6 +63,9 @@ class MailboxCreatorController extends BaseController {
       teamMailboxesTre = arguments!.teamMailboxesTree;
       accountId = arguments!.accountId;
       _session = arguments!.session;
+      if (arguments!.selectedMailbox != null) {
+        selectedMailbox.value = arguments!.selectedMailbox;
+      }
       _createListMailboxNameAsStringInMailboxLocation();
     }
   }
