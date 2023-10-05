@@ -46,7 +46,8 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
               key: Key(SendingEmailActionType.edit.getButtonKey()),
               text: SendingEmailActionType.edit.getButtonTitle(context),
               icon: imagePaths.icEdit,
-              borderRadius: 8,
+              borderRadius: 0,
+              backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.edit.getButtonIconColor(_isEditable ? ButtonState.enabled : ButtonState.disabled),
               textStyle: TextStyle(
                 fontSize: 12,
@@ -68,7 +69,8 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
               key: Key(SendingEmailActionType.resend.getButtonKey()),
               text: SendingEmailActionType.resend.getButtonTitle(context),
               icon: imagePaths.icRefresh,
-              borderRadius: 8,
+              borderRadius: 0,
+              backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.resend.getButtonIconColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled),
               textStyle: TextStyle(
                 fontSize: 12,
@@ -87,7 +89,8 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
               key: Key(SendingEmailActionType.delete.getButtonKey()),
               text: SendingEmailActionType.delete.getButtonTitle(context),
               icon: imagePaths.icDeleteComposer,
-              borderRadius: 8,
+              borderRadius: 0,
+              backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.delete.getButtonIconColor(ButtonState.enabled),
               textStyle: TextStyle(
                 fontSize: 12,
