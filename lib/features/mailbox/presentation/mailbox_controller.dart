@@ -266,9 +266,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
     ever(mailboxDashBoardController.mailboxUIAction, (action) {
       if (action is SelectMailboxDefaultAction) {
-        if (mailboxDashBoardController.selectedMailbox.value == null) {
-          _switchBackToMailboxDefault();
-        }
+        _switchBackToMailboxDefault();
         mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is RefreshChangeMailboxAction) {
         if (action.newState != currentMailboxState) {

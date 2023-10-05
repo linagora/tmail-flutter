@@ -4,6 +4,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -47,11 +48,11 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   final DeleteSendingEmailInteractor _deleteSendingEmailInteractor;
   final GetStoredSendingEmailInteractor _getStoredSendingEmailInteractor;
 
-  final dashboardController = getBinding<MailboxDashBoardController>();
-  final _networkConnectionController = getBinding<NetworkConnectionController>();
+  final dashboardController = Get.find<MailboxDashBoardController>();
+  final _networkConnectionController = Get.find<NetworkConnectionController>();
   final _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
-  final _imagePaths = getBinding<ImagePaths>();
-  final _appToast = getBinding<AppToast>();
+  final _imagePaths = Get.find<ImagePaths>();
+  final _appToast = Get.find<AppToast>();
 
   final listSendingEmailController = ScrollController();
 
@@ -114,20 +115,18 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     switch(newState) {
       case SendingState.waiting:
       case SendingState.running:
-        if (dashboardController != null) {
-          final listSendingEmails = dashboardController!.listSendingEmails
-            .map((sendingEmail) => sendingEmail.sendingId == sendingId
-              ? sendingEmail.updatingSendingState(newState)
-              : sendingEmail)
-            .toList();
+        final listSendingEmails = dashboardController.listSendingEmails
+          .map((sendingEmail) => sendingEmail.sendingId == sendingId
+            ? sendingEmail.updatingSendingState(newState)
+            : sendingEmail)
+          .toList();
 
-          dashboardController!.listSendingEmails.value = listSendingEmails;
-        }
+        dashboardController.listSendingEmails.value = listSendingEmails;
         break;
       case SendingState.canceled:
       case SendingState.error:
         if (accountId != null && userName != null) {
-          final matchedSendingEmail = dashboardController?.listSendingEmails.firstWhereOrNull((sendingEmail) => sendingEmail.sendingId == sendingId);
+          final matchedSendingEmail = dashboardController.listSendingEmails.firstWhereOrNull((sendingEmail) => sendingEmail.sendingId == sendingId);
           if (matchedSendingEmail != null) {
             _updateSendingEmailAction(
               newSendingEmail: matchedSendingEmail.updatingSendingState(newState),
@@ -148,8 +147,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void handleOnLongPressAction(SendingEmail sendingEmail) {
-    final newListSendingEmail = dashboardController!.listSendingEmails.toggleSelection(sendingEmailSelected: sendingEmail);
-    dashboardController!.listSendingEmails.value = newListSendingEmail;
+    final newListSendingEmail = dashboardController.listSendingEmails.toggleSelection(sendingEmailSelected: sendingEmail);
+    dashboardController.listSendingEmails.value = newListSendingEmail;
 
     selectionState.value = newListSendingEmail.isAllUnSelected()
       ? SelectMode.INACTIVE
@@ -157,31 +156,29 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void toggleSelectionSendingEmail(SendingEmail sendingEmail) {
-    final newListSendingEmail = dashboardController!.listSendingEmails.toggleSelection(sendingEmailSelected: sendingEmail);
-    dashboardController!.listSendingEmails.value = newListSendingEmail;
+    final newListSendingEmail = dashboardController.listSendingEmails.toggleSelection(sendingEmailSelected: sendingEmail);
+    dashboardController.listSendingEmails.value = newListSendingEmail;
 
     selectionState.value = newListSendingEmail.isAllUnSelected()
       ? SelectMode.INACTIVE
       : SelectMode.ACTIVE;
   }
 
-  bool get isAllUnSelected => dashboardController!.listSendingEmails.isAllUnSelected();
+  bool get isAllUnSelected => dashboardController.listSendingEmails.isAllUnSelected();
 
-  bool get isConnectedNetwork => _networkConnectionController?.isNetworkConnectionAvailable() == true;
+  bool get isConnectedNetwork => _networkConnectionController.isNetworkConnectionAvailable() == true;
 
   void refreshSendingQueue() {
-    if (dashboardController != null) {
-      dashboardController!.getAllSendingEmails();
-    }
+    dashboardController.getAllSendingEmails();
   }
 
   void openMailboxMenu() {
-    dashboardController!.openMailboxMenuDrawer();
+    dashboardController.openMailboxMenuDrawer();
   }
 
   void disableSelectionMode() {
-    final newListSendingEmail = dashboardController!.listSendingEmails.unAllSelected();
-    dashboardController!.listSendingEmails.value = newListSendingEmail;
+    final newListSendingEmail = dashboardController.listSendingEmails.unAllSelected();
+    dashboardController.listSendingEmails.value = newListSendingEmail;
     selectionState.value = SelectMode.INACTIVE;
   }
 
@@ -213,7 +210,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
       AppLocalizations.of(context).messageDialogDeleteSendingEmail,
       AppLocalizations.of(currentContext!).delete,
       title: AppLocalizations.of(currentContext!).deleteOfflineEmail,
-      icon: SvgPicture.asset(_imagePaths!.icDeleteDialogRecipients),
+      icon: SvgPicture.asset(_imagePaths.icDeleteDialogRecipients),
       alignCenter: true,
       messageStyle: const TextStyle(
         color: AppColor.colorTitleSendingItem,
@@ -243,8 +240,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   void _handleDeleteListSendingEmail(List<SendingEmail> listSendingEmails) async {
     disableSelectionMode();
 
-    final accountId = dashboardController!.accountId.value;
-    final session = dashboardController!.sessionCurrent;
+    final accountId = dashboardController.accountId.value;
+    final session = dashboardController.sessionCurrent;
     if (accountId != null && session != null) {
       consumeState(
         _deleteMultipleSendingEmailInteractor.execute(
@@ -260,7 +257,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     await Future.wait(success.sendingIds.map(WorkManagerController().cancelByUniqueId));
 
     if (currentContext != null && currentOverlayContext != null) {
-      _appToast!.showToastSuccessMessage(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).messageHaveBeenDeletedSuccessfully);
     }
@@ -270,14 +267,14 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   void _editSendingEmailAction(SendingEmail sendingEmail) {
     disableSelectionMode();
-    dashboardController?.goToComposer(ComposerArguments.fromSendingEmail(sendingEmail));
+    dashboardController.goToComposer(ComposerArguments.fromSendingEmail(sendingEmail));
   }
 
   void _resendSendingEmailAction(List<SendingEmail> listSendingEmails) async {
     disableSelectionMode();
 
-    final accountId = dashboardController!.accountId.value;
-    final session = dashboardController!.sessionCurrent;
+    final accountId = dashboardController.accountId.value;
+    final session = dashboardController.sessionCurrent;
 
     if (accountId != null && session != null) {
       consumeState(
@@ -293,11 +290,11 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   void _handleResendSendingEmailSuccess(List<SendingEmail> newListSendingEmails) async {
     await Future.forEach<SendingEmail>(newListSendingEmails, (sendingEmail) async {
       await WorkManagerController().cancelByUniqueId(sendingEmail.sendingId);
-      dashboardController!.addSendingEmailToSendingQueue(sendingEmail);
+      dashboardController.addSendingEmailToSendingQueue(sendingEmail);
     });
 
     if (currentContext != null && currentOverlayContext != null) {
-      _appToast!.showToastSuccessMessage(
+      _appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).messagesHaveBeenResent);
     }
@@ -335,6 +332,13 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
         sendingState
       )
     );
+  }
+
+  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
+    if (PlatformInfo.isMobile) {
+      dashboardController.openDefaultMailbox();
+    }
+    return false;
   }
 
   @override

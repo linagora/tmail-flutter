@@ -1927,11 +1927,11 @@ class MailboxDashBoardController extends ReloadableController {
     listSendingEmails.value = success.sendingEmails;
 
     if (listSendingEmails.isEmpty && dashboardRoute.value == DashboardRoutes.sendingQueue) {
-      _openDefaultMailbox();
+      openDefaultMailbox();
     }
   }
 
-  void _openDefaultMailbox() {
+  void openDefaultMailbox() {
     dispatchRoute(DashboardRoutes.thread);
     dispatchMailboxUIAction(SelectMailboxDefaultAction());
   }
