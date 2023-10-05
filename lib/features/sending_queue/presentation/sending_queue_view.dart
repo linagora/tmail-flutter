@@ -19,43 +19,46 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Obx(() {
-              return AppBarSendingQueueWidget(
-                listSendingEmailSelected: controller.dashboardController!.listSendingEmails.listSelected(),
-                onOpenMailboxMenu: controller.openMailboxMenu,
-                onBackAction: controller.disableSelectionMode,
-                selectMode: controller.selectionState.value,
-              );
-            }),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
-            Obx(() {
-              if (!controller.isConnectedNetwork) {
-                return const BannerMessageSendingQueueWidget();
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            Expanded(child: _buildListSendingEmails(context)),
-            Obx(() {
-              if (controller.isAllUnSelected) {
-                return const SizedBox.shrink();
-              } else {
-               return BottomBarSendingQueueWidget(
-                  listSendingEmailSelected: controller.dashboardController!.listSendingEmails.listSelected(),
-                  isConnectedNetwork: controller.isConnectedNetwork,
-                  onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
+    return WillPopScope(
+      onWillPop: () => controller.backButtonPressedCallbackAction.call(context),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Obx(() {
+                return AppBarSendingQueueWidget(
+                  listSendingEmailSelected: controller.dashboardController.listSendingEmails.listSelected(),
+                  onOpenMailboxMenu: controller.openMailboxMenu,
+                  onBackAction: controller.disableSelectionMode,
+                  selectMode: controller.selectionState.value,
                 );
-              }
-            }),
-          ]
+              }),
+              const Divider(color: AppColor.colorDividerComposer, height: 1),
+              Obx(() {
+                if (!controller.isConnectedNetwork) {
+                  return const BannerMessageSendingQueueWidget();
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
+              Expanded(child: _buildListSendingEmails(context)),
+              Obx(() {
+                if (controller.isAllUnSelected) {
+                  return const SizedBox.shrink();
+                } else {
+                 return BottomBarSendingQueueWidget(
+                    listSendingEmailSelected: controller.dashboardController.listSendingEmails.listSelected(),
+                    isConnectedNetwork: controller.isConnectedNetwork,
+                    onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
+                  );
+                }
+              }),
+            ]
+          ),
         ),
+        floatingActionButton: _buildFloatingButtonCompose(),
       ),
-      floatingActionButton: _buildFloatingButtonCompose(),
     );
   }
 
@@ -74,7 +77,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
 
   Widget _buildListViewItemSendingEmails() {
     return Obx(() {
-      final listSendingEmails = controller.dashboardController!.listSendingEmails;
+      final listSendingEmails = controller.dashboardController.listSendingEmails;
       if (listSendingEmails.isNotEmpty) {
         return ListView.builder(
           controller: controller.listSendingEmailController,
@@ -104,14 +107,14 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
       if (controller.isAllUnSelected) {
         return ComposeFloatingButton(
           scrollController: controller.listSendingEmailController,
-          onTap: () => controller.dashboardController!.goToComposer(ComposerArguments())
+          onTap: () => controller.dashboardController.goToComposer(ComposerArguments())
         );
       } else {
         return Container(
           padding: const EdgeInsets.only(bottom: 70),
           child: ComposeFloatingButton(
             scrollController: controller.listSendingEmailController,
-            onTap: () => controller.dashboardController!.goToComposer(ComposerArguments())
+            onTap: () => controller.dashboardController.goToComposer(ComposerArguments())
           ),
         );
       }
