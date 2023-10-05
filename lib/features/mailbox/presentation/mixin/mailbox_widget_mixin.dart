@@ -38,6 +38,7 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb)
         MailboxActions.openInNewTab,
+      MailboxActions.newSubfolder,
       if (mailbox.isSpam)
         _mailboxActionForSpam(spamReportEnabled),
       if (mailbox.countUnReadEmailsAsString.isNotEmpty)
@@ -53,6 +54,7 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
+      MailboxActions.newSubfolder,
       if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       MailboxActions.move,
