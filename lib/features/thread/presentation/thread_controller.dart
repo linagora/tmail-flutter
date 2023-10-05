@@ -1086,4 +1086,14 @@ class ThreadController extends BaseController with EmailActionController {
 
     return DismissDirection.startToEnd;
   }
+
+  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
+    if (PlatformInfo.isMobile &&
+        mailboxDashBoardController.selectedMailbox.value?.isInbox == false) {
+      mailboxDashBoardController.openDefaultMailbox();
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
