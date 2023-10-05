@@ -490,7 +490,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     _openMailboxEventController.add(OpenMailboxViewEvent(context, presentationMailboxSelected));
   }
 
-  void goToCreateNewMailboxView(BuildContext context, PresentationMailbox? parentMailbox) async {
+  void goToCreateNewMailboxView(BuildContext context, {PresentationMailbox? parentMailbox}) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (session !=null && accountId != null) {
@@ -953,7 +953,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         emptySpamAction(context, mailbox, mailboxDashBoardController);
         break;
       case MailboxActions.newSubfolder:
-        goToCreateNewMailboxView(context, mailbox);
+        goToCreateNewMailboxView(context, parentMailbox: mailbox);
         break;
       default:
         break;
