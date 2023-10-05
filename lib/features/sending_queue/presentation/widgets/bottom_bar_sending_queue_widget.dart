@@ -104,7 +104,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
 
   bool get _isEditable => !isConnectedNetwork &&
     listSendingEmailSelected.length == 1 &&
-    listSendingEmailSelected.first.isWaiting;
+    listSendingEmailSelected.first.isEditableSupported;
 
   bool get _isCanResend => listSendingEmailSelected.isAllSendingStateError();
 }
