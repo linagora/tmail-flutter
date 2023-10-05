@@ -274,17 +274,26 @@ extension CalendarEventExtension on CalendarEvent {
 
   List<String> get videoConferences {
     if (extensionFields != null && extensionFields!.mapFields.isNotEmpty) {
-      final videoConferences = extensionFields!.mapFields['X-OPENPAAS-VIDEOCONFERENCE'];
-      if (videoConferences != null) {
-        final videoConferencesNotEmpty = videoConferences
-          .whereNotNull()
-          .where((link) => link.isNotEmpty)
-          .toList();
-        log('CalendarEventExtension::getListVideoConference: $videoConferencesNotEmpty');
-        return videoConferencesNotEmpty;
-      }
-    }
+      final videoConferences = List<String>.empty(growable: true);
 
+      final openPaasVideoConferences = extensionFields?.mapFields['X-OPENPAAS-VIDEOCONFERENCE']
+        ?.whereNotNull()
+        .where((link) => link.isNotEmpty)
+        .toList() ?? [];
+      log('CalendarEventExtension::openPaasVideoConferences: $openPaasVideoConferences');
+      final googleVideoConferences = extensionFields!.mapFields['X-GOOGLE-CONFERENCE']
+        ?.whereNotNull()
+        .where((link) => link.isNotEmpty)
+        .toList() ?? [];
+      log('CalendarEventExtension::googleVideoConferences: $googleVideoConferences');
+      if (openPaasVideoConferences.isNotEmpty) {
+        videoConferences.addAll(openPaasVideoConferences);
+      }
+      if (googleVideoConferences.isNotEmpty) {
+        videoConferences.addAll(googleVideoConferences);
+      }
+      return videoConferences;
+    }
     return [];
   }
 }
