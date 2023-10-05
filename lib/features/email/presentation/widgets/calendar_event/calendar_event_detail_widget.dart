@@ -54,7 +54,11 @@ class CalendarEventDetailWidget extends StatelessWidget {
           if (calendarEvent.description?.isNotEmpty == true)
             Padding(
               padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
-              child: EventDescriptionDetailWidget(description: calendarEvent.description!)
+              child: EventDescriptionDetailWidget(
+                description: calendarEvent.description!,
+                onOpenComposerAction: onOpenComposerAction,
+                onOpenNewTabAction: onOpenNewTabAction,
+              )
             ),
           if (calendarEvent.dateTimeEventAsString.isNotEmpty)
             Padding(
