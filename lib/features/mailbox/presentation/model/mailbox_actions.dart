@@ -21,7 +21,8 @@ enum MailboxActions {
   disableMailbox,
   enableMailbox,
   emptyTrash,
-  emptySpam;
+  emptySpam,
+  newSubfolder;
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -45,6 +46,8 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.openInNewTab:
         return AppLocalizations.of(context).openInNewTab;
+      case MailboxActions.newSubfolder:
+        return AppLocalizations.of(context).newSubfolder;
       case MailboxActions.disableSpamReport:
         return AppLocalizations.of(context).disableSpamReport;
       case MailboxActions.enableSpamReport:
@@ -74,6 +77,8 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.openInNewTab:
         return imagePaths.icOpenInNewTab;
+      case MailboxActions.newSubfolder:
+        return imagePaths.icAddNewFolder;
       case MailboxActions.disableSpamReport:
         return imagePaths.icSpamReportDisable;
       case MailboxActions.enableSpamReport:
@@ -156,6 +161,7 @@ extension MailboxActionsExtension on MailboxActions {
   ContextMenuItemState getContextMenuItemState(PresentationMailbox mailbox) {
     switch(this) {
       case MailboxActions.openInNewTab:
+      case MailboxActions.newSubfolder:
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
       case MailboxActions.enableMailbox:
