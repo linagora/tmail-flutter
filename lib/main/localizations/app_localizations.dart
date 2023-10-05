@@ -3347,4 +3347,11 @@ class AppLocalizations {
       name: 'dropFileHereToAttachThem',
     );
   }
+
+  String get canceled {
+    return Intl.message(
+      'Canceled',
+      name: 'canceled',
+    );
+  }
 }
