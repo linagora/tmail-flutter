@@ -107,6 +107,10 @@ class SendingEmail with EquatableMixin {
 
   bool get isCanceled => sendingState == SendingState.canceled;
 
+  bool get isRunning => sendingState == SendingState.running;
+
+  bool get isEditableSupported => isWaiting || isRunning || isCanceled;
+
   @override
   List<Object?> get props => [
     sendingId,
