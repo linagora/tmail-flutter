@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-02T15:04:12.165160",
+  "@@last_modified": "2023-10-05T15:38:07.324902",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3242,6 +3242,12 @@
   },
   "dropFileHereToAttachThem": "Drop file here to attach them",
   "@dropFileHereToAttachThem": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceled": "Canceled",
+  "@canceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -105,6 +105,8 @@ class SendingEmail with EquatableMixin {
 
   bool get isSuccess => sendingState == SendingState.success;
 
+  bool get isCanceled => sendingState == SendingState.canceled;
+
   @override
   List<Object?> get props => [
     sendingId,
