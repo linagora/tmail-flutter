@@ -1,9 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:html/parser.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 
 class HtmlAnalyzer {
 
@@ -36,14 +38,55 @@ class HtmlAnalyzer {
     }
   }
 
-  Future<List<String>> getListLinkCalendarEvent(String emailContents) async {
-    final document = parse(emailContents);
-    final linkElements = document.querySelectorAll('a.part-button');
-    final listLink = linkElements
-      .map((element) => element.attributes['href'])
-      .whereNotNull()
-      .toList();
-    return listLink;
+  Future<List<EventAction>> getListEventAction(String emailContents) async {
+    try {
+      final document = parse(emailContents);
+
+      final openPaasLinkElements = document.querySelectorAll('a.part-button');
+      if (openPaasLinkElements.isNotEmpty) {
+        final listEventAction = openPaasLinkElements
+          .mapIndexed((index, element) {
+            final hrefLink = element.attributes['href'] ?? '';
+            if (hrefLink.isNotEmpty) {
+              if (index == 0) {
+                return EventAction(EventActionType.yes, hrefLink);
+              } else if (index == 1) {
+                return EventAction(EventActionType.maybe, hrefLink);
+              } else if (index == 2) {
+                return EventAction(EventActionType.no, hrefLink);
+              }
+            }
+            return null;
+          })
+          .whereNotNull()
+          .toList();
+        log('HtmlAnalyzer::getListEventAction:OPEN_PAAS::listEventAction: $listEventAction');
+        return listEventAction;
+      } else {
+        final googleLinkElements = document.querySelectorAll('a.grey-button-text');
+        final listEventAction = googleLinkElements
+          .mapIndexed((index, element) {
+            final hrefLink = element.attributes['href'] ?? '';
+            if (hrefLink.isNotEmpty) {
+              if (index == 0) {
+                return EventAction(EventActionType.yes, hrefLink);
+              } else if (index == 1) {
+                return EventAction(EventActionType.no, hrefLink);
+              } else if (index == 2) {
+                return EventAction(EventActionType.maybe, hrefLink);
+              }
+            }
+            return null;
+          })
+          .whereNotNull()
+          .toList();
+        log('HtmlAnalyzer::getListEventAction:GOOGLE::listEventAction: $listEventAction');
+        return listEventAction;
+      }
+    } catch(e) {
+      logError('HtmlAnalyzer::getListEventAction:Exception: $e');
+      return [];
+    }
   }
 
   Future<String> transformHtmlEmailContent(
