@@ -1838,6 +1838,7 @@ class MailboxDashBoardController extends ReloadableController {
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest,
   ) {
+    log('MailboxDashBoardController::_handleStoreSendingEmail:');
     final sendingEmail = emailRequest.toSendingEmail(_uuid.v1(), mailboxRequest: mailboxRequest);
     consumeState(_storeSendingEmailInteractor.execute(
       accountId,
@@ -1852,6 +1853,7 @@ class MailboxDashBoardController extends ReloadableController {
     EmailRequest emailRequest,
     CreateNewMailboxRequest? mailboxRequest,
   ) {
+    log('MailboxDashBoardController::_handleUpdateSendingEmail:');
     final storedSendingId = emailRequest.storedSendingId;
     if (storedSendingId != null) {
       final sendingEmail = emailRequest.toSendingEmail(storedSendingId, mailboxRequest: mailboxRequest);
@@ -1862,6 +1864,12 @@ class MailboxDashBoardController extends ReloadableController {
       ));
     } else {
       logError('MailboxDashBoardController::_handleUpdateSendingEmail(): StoredSendingId is null');
+      _handleStoreSendingEmail(
+        session,
+        accountId,
+        emailRequest,
+        mailboxRequest
+      );
     }
   }
 

@@ -124,17 +124,18 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
           dashboardController!.listSendingEmails.value = listSendingEmails;
         }
         break;
+      case SendingState.canceled:
       case SendingState.error:
         if (accountId != null && userName != null) {
           final matchedSendingEmail = dashboardController?.listSendingEmails.firstWhereOrNull((sendingEmail) => sendingEmail.sendingId == sendingId);
           if (matchedSendingEmail != null) {
             _updateSendingEmailAction(
-              newSendingEmail: matchedSendingEmail.updatingSendingState(SendingState.error),
+              newSendingEmail: matchedSendingEmail.updatingSendingState(newState),
               accountId: accountId,
               userName: userName
             );
           } else {
-            _getStoredSendingEmailAction(sendingId, accountId, userName, SendingState.error);
+            _getStoredSendingEmailAction(sendingId, accountId, userName, newState);
           }
         }
         break;

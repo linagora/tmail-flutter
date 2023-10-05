@@ -94,7 +94,7 @@ class SendingEmailWorker extends Worker {
         failure is GetSessionFailure ||
         failure is GetStoredTokenOidcFailure ||
         failure is GetCredentialFailure) {
-      _handleTaskFailureInWorkManager();
+      _handleWorkerTaskToRetry();
     }
   }
 
@@ -115,7 +115,7 @@ class SendingEmailWorker extends Worker {
   @override
   void handleOnError(Object? error, StackTrace stackTrace) {
     super.handleOnError(error, stackTrace);
-    _handleTaskFailureInWorkManager();
+    _handleWorkerTaskToRetry();
   }
 
   void _getInteractorBindings() {
@@ -155,7 +155,7 @@ class SendingEmailWorker extends Worker {
       _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
       _sendEmailAction(_currentAccountId!, _currentSession!);
     } else {
-      _handleTaskFailureInWorkManager();
+      _handleWorkerTaskToRetry();
     }
   }
 
@@ -202,33 +202,34 @@ class SendingEmailWorker extends Worker {
   }
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {
-    _updatingSendingStateToMainUI(sendingState: SendingState.success);
-    _handleTaskSuccessInWorkManager();
+    _handleWorkerTaskSuccess();
   }
 
   void _handleSendEmailFailure(SendEmailFailure failure) {
-    _updatingSendingStateToMainUI(sendingState: SendingState.error);
-    _handleTaskErrorInWorkManager(failure.exception);
+    _handleWorkerTaskFailure(failure.exception);
   }
 
-  void _handleTaskFailureInWorkManager() async {
-    log('SendingEmailObserver::_handleTaskFailureInWorkManager():');
+  void _handleWorkerTaskToRetry() async {
+    _updatingSendingStateToMainUI(sendingState: SendingState.canceled);
+    log('SendingEmailObserver::_handleWorkerTaskToRetry():');
     await Future.delayed(
       const Duration(milliseconds: 1000),
       () => _completer.complete(false)
     );
   }
 
-  void _handleTaskErrorInWorkManager(dynamic error) async {
-    log('SendingEmailObserver::_handleTaskErrorInWorkManager():');
+  void _handleWorkerTaskFailure(dynamic error) async {
+    log('SendingEmailObserver::_handleWorkerTaskFailure():error: $error');
+    _updatingSendingStateToMainUI(sendingState: SendingState.error);
     await Future.delayed(
       const Duration(milliseconds: 1000),
       () => _completer.completeError(error)
     );
   }
 
-  void _handleTaskSuccessInWorkManager() async {
-    log('SendingEmailObserver::_handleTaskSuccessInWorkManager():');
+  void _handleWorkerTaskSuccess() async {
+    log('SendingEmailObserver::_handleWorkerTaskSuccess():');
+    _updatingSendingStateToMainUI(sendingState: SendingState.success);
     await Future.delayed(
       const Duration(milliseconds: 1000),
       () => _completer.complete(true)
