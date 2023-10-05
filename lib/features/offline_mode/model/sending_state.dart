@@ -8,6 +8,7 @@ enum SendingState {
   waiting,
   running,
   error,
+  canceled,
   success;
 
   String getTitle(BuildContext context) {
@@ -16,6 +17,8 @@ enum SendingState {
       case SendingState.running:
       case SendingState.success:
         return AppLocalizations.of(context).delivering;
+      case SendingState.canceled:
+        return AppLocalizations.of(context).canceled;
       case SendingState.error:
         return AppLocalizations.of(context).error;
     }
@@ -26,6 +29,8 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.running:
       case SendingState.success:
+        return imagePaths.icDelivering;
+      case SendingState.canceled:
         return imagePaths.icDelivering;
       case SendingState.error:
         return imagePaths.icError;
@@ -39,6 +44,7 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.error:
       case SendingState.success:
+      case SendingState.canceled:
         return imagePaths.icAvatarGroup;
     }
   }
@@ -50,6 +56,7 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.error:
       case SendingState.success:
+      case SendingState.canceled:
         return imagePaths.icAvatarPersonal;
     }
   }
@@ -59,6 +66,7 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.running:
       case SendingState.success:
+      case SendingState.canceled:
         return AppColor.colorTitleSendingItem;
       case SendingState.error:
         return AppColor.colorErrorState;
@@ -70,6 +78,7 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.running:
       case SendingState.success:
+      case SendingState.canceled:
         return AppColor.colorBackgroundDeliveringState;
       case SendingState.error:
         return AppColor.colorBackgroundErrorState;
@@ -83,6 +92,7 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.error:
       case SendingState.success:
+      case SendingState.canceled:
         return Colors.black;
     }
   }
@@ -94,6 +104,7 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.error:
       case SendingState.success:
+      case SendingState.canceled:
         return AppColor.colorTitleSendingItem;
     }
   }
