@@ -1955,26 +1955,10 @@ class ComposerController extends BaseController {
       return;
     }
 
-    if (fileUpload.type == null) {
-      final fileInfo = await fileUpload.toFileInfo();
-      if (fileInfo != null) {
-        _addAttachmentFromDragAndDrop(fileInfo: fileInfo);
-      } else if (context.mounted) {
-        _appToast.showToastErrorMessage(
-          context,
-          AppLocalizations.of(context).can_not_upload_this_file_as_attachments
-        );
-      }
-      return;
-    }
-
-    final mediaType = MediaType.parse(fileUpload.type!);
-    if (mediaType.isImageValid()) {
+    if (fileUpload.type?.startsWith(MediaTypeExtension.imageType) == true) {
       _addInlineImageFromDragAndDrop(
         base64Data: fileUpload.base64!,
         name: fileUpload.name,
-        type: mediaType,
-        size: fileUpload.size,
       );
     } else {
       final fileInfo = await fileUpload.toFileInfo();
@@ -1989,19 +1973,9 @@ class ComposerController extends BaseController {
     }
   }
 
-  void _addInlineImageFromDragAndDrop({
-    required String base64Data,
-    String? name,
-    MediaType? type,
-    int? size
-  }) {
+  void _addInlineImageFromDragAndDrop({required String base64Data, String? name}) {
     log('ComposerController::_addInlineImageFromDragAndDrop:name: $name');
-    richTextWebController.insertInlineImage(
-      base64Data: base64Data,
-      name: name,
-      type: type,
-      size: size,
-    );
+    richTextWebController.insertInlineImage(base64Data: base64Data, name: name);
   }
 
   void handleImageUploadFailure({

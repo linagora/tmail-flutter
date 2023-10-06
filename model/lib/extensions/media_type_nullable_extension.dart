@@ -1,7 +1,7 @@
 import 'package:http_parser/http_parser.dart';
 import 'package:model/email/email_content_type.dart';
 
-extension MediaTypeExtension on MediaType? {
+extension MediaTypeNullableExtension on MediaType? {
 
   EmailContentType toEmailContentType() {
     if (this == null) {
