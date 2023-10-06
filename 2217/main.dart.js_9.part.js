@@ -3973,7 +3973,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).get$backButtonPressedCallbackAction().call$1(this.context);
     },
-    $signature: 21
+    $signature: 19
   };
   C.ManageAccountDashBoardView_build_closure3.prototype = {
     call$0() {
@@ -5482,4 +5482,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["HduH7J/tTWmUd9tv7lBx1j0FC+g="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["m4G5xc5GzYeYIbl3VZ/cQynMcJM="] = $__dart_deferred_initializers__.current
