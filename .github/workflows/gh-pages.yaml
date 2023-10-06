@@ -5,6 +5,9 @@ on:
 
 name: Deploy PR on Github Pages
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
   deploy:
     name: Build web version and deploy
