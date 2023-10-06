@@ -26,7 +26,7 @@ class FileInfo with EquatableMixin {
 
   String get fileExtension => fileName.split('.').last;
 
-  String get mimeType => lookupMimeType(kIsWeb ? fileName : filePath) ?? 'application/json; charset=UTF-8';
+  String get mimeType => lookupMimeType(kIsWeb ? fileName : filePath) ?? 'application/octet-stream';
 
   @override
   List<Object?> get props => [fileName, filePath, fileSize, readStream, bytes];
