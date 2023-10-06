@@ -2982,7 +2982,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleRecipientSendingEmail": "Tới: {người nhận}",
+  "titleRecipientSendingEmail": "Tới: {recipients}",
   "@titleRecipientSendingEmail": {
     "type": "text",
     "placeholders_order": [
