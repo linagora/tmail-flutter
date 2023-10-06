@@ -8,7 +8,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
@@ -186,13 +185,8 @@ class RichTextWebController extends BaseRichTextController {
     }
   }
 
-  void insertInlineImage({
-    required String base64Data,
-    String? name,
-    MediaType? type,
-    int? size,
-  }) async {
-    log('RichTextWebController::insertInlineImage():name: $name | type: $type');
+  void insertInlineImage({required String base64Data, String? name}) async {
+    log('RichTextWebController::insertInlineImage():name: $name');
     final base64Uri = '<img src="$base64Data" data-filename="$name" alt="Inline Image TeamMail" style="max-width: 100%" />';
     editorController.insertHtml(base64Uri);
   }

@@ -43,7 +43,7 @@ export 'extensions/list_presentation_email_extension.dart';
 export 'extensions/mailbox_extension.dart';
 export 'extensions/mailbox_id_extension.dart';
 export 'extensions/mailbox_name_extension.dart';
-export 'extensions/media_type_extension.dart';
+export 'extensions/media_type_nullable_extension.dart';
 export 'extensions/presentation_email_extension.dart';
 export 'extensions/presentation_mailbox_extension.dart';
 export 'extensions/properties_extension.dart';

@@ -8,7 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
-import 'package:model/extensions/media_type_extension.dart';
+import 'package:model/extensions/media_type_nullable_extension.dart';
 
 class ComposerCache with EquatableMixin {
 
