@@ -1009,7 +1009,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
   }
 
-  void openMailToLink(Uri? uri) {
+  Future<void> openMailToLink(Uri? uri) async {
     log('SingleEmailController::openMailToLink(): ${uri.toString()}');
     String address = uri?.path ?? '';
     log('SingleEmailController::openMailToLink(): address: $address');
