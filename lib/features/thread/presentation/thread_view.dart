@@ -162,19 +162,22 @@ class ThreadView extends GetWidget<ThreadController>
           floatingActionButton: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              ScrollToTopButtonWidget(
-                scrollController: controller.listEmailController,
-                onTap: () => controller.scrollToTop(),
-                responsiveUtils: _responsiveUtils,
-                icon: SvgPicture.asset(
-                  _imagePaths.icArrowUpOutline,
-                  width: ScrollToTopButtonWidgetStyles.iconWidth,
-                  height: ScrollToTopButtonWidgetStyles.iconHeight,
-                  fit: BoxFit.fill,
-                  colorFilter: Colors.white.asFilter(),
+              Container(
+                padding: const EdgeInsetsDirectional.only(end: 4.0),
+                child: ScrollToTopButtonWidget(
+                  scrollController: controller.listEmailController,
+                  onTap: controller.scrollToTop,
+                  responsiveUtils: _responsiveUtils,
+                  icon: SvgPicture.asset(
+                    _imagePaths.icArrowUpOutline,
+                    width: ScrollToTopButtonWidgetStyles.iconWidth,
+                    height: ScrollToTopButtonWidgetStyles.iconHeight,
+                    fit: BoxFit.fill,
+                    colorFilter: Colors.white.asFilter(),
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 24),
               _buildFloatingButtonCompose(context),
             ],
           ),

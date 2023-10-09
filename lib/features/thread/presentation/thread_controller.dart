@@ -1096,4 +1096,10 @@ class ThreadController extends BaseController with EmailActionController {
       return true;
     }
   }
+
+  void scrollToTop() {
+    if (listEmailController.hasClients) {
+      listEmailController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+    }
+  }
 }
