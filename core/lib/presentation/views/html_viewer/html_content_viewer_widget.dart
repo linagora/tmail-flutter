@@ -20,7 +20,7 @@ typedef OnWebViewLoaded = Function(bool isScrollPageViewActivated);
 class HtmlContentViewer extends StatefulWidget {
 
   final String contentHtml;
-  final double heightContent;
+  final double? heightContent;
   final OnScrollHorizontalEnd? onScrollHorizontalEnd;
   final OnWebViewLoaded? onWebViewLoaded;
   final TextDirection? direction;
@@ -39,7 +39,7 @@ class HtmlContentViewer extends StatefulWidget {
   const HtmlContentViewer({
     Key? key,
     required this.contentHtml,
-    required this.heightContent,
+    this.heightContent,
     this.onCreated,
     this.onWebViewLoaded,
     this.onScrollHorizontalEnd,
@@ -54,17 +54,19 @@ class HtmlContentViewer extends StatefulWidget {
 
 class _HtmlContentViewState extends State<HtmlContentViewer> {
 
-  late double actualHeight;
-  double minWidth = 300;
+  static const double _minHeight = 100.0;
+  static const double _offsetHeight = 30.0;
+
+  late double _actualHeight;
   String? _htmlData;
   late InAppWebViewController _webViewController;
   bool _isLoading = true;
-  bool horizontalGestureActivated = false;
+  bool _horizontalGestureActivated = false;
 
   @override
   void initState() {
     super.initState();
-    actualHeight = widget.heightContent;
+    _actualHeight = widget.heightContent ?? _minHeight;
     _htmlData = generateHtml(
       widget.contentHtml,
       direction: widget.direction,
@@ -89,11 +91,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     return LayoutBuilder(builder: (context, constraints) {
       return Stack(
         children: [
-          if (_htmlData?.isNotEmpty == false)
+          if (_htmlData == null || _htmlData?.isEmpty == true)
             const SizedBox.shrink()
           else
             SizedBox(
-              height: actualHeight,
+              height: _actualHeight,
               width: constraints.maxWidth,
               child: InAppWebView(
                 key: ValueKey(_htmlData),
@@ -110,7 +112,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
                 shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
                 gestureRecognizers: {
                   Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
-                  if (Platform.isIOS && horizontalGestureActivated)
+                  if (Platform.isIOS && _horizontalGestureActivated)
                     Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
                   if (Platform.isAndroid)
                     Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
@@ -158,18 +160,17 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   ) async {
     log('_HtmlContentViewState::_onContentSizeChanged:oldContentSize: $oldContentSize | newContentSize: $newContentSize');
     final maxContentHeight = max(oldContentSize.height, newContentSize.height);
-    log('_HtmlContentViewState::_onContentSizeChanged:maxContentHeight: $maxContentHeight');
-    if (maxContentHeight > actualHeight) {
+    if (!_isLoading && maxContentHeight > _actualHeight) {
+      log('_HtmlContentViewState::_onContentSizeChanged:HEIGHT_UPDATED: $maxContentHeight');
       setState(() {
-        actualHeight = maxContentHeight;
+        _actualHeight = maxContentHeight;
       });
     }
   }
 
   void _onHandleScrollEvent(List<dynamic> parameters) {
-    log('_HtmlContentViewState::_onHandleScrollRightEvent():parameters: $parameters');
+    log('_HtmlContentViewState::_onHandleScrollEvent():parameters: $parameters');
     final message = parameters.first;
-    log('_HtmlContentViewState::_onHandleScrollRightEvent():message: $message');
     if (message == HtmlEventAction.scrollLeftEndAction) {
       widget.onScrollHorizontalEnd?.call(true);
     } else if (message == HtmlEventAction.scrollRightEndAction) {
@@ -179,14 +180,16 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   Future<void> _setActualHeightView() async {
     final scrollHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
-    if (scrollHeight != null && mounted) {
-      final scrollHeightWithBuffer = scrollHeight + 30.0;
-      if (scrollHeightWithBuffer > actualHeight) {
-        setState(() {
-          actualHeight = scrollHeightWithBuffer;
-          _isLoading = false;
-        });
-      }
+    log('_HtmlContentViewState::_setActualHeightView():scrollHeight: $scrollHeight | type: ${scrollHeight.runtimeType}');
+    if (mounted &&
+        scrollHeight != null &&
+        scrollHeight is double &&
+        scrollHeight > 0
+    ) {
+      setState(() {
+        _actualHeight = scrollHeight + _offsetHeight;
+        _isLoading = false;
+      });
     }
   }
 
@@ -195,19 +198,24 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0].scrollWidth'),
       _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0].offsetWidth')
     ]);
-
+    log('_HtmlContentViewState::_setActualWidthView():result: $result');
     if (result.length == 2) {
       final scrollWidth = result[0];
       final offsetWidth = result[1];
-      if (scrollWidth != null && offsetWidth != null && mounted) {
+      if (mounted &&
+          scrollWidth != null &&
+          offsetWidth != null &&
+          scrollWidth is double &&
+          offsetWidth is double
+      ) {
         final isScrollActivated = scrollWidth.round() == offsetWidth.round();
         if (isScrollActivated) {
           setState(() {
-            horizontalGestureActivated = false;
+            _horizontalGestureActivated = false;
           });
         } else {
           setState(() {
-            horizontalGestureActivated = true;
+            _horizontalGestureActivated = true;
           });
 
           await _webViewController.evaluateJavascript(source: HtmlUtils.runScriptsHandleScrollEvent);
