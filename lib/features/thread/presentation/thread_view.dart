@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.da
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_button_widget_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
@@ -31,6 +32,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_bottom_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
@@ -157,7 +159,25 @@ class ThreadView extends GetWidget<ThreadController>
               ))
             ]),
           ),
-          floatingActionButton: _buildFloatingButtonCompose(context),
+          floatingActionButton: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ScrollToTopButtonWidget(
+                scrollController: controller.listEmailController,
+                onTap: () => controller.scrollToTop(),
+                responsiveUtils: _responsiveUtils,
+                icon: SvgPicture.asset(
+                  _imagePaths.icArrowUpOutline,
+                  width: ScrollToTopButtonWidgetStyles.iconWidth,
+                  height: ScrollToTopButtonWidgetStyles.iconHeight,
+                  fit: BoxFit.fill,
+                  colorFilter: Colors.white.asFilter(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildFloatingButtonCompose(context),
+            ],
+          ),
         ),
       ),
     );
