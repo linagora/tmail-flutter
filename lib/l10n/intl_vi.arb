@@ -3236,7 +3236,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderCreatedTitle": "Bạn đã tạo thư mục {folderName} thành công",
+  "folderCreatedTitle": "Thư mục của bạn vừa được tạo",
   "@folderCreatedTitle": {
     "type": "text",
     "placeholders_order": [],
