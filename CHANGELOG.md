@@ -1,3 +1,38 @@
+## [0.10.0] - 2023-10-09
+### Added
+- \#2116 Apply new design composer
+- \#2118 Support drag and drop attachments from my PC
+- \#2172 Support drag and drop attachments from other mail
+- \#2194 Add action new subfolder
+- Translated Vietnamese/German
+
+### Changed
+- \#2125 README: refresh roadmap
+- \#2126 README: Credit Linagora better
+
+### Fixed
+- Fix not found object in bindings
+- Fix can not open new tab for email
+- \#2120 Fix drag and drop text inside the composer on web
+- \#1608 Set References and In-Reply-To fields
+- \#2157 Remove collapsed/expanded signature in EmailView
+- \#2168 Invalid recipient from mailto router
+- \#2167 Support CTRL+SHIFT+Z shortcut in composer on web
+- \#2176 Fix app grid on the tmail.linagora.com sometimes is outdated
+- \#2160 \[Mobile\] A part of the bottom of email content has been cut off, only happen with long email html template
+- \#2179 \[UI\] Some screen having menu label is overlap on Russian languages
+- \#2180 \[UI\] Suggestion list being hidden once user use device with small screen
+- \#2199 \[UX\] \[Suggestion\] User cannot see the email suggestion if that email is new with our system
+- \#2202 \[Offline\] Sending email failed when network is corrupted but wifi still in full
+- \#2189 \[Offline\] While app in offline, After click on send button in composer, dialog show, but when click outside the dialog, all disappear
+- \#2188 \[Offline\] Sending queue item sent failed but still in Sending queue
+- \#2190 \[Offline\] Offline proceed dialog is overlapped
+- \#2187 \[Offline\] Click on back button in Sending Queue mailbox then close the app
+- \#2182 \[BLUE-BAR\] No blue bar for Office 365 events
+
+### Security
+- \#2163 Add a security.md file
+
 ## [0.9.3] - 2023-09-19
 ### Fixed
 - \[HOT-FIX\] Fix built release but nginx route 404 not found on web
@@ -261,6 +296,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.10.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.0
 [0.9.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.3
 [0.9.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.2
 [0.9.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.1
