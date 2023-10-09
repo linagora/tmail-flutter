@@ -6,10 +6,10 @@ class ScrollToTopButtonWidget extends StatefulWidget {
   final ScrollController scrollController;
   final GestureTapCallback onTap;
   final ResponsiveUtils responsiveUtils;
-  final double? limitIndicator;
-  final double? elevation;
-  final Color? colorButton;
-  final double? buttonRadius;
+  final double limitIndicator;
+  final double elevation;
+  final Color colorButton;
+  final double buttonRadius;
   final Widget? icon;
 
   const ScrollToTopButtonWidget({
@@ -34,32 +34,29 @@ class _ScrollToTopButtonWidgetState extends State<ScrollToTopButtonWidget> {
   @override
   void initState() {
     super.initState();
-    _handleScroll();
+    widget.scrollController.addListener(_handleScroll);
   }
 
   @override
   void dispose() {
-    widget.scrollController.removeListener(() {});
+    widget.scrollController.removeListener(_handleScroll);
     super.dispose();
   }
 
   void _handleScroll() {
-    ScrollController scrollController = widget.scrollController;
-    scrollController.addListener(() {
-      if (scrollController.position.pixels > widget.limitIndicator!) {
-        if (mounted) {
-          setState(() {
-            _isVisible = true;
-          });
-        }
-      } else if (scrollController.position.pixels <= widget.limitIndicator!) {
-        if (mounted) {
-          setState(() {
-            _isVisible = false;
-          });
-        }
+    if (widget.scrollController.position.pixels > widget.limitIndicator) {
+      if (mounted) {
+        setState(() {
+          _isVisible = true;
+        });
       }
-    });
+    } else if (widget.scrollController.position.pixels <= widget.limitIndicator) {
+      if (mounted) {
+        setState(() {
+          _isVisible = false;
+        });
+      }
+    }
   }
 
   @override
@@ -76,11 +73,11 @@ class _ScrollToTopButtonWidgetState extends State<ScrollToTopButtonWidget> {
           elevation: widget.elevation,
           shape: const CircleBorder(),
           child: InkWell(
-            borderRadius: BorderRadius.circular(widget.buttonRadius!),
+            borderRadius: BorderRadius.all(Radius.circular(widget.buttonRadius)),
             onTap: widget.onTap,
             child: Ink(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(widget.buttonRadius!),
+                borderRadius: BorderRadius.all(Radius.circular(widget.buttonRadius)),
                 color: widget.colorButton,
               ),
               padding: const EdgeInsets.all(ScrollToTopButtonWidgetStyles.buttonPadding),
