@@ -221,16 +221,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
             RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
             listEmailRuleFilterActionSelected.add(newRuleFilterAction);
           }
-          if (currentAction.markAsSeen == true) {
-            EmailRuleFilterAction? action = EmailRuleFilterAction.maskAsSeen;
-            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
-            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
-          }
-          if (currentAction.markAsImportant == true) {
-            EmailRuleFilterAction? action = EmailRuleFilterAction.startIt;
-            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
-            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
-          }
           if (currentAction.appendIn.mailboxIds.isNotEmpty == true) {
             for (var mailboxId in currentAction.appendIn.mailboxIds) {
               if (mailboxId == findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id) {
@@ -243,6 +233,16 @@ class RulesFilterCreatorController extends BaseMailboxController {
                 listEmailRuleFilterActionSelected.add(newRuleFilterAction);
               }
             }
+          }
+          if (currentAction.markAsImportant == true) {
+            EmailRuleFilterAction? action = EmailRuleFilterAction.startIt;
+            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
+            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
+          }
+          if (currentAction.markAsSeen == true) {
+            EmailRuleFilterAction? action = EmailRuleFilterAction.maskAsSeen;
+            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
+            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
           }
 
           if (listEmailRuleFilterActionSelected.length >= maxCountAction) {
