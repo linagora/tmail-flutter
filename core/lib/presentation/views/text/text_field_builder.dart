@@ -7,6 +7,7 @@ class TextFieldBuilder extends StatefulWidget {
   final ValueChanged<String>? onTextChange;
   final ValueChanged<String>? onTextSubmitted;
   final VoidCallback? onTap;
+  final TapRegionCallback? onTapOutside;
   final TextStyle? textStyle;
   final TextInputAction? textInputAction;
   final InputDecoration? decoration;
@@ -45,6 +46,7 @@ class TextFieldBuilder extends StatefulWidget {
     this.keyboardAppearance,
     this.mouseCursor,
     this.onTap,
+    this.onTapOutside,
     this.onTextChange,
     this.onTextSubmitted,
   });
@@ -102,6 +104,7 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       },
       onSubmitted: widget.onTextSubmitted,
       onTap: widget.onTap,
+      onTapOutside: widget.onTapOutside,
     );
   }
 
