@@ -200,6 +200,28 @@ class EmailRulesController extends BaseController {
   void _handleDeleteEmailRuleAction(TMailRule emailRule) {
     popBack();
 
+    if (emailRule.conditionGroup != null) {
+      emailRule = TMailRule(
+        id: emailRule.id,
+        name: emailRule.name,
+        action: emailRule.action,
+        conditionGroup: emailRule.conditionGroup,
+      );
+    }
+
+    listEmailRule.value = listEmailRule.map((rule) {
+      if (rule.conditionGroup != null) {
+        return TMailRule(
+          id: rule.id,
+          name: rule.name,
+          action: rule.action,
+          conditionGroup: rule.conditionGroup,
+        );
+      } else {
+        return rule;
+      }
+    }).toList();
+
     if (_deleteEmailRuleInteractor != null) {
       final deleteEmailRuleRequest = DeleteEmailRuleRequest(
         emailRuleDelete : emailRule,
