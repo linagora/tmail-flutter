@@ -874,7 +874,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_folder": "Папка Корзина пуста",
+  "empty_trash_folder": "Очистить корзину",
   "@empty_trash_folder": {
     "type": "text",
     "placeholders_order": [],
@@ -1972,7 +1972,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "endNow": "Закончить сейчас",
+  "endNow": "Закончить",
   "@endNow": {
     "type": "text",
     "placeholders_order": [],
@@ -2074,7 +2074,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSetting": "Настройки автоответчика",
+  "vacationSetting": "Настройки",
   "@vacationSetting": {
     "type": "text",
     "placeholders_order": [],
@@ -3108,6 +3108,102 @@
   },
   "messageEventActionBannerAttendeeCounter": " предложил(а) изменения к этому событию",
   "@messageEventActionBannerAttendeeCounter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMoreAttachment": "Показать еще (+{count})",
+  "@showMoreAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "messageEmptyFolderDialog": "Сообщения в папке {folder} будут удалены навсегда, и вы не сможете их восстановить",
+  "@messageEmptyFolderDialog": {
+    "type": "text",
+    "placeholders_order": [
+      "folder"
+    ],
+    "placeholders": {
+      "folder": {}
+    }
+  },
+  "newSubfolder": "Новая подпапка",
+  "@newSubfolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAsDraft": "Сохранить как черновик",
+  "@saveAsDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addCondition": "Добавить условие",
+  "@addCondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markedSingleMessageToast": "Сообщение было помечено как {action}",
+  "@markedSingleMessageToast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "enterSomeSuggestions": "Введите предложения",
+  "@enterSomeSuggestions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formattingOptions": "Параметры форматирования",
+  "@formattingOptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceled": "Отменено",
+  "@canceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dropFileHereToAttachThem": "Перетащите файлы, чтобы прикрепить",
+  "@dropFileHereToAttachThem": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty": "Очистить",
+  "@empty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "embedCode": "Код для вставки",
+  "@embedCode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterASubject": "Введите тему",
+  "@enterASubject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFolder": "Очистить папку",
+  "@clearFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
