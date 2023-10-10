@@ -11,6 +11,7 @@ class SubjectComposerWidget extends StatelessWidget {
   final ValueChanged<String>? onTextChange;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
+  final TapRegionCallback? onTapOutside;
 
   const SubjectComposerWidget({
     super.key,
@@ -19,6 +20,7 @@ class SubjectComposerWidget extends StatelessWidget {
     required this.onTextChange,
     this.margin,
     this.padding,
+    this.onTapOutside,
   });
 
   @override
@@ -50,6 +52,7 @@ class SubjectComposerWidget extends StatelessWidget {
               textDirection: DirectionUtils.getDirectionByLanguage(context),
               textStyle: SubjectComposerWidgetStyle.inputTextStyle,
               controller: textController,
+              onTapOutside: onTapOutside,
             )
           )
         ]
