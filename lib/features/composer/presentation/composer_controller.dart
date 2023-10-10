@@ -386,6 +386,26 @@ class ComposerController extends BaseController {
     );
   }
 
+  void onTapOutsideSubject(PointerDownEvent event) {
+    subjectEmailInputFocusNode?.unfocus();
+  }
+
+  void onTapOutsideRecipients(PrefixEmailAddress prefix) {
+    switch(prefix) {
+      case PrefixEmailAddress.to:
+        toAddressFocusNode?.unfocus();
+        break;
+      case PrefixEmailAddress.cc:
+        ccAddressFocusNode?.unfocus();
+        break;
+      case PrefixEmailAddress.bcc:
+        bccAddressFocusNode?.unfocus();
+        break;
+      default:
+        break;
+    }
+  }
+
   void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) {
     if (identitySelected == null) {
       _getAllIdentities();
@@ -1836,18 +1856,8 @@ class ComposerController extends BaseController {
   }
 
   void _onEditorFocusOnMobile() {
-    if (Platform.isAndroid) {
-      _collapseAllRecipient();
-      _autoCreateEmailTag();
-      removeFocusAllInputEditorHeader();
-    }
-  }
-
-  void removeFocusAllInputEditorHeader() {
-    subjectEmailInputFocusNode?.unfocus();
-    toAddressFocusNode?.unfocus();
-    ccAddressFocusNode?.unfocus();
-    bccAddressFocusNode?.unfocus();
+    _collapseAllRecipient();
+    _autoCreateEmailTag();
   }
 
   void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {

@@ -118,6 +118,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                                 onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                 onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                                onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.to),
                               ),
                               if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                                 RecipientComposerWidget(
@@ -138,6 +139,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                                   onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                   onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                                  onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.cc),
                                 ),
                               if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                                 RecipientComposerWidget(
@@ -158,6 +160,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                                   onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                   onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                                  onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.bcc),
                                 ),
                             ],
                           )),
@@ -167,6 +170,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             onTextChange: controller.setSubjectEmail,
                             padding: ComposerStyle.mobileSubjectPadding,
                             margin: ComposerStyle.mobileSubjectMargin,
+                            onTapOutside: controller.onTapOutsideSubject,
                           ),
                           Obx(() => Center(
                             child: InsertImageLoadingBarWidget(
@@ -175,18 +179,13 @@ class ComposerView extends GetWidget<ComposerController> {
                               padding: ComposerStyle.insertImageLoadingBarPadding,
                             ),
                           )),
-                          Obx(() => GestureDetector(
-                            onTapDown: (_) {
-                              controller.removeFocusAllInputEditorHeader();
-                            },
-                            child: Padding(
-                              padding: ComposerStyle.mobileEditorPadding,
-                              child: MobileEditorView(
-                                arguments: controller.composerArguments.value,
-                                contentViewState: controller.emailContentsViewState.value,
-                                onCreatedEditorAction: controller.onCreatedMobileEditorAction,
-                                onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
-                              ),
+                          Obx(() => Padding(
+                            padding: ComposerStyle.mobileEditorPadding,
+                            child: MobileEditorView(
+                              arguments: controller.composerArguments.value,
+                              contentViewState: controller.emailContentsViewState.value,
+                              onCreatedEditorAction: controller.onCreatedMobileEditorAction,
+                              onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                             ),
                           )),
                           Obx(() {
@@ -259,6 +258,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                            onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.to),
                           ),
                           if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
@@ -279,6 +279,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                              onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.cc),
                             ),
                           if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
@@ -299,6 +300,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                              onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.bcc),
                             ),
                         ],
                       )),
@@ -308,6 +310,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         onTextChange: controller.setSubjectEmail,
                         padding: ComposerStyle.mobileSubjectPadding,
                         margin: ComposerStyle.mobileSubjectMargin,
+                        onTapOutside: controller.onTapOutsideSubject,
                       ),
                       Obx(() => Center(
                         child: InsertImageLoadingBarWidget(
@@ -316,18 +319,13 @@ class ComposerView extends GetWidget<ComposerController> {
                           padding: ComposerStyle.insertImageLoadingBarPadding,
                         ),
                       )),
-                      Obx(() => GestureDetector(
-                        onTapDown: (_) {
-                          controller.removeFocusAllInputEditorHeader();
-                        },
-                        child: Padding(
-                          padding: ComposerStyle.mobileEditorPadding,
-                          child: MobileEditorView(
-                            arguments: controller.composerArguments.value,
-                            contentViewState: controller.emailContentsViewState.value,
-                            onCreatedEditorAction: controller.onCreatedMobileEditorAction,
-                            onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
-                          ),
+                      Obx(() => Padding(
+                        padding: ComposerStyle.mobileEditorPadding,
+                        child: MobileEditorView(
+                          arguments: controller.composerArguments.value,
+                          contentViewState: controller.emailContentsViewState.value,
+                          onCreatedEditorAction: controller.onCreatedMobileEditorAction,
+                          onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                         ),
                       )),
                       Obx(() {
