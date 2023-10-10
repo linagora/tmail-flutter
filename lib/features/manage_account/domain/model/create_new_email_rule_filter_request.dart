@@ -15,6 +15,7 @@ class CreateNewEmailRuleFilterRequest with EquatableMixin {
     for (var rule in currentListTMailRules) {
       if (rule.conditionGroup != null) {
         final newRule = TMailRule(
+          id: rule.id,
           name: rule.name,
           action: rule.action,
           conditionGroup: rule.conditionGroup,
