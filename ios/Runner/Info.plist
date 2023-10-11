@@ -53,7 +53,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSContactsUsageDescription</key>
-	<string>To send email with these contacts</string>
+	<string>Used by Team-Mail for Email address auto-completion. You can easily to find the email address in your contact book to send the email.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>To save photo to library, we need permission to access your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
