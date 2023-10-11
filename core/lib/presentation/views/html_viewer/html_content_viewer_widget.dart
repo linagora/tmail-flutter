@@ -66,7 +66,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   void initState() {
     super.initState();
-    _actualHeight = widget.heightContent ?? _minHeight;
+    if (Platform.isAndroid) {
+      _actualHeight = widget.heightContent ?? _minHeight;
+    } else {
+      _actualHeight = _minHeight;
+    }
+    log('_HtmlContentViewState::initState():_actualHeight: $_actualHeight');
     _htmlData = generateHtml(
       widget.contentHtml,
       direction: widget.direction,
@@ -101,6 +106,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
                 key: ValueKey(_htmlData),
                 initialSettings: InAppWebViewSettings(
                   transparentBackground: true,
+                  verticalScrollBarEnabled: false
                 ),
                 onWebViewCreated: (controller) async {
                   _webViewController = controller;
@@ -123,14 +129,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
           if (_isLoading)
             const Align(
               alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CupertinoActivityIndicator(
-                    color: AppColor.colorLoading
-                  )
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CupertinoActivityIndicator(
+                  color: AppColor.colorLoading
                 )
               )
             )
@@ -179,15 +182,19 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   Future<void> _setActualHeightView() async {
-    final scrollHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
-    log('_HtmlContentViewState::_setActualHeightView():scrollHeight: $scrollHeight | type: ${scrollHeight.runtimeType}');
+    if (Platform.isAndroid) {
+      await Future.delayed(const Duration(milliseconds: 1000));
+    }
+    final scrollHeight = await _webViewController.getContentHeight();
+    log('_HtmlContentViewState::_setActualHeightView():scrollHeight: $scrollHeight');
     if (mounted &&
         scrollHeight != null &&
-        scrollHeight is double &&
         scrollHeight > 0
     ) {
+      final newHeight = scrollHeight + _offsetHeight;
+      log('_HtmlContentViewState::_setActualHeightView():newHeight: $newHeight');
       setState(() {
-        _actualHeight = scrollHeight + _offsetHeight;
+        _actualHeight = newHeight;
         _isLoading = false;
       });
     }
@@ -205,8 +212,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       if (mounted &&
           scrollWidth != null &&
           offsetWidth != null &&
-          scrollWidth is double &&
-          offsetWidth is double
+          scrollWidth is num &&
+          offsetWidth is num
       ) {
         final isScrollActivated = scrollWidth.round() == offsetWidth.round();
         if (isScrollActivated) {
