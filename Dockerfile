@@ -1,6 +1,7 @@
+ARG FLUTTER_VERSION=3.10.6
 # Stage 1 - Install dependencies and build the app
 # This matches the flutter version on our CI/CD pipeline on Github
-FROM ghcr.io/cirruslabs/flutter:3.10.6 AS build-env
+FROM --platform=amd64 ghcr.io/cirruslabs/flutter:${FLUTTER_VERSION} AS build-env
 
 # Set directory to Copy App
 WORKDIR /app
@@ -8,11 +9,13 @@ WORKDIR /app
 COPY . .
 
 # Precompile tmail flutter
-RUN bash prebuild.sh && flutter build web --release
+RUN bash prebuild.sh
+# Build flutter for web
+RUN flutter build web --release
 
 # Stage 2 - Create the run-time image
-FROM nginx:mainline
-RUN chmod -R 755 /usr/share/nginx/html && apt install -y gzip
+FROM nginx:alpine
+RUN apk add gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 
