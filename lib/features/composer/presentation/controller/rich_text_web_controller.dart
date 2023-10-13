@@ -23,12 +23,16 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RichTextWebController extends BaseRichTextController {
 
+  static const List<int> fontSizeList = [10, 12, 14, 15, 16, 18, 24, 36, 48, 64];
+  static const int fontSizeDefault = 16;
+
   final editorController = HtmlEditorController();
 
   final listTextStyleApply = RxList<RichTextStyleType>();
   final selectedTextColor = Colors.black.obs;
   final selectedTextBackgroundColor = Colors.white.obs;
   final selectedFontName = FontNameType.sansSerif.obs;
+  final selectedFontSize = RxInt(fontSizeDefault);
   final codeViewState = CodeViewState.disabled.obs;
   final selectedParagraph = ParagraphType.alignLeft.obs;
   final selectedOrderList = OrderListType.bulletedList.obs;
@@ -59,6 +63,10 @@ class RichTextWebController extends BaseRichTextController {
     _updateBackgroundTextColor(settings);
     _updateOrderList(settings);
     _updateParagraph(settings);
+  }
+
+  void onEditorTextSizeChanged(int? size) {
+    _updateFontSize(size);
   }
 
   void _updateTextStyle(EditorSettings settings) {
@@ -92,11 +100,20 @@ class RichTextWebController extends BaseRichTextController {
     }
   }
 
+  void _updateFontSize(int? size) {
+    log('RichTextWebController::_updateFontSize():size: $size');
+    if (size != null && fontSizeList.contains(size)) {
+      selectedFontSize.value = size;
+    }
+  }
+
   void _updateTextColor(EditorSettings settings) {
+    log('RichTextWebController::_updateTextColor():foregroundColor: ${settings.foregroundColor}');
     selectedTextColor.value = settings.foregroundColor;
   }
 
   void _updateBackgroundTextColor(EditorSettings settings) {
+    log('RichTextWebController::_updateBackgroundTextColor():backgroundColor: ${settings.backgroundColor}');
     selectedTextBackgroundColor.value = settings.backgroundColor;
   }
 
@@ -197,6 +214,11 @@ class RichTextWebController extends BaseRichTextController {
     editorController.execSummernoteAPI(
       RichTextStyleType.fontName.summernoteNameAPI,
       value: fontSelected.value);
+  }
+
+  void applyNewFontSize(int? newSize) {
+    selectedFontSize.value = newSize ?? fontSizeDefault;
+    editorController.setFontSize(newSize ?? fontSizeDefault);
   }
 
   bool get isMenuFontOpen => menuFontStatus.value == DropdownMenuFontStatus.open;

@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -150,7 +149,6 @@ class ComposerView extends GetWidget<ComposerController> {
               ),
               Expanded(
                 child: LayoutBuilder(builder: (context, constraints) {
-                  log('ComposerView::build:mobile:constraints: $constraints');
                   return Stack(
                     children: [
                       Padding(
@@ -175,6 +173,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               base64Str: base64Str,
                             );
                           },
+                          onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
                           width: constraints.maxWidth,
                           height: constraints.maxHeight,
                         )),
@@ -330,7 +329,6 @@ class ComposerView extends GetWidget<ComposerController> {
                   color: ComposerStyle.backgroundEditorColor
                 ),
                 child: LayoutBuilder(builder: (context, constraints) {
-                  log('ComposerView::build:desktop:constraints: $constraints');
                   return Stack(
                     children: [
                       Column(
@@ -361,6 +359,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                           base64Str: base64Str,
                                         );
                                       },
+                                      onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
                                       width: constraints.maxWidth,
                                       height: constraints.maxHeight,
                                     ),
@@ -551,7 +550,6 @@ class ComposerView extends GetWidget<ComposerController> {
                   color: ComposerStyle.backgroundEditorColor
                 ),
                 child: LayoutBuilder(builder: (context, constraints) {
-                  log('ComposerView::build:tablet:constraints: $constraints');
                   return Stack(
                     children: [
                       Column(
@@ -579,6 +577,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     base64Str: base64Str,
                                   );
                                 },
+                                onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
                                 width: constraints.maxWidth,
                                 height: constraints.maxHeight,
                               )),

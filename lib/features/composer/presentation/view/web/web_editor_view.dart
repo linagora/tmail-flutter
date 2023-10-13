@@ -28,6 +28,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final OnEditorSettingsChange? onEditorSettings;
   final OnImageUploadSuccessAction? onImageUploadSuccessAction;
   final OnImageUploadFailureAction? onImageUploadFailureAction;
+  final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
 
@@ -45,6 +46,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onEditorSettings,
     this.onImageUploadSuccessAction,
     this.onImageUploadFailureAction,
+    this.onEditorTextSizeChanged,
     this.width,
     this.height,
   });
@@ -71,6 +73,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorSettings: onEditorSettings,
           onImageUploadSuccessAction: onImageUploadSuccessAction,
           onImageUploadFailureAction: onImageUploadFailureAction,
+          onEditorTextSizeChanged: onEditorTextSizeChanged,
           width: width,
           height: height,
         );
@@ -94,6 +97,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onEditorSettings: onEditorSettings,
             onImageUploadSuccessAction: onImageUploadSuccessAction,
             onImageUploadFailureAction: onImageUploadFailureAction,
+            onEditorTextSizeChanged: onEditorTextSizeChanged,
             width: width,
             height: height,
           ),
@@ -119,6 +123,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorSettings: onEditorSettings,
                 onImageUploadSuccessAction: onImageUploadSuccessAction,
                 onImageUploadFailureAction: onImageUploadFailureAction,
+                onEditorTextSizeChanged: onEditorTextSizeChanged,
                 width: width,
                 height: height,
               );
@@ -151,6 +156,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onEditorSettings: onEditorSettings,
               onImageUploadSuccessAction: onImageUploadSuccessAction,
               onImageUploadFailureAction: onImageUploadFailureAction,
+              onEditorTextSizeChanged: onEditorTextSizeChanged,
               width: width,
               height: height,
             );
@@ -179,6 +185,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorSettings: onEditorSettings,
                 onImageUploadSuccessAction: onImageUploadSuccessAction,
                 onImageUploadFailureAction: onImageUploadFailureAction,
+                onEditorTextSizeChanged: onEditorTextSizeChanged,
                 width: width,
                 height: height,
               );
@@ -198,6 +205,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorSettings: onEditorSettings,
           onImageUploadSuccessAction: onImageUploadSuccessAction,
           onImageUploadFailureAction: onImageUploadFailureAction,
+          onEditorTextSizeChanged: onEditorTextSizeChanged,
           width: width,
           height: height,
         );

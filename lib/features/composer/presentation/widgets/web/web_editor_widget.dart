@@ -10,6 +10,7 @@ typedef OnMouseDownEditorAction = Function(BuildContext context);
 typedef OnEditorSettingsChange = Function(EditorSettings settings);
 typedef OnImageUploadSuccessAction = Function(FileUpload fileUpload);
 typedef OnImageUploadFailureAction = Function(FileUpload? fileUpload, String? base64Str, UploadError error);
+typedef OnEditorTextSizeChanged = Function(int? size);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -24,6 +25,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnEditorSettingsChange? onEditorSettings;
   final OnImageUploadSuccessAction? onImageUploadSuccessAction;
   final OnImageUploadFailureAction? onImageUploadFailureAction;
+  final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
 
@@ -40,6 +42,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onEditorSettings,
     this.onImageUploadSuccessAction,
     this.onImageUploadFailureAction,
+    this.onEditorTextSizeChanged,
     this.width,
     this.height,
   });
@@ -111,6 +114,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         onChangeCodeview: widget.onChangeContent,
         onImageUpload: widget.onImageUploadSuccessAction,
         onImageUploadError: widget.onImageUploadFailureAction,
+        onTextFontSizeChanged: widget.onEditorTextSizeChanged,
       ),
     );
   }
