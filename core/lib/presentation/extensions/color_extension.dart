@@ -220,6 +220,9 @@ extension AppColor on Color {
   static const colorProgressLoadingBackground = Color(0xFFE3F1FF);
   static const colorDropZoneBackground = Color(0xFFF6FAFF);
   static const colorDropZoneBorder = Color(0xFF46A2FF);
+  static const colorLabelRichText = Color(0xFFADADC0);
+  static const dropdownButtonBorderColor = Color(0xFFCFD7E2);
+  static const dropdownLabelButtonBackgroundColor = Color(0xFFF4F4F4);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

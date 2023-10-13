@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-05T15:38:07.324902",
+  "@@last_modified": "2023-10-11T09:37:10.790631",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3254,6 +3254,12 @@
   },
   "newSubfolder": "New subfolder",
   "@newSubfolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textSize": "Text Size",
+  "@textSize": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
