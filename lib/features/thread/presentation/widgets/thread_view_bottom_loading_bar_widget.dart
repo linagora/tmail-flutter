@@ -1,8 +1,8 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:tmail_ui_user/features/base/widget/cupertino_loading_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 
