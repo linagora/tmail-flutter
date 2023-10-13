@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 
-import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
-import 'package:core/presentation/utils/html_transformer/html_template.dart';
 import 'package:core/presentation/utils/html_transformer/html_utils.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -14,38 +11,28 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:url_launcher/url_launcher_string.dart';
 
-typedef OnScrollHorizontalEnd = Function(bool leftDirection);
-typedef OnWebViewLoaded = Function(bool isScrollPageViewActivated);
+typedef OnScrollHorizontalEndAction = Function(bool leftDirection);
+typedef OnLoadWidthHtmlViewerAction = Function(bool isScrollPageViewActivated);
+typedef OnMailtoDelegateAction = Future<void> Function(Uri? uri);
 
 class HtmlContentViewer extends StatefulWidget {
 
   final String contentHtml;
-  final double? heightContent;
-  final OnScrollHorizontalEnd? onScrollHorizontalEnd;
-  final OnWebViewLoaded? onWebViewLoaded;
+  final double? initialWidth;
   final TextDirection? direction;
 
-  /// Register this callback if you want a reference to the [InAppWebViewController].
-  final void Function(InAppWebViewController controller)? onCreated;
-
-  /// Handler for mailto: links
-  final Future Function(Uri mailto)? mailtoDelegate;
-
-  /// Handler for any non-media URLs that the user taps on the website.
-  ///
-  /// Returns `true` when the given `url` was handled.
-  final Future<bool> Function(Uri url)? urlLauncherDelegate;
+  final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
+  final OnMailtoDelegateAction? onMailtoDelegateAction;
+  final OnScrollHorizontalEndAction? onScrollHorizontalEnd;
 
   const HtmlContentViewer({
     Key? key,
     required this.contentHtml,
-    this.heightContent,
-    this.onCreated,
-    this.onWebViewLoaded,
-    this.onScrollHorizontalEnd,
-    this.urlLauncherDelegate,
-    this.mailtoDelegate,
+    this.initialWidth,
     this.direction,
+    this.onLoadWidthHtmlViewer,
+    this.onMailtoDelegateAction,
+    this.onScrollHorizontalEnd
   }) : super(key: key);
 
   @override
@@ -57,24 +44,39 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   static const double _minHeight = 100.0;
   static const double _offsetHeight = 30.0;
 
-  late double _actualHeight;
-  String? _htmlData;
   late InAppWebViewController _webViewController;
-  bool _isLoading = true;
-  bool _horizontalGestureActivated = false;
+  late double _actualHeight;
+  late Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers;
+
+  final _loadingBarNotifier = ValueNotifier(true);
+
+  String? _htmlData;
+
+  final _webViewSetting = InAppWebViewSettings(
+    transparentBackground: true,
+    verticalScrollBarEnabled: false,
+  );
 
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) {
-      _actualHeight = widget.heightContent ?? _minHeight;
+    _actualHeight = _minHeight;
+    if (PlatformInfo.isAndroid) {
+      _gestureRecognizers = {
+        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
+        Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
+      };
     } else {
-      _actualHeight = _minHeight;
+      _gestureRecognizers = {
+        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
+      };
     }
-    log('_HtmlContentViewState::initState():_actualHeight: $_actualHeight');
     _htmlData = generateHtml(
       widget.contentHtml,
       direction: widget.direction,
+      javaScripts: PlatformInfo.isAndroid
+        ? HtmlUtils.scriptsHandleContentSizeChanged
+        : null
     );
   }
 
@@ -84,76 +86,73 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     log('_HtmlContentViewState::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
     if (widget.contentHtml != oldWidget.contentHtml ||
         widget.direction != oldWidget.direction) {
+      _actualHeight = _minHeight;
       _htmlData = generateHtml(
         widget.contentHtml,
         direction: widget.direction,
+        javaScripts: PlatformInfo.isAndroid
+          ? HtmlUtils.scriptsHandleContentSizeChanged
+          : null
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Stack(
-        children: [
-          if (_htmlData == null || _htmlData?.isEmpty == true)
-            const SizedBox.shrink()
-          else
-            SizedBox(
-              height: _actualHeight,
-              width: constraints.maxWidth,
-              child: InAppWebView(
-                key: ValueKey(_htmlData),
-                initialSettings: InAppWebViewSettings(
-                  transparentBackground: true,
-                  verticalScrollBarEnabled: false
-                ),
-                onWebViewCreated: (controller) async {
-                  _webViewController = controller;
-                  await controller.loadData(data: _htmlData ?? '');
-                  widget.onCreated?.call(controller);
-                },
-                onLoadStop: _onLoadStop,
-                onContentSizeChanged: _onContentSizeChanged,
-                shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-                gestureRecognizers: {
-                  Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
-                  if (Platform.isIOS && _horizontalGestureActivated)
-                    Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
-                  if (Platform.isAndroid)
-                    Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
-                },
-                onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0)
-              ),
-            ),
-          if (_isLoading)
-            const Align(
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                width: 30,
-                height: 30,
-                child: CupertinoActivityIndicator(
-                  color: AppColor.colorLoading
-                )
-              )
-            )
-        ],
-      );
-    });
+    return Stack(children: [
+      if (_htmlData == null)
+        const SizedBox.shrink()
+      else
+        SizedBox(
+          height: _actualHeight,
+          width: widget.initialWidth,
+          child: InAppWebView(
+            key: ValueKey(_htmlData),
+            initialSettings: _webViewSetting,
+            onWebViewCreated: _onWebViewCreated,
+            onLoadStop: _onLoadStop,
+            onContentSizeChanged: _onContentSizeChanged,
+            shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+            gestureRecognizers: _gestureRecognizers,
+            onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0)
+          )
+        ),
+      ValueListenableBuilder(
+        valueListenable: _loadingBarNotifier,
+        builder: (context, loading, child) {
+          if (loading) {
+            return const CupertinoLoadingWidget(isCenter: false);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }
+      ),
+    ]);
   }
 
-  void _onLoadStop(InAppWebViewController controller, WebUri? webUri) async {
-    await Future.wait([
-      _setActualHeightView(),
-      _setActualWidthView(),
-    ]);
+  void _onWebViewCreated(InAppWebViewController controller) async {
+    log('_HtmlContentViewState::_onWebViewCreated:');
+    _webViewController = controller;
 
-    _hideLoadingProgress();
+    await controller.loadData(data: _htmlData ?? '');
 
     controller.addJavaScriptHandler(
       handlerName: HtmlUtils.scrollEventJSChannelName,
       callback: _onHandleScrollEvent
     );
+
+    if (PlatformInfo.isAndroid) {
+      controller.addJavaScriptHandler(
+        handlerName: HtmlUtils.contentSizeChangedEventJSChannelName,
+        callback: _onHandleContentSizeChangedEvent
+      );
+    }
+  }
+
+  void _onLoadStop(InAppWebViewController controller, WebUri? webUri) async {
+    log('_HtmlContentViewState::_onLoadStop:');
+    await _getActualSizeHtmlViewer();
+    _loadingBarNotifier.value = false;
   }
 
   void _onContentSizeChanged(
@@ -161,12 +160,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     Size oldContentSize,
     Size newContentSize
   ) async {
-    log('_HtmlContentViewState::_onContentSizeChanged:oldContentSize: $oldContentSize | newContentSize: $newContentSize');
-    final maxContentHeight = max(oldContentSize.height, newContentSize.height);
-    if (!_isLoading && maxContentHeight > _actualHeight) {
+    final maxContentHeight = math.max(oldContentSize.height, newContentSize.height);
+    log('_HtmlContentViewState::_onContentSizeChanged:maxContentHeight: $maxContentHeight');
+    if (maxContentHeight > _actualHeight && !_loadingBarNotifier.value && mounted) {
       log('_HtmlContentViewState::_onContentSizeChanged:HEIGHT_UPDATED: $maxContentHeight');
       setState(() {
-        _actualHeight = maxContentHeight;
+        _actualHeight = maxContentHeight + _offsetHeight;
       });
     }
   }
@@ -181,64 +180,62 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
   }
 
-  Future<void> _setActualHeightView() async {
-    if (Platform.isAndroid) {
-      await Future.delayed(const Duration(milliseconds: 1000));
-    }
-    final scrollHeight = await _webViewController.getContentHeight();
-    log('_HtmlContentViewState::_setActualHeightView():scrollHeight: $scrollHeight');
-    if (mounted &&
-        scrollHeight != null &&
-        scrollHeight > 0
-    ) {
-      final newHeight = scrollHeight + _offsetHeight;
-      log('_HtmlContentViewState::_setActualHeightView():newHeight: $newHeight');
+  void _onHandleContentSizeChangedEvent(List<dynamic> parameters) async {
+    final maxContentHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
+    log('_HtmlContentViewState::_onHandleContentSizeChangedEvent:maxContentHeight: $maxContentHeight');
+    if (maxContentHeight is num && maxContentHeight > _actualHeight && !_loadingBarNotifier.value && mounted) {
+      log('_HtmlContentViewState::_onHandleContentSizeChangedEvent:HEIGHT_UPDATED: $maxContentHeight');
       setState(() {
-        _actualHeight = newHeight;
-        _isLoading = false;
+        _actualHeight = maxContentHeight + _offsetHeight;
       });
     }
   }
 
-  Future<void> _setActualWidthView() async {
-    final result = await Future.wait([
+  Future<void> _getActualSizeHtmlViewer() async {
+    final listSize = await Future.wait([
       _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0].scrollWidth'),
-      _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0].offsetWidth')
+      _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0].offsetWidth'),
+      _webViewController.evaluateJavascript(source: 'document.body.scrollHeight'),
     ]);
-    log('_HtmlContentViewState::_setActualWidthView():result: $result');
-    if (result.length == 2) {
-      final scrollWidth = result[0];
-      final offsetWidth = result[1];
-      if (mounted &&
-          scrollWidth != null &&
-          offsetWidth != null &&
-          scrollWidth is num &&
-          offsetWidth is num
-      ) {
-        final isScrollActivated = scrollWidth.round() == offsetWidth.round();
-        if (isScrollActivated) {
-          setState(() {
-            _horizontalGestureActivated = false;
-          });
-        } else {
-          setState(() {
-            _horizontalGestureActivated = true;
-          });
+    log('_HtmlContentViewState::_getActualSizeHtmlViewer():listSize: $listSize');
+    Set<Factory<OneSequenceGestureRecognizer>>? newGestureRecognizers;
+    bool isScrollActivated = false;
 
-          await _webViewController.evaluateJavascript(source: HtmlUtils.runScriptsHandleScrollEvent);
-        }
+    if (listSize[0] is num && listSize[1] is num) {
+      final scrollWidth = listSize[0] as num;
+      final offsetWidth = listSize[1] as num;
+      isScrollActivated = scrollWidth.round() == offsetWidth.round();
 
-        widget.onWebViewLoaded?.call(isScrollActivated);
+      if (!isScrollActivated && PlatformInfo.isIOS) {
+        newGestureRecognizers = {
+          Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
+          Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer())
+        };
       }
     }
-  }
 
-  void _hideLoadingProgress() {
-    if (mounted && _isLoading) {
-      setState(() {
-        _isLoading = false;
-      });
+    if (listSize[2] is num) {
+      final scrollHeight = listSize[2] as num;
+      if (mounted && scrollHeight > 0) {
+        setState(() {
+          _actualHeight = scrollHeight + _offsetHeight;
+          if (newGestureRecognizers != null) {
+            _gestureRecognizers = newGestureRecognizers;
+          }
+        });
+      }
+    } else {
+      if (mounted && newGestureRecognizers != null) {
+        setState(() {
+          _gestureRecognizers = newGestureRecognizers!;
+        });
+      }
     }
+
+    if (!isScrollActivated) {
+      await _webViewController.evaluateJavascript(source: HtmlUtils.runScriptsHandleScrollEvent);
+    }
+    widget.onLoadWidthHtmlViewer?.call(isScrollActivated);
   }
 
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(
@@ -256,17 +253,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
 
     final requestUri = Uri.parse(url);
-    final mailtoHandler = widget.mailtoDelegate;
+    final mailtoHandler = widget.onMailtoDelegateAction;
     if (mailtoHandler != null && requestUri.isScheme('mailto')) {
       await mailtoHandler(requestUri);
       return NavigationActionPolicy.CANCEL;
     }
 
-    final urlDelegate = widget.urlLauncherDelegate;
-    if (urlDelegate != null) {
-      await urlDelegate(Uri.parse(url));
-      return NavigationActionPolicy.CANCEL;
-    }
     if (await launcher.canLaunchUrl(Uri.parse(url))) {
       await launcher.launchUrl(
         Uri.parse(url),
@@ -275,5 +267,11 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
 
     return NavigationActionPolicy.CANCEL;
+  }
+
+  @override
+  void dispose() {
+    _loadingBarNotifier.dispose();
+    super.dispose();
   }
 }
