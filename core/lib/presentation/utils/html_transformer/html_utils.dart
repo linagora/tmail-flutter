@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class HtmlUtils {
 
   static const scrollEventJSChannelName = 'ScrollEventListener';
+  static const contentSizeChangedEventJSChannelName = 'ContentSizeChangedEventListener';
 
   static const runScriptsHandleScrollEvent = '''
     let contentElement = document.getElementsByClassName('tmail-content')[0];
@@ -59,6 +60,16 @@ class HtmlUtils {
       xDown = null;
       yDown = null;                                             
     }
+  ''';
+
+  static const scriptsHandleContentSizeChanged = '''
+    <script>
+      const bodyResizeObserver = new ResizeObserver(entries => {
+        window.flutter_inappwebview.callHandler('$contentSizeChangedEventJSChannelName', '');
+      })
+      
+      bodyResizeObserver.observe(document.body)
+    </script>
   ''';
 
   static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
