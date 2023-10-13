@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/widget/cupertino_loading_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
