@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'package:collection/collection.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class EmailSupervisorController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    updateScrollPhysicPageView();
+    updateScrollPhysicPageView(false);
   }
 
   @override
@@ -69,7 +70,7 @@ class EmailSupervisorController extends GetxController {
   }
 
   void onPageChanged(int index) {
-    updateScrollPhysicPageView();
+    updateScrollPhysicPageView(false);
     mailboxDashBoardController.openEmailDetailedView(currentListEmail[index]);
   }
 
@@ -122,7 +123,8 @@ class EmailSupervisorController extends GetxController {
     }
   }
 
-  void updateScrollPhysicPageView({bool isScrollPageViewActivated = false}) {
+  void updateScrollPhysicPageView(bool isScrollPageViewActivated) {
+    log('EmailSupervisorController::updateScrollPhysicPageView:isScrollPageViewActivated: $isScrollPageViewActivated');
     if (PlatformInfo.isWeb || !isScrollPageViewActivated) {
       scrollPhysicsPageView.value = const NeverScrollableScrollPhysics();
     } else {
