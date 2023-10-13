@@ -3361,4 +3361,11 @@ class AppLocalizations {
       name: 'newSubfolder',
     );
   }
+
+  String get textSize {
+    return Intl.message(
+      'Text Size',
+      name: 'textSize'
+    );
+  }
 }

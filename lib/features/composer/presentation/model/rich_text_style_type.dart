@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 enum RichTextStyleType {
   headerStyle,
   fontName,
+  fontSize,
   bold,
   italic,
   underline,
@@ -19,20 +20,6 @@ enum RichTextStyleType {
     switch (this) {
       case headerStyle:
         return 'formatBlock';
-      case fontName:
-        return 'fontName';
-      case bold:
-        return 'bold';
-      case italic:
-        return 'italic';
-      case underline:
-        return 'underline';
-      case strikeThrough:
-        return 'strikeThrough';
-      case textColor:
-        return 'foreColor';
-      case textBackgroundColor:
-        return 'hiliteColor';
       default:
         return '';
     }
@@ -40,11 +27,11 @@ enum RichTextStyleType {
 
   String get summernoteNameAPI {
     switch (this) {
-      case RichTextStyleType.textColor:
+      case textColor:
         return 'foreColor';
-      case RichTextStyleType.textBackgroundColor:
+      case textBackgroundColor:
         return 'backColor';
-      case RichTextStyleType.fontName:
+      case fontName:
         return 'fontName';
       case bold:
         return 'bold';
@@ -108,6 +95,8 @@ enum RichTextStyleType {
         return AppLocalizations.of(context).headerStyle;
       case fontName:
         return AppLocalizations.of(context).fontFamily;
+      case fontSize:
+        return AppLocalizations.of(context).textSize;
       case paragraph:
         return AppLocalizations.of(context).paragraph;
       case orderList:
