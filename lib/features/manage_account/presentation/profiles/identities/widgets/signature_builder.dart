@@ -46,11 +46,13 @@ class SignatureBuilder extends StatelessWidget {
           direction: AppUtils.getCurrentDirection(context),
         );
       } else {
-        return HtmlContentViewer(
-          contentHtml: signatureSelected,
-          heightContent: height,
-          direction: AppUtils.getCurrentDirection(context),
-        );
+        return LayoutBuilder(builder: (context, constraints) {
+          return HtmlContentViewer(
+            contentHtml: signatureSelected,
+            initialWidth: constraints.maxWidth,
+            direction: AppUtils.getCurrentDirection(context),
+          );
+        });
       }
     } else {
       return SizedBox(width: width, height: height);
