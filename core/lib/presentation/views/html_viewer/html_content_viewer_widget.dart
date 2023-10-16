@@ -47,6 +47,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   late InAppWebViewController _webViewController;
   late double _actualHeight;
   late Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers;
+  late String _customScripts;
 
   final _loadingBarNotifier = ValueNotifier(true);
 
@@ -60,7 +61,6 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   void initState() {
     super.initState();
-    _actualHeight = _minHeight;
     if (PlatformInfo.isAndroid) {
       _gestureRecognizers = {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
@@ -71,13 +71,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
       };
     }
-    _htmlData = generateHtml(
-      widget.contentHtml,
-      direction: widget.direction,
-      javaScripts: PlatformInfo.isAndroid
-        ? HtmlUtils.scriptsHandleContentSizeChanged
-        : null
-    );
+    if (PlatformInfo.isAndroid) {
+      _customScripts = HtmlUtils.scriptsHandleLazyLoadingBackgroundImage + HtmlUtils.scriptsHandleContentSizeChanged;
+    } else {
+      _customScripts = HtmlUtils.scriptsHandleLazyLoadingBackgroundImage;
+    }
+    _initialData();
   }
 
   @override
@@ -86,15 +85,17 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     log('_HtmlContentViewState::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
     if (widget.contentHtml != oldWidget.contentHtml ||
         widget.direction != oldWidget.direction) {
-      _actualHeight = _minHeight;
-      _htmlData = generateHtml(
-        widget.contentHtml,
-        direction: widget.direction,
-        javaScripts: PlatformInfo.isAndroid
-          ? HtmlUtils.scriptsHandleContentSizeChanged
-          : null
-      );
+      _initialData();
     }
+  }
+
+  void _initialData() {
+    _actualHeight = _minHeight;
+    _htmlData = generateHtml(
+      widget.contentHtml,
+      direction: widget.direction,
+      javaScripts: _customScripts
+    );
   }
 
   @override
