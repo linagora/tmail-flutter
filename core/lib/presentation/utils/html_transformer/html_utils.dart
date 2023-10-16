@@ -72,6 +72,29 @@ class HtmlUtils {
     </script>
   ''';
 
+  static const scriptsHandleLazyLoadingBackgroundImage = '''
+    <script>
+      const lazyImages = document.querySelectorAll('[lazy]');
+      const lazyImageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const lazyImage = entry.target;
+            const src = lazyImage.dataset.src;
+            lazyImage.tagName.toLowerCase() === 'img'
+              ? lazyImage.src = src
+              : lazyImage.style.backgroundImage = "url(\'" + src + "\')";
+            lazyImage.removeAttribute('lazy');
+            observer.unobserve(lazyImage);
+          }
+        });
+      });
+      
+      lazyImages.forEach((lazyImage) => {
+        lazyImageObserver.observe(lazyImage);
+      });
+    </script>
+  ''';
+
   static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
     if (PlatformInfo.isWeb) {
       return '''
