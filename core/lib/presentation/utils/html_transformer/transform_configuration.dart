@@ -1,9 +1,9 @@
 
-import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/add_lazy_loading_for_background_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/add_target_blank_in_tag_a_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/add_tooltip_link_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockcode_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
@@ -11,6 +11,7 @@ import 'package:core/presentation/utils/html_transformer/dom/remove_tooltip_link
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sigature_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
+import 'package:core/utils/platform_info.dart';
 
 /// Contains the configuration for all transformations.
 class TransformConfiguration {
