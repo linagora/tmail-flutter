@@ -1418,7 +1418,7 @@ class ComposerController extends BaseController {
         accountId,
         emailId,
         mailboxDashBoardController.baseDownloadUrl,
-        TransformConfiguration.empty()
+        TransformConfiguration.forDraftsEmail()
       ));
     }
   }
