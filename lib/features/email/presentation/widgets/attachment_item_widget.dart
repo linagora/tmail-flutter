@@ -1,7 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:filesize/filesize.dart';
@@ -20,7 +19,6 @@ class AttachmentItemWidget extends StatelessWidget {
   final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
 
   final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   AttachmentItemWidget({
     Key? key,
@@ -30,29 +28,26 @@ class AttachmentItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: AttachmentItemWidgetStyle.padding,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => downloadAttachmentAction?.call(attachment),
-          customBorder: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => downloadAttachmentAction?.call(attachment),
+        customBorder: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
+        ),
+        child: Container(
+          padding: AttachmentItemWidgetStyle.contentPadding,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius)),
+            border: Border.all(color: AttachmentItemWidgetStyle.borderColor),
           ),
-          child: Container(
-            padding: AttachmentItemWidgetStyle.contentPadding,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius)),
-              border: Border.all(color: AttachmentItemWidgetStyle.borderColor),
-            ),
-            width: _responsiveUtils.isMobile(context)
-              ? AttachmentItemWidgetStyle.mobileWidth
-              : AttachmentItemWidgetStyle.width,
-            height: AttachmentItemWidgetStyle.height,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Row(children: [
+          width: AttachmentItemWidgetStyle.width,
+          height: AttachmentItemWidgetStyle.height,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Row(
+                  children: [
                     SvgPicture.asset(
                       attachment.getIcon(_imagePaths),
                       width: AttachmentItemWidgetStyle.iconSize,
@@ -60,26 +55,29 @@ class AttachmentItemWidget extends StatelessWidget {
                       fit: BoxFit.fill
                     ),
                     const SizedBox(width: AttachmentItemWidgetStyle.space),
-                    Expanded(child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Expanded(child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ExtendedText(
-                          (attachment.name ?? ''),
-                          maxLines: 1,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          overflowWidget: TextOverflowWidget(
-                            position: Directionality.maybeOf(context) == TextDirection.rtl
-                              ? TextOverflowPosition.start
-                              : TextOverflowPosition.end,
-                            child: const Text(
-                              "...",
-                              style: AttachmentItemWidgetStyle.dotsLabelTextStyle,
+                        SizedBox(
+                          width: AttachmentItemWidgetStyle.attachmentNameMaxWidth,
+                          child: ExtendedText(
+                            (attachment.name ?? ''),
+                            maxLines: 1,
+                            overflow: CommonTextStyle.defaultTextOverFlow,
+                            softWrap: CommonTextStyle.defaultSoftWrap,
+                            overflowWidget: TextOverflowWidget(
+                              position: Directionality.maybeOf(context) == TextDirection.rtl
+                                ? TextOverflowPosition.start
+                                : TextOverflowPosition.end,
+                              child: const Text(
+                                "...",
+                                style: AttachmentItemWidgetStyle.dotsLabelTextStyle,
+                              ),
                             ),
+                            style: AttachmentItemWidgetStyle.labelTextStyle,
                           ),
-                          style: AttachmentItemWidgetStyle.labelTextStyle,
                         ),
-                        const SizedBox(height: 4),
                         Text(
                           filesize(attachment.size?.value),
                           maxLines: 1,
@@ -88,29 +86,26 @@ class AttachmentItemWidget extends StatelessWidget {
                           style: AttachmentItemWidgetStyle.sizeLabelTextStyle,
                         )
                       ]
-                    ))
-                  ]),
-                ),
-                Align(
-                  alignment: AlignmentDirectional.bottomEnd,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      child: SvgPicture.asset(
-                        _imagePaths.icDownloadAttachment,
-                        width: AttachmentItemWidgetStyle.downloadIconSize,
-                        height: AttachmentItemWidgetStyle.downloadIconSize,
-                        colorFilter: AttachmentItemWidgetStyle.downloadIconColor.asFilter(),
-                        fit: BoxFit.fill
+                    )),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        child: SvgPicture.asset(
+                          _imagePaths.icDownloadAttachment,
+                          width: AttachmentItemWidgetStyle.downloadIconSize,
+                          height: AttachmentItemWidgetStyle.downloadIconSize,
+                          colorFilter: AttachmentItemWidgetStyle.downloadIconColor.asFilter(),
+                          fit: BoxFit.fill
+                        ),
+                        onTap: () => downloadAttachmentAction?.call(attachment)
                       ),
-                      onTap: () => downloadAttachmentAction?.call(attachment)
                     ),
-                  ),
+                  ]
                 ),
-              ]
-            )
-          ),
+              ),          
+            ]
+          )
         ),
       ),
     );
