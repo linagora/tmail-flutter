@@ -3382,4 +3382,33 @@ class AppLocalizations {
       name: 'bannerMessageSendingQueueViewOnIOS'
     );
   }
+
+  String moreAttachments(int count) {
+    return Intl.message(
+      '+ $count more',
+      name: 'moreAttachments',
+      args: [count]
+    );
+  }
+
+  String get attachmentList {
+    return Intl.message(
+      'Attachment list',
+      name: 'attachmentList',
+    );
+  }
+
+  String get files {
+    return Intl.message(
+      'files',
+      name: 'files',
+    );
+  }
+
+  String get downloadAll {
+    return Intl.message(
+      'Download all',
+      name: 'downloadAll',
+    );
+  }
 }
