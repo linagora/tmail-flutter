@@ -4142,7 +4142,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new B._StreamBuilderBaseState__subscribe__closure(t1, error, stackTrace));
     },
-    $signature: 95
+    $signature: 104
   };
   B._StreamBuilderBaseState__subscribe__closure.prototype = {
     call$0() {
@@ -4702,4 +4702,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["UM42vrsMHObT/O2x4r5CeLI98B0="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["uFdtCoUSuRqt3I+Ujcdh4YF8/rY="] = $__dart_deferred_initializers__.current

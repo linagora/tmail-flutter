@@ -191,7 +191,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 76
+    $signature: 77
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -215,4 +215,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["mXLkvjK35A7Jp1IlMNVY+TdoxAg="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["h62CyhDZWfEpy7ob92d4mV6yGCg="] = $__dart_deferred_initializers__.current
