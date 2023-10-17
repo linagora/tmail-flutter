@@ -340,7 +340,9 @@ class EmailView extends GetWidget<SingleEmailController> {
           final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
           if (attachments.isNotEmpty) {
             return EmailAttachmentsWidget(
+              responsiveUtils: responsiveUtils,
               attachments: attachments,
+              imagePaths: imagePaths,
               onDragStarted: () {
                 log('EmailView::_buildEmailMessage:onDragStarted:');
                 controller.mailboxDashBoardController.enableDraggableApp();
@@ -356,6 +358,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   controller.exportAttachment(context, attachment);
                 }
               },
+              onTapShowAllAttachmentFile: () => controller.openAttachmentList(context, attachments),
             );
           } else {
             return const SizedBox.shrink();
