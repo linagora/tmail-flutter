@@ -223,6 +223,10 @@ extension AppColor on Color {
   static const colorLabelRichText = Color(0xFFADADC0);
   static const dropdownButtonBorderColor = Color(0xFFCFD7E2);
   static const dropdownLabelButtonBackgroundColor = Color(0xFFF4F4F4);
+  static const colorLabelMoreAttachmentsButton = Color(0xFF71767C);
+  static const colorButtonBorder = Color(0xFFD5D7E0);
+  static const colorScrollbarTrackColor = Color(0xFFF4EFF4);
+  static const colorScrollbarThumbColor = Color(0xFFD8E1EB);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
