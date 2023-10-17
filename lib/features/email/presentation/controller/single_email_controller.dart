@@ -58,6 +58,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -1337,5 +1339,39 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void openNewComposerAction(String mailTo) {
     final emailAddress = EmailAddress(mailTo, mailTo);
     mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
+  }
+
+  void openAttachmentList(BuildContext context, List<Attachment> attachments) {
+    if (responsiveUtils.isMobile(context)) {
+      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths)
+        ..onCloseButtonAction(() => popBack())
+        ..onDownloadAttachmentFileAction((attachment) {
+          if (PlatformInfo.isWeb) {
+            downloadAttachmentForWeb(context, attachment);
+          } else {
+            exportAttachment(context, attachment);
+          }
+        })
+      ).show();
+    } else {
+      showDialog(
+        context: context,
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        builder: (BuildContext context) => 
+          PointerInterceptor(
+            child: (AttachmentListDialogBuilder(context, imagePaths, attachments, responsiveUtils)
+              ..backgroundColor(Colors.black.withAlpha(24))
+              ..onCloseButtonAction(() => popBack())
+              ..onDownloadAttachmentFileAction((attachment) {
+                if (PlatformInfo.isWeb) {
+                  downloadAttachmentForWeb(context, attachment);
+                } else {
+                  exportAttachment(context, attachment);
+                }
+              })
+            ).build()
+          )
+      );
+    }
   }
 }
