@@ -1364,9 +1364,13 @@ class MailboxDashBoardController extends ReloadableController {
         openComposerOverlay(arguments);
       }
     } else {
-      final result = await push(AppRoutes.composer, arguments: arguments);
-      if (result is SendingEmailArguments) {
-        handleSendEmailAction(result);
+      if (PlatformInfo.isIOS && !networkConnectionController.isNetworkConnectionAvailable()) {
+        _showDialogAvoidComposing();
+      } else {
+        final result = await push(AppRoutes.composer, arguments: arguments);
+        if (result is SendingEmailArguments) {
+          handleSendEmailAction(result);
+        }
       }
     }
   }
@@ -2069,6 +2073,28 @@ class MailboxDashBoardController extends ReloadableController {
 
   void disableDraggableApp() {
     draggableAppState.value = DraggableAppState.inActive;
+  }
+
+  void _showDialogAvoidComposing() async {
+    await showDialog(
+      context: currentContext!,
+      barrierDismissible: true,
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      builder: (BuildContext context) => PointerInterceptor(
+        child: (ConfirmDialogBuilder(_imagePaths, heightButton: 44)
+          ..key(const Key('avoid_composing_dialog'))
+          ..title(AppLocalizations.of(currentContext!).youAreInOfflineMode)
+          ..content(AppLocalizations.of(context).avoidComposingDialogMessage)
+          ..addIcon(SvgPicture.asset(_imagePaths.icDialogOfflineMode))
+          ..marginIcon(const EdgeInsets.only(top: 24))
+          ..paddingTitle(const EdgeInsets.only(top: 24))
+          ..paddingContent(const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 12))
+          ..styleTitle(const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
+          ..styleContent(const TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: AppColor.colorTitleSendingItem))
+          ..onCloseButtonAction(() => popBack())
+        ).build()
+      )
+    );
   }
 
   @override
