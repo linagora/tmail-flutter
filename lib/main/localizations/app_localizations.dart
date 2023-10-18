@@ -3368,4 +3368,11 @@ class AppLocalizations {
       name: 'textSize'
     );
   }
+
+  String get avoidComposingDialogMessage {
+    return Intl.message(
+      'We do not support sending emails without a network connection. You can try again later when online.',
+      name: 'avoidComposingDialogMessage'
+    );
+  }
 }

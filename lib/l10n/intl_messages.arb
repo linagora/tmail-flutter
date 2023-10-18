@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-11T09:37:10.790631",
+  "@@last_modified": "2023-10-18T15:07:30.779417",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3260,6 +3260,12 @@
   },
   "textSize": "Text Size",
   "@textSize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "avoidComposingDialogMessage": "We do not support sending emails without a network connection. You can try again later when online.",
+  "@avoidComposingDialogMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
