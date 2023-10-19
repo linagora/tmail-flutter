@@ -51,7 +51,8 @@ class SendEmailInteractor {
         yield Right<Failure, Success>(
           SendEmailSuccess(
             currentEmailState: currentEmailState,
-            currentMailboxState: currentMailboxState
+            currentMailboxState: currentMailboxState,
+            storedSendingId: emailRequest.storedSendingId
           )
         );
       } else {

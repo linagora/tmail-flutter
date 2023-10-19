@@ -94,7 +94,11 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
               onLongPressAction: controller.handleOnLongPressAction,
               onSelectLeadingAction: controller.toggleSelectionSendingEmail,
               onTapAction: (actionType, sendingEmail) {
-                if (!controller.isConnectedNetwork && sendingEmail.isEditableSupported) {
+                if (PlatformInfo.isAndroid &&
+                    !controller.isConnectedNetwork &&
+                    sendingEmail.isEditableSupported) {
+                  controller.handleSendingEmailActionType(context, actionType, [sendingEmail]);
+                } else if (PlatformInfo.isIOS && sendingEmail.isEditableSupported) {
                   controller.handleSendingEmailActionType(context, actionType, [sendingEmail]);
                 }
               });

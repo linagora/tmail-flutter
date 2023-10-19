@@ -86,6 +86,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
@@ -168,6 +169,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmptySpamFolderInteractor>(),
       Get.find<SaveEmailAsDraftsInteractor>(),
       Get.find<UpdateEmailDraftsInteractor>(),
+      Get.find<DeleteSendingEmailInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
