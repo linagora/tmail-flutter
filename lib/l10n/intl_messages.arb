@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-11T09:37:10.790631",
+  "@@last_modified": "2023-10-19T11:55:20.606226",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3260,6 +3260,18 @@
   },
   "textSize": "Text Size",
   "@textSize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogOfflineModeOnIOS": "The message will be in Sending Queue. You can try again when being online.",
+  "@messageDialogOfflineModeOnIOS": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueViewOnIOS": "Messages in the Send Queue mailbox can be sent while online.",
+  "@bannerMessageSendingQueueViewOnIOS": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

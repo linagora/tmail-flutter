@@ -177,9 +177,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => ComposerController(
         Get.find<DeviceInfoPlugin>(),
         Get.find<LocalFilePickerInteractor>(),
-        Get.find<SaveEmailAsDraftsInteractor>(),
         Get.find<GetEmailContentInteractor>(),
-        Get.find<UpdateEmailDraftsInteractor>(),
         Get.find<GetAllIdentitiesInteractor>(),
         Get.find<UploadController>(),
         Get.find<RemoveComposerCacheOnWebInteractor>(),
