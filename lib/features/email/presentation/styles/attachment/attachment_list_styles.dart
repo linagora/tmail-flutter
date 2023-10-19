@@ -34,6 +34,8 @@ class AttachmentListStyles {
     horizontal: 24.0,
     vertical: 12.0
   );
+  static const EdgeInsetsGeometry closeButtonPadding = EdgeInsets.all(12.0);
+  static const EdgeInsetsGeometry actionButtonsRowPadding = EdgeInsets.only(top: 12);
 
   static const Color bodyBackgroundColor = Colors.white;
   static const Color headerBorderColor = AppColor.colorDividerEmailView;

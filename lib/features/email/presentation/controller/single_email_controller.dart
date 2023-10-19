@@ -96,6 +96,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final _uuid = Get.find<Uuid>();
   final _downloadManager = Get.find<DownloadManager>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
+  final _attachmentListScrollController = ScrollController();
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -151,6 +152,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   @override
   void onClose() {
     _downloadProgressStateController.close();
+    _attachmentListScrollController.dispose();
     super.onClose();
   }
 
@@ -1343,7 +1345,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void openAttachmentList(BuildContext context, List<Attachment> attachments) {
     if (responsiveUtils.isMobile(context)) {
-      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths)
+      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController)
         ..onCloseButtonAction(() => popBack())
         ..onDownloadAttachmentFileAction((attachment) {
           if (PlatformInfo.isWeb) {
@@ -1359,17 +1361,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
         builder: (BuildContext context) => 
           PointerInterceptor(
-            child: (AttachmentListDialogBuilder(context, imagePaths, attachments, responsiveUtils)
-              ..backgroundColor(Colors.black.withAlpha(24))
-              ..onCloseButtonAction(() => popBack())
-              ..onDownloadAttachmentFileAction((attachment) {
+            child: AttachmentListDialogBuilder(
+              imagePaths: imagePaths,
+              attachments: attachments,
+              responsiveUtils: responsiveUtils,
+              scrollController: _attachmentListScrollController,
+              backgroundColor: Colors.black.withAlpha(24),
+              onCloseButtonAction: () => popBack(),
+              onDownloadAttachmentFileAction: (attachment) {
                 if (PlatformInfo.isWeb) {
                   downloadAttachmentForWeb(context, attachment);
                 } else {
                   exportAttachment(context, attachment);
                 }
-              })
-            ).build()
+              }
+            )
           )
       );
     }
