@@ -44,8 +44,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -115,9 +113,7 @@ class ComposerController extends BaseController {
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
-  final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
-  final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
@@ -174,9 +170,7 @@ class ComposerController extends BaseController {
   ComposerController(
     this._deviceInfoPlugin,
     this._localFilePickerInteractor,
-    this._saveEmailAsDraftsInteractor,
     this._getEmailContentInteractor,
-    this._updateEmailDraftsInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
     this._removeComposerCacheOnWebInteractor,
@@ -894,7 +888,7 @@ class ComposerController extends BaseController {
         ? CreateNewMailboxRequest(Id(_uuid.v1()), PresentationMailbox.outboxMailboxName)
         : null;
 
-      if (PlatformInfo.isAndroid && !networkConnectionController.isNetworkConnectionAvailable()) {
+      if (!networkConnectionController.isNetworkConnectionAvailable()) {
         switch(arguments.sendingEmailActionType) {
           case SendingEmailActionType.create:
             _showConfirmDialogStoreSendingEmail(
@@ -951,7 +945,9 @@ class ComposerController extends BaseController {
   void _showConfirmDialogStoreSendingEmail(SendingEmailArguments sendingEmailArguments) {
     showConfirmDialogAction(
       currentContext!,
-      '',
+      PlatformInfo.isIOS
+        ? AppLocalizations.of(currentContext!).messageDialogOfflineModeOnIOS
+        : '',
       AppLocalizations.of(currentContext!).proceed,
       onConfirmAction: () {
         uploadController.clearInlineFileUploaded();
@@ -969,27 +965,29 @@ class ComposerController extends BaseController {
         fontSize: 15,
         fontWeight: FontWeight.normal
       ),
-      listTextSpan: [
-        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailFirst),
-        TextSpan(
-          text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailSecond,
-          style: const TextStyle(
-            color: AppColor.colorTitleSendingItem,
-            fontSize: 15,
-            fontWeight: FontWeight.w600
-          ),
-        ),
-        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailThird),
-        TextSpan(
-          text: AppLocalizations.of(currentContext!).sendingQueue,
-          style: const TextStyle(
-            color: AppColor.colorTitleSendingItem,
-            fontSize: 15,
-            fontWeight: FontWeight.w600
-          ),
-        ),
-        TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailTail)
-      ]
+      listTextSpan: PlatformInfo.isIOS
+        ? null
+        : [
+            TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailFirst),
+            TextSpan(
+              text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailSecond,
+              style: const TextStyle(
+                color: AppColor.colorTitleSendingItem,
+                fontSize: 15,
+                fontWeight: FontWeight.w600
+              ),
+            ),
+            TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailThird),
+            TextSpan(
+              text: AppLocalizations.of(currentContext!).sendingQueue,
+              style: const TextStyle(
+                color: AppColor.colorTitleSendingItem,
+                fontSize: 15,
+                fontWeight: FontWeight.w600
+              ),
+            ),
+            TextSpan(text: AppLocalizations.of(currentContext!).messageDialogWhenStoreSendingEmailTail)
+          ]
     );
   }
 
@@ -1188,13 +1186,16 @@ class ComposerController extends BaseController {
     final userProfile = mailboxDashBoardController.userProfile.value;
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
+    final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
 
     if (arguments == null ||
+        draftMailboxId == null ||
         userProfile == null ||
         session == null ||
-        accountId == null ||
-        arguments.presentationEmail?.id != _emailIdEditing
+        accountId == null
     ) {
+      logError('ComposerController::saveToDraftAndClose: Param is NULL');
+      uploadController.clearInlineFileUploaded();
       if (PlatformInfo.isWeb) {
         mailboxDashBoardController.closeComposerOverlay();
       } else {
@@ -1203,16 +1204,7 @@ class ComposerController extends BaseController {
       return;
     }
 
-    final isChanged = await _isEmailChanged(
-      context: context,
-      emailActionType: arguments.emailActionType,
-      presentationEmail: arguments.presentationEmail,
-      mailboxRole: arguments.mailboxRole
-    );
-
-    if (isChanged && context.mounted) {
-      final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
-
+    if (_emailIdEditing != null && _emailIdEditing != arguments.presentationEmail?.id) {
       final newEmail = await _generateEmail(
         context,
         userProfile,
@@ -1221,28 +1213,47 @@ class ComposerController extends BaseController {
         arguments: arguments,
       );
 
-      if (arguments.emailActionType == EmailActionType.editDraft) {
-        mailboxDashBoardController.consumeState(
-          _updateEmailDraftsInteractor.execute(
-            session,
-            accountId,
-            newEmail,
-            arguments.presentationEmail!.id!
-          )
+      mailboxDashBoardController.updateEmailToDraft(
+        session: session,
+        accountId: accountId,
+        newEmail: newEmail,
+        oldEmailId: _emailIdEditing!
+      );
+    } else {
+      final isChanged = await _isEmailChanged(
+        context: context,
+        emailActionType: arguments.emailActionType,
+        presentationEmail: arguments.presentationEmail,
+        mailboxRole: arguments.mailboxRole
+      );
+      log('ComposerController::saveToDraftAndClose: isChanged: $isChanged');
+      if (isChanged && context.mounted) {
+        final newEmail = await _generateEmail(
+          context,
+          userProfile,
+          asDrafts: true,
+          draftMailboxId: draftMailboxId,
+          arguments: arguments,
         );
-      } else {
-        mailboxDashBoardController.consumeState(
-          _saveEmailAsDraftsInteractor.execute(
-            session,
-            accountId,
-            newEmail
-          )
-        );
+
+        if (arguments.emailActionType == EmailActionType.editDraft &&
+            arguments.presentationEmail?.id != null) {
+          mailboxDashBoardController.updateEmailToDraft(
+            session: session,
+            accountId: accountId,
+            newEmail: newEmail,
+            oldEmailId: arguments.presentationEmail!.id!
+          );
+        } else {
+          mailboxDashBoardController.saveEmailToDraft(
+            session: session,
+            accountId: accountId,
+            email: newEmail
+          );
+        }
       }
-
-      uploadController.clearInlineFileUploaded();
     }
-
+    uploadController.clearInlineFileUploaded();
     if (PlatformInfo.isWeb) {
       mailboxDashBoardController.closeComposerOverlay();
     } else {
@@ -1285,21 +1296,17 @@ class ComposerController extends BaseController {
     );
 
     if (event.emailIdEditing == null) {
-      mailboxDashBoardController.consumeState(
-        _saveEmailAsDraftsInteractor.execute(
-          event.session,
-          event.accountId,
-          newEmail
-        )
+      mailboxDashBoardController.saveEmailToDraft(
+        session: event.session,
+        accountId: event.accountId,
+        email: newEmail
       );
     } else {
-      mailboxDashBoardController.consumeState(
-        _updateEmailDraftsInteractor.execute(
-          event.session,
-          event.accountId,
-          newEmail,
-          event.emailIdEditing!
-        )
+      mailboxDashBoardController.updateEmailToDraft(
+        session: event.session,
+        accountId: event.accountId,
+        newEmail: newEmail,
+        oldEmailId: event.emailIdEditing!
       );
     }
   }
