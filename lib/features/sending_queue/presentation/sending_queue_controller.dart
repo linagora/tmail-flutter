@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.da
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
@@ -32,6 +33,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_send
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_stored_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_multiple_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/delete_multiple_sending_email_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_multiple_sending_email_interactor.dart';
@@ -275,8 +277,26 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
     final accountId = dashboardController.accountId.value;
     final session = dashboardController.sessionCurrent;
+    if (accountId == null || session == null) {
+      return;
+    }
 
-    if (accountId != null && session != null) {
+    if (PlatformInfo.isIOS && listSendingEmails.isNotEmpty) {
+      final sendingEmailRunning = listSendingEmails.first.updatingSendingState(SendingState.running);
+      _updateSendingEmailAction(
+        newSendingEmail: sendingEmailRunning,
+        accountId: accountId,
+        userName: session.username
+      );
+      dashboardController.handleSendEmailAction(
+        SendingEmailArguments(
+          session,
+          accountId,
+          sendingEmailRunning.toEmailRequest(),
+          _getMailboxRequest(sendingEmailRunning),
+        )
+      );
+    } else {
       consumeState(
         _updateMultipleSendingEmailInteractor.execute(
           accountId,
@@ -287,11 +307,26 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     }
   }
 
+  CreateNewMailboxRequest? _getMailboxRequest(SendingEmail sendingEmail) {
+    if (sendingEmail.mailboxNameRequest != null &&
+        sendingEmail.creationIdRequest != null
+    ) {
+      return CreateNewMailboxRequest(
+        sendingEmail.creationIdRequest!,
+        sendingEmail.mailboxNameRequest!
+      );
+    } else {
+      return null;
+    }
+  }
+
   void _handleResendSendingEmailSuccess(List<SendingEmail> newListSendingEmails) async {
-    await Future.forEach<SendingEmail>(newListSendingEmails, (sendingEmail) async {
-      await WorkManagerController().cancelByUniqueId(sendingEmail.sendingId);
-      dashboardController.addSendingEmailToSendingQueue(sendingEmail);
-    });
+    if (PlatformInfo.isAndroid) {
+      await Future.forEach<SendingEmail>(newListSendingEmails, (sendingEmail) async {
+        await WorkManagerController().cancelByUniqueId(sendingEmail.sendingId);
+        dashboardController.addSendingEmailToSendingQueue(sendingEmail);
+      });
+    }
 
     if (currentContext != null && currentOverlayContext != null) {
       _appToast.showToastSuccessMessage(
@@ -314,7 +349,9 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
-    await WorkManagerController().cancelByUniqueId(success.newSendingEmail.sendingId);
+    if (PlatformInfo.isAndroid) {
+      await WorkManagerController().cancelByUniqueId(success.newSendingEmail.sendingId);
+    }
     refreshSendingQueue();
   }
 
