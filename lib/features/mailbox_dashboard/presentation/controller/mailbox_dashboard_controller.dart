@@ -28,7 +28,9 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -168,6 +170,8 @@ class MailboxDashBoardController extends ReloadableController {
   final GetAllSendingEmailInteractor _getAllSendingEmailInteractor;
   final StoreSessionInteractor _storeSessionInteractor;
   final EmptySpamFolderInteractor _emptySpamFolderInteractor;
+  final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
+  final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -243,6 +247,8 @@ class MailboxDashBoardController extends ReloadableController {
     this._getAllSendingEmailInteractor,
     this._storeSessionInteractor,
     this._emptySpamFolderInteractor,
+    this._saveEmailAsDraftsInteractor,
+    this._updateEmailDraftsInteractor,
   ) : super(
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
@@ -1876,7 +1882,9 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) {
-    addSendingEmailToSendingQueue(success.sendingEmail);
+    if (PlatformInfo.isAndroid) {
+      addSendingEmailToSendingQueue(success.sendingEmail);
+    }
     getAllSendingEmails();
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastSuccessMessage(
@@ -1888,8 +1896,10 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
-    await WorkManagerController().cancelByUniqueId(success.newSendingEmail.sendingId);
-    addSendingEmailToSendingQueue(success.newSendingEmail);
+    if (PlatformInfo.isAndroid) {
+      await WorkManagerController().cancelByUniqueId(success.newSendingEmail.sendingId);
+      addSendingEmailToSendingQueue(success.newSendingEmail);
+    }
     getAllSendingEmails();
   }
 
@@ -2069,6 +2079,36 @@ class MailboxDashBoardController extends ReloadableController {
 
   void disableDraggableApp() {
     draggableAppState.value = DraggableAppState.inActive;
+  }
+
+  void saveEmailToDraft({
+    required Session session,
+    required AccountId accountId,
+    required Email email
+  }) {
+    consumeState(
+      _saveEmailAsDraftsInteractor.execute(
+        session,
+        accountId,
+        email
+      )
+    );
+  }
+
+  void updateEmailToDraft({
+    required Session session,
+    required AccountId accountId,
+    required Email newEmail,
+    required EmailId oldEmailId
+  }) {
+    consumeState(
+      _updateEmailDraftsInteractor.execute(
+        session,
+        accountId,
+        newEmail,
+        oldEmailId
+      )
+    );
   }
 
   @override

@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_utils.dart';
@@ -35,7 +36,9 @@ class BannerMessageSendingQueueWidget extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Expanded(child: Text(
-              AppLocalizations.of(context).bannerMessageSendingQueueView,
+              PlatformInfo.isAndroid
+                ? AppLocalizations.of(context).bannerMessageSendingQueueView
+                : AppLocalizations.of(context).bannerMessageSendingQueueViewOnIOS,
               style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black,
