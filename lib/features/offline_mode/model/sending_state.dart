@@ -29,7 +29,6 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.running:
       case SendingState.success:
-        return imagePaths.icDelivering;
       case SendingState.canceled:
         return imagePaths.icDelivering;
       case SendingState.error:

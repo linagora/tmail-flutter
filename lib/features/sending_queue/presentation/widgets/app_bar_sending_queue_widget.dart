@@ -1,15 +1,14 @@
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
-import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_utils.dart';
+import 'package:tmail_ui_user/features/sending_queue/presentation/styles/app_bar_sending_queue_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AppBarSendingQueueWidget extends StatelessWidget {
@@ -19,7 +18,9 @@ class AppBarSendingQueueWidget extends StatelessWidget {
   final SelectMode selectMode;
   final List<SendingEmail> listSendingEmailSelected;
 
-  const AppBarSendingQueueWidget({
+  final _imagePaths = Get.find<ImagePaths>();
+
+  AppBarSendingQueueWidget({
     super.key,
     required this.listSendingEmailSelected,
     this.onBackAction,
@@ -29,54 +30,49 @@ class AppBarSendingQueueWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        height: 52,
-        color: Colors.white,
-        padding: SendingQueueUtils.getPaddingAppBarByResponsiveSize(constraints.maxWidth),
+        height: AppBarSendingQueueWidgetStyle.height,
+        color: AppBarSendingQueueWidgetStyle.backgroundColor,
+        padding: AppBarSendingQueueWidgetStyle.getPaddingAppBarByResponsiveSize(constraints.maxWidth),
         child: Row(
           children: [
             if (selectMode == SelectMode.INACTIVE)
-              buildIconWeb(
-                icon: SvgPicture.asset(
-                  imagePaths.icMenuMailbox,
-                  colorFilter: AppColor.colorTextButton.asFilter(),
-                  fit: BoxFit.fill
-                ),
-                tooltip: AppLocalizations.of(context).openMailboxMenu,
-                onTap: onOpenMailboxMenu
+              TMailButtonWidget.fromIcon(
+                icon: _imagePaths.icMenuMailbox,
+                backgroundColor: Colors.transparent,
+                iconColor: AppBarSendingQueueWidgetStyle.iconColor,
+                tooltipMessage: AppLocalizations.of(context).openMailboxMenu,
+                onTapActionCallback: onOpenMailboxMenu
               )
             else
               Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding: AppBarSendingQueueWidgetStyle.leadingPadding,
                 child: Material(
                   color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: const BorderRadius.all(Radius.circular(AppBarSendingQueueWidgetStyle.leadingRadius)),
                   child: InkWell(
                     onTap: onBackAction,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: const BorderRadius.all(Radius.circular(AppBarSendingQueueWidgetStyle.leadingRadius)),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: AppBarSendingQueueWidgetStyle.selectIconPadding,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SvgPicture.asset(
-                            DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icCollapseFolder : imagePaths.icBack,
-                            colorFilter: AppColor.colorTextButton.asFilter(),
+                            DirectionUtils.isDirectionRTLByLanguage(context)
+                              ? _imagePaths.icCollapseFolder
+                              : _imagePaths.icBack,
+                            colorFilter: AppBarSendingQueueWidgetStyle.iconColor.asFilter(),
                             fit: BoxFit.fill
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppBarSendingQueueWidgetStyle.space),
                           Text(
                             listSendingEmailSelected.length.toString(),
                             maxLines: 1,
                             overflow: CommonTextStyle.defaultTextOverFlow,
                             softWrap: CommonTextStyle.defaultSoftWrap,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              color: AppColor.colorTextButton
-                            )
+                            style: AppBarSendingQueueWidgetStyle.countStyle
                           )
                         ]
                       ),
@@ -90,13 +86,9 @@ class AppBarSendingQueueWidget extends StatelessWidget {
               textAlign: TextAlign.center,
               overflow: CommonTextStyle.defaultTextOverFlow,
               softWrap: CommonTextStyle.defaultSoftWrap,
-              style: const TextStyle(
-                fontSize: 21,
-                color: Colors.black,
-                fontWeight: FontWeight.bold
-              )
+              style: AppBarSendingQueueWidgetStyle.labelStyle
             )),
-            const SizedBox(width: 50)
+            const SizedBox(width: AppBarSendingQueueWidgetStyle.trailingSize)
           ],
         ),
       );

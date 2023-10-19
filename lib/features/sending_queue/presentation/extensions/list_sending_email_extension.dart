@@ -20,5 +20,7 @@ extension ListSendingEmailExtension on List<SendingEmail> {
 
   bool isAllSendingStateError() => every((sendingEmail) => sendingEmail.isError);
 
+  bool isAllSendingStateWaitingOrError() => every((sendingEmail) => sendingEmail.isWaiting || sendingEmail.isError);
+
   List<SendingEmail> toSendingStateWaiting() => map((sendingEmail) => sendingEmail.updatingSendingState(SendingState.waiting)).toList();
 }

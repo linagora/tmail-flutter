@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
@@ -18,7 +19,10 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
   final OnHandleSendingEmailActionType? onHandleSendingEmailActionType;
   final bool isConnectedNetwork;
 
-  const BottomBarSendingQueueWidget({
+  final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  BottomBarSendingQueueWidget({
     super.key,
     required this.listSendingEmailSelected,
     this.onHandleSendingEmailActionType,
@@ -27,9 +31,6 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-    final responsiveUtils = Get.find<ResponsiveUtils>();
-
     return Container(
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(
@@ -45,7 +46,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
             child: TMailButtonWidget(
               key: Key(SendingEmailActionType.edit.getButtonKey()),
               text: SendingEmailActionType.edit.getButtonTitle(context),
-              icon: imagePaths.icEdit,
+              icon: _imagePaths.icEdit,
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.edit.getButtonIconColor(_isEditable ? ButtonState.enabled : ButtonState.disabled),
@@ -53,7 +54,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
                 fontSize: 12,
                 color: SendingEmailActionType.edit.getButtonTitleColor(_isEditable ? ButtonState.enabled : ButtonState.disabled)
               ),
-              verticalDirection: responsiveUtils.isPortraitMobile(context),
+              verticalDirection: _responsiveUtils.isPortraitMobile(context),
               onTapActionCallback: () {
                 if (_isEditable) {
                   onHandleSendingEmailActionType?.call(
@@ -68,7 +69,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
             child: TMailButtonWidget(
               key: Key(SendingEmailActionType.resend.getButtonKey()),
               text: SendingEmailActionType.resend.getButtonTitle(context),
-              icon: imagePaths.icRefresh,
+              icon: _imagePaths.icRefresh,
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.resend.getButtonIconColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled),
@@ -76,7 +77,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
                 fontSize: 12,
                 color: SendingEmailActionType.resend.getButtonTitleColor(_isCanResend ? ButtonState.enabled : ButtonState.disabled)
               ),
-              verticalDirection: responsiveUtils.isPortraitMobile(context),
+              verticalDirection: _responsiveUtils.isPortraitMobile(context),
               onTapActionCallback: () {
                 if (_isCanResend) {
                   onHandleSendingEmailActionType?.call(SendingEmailActionType.resend, listSendingEmailSelected);
@@ -88,7 +89,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
             child: TMailButtonWidget(
               key: Key(SendingEmailActionType.delete.getButtonKey()),
               text: SendingEmailActionType.delete.getButtonTitle(context),
-              icon: imagePaths.icDeleteComposer,
+              icon: _imagePaths.icDeleteComposer,
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.delete.getButtonIconColor(ButtonState.enabled),
@@ -96,7 +97,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
                 fontSize: 12,
                 color: SendingEmailActionType.delete.getButtonTitleColor(ButtonState.enabled)
               ),
-              verticalDirection: responsiveUtils.isPortraitMobile(context),
+              verticalDirection: _responsiveUtils.isPortraitMobile(context),
               onTapActionCallback: () => onHandleSendingEmailActionType?.call(SendingEmailActionType.delete, listSendingEmailSelected),
             ),
           ),
@@ -105,9 +106,28 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
     );
   }
 
-  bool get _isEditable => !isConnectedNetwork &&
-    listSendingEmailSelected.length == 1 &&
-    listSendingEmailSelected.first.isEditableSupported;
+  bool get _isEditable {
+    if (PlatformInfo.isAndroid) {
+      return !isConnectedNetwork &&
+        listSendingEmailSelected.length == 1 &&
+        listSendingEmailSelected.first.isEditableSupported;
+    } else if (PlatformInfo.isIOS) {
+      return listSendingEmailSelected.length == 1 &&
+        listSendingEmailSelected.first.isEditableSupported;
+    } else {
+      return false;
+    }
+  }
 
-  bool get _isCanResend => listSendingEmailSelected.isAllSendingStateError();
+  bool get _isCanResend {
+    if (PlatformInfo.isAndroid) {
+      return listSendingEmailSelected.isAllSendingStateError();
+    } else if (PlatformInfo.isIOS) {
+      return isConnectedNetwork &&
+        listSendingEmailSelected.length == 1 &&
+        (listSendingEmailSelected.first.isWaiting || listSendingEmailSelected.first.isError);
+    } else {
+      return false;
+    }
+  }
 }

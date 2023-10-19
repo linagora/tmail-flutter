@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -35,13 +36,16 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
                 );
               }),
               const Divider(color: AppColor.colorDividerComposer, height: 1),
-              Obx(() {
-                if (!controller.isConnectedNetwork) {
-                  return const BannerMessageSendingQueueWidget();
-                } else {
-                  return const SizedBox.shrink();
-                }
-              }),
+              if (PlatformInfo.isIOS)
+                const BannerMessageSendingQueueWidget()
+              else
+                Obx(() {
+                  if (!controller.isConnectedNetwork) {
+                    return const BannerMessageSendingQueueWidget();
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
               Expanded(child: _buildListSendingEmails(context)),
               Obx(() {
                 if (controller.isAllUnSelected) {

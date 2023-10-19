@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:core/core.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
@@ -109,7 +110,15 @@ class SendingEmail with EquatableMixin {
 
   bool get isRunning => sendingState == SendingState.running;
 
-  bool get isEditableSupported => isWaiting || isRunning || isCanceled;
+  bool get isEditableSupported {
+    if (PlatformInfo.isAndroid) {
+      return isWaiting || isRunning || isCanceled;
+    } else if (PlatformInfo.isIOS) {
+      return isWaiting || isCanceled;
+    } else {
+      return false;
+    }
+  }
 
   @override
   List<Object?> get props => [

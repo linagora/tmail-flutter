@@ -3368,4 +3368,18 @@ class AppLocalizations {
       name: 'textSize'
     );
   }
+
+  String get messageDialogOfflineModeOnIOS {
+    return Intl.message(
+      'The message will be in Sending Queue. You can try again when being online.',
+      name: 'messageDialogOfflineModeOnIOS'
+    );
+  }
+
+  String get bannerMessageSendingQueueViewOnIOS {
+    return Intl.message(
+      'Messages in the Send Queue mailbox can be sent while online.',
+      name: 'bannerMessageSendingQueueViewOnIOS'
+    );
+  }
 }
