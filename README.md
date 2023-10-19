@@ -63,7 +63,7 @@ or you can find our images in: https://hub.docker.com/r/linagora/tmail-web
   <summary>Read more...</summary>
 That is a good question! **IMAP** is THE ubiquitous protocol people use to read their emails, THE norm.
 
-Yet **IMAP** had been designed in another age, which resulted in a chatty patchwork of extensions. **IMAP** lacks decent synchronisation primitives to address real-time challenges modern mobile fleet requires, it consumes a lot of bandwith, requires a lot of roundtrips which means high latency.
+Yet **IMAP** had been designed in another age, which resulted in a chatty patchwork of extensions. **IMAP** lacks decent synchronization primitives to address real-time challenges modern mobile fleet requires, it consumes a lot of bandwidth, requires a lot of round trips which means high latency.
 
 We are not alone to say this! Big players of the field started their own [proprietary](https://developers.google.com/gmail/api) [protocols](https://docs.microsoft.com/en-us/exchange/clients/exchange-activesync/exchange-activesync?view=exchserver-2019) to address IMAP flaws, and inter-operable standard was yet to be found...
 
@@ -72,7 +72,7 @@ This, is where **[JMAP](https://jmap.io/)** comes to play! **JMAP** builds on de
 
 ### **Can I use Team Mail with *any* JMAP server?**
 
-Yes, you can use the Team Mail application with any JMAP server and benefits from **Team Mail** ergonomy and ease of use.
+Yes, you can use the Team Mail application with any JMAP server and benefits from **Team Mail**'s ease of use.
 
 ### **I don't understand your app... I need help using it! HELP MEEEEEE...**
 
@@ -85,7 +85,7 @@ We plan on writing a user documentation, helping you navigating around the appli
 If what you are looking for is not in the *user guide* then ask us directly in the [issues](https://github.com/linagora/tmail-flutter/issues) first, we would be glad to help. But also glad to improve our documentation and maybe tweak slightly our UI (user interface).
 </details>
 
-### **What plateforms do you (plan to) target?**
+### **What platforms do you (plan to) target?**
 
 <details>
   <summary>Read more...</summary>
@@ -104,8 +104,8 @@ Now that we plan having a simple JMAP email client supporting Android, IOS, and 
 
  - Better filters, with more actions, and combining conditions
  - Restoring deleted messages
- - Delegating full access to others for instance your secratery
- - Labels for better sorting your emails accross folders
+ - Delegating full access to others for instance your security
+ - Labels for better sorting your emails across folders
  - Automated actions: archiving, emptying your trash, your spam folders
  - Running filters against a folder
  - Attachment thumbnails
@@ -123,7 +123,7 @@ Then, we have plan for multiple features including:
   - Support for Team Mail encrypted mailbox (GPG)
   - Interactions with some other software from [Linagora](https://linagora.com) including:
       - Sending attachments via [TDrive](https://github.com/linagora/TDrive) file sharing platform.
-      - Transfering some attachments you received to [TDrive](https://github.com/linagora/TDrive) file sharing platform.
+      - Transferring some attachments you received to [TDrive](https://github.com/linagora/TDrive) file sharing platform.
       - Discussing some emails you received via [Twake](https://twake.app/en/) chat.
 </details>
 
@@ -214,7 +214,7 @@ No we do not plan to support such extensions, that are currently not standardize
 
 <details>
   <summary>Read more...</summary>
-Thanks for the enthousiasm!
+Thanks for the enthusiasm!
 
 There are many ways to help us, and amongst them:
 
