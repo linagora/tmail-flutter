@@ -254,7 +254,9 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void _handleDeleteListSendingEmailSuccess(DeleteMultipleSendingEmailSuccess success) async {
-    await Future.wait(success.sendingIds.map(WorkManagerController().cancelByUniqueId));
+    if (PlatformInfo.isAndroid) {
+      await Future.wait(success.sendingIds.map(WorkManagerController().cancelByUniqueId));
+    }
 
     if (currentContext != null && currentOverlayContext != null) {
       _appToast.showToastSuccessMessage(
