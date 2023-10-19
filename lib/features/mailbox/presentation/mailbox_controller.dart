@@ -362,7 +362,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _selectSelectedMailboxDefault() {
     final isSearchEmailRunning = mailboxDashBoardController.searchController.isSearchEmailRunning;
-    if (isSearchEmailRunning) {
+    final dashboardRoute = mailboxDashBoardController.dashboardRoute.value;
+    if (isSearchEmailRunning || dashboardRoute == DashboardRoutes.sendingQueue) {
       log('MailboxController::_selectMailboxDefault(): isSearchEmailRunning is $isSearchEmailRunning');
       return;
     }

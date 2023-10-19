@@ -32,7 +32,9 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_dr
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
@@ -105,6 +107,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending_email_state.dart';
+import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
@@ -172,6 +175,7 @@ class MailboxDashBoardController extends ReloadableController {
   final EmptySpamFolderInteractor _emptySpamFolderInteractor;
   final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
+  final DeleteSendingEmailInteractor _deleteSendingEmailInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -249,6 +253,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._emptySpamFolderInteractor,
     this._saveEmailAsDraftsInteractor,
     this._updateEmailDraftsInteractor,
+    this._deleteSendingEmailInteractor,
   ) : super(
     getAuthenticatedAccountInteractor,
     updateAuthenticationAccountInteractor
@@ -298,12 +303,7 @@ class MailboxDashBoardController extends ReloadableController {
       dispatchMailboxUIAction(RefreshChangeMailboxAction(success.storedState));
       _deleteMailboxStateToRefreshAction();
     } else if (success is SendEmailSuccess) {
-      if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastSuccessMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
-          leadingSVGIcon: _imagePaths.icSendSuccessToast);
-      }
+      _handleSendEmailSuccess(success);
     } else if (success is SaveEmailAsDraftsSuccess) {
       _saveEmailAsDraftsSuccess(success);
     } else if (success is MoveToMailboxSuccess) {
@@ -347,6 +347,8 @@ class MailboxDashBoardController extends ReloadableController {
       _emptySpamFolderSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
       _markAsReadEmailSuccess(success);
+    } else if (success is DeleteSendingEmailSuccess) {
+      getAllSendingEmails();
     }
   }
 
@@ -1261,6 +1263,8 @@ class MailboxDashBoardController extends ReloadableController {
 
     if (result is SendingEmailArguments) {
       handleSendEmailAction(result);
+    } else if (result is SaveToDraftArguments) {
+      saveEmailToDraft(arguments: result);
     }
   }
 
@@ -1373,6 +1377,8 @@ class MailboxDashBoardController extends ReloadableController {
       final result = await push(AppRoutes.composer, arguments: arguments);
       if (result is SendingEmailArguments) {
         handleSendEmailAction(result);
+      } else if (result is SaveToDraftArguments) {
+        saveEmailToDraft(arguments: result);
       }
     }
   }
@@ -2081,34 +2087,46 @@ class MailboxDashBoardController extends ReloadableController {
     draggableAppState.value = DraggableAppState.inActive;
   }
 
-  void saveEmailToDraft({
-    required Session session,
-    required AccountId accountId,
-    required Email email
-  }) {
-    consumeState(
-      _saveEmailAsDraftsInteractor.execute(
-        session,
-        accountId,
-        email
-      )
-    );
+  void saveEmailToDraft({required SaveToDraftArguments arguments}) {
+    if (arguments.oldEmailId != null) {
+      consumeState(
+        _updateEmailDraftsInteractor.execute(
+          arguments.session,
+          arguments.accountId,
+          arguments.newEmail,
+          arguments.oldEmailId!
+        )
+      );
+    } else {
+      consumeState(
+        _saveEmailAsDraftsInteractor.execute(
+          arguments.session,
+          arguments.accountId,
+          arguments.newEmail,
+        )
+      );
+    }
   }
 
-  void updateEmailToDraft({
-    required Session session,
-    required AccountId accountId,
-    required Email newEmail,
-    required EmailId oldEmailId
-  }) {
-    consumeState(
-      _updateEmailDraftsInteractor.execute(
-        session,
-        accountId,
-        newEmail,
-        oldEmailId
-      )
-    );
+  void _handleSendEmailSuccess(SendEmailSuccess success) {
+    if (PlatformInfo.isIOS &&
+        success.storedSendingId != null &&
+        accountId.value != null &&
+        sessionCurrent != null
+    ) {
+      consumeState(_deleteSendingEmailInteractor.execute(
+        accountId.value!,
+        sessionCurrent!.username,
+        success.storedSendingId!
+      ));
+    }
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
+        leadingSVGIcon: _imagePaths.icSendSuccessToast
+      );
+    }
   }
 
   @override

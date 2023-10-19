@@ -12,10 +12,19 @@ class SendEmailLoading extends UIState {}
 
 class SendEmailSuccess extends UIActionState {
 
+  final String? storedSendingId;
+
   SendEmailSuccess({
     jmap.State? currentEmailState,
     jmap.State? currentMailboxState,
+    this.storedSendingId,
   }) : super(currentEmailState, currentMailboxState);
+
+  @override
+  List<Object?> get props => [
+    ...super.props,
+    storedSendingId,
+  ];
 }
 
 class SendEmailFailure extends FeatureFailure {
@@ -34,4 +43,14 @@ class SendEmailFailure extends FeatureFailure {
     this.mailboxRequest,
     this.sendingEmailActionType
   }) : super(exception: exception);
+
+  @override
+  List<Object?> get props => [
+    ...super.props,
+    session,
+    accountId,
+    emailRequest,
+    mailboxRequest,
+    sendingEmailActionType,
+  ];
 }

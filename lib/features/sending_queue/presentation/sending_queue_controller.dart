@@ -192,9 +192,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
         _deleteListSendingEmailAction(context, listSendingEmails);
         break;
       case SendingEmailActionType.edit:
-        if (!isConnectedNetwork) {
-          _editSendingEmailAction(listSendingEmails.first);
-        }
+        _editSendingEmailAction(listSendingEmails.first);
         break;
       case SendingEmailActionType.create:
         break;
