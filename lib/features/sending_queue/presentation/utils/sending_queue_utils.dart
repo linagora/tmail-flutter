@@ -4,8 +4,6 @@ import 'package:flutter/cupertino.dart';
 
 class SendingQueueUtils {
 
-
-
   static EdgeInsets getMarginBannerMessageByResponsiveSize(double width) {
     if (ResponsiveUtils.isMatchedMobileWidth(width)) {
       return const EdgeInsets.only(top: 16, left: 16, right: 16);

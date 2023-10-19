@@ -22,6 +22,20 @@ class SendingEmailArguments extends RouterArguments {
     }
   );
 
+  SendingEmailArguments copyWith({
+    Session? session,
+    AccountId? accountId,
+    EmailRequest? emailRequest,
+    CreateNewMailboxRequest? mailboxRequest,
+    ComposeActionMode? actionMode,
+  }) => SendingEmailArguments(
+    session ?? this.session,
+    accountId ?? this.accountId,
+    emailRequest ?? this.emailRequest,
+    mailboxRequest ?? this.mailboxRequest,
+    actionMode: actionMode ?? this.actionMode
+  );
+
   @override
   List<Object?> get props => [
     session,
