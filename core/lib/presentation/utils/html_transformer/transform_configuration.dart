@@ -7,6 +7,7 @@ import 'package:core/presentation/utils/html_transformer/dom/add_tooltip_link_tr
 import 'package:core/presentation/utils/html_transformer/dom/blockcode_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/remove_collapsed_signature_button_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading_for_background_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_tooltip_link_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
@@ -40,6 +41,7 @@ class TransformConfiguration {
       const RemoveTooltipLinkTransformer(),
     const SignatureTransformer(),
     const RemoveLazyLoadingForBackgroundImageTransformer(),
+    const RemoveCollapsedSignatureButtonTransformer(),
   ]);
 
   factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.empty();
@@ -53,6 +55,7 @@ class TransformConfiguration {
       const ImageTransformer(),
       const AddTooltipLinkTransformer(),
       const AddLazyLoadingForBackgroundImageTransformer(),
+      const RemoveCollapsedSignatureButtonTransformer(),
     ]
   );
 
@@ -92,6 +95,7 @@ class TransformConfiguration {
     AddTargetBlankInTagATransformer(),
     ImageTransformer(),
     AddLazyLoadingForBackgroundImageTransformer(),
+    RemoveCollapsedSignatureButtonTransformer(),
   ];
 
   static const List<TextTransformer> standardTextTransformers = [
