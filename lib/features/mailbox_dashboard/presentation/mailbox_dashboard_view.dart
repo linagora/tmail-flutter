@@ -25,6 +25,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         SizedBox(
             width: ResponsiveUtils.defaultSizeLeftMenuMobile,
             child: _buildScaffoldHaveDrawer(body: ThreadView())),
+        const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
         Expanded(child: EmailView()),
       ],
     );
@@ -62,6 +63,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   SizedBox(
                     width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                     child: _buildScaffoldHaveDrawer(body: const SendingQueueView())),
+                  const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
                   Expanded(child: EmailView()),
                 ],
               );
