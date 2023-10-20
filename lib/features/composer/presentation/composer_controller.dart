@@ -291,6 +291,14 @@ class ComposerController extends BaseController {
     }
   }
 
+  @override
+  void handleExceptionAction({Failure? failure, Exception? exception}) {
+    super.handleExceptionAction(failure: failure, exception: exception);
+    if (failure is GetAllIdentitiesFailure) {
+      _handleGetAllIdentitiesFailure(failure);
+    }
+  }
+
   void _listenStreamEvent() {
     uploadInlineImageWorker = ever(uploadController.uploadInlineViewState, (state) {
       log('ComposerController::_listenStreamEvent()::uploadInlineImageWorker: $state');
@@ -2088,5 +2096,16 @@ class ComposerController extends BaseController {
   void addAttachmentFromDropZone(Attachment attachment) {
     log('ComposerController::addAttachmentFromDropZone: $attachment');
     uploadController.initializeUploadAttachments([attachment]);
+  }
+
+  void _handleGetAllIdentitiesFailure(GetAllIdentitiesFailure failure) async {
+    log('ComposerController::_handleGetAllIdentitiesFailure:failure: $failure');
+    if (composerArguments.value?.emailActionType == EmailActionType.editSendingEmail && PlatformInfo.isMobile) {
+      final signatureContent = await htmlEditorApi?.getSignatureContent();
+      log('ComposerController::_handleGetAllIdentitiesFailure:signatureContent: $signatureContent');
+      if (signatureContent?.isNotEmpty == true) {
+        await _applySignature(signatureContent!);
+      }
+    }
   }
 }
