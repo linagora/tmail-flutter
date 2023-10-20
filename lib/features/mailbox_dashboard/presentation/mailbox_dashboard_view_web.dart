@@ -184,6 +184,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               SizedBox(
                                   width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                                   child: ThreadView()),
+                              const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
                               Expanded(child: EmailView()),
                             ],
                           ),
@@ -196,6 +197,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         SizedBox(
                             width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                             child: ThreadView()),
+                        const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
                         Expanded(child: EmailView()),
                       ],
                     ),
