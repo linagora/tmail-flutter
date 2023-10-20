@@ -53,6 +53,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
         ),
         color: EmailViewBottomBarWidgetStyles.backgroundColor
       ),
+      padding: EmailViewBottomBarWidgetStyles.padding,
       child: IntrinsicHeight(
         child: Row(
           children: [
