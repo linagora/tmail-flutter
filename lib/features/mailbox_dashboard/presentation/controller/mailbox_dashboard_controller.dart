@@ -94,6 +94,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
 import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
+import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/offline_mode/work_manager/one_time_work_request.dart';
 import 'package:tmail_ui_user/features/offline_mode/work_manager/worker_type.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
@@ -375,8 +376,11 @@ class MailboxDashBoardController extends ReloadableController {
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     super.handleExceptionAction(failure: failure, exception: exception);
     if (failure is SendEmailFailure && exception is NoNetworkError) {
-      if (PlatformInfo.isIOS && currentContext != null) {
-        _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailure);
+      if (PlatformInfo.isIOS) {
+        if (currentContext != null) {
+          _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailure);
+        }
+        _updateSendingStateWhenSendEmailFailureOnIOS(failure);
       } else if (PlatformInfo.isAndroid) {
         if (failure.emailRequest.storedSendingId != null) {
           _handleStoreSendingEmail(
@@ -1733,6 +1737,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSendEmailFailure(SendEmailFailure failure) {
     logError('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
+    _updateSendingStateWhenSendEmailFailureOnIOS(failure);
     if (currentContext == null) {
       clearState();
       return;
@@ -2125,6 +2130,28 @@ class MailboxDashBoardController extends ReloadableController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
         leadingSVGIcon: _imagePaths.icSendSuccessToast
+      );
+    }
+  }
+
+  void _updateSendingStateWhenSendEmailFailureOnIOS(SendEmailFailure failure) {
+    log('MailboxDashBoardController::_updateSendingStateWhenSendEmailFailureOnIOS:');
+    if (PlatformInfo.isIOS &&
+        failure.emailRequest.storedSendingId != null &&
+        accountId.value != null &&
+        sessionCurrent != null
+    ) {
+      final sendingEmailError = failure.emailRequest.toSendingEmail(
+        failure.emailRequest.storedSendingId!,
+        mailboxRequest: failure.mailboxRequest,
+        newState: SendingState.error
+      );
+      consumeState(
+        _updateSendingEmailInteractor.execute(
+          accountId.value!,
+          sessionCurrent!.username,
+          sendingEmailError
+        )
       );
     }
   }
