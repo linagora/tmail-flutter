@@ -63,6 +63,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           Expanded(child: SafeArea(
               right: responsiveUtils.isLandscapeMobile(context),
               left: responsiveUtils.isLandscapeMobile(context),
+              bottom: !PlatformInfo.isIOS,
               child: Container(
                   clipBehavior: Clip.antiAlias,
                   decoration: responsiveUtils.isWebDesktop(context)
