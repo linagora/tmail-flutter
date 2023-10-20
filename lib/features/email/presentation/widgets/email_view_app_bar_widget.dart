@@ -42,8 +42,12 @@ class EmailViewAppBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        height: EmailViewAppBarWidgetStyles.height,
-        padding: EmailViewAppBarWidgetStyles.padding,
+        height: PlatformInfo.isIOS
+          ? EmailViewAppBarWidgetStyles.heightIOS(context, _responsiveUtils)
+          : EmailViewAppBarWidgetStyles.height,
+        padding: PlatformInfo.isIOS
+          ? EmailViewAppBarWidgetStyles.paddingIOS(context, _responsiveUtils)
+          : EmailViewAppBarWidgetStyles.padding,
         decoration: const BoxDecoration(
           border: Border(
             bottom: BorderSide(

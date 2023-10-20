@@ -53,185 +53,217 @@ class EmailView extends GetWidget<SingleEmailController> {
       onWillPop: () => controller.backButtonPressedCallbackAction.call(context),
       child: Scaffold(
         backgroundColor: responsiveUtils.isWebDesktop(context)
-            ? AppColor.colorBgDesktop
-            : Colors.white,
-        body: Row(children: [
-          if (_supportVerticalDivider(context))
-            const VerticalDivider(
-                color: AppColor.lineItemListColor,
-                width: 12),
-          Expanded(child: SafeArea(
-              right: responsiveUtils.isLandscapeMobile(context),
-              left: responsiveUtils.isLandscapeMobile(context),
-              bottom: !PlatformInfo.isIOS,
-              child: Container(
-                  clipBehavior: Clip.antiAlias,
-                  decoration: responsiveUtils.isWebDesktop(context)
-                      ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
-                          color: Colors.white)
-                      : const BoxDecoration(color: Colors.white),
-                  margin: _getMarginEmailView(context),
-                  child: Obx(() {
-                    final currentEmail = controller.currentEmail;
-                    if (currentEmail != null) {
-                      return Column(children: [
-                        Obx(() => EmailViewAppBarWidget(
-                          key: const Key('email_view_app_bar_widget'),
-                          presentationEmail: currentEmail,
-                          mailboxContain: _getMailboxContain(currentEmail),
-                          isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
-                          onBackAction: () => controller.closeEmailView(context),
-                          onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
-                          onMoreActionClick: (email, position) {
-                            if (position == null) {
-                              controller.openContextMenuAction(
-                                context,
-                                _emailActionMoreActionTile(context, email)
-                              );
-                            } else {
-                              controller.openPopupMenuAction(
-                                context,
-                                position,
-                                _popupMenuEmailActionTile(context, email)
-                              );
-                            }
-                          },
-                          optionsWidget: PlatformInfo.isWeb && controller.emailSupervisorController.supportedPageView.isTrue
-                            ? _buildNavigatorPageViewWidgets(context)
-                            : null,
-                        )),
-                        Obx(() {
-                          final vacation = controller.mailboxDashBoardController.vacationResponse.value;
-                          if (vacation?.vacationResponderIsValid == true &&
-                              (
-                                responsiveUtils.isMobile(context) ||
-                                responsiveUtils.isTablet(context) ||
-                                responsiveUtils.isLandscapeMobile(context)
-                              )
-                          ) {
-                            return VacationNotificationMessageWidget(
-                              margin: const EdgeInsets.only(left: 12, right: 12, bottom: 5),
-                              vacationResponse: vacation!,
-                              actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-                              actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                        Expanded(
-                          child: Obx(() {
-                            if (controller.emailSupervisorController.supportedPageView.isTrue) {
-                              final currentListEmail = controller.emailSupervisorController.currentListEmail;
-                              return PageView.builder(
-                                physics: controller.emailSupervisorController.scrollPhysicsPageView.value,
-                                itemCount: currentListEmail.length,
-                                allowImplicitScrolling: true,
-                                controller: controller.emailSupervisorController.pageController,
-                                onPageChanged: controller.emailSupervisorController.onPageChanged,
-                                itemBuilder: (context, index) {
-                                  final currentEmail = currentListEmail[index];
-                                  if (PlatformInfo.isMobile) {
-                                    return SingleChildScrollView(
-                                      physics : const ClampingScrollPhysics(),
-                                      child: Container(
-                                        width: double.infinity,
-                                        alignment: Alignment.center,
-                                        color: Colors.white,
-                                        child: Obx(() => _buildEmailMessage(
-                                          context: context,
-                                          presentationEmail: currentEmail,
-                                          calendarEvent: controller.calendarEvent.value,
-                                        ))
-                                      )
-                                    );
-                                  } else {
-                                    return Obx(() {
-                                      final calendarEvent = controller.calendarEvent.value;
-                                      if (currentEmail.hasCalendarEvent && calendarEvent != null) {
-                                        return SingleChildScrollView(
-                                          physics : const ClampingScrollPhysics(),
-                                          child: Container(
-                                            width: double.infinity,
-                                            alignment: Alignment.center,
-                                            color: Colors.white,
-                                            child: _buildEmailMessage(
-                                              context: context,
-                                              presentationEmail: currentEmail,
-                                              calendarEvent: calendarEvent,
-                                              emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
-                                            )
-                                          )
-                                        );
-                                      } else {
-                                        return _buildEmailMessage(
-                                          context: context,
-                                          presentationEmail: currentEmail,
-                                        );
-                                      }
-                                    });
-                                  }
-                                }
-                              );
-                            } else {
-                              if (PlatformInfo.isMobile) {
-                                return SingleChildScrollView(
-                                  physics : const ClampingScrollPhysics(),
-                                  child: Container(
-                                    width: double.infinity,
-                                    alignment: Alignment.center,
-                                    color: Colors.white,
-                                    child: Obx(() => _buildEmailMessage(
-                                      context: context,
-                                      presentationEmail: currentEmail,
-                                      calendarEvent: controller.calendarEvent.value,
-                                    ))
-                                  )
-                                );
-                              } else {
-                                return Obx(() {
-                                  final calendarEvent = controller.calendarEvent.value;
-                                  if (currentEmail.hasCalendarEvent && calendarEvent != null) {
-                                    return SingleChildScrollView(
-                                      physics : const ClampingScrollPhysics(),
-                                      child: Container(
-                                        width: double.infinity,
-                                        alignment: Alignment.center,
-                                        color: Colors.white,
-                                        child: _buildEmailMessage(
-                                          context: context,
-                                          presentationEmail: currentEmail,
-                                          calendarEvent: calendarEvent,
-                                          emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
-                                        )
-                                      )
-                                    );
-                                  } else {
-                                    return _buildEmailMessage(
-                                      context: context,
-                                      presentationEmail: currentEmail,
-                                    );
-                                  }
-                                });
-                              }
-                            }
-                          }),
-                        ),
-                        EmailViewBottomBarWidget(
-                          key: const Key('email_view_button_bar'),
-                          presentationEmail: currentEmail,
-                          emailActionCallback: controller.pressEmailAction
-                        ),
-                      ]);
+          ? AppColor.colorBgDesktop
+          : Colors.white,
+        appBar: PlatformInfo.isIOS
+          ? PreferredSize(
+              preferredSize: const Size(double.infinity, 100),
+              child: Obx(() {
+                if (controller.currentEmail != null) {
+                  return SafeArea(
+                    top: false,
+                    bottom: false,
+                    child: EmailViewAppBarWidget(
+                      key: const Key('email_view_app_bar_widget'),
+                      presentationEmail: controller.currentEmail!,
+                      mailboxContain: _getMailboxContain(controller.currentEmail!),
+                      isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
+                      onBackAction: () => controller.closeEmailView(context),
+                      onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
+                      onMoreActionClick: (email, position) {
+                        if (position == null) {
+                          controller.openContextMenuAction(
+                            context,
+                            _emailActionMoreActionTile(context, email)
+                          );
+                        } else {
+                          controller.openPopupMenuAction(
+                            context,
+                            position,
+                            _popupMenuEmailActionTile(context, email)
+                          );
+                        }
+                      },
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              })
+            )
+          : null,
+        body: SafeArea(
+          right: responsiveUtils.isLandscapeMobile(context),
+          left: responsiveUtils.isLandscapeMobile(context),
+          bottom: !PlatformInfo.isIOS,
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: responsiveUtils.isWebDesktop(context)
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+                  color: Colors.white)
+              : const BoxDecoration(color: Colors.white),
+            margin: _getMarginEmailView(context),
+            child: Obx(() {
+              final currentEmail = controller.currentEmail;
+              if (currentEmail != null) {
+                return Column(children: [
+                  if (!PlatformInfo.isIOS)
+                    Obx(() => EmailViewAppBarWidget(
+                      key: const Key('email_view_app_bar_widget'),
+                      presentationEmail: currentEmail,
+                      mailboxContain: _getMailboxContain(currentEmail),
+                      isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
+                      onBackAction: () => controller.closeEmailView(context),
+                      onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
+                      onMoreActionClick: (email, position) {
+                        if (position == null) {
+                          controller.openContextMenuAction(
+                            context,
+                            _emailActionMoreActionTile(context, email)
+                          );
+                        } else {
+                          controller.openPopupMenuAction(
+                            context,
+                            position,
+                            _popupMenuEmailActionTile(context, email)
+                          );
+                        }
+                      },
+                      optionsWidget: PlatformInfo.isWeb && controller.emailSupervisorController.supportedPageView.isTrue
+                        ? _buildNavigatorPageViewWidgets(context)
+                        : null,
+                    )),
+                  Obx(() {
+                    final vacation = controller.mailboxDashBoardController.vacationResponse.value;
+                    if (vacation?.vacationResponderIsValid == true &&
+                        (
+                          responsiveUtils.isMobile(context) ||
+                          responsiveUtils.isTablet(context) ||
+                          responsiveUtils.isLandscapeMobile(context)
+                        )
+                    ) {
+                      return VacationNotificationMessageWidget(
+                        margin: const EdgeInsets.only(left: 12, right: 12, bottom: 5),
+                        vacationResponse: vacation!,
+                        actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
+                        actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
+                      );
                     } else {
-                      return const EmailViewEmptyWidget();
+                      return const SizedBox.shrink();
                     }
-                  })
-              )
-          ))
-        ])
+                  }),
+                  Expanded(
+                    child: Obx(() {
+                      if (controller.emailSupervisorController.supportedPageView.isTrue) {
+                        final currentListEmail = controller.emailSupervisorController.currentListEmail;
+                        return PageView.builder(
+                          physics: controller.emailSupervisorController.scrollPhysicsPageView.value,
+                          itemCount: currentListEmail.length,
+                          allowImplicitScrolling: true,
+                          controller: controller.emailSupervisorController.pageController,
+                          onPageChanged: controller.emailSupervisorController.onPageChanged,
+                          itemBuilder: (context, index) {
+                            final currentEmail = currentListEmail[index];
+                            if (PlatformInfo.isMobile) {
+                              return SingleChildScrollView(
+                                physics : const ClampingScrollPhysics(),
+                                child: Container(
+                                  width: double.infinity,
+                                  alignment: Alignment.center,
+                                  color: Colors.white,
+                                  child: Obx(() => _buildEmailMessage(
+                                    context: context,
+                                    presentationEmail: currentEmail,
+                                    calendarEvent: controller.calendarEvent.value,
+                                  ))
+                                )
+                              );
+                            } else {
+                              return Obx(() {
+                                final calendarEvent = controller.calendarEvent.value;
+                                if (currentEmail.hasCalendarEvent && calendarEvent != null) {
+                                  return SingleChildScrollView(
+                                    physics : const ClampingScrollPhysics(),
+                                    child: Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      color: Colors.white,
+                                      child: _buildEmailMessage(
+                                        context: context,
+                                        presentationEmail: currentEmail,
+                                        calendarEvent: calendarEvent,
+                                        emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                                      )
+                                    )
+                                  );
+                                } else {
+                                  return _buildEmailMessage(
+                                    context: context,
+                                    presentationEmail: currentEmail,
+                                  );
+                                }
+                              });
+                            }
+                          }
+                        );
+                      } else {
+                        if (PlatformInfo.isMobile) {
+                          return SingleChildScrollView(
+                            physics : const ClampingScrollPhysics(),
+                            child: Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              color: Colors.white,
+                              child: Obx(() => _buildEmailMessage(
+                                context: context,
+                                presentationEmail: currentEmail,
+                                calendarEvent: controller.calendarEvent.value,
+                              ))
+                            )
+                          );
+                        } else {
+                          return Obx(() {
+                            final calendarEvent = controller.calendarEvent.value;
+                            if (currentEmail.hasCalendarEvent && calendarEvent != null) {
+                              return SingleChildScrollView(
+                                physics : const ClampingScrollPhysics(),
+                                child: Container(
+                                  width: double.infinity,
+                                  alignment: Alignment.center,
+                                  color: Colors.white,
+                                  child: _buildEmailMessage(
+                                    context: context,
+                                    presentationEmail: currentEmail,
+                                    calendarEvent: calendarEvent,
+                                    emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                                  )
+                                )
+                              );
+                            } else {
+                              return _buildEmailMessage(
+                                context: context,
+                                presentationEmail: currentEmail,
+                              );
+                            }
+                          });
+                        }
+                      }
+                    }),
+                  ),
+                  EmailViewBottomBarWidget(
+                    key: const Key('email_view_button_bar'),
+                    presentationEmail: currentEmail,
+                    emailActionCallback: controller.pressEmailAction
+                  ),
+                ]);
+              } else {
+                return const EmailViewEmptyWidget();
+              }
+            })
+          )
+        )
       )
     );
   }
@@ -250,16 +282,6 @@ class EmailView extends GetWidget<SingleEmailController> {
       }
     } else {
       return EdgeInsets.zero;
-    }
-  }
-
-  bool _supportVerticalDivider(BuildContext context) {
-    if (PlatformInfo.isWeb) {
-      return responsiveUtils.isTabletLarge(context);
-    } else {
-      return responsiveUtils.isLandscapeTablet(context) ||
-        responsiveUtils.isDesktop(context) ||
-        responsiveUtils.isTabletLarge(context);
     }
   }
 
