@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class EmailViewBottomBarWidgetStyles {
@@ -16,6 +17,13 @@ class EmailViewBottomBarWidgetStyles {
   static const Color buttonBackgroundColor =  Colors.transparent;
 
   static const EdgeInsetsGeometry buttonPadding = EdgeInsets.symmetric(horizontal: 8, vertical: 12);
+  static EdgeInsetsGeometry? get padding {
+    if (PlatformInfo.isIOS) {
+      return const EdgeInsetsDirectional.only(bottom: 30);
+    } else {
+      return null;
+    }
+  }
 
   static TextStyle getButtonTextStyle(
     BuildContext context,
