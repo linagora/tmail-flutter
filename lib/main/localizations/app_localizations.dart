@@ -3,13 +3,13 @@ import 'package:intl/intl.dart';
 import 'package:tmail_ui_user/l10n/messages_all.dart';
 
 class AppLocalizations {
-
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
   static Future<AppLocalizations> load(Locale locale) async {
-    final name = locale.countryCode == null ? locale.languageCode : locale.toString();
+    final name =
+        locale.countryCode == null ? locale.languageCode : locale.toString();
 
     final localeName = Intl.canonicalizedLocale(name);
 
@@ -20,23 +20,24 @@ class AppLocalizations {
   }
 
   String get initializing_data {
-    return Intl.message('Initializing data...',
-      name: 'initializing_data');
+    return Intl.message('Initializing data...', name: 'initializing_data');
   }
 
   String get login_text_slogan {
-    return Intl.message('Team Mail',
-        name: 'login_text_slogan');
+    return Intl.message('Team Mail', name: 'login_text_slogan');
   }
 
   String get loginInputUrlMessage {
-    return Intl.message('To login and access your message please connect to your JMAP server', name: 'loginInputUrlMessage');
+    return Intl.message(
+        'To login and access your message please connect to your JMAP server',
+        name: 'loginInputUrlMessage');
   }
 
   String get loginInputCredentialMessage {
-    return Intl.message('Enter your credentials to sign in', name: 'loginInputCredentialMessage');
+    return Intl.message('Enter your credentials to sign in',
+        name: 'loginInputCredentialMessage');
   }
-  
+
   String get badCredentials {
     return Intl.message('Bad credentials');
   }
@@ -46,43 +47,35 @@ class AppLocalizations {
   }
 
   String get prefix_https {
-    return Intl.message('https://',
-        name: 'prefix_https');
+    return Intl.message('https://', name: 'prefix_https');
   }
 
   String get email {
-    return Intl.message('email',
-        name: 'email');
+    return Intl.message('email', name: 'email');
   }
 
   String get password {
-    return Intl.message('password',
-        name: 'password');
+    return Intl.message('password', name: 'password');
   }
 
   String get login {
-    return Intl.message('Login',
-        name: 'login');
+    return Intl.message('Login', name: 'login');
   }
 
   String get signIn {
-    return Intl.message('Sign In',
-        name: 'signIn');
+    return Intl.message('Sign In', name: 'signIn');
   }
 
   String get requiredEmail {
-    return Intl.message('Email is required',
-        name: 'requiredEmail');
+    return Intl.message('Email is required', name: 'requiredEmail');
   }
 
   String get requiredPassword {
-    return Intl.message('Password is required',
-        name: 'requiredPassword');
+    return Intl.message('Password is required', name: 'requiredPassword');
   }
 
   String get requiredUrl {
-    return Intl.message('Server address is required',
-        name: 'requiredUrl');
+    return Intl.message('Server address is required', name: 'requiredUrl');
   }
 
   String get jmapBasedMailSolution {
@@ -91,18 +84,15 @@ class AppLocalizations {
   }
 
   String get jmapStandard {
-    return Intl.message('JMAP standard',
-        name: 'jmapStandard');
+    return Intl.message('JMAP standard', name: 'jmapStandard');
   }
 
   String get encryptedMailbox {
-    return Intl.message('Encrypted mailbox',
-      name: 'encryptedMailbox');
+    return Intl.message('Encrypted mailbox', name: 'encryptedMailbox');
   }
 
   String get manageEmailAsATeam {
-    return Intl.message('Manage email as a team',
-      name: 'manageEmailAsATeam');
+    return Intl.message('Manage email as a team', name: 'manageEmailAsATeam');
   }
 
   String get multipleIntegrations {
@@ -220,11 +210,8 @@ class AppLocalizations {
   }
 
   String header_email_quoted(String sentDate, String emailAddress) {
-    return Intl.message(
-        'On $sentDate, from $emailAddress',
-        name: 'header_email_quoted',
-        args: [sentDate, emailAddress]
-    );
+    return Intl.message('On $sentDate, from $emailAddress',
+        name: 'header_email_quoted', args: [sentDate, emailAddress]);
   }
 
   String get prefix_reply_email {
@@ -256,11 +243,8 @@ class AppLocalizations {
   }
 
   String count_email_selected(int count) {
-    return Intl.message(
-        '$count selected',
-        name: 'count_email_selected',
-        args: [count]
-    );
+    return Intl.message('$count selected',
+        name: 'count_email_selected', args: [count]);
   }
 
   String get mark_as_unread {
@@ -299,19 +283,13 @@ class AppLocalizations {
   }
 
   String marked_multiple_item_as_read(int count) {
-    return Intl.message(
-        'Marked $count item as read',
-        name: 'marked_multiple_item_as_read',
-        args: [count]
-    );
+    return Intl.message('Marked $count item as read',
+        name: 'marked_multiple_item_as_read', args: [count]);
   }
 
   String marked_multiple_item_as_unread(int count) {
-    return Intl.message(
-        'Marked $count item as unread',
-        name: 'marked_multiple_item_as_unread',
-        args: [count]
-    );
+    return Intl.message('Marked $count item as unread',
+        name: 'marked_multiple_item_as_unread', args: [count]);
   }
 
   String get an_error_occurred {
@@ -329,75 +307,51 @@ class AppLocalizations {
   }
 
   String downloading_file(String fileName) {
-    return Intl.message(
-      'Downloading $fileName',
-      name: 'downloading_file',
-      args: [fileName]
-    );
+    return Intl.message('Downloading $fileName',
+        name: 'downloading_file', args: [fileName]);
   }
 
   String get preparing_to_export {
-    return Intl.message(
-      'Preparing to export',
-      name: 'preparing_to_export'
-    );
+    return Intl.message('Preparing to export', name: 'preparing_to_export');
   }
 
   String get cancel {
-    return Intl.message(
-      'Cancel',
-      name: 'cancel'
-    );
+    return Intl.message('Cancel', name: 'cancel');
   }
 
   String get user_cancel_download_file {
-    return Intl.message(
-      'User cancel download file',
-      name: 'user_cancel_download_file'
-    );
+    return Intl.message('User cancel download file',
+        name: 'user_cancel_download_file');
   }
 
   String get you_need_to_grant_files_permission_to_download_attachments {
     return Intl.message(
-      'You need to grant files permission to download attachments',
-      name: 'you_need_to_grant_files_permission_to_download_attachments'
-    );
+        'You need to grant files permission to download attachments',
+        name: 'you_need_to_grant_files_permission_to_download_attachments');
   }
 
   String titleHeaderAttachment(int count, String totalSize) {
-    return Intl.message(
-        '$count Attachments ($totalSize):',
-        name: 'titleHeaderAttachment',
-        args: [count, totalSize]
-    );
+    return Intl.message('$count Attachments ($totalSize):',
+        name: 'titleHeaderAttachment', args: [count, totalSize]);
   }
 
   String get attach_file_prepare_text {
-    return Intl.message(
-      'Preparing to attach file...',
-      name: 'attach_file_prepare_text'
-    );
+    return Intl.message('Preparing to attach file...',
+        name: 'attach_file_prepare_text');
   }
 
   String get can_not_upload_this_file_as_attachments {
-    return Intl.message(
-      'Can not upload this file as attachments',
-      name: 'can_not_upload_this_file_as_attachments'
-    );
+    return Intl.message('Can not upload this file as attachments',
+        name: 'can_not_upload_this_file_as_attachments');
   }
 
   String get attachments_uploaded_successfully {
-    return Intl.message(
-      'Attachments uploaded successfully',
-      name: 'attachments_uploaded_successfully'
-    );
+    return Intl.message('Attachments uploaded successfully',
+        name: 'attachments_uploaded_successfully');
   }
 
   String get pick_attachments {
-    return Intl.message(
-      'Pick attachments',
-      name: 'pick_attachments'
-    );
+    return Intl.message('Pick attachments', name: 'pick_attachments');
   }
 
   String get photos_and_videos {
@@ -415,34 +369,22 @@ class AppLocalizations {
   }
 
   String moved_to_mailbox(String destinationMailboxPath) {
-    return Intl.message(
-        'Moved to $destinationMailboxPath',
-        name: 'moved_to_mailbox',
-        args: [destinationMailboxPath]
-    );
+    return Intl.message('Moved to $destinationMailboxPath',
+        name: 'moved_to_mailbox', args: [destinationMailboxPath]);
   }
 
   String get undo {
-    return Intl.message(
-        'Undo',
-        name: 'undo'
-    );
+    return Intl.message('Undo', name: 'undo');
   }
 
   String marked_star_multiple_item(int count) {
-    return Intl.message(
-        'Marked star $count item',
-        name: 'marked_star_multiple_item',
-        args: [count]
-    );
+    return Intl.message('Marked star $count item',
+        name: 'marked_star_multiple_item', args: [count]);
   }
 
   String marked_unstar_multiple_item(int count) {
-    return Intl.message(
-        'Marked unstar $count item',
-        name: 'marked_unstar_multiple_item',
-        args: [count]
-    );
+    return Intl.message('Marked unstar $count item',
+        name: 'marked_unstar_multiple_item', args: [count]);
   }
 
   String get search_mail {
@@ -474,129 +416,88 @@ class AppLocalizations {
   }
 
   String get edit {
-    return Intl.message('Edit',
-        name: 'edit');
+    return Intl.message('Edit', name: 'edit');
   }
 
   String get hint_search_emails {
-    return Intl.message(
-        'Search for emails and files',
+    return Intl.message('Search for emails and files',
         name: 'hint_search_emails');
   }
 
   String get compose {
-    return Intl.message(
-        'Compose',
-        name: 'compose');
+    return Intl.message('Compose', name: 'compose');
   }
 
   String get delete {
-    return Intl.message(
-        'Delete',
-        name: 'delete');
+    return Intl.message('Delete', name: 'delete');
   }
 
   String get move {
-    return Intl.message(
-        'Move',
-        name: 'move');
+    return Intl.message('Move', name: 'move');
   }
 
   String get spam {
-    return Intl.message(
-        'Spam',
-        name: 'spam');
+    return Intl.message('Spam', name: 'spam');
   }
 
   String get flag {
-    return Intl.message(
-        'Flag',
-        name: 'flag');
+    return Intl.message('Flag', name: 'flag');
   }
 
   String get read {
-    return Intl.message(
-        'Read',
-        name: 'read');
+    return Intl.message('Read', name: 'read');
   }
 
   String get unread {
-    return Intl.message(
-        'Unread',
-        name: 'unread');
+    return Intl.message('Unread', name: 'unread');
   }
 
   String get the_feature_is_under_development {
-    return Intl.message(
-        'This feature is under development.',
+    return Intl.message('This feature is under development.',
         name: 'the_feature_is_under_development');
   }
 
   String marked_message_toast(String action) {
-    return Intl.message(
-        'You’ve marked messages as "$action"',
-        name: 'marked_message_toast',
-        args: [action]
-    );
+    return Intl.message('You’ve marked messages as "$action"',
+        name: 'marked_message_toast', args: [action]);
   }
 
   String get folders {
-    return Intl.message(
-        'Folders',
-        name: 'folders'
-    );
+    return Intl.message('Folders', name: 'folders');
   }
 
   String get sign_out {
-    return Intl.message('Sign out',
-        name: 'sign_out');
+    return Intl.message('Sign out', name: 'sign_out');
   }
 
   String get hint_search_mailboxes {
-    return Intl.message(
-        'Search mailboxes',
-        name: 'hint_search_mailboxes');
+    return Intl.message('Search mailboxes', name: 'hint_search_mailboxes');
   }
 
   String get with_attachments {
-    return Intl.message(
-        'With attachments',
-        name: 'with_attachments'
-    );
+    return Intl.message('With attachments', name: 'with_attachments');
   }
 
   String get starred {
-    return Intl.message(
-        'Starred',
-        name: 'starred'
-    );
+    return Intl.message('Starred', name: 'starred');
   }
 
   String filter_message_toast(String filterOption) {
-    return Intl.message(
-        'You’ve filtered messages by "$filterOption"',
-        name: 'filter_message_toast',
-        args: [filterOption]
-    );
+    return Intl.message('You’ve filtered messages by "$filterOption"',
+        name: 'filter_message_toast', args: [filterOption]);
   }
 
   String get disable_filter_message_toast {
-    return Intl.message(
-        'You’ve disabled filtered messages',
-        name: 'disable_filter_message_toast'
-    );
+    return Intl.message('You’ve disabled filtered messages',
+        name: 'disable_filter_message_toast');
   }
 
   String get with_unread {
-    return Intl.message(
-        'With Unread',
-        name: 'with_unread');
+    return Intl.message('With Unread', name: 'with_unread');
   }
 
   String get with_starred {
-    return Intl.message(
-        'With Starred',
-        name: 'with_starred');
+    return Intl.message('With Starred', name: 'with_starred');
   }
 
   String get message_has_been_sent_successfully {
@@ -607,10 +508,7 @@ class AppLocalizations {
   }
 
   String get done {
-    return Intl.message(
-        'Done',
-        name: 'done'
-    );
+    return Intl.message('Done', name: 'done');
   }
 
   String get new_mailbox {
@@ -642,18 +540,13 @@ class AppLocalizations {
   }
 
   String new_mailbox_is_created(String nameMailbox) {
-    return Intl.message(
-        '$nameMailbox is created',
-        name: 'new_mailbox_is_created',
-        args: [nameMailbox]
-    );
+    return Intl.message('$nameMailbox is created',
+        name: 'new_mailbox_is_created', args: [nameMailbox]);
   }
 
   String get create_new_mailbox_failure {
-    return Intl.message(
-        'Create new mailbox failure',
-        name: 'create_new_mailbox_failure'
-    );
+    return Intl.message('Create new mailbox failure',
+        name: 'create_new_mailbox_failure');
   }
 
   String get drafts_saved {
@@ -664,62 +557,45 @@ class AppLocalizations {
   }
 
   String get discard {
-    return Intl.message(
-        'Discard',
-        name: 'discard'
-    );
+    return Intl.message('Discard', name: 'discard');
   }
 
   String get skip {
-    return Intl.message(
-        'Skip',
-        name: 'skip'
-    );
+    return Intl.message('Skip', name: 'skip');
   }
 
   String get hint_input_create_new_mailbox {
-    return Intl.message(
-        'Enter name of mailbox',
-        name: 'hint_input_create_new_mailbox'
-    );
+    return Intl.message('Enter name of mailbox',
+        name: 'hint_input_create_new_mailbox');
   }
 
   String get rename {
-    return Intl.message(
-        'Rename',
-        name: 'rename');
+    return Intl.message('Rename', name: 'rename');
   }
 
   String get delete_mailboxes_successfully {
-    return Intl.message(
-        'Delete mailboxes successfully',
+    return Intl.message('Delete mailboxes successfully',
         name: 'delete_mailboxes_successfully');
   }
 
   String get delete_mailboxes_failure {
-    return Intl.message(
-        'Delete mailboxes failure',
+    return Intl.message('Delete mailboxes failure',
         name: 'delete_mailboxes_failure');
   }
 
   String get delete_mailboxes {
-    return Intl.message(
-        'Delete mailboxes',
-        name: 'delete_mailboxes');
+    return Intl.message('Delete mailboxes', name: 'delete_mailboxes');
   }
 
   String message_confirmation_dialog_delete_mailbox(String nameMailbox) {
     return Intl.message(
         '"$nameMailbox" mailbox and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
         name: 'message_confirmation_dialog_delete_mailbox',
-        args: [nameMailbox]
-    );
+        args: [nameMailbox]);
   }
 
   String get rename_mailbox {
-    return Intl.message(
-        'Rename mailbox',
-        name: 'rename_mailbox');
+    return Intl.message('Rename mailbox', name: 'rename_mailbox');
   }
 
   String get this_field_cannot_be_blank {
@@ -744,10 +620,7 @@ class AppLocalizations {
   }
 
   String get preparing_to_save {
-    return Intl.message(
-        'Preparing to save',
-        name: 'preparing_to_save'
-    );
+    return Intl.message('Preparing to save', name: 'preparing_to_save');
   }
 
   String get new_message {
@@ -758,81 +631,57 @@ class AppLocalizations {
   }
 
   String get hide {
-    return Intl.message(
-        'Hide',
-        name: 'hide');
+    return Intl.message('Hide', name: 'hide');
   }
 
   String get copy_email_address {
-    return Intl.message(
-        'Copy email address',
-        name: 'copy_email_address');
+    return Intl.message('Copy email address', name: 'copy_email_address');
   }
 
   String get compose_email {
-    return Intl.message(
-        'Compose email',
-        name: 'compose_email');
+    return Intl.message('Compose email', name: 'compose_email');
   }
 
   String get email_address_copied_to_clipboard {
-    return Intl.message(
-        'Email address copied to clipboard',
+    return Intl.message('Email address copied to clipboard',
         name: 'email_address_copied_to_clipboard');
   }
 
   String get minimize {
-    return Intl.message(
-        'Minimize',
-        name: 'minimize');
+    return Intl.message('Minimize', name: 'minimize');
   }
 
   String get fullscreen {
-    return Intl.message(
-        'Fullscreen',
-        name: 'fullscreen');
+    return Intl.message('Fullscreen', name: 'fullscreen');
   }
 
   String get close {
-    return Intl.message(
-        'Close',
-        name: 'close');
+    return Intl.message('Close', name: 'close');
   }
 
   String get send {
-    return Intl.message(
-        'Send',
-        name: 'send');
+    return Intl.message('Send', name: 'send');
   }
 
   String get attachments {
-    return Intl.message(
-        'Attachments',
-        name: 'attachments');
+    return Intl.message('Attachments', name: 'attachments');
   }
 
   String get showAll {
-    return Intl.message(
-        'Show all',
-        name: 'showAll');
+    return Intl.message('Show all', name: 'showAll');
   }
 
   String get message_dialog_send_email_without_a_subject {
-    return Intl.message(
-        'Are you sure to send messages without a subject?',
+    return Intl.message('Are you sure to send messages without a subject?',
         name: 'message_dialog_send_email_without_a_subject');
   }
 
   String get app_name {
-    return Intl.message(
-        'Team Mail',
-        name: 'app_name');
+    return Intl.message('Team Mail', name: 'app_name');
   }
 
   String get search_emails {
-    return Intl.message(
-        'Search emails',
-        name: 'search_emails');
+    return Intl.message('Search emails', name: 'search_emails');
   }
 
   String get select_all {
@@ -857,10 +706,7 @@ class AppLocalizations {
   }
 
   String get not_starred {
-    return Intl.message(
-        'Not starred',
-        name: 'not_starred'
-    );
+    return Intl.message('Not starred', name: 'not_starred');
   }
 
   String get select {
@@ -885,15 +731,11 @@ class AppLocalizations {
   }
 
   String get expand {
-    return Intl.message(
-        'Expand',
-        name: 'expand');
+    return Intl.message('Expand', name: 'expand');
   }
 
   String get collapse {
-    return Intl.message(
-        'Collapse',
-        name: 'collapse');
+    return Intl.message('Collapse', name: 'collapse');
   }
 
   String get save_to_drafts {
@@ -904,45 +746,32 @@ class AppLocalizations {
   }
 
   String get hint_compose_email {
-    return Intl.message(
-        'Start composing a letter...',
+    return Intl.message('Start composing a letter...',
         name: 'hint_compose_email');
   }
 
   String get attach_file {
-    return Intl.message(
-        'Attach file',
-        name: 'attach_file');
+    return Intl.message('Attach file', name: 'attach_file');
   }
 
   String get show {
-    return Intl.message(
-        'Show',
-        name: 'show');
+    return Intl.message('Show', name: 'show');
   }
 
   String get add_recipients {
-    return Intl.message(
-        'Add recipients',
-        name: 'add_recipients');
+    return Intl.message('Add recipients', name: 'add_recipients');
   }
 
   String get sending_failed {
-    return Intl.message(
-        'Sending failed',
-        name: 'sending_failed');
+    return Intl.message('Sending failed', name: 'sending_failed');
   }
 
   String get send_anyway {
-    return Intl.message(
-        'Send anyway',
-        name: 'send_anyway');
+    return Intl.message('Send anyway', name: 'send_anyway');
   }
 
   String get empty_subject {
-    return Intl.message(
-        'Empty subject',
-        name: 'empty_subject');
+    return Intl.message('Empty subject', name: 'empty_subject');
   }
 
   String get message_dialog_send_email_with_email_address_invalid {
@@ -952,36 +781,25 @@ class AppLocalizations {
   }
 
   String get fix_email_addresses {
-    return Intl.message(
-        'Fix email addresses',
-        name: 'fix_email_addresses');
+    return Intl.message('Fix email addresses', name: 'fix_email_addresses');
   }
 
   String get your_download_has_started {
-    return Intl.message(
-        'Your download has started',
-        name: 'your_download_has_started'
-    );
+    return Intl.message('Your download has started',
+        name: 'your_download_has_started');
   }
 
   String get moved_to_trash {
-    return Intl.message(
-        'Moved to Trash',
-        name: 'moved_to_trash'
-    );
+    return Intl.message('Moved to Trash', name: 'moved_to_trash');
   }
 
   String get no_internet_connection {
-    return Intl.message(
-        'No internet connection',
-        name: 'no_internet_connection'
-    );
+    return Intl.message('No internet connection',
+        name: 'no_internet_connection');
   }
 
   String get page_name {
-    return Intl.message(
-        'Team Mail',
-        name: 'page_name');
+    return Intl.message('Team Mail', name: 'page_name');
   }
 
   String get message_delete_all_email_in_trash_button {
@@ -991,15 +809,11 @@ class AppLocalizations {
   }
 
   String get empty_trash_now {
-    return Intl.message(
-        'Empty trash now',
-        name: 'empty_trash_now');
+    return Intl.message('Empty trash now', name: 'empty_trash_now');
   }
 
   String get empty_trash_folder {
-    return Intl.message(
-        'Empty trash folder',
-        name: 'empty_trash_folder');
+    return Intl.message('Empty trash folder', name: 'empty_trash_folder');
   }
 
   String get empty_trash_dialog_message {
@@ -1009,39 +823,31 @@ class AppLocalizations {
   }
 
   String get delete_all {
-    return Intl.message(
-        'Delete all',
-        name: 'delete_all');
+    return Intl.message('Delete all', name: 'delete_all');
   }
 
   String toast_message_delete_multiple_email_permanently_success(int count) {
-    return Intl.message(
-        '$count Messages has been deleted forever',
+    return Intl.message('$count Messages has been deleted forever',
         name: 'toast_message_delete_multiple_email_permanently_success',
         args: [count]);
   }
 
   String get toast_message_delete_a_email_permanently_success {
-    return Intl.message(
-        'Message has been deleted forever',
+    return Intl.message('Message has been deleted forever',
         name: 'toast_message_delete_a_email_permanently_success');
   }
 
   String get delete_permanently {
-    return Intl.message(
-        'Delete permanently',
-        name: 'delete_permanently');
+    return Intl.message('Delete permanently', name: 'delete_permanently');
   }
 
   String get delete_messages_forever {
-    return Intl.message(
-        'Delete messages forever',
+    return Intl.message('Delete messages forever',
         name: 'delete_messages_forever');
   }
 
   String get delete_message_forever {
-    return Intl.message(
-        'Delete message forever',
+    return Intl.message('Delete message forever',
         name: 'delete_message_forever');
   }
 
@@ -1059,50 +865,39 @@ class AppLocalizations {
   }
 
   String get toast_message_empty_trash_folder_success {
-    return Intl.message(
-        'All messages has been deleted forever',
+    return Intl.message('All messages has been deleted forever',
         name: 'toast_message_empty_trash_folder_success');
   }
 
   String get version {
-    return Intl.message(
-        'Version',
-        name: 'version');
+    return Intl.message('Version', name: 'version');
   }
 
   String message_dialog_send_email_exceeds_maximum_size(String maxSize) {
     return Intl.message(
         'Your message could not be sent because it exceeds the maximum size of $maxSize',
         name: 'message_dialog_send_email_exceeds_maximum_size',
-        args: [maxSize]
-    );
+        args: [maxSize]);
   }
 
-  String message_dialog_upload_attachments_exceeds_maximum_size(String maxSize) {
+  String message_dialog_upload_attachments_exceeds_maximum_size(
+      String maxSize) {
     return Intl.message(
         'You have reached the maximum file size. Please upload files that total size is less than $maxSize',
         name: 'message_dialog_upload_attachments_exceeds_maximum_size',
-        args: [maxSize]
-    );
+        args: [maxSize]);
   }
 
   String get got_it {
-    return Intl.message(
-        'Got it',
-        name: 'got_it');
+    return Intl.message('Got it', name: 'got_it');
   }
 
   String get maximum_files_size {
-    return Intl.message(
-        'Maximum files size',
-        name: 'maximum_files_size');
+    return Intl.message('Maximum files size', name: 'maximum_files_size');
   }
 
   String get exchange {
-    return Intl.message(
-        'Exchange',
-        name: 'exchange'
-    );
+    return Intl.message('Exchange', name: 'exchange');
   }
 
   String get move_message {
@@ -1176,114 +971,84 @@ class AppLocalizations {
   }
 
   String get settings {
-    return Intl.message('Settings',
-        name: 'settings');
+    return Intl.message('Settings', name: 'settings');
   }
 
   String get manage_account {
-    return Intl.message('Manage account',
-        name: 'manage_account');
+    return Intl.message('Manage account', name: 'manage_account');
   }
 
   String get profiles {
-    return Intl.message('Profiles',
-        name: 'profiles');
+    return Intl.message('Profiles', name: 'profiles');
   }
 
   String get profilesSettingExplanation {
-    return Intl.message(
-      'Info about you, and options to manage it.',
-      name: 'profilesSettingExplanation'
-    );
+    return Intl.message('Info about you, and options to manage it.',
+        name: 'profilesSettingExplanation');
   }
 
   String get identities {
-    return Intl.message('Identities',
-        name: 'identities');
+    return Intl.message('Identities', name: 'identities');
   }
 
   String get setDefaultIdentity {
-    return Intl.message(
-        'Set as default identity',
-        name: 'setDefaultIdentity'
-    );
+    return Intl.message('Set as default identity', name: 'setDefaultIdentity');
   }
 
   String get identitiesSettingExplanation {
     return Intl.message(
-      'Select the identity or email address you want to use to send an emails',
-      name: 'identitiesSettingExplanation');
+        'Select the identity or email address you want to use to send an emails',
+        name: 'identitiesSettingExplanation');
   }
 
   String get createNewIdentity {
-    return Intl.message(
-      'Create new identity',
-      name: 'createNewIdentity');
+    return Intl.message('Create new identity', name: 'createNewIdentity');
   }
 
   String get new_identity {
-    return Intl.message('New Identity',
-        name: 'new_identity');
+    return Intl.message('New Identity', name: 'new_identity');
   }
 
   String get name {
-    return Intl.message(
-        'Name',
-        name: 'name');
+    return Intl.message('Name', name: 'name');
   }
 
   String get reply_to {
-    return Intl.message(
-        'Reply to',
-        name: 'reply_to');
+    return Intl.message('Reply to', name: 'reply_to');
   }
 
   String get bcc_to {
-    return Intl.message(
-        'Bcc to',
-        name: 'bcc_to');
+    return Intl.message('Bcc to', name: 'bcc_to');
   }
 
   String get signature {
-    return Intl.message(
-        'Signature',
-        name: 'signature');
+    return Intl.message('Signature', name: 'signature');
   }
 
   String get html_template {
-    return Intl.message(
-        'Html template',
-        name: 'html_template');
+    return Intl.message('Html template', name: 'html_template');
   }
 
   String get html {
-    return Intl.message(
-        'Html',
-        name: 'html');
+    return Intl.message('Html', name: 'html');
   }
 
   String get create {
-    return Intl.message(
-        'Create',
-        name: 'create');
+    return Intl.message('Create', name: 'create');
   }
 
   String get you_have_created_a_new_identity {
-    return Intl.message(
-        'You have created a new identity',
+    return Intl.message('You have created a new identity',
         name: 'you_have_created_a_new_identity');
   }
 
   String get you_have_created_a_new_default_identity {
-    return Intl.message(
-        'You have created a new default identity',
+    return Intl.message('You have created a new default identity',
         name: 'you_have_created_a_new_default_identity');
   }
 
   String get all_identities {
-    return Intl.message(
-        'All identities',
-        name: 'all_identities');
+    return Intl.message('All identities', name: 'all_identities');
   }
 
   String get default_value {
@@ -1294,8 +1059,7 @@ class AppLocalizations {
   }
 
   String get delete_identity {
-    return Intl.message('Delete identity',
-        name: 'delete_identity');
+    return Intl.message('Delete identity', name: 'delete_identity');
   }
 
   String get message_confirmation_dialog_delete_identity {
@@ -1309,13 +1073,11 @@ class AppLocalizations {
   }
 
   String get delete_failed {
-    return Intl.message('Delete Failed',
-        name: 'delete_failed');
+    return Intl.message('Delete Failed', name: 'delete_failed');
   }
 
   String get edit_identity {
-    return Intl.message('Edit identity',
-        name: 'edit_identity');
+    return Intl.message('Edit identity', name: 'edit_identity');
   }
 
   String get you_are_changed_your_identity_successfully {
@@ -1324,57 +1086,39 @@ class AppLocalizations {
   }
 
   String get save {
-    return Intl.message(
-        'Save',
-        name: 'save');
+    return Intl.message('Save', name: 'save');
   }
 
   String get hasAttachment {
-    return Intl.message(
-        'Has attachment',
-        name: 'hasAttachment');
+    return Intl.message('Has attachment', name: 'hasAttachment');
   }
 
   String get last7Days {
-    return Intl.message(
-        'Last 7 days',
-        name: 'last7Days');
+    return Intl.message('Last 7 days', name: 'last7Days');
   }
 
   String get fromMe {
-    return Intl.message(
-        'From me',
-        name: 'fromMe');
+    return Intl.message('From me', name: 'fromMe');
   }
 
   String get recent {
-    return Intl.message(
-        'Recent',
-        name: 'recent');
+    return Intl.message('Recent', name: 'recent');
   }
 
   String get showingResultsFor {
-    return Intl.message(
-        'Showing results for:',
-        name: 'showingResultsFor');
+    return Intl.message('Showing results for:', name: 'showingResultsFor');
   }
 
   String get last30Days {
-    return Intl.message(
-        'Last 30 days',
-        name: 'last30Days');
+    return Intl.message('Last 30 days', name: 'last30Days');
   }
 
   String get last6Months {
-    return Intl.message(
-        'Last 6 months',
-        name: 'last6Months');
+    return Intl.message('Last 6 months', name: 'last6Months');
   }
 
   String get lastYears {
-    return Intl.message(
-        'Last years',
-        name: 'lastYears');
+    return Intl.message('Last years', name: 'lastYears');
   }
 
   String get thisEmailAddressInvalid {
@@ -1385,8 +1129,7 @@ class AppLocalizations {
   }
 
   String get loginInputSSOMessage {
-    return Intl.message(
-        'Sign-in with my SSO account',
+    return Intl.message('Sign-in with my SSO account',
         name: 'loginInputSSOMessage');
   }
 
@@ -1410,19 +1153,16 @@ class AppLocalizations {
   }
 
   String get deleteMailbox {
-    return Intl.message(
-        'Delete mailbox',
-        name: 'deleteMailbox');
+    return Intl.message('Delete mailbox', name: 'deleteMailbox');
   }
 
   String toastMessageMarkAsMailboxReadSuccess(String mailboxName) {
-    return Intl.message(
-        'You’ve marked all messages in "$mailboxName" as read',
-        name: 'toastMessageMarkAsMailboxReadSuccess',
-        args: [mailboxName]);
+    return Intl.message('You’ve marked all messages in "$mailboxName" as read',
+        name: 'toastMessageMarkAsMailboxReadSuccess', args: [mailboxName]);
   }
 
-  String toastMessageMarkAsMailboxReadHasSomeEmailFailure(String mailboxName, int count) {
+  String toastMessageMarkAsMailboxReadHasSomeEmailFailure(
+      String mailboxName, int count) {
     return Intl.message(
         'You’ve marked $count messages in "$mailboxName" as read',
         name: 'toastMessageMarkAsMailboxReadHasSomeEmailFailure',
@@ -1430,14 +1170,11 @@ class AppLocalizations {
   }
 
   String get allMailboxes {
-    return Intl.message(
-        'All mailboxes',
-        name: 'allMailboxes');
+    return Intl.message('All mailboxes', name: 'allMailboxes');
   }
 
   String get singleSignOn {
-    return Intl.message('Single Sign-On',
-        name: 'singleSignOn');
+    return Intl.message('Single Sign-On', name: 'singleSignOn');
   }
 
   String get ssoNotAvailable {
@@ -1556,76 +1293,54 @@ class AppLocalizations {
   }
 
   String get languageAndRegion {
-    return Intl.message(
-        'Language & Region',
-        name: 'languageAndRegion');
+    return Intl.message('Language', name: 'languageAndRegion');
   }
 
   String get languageAndRegionSubtitle {
-    return Intl.message(
-        'Set the language, time zone, time format you use on TeamMail.',
+    return Intl.message('Set the language you use on TeamMail.',
         name: 'languageAndRegionSubtitle');
   }
 
   String get language {
-    return Intl.message(
-        'Language',
-        name: 'language');
+    return Intl.message('Language', name: 'language');
   }
 
   String get languageEnglish {
-    return Intl.message(
-        'English',
-        name: 'languageEnglish');
+    return Intl.message('English', name: 'languageEnglish');
   }
 
   String get languageVietnamese {
-    return Intl.message(
-        'Vietnamese',
-        name: 'languageVietnamese');
+    return Intl.message('Vietnamese', name: 'languageVietnamese');
   }
 
   String get languageFrench {
-    return Intl.message(
-        'French',
-        name: 'languageFrench');
+    return Intl.message('French', name: 'languageFrench');
   }
 
   String get languageRussian {
-    return Intl.message(
-        'Russian',
-        name: 'languageRussian');
+    return Intl.message('Russian', name: 'languageRussian');
   }
 
   String get languageArabic {
-    return Intl.message(
-        'Arabic',
-        name: 'languageArabic');
+    return Intl.message('Arabic', name: 'languageArabic');
   }
 
   String get languageItalian {
-    return Intl.message(
-      'Italian',
-      name: 'languageItalian');
+    return Intl.message('Italian', name: 'languageItalian');
   }
 
   String get messageDialogSendEmailUploadingAttachment {
     return Intl.message(
         'Your message could not be sent because it uploading attachment',
-        name: 'messageDialogSendEmailUploadingAttachment'
-    );
+        name: 'messageDialogSendEmailUploadingAttachment');
   }
 
   String get saveAndClose {
-    return Intl.message(
-        'Save & close',
-        name: 'saveAndClose');
+    return Intl.message('Save & close', name: 'saveAndClose');
   }
 
   String get insertImage {
-    return Intl.message(
-        'Insert image',
-        name: 'insertImage');
+    return Intl.message('Insert image', name: 'insertImage');
   }
 
   String get selectFromFile {
@@ -1650,14 +1365,11 @@ class AppLocalizations {
   }
 
   String get insert {
-    return Intl.message(
-        'Insert',
-        name: 'insert');
+    return Intl.message('Insert', name: 'insert');
   }
 
   String get insertImageErrorFileEmpty {
-    return Intl.message(
-        'Please either choose an image or enter an image URL',
+    return Intl.message('Please either choose an image or enter an image URL',
         name: 'insertImageErrorFileEmpty');
   }
 
@@ -1668,129 +1380,88 @@ class AppLocalizations {
   }
 
   String get chooseAColor {
-    return Intl.message(
-        'Choose a color',
-        name: 'chooseAColor');
+    return Intl.message('Choose a color', name: 'chooseAColor');
   }
 
   String get resetToDefault {
-    return Intl.message(
-        'Reset to default',
-        name: 'resetToDefault');
+    return Intl.message('Reset to default', name: 'resetToDefault');
   }
 
   String get setColor {
-    return Intl.message(
-        'Set color',
-        name: 'setColor');
+    return Intl.message('Set color', name: 'setColor');
   }
 
   String get formatBold {
-    return Intl.message(
-        'Bold',
-        name: 'formatBold');
+    return Intl.message('Bold', name: 'formatBold');
   }
 
   String get formatItalic {
-    return Intl.message(
-        'Italic',
-        name: 'formatItalic');
+    return Intl.message('Italic', name: 'formatItalic');
   }
 
   String get formatUnderline {
-    return Intl.message(
-        'Underline',
-        name: 'formatUnderline');
+    return Intl.message('Underline', name: 'formatUnderline');
   }
 
   String get formatStrikethrough {
-    return Intl.message(
-        'Strikethrough',
-        name: 'formatStrikethrough');
+    return Intl.message('Strikethrough', name: 'formatStrikethrough');
   }
 
   String get formatTextColor {
-    return Intl.message(
-        'Text Color',
-        name: 'formatTextColor');
+    return Intl.message('Text Color', name: 'formatTextColor');
   }
 
   String get formatTextBackgroundColor {
-    return Intl.message(
-        'Text Background Color',
+    return Intl.message('Text Background Color',
         name: 'formatTextBackgroundColor');
   }
 
   String get headerStyle {
-    return Intl.message(
-        'Style',
-        name: 'headerStyle');
+    return Intl.message('Style', name: 'headerStyle');
   }
 
   String get fontFamily {
-    return Intl.message(
-        'Font Family',
-        name: 'fontFamily');
+    return Intl.message('Font Family', name: 'fontFamily');
   }
 
   String get paragraph {
-    return Intl.message(
-        'Paragraph',
-        name: 'paragraph');
+    return Intl.message('Paragraph', name: 'paragraph');
   }
 
   String get alignLeft {
-    return Intl.message(
-        'Align left',
-        name: 'alignLeft');
+    return Intl.message('Align left', name: 'alignLeft');
   }
 
   String get alignRight {
-    return Intl.message(
-        'Align right',
-        name: 'alignRight');
+    return Intl.message('Align right', name: 'alignRight');
   }
 
   String get alignCenter {
-    return Intl.message(
-        'Align center',
-        name: 'alignCenter');
+    return Intl.message('Align center', name: 'alignCenter');
   }
 
   String get justifyFull {
-    return Intl.message(
-        'Justify full',
-        name: 'justifyFull');
+    return Intl.message('Justify full', name: 'justifyFull');
   }
 
   String get outdent {
-    return Intl.message(
-        'Outdent',
-        name: 'outdent');
+    return Intl.message('Outdent', name: 'outdent');
   }
 
   String get indent {
-    return Intl.message(
-        'Indent',
-        name: 'indent');
+    return Intl.message('Indent', name: 'indent');
   }
 
   String get orderList {
-    return Intl.message(
-        'Order list',
-        name: 'orderList');
+    return Intl.message('Order list', name: 'orderList');
   }
 
   String get numberedList {
-    return Intl.message(
-        'Numbered list',
-        name: 'numberedList');
+    return Intl.message('Numbered list', name: 'numberedList');
   }
 
   String get bulletedList {
-    return Intl.message(
-        'Bulleted list',
-        name: 'bulletedList');
+    return Intl.message('Bulleted list', name: 'bulletedList');
   }
 
   String get moveTo {
@@ -1836,75 +1507,53 @@ class AppLocalizations {
   }
 
   String get createNewRule {
-    return Intl.message(
-        'Create new rule',
-        name: 'createNewRule');
+    return Intl.message('Create new rule', name: 'createNewRule');
   }
 
   String get rulesNameHintTextInput {
-    return Intl.message(
-        'Enter the rule name',
-        name: 'rulesNameHintTextInput');
+    return Intl.message('Enter the rule name', name: 'rulesNameHintTextInput');
   }
 
   String get conditionValueHintTextInput {
-    return Intl.message(
-        'Value',
-        name: 'conditionValueHintTextInput');
+    return Intl.message('Value', name: 'conditionValueHintTextInput');
   }
 
   String get conditionTitleRulesFilter {
-    return Intl.message(
-        'If all of the following conditions are met:',
+    return Intl.message('If all of the following conditions are met:',
         name: 'conditionTitleRulesFilter');
   }
 
   String get recipient {
-    return Intl.message(
-        'Recipient',
-        name: 'recipient');
+    return Intl.message('Recipient', name: 'recipient');
   }
 
   String get contains {
-    return Intl.message(
-        'Contains',
-        name: 'contains');
+    return Intl.message('Contains', name: 'contains');
   }
 
   String get notContains {
-    return Intl.message(
-        'Not contains',
-        name: 'notContains');
+    return Intl.message('Not contains', name: 'notContains');
   }
 
   String get exactlyEquals {
-    return Intl.message(
-        'Exactly equals',
-        name: 'exactlyEquals');
+    return Intl.message('Exactly equals', name: 'exactlyEquals');
   }
 
   String get notExactlyEquals {
-    return Intl.message(
-        'Not exactly equals',
-        name: 'notExactlyEquals');
+    return Intl.message('Not exactly equals', name: 'notExactlyEquals');
   }
 
   String get actionTitleRulesFilter {
-    return Intl.message(
-        'Perform the following action:',
+    return Intl.message('Perform the following action:',
         name: 'actionTitleRulesFilter');
   }
 
   String get toMailbox {
-    return Intl.message(
-        'To mailbox:',
-        name: 'toMailbox');
+    return Intl.message('To mailbox:', name: 'toMailbox');
   }
 
   String get moveMessage {
-    return Intl.message(
-        'Move message',
-        name: 'moveMessage');
+    return Intl.message('Move message', name: 'moveMessage');
   }
 
   String get ruleFilterAddressFromField {
@@ -1929,14 +1578,11 @@ class AppLocalizations {
   }
 
   String get newFilterWasCreated {
-    return Intl.message(
-        'New filter was created',
-        name: 'newFilterWasCreated');
+    return Intl.message('New filter was created', name: 'newFilterWasCreated');
   }
 
   String get yourFilterHasBeenUpdated {
-    return Intl.message(
-        'Your filter has been updated',
+    return Intl.message('Your filter has been updated',
         name: 'yourFilterHasBeenUpdated');
   }
 
@@ -2081,37 +1727,29 @@ class AppLocalizations {
   }
 
   String messageDisableVacationResponderAutomatically(String endDate) {
-    return Intl.message(
-        'Your vacation responder stopped on $endDate',
-        name: 'messageDisableVacationResponderAutomatically',
-        args: [endDate]);
+    return Intl.message('Your vacation responder stopped on $endDate',
+        name: 'messageDisableVacationResponderAutomatically', args: [endDate]);
   }
 
   String messageConfirmationDialogDeleteRecipientForward(String emailAddress) {
-    return Intl.message(
-        'Do you want to delete email $emailAddress?',
+    return Intl.message('Do you want to delete email $emailAddress?',
         name: 'messageConfirmationDialogDeleteRecipientForward',
-        args: [emailAddress]
-    );
+        args: [emailAddress]);
   }
 
   String get deleteRecipient {
-    return Intl.message(
-        'Remove recipients',
-        name: 'deleteRecipient');
+    return Intl.message('Remove recipients', name: 'deleteRecipient');
   }
 
   String get toastMessageDeleteRecipientSuccessfully {
-    return Intl.message(
-        'The email has been removed from the recipient list.',
+    return Intl.message('The email has been removed from the recipient list.',
         name: 'toastMessageDeleteRecipientSuccessfully');
   }
 
   String get messageConfirmationDialogDeleteAllRecipientForward {
     return Intl.message(
         'Are you sure you want to remove those recipients? Doing this will remove them from the email chain.',
-        name: 'messageConfirmationDialogDeleteAllRecipientForward'
-    );
+        name: 'messageConfirmationDialogDeleteAllRecipientForward');
   }
 
   String get addRecipients {
@@ -2129,20 +1767,17 @@ class AppLocalizations {
   }
 
   String get toastMessageAddRecipientsSuccessfully {
-    return Intl.message(
-        'The emails has been added from the recipient list.',
+    return Intl.message('The emails has been added from the recipient list.',
         name: 'toastMessageAddRecipientsSuccessfully');
   }
 
   String get toastMessageLocalCopyEnable {
-    return Intl.message(
-        'Keep local copy enable.',
+    return Intl.message('Keep local copy enable.',
         name: 'toastMessageLocalCopyEnable');
   }
 
   String get toastMessageLocalCopyDisable {
-    return Intl.message(
-        'Keep local copy disable.',
+    return Intl.message('Keep local copy disable.',
         name: 'toastMessageLocalCopyDisable');
   }
 
@@ -2155,39 +1790,31 @@ class AppLocalizations {
 
   String get emailRuleSettingExplanation {
     return Intl.message(
-      'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
-      name: 'emailRuleSettingExplanation');
+        'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
+        name: 'emailRuleSettingExplanation');
   }
 
   String messageConfirmationDialogDeleteEmailRule(String ruleName) {
-    return Intl.message(
-        'Do you want to delete rule "$ruleName"?',
-        name: 'messageConfirmationDialogDeleteEmailRule',
-        args: [ruleName]
-    );
+    return Intl.message('Do you want to delete rule "$ruleName"?',
+        name: 'messageConfirmationDialogDeleteEmailRule', args: [ruleName]);
   }
 
   String get deleteEmailRule {
-    return Intl.message(
-        'Delete rule',
-        name: 'deleteEmailRule');
+    return Intl.message('Delete rule', name: 'deleteEmailRule');
   }
 
   String get toastMessageDeleteEmailRuleSuccessfully {
-    return Intl.message(
-        'The rule has been removed.',
+    return Intl.message('The rule has been removed.',
         name: 'toastMessageDeleteEmailRuleSuccessfully');
   }
 
   String get toastErrorMessageWhenCreateNewRule {
-    return Intl.message(
-        'You have not filled in the information completely.',
+    return Intl.message('You have not filled in the information completely.',
         name: 'toastErrorMessageWhenCreateNewRule');
   }
 
   String get vacationSettingExplanation {
-    return Intl.message(
-        'Sends an automated reply to incoming messages.',
+    return Intl.message('Sends an automated reply to incoming messages.',
         name: 'vacationSettingExplanation');
   }
 
@@ -2261,72 +1888,43 @@ class AppLocalizations {
   }
 
   String get contact {
-    return Intl.message(
-        'Contact',
-        name: 'contact');
+    return Intl.message('Contact', name: 'contact');
   }
 
   String get hintSearchInputContact {
-    return Intl.message(
-        'Enter name or email',
-        name: 'hintSearchInputContact'
-    );
+    return Intl.message('Enter name or email', name: 'hintSearchInputContact');
   }
 
   String get quickStyles {
-    return Intl.message(
-        'Quick styles',
-        name: 'quickStyles'
-    );
+    return Intl.message('Quick styles', name: 'quickStyles');
   }
 
   String get format {
-    return Intl.message(
-        'Format',
-        name: 'format'
-    );
+    return Intl.message('Format', name: 'format');
   }
 
   String get background {
-    return Intl.message(
-        'Background',
-        name: 'background'
-    );
+    return Intl.message('Background', name: 'background');
   }
 
   String get foreground {
-    return Intl.message(
-        'Foreground',
-        name: 'foreground'
-    );
+    return Intl.message('Foreground', name: 'foreground');
   }
 
   String get titleFormat {
-    return Intl.message(
-        'Format',
-        name: 'titleFormat'
-    );
+    return Intl.message('Format', name: 'titleFormat');
   }
 
   String get titleQuickStyles {
-    return Intl.message(
-        'Quick styles',
-        name: 'titleQuickStyles'
-    );
+    return Intl.message('Quick styles', name: 'titleQuickStyles');
   }
 
   String get titleBackground {
-    return Intl.message(
-        'Background',
-        name: 'titleBackground'
-    );
+    return Intl.message('Background', name: 'titleBackground');
   }
 
   String get titleForeground {
-    return Intl.message(
-        'Foreground',
-        name: 'titleForeground'
-    );
+    return Intl.message('Foreground', name: 'titleForeground');
   }
 
   String get selectDate {
@@ -2365,37 +1963,24 @@ class AppLocalizations {
   }
 
   String dateRangeAdvancedSearchFilter(String startDate, String endDate) {
-    return Intl.message(
-        'From $startDate to $endDate',
-        name: 'dateRangeAdvancedSearchFilter',
-        args: [startDate, endDate]
-    );
+    return Intl.message('From $startDate to $endDate',
+        name: 'dateRangeAdvancedSearchFilter', args: [startDate, endDate]);
   }
 
   String get customRange {
-    return Intl.message(
-        'Custom range',
-        name: 'customRange');
+    return Intl.message('Custom range', name: 'customRange');
   }
 
   String get selectParentFolder {
-    return Intl.message(
-        'Select parent folder',
-        name: 'selectParentFolder');
+    return Intl.message('Select parent folder', name: 'selectParentFolder');
   }
 
   String get requestReadReceipt {
-    return Intl.message(
-      'Request read receipt',
-      name: 'requestReadReceipt'
-    );
+    return Intl.message('Request read receipt', name: 'requestReadReceipt');
   }
 
   String get appGridTittle {
-    return Intl.message(
-      'Go to applications',
-      name: 'appGridTittle'
-    );
+    return Intl.message('Go to applications', name: 'appGridTittle');
   }
 
   String get titleReadReceiptRequestNotificationMessage {
@@ -2413,43 +1998,35 @@ class AppLocalizations {
   }
 
   String get yes {
-    return Intl.message(
-        'Yes',
-        name: 'yes');
+    return Intl.message('Yes', name: 'yes');
   }
 
   String get no {
-    return Intl.message(
-        'No',
-        name: 'no');
+    return Intl.message('No', name: 'no');
   }
 
   String get toastMessageNotSupportMdnWhenSendReceipt {
-    return Intl.message(
-        'Your account does not support the MDN capability',
+    return Intl.message('Your account does not support the MDN capability',
         name: 'toastMessageNotSupportMdnWhenSendReceipt');
   }
 
   String get toastMessageCannotFoundIdentityWhenSendReceipt {
-    return Intl.message(
-        'Identity id given cannot be found',
+    return Intl.message('Identity id given cannot be found',
         name: 'toastMessageCannotFoundIdentityWhenSendReceipt');
   }
 
   String get toastMessageCannotFoundEmailIdWhenSendReceipt {
-    return Intl.message(
-        'Email id given cannot be found',
+    return Intl.message('Email id given cannot be found',
         name: 'toastMessageCannotFoundEmailIdWhenSendReceipt');
   }
 
   String subjectSendReceiptToSender(String subject) {
-    return Intl.message(
-        'Read: $subject',
-        name: 'subjectSendReceiptToSender',
-        args: [subject]);
+    return Intl.message('Read: $subject',
+        name: 'subjectSendReceiptToSender', args: [subject]);
   }
 
-  String textBodySendReceiptToSender(String receiver, String subject, String time) {
+  String textBodySendReceiptToSender(
+      String receiver, String subject, String time) {
     return Intl.message(
         'Message was read by $receiver on $time \n\nSubject: $subject \n\nNote: This Return Read Receipt only acknowledges that the message was displayed on the recipient\'s computer. There is no guarantee that the recipient has read or understood the message contents.',
         name: 'textBodySendReceiptToSender',
@@ -2457,81 +2034,60 @@ class AppLocalizations {
   }
 
   String get toastMessageSendReceiptSuccess {
-    return Intl.message(
-        'A read receipt has been sent.',
+    return Intl.message('A read receipt has been sent.',
         name: 'toastMessageSendReceiptSuccess');
   }
 
   String moveConversation(int numberOfConversation) {
-    return Intl.message(
-        'Move $numberOfConversation conversation',
-        name: 'moveConversation',
-        args: [numberOfConversation]
-    );
+    return Intl.message('Move $numberOfConversation conversation',
+        name: 'moveConversation', args: [numberOfConversation]);
   }
 
   String messageConfirmationDialogDeleteMultipleMailbox(int numberOfMailbox) {
     return Intl.message(
         '$numberOfMailbox mailbox and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
         name: 'messageConfirmationDialogDeleteMultipleMailbox',
-        args: [numberOfMailbox]
-    );
+        args: [numberOfMailbox]);
   }
 
   String get toastMessageErrorNotSelectedFolderWhenCreateNewMailbox {
-    return Intl.message(
-        'You have not selected a save folder to save',
+    return Intl.message('You have not selected a save folder to save',
         name: 'toastMessageErrorNotSelectedFolderWhenCreateNewMailbox');
   }
 
   String get createNewMailbox {
-    return Intl.message(
-        'Create new mailbox',
-        name: 'createNewMailbox');
+    return Intl.message('Create new mailbox', name: 'createNewMailbox');
   }
 
   String get newer {
-    return Intl.message(
-        'Newer',
-        name: 'newer');
+    return Intl.message('Newer', name: 'newer');
   }
 
   String get older {
-    return Intl.message(
-        'Older',
-        name: 'older');
+    return Intl.message('Older', name: 'older');
   }
 
   String get forwardingSettingExplanation {
     return Intl.message(
-      'Allows a new recipient to see the email sent if they were not originally included in the email chain.',
-      name: 'forwardingSettingExplanation');
+        'Allows a new recipient to see the email sent if they were not originally included in the email chain.',
+        name: 'forwardingSettingExplanation');
   }
 
   String get addRecipientButton {
-    return Intl.message(
-      'Add recipient',
-      name: 'addRecipientButton');
+    return Intl.message('Add recipient', name: 'addRecipientButton');
   }
 
   String get incorrectEmailFormat {
-    return Intl.message(
-      'Incorrect email format',
-      name: 'incorrectEmailFormat');
+    return Intl.message('Incorrect email format', name: 'incorrectEmailFormat');
   }
 
   String get remove {
-    return Intl.message(
-      'Remove',
-      name: 'remove');
+    return Intl.message('Remove', name: 'remove');
   }
 
   String totalEmailSelected(int count) {
-    return Intl.message(
-        'Deselect all ($count)',
-        name: 'totalEmailSelected',
-        args: [count]
-    );
+    return Intl.message('Deselect all ($count)',
+        name: 'totalEmailSelected', args: [count]);
   }
 
   String get storageQuotas {
@@ -2549,27 +2105,23 @@ class AppLocalizations {
   }
 
   String get quickCreatingRule {
-    return Intl.message(
-        'Create a rule with this email',
+    return Intl.message('Create a rule with this email',
         name: 'quickCreatingRule');
   }
 
   String get titlePageNotFound {
-    return Intl.message(
-      'Oops, we can’t find that page',
-      name: 'titlePageNotFound');
+    return Intl.message('Oops, we can’t find that page',
+        name: 'titlePageNotFound');
   }
 
   String get subTitlePageNotFound {
     return Intl.message(
-      'It is possible that your destination page has disappeared or belongs to another account.',
-      name: 'subTitlePageNotFound');
+        'It is possible that your destination page has disappeared or belongs to another account.',
+        name: 'subTitlePageNotFound');
   }
 
   String get page404 {
-    return Intl.message(
-        'Page 404',
-        name: 'page404');
+    return Intl.message('Page 404', name: 'page404');
   }
 
   String get openInNewTab {
@@ -2594,16 +2146,12 @@ class AppLocalizations {
   }
 
   String get appTitlePushNotification {
-    return Intl.message(
-      'Team Mail',
-      name: 'appTitlePushNotification');
+    return Intl.message('Team Mail', name: 'appTitlePushNotification');
   }
 
   String totalNewMessagePushNotification(int count) {
-    return Intl.message(
-      '$count new emails',
-      name: 'totalNewMessagePushNotification',
-      args: [count]);
+    return Intl.message('$count new emails',
+        name: 'totalNewMessagePushNotification', args: [count]);
   }
 
   String get privacyPolicy {
@@ -2612,13 +2160,10 @@ class AppLocalizations {
       name: 'privacyPolicy',
     );
   }
-  
+
   String countNewSpamEmails(String count) {
-    return Intl.message(
-        'You have $count new spam emails!',
-        name: 'countNewSpamEmails',
-        args: [count]
-    );
+    return Intl.message('You have $count new spam emails!',
+        name: 'countNewSpamEmails', args: [count]);
   }
 
   String get showDetails {
@@ -2648,28 +2193,25 @@ class AppLocalizations {
       name: 'enableSpamReport',
     );
   }
-  
+
   String get required {
-    return Intl.message(
-      'required',
-      name: 'required');
+    return Intl.message('required', name: 'required');
   }
 
   String get noEmailInYourCurrentMailbox {
     return Intl.message(
-      'We\'re sorry, there are no emails in your current mailbox',
-      name: 'noEmailInYourCurrentMailbox');
+        'We\'re sorry, there are no emails in your current mailbox',
+        name: 'noEmailInYourCurrentMailbox');
   }
 
   String get noEmailMatchYourCurrentFilter {
     return Intl.message(
-      'We\'re sorry, there are no emails that match your current filter.',
-      name: 'noEmailMatchYourCurrentFilter');
+        'We\'re sorry, there are no emails that match your current filter.',
+        name: 'noEmailMatchYourCurrentFilter');
   }
 
   String get reduceSomeFiltersAndTryAgain {
-    return Intl.message(
-        'Let\'s reduce some filters and try again',
+    return Intl.message('Let\'s reduce some filters and try again',
         name: 'reduceSomeFiltersAndTryAgain');
   }
 
@@ -2716,55 +2258,42 @@ class AppLocalizations {
   }
 
   String get mailBoxes {
-    return Intl.message(
-      'Mailboxes',
-      name: 'mailBoxes');
+    return Intl.message('Mailboxes', name: 'mailBoxes');
   }
 
   String get teamMailBoxes {
-    return Intl.message(
-      'Team-mailboxes',
-      name: 'teamMailBoxes');
+    return Intl.message('Team-mailboxes', name: 'teamMailBoxes');
   }
 
   String get hideMailBoxes {
-    return Intl.message(
-      'Hide mailbox',
-      name: 'hideMailBoxes');
+    return Intl.message('Hide mailbox', name: 'hideMailBoxes');
   }
 
   String get thisImageCannotBeAdded {
-    return Intl.message(
-      'This image cannot be added.',
-      name: 'thisImageCannotBeAdded'
-    );
+    return Intl.message('This image cannot be added.',
+        name: 'thisImageCannotBeAdded');
   }
 
   String get toastMsgHideMailboxSuccess {
     return Intl.message(
-      'This mailbox has been hidden from your primary mailbox',
-      name: 'toastMsgHideMailboxSuccess');
+        'This mailbox has been hidden from your primary mailbox',
+        name: 'toastMsgHideMailboxSuccess');
   }
 
   String get searchForMailboxes {
-    return Intl.message(
-      'Search for mailboxes',
-      name: 'searchForMailboxes'
-    );
+    return Intl.message('Search for mailboxes', name: 'searchForMailboxes');
   }
 
   String get showMailbox {
-    return Intl.message(
-      'Show mailbox',
-      name: 'showMailbox'
-    );
+    return Intl.message('Show mailbox', name: 'showMailbox');
   }
 
   String get toastMessageShowMailboxSuccess {
     return Intl.message(
-      'This mailbox is already displayed in your primary mailbox',
-      name: 'toastMessageShowMailboxSuccess');
+        'This mailbox is already displayed in your primary mailbox',
+        name: 'toastMessageShowMailboxSuccess');
   }
+
   String get mailboxVisibility {
     return Intl.message(
       'Mailbox visibility',
@@ -2780,45 +2309,36 @@ class AppLocalizations {
   }
 
   String get emptyListEmailForward {
-    return Intl.message(
-      'Please input at least one recipient',
-      name: 'emptyListEmailForward');
+    return Intl.message('Please input at least one recipient',
+        name: 'emptyListEmailForward');
   }
 
   String get forwardedMessage {
-    return Intl.message(
-      'Forwarded message',
-      name: 'forwardedMessage');
+    return Intl.message('Forwarded message', name: 'forwardedMessage');
   }
 
   String get repliedMessage {
-    return Intl.message(
-      'Replied message',
-      name: 'repliedMessage');
+    return Intl.message('Replied message', name: 'repliedMessage');
   }
 
   String get repliedAndForwardedMessage {
-    return Intl.message(
-      'Replied and Forwarded message',
-      name: 'repliedAndForwardedMessage');
+    return Intl.message('Replied and Forwarded message',
+        name: 'repliedAndForwardedMessage');
   }
 
   String get emptyTrash {
-    return Intl.message(
-      'Empty Trash',
-      name: 'emptyTrash');
+    return Intl.message('Empty Trash', name: 'emptyTrash');
   }
 
   String get emptyTrashMessageDialog {
     return Intl.message(
-      'You are about to permanently delete all items in Trash . Do you want to continue?',
-      name: 'emptyTrashMessageDialog');
+        'You are about to permanently delete all items in Trash . Do you want to continue?',
+        name: 'emptyTrashMessageDialog');
   }
 
   String get cannotSelectThisImage {
-    return Intl.message(
-      'Cannot select this image.',
-      name: 'cannotSelectThisImage');
+    return Intl.message('Cannot select this image.',
+        name: 'cannotSelectThisImage');
   }
 
   String get messageHasBeenSavedToTheSendingQueue {
@@ -2829,73 +2349,51 @@ class AppLocalizations {
   }
 
   String get sendingQueue {
-    return Intl.message(
-      'Sending queue',
-      name: 'sendingQueue'
-    );
+    return Intl.message('Sending queue', name: 'sendingQueue');
   }
 
   String get bannerMessageSendingQueueView {
     return Intl.message(
-      'Messages in Sending queue mailbox will be sent or scheduled when online.',
-      name: 'bannerMessageSendingQueueView'
-    );
+        'Messages in Sending queue mailbox will be sent or scheduled when online.',
+        name: 'bannerMessageSendingQueueView');
   }
 
   String get proceed {
-    return Intl.message(
-      'Proceed',
-      name: 'proceed'
-    );
+    return Intl.message('Proceed', name: 'proceed');
   }
 
   String get youAreInOfflineMode {
-    return Intl.message(
-      'You\'re in offline mode',
-      name: 'youAreInOfflineMode'
-    );
+    return Intl.message('You\'re in offline mode', name: 'youAreInOfflineMode');
   }
 
   String get messageDialogWhenStoreSendingEmailFirst {
-    return Intl.message(
-      'Fortunately, you can still',
-      name: 'messageDialogWhenStoreSendingEmailFirst'
-    );
+    return Intl.message('Fortunately, you can still',
+        name: 'messageDialogWhenStoreSendingEmailFirst');
   }
 
   String get messageDialogWhenStoreSendingEmailSecond {
-    return Intl.message(
-      ' send, reply, or forward ',
-      name: 'messageDialogWhenStoreSendingEmailSecond'
-    );
+    return Intl.message(' send, reply, or forward ',
+        name: 'messageDialogWhenStoreSendingEmailSecond');
   }
 
   String get messageDialogWhenStoreSendingEmailThird {
     return Intl.message(
-      'emails. They will be delivered when you connect to the internet. To edit these emails before sending, go to the ',
-      name: 'messageDialogWhenStoreSendingEmailThird'
-    );
+        'emails. They will be delivered when you connect to the internet. To edit these emails before sending, go to the ',
+        name: 'messageDialogWhenStoreSendingEmailThird');
   }
 
   String get messageDialogWhenStoreSendingEmailTail {
-    return Intl.message(
-      ' mailbox.',
-      name: 'messageDialogWhenStoreSendingEmailTail'
-    );
+    return Intl.message(' mailbox.',
+        name: 'messageDialogWhenStoreSendingEmailTail');
   }
 
   String titleRecipientSendingEmail(String recipients) {
-    return Intl.message(
-      'To: $recipients',
-      name: 'titleRecipientSendingEmail',
-      args: [recipients]);
+    return Intl.message('To: $recipients',
+        name: 'titleRecipientSendingEmail', args: [recipients]);
   }
 
   String get openMailboxMenu {
-    return Intl.message(
-      'Open mailbox menu',
-      name: 'openMailboxMenu'
-    );
+    return Intl.message('Open mailbox menu', name: 'openMailboxMenu');
   }
 
   String get messageHasBeenSentSuccessfully {
@@ -2906,17 +2404,13 @@ class AppLocalizations {
   }
 
   String get deleteOfflineEmail {
-    return Intl.message(
-        'Delete offline email',
-        name: 'deleteOfflineEmail'
-    );
+    return Intl.message('Delete offline email', name: 'deleteOfflineEmail');
   }
 
   String get messageDialogDeleteSendingEmail {
     return Intl.message(
-      'Deleting an offline email will erase its content permanently. You won\'t be able to undo this action or recover the email from the Trash mailbox.',
-      name: 'messageDialogDeleteSendingEmail'
-    );
+        'Deleting an offline email will erase its content permanently. You won\'t be able to undo this action or recover the email from the Trash mailbox.',
+        name: 'messageDialogDeleteSendingEmail');
   }
 
   String get messageHaveBeenDeletedSuccessfully {
@@ -2941,29 +2435,21 @@ class AppLocalizations {
   }
 
   String get connectedToTheInternet {
-    return Intl.message(
-      'Connected to the internet',
-      name: 'connectedToTheInternet'
-    );
+    return Intl.message('Connected to the internet',
+        name: 'connectedToTheInternet');
   }
 
   String get resend {
-    return Intl.message(
-      'Resend',
-      name: 'resend');
+    return Intl.message('Resend', name: 'resend');
   }
 
   String get messagesHaveBeenResent {
-    return Intl.message(
-      'Messages have been resent',
-      name: 'messagesHaveBeenResent');
+    return Intl.message('Messages have been resent',
+        name: 'messagesHaveBeenResent');
   }
 
   String get connectionError {
-    return Intl.message(
-      'Connection error',
-      name: 'connectionError'
-    );
+    return Intl.message('Connection error', name: 'connectionError');
   }
 
   String get inboxMailboxDisplayName {
@@ -3023,112 +2509,87 @@ class AppLocalizations {
   }
 
   String pleaseChooseAnImageSizeCorrectly(int maxSize) {
-    return Intl.message(
-      'Please choose an image size <= ${maxSize}KB',
-      name: 'pleaseChooseAnImageSizeCorrectly',
-      args: [maxSize]);
+    return Intl.message('Please choose an image size <= ${maxSize}KB',
+        name: 'pleaseChooseAnImageSizeCorrectly', args: [maxSize]);
   }
 
   String get messageEventActionBannerOrganizerInvited {
-    return Intl.message(
-      ' has invited you in to a meeting',
-      name: 'messageEventActionBannerOrganizerInvited');
+    return Intl.message(' has invited you in to a meeting',
+        name: 'messageEventActionBannerOrganizerInvited');
   }
 
   String get messageEventActionBannerOrganizerUpdated {
-    return Intl.message(
-      ' has updated a meeting',
-      name: 'messageEventActionBannerOrganizerUpdated');
+    return Intl.message(' has updated a meeting',
+        name: 'messageEventActionBannerOrganizerUpdated');
   }
 
   String get messageEventActionBannerOrganizerCanceled {
-    return Intl.message(
-      ' has canceled a meeting',
-      name: 'messageEventActionBannerOrganizerCanceled');
+    return Intl.message(' has canceled a meeting',
+        name: 'messageEventActionBannerOrganizerCanceled');
   }
 
   String get subMessageEventActionBannerUpdated {
-    return Intl.message(
-      '"The time has been updated to better suit all of you"',
-      name: 'subMessageEventActionBannerUpdated');
+    return Intl.message('"The time has been updated to better suit all of you"',
+        name: 'subMessageEventActionBannerUpdated');
   }
 
   String get subMessageEventActionBannerCanceled {
-    return Intl.message(
-      '"We are canceling the event due to bad weather."',
-      name: 'subMessageEventActionBannerCanceled');
+    return Intl.message('"We are canceling the event due to bad weather."',
+        name: 'subMessageEventActionBannerCanceled');
   }
 
   String get anAttendee {
-    return Intl.message(
-      'An attendee',
-      name: 'anAttendee');
+    return Intl.message('An attendee', name: 'anAttendee');
   }
 
   String get you {
-    return Intl.message(
-      'You',
-      name: 'you');
+    return Intl.message('You', name: 'you');
   }
 
   String get messageEventActionBannerAttendeeAccepted {
-    return Intl.message(
-      ' has accepted this invitation',
-      name: 'messageEventActionBannerAttendeeAccepted');
+    return Intl.message(' has accepted this invitation',
+        name: 'messageEventActionBannerAttendeeAccepted');
   }
 
   String get messageEventActionBannerAttendeeTentative {
-    return Intl.message(
-      ' has replied "Maybe" to this invitation',
-      name: 'messageEventActionBannerAttendeeTentative');
+    return Intl.message(' has replied "Maybe" to this invitation',
+        name: 'messageEventActionBannerAttendeeTentative');
   }
 
   String get messageEventActionBannerAttendeeDeclined {
-    return Intl.message(
-      ' has declined this invitation',
-      name: 'messageEventActionBannerAttendeeDeclined');
+    return Intl.message(' has declined this invitation',
+        name: 'messageEventActionBannerAttendeeDeclined');
   }
 
   String get messageEventActionBannerAttendeeCounter {
-    return Intl.message(
-      ' has proposed changes to the event',
-      name: 'messageEventActionBannerAttendeeCounter');
+    return Intl.message(' has proposed changes to the event',
+        name: 'messageEventActionBannerAttendeeCounter');
   }
 
   String get messageEventActionBannerAttendeeCounterDeclined {
-    return Intl.message(
-      'Your counter proposal was declined',
-      name: 'messageEventActionBannerAttendeeCounterDeclined');
+    return Intl.message('Your counter proposal was declined',
+        name: 'messageEventActionBannerAttendeeCounterDeclined');
   }
 
   String get invitationMessageCalendarInformation {
-    return Intl.message(
-      ' has invited you in to a meeting:',
-      name: 'invitationMessageCalendarInformation');
+    return Intl.message(' has invited you in to a meeting:',
+        name: 'invitationMessageCalendarInformation');
   }
 
   String get when {
-    return Intl.message(
-      'When',
-      name: 'when');
+    return Intl.message('When', name: 'when');
   }
 
   String get where {
-    return Intl.message(
-      'Where',
-      name: 'where');
+    return Intl.message('Where', name: 'where');
   }
 
   String get who {
-    return Intl.message(
-      'Who',
-      name: 'who');
+    return Intl.message('Who', name: 'who');
   }
 
   String get organizer {
-    return Intl.message(
-      'Organizer',
-      name: 'organizer');
+    return Intl.message('Organizer', name: 'organizer');
   }
 
   String get time {
@@ -3139,57 +2600,44 @@ class AppLocalizations {
   }
 
   String get location {
-    return Intl.message(
-      'Location',
-      name: 'location');
+    return Intl.message('Location', name: 'location');
   }
 
   String get attendees {
-    return Intl.message(
-      'Attendees',
-      name: 'attendees');
+    return Intl.message('Attendees', name: 'attendees');
   }
 
   String get seeAllAttendees {
-    return Intl.message(
-      'See all attendees',
-      name: 'seeAllAttendees');
+    return Intl.message('See all attendees', name: 'seeAllAttendees');
   }
 
   String get link {
-    return Intl.message(
-      'Link',
-      name: 'link');
+    return Intl.message('Link', name: 'link');
   }
 
   String get deleteAllSpamEmails {
-    return Intl.message(
-      'Delete all spam emails',
-      name: 'deleteAllSpamEmails');
+    return Intl.message('Delete all spam emails', name: 'deleteAllSpamEmails');
   }
 
   String get emptySpamFolder {
-    return Intl.message(
-      'Empty Spam folder',
-      name: 'emptySpamFolder');
+    return Intl.message('Empty Spam folder', name: 'emptySpamFolder');
   }
 
   String get emptySpamMessageDialog {
     return Intl.message(
-      'You are about to permanently delete all items in Spam . Do you want to continue?',
-      name: 'emptySpamMessageDialog');
+        'You are about to permanently delete all items in Spam . Do you want to continue?',
+        name: 'emptySpamMessageDialog');
   }
 
   String get bannerDeleteAllSpamEmailsMessage {
     return Intl.message(
-      'All messages in Spam will be deleted if you reach limited storage.',
-      name: 'bannerDeleteAllSpamEmailsMessage');
+        'All messages in Spam will be deleted if you reach limited storage.',
+        name: 'bannerDeleteAllSpamEmailsMessage');
   }
 
   String get deleteAllSpamEmailsNow {
-    return Intl.message(
-      'Delete all spam emails now',
-      name: 'deleteAllSpamEmailsNow');
+    return Intl.message('Delete all spam emails now',
+        name: 'deleteAllSpamEmailsNow');
   }
 
   String quotaStateLabel(String used, String limit) {
@@ -3201,64 +2649,49 @@ class AppLocalizations {
   }
 
   String get quotaErrorBannerTitle {
-    return Intl.message(
-      'You have run out of storage space',
-      name: 'quotaErrorBannerTitle'
-    );
+    return Intl.message('You have run out of storage space',
+        name: 'quotaErrorBannerTitle');
   }
 
   String get quotaWarningBannerTitle {
-    return Intl.message(
-      'You are running out of storage (90%).',
-      name: 'quotaWarningBannerTitle'
-    );
+    return Intl.message('You are running out of storage (90%).',
+        name: 'quotaWarningBannerTitle');
   }
 
   String get quotaWarningBannerMessage {
     return Intl.message(
-      'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
-      name: 'quotaWarningBannerMessage'
-    );
+        'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
+        name: 'quotaWarningBannerMessage');
   }
 
   String get quotaErrorBannerMessage {
     return Intl.message(
-      'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
-      name: 'quotaErrorBannerMessage'
-    );
+        'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
+        name: 'quotaErrorBannerMessage');
   }
 
   String createFolderSuccessfullyMessage(String folderName) {
-    return Intl.message(
-      'You successfully created $folderName folder',
-      name: 'createFolderSuccessfullyMessage',
-      args: [folderName]
-    );
+    return Intl.message('You successfully created $folderName folder',
+        name: 'createFolderSuccessfullyMessage', args: [folderName]);
   }
 
   String get folderCreatedTitle {
-    return Intl.message(
-      'Your folder is just created',
-      name: 'folderCreatedTitle');
+    return Intl.message('Your folder is just created',
+        name: 'folderCreatedTitle');
   }
 
   String get folderCreatedMessage {
     return Intl.message(
-      'To begin using this mailbox, you should add some rules to organize all of your mail in your own way.',
-      name: 'folderCreatedMessage');
+        'To begin using this mailbox, you should add some rules to organize all of your mail in your own way.',
+        name: 'folderCreatedMessage');
   }
 
   String get createFilters {
-    return Intl.message(
-      'Create filters',
-      name: 'createFilters');
+    return Intl.message('Create filters', name: 'createFilters');
   }
 
-
   String get maybe {
-    return Intl.message(
-      'Maybe',
-      name: 'maybe');
+    return Intl.message('Maybe', name: 'maybe');
   }
 
   String get enterASubject {
@@ -3276,11 +2709,8 @@ class AppLocalizations {
   }
 
   String markedSingleMessageToast(String action) {
-    return Intl.message(
-        'Message has been marked as $action',
-        name: 'markedSingleMessageToast',
-        args: [action]
-    );
+    return Intl.message('Message has been marked as $action',
+        name: 'markedSingleMessageToast', args: [action]);
   }
 
   String get empty {
@@ -3299,10 +2729,9 @@ class AppLocalizations {
 
   String messageEmptyFolderDialog(String folder) {
     return Intl.message(
-      'The messages in $folder folder will be permanently deleted and you will not be able to restore them',
-      name: 'messageEmptyFolderDialog',
-      args: [folder]
-    );
+        'The messages in $folder folder will be permanently deleted and you will not be able to restore them',
+        name: 'messageEmptyFolderDialog',
+        args: [folder]);
   }
 
   String get addCondition {
@@ -3313,25 +2742,16 @@ class AppLocalizations {
   }
 
   String get formattingOptions {
-    return Intl.message(
-      'Formatting options',
-      name: 'formattingOptions'
-    );
+    return Intl.message('Formatting options', name: 'formattingOptions');
   }
 
   String get embedCode {
-    return Intl.message(
-      'Embed code',
-      name: 'embedCode'
-    );
+    return Intl.message('Embed code', name: 'embedCode');
   }
 
   String showMoreAttachment(int count) {
-    return Intl.message(
-      'Show more (+$count)',
-      name: 'showMoreAttachment',
-      args: [count]
-    );
+    return Intl.message('Show more (+$count)',
+        name: 'showMoreAttachment', args: [count]);
   }
 
   String get saveAsDraft {
@@ -3363,23 +2783,18 @@ class AppLocalizations {
   }
 
   String get textSize {
-    return Intl.message(
-      'Text Size',
-      name: 'textSize'
-    );
+    return Intl.message('Text Size', name: 'textSize');
   }
 
   String get messageDialogOfflineModeOnIOS {
     return Intl.message(
-      'The message will be in Sending Queue. You can try again when being online.',
-      name: 'messageDialogOfflineModeOnIOS'
-    );
+        'The message will be in Sending Queue. You can try again when being online.',
+        name: 'messageDialogOfflineModeOnIOS');
   }
 
   String get bannerMessageSendingQueueViewOnIOS {
     return Intl.message(
-      'Messages in the Send Queue mailbox can be sent while online.',
-      name: 'bannerMessageSendingQueueViewOnIOS'
-    );
+        'Messages in the Send Queue mailbox can be sent while online.',
+        name: 'bannerMessageSendingQueueViewOnIOS');
   }
 }
