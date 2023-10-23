@@ -2169,12 +2169,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "يسمح للمستلم الجديد برؤية البريد الإلكتروني المرسل إذا لم يتم تضمينه في الأصل في سلسلة البريد الإلكتروني.",
-  "@forwardingSettingExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "storageQuotas": "التخزين",
   "@storageQuotas": {
     "type": "text",

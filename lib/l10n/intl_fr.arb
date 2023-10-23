@@ -2234,12 +2234,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Permet à un nouveau destinataire de voir l'e-mail envoyé s'il n'était pas initialement inclus dans la chaîne d'e-mails.",
-  "@forwardingSettingExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "privacyPolicy": "Politique de confidentialité",
   "@privacyPolicy": {
     "type": "text",
