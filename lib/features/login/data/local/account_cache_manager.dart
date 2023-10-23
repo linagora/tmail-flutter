@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
@@ -10,24 +11,29 @@ class AccountCacheManager {
 
   AccountCacheManager(this._accountCacheClient);
 
-  Future<PersonalAccount> getSelectedAccount() async {
-    try {
-      final allAccounts = await _accountCacheClient.getAll();
-      return allAccounts.firstWhere((account) => account.isSelected)
-          .toAccount();
-    } catch (e) {
-      logError('AccountCacheManager::getSelectedAccount(): $e');
+  Future<PersonalAccount> getCurrentAccount() async {
+    final allAccounts = await _accountCacheClient.getAll();
+    log('AccountCacheManager::getCurrentAccount::allAccounts(): $allAccounts');
+    final accountCache = allAccounts.firstWhereOrNull((account) => account.isSelected);
+    log('AccountCacheManager::getCurrentAccount::accountCache(): $accountCache');
+    if (accountCache != null) {
+      return accountCache.toAccount();
+    } else {
       throw NotFoundAuthenticatedAccountException();
     }
   }
 
-  Future<void> setSelectedAccount(PersonalAccount account) {
-    log('AccountCacheManager::setSelectedAccount(): $_accountCacheClient');
+  Future<void> setCurrentAccount(PersonalAccount account) async {
+    log('AccountCacheManager::setCurrentAccount(): $account');
+    final accountCacheExist = await _accountCacheClient.isExistTable();
+    if (accountCacheExist) {
+      await _accountCacheClient.clearAllData();
+    }
     return _accountCacheClient.insertItem(account.id, account.toCache());
   }
 
-  Future<void> deleteSelectedAccount(String accountId) {
-    log('AccountCacheManager::deleteSelectedAccount(): $accountId');
-    return _accountCacheClient.deleteItem(accountId);
+  Future<void> deleteCurrentAccount(String hashId) {
+    log('AccountCacheManager::deleteCurrentAccount(): $hashId');
+    return _accountCacheClient.deleteItem(hashId);
   }
 }

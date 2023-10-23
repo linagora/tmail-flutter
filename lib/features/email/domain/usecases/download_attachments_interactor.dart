@@ -46,32 +46,25 @@ class DownloadAttachmentsInteractor {
 
       if (currentAccount.authenticationType == AuthenticationType.oidc) {
         final tokenOidc = await _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id);
-        accountRequest = AccountRequest(
-            token: tokenOidc.toToken(),
-            authenticationType: AuthenticationType.oidc);
+        accountRequest = AccountRequest.withOidc(token: tokenOidc.toToken());
       } else {
         final authenticationInfoCache = await credentialRepository.getAuthenticationInfoStored();
-        if (authenticationInfoCache != null) {
-          accountRequest = AccountRequest(
-              userName: UserName(authenticationInfoCache.username),
-              password: Password(authenticationInfoCache.password),
-              authenticationType: AuthenticationType.basic);
-        }
+        accountRequest = AccountRequest.withBasic(
+          userName: UserName(authenticationInfoCache.username),
+          password: Password(authenticationInfoCache.password),
+        );
       }
 
-      if (accountRequest != null) {
-        final taskIds = await emailRepository.downloadAttachments(
-            attachments,
-            accountId,
-            baseDownloadUrl,
-            accountRequest);
+      final taskIds = await emailRepository.downloadAttachments(
+        attachments,
+        accountId,
+        baseDownloadUrl,
+        accountRequest
+      );
 
-        yield Right<Failure, Success>(DownloadAttachmentsSuccess(taskIds));
-      } else {
-        yield Left<Failure, Success>(DownloadAttachmentsFailure(null));
-      }
+      yield Right<Failure, Success>(DownloadAttachmentsSuccess(taskIds));
     } catch (exception) {
-      log('DownloadAttachmentsInteractor::execute(): $exception');
+      logError('DownloadAttachmentsInteractor::execute(): $exception');
       if (exception is DownloadAttachmentHasTokenExpiredException &&
           exception.refreshToken.isNotEmpty) {
         yield* _retryDownloadAttachments(
@@ -101,9 +94,10 @@ class DownloadAttachmentsInteractor {
           oidcConfig.scopes,
           refreshToken);
 
+      await _accountRepository.deleteCurrentAccount(accountCurrent.id);
+
       await Future.wait([
         _authenticationOIDCRepository.persistTokenOIDC(newTokenOIDC),
-        _accountRepository.deleteCurrentAccount(accountCurrent.id),
         _accountRepository.setCurrentAccount(PersonalAccount(
           newTokenOIDC.tokenIdHash,
           AuthenticationType.oidc,
@@ -117,9 +111,7 @@ class DownloadAttachmentsInteractor {
           newToken: newTokenOIDC.toToken(),
           newConfig: oidcConfig);
 
-      final accountRequest = AccountRequest(
-          token: newTokenOIDC.toToken(),
-          authenticationType: AuthenticationType.oidc);
+      final accountRequest = AccountRequest.withOidc(token: newTokenOIDC.toToken());
 
       final taskIds = await emailRepository.downloadAttachments(
           attachments,

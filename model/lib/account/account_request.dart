@@ -19,6 +19,24 @@ class AccountRequest with EquatableMixin {
     this.authenticationType = AuthenticationType.none,
   });
 
+  factory AccountRequest.withOidc({required Token token}) {
+    return AccountRequest(
+      token: token,
+      authenticationType: AuthenticationType.oidc
+    );
+  }
+
+  factory AccountRequest.withBasic({
+    required UserName userName,
+    required Password password
+  }) {
+    return AccountRequest(
+      userName: userName,
+      password: password,
+      authenticationType: AuthenticationType.basic
+    );
+  }
+
   String get basicAuth => 'Basic ${base64Encode(utf8.encode('${userName?.value}:${password?.value}'))}';
 
   String get bearerToken => 'Bearer ${token?.token}';

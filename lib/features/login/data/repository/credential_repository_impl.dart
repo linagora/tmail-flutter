@@ -36,7 +36,7 @@ class CredentialRepositoryImpl extends CredentialRepository {
   }
 
   @override
-  Future<AuthenticationInfoCache?> getAuthenticationInfoStored() {
+  Future<AuthenticationInfoCache> getAuthenticationInfoStored() {
     return _authenticationInfoCacheManager.getAuthenticationInfoStored();
   }
 
