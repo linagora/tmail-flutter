@@ -1,15 +1,16 @@
 
 import 'package:byte_converter/byte_converter.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 
-class DownloadTaskItemWidget extends StatelessWidget with AppLoaderMixin {
+class DownloadTaskItemWidget extends StatelessWidget {
 
   final DownloadTaskState taskState;
 
@@ -40,7 +41,17 @@ class DownloadTaskItemWidget extends StatelessWidget with AppLoaderMixin {
                   width: 16,
                   height: 16,
                   fit: BoxFit.fill),
-              circularPercentLoadingWidget(taskState.percentDownloading)
+              Center(
+                child: taskState.percentDownloading == 0
+                  ? const CircularProgressIndicator(color: AppColor.primaryColor, strokeWidth: 3)
+                  : CircularPercentIndicator(
+                      percent: taskState.percentDownloading,
+                      backgroundColor: AppColor.colorBgMailboxSelected,
+                      progressColor: AppColor.primaryColor,
+                      lineWidth: 3,
+                      radius: 14,
+                    )
+              )
             ]),
           ),
           const SizedBox(width: 12),
