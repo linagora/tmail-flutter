@@ -42,7 +42,7 @@ class AppBarSendingQueueWidget extends StatelessWidget {
                 icon: _imagePaths.icMenuMailbox,
                 backgroundColor: Colors.transparent,
                 iconColor: AppBarSendingQueueWidgetStyle.iconColor,
-                tooltipMessage: AppLocalizations.of(context).openMailboxMenu,
+                tooltipMessage: AppLocalizations.of(context).openFolderMenu,
                 onTapActionCallback: onOpenMailboxMenu
               )
             else

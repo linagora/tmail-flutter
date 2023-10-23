@@ -109,16 +109,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_mailbox": "Verschoben nach {destinationMailboxPath}",
-  "@moved_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "destinationMailboxPath"
-    ],
-    "placeholders": {
-      "destinationMailboxPath": {}
-    }
-  },
   "login_text_login_to_continue": "Bitte melden Sie sich an, um fortzufahren",
   "@login_text_login_to_continue": {
     "type": "text",
@@ -269,12 +259,6 @@
   },
   "move_to_trash": "In Papierkorb verschieben",
   "@move_to_trash": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "move_to_mailbox": "Ins Postfach verschieben",
-  "@move_to_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

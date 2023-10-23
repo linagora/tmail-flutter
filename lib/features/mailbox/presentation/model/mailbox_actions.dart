@@ -36,7 +36,7 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).moveTo;
       case MailboxActions.select:
       case MailboxActions.selectForRuleAction:
-        return AppLocalizations.of(context).selectMailbox;
+        return AppLocalizations.of(context).selectFolder;
       default:
         return '';
     }
@@ -55,15 +55,15 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.markAsRead:
         return AppLocalizations.of(context).mark_as_read;
       case MailboxActions.move:
-        return AppLocalizations.of(context).moveMailbox;
+        return AppLocalizations.of(context).moveFolder;
       case MailboxActions.rename:
-        return AppLocalizations.of(context).rename_mailbox;
+        return AppLocalizations.of(context).renameFolder;
       case MailboxActions.delete:
-        return AppLocalizations.of(context).deleteMailbox;
+        return AppLocalizations.of(context).deleteFolder;
       case MailboxActions.disableMailbox:
-        return AppLocalizations.of(context).hideMailBoxes;
+        return AppLocalizations.of(context).hideFolder;
       case MailboxActions.enableMailbox:
-        return AppLocalizations.of(context).showMailbox;
+        return AppLocalizations.of(context).showFolder;
       case MailboxActions.emptyTrash:
         return AppLocalizations.of(context).emptyTrash;
       case MailboxActions.emptySpam:

@@ -149,18 +149,6 @@
       "maxSize": {}
     }
   },
-  "delete_multiple_messages_dialog": "أنت على وشك حذف {count} عناصر بشكل دائم في صندوق البريد {mailboxName}. هل ترغب في المتابعة؟",
-  "@delete_multiple_messages_dialog": {
-    "type": "text",
-    "placeholders_order": [
-      "count",
-      "mailboxName"
-    ],
-    "placeholders": {
-      "count": {},
-      "mailboxName": {}
-    }
-  },
   "message_dialog_upload_attachments_exceeds_maximum_size": "لقد وصلت إلى الحد الأقصى لحجم الملف. يُرجى تحميل ملفات بإجمالي حجم أقل من {maxSize}",
   "@message_dialog_upload_attachments_exceeds_maximum_size": {
     "type": "text",
@@ -201,18 +189,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "لقد وضعت علامة على {count} الرسائل في \"{mailboxName}\" كمقروءة",
-  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName",
-      "count"
-    ],
-    "placeholders": {
-      "mailboxName": {},
-      "count": {}
-    }
-  },
   "lastYears": "السنوات الاخيرة",
   "@lastYears": {
     "type": "text",
@@ -221,12 +197,6 @@
   },
   "last6Months": "آخر 6 أشهر",
   "@last6Months": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "deleteMailbox": "حذف صندوق البريد",
-  "@deleteMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -377,12 +347,6 @@
   },
   "actionTitleRulesFilter": "قم بالإجراء التالي:",
   "@actionTitleRulesFilter": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toMailbox": "إلى صندوق البريد:",
-  "@toMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -859,36 +823,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_mailbox": "سيتم حذف صندوق البريد \"{nameMailbox}\" وجميع المجلدات الفرعية والرسائل التي يحتويها، ولن يكون بإمكانك استعادتها. هل ترغب في المتابعة وحذفه؟",
-  "@message_confirmation_dialog_delete_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
-  },
-  "rename_mailbox": "إعادة تسمية صندوق البريد",
-  "@rename_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "this_field_cannot_be_blank": "هذا الحقل لا يمكن أن يكون فارغًا",
   "@this_field_cannot_be_blank": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes_failure": "فشل حذف صناديق البريد",
-  "@delete_mailboxes_failure": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes": "حذف صناديق البريد",
-  "@delete_mailboxes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1117,12 +1053,6 @@
   },
   "advancedSearch": "البحث المتقدم",
   "@advancedSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "selectMailbox": "حدد صندوق البريد",
-  "@selectMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1421,16 +1351,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_mailbox": "تم نقلها إلى {destinationMailboxPath}",
-  "@moved_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "destinationMailboxPath"
-    ],
-    "placeholders": {
-      "destinationMailboxPath": {}
-    }
-  },
   "undo": "تراجع",
   "@undo": {
     "type": "text",
@@ -1523,12 +1443,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_mailboxes": "البحث في صناديق البريد",
-  "@hint_search_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "starred": "المفضلة",
   "@starred": {
     "type": "text",
@@ -1569,42 +1483,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_mailbox": "صندوق بريد جديد",
-  "@new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "name_of_mailbox_is_required": "اسم صندوق البريد مطلوب",
-  "@name_of_mailbox_is_required": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_name_cannot_contain_special_characters": "اسم صندوق البريد لا يمكن أن يحتوي على أحرف خاصة",
-  "@mailbox_name_cannot_contain_special_characters": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "this_folder_name_is_already_taken": "اسم هذا المجلد مستخدم بالفعل",
   "@this_folder_name_is_already_taken": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "new_mailbox_is_created": "تم إنشاء صندوق البريد {nameMailbox}",
-  "@new_mailbox_is_created": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
-  },
-  "create_new_mailbox_failure": "فشل إنشاء صندوق البريد الجديد",
-  "@create_new_mailbox_failure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1627,20 +1507,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_input_create_new_mailbox": "يرجى إدخال اسم صندوق البريد",
-  "@hint_input_create_new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "rename": "إعادة تسمية",
   "@rename": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes_successfully": "تم حذف صناديق البريد بنجاح",
-  "@delete_mailboxes_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1991,28 +1859,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMailbox": "نقل صندوق البريد",
-  "@moveMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadSuccess": "لقد وضعت علامة على جميع الرسائل في \"{mailboxName}\" كمقروءة",
-  "@toastMessageMarkAsMailboxReadSuccess": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName"
-    ],
-    "placeholders": {
-      "mailboxName": {}
-    }
-  },
-  "allMailboxes": "كل علب البريد",
-  "@allMailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "singleSignOn": "علامة واحدة على",
   "@singleSignOn": {
     "type": "text",
@@ -2051,12 +1897,6 @@
   },
   "doesNotHave": "لا يملك",
   "@doesNotHave": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox": "صندوق بريد",
-  "@mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2291,12 +2131,6 @@
       "time": {}
     }
   },
-  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "لم تحدد مجلد حفظ لحفظه",
-  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "moveConversation": "انقل محادثة {numberOfConversation}",
   "@moveConversation": {
     "type": "text",
@@ -2457,18 +2291,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMsgHideMailboxSuccess": "تم إخفاء صندوق البريد هذا من صندوق البريد الأساسي الخاص بك",
-  "@toastMsgHideMailboxSuccess": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "searchForMailboxes": "ابحث عن علب البريد",
-  "@searchForMailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "textQuotasOutOfStorage": "نفاد التخزين",
   "@textQuotasOutOfStorage": {
     "type": "text",
@@ -2477,24 +2299,6 @@
   },
   "appTitlePushNotification": "Team Mail",
   "@appTitlePushNotification": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "hideMailBoxes": "إخفاء صندوق البريد",
-  "@hideMailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "showMailbox": "إظهار علبة البريد",
-  "@showMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageShowMailboxSuccess": "صندوق البريد هذا معروض بالفعل في صندوق البريد الأساسي الخاص بك",
-  "@toastMessageShowMailboxSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2565,12 +2369,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailboxVisibility": "رؤية صندوق البريد",
-  "@mailboxVisibility": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "textQuotasRunningOutOfStorageContent": "قريبًا لن تتمكن من إرسال بريد إلكتروني في Team Mail. الرجاء تنظيف مساحة التخزين الخاصة بك أو ترقية مساحة التخزين لديك للحصول على الميزات الكاملة في بريد الفريق.",
   "@textQuotasRunningOutOfStorageContent": {
     "type": "text",
@@ -2601,26 +2399,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentMailbox": "معذرةً ، لا توجد رسائل بريد إلكتروني في صندوق بريدك الحالي",
-  "@noEmailInYourCurrentMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailBoxes": "علب البريد",
-  "@mailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "thisImageCannotBeAdded": "لا يمكن إضافة هذه الصورة.",
   "@thisImageCannotBeAdded": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxVisibilitySubtitle": "إظهار / إخفاء علب البريد الخاصة بك ، بما في ذلك علب البريد الشخصية والفريق.",
-  "@mailboxVisibilitySubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2681,22 +2461,6 @@
     ],
     "placeholders": {
       "subject": {}
-    }
-  },
-  "createNewMailbox": "إنشاء صندوق بريد جديد",
-  "@createNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "messageConfirmationDialogDeleteMultipleMailbox": "سيتم حذف صندوق بريد {numberOfMailbox} وجميع المجلدات الفرعية والرسائل التي يحتوي عليها ولن تتمكن من استعادتها. هل تريد الاستمرار في الحذف؟",
-  "@messageConfirmationDialogDeleteMultipleMailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "numberOfMailbox"
-    ],
-    "placeholders": {
-      "numberOfMailbox": {}
     }
   },
   "page404": "صفحة 404",
