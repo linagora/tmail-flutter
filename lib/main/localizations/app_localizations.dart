@@ -3277,10 +3277,10 @@ class AppLocalizations {
     );
   }
 
-  String get empty {
+  String get clean {
     return Intl.message(
-      'Empty',
-      name: 'empty',
+      'Clean',
+      name: 'clean',
     );
   }
 
