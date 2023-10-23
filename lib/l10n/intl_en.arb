@@ -3177,8 +3177,8 @@
       "action": {}
     }
   },
-  "empty": "Empty",
-  "@empty": {
+  "clean": "Clean",
+  "@clean": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
