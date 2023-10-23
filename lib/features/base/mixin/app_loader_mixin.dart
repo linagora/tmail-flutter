@@ -1,8 +1,7 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 mixin AppLoaderMixin {
@@ -22,18 +21,6 @@ mixin AppLoaderMixin {
           backgroundColor: AppColor.colorBgMailboxSelected));
   }
 
-  Widget circularPercentLoadingWidget(double percent) {
-    return Center(
-        child: CircularPercentIndicator(
-          percent: percent > 1.0 ? 1.0 : percent,
-          backgroundColor: AppColor.colorBgMailboxSelected,
-          progressColor: AppColor.primaryColor,
-          lineWidth: 3,
-          radius: 14,
-        )
-    );
-  }
-
   Widget horizontalPercentLoadingWidget(double percent) {
     return Center(
         child: LinearPercentIndicator(
@@ -43,13 +30,5 @@ mixin AppLoaderMixin {
           backgroundColor: AppColor.colorBgMailboxSelected,
           progressColor: AppColor.primaryColor,
         ));
-  }
-
-  Widget loadingWidgetWithSizeColor({double? size, Color? color}) {
-    return Center(child: SizedBox(
-        width: size ?? 24,
-        height: size ?? 24,
-        child: CircularProgressIndicator(
-            color: color ?? AppColor.colorLoading)));
   }
 }
