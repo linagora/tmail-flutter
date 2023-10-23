@@ -55,9 +55,11 @@ class DownloadAttachmentForWebSuccess extends UIState {
 
 class DownloadAttachmentForWebFailure extends FeatureFailure {
 
-  final DownloadTaskId taskId;
+  final DownloadTaskId? taskId;
 
-  DownloadAttachmentForWebFailure(this.taskId, dynamic exception) : super(exception: exception);
+  DownloadAttachmentForWebFailure({
+    this.taskId, dynamic exception
+  }) : super(exception: exception);
 
   @override
   List<Object?> get props => [taskId, ...super.props];
