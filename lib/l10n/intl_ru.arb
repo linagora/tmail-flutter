@@ -2410,12 +2410,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Позволяет новому получателю увидеть отправленное письмо, если он изначально не был включен в переписку.",
-  "@forwardingSettingExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "storageQuotas": "Хранилище",
   "@storageQuotas": {
     "type": "text",

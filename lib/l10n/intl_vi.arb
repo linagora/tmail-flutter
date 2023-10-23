@@ -2544,7 +2544,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Cho phép người nhận mới xem email đã gửi nếu họ không được bao gồm trong chuỗi email ban đầu.",
+  "forwardingSettingExplanation": "Email của bạn sẽ được chuyển tiếp đến những địa chỉ bên dưới đây.",
   "@forwardingSettingExplanation": {
     "type": "text",
     "placeholders_order": [],

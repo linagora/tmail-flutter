@@ -2504,7 +2504,7 @@ class AppLocalizations {
 
   String get forwardingSettingExplanation {
     return Intl.message(
-      'Allows a new recipient to see the email sent if they were not originally included in the email chain.',
+      'Emails addresses listed below will receive your emails.',
       name: 'forwardingSettingExplanation');
   }
 
