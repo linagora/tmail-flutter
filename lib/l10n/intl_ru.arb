@@ -226,12 +226,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_mailbox": "Переместить в почтовый ящик",
-  "@move_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "mark_as_star": "Избранное",
   "@mark_as_star": {
     "type": "text",
@@ -355,16 +349,6 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "moved_to_mailbox": "Перемещено в {destinationMailboxPath}",
-  "@moved_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "destinationMailboxPath"
-    ],
-    "placeholders": {
-      "destinationMailboxPath": {}
-    }
   },
   "undo_action": "ОТМЕНИТЬ",
   "@undo_action": {
@@ -516,12 +500,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_mailboxes": "Поиск по почтовым ящикам",
-  "@hint_search_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "starred": "Избранное",
   "@starred": {
     "type": "text",
@@ -574,58 +552,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_mailbox": "Новый почтовый ящик",
-  "@new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_location": "Расположение почтового ящика",
-  "@mailbox_location": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "default_mailbox": "Почтовый ящик по умолчанию",
-  "@default_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "name_of_mailbox_is_required": "Введите название почтового ящика",
-  "@name_of_mailbox_is_required": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_name_cannot_contain_special_characters": "Название почтового ящика не может содержать специальные символы",
-  "@mailbox_name_cannot_contain_special_characters": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "this_folder_name_is_already_taken": "Это название папки уже используется",
-  "@this_folder_name_is_already_taken": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "new_mailbox_is_created": "{nameMailbox} создан",
-  "@new_mailbox_is_created": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
-  },
-  "create_new_mailbox_failure": "Не удалось создать новый почтовый ящик",
-  "@create_new_mailbox_failure": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "drafts_saved": "Черновик сохранен",
   "@drafts_saved": {
     "type": "text",
@@ -638,51 +564,11 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_input_create_new_mailbox": "Введите название почтового ящика",
-  "@hint_input_create_new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "rename": "Переименовать",
   "@rename": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "rename_mailbox": "Переименовать почтовый ящик",
-  "@rename_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes_successfully": "Почтовые ящики успешно удалены",
-  "@delete_mailboxes_successfully": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes_failure": "Не удалось удалить почтовые ящики",
-  "@delete_mailboxes_failure": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes": "Удалить почтовые ящики",
-  "@delete_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "message_confirmation_dialog_delete_mailbox": "Почтовый ящик \"{nameMailbox}\" и все содержащиеся в нем подпапки и сообщения будут удалены без возможности восстановления. Вы хотите продолжить удаление?",
-  "@message_confirmation_dialog_delete_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
   },
   "this_field_cannot_be_blank": "Заполните это поле",
   "@this_field_cannot_be_blank": {
@@ -1426,46 +1312,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMailbox": "Переместить почтовый ящик",
-  "@moveMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "deleteMailbox": "Удалить почтовый ящик",
-  "@deleteMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadSuccess": "Вы отметили все сообщения в \"{mailboxName}\" как прочитанные",
-  "@toastMessageMarkAsMailboxReadSuccess": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName"
-    ],
-    "placeholders": {
-      "mailboxName": {}
-    }
-  },
-  "allMailboxes": "Все ящики",
-  "@allMailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Вы отметили {count} сообщения(-ий) в \"{mailboxName}\" как прочитанные",
-  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName",
-      "count"
-    ],
-    "placeholders": {
-      "mailboxName": {},
-      "count": {}
-    }
-  },
   "singleSignOn": "Единый вход",
   "@singleSignOn": {
     "type": "text",
@@ -1510,12 +1356,6 @@
   },
   "doesNotHave": "Не включает",
   "@doesNotHave": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox": "Ящик",
-  "@mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1606,12 +1446,6 @@
   },
   "advancedSearch": "Расширенный поиск",
   "@advancedSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "selectMailbox": "Выбрать почтовый ящик",
-  "@selectMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1852,12 +1686,6 @@
   },
   "notExactlyEquals": "Примерно равняется",
   "@notExactlyEquals": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toMailbox": "В почтовый ящик:",
-  "@toMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2390,16 +2218,6 @@
       "time": {}
     }
   },
-  "messageConfirmationDialogDeleteMultipleMailbox": "{numberOfMailbox} почтовых ящиков и все содержащиеся в них подпапки и сообщения будут удалены без возможности восстановления. Вы хотите продолжить?",
-  "@messageConfirmationDialogDeleteMultipleMailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "numberOfMailbox"
-    ],
-    "placeholders": {
-      "numberOfMailbox": {}
-    }
-  },
   "unknownError": "Произошла неизвестная ошибка, пожалуйста, попробуйте еще раз",
   "@unknownError": {
     "type": "text",
@@ -2509,18 +2327,6 @@
     "placeholders": {
       "numberOfConversation": {}
     }
-  },
-  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Вы не выбрали папку для сохранения",
-  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "createNewMailbox": "Создать новый почтовый ящик",
-  "@createNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   },
   "older": "К старым",
   "@older": {
@@ -2716,50 +2522,14 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailBoxes": "Почтовые ящики",
-  "@mailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "teamMailBoxes": "Общие почтовые ящики",
   "@teamMailBoxes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hideMailBoxes": "Скрыть почтовый ящик",
-  "@hideMailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "thisImageCannotBeAdded": "Невозможно добавить это изображение.",
   "@thisImageCannotBeAdded": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMsgHideMailboxSuccess": "Почтовый ящик скрыт из основного почтового ящика",
-  "@toastMsgHideMailboxSuccess": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "searchForMailboxes": "Поиск почтовых ящиков",
-  "@searchForMailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "showMailbox": "Показать почтовый ящик",
-  "@showMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxVisibilitySubtitle": "Показать/скрыть почтовые ящики, включая личные и общие почтовые ящики.",
-  "@mailboxVisibilitySubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2794,12 +2564,6 @@
   },
   "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Не удалось сохранить сообщение как черновик, так как превышена его максимальная длина.",
   "@saveEmailAsDraftFailureWithSetErrorTypeTooLarge": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageShowMailboxSuccess": "Этот почтовый ящик уже отображается в основном почтовом ящике",
-  "@toastMessageShowMailboxSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2880,12 +2644,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentMailbox": "К сожалению, в текущем почтовом ящике нет писем",
-  "@noEmailInYourCurrentMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "noEmailMatchYourCurrentFilter": "К сожалению, мы не нашли писем, соответствующих текущему фильтру.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
@@ -2894,12 +2652,6 @@
   },
   "sendMessageFailureWithSetErrorTypeOverQuota": "Не удалось отправить сообщение, так как оно превышает квоту.",
   "@sendMessageFailureWithSetErrorTypeOverQuota": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxVisibility": "Отображение почтового ящика",
-  "@mailboxVisibility": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2972,12 +2724,6 @@
   },
   "messageDialogWhenStoreSendingEmailTail": " почтовый ящик.",
   "@messageDialogWhenStoreSendingEmailTail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "openMailboxMenu": "Открыть меню почтового ящика",
-  "@openMailboxMenu": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

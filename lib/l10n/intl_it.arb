@@ -119,12 +119,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_mailbox": "Sposta nella casella di posta",
-  "@move_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "mark_as_star": "Preferito",
   "@mark_as_star": {
     "type": "text",
@@ -180,16 +174,6 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "moved_to_mailbox": "Spostato in {destinationMailboxPath}",
-  "@moved_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "destinationMailboxPath"
-    ],
-    "placeholders": {
-      "destinationMailboxPath": {}
-    }
   },
   "undo_action": "DISFARE",
   "@undo_action": {
@@ -509,12 +493,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_mailboxes": "Cerca nelle caselle di posta",
-  "@hint_search_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "with_attachments": "Con allegati",
   "@with_attachments": {
     "type": "text",
@@ -573,54 +551,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_mailbox": "Nuova casella di posta",
-  "@new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_location": "Posizione della casella di posta",
-  "@mailbox_location": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "default_mailbox": "Casella di posta predefinita",
-  "@default_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "name_of_mailbox_is_required": "Il nome della casella di posta è obbligatorio",
-  "@name_of_mailbox_is_required": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_name_cannot_contain_special_characters": "Il nome della casella do posta non può contenere caratteri speciali",
-  "@mailbox_name_cannot_contain_special_characters": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "this_folder_name_is_already_taken": "Questo nome di cartella è già usato",
   "@this_folder_name_is_already_taken": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "new_mailbox_is_created": "{nameMailbox} è stato creato",
-  "@new_mailbox_is_created": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
-  },
-  "create_new_mailbox_failure": "Impossibile creare una nuova casella di posta",
-  "@create_new_mailbox_failure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -637,48 +569,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_input_create_new_mailbox": "Scegli il nome della casella di posta",
-  "@hint_input_create_new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "rename": "Rinomina",
   "@rename": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes_successfully": "Le caselle di posta eliminate con successo",
-  "@delete_mailboxes_successfully": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes_failure": "Impossibile eliminare le caselle di posta",
-  "@delete_mailboxes_failure": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes": "Elimina le caselle di posta",
-  "@delete_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "message_confirmation_dialog_delete_mailbox": "La casella di posta «{nameMailbox}» e tutte le sottocartelle e i messaggi contenuti verranno eliminati e non sarà possibile ripristinarli. Vuoi continuare a eliminare?",
-  "@message_confirmation_dialog_delete_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
-  },
-  "rename_mailbox": "Rinomina la casella di posta",
-  "@rename_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1239,12 +1131,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMailbox": "Sposta la casella di posta",
-  "@moveMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "loginInputCredentialMessage": "Inserisci le tue credenziali per accedere",
   "@loginInputCredentialMessage": {
     "type": "text",
@@ -1431,46 +1317,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteMailbox": "Elimina la casella di posta",
-  "@deleteMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadSuccess": "Hai contrassegnato tutti i messaggi in \"{mailboxName}\" come letti",
-  "@toastMessageMarkAsMailboxReadSuccess": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName"
-    ],
-    "placeholders": {
-      "mailboxName": {}
-    }
-  },
-  "allMailboxes": "Tutte le cassette di posta",
-  "@allMailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "singleSignOn": "Accesso singolo",
-  "@singleSignOn": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Hai contrassegnato {count} messaggi in \"{mailboxName}\" come letti",
-  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName",
-      "count"
-    ],
-    "placeholders": {
-      "mailboxName": {},
-      "count": {}
-    }
-  },
   "ssoNotAvailable": "Accesso singolo (SSO) non è disponibile",
   "@ssoNotAvailable": {
     "type": "text",
@@ -1519,12 +1365,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailbox": "Cassetta postale",
-  "@mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "nameOrEmailAddress": "Nome o indirizzo e-mail",
   "@nameOrEmailAddress": {
     "type": "text",
@@ -1563,12 +1403,6 @@
   },
   "advancedSearch": "Ricerca avanzata",
   "@advancedSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "selectMailbox": "Seleziona la casella di posta",
-  "@selectMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1875,12 +1709,6 @@
   },
   "actionTitleRulesFilter": "Eseguire la seguente azione:",
   "@actionTitleRulesFilter": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toMailbox": "Alla casella di posta:",
-  "@toMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2499,28 +2327,6 @@
       "numberOfConversation": {}
     }
   },
-  "messageConfirmationDialogDeleteMultipleMailbox": "{numberOfMailbox} caselli di posta e tutte le sottocartelle e i messaggi in essa contenuti verranno eliminati e non sarà possibile ripristinarli. Vuoi continuare a cancellare?",
-  "@messageConfirmationDialogDeleteMultipleMailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "numberOfMailbox"
-    ],
-    "placeholders": {
-      "numberOfMailbox": {}
-    }
-  },
-  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Non hai selezionato una cartella di salvataggio",
-  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "createNewMailbox": "Crea nuova casella di posta",
-  "@createNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "hintInputAutocompleteContact": "Inserisci il nome o l'indirizzo email",
   "@hintInputAutocompleteContact": {
     "type": "text",
@@ -2743,12 +2549,6 @@
   },
   "required": "necessario",
   "@required": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noEmailInYourCurrentMailbox": "Siamo spiacenti, non ci sono email nella tua casella di posta attuale",
-  "@noEmailInYourCurrentMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

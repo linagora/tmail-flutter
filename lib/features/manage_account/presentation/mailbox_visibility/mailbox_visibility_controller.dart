@@ -207,7 +207,7 @@ class MailboxVisibilityController extends BaseMailboxController {
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
+        AppLocalizations.of(currentContext!).toastMsgHideFolderSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () => _subscribeMailboxAction(
           SubscribeMailboxRequest(

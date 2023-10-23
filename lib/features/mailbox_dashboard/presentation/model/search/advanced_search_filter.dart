@@ -25,7 +25,7 @@ enum AdvancedSearchFilterField {
       case AdvancedSearchFilterField.notKeyword:
         return AppLocalizations.of(context).doesNotHave;
       case AdvancedSearchFilterField.mailBox:
-        return AppLocalizations.of(context).mailbox;
+        return AppLocalizations.of(context).folder;
       case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).date;
       case AdvancedSearchFilterField.hasAttachment:
@@ -44,7 +44,7 @@ enum AdvancedSearchFilterField {
       case AdvancedSearchFilterField.notKeyword:
         return AppLocalizations.of(context).enterSomeSuggestions;
       case AdvancedSearchFilterField.mailBox:
-        return AppLocalizations.of(context).allMailboxes;
+        return AppLocalizations.of(context).allFolders;
       case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).allTime;
       case AdvancedSearchFilterField.hasAttachment:

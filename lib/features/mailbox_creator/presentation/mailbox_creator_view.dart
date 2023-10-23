@@ -4,8 +4,8 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -91,7 +91,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   Widget _buildAppBar(BuildContext context) {
     return (AppBarMailboxCreatorBuilder(
       context,
-      title: AppLocalizations.of(context).new_mailbox,
+      title: AppLocalizations.of(context).newFolder,
       isValidated: true)
     ..addOnCancelActionClick(() => controller.closeMailboxCreator(context))
     ..addOnDoneActionClick(() => controller.createNewMailbox(context)))
@@ -114,7 +114,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           overflow: CommonTextStyle.defaultTextOverFlow),
         focusNode: controller.nameInputFocusNode,
         decoration: (CreateMailboxNameInputDecorationBuilder()
-          ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
+          ..setHintText(AppLocalizations.of(context).hintInputCreateNewFolder)
           ..setErrorText(controller.getErrorInputNameString(context)))
         .build(),
       ))
@@ -154,7 +154,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                     fit: BoxFit.fill)),
                 const SizedBox(width: 12),
                 Expanded(child: Obx(() => Text(
-                  controller.selectedMailbox.value?.getDisplayName(context) ?? AppLocalizations.of(context).allMailboxes,
+                  controller.selectedMailbox.value?.getDisplayName(context) ?? AppLocalizations.of(context).allFolders,
                   maxLines: 1,
                   softWrap: CommonTextStyle.defaultSoftWrap,
                   overflow: CommonTextStyle.defaultTextOverFlow,

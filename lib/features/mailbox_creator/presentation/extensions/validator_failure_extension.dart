@@ -12,14 +12,14 @@ extension ValicatorFailureExtension on VerifyNameFailure {
       if (actions == MailboxActions.rename) {
         return AppLocalizations.of(context).this_field_cannot_be_blank;
       }
-      return AppLocalizations.of(context).name_of_mailbox_is_required;
+      return AppLocalizations.of(context).nameOfFolderIsRequired;
     } else if (exception is DuplicatedNameException) {
       if (actions == MailboxActions.rename) {
         return AppLocalizations.of(context).there_is_already_folder_with_the_same_name;
       }
       return AppLocalizations.of(context).this_folder_name_is_already_taken;
     } else if (exception is SpecialCharacterException) {
-      return AppLocalizations.of(context).mailbox_name_cannot_contain_special_characters;
+      return AppLocalizations.of(context).folderNameCannotContainSpecialCharacters;
     } else {
       return '';
     }

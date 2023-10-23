@@ -539,9 +539,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
       final exception = failure.exception;
-      var messageError = AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+      var messageError = AppLocalizations.of(currentContext!).createNewFolderFailure;
       if (exception is ErrorMethodResponse) {
-        messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+        messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
       }
       _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
@@ -683,7 +683,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).delete_mailboxes_successfully);
+        AppLocalizations.of(currentContext!).deleteFoldersSuccessfully);
     }
 
     if (listMailboxIdDeleted.contains(selectedMailbox?.id)) {
@@ -701,7 +701,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         _responsiveUtils.isPortraitMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
         ..messageText(AppLocalizations.of(context)
-            .messageConfirmationDialogDeleteMultipleMailbox(selectedMailboxList.length))
+            .messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
         ..onCancelAction(AppLocalizations.of(context).cancel, () =>
             popBack())
         ..onConfirmAction(AppLocalizations.of(context).delete, () =>
@@ -713,9 +713,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
             ..key(const Key('confirm_dialog_delete_multiple_mailbox'))
-            ..title(AppLocalizations.of(context).delete_mailboxes)
+            ..title(AppLocalizations.of(context).deleteFolders)
             ..content(AppLocalizations.of(context)
-                .messageConfirmationDialogDeleteMultipleMailbox(selectedMailboxList.length))
+                .messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
             ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
                 fit: BoxFit.fill))
             ..colorConfirmButton(AppColor.colorConfirmActionDialog)
@@ -767,7 +767,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).delete_mailboxes_failure,
+        AppLocalizations.of(currentContext!).deleteFoldersFailure,
         leadingSVGIcon: _imagePaths.icDeleteToast
       );
     }
@@ -813,8 +813,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         && currentContext != null) {
       _appToast.showToastMessage(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).moved_to_mailbox(
-              success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allMailboxes),
+          AppLocalizations.of(currentContext!).movedToFolder(
+              success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allFolders),
           actionName: AppLocalizations.of(currentContext!).undo,
           onActionClick: () {
             _undoMovingMailbox(MoveMailboxRequest(
@@ -1126,7 +1126,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMsgHideMailboxSuccess,
+        AppLocalizations.of(currentContext!).toastMsgHideFolderSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () => _undoUnsubscribeMailboxAction(
           mailboxIdSubscribed,

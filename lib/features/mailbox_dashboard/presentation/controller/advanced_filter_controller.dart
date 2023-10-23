@@ -251,7 +251,7 @@ class AdvancedFilterController extends BaseController {
     dateFilterSelectedFormAdvancedSearch.value = searchEmailFilter.emailReceiveTimeType;
     _destinationMailboxSelected = searchEmailFilter.mailbox;
     if (searchEmailFilter.mailbox == null) {
-      mailBoxFilterInputController.text = AppLocalizations.of(context).allMailboxes;
+      mailBoxFilterInputController.text = AppLocalizations.of(context).allFolders;
     } else {
       mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.getDisplayName(context));
     }

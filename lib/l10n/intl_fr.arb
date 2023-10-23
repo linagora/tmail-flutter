@@ -226,12 +226,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_mailbox": "Déplacer vers la boîte aux lettres",
-  "@move_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "mark_as_star": "Important",
   "@mark_as_star": {
     "type": "text",
@@ -355,16 +349,6 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "moved_to_mailbox": "Déplacé vers {destinationMailboxPath}",
-  "@moved_to_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "destinationMailboxPath"
-    ],
-    "placeholders": {
-      "destinationMailboxPath": {}
-    }
   },
   "undo_action": "ANNULER",
   "@undo_action": {
@@ -510,12 +494,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_mailboxes": "Chercher dans les boîtes de réception",
-  "@hint_search_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "with_attachments": "Avec pièces jointes",
   "@with_attachments": {
     "type": "text",
@@ -536,36 +514,6 @@
   },
   "done": "Terminé",
   "@done": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "new_mailbox": "Nouvelle boîte de réception",
-  "@new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_location": "Emplacement de la boîte de réception",
-  "@mailbox_location": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "default_mailbox": "Boîte de réception par défaut",
-  "@default_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "name_of_mailbox_is_required": "Le nom de la boîte de réception est requis",
-  "@name_of_mailbox_is_required": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_name_cannot_contain_special_characters": "Le nom de la boîte de réception ne peut pas comporter de caractères spéciaux",
-  "@mailbox_name_cannot_contain_special_characters": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -610,16 +558,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_mailbox_is_created": "{nameMailbox} est créé",
-  "@new_mailbox_is_created": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
-  },
   "drafts_saved": "Brouillon enregistré",
   "@drafts_saved": {
     "type": "text",
@@ -628,24 +566,6 @@
   },
   "discard": "Rejeter",
   "@discard": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "hint_input_create_new_mailbox": "Entrez le nom de la boîte de réception",
-  "@hint_input_create_new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes": "Supprimer des boîtes de réception",
-  "@delete_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "rename_mailbox": "Renommer la boîte de réception",
-  "@rename_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -872,12 +792,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "create_new_mailbox_failure": "Échec de création de boîte de réception",
-  "@create_new_mailbox_failure": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "message_has_been_sent_failure": "Impossible d'envoyer le message",
   "@message_has_been_sent_failure": {
     "type": "text",
@@ -950,22 +864,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_mailboxes_successfully": "Les boîtes de messagerie ont bien été supprimées",
-  "@delete_mailboxes_successfully": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "message_confirmation_dialog_delete_mailbox": "La boîte de messagerie « {nameMailbox}  », et tous les sous-dossiers et les messages qu'elle contient seront supprimés et ne seront plus récupérables. Voulez-vous continuer la suppression ?",
-  "@message_confirmation_dialog_delete_mailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "nameMailbox"
-    ],
-    "placeholders": {
-      "nameMailbox": {}
-    }
-  },
   "there_is_already_folder_with_the_same_name": "Il y a déjà un dossier avec le même nom",
   "@there_is_already_folder_with_the_same_name": {
     "type": "text",
@@ -996,12 +894,6 @@
   },
   "sign_out": "Se déconnecter",
   "@sign_out": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes_failure": "Impossible de supprimer les boîtes de messagerie",
-  "@delete_mailboxes_failure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1258,28 +1150,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMailbox": "Déplacer la boîte aux lettres",
-  "@moveMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "deleteMailbox": "Supprimer la boîte aux lettres",
-  "@deleteMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadSuccess": "Vous avez marqué tous les messages dans \"{mailboxName}\" comme lus",
-  "@toastMessageMarkAsMailboxReadSuccess": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName"
-    ],
-    "placeholders": {
-      "mailboxName": {}
-    }
-  },
   "ssoNotAvailable": "L'authentification unique (SSO) n'est pas disponible",
   "@ssoNotAvailable": {
     "type": "text",
@@ -1328,12 +1198,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailbox": "Boites aux lettres",
-  "@mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "nameOrEmailAddress": "Nom ou adresse e-mail",
   "@nameOrEmailAddress": {
     "type": "text",
@@ -1366,12 +1230,6 @@
   },
   "advancedSearch": "Recherche avancée",
   "@advancedSearch": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "selectMailbox": "Sélectionnez la boîte aux lettres",
-  "@selectMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1447,18 +1305,6 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Vous avez marqué {count} messages dans \"{mailboxName}\" comme lus",
-  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName",
-      "count"
-    ],
-    "placeholders": {
-      "mailboxName": {},
-      "count": {}
-    }
   },
   "subject": "Sujet",
   "@subject": {
@@ -1612,12 +1458,6 @@
   },
   "last30Days": "Les 30 derniers jours",
   "@last30Days": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "allMailboxes": "Toutes les boîtes aux lettres",
-  "@allMailboxes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2034,30 +1874,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailBoxes": "Boîtes aux lettres",
-  "@mailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "searchForMailboxes": "Rechercher des boîtes aux lettres",
-  "@searchForMailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "showMailbox": "Afficher la boîte aux lettres",
-  "@showMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMessageShowMailboxSuccess": "Cette boîte aux lettres est déjà affichée dans votre boîte aux lettres principale",
-  "@toastMessageShowMailboxSuccess": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "actionTitleRulesFilter": "Effectuez l'action suivante :",
   "@actionTitleRulesFilter": {
     "type": "text",
@@ -2229,22 +2045,6 @@
     "placeholders": {
       "subject": {}
     }
-  },
-  "messageConfirmationDialogDeleteMultipleMailbox": "La boîte aux lettres {numberOfMailbox} et tous les sous-dossiers et messages qu'elle contient seront supprimés et ne pourront pas être récupérés. Voulez-vous continuer la suppression ?",
-  "@messageConfirmationDialogDeleteMultipleMailbox": {
-    "type": "text",
-    "placeholders_order": [
-      "numberOfMailbox"
-    ],
-    "placeholders": {
-      "numberOfMailbox": {}
-    }
-  },
-  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Vous n'avez pas sélectionné de dossier parent pour enregistrer pour enregistrer cette boîte aux lettres",
-  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   },
   "addRecipientButton": "Ajouter un destinataire",
   "@addRecipientButton": {
@@ -2526,12 +2326,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentMailbox": "Nous sommes désolés, il n'y a pas d'e-mails dans votre boîte aux lettres actuelle",
-  "@noEmailInYourCurrentMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "reduceSomeFiltersAndTryAgain": "Retirez quelques filtres et réessayez",
   "@reduceSomeFiltersAndTryAgain": {
     "type": "text",
@@ -2574,44 +2368,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hideMailBoxes": "Masquer la boîte aux lettres",
-  "@hideMailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toastMsgHideMailboxSuccess": "Cette boîte aux lettres a été masquée",
-  "@toastMsgHideMailboxSuccess": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "teamMailBoxes": "Boîtes aux lettres d'équipe",
-  "@teamMailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxVisibilitySubtitle": "Afficher/masquer vos boîtes aux lettres, y compris vos boîtes aux lettres personnelles et d'équipe.",
-  "@mailboxVisibilitySubtitle": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailboxVisibility": "Visibilité des boîtes aux lettres",
-  "@mailboxVisibility": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "notExactlyEquals": "Pas exactement égal",
   "@notExactlyEquals": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "toMailbox": "Vers la boîte aux lettres :",
-  "@toMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2867,12 +2625,6 @@
     "placeholders": {
       "numberOfConversation": {}
     }
-  },
-  "createNewMailbox": "Créer une nouvelle boîte aux lettres",
-  "@createNewMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   },
   "languageArabic": "Arabe",
   "@languageArabic": {

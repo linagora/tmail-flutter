@@ -44,7 +44,7 @@ class DefaultWebAppBarThreadWidget extends StatelessWidget {
               backgroundColor: Colors.transparent,
               padding: DefaultWebAppBarThreadWidgetStyle.mailboxMenuPadding,
               maxWidth: DefaultWebAppBarThreadWidgetStyle.buttonMaxWidth,
-              tooltipMessage: AppLocalizations.of(context).openMailboxMenu,
+              tooltipMessage: AppLocalizations.of(context).openFolderMenu,
               onTapActionCallback: openMailboxAction,
             ),
             Expanded(
