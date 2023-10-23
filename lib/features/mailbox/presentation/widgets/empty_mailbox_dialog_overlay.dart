@@ -86,7 +86,7 @@ class EmptyMailboxDialogOverlay extends StatelessWidget {
                   ),
                   const SizedBox(width: EmptyMailboxDialogOverlayStyles.buttonSpace),
                   TMailButtonWidget.fromText(
-                    text: AppLocalizations.of(context).empty,
+                    text: AppLocalizations.of(context).clean,
                     backgroundColor: EmptyMailboxDialogOverlayStyles.emptyButtonColor,
                     padding: EmptyMailboxDialogOverlayStyles.buttonPadding,
                     textStyle: EmptyMailboxDialogOverlayStyles.buttonTextStyle,
