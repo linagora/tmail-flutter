@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-23T14:53:09.230043",
+  "@@last_modified": "2023-10-23T15:41:56.932213",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2436,7 +2436,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Allows a new recipient to see the email sent if they were not originally included in the email chain.",
+  "forwardingSettingExplanation": "Emails addresses listed below will receive your emails.",
   "@forwardingSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
