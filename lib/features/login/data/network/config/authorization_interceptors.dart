@@ -56,8 +56,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    log('AuthorizationInterceptors::onRequest():DATA: ${options.data}');
-    log('AuthorizationInterceptors::onRequest():TOKEN_HASHCODE_CURRENT: ${_token?.token.hashCode}');
+    log('AuthorizationInterceptors::onRequest():data: ${options.data} | header: ${options.headers}');
     switch(_authenticationType) {
       case AuthenticationType.basic:
         if (_authorization != null) {
@@ -78,8 +77,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): $err');
-    logError('AuthorizationInterceptors::onError():TOKEN_HASHCODE_CURRENT: ${_token?.token.hashCode}');
-
     final requestOptions = err.requestOptions;
     final extraInRequest = requestOptions.extra;
     var retries = extraInRequest[RETRY_KEY] ?? 0;
@@ -94,20 +91,20 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         _token!.refreshToken
       );
 
-      final accountCurrent = await _accountCacheManager.getSelectedAccount();
+      final currentAccount = await _accountCacheManager.getCurrentAccount();
 
-      await _accountCacheManager.deleteSelectedAccount(_token!.tokenIdHash);
+      await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
 
       await Future.wait([
         _tokenOidcCacheManager.persistOneTokenOidc(newToken),
-        _accountCacheManager.setSelectedAccount(
+        _accountCacheManager.setCurrentAccount(
           PersonalAccount(
             newToken.tokenIdHash,
             AuthenticationType.oidc,
             isSelected: true,
-            accountId: accountCurrent.accountId,
-            apiUrl: accountCurrent.apiUrl,
-            userName: accountCurrent.userName
+            accountId: currentAccount.accountId,
+            apiUrl: currentAccount.apiUrl,
+            userName: currentAccount.userName
           )
         )
       ]);

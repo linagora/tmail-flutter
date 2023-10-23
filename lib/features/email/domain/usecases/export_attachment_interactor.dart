@@ -38,31 +38,24 @@ class ExportAttachmentInteractor {
 
       if (currentAccount.authenticationType == AuthenticationType.oidc) {
         final tokenOidc = await _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id);
-        accountRequest = AccountRequest(
-            token: tokenOidc.toToken(),
-            authenticationType: AuthenticationType.oidc);
+        accountRequest = AccountRequest.withOidc(token: tokenOidc.toToken());
       } else {
         final authenticationInfoCache = await credentialRepository.getAuthenticationInfoStored();
-        if (authenticationInfoCache != null) {
-          accountRequest = AccountRequest(
-              userName: UserName(authenticationInfoCache.username),
-              password: Password(authenticationInfoCache.password),
-              authenticationType: AuthenticationType.basic);
-        }
+        accountRequest = AccountRequest.withBasic(
+          userName: UserName(authenticationInfoCache.username),
+          password: Password(authenticationInfoCache.password),
+        );
       }
 
-      if (accountRequest != null) {
-        final downloadedResponse = await emailRepository.exportAttachment(
-            attachment,
-            accountId,
-            baseDownloadUrl,
-            accountRequest,
-            cancelToken);
+      final downloadedResponse = await emailRepository.exportAttachment(
+        attachment,
+        accountId,
+        baseDownloadUrl,
+        accountRequest,
+        cancelToken
+      );
 
-        yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse));
-      } else {
-        yield Left<Failure, Success>(ExportAttachmentFailure(null));
-      }
+      yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse));
     } catch (exception) {
       log('ExportAttachmentInteractor::execute(): exception: $exception');
       yield Left<Failure, Success>(ExportAttachmentFailure(exception));

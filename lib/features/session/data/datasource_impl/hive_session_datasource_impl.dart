@@ -33,7 +33,7 @@ class HiveSessionDataSourceImpl extends SessionDataSource {
       if (sessionHiveObj != null) {
         return sessionHiveObj.toSession();
       } else {
-        throw NotFoundSessionHiveObject();
+        throw NotFoundSessionException();
       }
     }).catchError(_exceptionThrower.throwException);
   }
