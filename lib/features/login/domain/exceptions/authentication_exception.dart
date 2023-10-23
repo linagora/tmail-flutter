@@ -52,3 +52,5 @@ class CanNotFoundUserName implements Exception {}
 class CanNotFoundPassword implements Exception {}
 
 class CanNotAuthenticationInfoOnWeb implements Exception {}
+
+class NotFoundAuthenticationInfoCache implements Exception {}

@@ -74,6 +74,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
+import 'package:tmail_ui_user/features/session/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -698,8 +699,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _downloadAttachmentForWebAction(BuildContext context, Attachment attachment) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      final baseDownloadUrl = session.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       final generateTaskId = DownloadTaskId(_uuid.v4());
       consumeState(_downloadAttachmentForWebInteractor.execute(
           generateTaskId,
@@ -707,6 +709,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           accountId,
           baseDownloadUrl,
           _downloadProgressStateController));
+    } else {
+      consumeState(Stream.value(
+        Left(DownloadAttachmentForWebFailure(exception: NotFoundSessionException()))
+      ));
     }
   }
 
@@ -721,7 +727,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {
     log('SingleEmailController::_downloadAttachmentForWebFailureAction(): $failure');
-    mailboxDashBoardController.deleteDownloadTask(failure.taskId);
+    if (failure.taskId != null) {
+      mailboxDashBoardController.deleteDownloadTask(failure.taskId!);
+    }
 
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastErrorMessage(
