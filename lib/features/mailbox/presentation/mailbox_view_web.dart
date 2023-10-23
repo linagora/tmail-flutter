@@ -170,7 +170,7 @@ class MailboxView extends BaseMailboxView {
                                   imagePaths.icAddNewFolder,
                                   colorFilter: AppColor.colorTextButton.asFilter(),
                                   fit: BoxFit.fill),
-                                tooltip: AppLocalizations.of(context).new_mailbox,
+                                tooltip: AppLocalizations.of(context).newFolder,
                                 onTap: () => controller.goToCreateNewMailboxView(context)),
                           ],
                           )),

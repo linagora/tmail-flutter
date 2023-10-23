@@ -68,7 +68,7 @@ mixin MailboxActionHandlerMixin {
             } else {
               appToast.showToastWarningMessage(
                 context,
-                AppLocalizations.of(context).noEmailInYourCurrentMailbox
+                AppLocalizations.of(context).noEmailInYourCurrentFolder
               );
             }
         }))
@@ -95,7 +95,7 @@ mixin MailboxActionHandlerMixin {
               } else {
                 appToast.showToastWarningMessage(
                   context,
-                  AppLocalizations.of(context).noEmailInYourCurrentMailbox
+                  AppLocalizations.of(context).noEmailInYourCurrentFolder
                 );
               }
           })
@@ -128,7 +128,7 @@ mixin MailboxActionHandlerMixin {
           } else {
             appToast.showToastWarningMessage(
               context,
-              AppLocalizations.of(context).noEmailInYourCurrentMailbox
+              AppLocalizations.of(context).noEmailInYourCurrentFolder
             );
           }
         }))
@@ -155,7 +155,7 @@ mixin MailboxActionHandlerMixin {
             } else {
               appToast.showToastWarningMessage(
                 context,
-                AppLocalizations.of(context).noEmailInYourCurrentMailbox
+                AppLocalizations.of(context).noEmailInYourCurrentFolder
               );
             }
           })

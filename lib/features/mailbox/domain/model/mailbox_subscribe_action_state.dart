@@ -9,9 +9,9 @@ enum MailboxSubscribeAction {
   String getToastMessageSuccess(BuildContext context) {
     switch(this) {
       case MailboxSubscribeAction.subscribe:
-        return AppLocalizations.of(context).toastMessageShowMailboxSuccess;
+        return AppLocalizations.of(context).toastMessageShowFolderSuccess;
       case MailboxSubscribeAction.unSubscribe:
-        return AppLocalizations.of(context).toastMsgHideMailboxSuccess;
+        return AppLocalizations.of(context).toastMsgHideFolderSuccess;
       case MailboxSubscribeAction.undo:
         return '';
     }

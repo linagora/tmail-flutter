@@ -10,8 +10,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -342,9 +342,9 @@ class DestinationPickerController extends BaseMailboxController {
   void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
       final exception = failure.exception;
-      var messageError = AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+      var messageError = AppLocalizations.of(currentContext!).createNewFolderFailure;
       if (exception is ErrorMethodResponse) {
-        messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+        messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
       }
       _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }

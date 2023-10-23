@@ -219,7 +219,7 @@ class MailboxView extends BaseMailboxView {
             children: [
               Expanded(
                 child: Text(
-                  AppLocalizations.of(context).mailBoxes,
+                  AppLocalizations.of(context).folders,
                   style: const TextStyle(
                     fontSize: 20,
                     color: Colors.black,
@@ -236,7 +236,7 @@ class MailboxView extends BaseMailboxView {
                     colorFilter: AppColor.colorTextButton.asFilter(),
                     fit: BoxFit.fill
                   ),
-                  tooltip: AppLocalizations.of(context).searchForMailboxes,
+                  tooltip: AppLocalizations.of(context).searchForFolders,
                   onTap: () => controller.openSearchViewAction(context)
                 ),
                 buildIconWeb(
@@ -248,7 +248,7 @@ class MailboxView extends BaseMailboxView {
                     imagePaths.icAddNewFolder,
                     colorFilter: AppColor.colorTextButton.asFilter(),
                     fit: BoxFit.fill),
-                  tooltip: AppLocalizations.of(context).new_mailbox,
+                  tooltip: AppLocalizations.of(context).newFolder,
                 onTap: () => controller.goToCreateNewMailboxView(context)),
               ]),
             ]),

@@ -17,13 +17,13 @@ class MailboxVisibilityHeaderWidget extends StatelessWidget {
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context).mailboxVisibility,
+            Text(AppLocalizations.of(context).folderVisibility,
                 style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black)),
             const SizedBox(height: 4),
-            Text(AppLocalizations.of(context).mailboxVisibilitySubtitle,
+            Text(AppLocalizations.of(context).folderVisibilitySubtitle,
                 style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,

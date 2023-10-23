@@ -44,7 +44,7 @@ enum AccountMenuItem {
       case AccountMenuItem.vacation:
         return AppLocalizations.of(context).vacation;
       case AccountMenuItem.mailboxVisibility:
-        return AppLocalizations.of(context).mailboxVisibility;
+        return AppLocalizations.of(context).folderVisibility;
       case AccountMenuItem.none:
         return AppLocalizations.of(context).profiles;
     }

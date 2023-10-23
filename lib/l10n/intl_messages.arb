@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-19T11:55:20.606226",
+  "@@last_modified": "2023-10-23T14:53:09.230043",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -400,8 +400,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_mailbox": "Moved to {destinationMailboxPath}",
-  "@moved_to_mailbox": {
+  "movedToFolder": "Moved to {destinationMailboxPath}",
+  "@movedToFolder": {
     "type": "text",
     "placeholders_order": [
       "destinationMailboxPath"
@@ -542,8 +542,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_mailboxes": "Search mailboxes",
-  "@hint_search_mailboxes": {
+  "hintSearchFolders": "Search folders",
+  "@hintSearchFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -600,20 +600,20 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_mailbox": "New mailbox",
-  "@new_mailbox": {
+  "newFolder": "New folder",
+  "@newFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "name_of_mailbox_is_required": "Name of mailbox is required",
-  "@name_of_mailbox_is_required": {
+  "nameOfFolderIsRequired": "Name of folder is required",
+  "@nameOfFolderIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailbox_name_cannot_contain_special_characters": "Mailbox name cannot contain special characters",
-  "@mailbox_name_cannot_contain_special_characters": {
+  "folderNameCannotContainSpecialCharacters": "Folder name cannot contain special characters",
+  "@folderNameCannotContainSpecialCharacters": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -624,8 +624,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_mailbox_is_created": "{nameMailbox} is created",
-  "@new_mailbox_is_created": {
+  "new_folder_is_created": "{nameMailbox} is created",
+  "@new_folder_is_created": {
     "type": "text",
     "placeholders_order": [
       "nameMailbox"
@@ -634,8 +634,8 @@
       "nameMailbox": {}
     }
   },
-  "create_new_mailbox_failure": "Create new mailbox failure",
-  "@create_new_mailbox_failure": {
+  "createNewFolderFailure": "Create new folder failure",
+  "@createNewFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -658,8 +658,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_input_create_new_mailbox": "Enter name of mailbox",
-  "@hint_input_create_new_mailbox": {
+  "hintInputCreateNewFolder": "Enter name of folder",
+  "@hintInputCreateNewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -670,26 +670,26 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_mailboxes_successfully": "Delete mailboxes successfully",
-  "@delete_mailboxes_successfully": {
+  "deleteFoldersSuccessfully": "Delete folders successfully",
+  "@deleteFoldersSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_mailboxes_failure": "Delete mailboxes failure",
-  "@delete_mailboxes_failure": {
+  "deleteFoldersFailure": "Delete folders failure",
+  "@deleteFoldersFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_mailboxes": "Delete mailboxes",
-  "@delete_mailboxes": {
+  "deleteFolders": "Delete folders",
+  "@deleteFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_mailbox": "\"{nameMailbox}\" mailbox and all of the sub-folders and messages it contains will be deleted and won't be able to recover. Do you want to continue to delete?",
-  "@message_confirmation_dialog_delete_mailbox": {
+  "message_confirmation_dialog_delete_folder": "\"{nameMailbox}\" folder and all of the sub-folders and messages it contains will be deleted and won't be able to recover. Do you want to continue to delete?",
+  "@message_confirmation_dialog_delete_folder": {
     "type": "text",
     "placeholders_order": [
       "nameMailbox"
@@ -698,8 +698,8 @@
       "nameMailbox": {}
     }
   },
-  "rename_mailbox": "Rename mailbox",
-  "@rename_mailbox": {
+  "renameFolder": "Rename folder",
+  "@renameFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1376,14 +1376,14 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMailbox": "Move mailbox",
-  "@moveMailbox": {
+  "moveFolder": "Move folder",
+  "@moveFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteMailbox": "Delete mailbox",
-  "@deleteMailbox": {
+  "deleteFolder": "Delete folder",
+  "@deleteFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1410,8 +1410,8 @@
       "count": {}
     }
   },
-  "allMailboxes": "All mailboxes",
-  "@allMailboxes": {
+  "allFolders": "All folders",
+  "@allFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1470,8 +1470,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailbox": "Mailbox",
-  "@mailbox": {
+  "folder": "Folder",
+  "@folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1512,8 +1512,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectMailbox": "Select Mailbox",
-  "@selectMailbox": {
+  "selectFolder": "Select Folder",
+  "@selectFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -1854,8 +1854,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toMailbox": "To mailbox:",
-  "@toMailbox": {
+  "toFolder": "To folder:",
+  "@toFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2402,8 +2402,8 @@
       "numberOfConversation": {}
     }
   },
-  "messageConfirmationDialogDeleteMultipleMailbox": "{numberOfMailbox} mailbox and all of the sub-folders and messages it contains will be deleted and won't be able to recover. Do you want to continue to delete?",
-  "@messageConfirmationDialogDeleteMultipleMailbox": {
+  "messageConfirmationDialogDeleteMultipleFolder": "{numberOfMailbox} folder and all of the sub-folders and messages it contains will be deleted and won't be able to recover. Do you want to continue to delete?",
+  "@messageConfirmationDialogDeleteMultipleFolder": {
     "type": "text",
     "placeholders_order": [
       "numberOfMailbox"
@@ -2418,8 +2418,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewMailbox": "Create new mailbox",
-  "@createNewMailbox": {
+  "createNewFolder": "Create new folder",
+  "@createNewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2586,8 +2586,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentMailbox": "We're sorry, there are no emails in your current mailbox",
-  "@noEmailInYourCurrentMailbox": {
+  "noEmailInYourCurrentFolder": "We're sorry, there are no emails in your current folder",
+  "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2640,20 +2640,14 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailBoxes": "Mailboxes",
-  "@mailBoxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "teamMailBoxes": "Team-mailboxes",
   "@teamMailBoxes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hideMailBoxes": "Hide mailbox",
-  "@hideMailBoxes": {
+  "hideFolder": "Hide folder",
+  "@hideFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2664,38 +2658,38 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMsgHideMailboxSuccess": "This mailbox has been hidden from your primary mailbox",
-  "@toastMsgHideMailboxSuccess": {
+  "toastMsgHideFolderSuccess": "This folder has been hidden from your primary folder",
+  "@toastMsgHideFolderSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "searchForMailboxes": "Search for mailboxes",
-  "@searchForMailboxes": {
+  "searchForFolders": "Search for folders",
+  "@searchForFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showMailbox": "Show mailbox",
-  "@showMailbox": {
+  "showFolder": "Show folder",
+  "@showFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageShowMailboxSuccess": "This mailbox is already displayed in your primary mailbox",
-  "@toastMessageShowMailboxSuccess": {
+  "toastMessageShowFolderSuccess": "This folder is already displayed in your primary folder",
+  "@toastMessageShowFolderSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailboxVisibility": "Mailbox visibility",
-  "@mailboxVisibility": {
+  "folderVisibility": "Folder visibility",
+  "@folderVisibility": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailboxVisibilitySubtitle": "Show/ hide your mailboxes, including your personal and team mailboxes.",
-  "@mailboxVisibilitySubtitle": {
+  "folderVisibilitySubtitle": "Show/ hide your folders, including your personal folders and team mailboxes.",
+  "@folderVisibilitySubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2754,7 +2748,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueView": "Messages in Sending queue mailbox will be sent or scheduled when online.",
+  "bannerMessageSendingQueueView": "Messages in Sending queue folder will be sent or scheduled when online.",
   "@bannerMessageSendingQueueView": {
     "type": "text",
     "placeholders_order": [],
@@ -2790,7 +2784,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailTail": " mailbox.",
+  "messageDialogWhenStoreSendingEmailTail": " folder.",
   "@messageDialogWhenStoreSendingEmailTail": {
     "type": "text",
     "placeholders_order": [],
@@ -2806,8 +2800,8 @@
       "recipients": {}
     }
   },
-  "openMailboxMenu": "Open mailbox menu",
-  "@openMailboxMenu": {
+  "openFolderMenu": "Open Folder menu",
+  "@openFolderMenu": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2824,7 +2818,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogDeleteSendingEmail": "Deleting an offline email will erase its content permanently. You won't be able to undo this action or recover the email from the Trash mailbox.",
+  "messageDialogDeleteSendingEmail": "Deleting an offline email will erase its content permanently. You won't be able to undo this action or recover the email from the Trash folder.",
   "@messageDialogDeleteSendingEmail": {
     "type": "text",
     "placeholders_order": [],
@@ -3144,7 +3138,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderCreatedMessage": "To begin using this mailbox, you should add some rules to organize all of your mail in your own way.",
+  "folderCreatedMessage": "To begin using this folder, you should add some rules to organize all of your mail in your own way.",
   "@folderCreatedMessage": {
     "type": "text",
     "placeholders_order": [],

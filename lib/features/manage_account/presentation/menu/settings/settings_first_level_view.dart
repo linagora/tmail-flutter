@@ -106,7 +106,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           SettingFirstLevelTileBuilder(
             AccountMenuItem.mailboxVisibility.getName(context),
             AccountMenuItem.mailboxVisibility.getIcon(_imagePaths),
-            subtitle: AppLocalizations.of(context).mailboxVisibilitySubtitle,
+            subtitle: AppLocalizations.of(context).folderVisibilitySubtitle,
             () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
           ),
           Divider(

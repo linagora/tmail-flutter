@@ -8,6 +8,7 @@ import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -15,12 +16,12 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
-import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -66,7 +67,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:uuid/uuid.dart';
 
 class SearchMailboxController extends BaseMailboxController with MailboxActionHandlerMixin {
@@ -378,7 +378,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     if (success.moveAction == MoveAction.moving && currentOverlayContext != null && currentContext != null) {
       _appToast.showToastMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).moved_to_mailbox(success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allMailboxes),
+        AppLocalizations.of(currentContext!).movedToFolder(success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allFolders),
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
           _undoMovingMailbox(MoveMailboxRequest(
@@ -437,7 +437,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).delete_mailboxes_successfully);
+        AppLocalizations.of(currentContext!).deleteFoldersSuccessfully);
     }
 
     if (listMailboxIdDeleted.contains(dashboardController.selectedMailbox.value?.id)) {
@@ -452,7 +452,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     if (currentOverlayContext != null && currentContext != null) {
       _appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).delete_mailboxes_failure);
+        AppLocalizations.of(currentContext!).deleteFoldersFailure);
     }
   }
 
@@ -688,9 +688,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   void _createNewMailboxFailure(CreateNewMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
       final exception = failure.exception;
-      var messageError = AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+      var messageError = AppLocalizations.of(currentContext!).createNewFolderFailure;
       if (exception is ErrorMethodResponse) {
-        messageError = exception.description ?? AppLocalizations.of(currentContext!).create_new_mailbox_failure;
+        messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
       }
       _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }

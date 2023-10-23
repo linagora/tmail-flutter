@@ -7,8 +7,8 @@ import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -172,7 +172,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           overflow: CommonTextStyle.defaultTextOverFlow),
         focusNode: controller.nameInputFocusNode,
         decoration: (CreateMailboxNameInputDecorationBuilder()
-          ..setHintText(AppLocalizations.of(context).hint_input_create_new_mailbox)
+          ..setHintText(AppLocalizations.of(context).hintInputCreateNewFolder)
           ..setErrorText(controller.getErrorInputNameString(context)))
         .build(),
       ))
@@ -203,7 +203,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               SearchBarView(
                 _imagePaths,
                 margin: const EdgeInsets.all(16),
-                hintTextSearch: AppLocalizations.of(context).hint_search_mailboxes,
+                hintTextSearch: AppLocalizations.of(context).hintSearchFolders,
                 onOpenSearchViewAction: controller.enableSearch
               ),
           _buildLoadingView(),
@@ -450,7 +450,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               ),
               const SizedBox(width: 8),
               Expanded(child: Text(
-                AppLocalizations.of(context).allMailboxes,
+                AppLocalizations.of(context).allFolders,
                 maxLines: 1,
                 softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
@@ -502,7 +502,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     PresentationMailbox newPresentationMailbox;
     if (presentationMailbox.id == PresentationMailbox.unifiedMailbox.id) {
       newPresentationMailbox = presentationMailbox
-          .toPresentationMailboxWithMailboxPath(AppLocalizations.of(context).allMailboxes);
+          .toPresentationMailboxWithMailboxPath(AppLocalizations.of(context).allFolders);
     } else {
       final path = controller.findNodePath(presentationMailbox.id)
           ?? presentationMailbox.name?.name;
@@ -551,7 +551,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                   width: 18,
                   height: 18,
                   fit: BoxFit.fill),
-                hintText: AppLocalizations.of(context).hint_search_mailboxes,
+                hintText: AppLocalizations.of(context).hintSearchFolders,
                 onClearTextSearchAction: controller.clearSearchText,
                 onTextChangeSearchAction: (query) => controller.searchMailbox(context, query),
                 onSearchTextAction: (query) => controller.searchMailbox(context, query),

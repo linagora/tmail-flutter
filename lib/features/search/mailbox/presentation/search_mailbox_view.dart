@@ -2,8 +2,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/modals.dart';
@@ -154,7 +154,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       onTextSubmitted: (text) => controller.onTextSearchSubmitted(context, text),
       decoration: InputDecoration(
         contentPadding: EdgeInsets.zero,
-        hintText: AppLocalizations.of(context).searchForMailboxes,
+        hintText: AppLocalizations.of(context).searchForFolders,
         hintStyle: const TextStyle(
           color: AppColor.loginTextFieldHintColor,
           fontSize: 15,
