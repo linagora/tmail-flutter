@@ -34,7 +34,16 @@ class DownloadTaskState with EquatableMixin {
     );
   }
 
-  double get percentDownloading => progress / 100;
+  double get percentDownloading {
+    final percent = progress / 100;
+    if (percent < 0) {
+      return 0;
+    } else if (percent > 1) {
+      return 1;
+    } else {
+      return percent;
+    }
+  }
 
   @override
   List<Object?> get props => [taskId, attachment, progress, downloaded, total];
