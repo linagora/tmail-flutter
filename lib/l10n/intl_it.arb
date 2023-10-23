@@ -2345,12 +2345,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Lascia a un nuovo destinatario di vedere l'e-mail inviata se non era originariamente incluso nello scambio di lettere.",
-  "@forwardingSettingExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "addRecipientButton": "Aggiungi il destinatario",
   "@addRecipientButton": {
     "type": "text",
