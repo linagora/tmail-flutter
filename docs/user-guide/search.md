@@ -1,5 +1,7 @@
 # Search
 
+**On Web**
+
 TMail offers you several tools to quickly find your emails.
 
 ## Quick search
@@ -8,7 +10,7 @@ The top search bar allows you to quickly look for your emails. Just start typing
 
 ![Quick search](images/quick-search.png)
 
-Additionnal filters are also added for convenience. Those include:
+Additional filters are also added for convenience. Those include:
 
  - (1) `Has attachment`: If checked, then only emails with attachments will be returned.
  - (2) `Last 7 days`: If checked, then only returns emails sent within the last 7 days.
@@ -18,7 +20,6 @@ Additionnal filters are also added for convenience. Those include:
 
 (5) allows to enter the advanced search.
 
-TODO mobile
 
 ## Advanced search
 
@@ -39,7 +40,6 @@ Those criteria includes:
 
 Clicking the (9) search button will launch the search and display all corresponding emails. `Clear filer` (10) will reset your input.
 
-TODO mobile
 
 ## Folder filters
 
@@ -53,4 +53,19 @@ Filters includes:
  - (2) All emails in this folder that are not read
  - (3) All emails in this folder that are starred
 
-TODO mobile
+**On Mobile**
+
+On mobile, When you click on Search bar, start typing text in it, and top search results will appear interactively.
+
+ Under the search bar, there are some tags that allow you to specify more criteria. Those criteria include:
+
+ - (1) `From`: Specifying who should have sent the emails returned. When you click on this tags, a new screen will be opened that allow you to input email address. The system supports auto-complete on your contacts
+ - (2) `To`: Specifying who the emails returned should be addressed to. When you click on this tags, a new screen will be opened that allow you to input email address. The system supports auto-complete on your contacts
+ - (3) `Has attachment`: If checked, then only emails with attachments will be returned.
+ - (4) `All time`: This field specifies the time range in which the returned emails should have been sent. Default option is "All time". When I click on this field, a new screen will be opened.
+ - (5) `Folder`: Specifies in which folder the returned emails should be placed. Default option is "All folders". When I click on this field, a new screen will be opened.
+
+![Frame 162](https://github.com/linagora/tmail-flutter/assets/68209176/af0a4d8d-2272-4e49-901a-18e40f9ebc5d)
+
+![Frame 163](https://github.com/linagora/tmail-flutter/assets/68209176/a4a4f34a-374a-4471-8f90-cc6cfe3c07f1)
+
