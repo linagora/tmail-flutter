@@ -50,7 +50,7 @@ class _EmptyMailboxPopupDialogWidgetState extends State<EmptyMailboxPopupDialogW
         ),
         visible: _visible,
         child: TMailButtonWidget.fromText(
-          text: AppLocalizations.of(context).empty,
+          text: AppLocalizations.of(context).clean,
           textStyle: EmptyMailboxPopupDialogWidgetStyles.emptyButtonTextStyle,
           backgroundColor: EmptyMailboxPopupDialogWidgetStyles.emptyButtonBackground,
           padding: EmptyMailboxPopupDialogWidgetStyles.emptyButtonPadding,
