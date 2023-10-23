@@ -39,7 +39,7 @@ extension EmailActionTypeExtension on EmailActionType {
   String getToastMessageMoveToMailboxSuccess(BuildContext context, {String? destinationPath}) {
     switch(this) {
       case EmailActionType.moveToMailbox:
-        return AppLocalizations.of(context).moved_to_mailbox(destinationPath ?? '');
+        return AppLocalizations.of(context).movedToFolder(destinationPath ?? '');
       case EmailActionType.moveToTrash:
         return AppLocalizations.of(context).moved_to_trash;
       case EmailActionType.moveToSpam:

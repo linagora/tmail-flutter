@@ -11,7 +11,7 @@ enum DestinationScreenType {
       case DestinationScreenType.destinationPicker:
         return mailboxActionTitle;
       case DestinationScreenType.createNewMailbox:
-        return AppLocalizations.of(context).createNewMailbox;
+        return AppLocalizations.of(context).createNewFolder;
     }
   }
 }

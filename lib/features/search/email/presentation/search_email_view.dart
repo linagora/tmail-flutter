@@ -5,8 +5,8 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -27,10 +27,10 @@ import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_r
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchEmailView extends GetWidget<SearchEmailController>
     with AppLoaderMixin {
@@ -539,7 +539,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 Text(
                   filterSelected
                     ? controller.simpleSearchFilter.value.getMailboxName(context)
-                    : AppLocalizations.of(context).mailbox,
+                    : AppLocalizations.of(context).folder,
                   maxLines: 1,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   softWrap: CommonTextStyle.defaultSoftWrap,

@@ -197,7 +197,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          AppLocalizations.of(context).toMailbox,
+                          AppLocalizations.of(context).toFolder,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           maxLines: 1,
@@ -349,7 +349,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: Text(
-                                  AppLocalizations.of(context).toMailbox,
+                                  AppLocalizations.of(context).toFolder,
                                   overflow: CommonTextStyle.defaultTextOverFlow,
                                   softWrap: CommonTextStyle.defaultSoftWrap,
                                   maxLines: 1,
@@ -519,7 +519,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               child: Text(
-                                  AppLocalizations.of(context).toMailbox,
+                                  AppLocalizations.of(context).toFolder,
                                   overflow: CommonTextStyle.defaultTextOverFlow,
                                   softWrap: CommonTextStyle.defaultSoftWrap,
                                   maxLines: 1,

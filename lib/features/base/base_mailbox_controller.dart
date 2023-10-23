@@ -5,12 +5,14 @@ import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/presentation/views/dialog/edit_text_dialog_builder.dart';
 import 'package:core/presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -33,18 +35,16 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 abstract class BaseMailboxController extends BaseController {
   final TreeBuilder _treeBuilder;
@@ -310,7 +310,7 @@ abstract class BaseMailboxController extends BaseController {
     if (responsiveUtils.isMobile(context)) {
       (EditTextModalSheetBuilder()
         ..key(const Key('rename_mailbox_dialog'))
-        ..title(AppLocalizations.of(context).rename_mailbox)
+        ..title(AppLocalizations.of(context).renameFolder)
         ..cancelText(AppLocalizations.of(context).cancel)
         ..boxConstraints(responsiveUtils.isLandscapeMobile(context)
             ? const BoxConstraints(maxWidth: 400)
@@ -343,7 +343,7 @@ abstract class BaseMailboxController extends BaseController {
         builder: (context) =>
           PointerInterceptor(child: (EditTextDialogBuilder()
             ..key(const Key('rename_mailbox_dialog'))
-            ..title(AppLocalizations.of(context).rename_mailbox)
+            ..title(AppLocalizations.of(context).renameFolder)
             ..cancelText(AppLocalizations.of(context).cancel)
             ..setErrorString((value) {
               return verifyMailboxNameAction(
@@ -412,7 +412,7 @@ abstract class BaseMailboxController extends BaseController {
   }) {
     if (responsiveUtils.isLandscapeMobile(context) || responsiveUtils.isPortraitMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.getDisplayName(context)))
+        ..messageText(AppLocalizations.of(context).message_confirmation_dialog_delete_folder(presentationMailbox.getDisplayName(context)))
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
         ..onConfirmAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
       ).show();
@@ -423,8 +423,8 @@ abstract class BaseMailboxController extends BaseController {
         builder: (context) => PointerInterceptor(
           child: (ConfirmDialogBuilder(imagePaths)
           ..key(const Key('confirm_dialog_delete_mailbox'))
-          ..title(AppLocalizations.of(context).delete_mailboxes)
-          ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_mailbox(presentationMailbox.getDisplayName(context)))
+          ..title(AppLocalizations.of(context).deleteFolders)
+          ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_folder(presentationMailbox.getDisplayName(context)))
           ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
           ..colorConfirmButton(AppColor.colorConfirmActionDialog)
           ..styleTextConfirmButton(const TextStyle(

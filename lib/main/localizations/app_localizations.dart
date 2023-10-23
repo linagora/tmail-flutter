@@ -414,10 +414,10 @@ class AppLocalizations {
     );
   }
 
-  String moved_to_mailbox(String destinationMailboxPath) {
+  String movedToFolder(String destinationMailboxPath) {
     return Intl.message(
         'Moved to $destinationMailboxPath',
-        name: 'moved_to_mailbox',
+        name: 'movedToFolder',
         args: [destinationMailboxPath]
     );
   }
@@ -552,10 +552,10 @@ class AppLocalizations {
         name: 'sign_out');
   }
 
-  String get hint_search_mailboxes {
+  String get hintSearchFolders {
     return Intl.message(
-        'Search mailboxes',
-        name: 'hint_search_mailboxes');
+        'Search folders',
+        name: 'hintSearchFolders');
   }
 
   String get with_attachments {
@@ -613,24 +613,24 @@ class AppLocalizations {
     );
   }
 
-  String get new_mailbox {
+  String get newFolder {
     return Intl.message(
-      'New mailbox',
-      name: 'new_mailbox',
+      'New folder',
+      name: 'newFolder',
     );
   }
 
-  String get name_of_mailbox_is_required {
+  String get nameOfFolderIsRequired {
     return Intl.message(
-      'Name of mailbox is required',
-      name: 'name_of_mailbox_is_required',
+      'Name of folder is required',
+      name: 'nameOfFolderIsRequired',
     );
   }
 
-  String get mailbox_name_cannot_contain_special_characters {
+  String get folderNameCannotContainSpecialCharacters {
     return Intl.message(
-      'Mailbox name cannot contain special characters',
-      name: 'mailbox_name_cannot_contain_special_characters',
+      'Folder name cannot contain special characters',
+      name: 'folderNameCannotContainSpecialCharacters',
     );
   }
 
@@ -641,18 +641,18 @@ class AppLocalizations {
     );
   }
 
-  String new_mailbox_is_created(String nameMailbox) {
+  String new_folder_is_created(String nameMailbox) {
     return Intl.message(
         '$nameMailbox is created',
-        name: 'new_mailbox_is_created',
+        name: 'new_folder_is_created',
         args: [nameMailbox]
     );
   }
 
-  String get create_new_mailbox_failure {
+  String get createNewFolderFailure {
     return Intl.message(
-        'Create new mailbox failure',
-        name: 'create_new_mailbox_failure'
+        'Create new folder failure',
+        name: 'createNewFolderFailure'
     );
   }
 
@@ -677,10 +677,10 @@ class AppLocalizations {
     );
   }
 
-  String get hint_input_create_new_mailbox {
+  String get hintInputCreateNewFolder {
     return Intl.message(
-        'Enter name of mailbox',
-        name: 'hint_input_create_new_mailbox'
+        'Enter name of folder',
+        name: 'hintInputCreateNewFolder'
     );
   }
 
@@ -690,36 +690,36 @@ class AppLocalizations {
         name: 'rename');
   }
 
-  String get delete_mailboxes_successfully {
+  String get deleteFoldersSuccessfully {
     return Intl.message(
-        'Delete mailboxes successfully',
-        name: 'delete_mailboxes_successfully');
+        'Delete folders successfully',
+        name: 'deleteFoldersSuccessfully');
   }
 
-  String get delete_mailboxes_failure {
+  String get deleteFoldersFailure {
     return Intl.message(
-        'Delete mailboxes failure',
-        name: 'delete_mailboxes_failure');
+        'Delete folders failure',
+        name: 'deleteFoldersFailure');
   }
 
-  String get delete_mailboxes {
+  String get deleteFolders {
     return Intl.message(
-        'Delete mailboxes',
-        name: 'delete_mailboxes');
+        'Delete folders',
+        name: 'deleteFolders');
   }
 
-  String message_confirmation_dialog_delete_mailbox(String nameMailbox) {
+  String message_confirmation_dialog_delete_folder(String nameMailbox) {
     return Intl.message(
-        '"$nameMailbox" mailbox and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
-        name: 'message_confirmation_dialog_delete_mailbox',
+        '"$nameMailbox" folder and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
+        name: 'message_confirmation_dialog_delete_folder',
         args: [nameMailbox]
     );
   }
 
-  String get rename_mailbox {
+  String get renameFolder {
     return Intl.message(
-        'Rename mailbox',
-        name: 'rename_mailbox');
+        'Rename folder',
+        name: 'renameFolder');
   }
 
   String get this_field_cannot_be_blank {
@@ -1402,17 +1402,17 @@ class AppLocalizations {
         name: 'canNotGetToken');
   }
 
-  String get moveMailbox {
+  String get moveFolder {
     return Intl.message(
-      'Move mailbox',
-      name: 'moveMailbox',
+      'Move folder',
+      name: 'moveFolder',
     );
   }
 
-  String get deleteMailbox {
+  String get deleteFolder {
     return Intl.message(
-        'Delete mailbox',
-        name: 'deleteMailbox');
+        'Delete folder',
+        name: 'deleteFolder');
   }
 
   String toastMessageMarkAsMailboxReadSuccess(String mailboxName) {
@@ -1429,10 +1429,10 @@ class AppLocalizations {
         args: [mailboxName, count]);
   }
 
-  String get allMailboxes {
+  String get allFolders {
     return Intl.message(
-        'All mailboxes',
-        name: 'allMailboxes');
+        'All folders',
+        name: 'allFolders');
   }
 
   String get singleSignOn {
@@ -1492,10 +1492,10 @@ class AppLocalizations {
     );
   }
 
-  String get mailbox {
+  String get folder {
     return Intl.message(
-      'Mailbox',
-      name: 'mailbox',
+      'Folder',
+      name: 'folder',
     );
   }
 
@@ -1541,10 +1541,10 @@ class AppLocalizations {
     );
   }
 
-  String get selectMailbox {
+  String get selectFolder {
     return Intl.message(
-      'Select Mailbox',
-      name: 'selectMailbox',
+      'Select Folder',
+      name: 'selectFolder',
     );
   }
 
@@ -1895,10 +1895,10 @@ class AppLocalizations {
         name: 'actionTitleRulesFilter');
   }
 
-  String get toMailbox {
+  String get toFolder {
     return Intl.message(
-        'To mailbox:',
-        name: 'toMailbox');
+        'To folder:',
+        name: 'toFolder');
   }
 
   String get moveMessage {
@@ -2470,10 +2470,10 @@ class AppLocalizations {
     );
   }
 
-  String messageConfirmationDialogDeleteMultipleMailbox(int numberOfMailbox) {
+  String messageConfirmationDialogDeleteMultipleFolder(int numberOfMailbox) {
     return Intl.message(
-        '$numberOfMailbox mailbox and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
-        name: 'messageConfirmationDialogDeleteMultipleMailbox',
+        '$numberOfMailbox folder and all of the sub-folders and messages it contains will be deleted and won\'t be able to recover. Do you want to continue to delete?',
+        name: 'messageConfirmationDialogDeleteMultipleFolder',
         args: [numberOfMailbox]
     );
   }
@@ -2484,10 +2484,10 @@ class AppLocalizations {
         name: 'toastMessageErrorNotSelectedFolderWhenCreateNewMailbox');
   }
 
-  String get createNewMailbox {
+  String get createNewFolder {
     return Intl.message(
-        'Create new mailbox',
-        name: 'createNewMailbox');
+        'Create new folder',
+        name: 'createNewFolder');
   }
 
   String get newer {
@@ -2655,10 +2655,10 @@ class AppLocalizations {
       name: 'required');
   }
 
-  String get noEmailInYourCurrentMailbox {
+  String get noEmailInYourCurrentFolder {
     return Intl.message(
-      'We\'re sorry, there are no emails in your current mailbox',
-      name: 'noEmailInYourCurrentMailbox');
+      'We\'re sorry, there are no emails in your current folder',
+      name: 'noEmailInYourCurrentFolder');
   }
 
   String get noEmailMatchYourCurrentFilter {
@@ -2715,22 +2715,16 @@ class AppLocalizations {
     );
   }
 
-  String get mailBoxes {
-    return Intl.message(
-      'Mailboxes',
-      name: 'mailBoxes');
-  }
-
   String get teamMailBoxes {
     return Intl.message(
       'Team-mailboxes',
       name: 'teamMailBoxes');
   }
 
-  String get hideMailBoxes {
+  String get hideFolder {
     return Intl.message(
-      'Hide mailbox',
-      name: 'hideMailBoxes');
+      'Hide folder',
+      name: 'hideFolder');
   }
 
   String get thisImageCannotBeAdded {
@@ -2740,42 +2734,42 @@ class AppLocalizations {
     );
   }
 
-  String get toastMsgHideMailboxSuccess {
+  String get toastMsgHideFolderSuccess {
     return Intl.message(
-      'This mailbox has been hidden from your primary mailbox',
-      name: 'toastMsgHideMailboxSuccess');
+      'This folder has been hidden from your primary folder',
+      name: 'toastMsgHideFolderSuccess');
   }
 
-  String get searchForMailboxes {
+  String get searchForFolders {
     return Intl.message(
-      'Search for mailboxes',
-      name: 'searchForMailboxes'
+      'Search for folders',
+      name: 'searchForFolders'
     );
   }
 
-  String get showMailbox {
+  String get showFolder {
     return Intl.message(
-      'Show mailbox',
-      name: 'showMailbox'
+      'Show folder',
+      name: 'showFolder'
     );
   }
 
-  String get toastMessageShowMailboxSuccess {
+  String get toastMessageShowFolderSuccess {
     return Intl.message(
-      'This mailbox is already displayed in your primary mailbox',
-      name: 'toastMessageShowMailboxSuccess');
+      'This folder is already displayed in your primary folder',
+      name: 'toastMessageShowFolderSuccess');
   }
-  String get mailboxVisibility {
+  String get folderVisibility {
     return Intl.message(
-      'Mailbox visibility',
-      name: 'mailboxVisibility',
+      'Folder visibility',
+      name: 'folderVisibility',
     );
   }
 
-  String get mailboxVisibilitySubtitle {
+  String get folderVisibilitySubtitle {
     return Intl.message(
-      'Show/ hide your mailboxes, including your personal and team mailboxes.',
-      name: 'mailboxVisibilitySubtitle',
+      'Show/ hide your folders, including your personal folders and team mailboxes.',
+      name: 'folderVisibilitySubtitle',
     );
   }
 
@@ -2837,7 +2831,7 @@ class AppLocalizations {
 
   String get bannerMessageSendingQueueView {
     return Intl.message(
-      'Messages in Sending queue mailbox will be sent or scheduled when online.',
+      'Messages in Sending queue folder will be sent or scheduled when online.',
       name: 'bannerMessageSendingQueueView'
     );
   }
@@ -2879,7 +2873,7 @@ class AppLocalizations {
 
   String get messageDialogWhenStoreSendingEmailTail {
     return Intl.message(
-      ' mailbox.',
+      ' folder.',
       name: 'messageDialogWhenStoreSendingEmailTail'
     );
   }
@@ -2891,10 +2885,10 @@ class AppLocalizations {
       args: [recipients]);
   }
 
-  String get openMailboxMenu {
+  String get openFolderMenu {
     return Intl.message(
-      'Open mailbox menu',
-      name: 'openMailboxMenu'
+      'Open Folder menu',
+      name: 'openFolderMenu'
     );
   }
 
@@ -2914,7 +2908,7 @@ class AppLocalizations {
 
   String get messageDialogDeleteSendingEmail {
     return Intl.message(
-      'Deleting an offline email will erase its content permanently. You won\'t be able to undo this action or recover the email from the Trash mailbox.',
+      'Deleting an offline email will erase its content permanently. You won\'t be able to undo this action or recover the email from the Trash folder.',
       name: 'messageDialogDeleteSendingEmail'
     );
   }
@@ -3244,7 +3238,7 @@ class AppLocalizations {
 
   String get folderCreatedMessage {
     return Intl.message(
-      'To begin using this mailbox, you should add some rules to organize all of your mail in your own way.',
+      'To begin using this folder, you should add some rules to organize all of your mail in your own way.',
       name: 'folderCreatedMessage');
   }
 

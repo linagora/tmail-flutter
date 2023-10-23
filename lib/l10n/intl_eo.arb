@@ -315,42 +315,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_mailbox": "Nova retpoŝtkesto",
-  "@new_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "mailbox_location": "Loko de retpoŝtkesto",
-  "@mailbox_location": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "default_mailbox": "Implicita retpoŝtkesto",
-  "@default_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "drafts_saved": "Malneto konserviĝis",
-  "@drafts_saved": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "delete_mailboxes": "Forigi retpoŝtkestojn",
-  "@delete_mailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "rename_mailbox": "Ŝanĝi nomon de retpoŝtkesto",
-  "@rename_mailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "compose_email": "Verki retmesaĝon",
   "@compose_email": {
     "type": "text",
@@ -489,18 +453,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMailbox": "Movi retpoŝtkeston",
-  "@moveMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "deleteMailbox": "Forigi retpoŝtkeston",
-  "@deleteMailbox": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "send_anyway": "Sendi malgraŭ tio",
   "@send_anyway": {
     "type": "text",
@@ -627,12 +579,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allMailboxes": "Ĉiuj retpoŝtkestoj",
-  "@allMailboxes": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "delete_message_forever": "Forviŝi mesaĝon nemalfareble",
   "@delete_message_forever": {
     "type": "text",
@@ -659,12 +605,6 @@
   },
   "thisEmailAddressInvalid": "Ĉi tiu retpoŝta adreso ŝajnas nevalida",
   "@thisEmailAddressInvalid": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "hint_input_create_new_mailbox": "Tajpu nomon de retpoŝtkesto",
-  "@hint_input_create_new_mailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
