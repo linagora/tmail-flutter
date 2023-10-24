@@ -28,6 +28,7 @@ class FileUploader {
   static const String bytesExtraKey = 'bytes';
   static const String typeExtraKey = 'type';
   static const String sizeExtraKey = 'size';
+  static const String filePathExtraKey = 'path';
 
   final DioClient _dioClient;
   final worker.Executor _isolateExecutor;
@@ -77,12 +78,24 @@ class FileUploader {
     final headerParam = argsUpload.dioClient.getHeaders();
     headerParam[HttpHeaders.contentTypeHeader] = argsUpload.mobileFileUpload.mimeType;
     headerParam[HttpHeaders.contentLengthHeader] = argsUpload.mobileFileUpload.fileSize;
-    final data = File(argsUpload.mobileFileUpload.filePath).openRead();
+
+    final mapExtra = <String, dynamic>{
+      uploadAttachmentExtraKey: {
+        platformExtraKey: 'mobile',
+        filePathExtraKey: argsUpload.mobileFileUpload.filePath,
+        typeExtraKey: argsUpload.mobileFileUpload.mimeType,
+        sizeExtraKey: argsUpload.mobileFileUpload.fileSize,
+      }
+    };
+
 
     final resultJson = await argsUpload.dioClient.post(
       Uri.decodeFull(argsUpload.uploadUri.toString()),
-      options: Options(headers: headerParam),
-      data: data,
+      options: Options(
+        headers: headerParam,
+        extra: mapExtra
+      ),
+      data: File(argsUpload.mobileFileUpload.filePath).openRead(),
       onSendProgress: (count, total) {
         log('FileUploader::_handleUploadAttachmentAction():onSendProgress: [${argsUpload.uploadId.id}] = $count');
         sendPort.send(
