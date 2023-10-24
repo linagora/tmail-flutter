@@ -37,6 +37,7 @@ class TMailButtonWidget extends StatelessWidget {
   final TextDirection iconAlignment;
   final int? maxLines;
   final MainAxisSize mainAxisSize;
+  final bool? isLoading;
 
   const TMailButtonWidget({
     super.key,
@@ -68,6 +69,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.iconAlignment = TextDirection.ltr,
     this.maxLines,
     this.mainAxisSize = MainAxisSize.max,
+    this.isLoading = false,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -287,13 +289,23 @@ class TMailButtonWidget extends StatelessWidget {
                   softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                 ),
               SizedBox(width: iconSpace),
-              SvgPicture.asset(
-                icon!,
-                width: iconSize,
-                height: iconSize,
-                fit: BoxFit.fill,
-                colorFilter: iconColor?.asFilter()
-              ),
+              if (!isLoading!)
+                SvgPicture.asset(
+                  icon!,
+                  width: iconSize,
+                  height: iconSize,
+                  fit: BoxFit.fill,
+                  colorFilter: iconColor?.asFilter()
+                )
+              else 
+                SizedBox(
+                  width: iconSize,
+                  height: iconSize,
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  )
+                ),
             ]
           );
         }
