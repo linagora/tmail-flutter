@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/oidc_configuration.dart';
@@ -12,6 +14,7 @@ import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuratio
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
@@ -77,6 +80,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): $err');
+
     final requestOptions = err.requestOptions;
     final extraInRequest = requestOptions.extra;
     var retries = extraInRequest[RETRY_KEY] ?? 0;
@@ -110,16 +114,36 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       ]);
       _updateNewToken(newToken.toToken());
 
-      final requestOptions = err.requestOptions;
-      requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+      if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
+        final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
-      final response = await _dio.fetch(requestOptions);
-      return handler.resolve(response);
+        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+        requestOptions.headers[HttpHeaders.contentTypeHeader] = uploadExtra[FileUploader.typeExtraKey];
+        requestOptions.headers[HttpHeaders.contentLengthHeader] = uploadExtra[FileUploader.sizeExtraKey];
+
+        final newOptions = Options(
+          method: requestOptions.method,
+          headers: requestOptions.headers,
+        );
+
+        final response = await _dio.request(
+          requestOptions.path,
+          data: BodyBytesStream.fromBytes(uploadExtra[FileUploader.bytesExtraKey]),
+          queryParameters: requestOptions.queryParameters,
+          options: newOptions,
+        );
+
+        return handler.resolve(response);
+      } else {
+        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+
+        final response = await _dio.fetch(requestOptions);
+        return handler.resolve(response);
+      }
     } else if (_validateToRetry(err, retries)) {
       log('AuthorizationInterceptors::onError:>> _validateToRetry | retries: $retries');
       retries++;
 
-      final requestOptions = err.requestOptions;
       requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
       requestOptions.extra = {RETRY_KEY: retries};
 

@@ -27,7 +27,7 @@ class ComposerDataSourceImpl extends ComposerDataSource {
         cid,
         fileInfo.fileExtension,
         fileInfo.fileName,
-        bytesData: fileInfo.bytes,
+        filePath: fileInfo.filePath,
         maxWidth: maxWidth,
         compress: compress);
     }).catchError(_exceptionThrower.throwException);

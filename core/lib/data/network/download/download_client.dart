@@ -40,15 +40,18 @@ class DownloadClient {
       String fileExtension,
       String fileName,
       {
-        Uint8List? bytesData,
+        String? filePath,
         double? maxWidth,
         bool? compress,
       }
   ) async {
     try {
-      if (bytesData == null) {
+      Uint8List? bytesData;
+      if (filePath == null || filePath.isEmpty) {
         log('DownloadClient::downloadImageAsBase64(): bytesData is NULL');
         bytesData = await _dioClient.get(url, options: Options(responseType: ResponseType.bytes));
+      } else {
+        bytesData = await File(filePath).readAsBytes();
       }
 
       if (bytesData == null) {
