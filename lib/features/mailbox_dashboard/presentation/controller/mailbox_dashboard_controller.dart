@@ -1917,9 +1917,7 @@ class MailboxDashBoardController extends ReloadableController {
   void addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
     log('MailboxDashBoardController::addSendingEmailToSendingQueue():sendingEmail: $sendingEmail');
     final work = OneTimeWorkRequest(
-      uniqueId: PlatformInfo.isAndroid
-        ? sendingEmail.sendingId
-        : WorkerType.sendingEmail.iOSUniqueId,
+      uniqueId: sendingEmail.sendingId,
       taskId: sendingEmail.sendingId,
       tag: WorkerType.sendingEmail.name,
       inputData: sendingEmail.toJson()

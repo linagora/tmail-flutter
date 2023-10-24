@@ -3,7 +3,6 @@ import Flutter
 import flutter_downloader
 import receive_sharing_intent
 import flutter_local_notifications
-import workmanager
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -48,13 +47,7 @@ import workmanager
                 }
             }
         }
-        
-        WorkmanagerPlugin.setPluginRegistrantCallback { registry in
-            AppDelegate.registerPlugins(with: registry)
-        }
-        
-        WorkmanagerPlugin.registerTask(withIdentifier: "com.linagora.ios.teammail.sendingQueue")
-        
+
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
