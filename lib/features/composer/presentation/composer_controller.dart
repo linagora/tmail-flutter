@@ -111,6 +111,7 @@ class ComposerController extends BaseController {
   final hasRequestReadReceipt = false.obs;
   final ccRecipientState = PrefixRecipientState.disabled.obs;
   final bccRecipientState = PrefixRecipientState.disabled.obs;
+  final isSendEmailLoading = false.obs;
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
@@ -288,6 +289,9 @@ class ComposerController extends BaseController {
     } else if (failure is GetEmailContentFailure ||
         failure is TransformHtmlEmailContentFailure) {
       emailContentsViewState.value = Left(failure);
+      if (isSendEmailLoading.isTrue) {
+        isSendEmailLoading.value = false;
+      }
     }
   }
 
@@ -787,7 +791,13 @@ class ComposerController extends BaseController {
   }
 
   void sendEmailAction(BuildContext context) async {
+    if (isSendEmailLoading.isTrue) {
+      return;
+    }
+
     clearFocusEditor(context);
+
+    isSendEmailLoading.value = true;
 
     if (toEmailAddressController.text.isNotEmpty
         || ccEmailAddressController.text.isNotEmpty
@@ -800,7 +810,7 @@ class ComposerController extends BaseController {
       showConfirmDialogAction(context,
           AppLocalizations.of(context).message_dialog_send_email_without_recipient,
           AppLocalizations.of(context).add_recipients,
-          onConfirmAction: () => {},
+          onConfirmAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
@@ -819,6 +829,7 @@ class ComposerController extends BaseController {
             toAddressExpandMode.value = ExpandMode.EXPAND;
             ccAddressExpandMode.value = ExpandMode.EXPAND;
             bccAddressExpandMode.value = ExpandMode.EXPAND;
+            isSendEmailLoading.value = false;
           },
           title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
@@ -831,6 +842,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
           AppLocalizations.of(context).send_anyway,
           onConfirmAction: () => _handleSendMessages(context),
+          onCancelAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).empty_subject,
           icon: SvgPicture.asset(_imagePaths.icEmpty, fit: BoxFit.fill),
       );
@@ -842,7 +854,7 @@ class ComposerController extends BaseController {
           context,
           AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
           AppLocalizations.of(context).got_it,
-          onConfirmAction: () => {},
+          onConfirmAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
@@ -855,7 +867,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
               filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
           AppLocalizations.of(context).got_it,
-          onConfirmAction: () => {},
+          onConfirmAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).sending_failed,
           icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
@@ -1110,7 +1122,7 @@ class ComposerController extends BaseController {
             AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
                 filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
             AppLocalizations.of(currentContext!).got_it,
-            onConfirmAction: () => {},
+            onConfirmAction: () => {isSendEmailLoading.value = false},
             title: AppLocalizations.of(currentContext!).maximum_files_size,
             hasCancelButton: false);
       }
@@ -1454,11 +1466,13 @@ class ComposerController extends BaseController {
     if (PlatformInfo.isWeb) {
       _closeComposerWeb(result: result);
     } else {
+      isSendEmailLoading.value = false;
       popBack(result: result);
     }
   }
 
   void _closeComposerWeb({dynamic result}) {
+    isSendEmailLoading.value = false;
     mailboxDashBoardController.closeComposerOverlay(result: result);
   }
 
@@ -1803,7 +1817,7 @@ class ComposerController extends BaseController {
             AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
                 filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
             AppLocalizations.of(currentContext!).got_it,
-            onConfirmAction: () => {},
+            onConfirmAction: () => {isSendEmailLoading.value = false},
             title: AppLocalizations.of(currentContext!).maximum_files_size,
             hasCancelButton: false);
       }
