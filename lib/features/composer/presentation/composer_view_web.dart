@@ -435,6 +435,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   radius: ComposerStyle.popupMenuRadius
                 );
               },
+              isSending: controller.isSendEmailLoading.value,
             )),
           ]);
         },
