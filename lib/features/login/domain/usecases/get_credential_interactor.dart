@@ -19,7 +19,7 @@ class GetCredentialInteractor {
     try {
       final baseUrl = await credentialRepository.getBaseUrl();
       final authenticationInfo = await credentialRepository.getAuthenticationInfoStored();
-      if (isCredentialValid(baseUrl) && authenticationInfo != null) {
+      if (isCredentialValid(baseUrl)) {
         return Right(GetCredentialViewState(
           baseUrl,
           UserName(authenticationInfo.username),
