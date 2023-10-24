@@ -3,6 +3,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/account_cache_extensions.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/list_account_cache_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/personal_account_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
@@ -23,14 +24,25 @@ class AccountCacheManager {
     }
   }
 
-  Future<void> setCurrentAccount(PersonalAccount account) async {
-    log('AccountCacheManager::setCurrentAccount(): $account');
-    final accountCacheExist = await _accountCacheClient.isExistTable();
-    if (accountCacheExist) {
-      await _accountCacheClient.clearAllData();
+  Future<void> setCurrentAccount(PersonalAccount newAccount) async {
+    log('AccountCacheManager::setCurrentAccount(): $newAccount');
+    final newAccountCache = newAccount.toCache();
+    final allAccounts = await _accountCacheClient.getAll();
+    log('AccountCacheManager::setCurrentAccount::allAccounts(): $allAccounts');
+    if (allAccounts.isNotEmpty) {
+      final newAllAccounts = allAccounts
+        .unselected()
+        .removeDuplicated()
+        .whereNot((account) => account.accountId == newAccountCache.accountId)
+        .toList();
+      if (newAllAccounts.isNotEmpty) {
+        await _accountCacheClient.clearAllData();
+        await _accountCacheClient.updateMultipleItem(newAllAccounts.toMap());
+      }
     }
-    return _accountCacheClient.insertItem(account.id, account.toCache());
+    return _accountCacheClient.insertItem(newAccountCache.id, newAccountCache);
   }
+
 
   Future<void> deleteCurrentAccount(String hashId) {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
