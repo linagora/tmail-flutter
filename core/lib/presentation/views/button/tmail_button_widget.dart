@@ -37,7 +37,7 @@ class TMailButtonWidget extends StatelessWidget {
   final TextDirection iconAlignment;
   final int? maxLines;
   final MainAxisSize mainAxisSize;
-  final bool? isLoading;
+  final bool isLoading;
 
   const TMailButtonWidget({
     super.key,
@@ -289,7 +289,7 @@ class TMailButtonWidget extends StatelessWidget {
                   softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                 ),
               SizedBox(width: iconSpace),
-              if (!isLoading!)
+              if (!isLoading)
                 SvgPicture.asset(
                   icon!,
                   width: iconSize,
