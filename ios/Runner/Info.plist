@@ -64,10 +64,6 @@
         <string>remote-notification</string>
 		<string>processing</string>
 	</array>
-    <key>BGTaskSchedulerPermittedIdentifiers</key>
-    <array>
-        <string>com.linagora.ios.teammail.sendingQueue</string>
-    </array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
