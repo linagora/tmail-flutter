@@ -202,12 +202,6 @@ class RichTextWebController extends BaseRichTextController {
     }
   }
 
-  void insertInlineImage({required String base64Data, String? name}) async {
-    log('RichTextWebController::insertInlineImage():name: $name');
-    final base64Uri = '<img src="$base64Data" data-filename="$name" alt="Inline Image TeamMail" style="max-width: 100%" />';
-    editorController.insertHtml(base64Uri);
-  }
-
   void applyNewFontStyle(FontNameType? newFont) {
     final fontSelected = newFont ?? FontNameType.sansSerif;
     selectedFontName.value = fontSelected;
