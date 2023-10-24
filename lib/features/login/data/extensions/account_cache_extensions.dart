@@ -26,4 +26,26 @@ extension AccountCacheExtension on AccountCache {
       apiUrl: apiUrl,
       userName: userName != null ? UserName(userName!) : null);
   }
+
+  AccountCache unselected() {
+    return AccountCache(
+      id,
+      authenticationType,
+      isSelected: false,
+      accountId: accountId,
+      apiUrl: apiUrl,
+      userName: userName
+    );
+  }
+
+  AccountCache emptyId() {
+    return AccountCache(
+      '',
+      authenticationType,
+      isSelected: false,
+      accountId: accountId,
+      apiUrl: apiUrl,
+      userName: userName
+    );
+  }
 }
