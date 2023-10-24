@@ -164,7 +164,7 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
   }
 
   bool get canDeletePermanently {
-    return _currentMailbox?.isTrash == true || _currentMailbox?.isDrafts == true;
+    return _currentMailbox?.isTrash == true || _currentMailbox?.isDrafts == true || _currentMailbox?.isSpam == true;
   }
 
   bool _verticalDirection(BuildContext context) {

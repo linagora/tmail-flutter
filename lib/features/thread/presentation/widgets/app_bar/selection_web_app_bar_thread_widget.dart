@@ -152,5 +152,5 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
     );
   }
 
-  bool get _deletePermanentlyValid => mailboxSelected?.isTrash == true || mailboxSelected?.isDrafts == true;
+  bool get _deletePermanentlyValid => mailboxSelected?.isTrash == true || mailboxSelected?.isDrafts == true || mailboxSelected?.isSpam == true;
 }
