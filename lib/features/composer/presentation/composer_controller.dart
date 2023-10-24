@@ -1101,7 +1101,7 @@ class ComposerController extends BaseController {
   }
 
   void _pickFileSuccess(LocalFilePickerSuccess success) {
-    if (uploadController.hasEnoughMaxAttachmentSize(listFiles: success.pickedFiles)) {
+    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo(success.pickedFiles))) {
       _uploadAttachmentsAction(success.pickedFiles);
     } else {
       if (currentContext != null) {
@@ -1347,7 +1347,7 @@ class ComposerController extends BaseController {
     }
     if (listFileAttachmentSharedMediaFile.isNotEmpty) {
       final listFile = covertListSharedMediaFileToFileInfo(listSharedMediaFile);
-      if (uploadController.hasEnoughMaxAttachmentSize(listFiles: listFile)) {
+      if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo(listFile))) {
         _uploadAttachmentsAction(listFile);
       } else {
         if (currentContext != null) {
@@ -1784,7 +1784,7 @@ class ComposerController extends BaseController {
   }
 
   void _uploadInlineAttachmentsAction(FileInfo pickedFile, {bool fromFileShared = false}) async {
-    if (uploadController.hasEnoughMaxAttachmentSize(listFiles: [pickedFile])) {
+    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo([pickedFile]))) {
       final session = mailboxDashBoardController.sessionCurrent;
       final accountId = mailboxDashBoardController.accountId.value;
       if (session != null && accountId != null) {
@@ -1950,10 +1950,15 @@ class ComposerController extends BaseController {
     }
 
     if (fileUpload.type?.startsWith(MediaTypeExtension.imageType) == true) {
-      _addInlineImageFromDragAndDrop(
-        base64Data: fileUpload.base64!,
-        name: fileUpload.name,
-      );
+      final fileInfo = await fileUpload.toFileInfo();
+      if (fileInfo != null) {
+        _uploadInlineAttachmentsAction(fileInfo);
+      } else if (context.mounted) {
+        _appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).can_not_upload_this_file_as_attachments
+        );
+      }
     } else {
       final fileInfo = await fileUpload.toFileInfo();
       if (fileInfo != null) {
@@ -1965,11 +1970,6 @@ class ComposerController extends BaseController {
         );
       }
     }
-  }
-
-  void _addInlineImageFromDragAndDrop({required String base64Data, String? name}) {
-    log('ComposerController::_addInlineImageFromDragAndDrop:name: $name');
-    richTextWebController.insertInlineImage(base64Data: base64Data, name: name);
   }
 
   void handleImageUploadFailure({
@@ -1986,7 +1986,7 @@ class ComposerController extends BaseController {
   }
 
   void _addAttachmentFromDragAndDrop({required FileInfo fileInfo}) {
-    if (uploadController.hasEnoughMaxAttachmentSize(listFiles: [fileInfo])) {
+    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo([fileInfo]))) {
       _uploadAttachmentsAction([fileInfo]);
     } else {
       if (currentContext != null) {
@@ -2095,7 +2095,20 @@ class ComposerController extends BaseController {
 
   void addAttachmentFromDropZone(Attachment attachment) {
     log('ComposerController::addAttachmentFromDropZone: $attachment');
-    uploadController.initializeUploadAttachments([attachment]);
+    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: attachment.size?.value)) {
+      uploadController.initializeUploadAttachments([attachment]);
+    } else {
+      if (currentContext != null) {
+        showConfirmDialogAction(
+          currentContext!,
+          AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+              filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
+          AppLocalizations.of(currentContext!).got_it,
+          title: AppLocalizations.of(currentContext!).maximum_files_size,
+          hasCancelButton: false,
+        );
+      }
+    }
   }
 
   void _handleGetAllIdentitiesFailure(GetAllIdentitiesFailure failure) async {
