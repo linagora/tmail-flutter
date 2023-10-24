@@ -3319,5 +3319,11 @@
       "folderName": {},
       "reason": {}
     }
+  },
+  "sending": "Sending",
+  "@sending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
