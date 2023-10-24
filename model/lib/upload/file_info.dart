@@ -7,21 +7,20 @@ class FileInfo with EquatableMixin {
   final String fileName;
   final String filePath;
   final int fileSize;
-  final Stream<List<int>>? readStream;
   final Uint8List? bytes;
 
-  FileInfo(this.fileName, this.filePath, this.fileSize, {this.readStream, this.bytes});
+  FileInfo(this.fileName, this.filePath, this.fileSize, {this.bytes});
 
   factory FileInfo.empty() {
     return FileInfo('', '', 0);
   }
 
-  factory FileInfo.fromStream({
-    required Stream<List<int>> stream,
+  factory FileInfo.fromBytes({
+    required Uint8List bytes,
     String? name,
     int? size
   }) {
-    return FileInfo(name ?? '', '', size ?? 0, readStream: stream);
+    return FileInfo(name ?? '', '', size ?? 0, bytes: bytes);
   }
 
   String get fileExtension => fileName.split('.').last;
@@ -29,5 +28,5 @@ class FileInfo with EquatableMixin {
   String get mimeType => lookupMimeType(kIsWeb ? fileName : filePath) ?? 'application/octet-stream';
 
   @override
-  List<Object?> get props => [fileName, filePath, fileSize, readStream, bytes];
+  List<Object?> get props => [fileName, filePath, fileSize, bytes];
 }
