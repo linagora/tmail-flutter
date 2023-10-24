@@ -10,6 +10,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:model/upload/upload_response.dart';
@@ -21,6 +22,12 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 import 'package:worker_manager/worker_manager.dart' as worker;
 
 class FileUploader {
+
+  static const String uploadAttachmentExtraKey = 'upload-attachment';
+  static const String platformExtraKey = 'platform';
+  static const String bytesExtraKey = 'bytes';
+  static const String typeExtraKey = 'type';
+  static const String sizeExtraKey = 'size';
 
   final DioClient _dioClient;
   final worker.Executor _isolateExecutor;
@@ -104,12 +111,23 @@ class FileUploader {
     final headerParam = _dioClient.getHeaders();
     headerParam[HttpHeaders.contentTypeHeader] = fileInfo.mimeType;
     headerParam[HttpHeaders.contentLengthHeader] = fileInfo.fileSize;
-    final data = fileInfo.readStream;
+
+    final mapExtra = <String, dynamic>{
+      uploadAttachmentExtraKey: {
+        platformExtraKey: 'web',
+        bytesExtraKey: fileInfo.bytes,
+        typeExtraKey: fileInfo.mimeType,
+        sizeExtraKey: fileInfo.fileSize,
+      }
+    };
 
     final resultJson = await _dioClient.post(
       Uri.decodeFull(uploadUri.toString()),
-      options: Options(headers: headerParam),
-      data: data,
+      options: Options(
+        headers: headerParam,
+        extra: mapExtra
+      ),
+      data: BodyBytesStream.fromBytes(fileInfo.bytes!),
       cancelToken: cancelToken,
       onSendProgress: (count, total) {
         log('FileUploader::_handleUploadAttachmentActionOnWeb():onSendProgress: [${uploadId.id}] = $count');
