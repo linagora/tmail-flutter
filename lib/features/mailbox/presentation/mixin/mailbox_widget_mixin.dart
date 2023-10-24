@@ -41,7 +41,7 @@ mixin MailboxWidgetMixin {
       MailboxActions.newSubfolder,
       if (mailbox.isSpam)
         _mailboxActionForSpam(spamReportEnabled),
-      if (mailbox.countUnReadEmailsAsString.isNotEmpty)
+      if (!mailbox.isTrash && mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       if (mailbox.isTrash)
         MailboxActions.emptyTrash,
