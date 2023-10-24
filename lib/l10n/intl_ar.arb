@@ -1,17 +1,17 @@
 {
-  "Bad credentials": "بيانات اعتماد غير صحيحة.",
+  "Bad credentials": "بيانات اعتماد غير صحيحة",
   "@Bad credentials": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputUrlMessage": "لتسجيل الدخول والوصول إلى رسائلك، يرجى الاتصال بخادم JMAP الخاص بك.",
+  "loginInputUrlMessage": "لتسجيل الدخول والوصول إلى رسائلك، يرجى الاتصال بخادم JMAP الخاص بك",
   "@loginInputUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknownError": "حدث خطأ غير معروف، يرجى المحاولة مرة أخرى.",
+  "unknownError": "حدث خطأ غير معروف، يرجى المحاولة مرة أخرى",
   "@unknownError": {
     "type": "text",
     "placeholders_order": [],
@@ -57,13 +57,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disable_filter_message_toast": "لقد قمت بتعطيل تصفية الرسائل.",
+  "disable_filter_message_toast": "لقد قمت بتعطيل تصفية الرسائل",
   "@disable_filter_message_toast": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "can_not_upload_this_file_as_attachments": "لا يمكن رفع هذا الملف كمرفقات.",
+  "can_not_upload_this_file_as_attachments": "لا يمكن رفع هذا الملف كمرفقات",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
@@ -87,7 +87,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_message_toast": "لقد قمت بوضع علامة على الرسائل بوضعية \"{action}\".",
+  "marked_message_toast": "لقد قمت بوضع علامة على الرسائل بوضعية \"{action}\"",
   "@marked_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -715,7 +715,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputCredentialMessage": "أدخِل بيانات الاعتماد الخاصة بك لتسجيل الدخول.",
+  "loginInputCredentialMessage": "أدخِل بيانات الاعتماد الخاصة بك لتسجيل الدخول",
   "@loginInputCredentialMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -769,13 +769,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "ابدأ كتابة رسالتك البريدية هنا.",
+  "hint_content_email_composer": "ابدأ كتابة رسالتك البريدية هنا",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_reply_email": ":Re",
+  "prefix_reply_email": "يكرر:",
   "@prefix_reply_email": {
     "type": "text",
     "placeholders_order": [],
@@ -805,7 +805,7 @@
       "totalSize": {}
     }
   },
-  "user_cancel_download_file": "تم إلغاء تنزيل الملف بواسطة المستخدم.",
+  "user_cancel_download_file": "تم إلغاء تنزيل الملف بواسطة المستخدم",
   "@user_cancel_download_file": {
     "type": "text",
     "placeholders_order": [],
@@ -1129,13 +1129,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapBasedMailSolution": "JMAP-based\ncollaborative team mail solution",
+  "jmapBasedMailSolution": "JMAP-based\nحل بريد الفريق التعاوني",
   "@jmapBasedMailSolution": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapStandard": "JMAP standard",
+  "jmapStandard": "مقياس JMAP",
   "@jmapStandard": {
     "type": "text",
     "placeholders_order": [],
@@ -1255,7 +1255,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_recipient": "يجب أن يكون لديك على الأقل مستلم واحد لرسالتك البريدية.",
+  "message_dialog_send_email_without_recipient": "يجب أن يكون لديك على الأقل مستلم واحد لرسالتك البريدية",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
@@ -1315,7 +1315,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "يجب عليك منح إذن لتنزيل المرفقات.",
+  "you_need_to_grant_files_permission_to_download_attachments": "يجب عليك منح إذن لتنزيل المرفقات",
   "@you_need_to_grant_files_permission_to_download_attachments": {
     "type": "text",
     "placeholders_order": [],
@@ -1327,7 +1327,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "تم تحميل المرفقات بنجاح.",
+  "attachments_uploaded_successfully": "تم تحميل المرفقات بنجاح",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
@@ -1449,7 +1449,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "filter_message_toast": "لقد قمت بتصفية الرسائل حسب \"{filterOption}\".",
+  "filter_message_toast": "لقد قمت بتصفية الرسائل حسب \"{filterOption}\"",
   "@filter_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -1495,7 +1495,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "discard": "تجاهل",
+  "discard": "ينبذ",
   "@discard": {
     "type": "text",
     "placeholders_order": [],
@@ -2111,7 +2111,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textBodySendReceiptToSender": "تمت قراءة الرسالة بواسطة {Receiver} في {time}\n\nالموضوع:  {subject}\n\nملاحظة: يقر إيصال إعادة القراءة هذا فقط بأنه تم عرض الرسالة على كمبيوتر المستلم. ليس هناك ما يضمن أن المستلم قد قرأ أو فهم محتويات الرسالة.",
+  "textBodySendReceiptToSender": "تمت قراءة الرسالة بواسطة {Receiver} في {time}\n\nالموضوع: {subject}\n\nملاحظة: يقر إيصال إعادة القراءة هذا فقط بأنه تم عرض الرسالة على كمبيوتر المستلم. ليس هناك ما يضمن أن المستلم قد قرأ أو فهم محتويات الرسالة.",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -2215,7 +2215,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "countNewSpamEmails": "لديك  {count}  رسائل بريد إلكتروني جديدة غير مرغوب فيها!",
+  "countNewSpamEmails": "لديك {count} من رسائل البريد الإلكتروني غير المرغوب فيها الجديدة!",
   "@countNewSpamEmails": {
     "type": "text",
     "placeholders_order": [
@@ -2587,7 +2587,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteAllSpamEmails": "حذف كافة رسائل البريد الإلكتروني غير المرغوب فيها.",
+  "deleteAllSpamEmails": "حذف كافة رسائل البريد الإلكتروني غير المرغوب فيها",
   "@deleteAllSpamEmails": {
     "type": "text",
     "placeholders_order": [],
@@ -2655,6 +2655,408 @@
   },
   "when": "متى",
   "@when": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMoreAttachment": "عرض المزيد (+{count})",
+  "@showMoreAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "messageEmptyFolderDialog": "سيتم حذف الرسائل الموجودة في المجلد {folder} نهائيًا ولن تتمكن من استعادتها",
+  "@messageEmptyFolderDialog": {
+    "type": "text",
+    "placeholders_order": [
+      "folder"
+    ],
+    "placeholders": {
+      "folder": {}
+    }
+  },
+  "repliedMessage": "تم الرد على الرسالة",
+  "@repliedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newSubfolder": "مجلد فرعي جديد",
+  "@newSubfolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreInOfflineMode": "أنت في وضع غير متصل بالشبكة",
+  "@youAreInOfflineMode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAsDraft": "حفظ كمسودة",
+  "@saveAsDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resend": "إعادة إرسال",
+  "@resend": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addCondition": "إضافة شرط",
+  "@addCondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleRecipientSendingEmail": "إلى: {recipients}",
+  "@titleRecipientSendingEmail": {
+    "type": "text",
+    "placeholders_order": [
+      "recipients"
+    ],
+    "placeholders": {
+      "recipients": {}
+    }
+  },
+  "messageDialogDeleteSendingEmail": "سيؤدي حذف البريد الإلكتروني غير المتصل بالإنترنت إلى مسح محتواه نهائيًا. لن تتمكن من التراجع عن هذا الإجراء أو استرداد البريد الإلكتروني من صندوق بريد سلة المهملات.",
+  "@messageDialogDeleteSendingEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeDeclined": " لقد رفض هذه الدعوة",
+  "@messageEventActionBannerAttendeeDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounterDeclined": "تم رفض اقتراحك المضاد",
+  "@messageEventActionBannerAttendeeCounterDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerCanceled": " تم إلغاء الاجتماع",
+  "@messageEventActionBannerOrganizerCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerMessage": "قريبًا لن تتمكن من إرسال بريد إلكتروني إلى Tmail. يرجى تنظيف مساحة التخزين الخاصة بك أو ترقية مساحة التخزين الخاصة بك للحصول على الميزات الكاملة في Tmail.",
+  "@quotaWarningBannerMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subMessageEventActionBannerCanceled": "\"لقد ألغينا الحدث بسبب سوء الأحوال الجوية.\"",
+  "@subMessageEventActionBannerCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messagesHaveBeenResent": "تم إعادة إرسال الرسائل",
+  "@messagesHaveBeenResent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markedSingleMessageToast": "تم وضع علامة على الرسالة كـ{action}",
+  "@markedSingleMessageToast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "messageHaveBeenDeletedSuccessfully": "تم حذف الرسائل بنجاح",
+  "@messageHaveBeenDeletedSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotSelectThisImage": "لا يمكن تحديد هذه الصورة.",
+  "@cannotSelectThisImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterSomeSuggestions": "أدخل بعض الاقتراحات",
+  "@enterSomeSuggestions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingQueue": "قائمة انتظار الإرسال",
+  "@sendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilters": "إنشاء المرشحات",
+  "@createFilters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSentSuccessfully": "تم إرسال الرسالة بنجاح.",
+  "@messageHasBeenSentSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardedMessage": "الرسالة المعاد توجيهها",
+  "@forwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formattingOptions": "خيارات التنسيق",
+  "@formattingOptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeTentative": " أجاب \"ربما\" على هذه الدعوة",
+  "@messageEventActionBannerAttendeeTentative": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invitationMessageCalendarInformation": " قام بدعوتك لحضور اجتماع:",
+  "@invitationMessageCalendarInformation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maybe": "ربما",
+  "@maybe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseChooseAnImageSizeCorrectly": "الرجاء اختيار حجم الصورة <= {maxSize} كيلو بايت",
+  "@pleaseChooseAnImageSizeCorrectly": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "quotaErrorBannerMessage": "قريبًا لن تتمكن من إرسال بريد إلكتروني إلى Tmail. يرجى تنظيف مساحة التخزين الخاصة بك أو ترقية مساحة التخزين الخاصة بك للحصول على الميزات الكاملة في Tmail.",
+  "@quotaErrorBannerMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceled": "ألغيت",
+  "@canceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delivering": "تسليم",
+  "@delivering": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeAccepted": " وقد قبل هذه الدعوة",
+  "@messageEventActionBannerAttendeeAccepted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "proceed": "يتابع",
+  "@proceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you": "أنت",
+  "@you": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "connectionError": "خطأ في الإتصال",
+  "@connectionError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "error": "خطأ",
+  "@error": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerInvited": " لقد دعاك إلى اجتماع",
+  "@messageEventActionBannerOrganizerInvited": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerTitle": "لقد نفدت مساحة التخزين لديك (90%).",
+  "@quotaWarningBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailFirst": "لحسن الحظ، لا يزال بإمكانك",
+  "@messageDialogWhenStoreSendingEmailFirst": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dropFileHereToAttachThem": "قم بإسقاط الملف هنا لإرفاقه",
+  "@dropFileHereToAttachThem": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty": "فارغ",
+  "@empty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subMessageEventActionBannerUpdated": "\"تم تحديث الوقت ليناسب الجميع بشكل أفضل\"",
+  "@subMessageEventActionBannerUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderCreatedTitle": "تم إنشاء المجلد الخاص بك للتو",
+  "@folderCreatedTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerStyle": "نمط",
+  "@headerStyle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "repliedAndForwardedMessage": "تم الرد وإعادة توجيه الرسالة",
+  "@repliedAndForwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerOrganizerUpdated": " قام بتحديث اجتماع",
+  "@messageEventActionBannerOrganizerUpdated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrash": "سلة مهملات فارغة",
+  "@emptyTrash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrashMessageDialog": "أنت على وشك حذف جميع العناصر الموجودة في سلة المهملات نهائيًا. هل تريد الاستمرار؟",
+  "@emptyTrashMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSavedToTheSendingQueue": "تم حفظ الرسالة في قائمة انتظار الإرسال.",
+  "@messageHasBeenSavedToTheSendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFolderSuccessfullyMessage": "لقد قمت بإنشاء المجلد {folderName} بنجاح",
+  "@createFolderSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "embedCode": "تضمين التعليمات البرمجية",
+  "@embedCode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueView": "سيتم إرسال الرسائل الموجودة في صندوق بريد قائمة انتظار الإرسال أو جدولتها عند الاتصال بالإنترنت.",
+  "@bannerMessageSendingQueueView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "connectedToTheInternet": "متصل بالإنترنت",
+  "@connectedToTheInternet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderCreatedMessage": "للبدء في استخدام صندوق البريد هذا، يجب عليك إضافة بعض القواعد لتنظيم كل بريدك بطريقتك الخاصة.",
+  "@folderCreatedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterASubject": "أدخل الموضوع",
+  "@enterASubject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailTail": " صندوق بريد.",
+  "@messageDialogWhenStoreSendingEmailTail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFolder": "مسح المجلد",
+  "@clearFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteOfflineEmail": "حذف البريد الإلكتروني غير المتصل",
+  "@deleteOfflineEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailSecond": " إرسال ، الرد، أو إعادة التوجيه ",
+  "@messageDialogWhenStoreSendingEmailSecond": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openMailboxMenu": "فتح قائمة صندوق البريد",
+  "@openMailboxMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounter": " اقترح تغييرات على الحدث",
+  "@messageEventActionBannerAttendeeCounter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogWhenStoreSendingEmailThird": "رسائل البريد الإلكتروني. سيتم تسليمها عند الاتصال بالإنترنت. لتحرير رسائل البريد الإلكتروني هذه قبل إرسالها، انتقل إلى ",
+  "@messageDialogWhenStoreSendingEmailThird": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
