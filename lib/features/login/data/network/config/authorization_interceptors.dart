@@ -128,7 +128,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
         final response = await _dio.request(
           requestOptions.path,
-          data: BodyBytesStream.fromBytes(uploadExtra[FileUploader.bytesExtraKey]),
+          data: uploadExtra[FileUploader.platformExtraKey] == 'web'
+            ? BodyBytesStream.fromBytes(uploadExtra[FileUploader.bytesExtraKey])
+            : File(uploadExtra[FileUploader.filePathExtraKey]).openRead(),
           queryParameters: requestOptions.queryParameters,
           options: newOptions,
         );
