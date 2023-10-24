@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
@@ -32,15 +34,20 @@ class RichTextMobileTabletController extends BaseRichTextController {
     htmlEditorApi?.formatHeader(styleSelected.styleValue);
   }
 
-  void insertImageAsBase64({required PlatformFile platformFile, int? maxWidth}) async {
-    if (platformFile.bytes != null) {
-      await htmlEditorApi?.insertImageData(
-        platformFile.bytes!,
-        'image/${platformFile.extension}',
-        maxWidth: maxWidth
-      );
-    } else {
-      logError("RichTextWebController::insertImageAsBase64: bytes is null");
+  void insertImageData({required PlatformFile platformFile, int? maxWidth}) async {
+    try {
+      if (platformFile.path?.isNotEmpty == true) {
+        final bytesData = await File(platformFile.path!).readAsBytes();
+        await htmlEditorApi?.insertImageData(
+          bytesData,
+          'image/${platformFile.extension}',
+          maxWidth: maxWidth
+        );
+      } else {
+        logError('RichTextMobileTabletController::insertImageData: path is null');
+      }
+    } catch (e) {
+      logError('RichTextMobileTabletController::insertImageData:Exception: $e');
     }
   }
 }
