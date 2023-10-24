@@ -274,17 +274,12 @@ class UploadController extends BaseController {
     }
   }
 
-  bool hasEnoughMaxAttachmentSize({List<FileInfo>? listFiles}) {
+  bool hasEnoughMaxAttachmentSize({num? fileInfoTotalSize}) {
     final currentTotalAttachmentsSize = attachmentsUploaded.totalSize();
     final totalInlineAttachmentsSize = inlineAttachmentsUploaded.totalSize();
     log('UploadController::_validateAttachmentsSize(): $currentTotalAttachmentsSize');
     log('UploadController::_validateAttachmentsSize(): totalInlineAttachmentsSize: $totalInlineAttachmentsSize');
-    num uploadedTotalSize = 0;
-    if (listFiles != null && listFiles.isNotEmpty) {
-      final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
-      uploadedTotalSize = uploadedListSize.reduce((sum, size) => sum + size);
-      log('UploadController::_validateAttachmentsSize(): uploadedTotalSize: $uploadedTotalSize');
-    }
+    num uploadedTotalSize = fileInfoTotalSize ?? 0;
 
     final totalSizeReadyToUpload = currentTotalAttachmentsSize +
         totalInlineAttachmentsSize +
@@ -297,6 +292,13 @@ class UploadController extends BaseController {
     } else {
       return false;
     }
+  }
+
+  num getTotalSizeFromListFileInfo(List<FileInfo> listFiles) {
+    final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
+    num totalSize = uploadedListSize.reduce((sum, size) => sum + size);
+    log('UploadController::_getTotalSizeFromListFileInfo():totalSize: $totalSize');
+    return totalSize;
   }
 
   bool get allUploadAttachmentsCompleted {
