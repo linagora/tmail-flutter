@@ -19,13 +19,13 @@ import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.d
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/bindings/sending_email_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/offline_mode/work_manager/worker.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
-import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
@@ -76,9 +76,11 @@ class SendingEmailWorker extends Worker {
       HiveCacheConfig().setUp()
     ]);
 
-    SendingQueueInteractorBindings().dependencies();
-    SendEmailInteractorBindings().dependencies();
-    SendingQueueBindings().dependencies();
+    await Future.sync(() {
+      SendingQueueInteractorBindings().dependencies();
+      SendEmailInteractorBindings().dependencies();
+      MailboxDashBoardBindings().dependencies();
+    });
 
     _getInteractorBindings();
 
