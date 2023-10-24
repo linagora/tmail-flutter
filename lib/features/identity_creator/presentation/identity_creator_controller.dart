@@ -478,12 +478,12 @@ class IdentityCreatorController extends BaseController {
 
     final filePickerResult = await FilePicker.platform.pickFiles(
       type: FileType.image,
-      withData: true
+      withData: PlatformInfo.isWeb
     );
 
     if (context.mounted) {
-      final platformFile = filePickerResult?.files.single;
-      if (platformFile != null) {
+      if (filePickerResult?.files.isNotEmpty == true) {
+        final platformFile = filePickerResult!.files.first;
         _insertInlineImage(context, platformFile, maxWidth: maxWidth);
       } else {
         _appToast.showToastErrorMessage(
@@ -515,7 +515,7 @@ class IdentityCreatorController extends BaseController {
       if (PlatformInfo.isWeb) {
         richTextWebController.insertImageAsBase64(platformFile: platformFile);
       } else if (PlatformInfo.isMobile) {
-        richTextMobileTabletController.insertImageAsBase64(platformFile: platformFile, maxWidth: maxWidth);
+        richTextMobileTabletController.insertImageData(platformFile: platformFile, maxWidth: maxWidth);
       } else {
         logError("IdentityCreatorController::_insertInlineImage: Platform not supported");
       }
