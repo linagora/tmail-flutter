@@ -3421,4 +3421,11 @@ class AppLocalizations {
       args: [folderName, reason]
     );
   }
+
+  String get sending {
+    return Intl.message(
+      'Sending',
+      name: 'sending',
+    );
+  }
 }
