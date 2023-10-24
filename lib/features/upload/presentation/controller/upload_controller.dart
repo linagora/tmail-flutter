@@ -265,7 +265,6 @@ class UploadController extends BaseController {
   }
 
   void _handleUploadAttachmentsSuccess(SuccessAttachmentUploadState success) {
-    log('UploadController::_handleUploadAttachmentsSuccess(): $success');
     if (currentContext != null && currentOverlayContext != null && _uploadingStateFiles.allSuccess) {
       _appToast.showToastSuccessMessage(
         currentOverlayContext!,

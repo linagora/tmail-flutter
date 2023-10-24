@@ -1750,17 +1750,17 @@ class ComposerController extends BaseController {
 
   Future<InlineImage?> _selectFromFile() async {
     final filePickerResult = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        withData: PlatformInfo.isMobile,
-        withReadStream: PlatformInfo.isWeb);
-    final platformFile = filePickerResult?.files.single;
-    if (platformFile != null) {
+      type: FileType.image,
+      withData: PlatformInfo.isWeb
+    );
+    if (filePickerResult?.files.isNotEmpty == true) {
+      PlatformFile platformFile = filePickerResult!.files.first;
       final fileSelected = FileInfo(
-          platformFile.name,
-          PlatformInfo.isWeb ? '' : platformFile.path ?? '',
-          platformFile.size,
-          bytes: platformFile.bytes,
-          readStream: platformFile.readStream);
+        platformFile.name,
+        PlatformInfo.isWeb ? '' : platformFile.path ?? '',
+        platformFile.size,
+        bytes: PlatformInfo.isWeb ? platformFile.bytes : null,
+      );
       return InlineImage(ImageSource.local, fileInfo: fileSelected);
     }
 
