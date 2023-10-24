@@ -117,17 +117,17 @@ class EmailViewAppBarWidget extends StatelessWidget {
                   iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
                   backgroundColor: Colors.transparent,
                   padding: EmailViewAppBarWidgetStyles.buttonPadding,
-                  iconColor: mailboxContain?.isTrash == false
-                    ? EmailViewAppBarWidgetStyles.emptyTrashButtonColor
-                    : EmailViewAppBarWidgetStyles.deletePermanentButtonColor,
-                  tooltipMessage: mailboxContain?.isTrash == false
-                    ? AppLocalizations.of(context).move_to_trash
-                    : AppLocalizations.of(context).delete_permanently,
+                  iconColor: canDeletePermanently
+                    ? EmailViewAppBarWidgetStyles.deletePermanentButtonColor
+                    : EmailViewAppBarWidgetStyles.emptyTrashButtonColor,
+                  tooltipMessage: canDeletePermanently
+                    ? AppLocalizations.of(context).delete_permanently
+                    : AppLocalizations.of(context).move_to_trash,
                   onTapActionCallback: () {
-                    if (mailboxContain?.isTrash == false) {
-                      onEmailActionClick?.call(presentationEmail, EmailActionType.moveToTrash);
-                    } else {
+                    if (canDeletePermanently) {
                       onEmailActionClick?.call(presentationEmail, EmailActionType.deletePermanently);
+                    } else {
+                      onEmailActionClick?.call(presentationEmail, EmailActionType.moveToTrash);
                     }
                   }
                 ),
@@ -164,5 +164,9 @@ class EmailViewAppBarWidget extends StatelessWidget {
         _responsiveUtils.isTablet(context) ||
         isSearchActivated;
     }
+  }
+
+  bool get canDeletePermanently {
+    return mailboxContain?.isTrash == true || mailboxContain?.isSpam == true;
   }
 }
