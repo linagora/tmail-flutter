@@ -477,7 +477,7 @@ class EmailTileBuilder with BaseEmailItemTile {
   }
 
   bool get canDeletePermanently {
-    return mailboxContain?.isTrash == true || mailboxContain?.isDrafts == true;
+    return mailboxContain?.isTrash == true || mailboxContain?.isDrafts == true || mailboxContain?.isSpam == true;
   }
 
   Widget _buildDateTimeForDesktopScreen() {

@@ -27,7 +27,8 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
         .whereType<PresentationMailbox>()
         .toList();
     final stateDelete = listMailboxContain.every((mailbox) => mailbox.isTrash) ||
-        listMailboxContain.every((mailbox) => mailbox.isDrafts);
+        listMailboxContain.every((mailbox) => mailbox.isDrafts) ||
+        listMailboxContain.every((mailbox) => mailbox.isSpam);
     return stateDelete;
   }
 
