@@ -61,9 +61,6 @@ class _ScrollToTopButtonWidgetState extends State<ScrollToTopButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.responsiveUtils.isWebDesktop(context)) {
-      return const SizedBox.shrink();
-    }
 
     return Align(
       alignment: AlignmentDirectional.bottomEnd,
