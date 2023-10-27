@@ -3405,4 +3405,20 @@ class AppLocalizations {
       name: 'downloadAll',
     );
   }
+
+  String toastMessageMarkAsReadFolderAllFailure(String folderName) {
+    return Intl.message(
+      'Folder "$folderName" could not be marked as read',
+      name: 'toastMessageMarkAsReadFolderAllFailure',
+      args: [folderName]
+    );
+  }
+
+  String toastMessageMarkAsReadFolderFailureWithReason(String folderName, String reason) {
+    return Intl.message(
+      'Folder "$folderName" could not be marked as read. Due "$reason"',
+      name: 'toastMessageMarkAsReadFolderFailureWithReason',
+      args: [folderName, reason]
+    );
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
@@ -8,6 +9,7 @@ import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.da
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_mobile_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
@@ -27,15 +29,18 @@ class NetworkIsolateBindings extends Bindings {
   void _bindingDio() {
     final dio = Get.put(Dio(Get.find<BaseOptions>()), tag: BindingTag.isolateTag);
     Get.put(DioClient(dio), tag: BindingTag.isolateTag);
+    Get.put(const FlutterAppAuth(), tag: BindingTag.isolateTag);
+    Get.put(AppAuthWebPlugin(), tag: BindingTag.isolateTag);
+    Get.put(AuthenticationClientBase(tag: BindingTag.isolateTag), tag: BindingTag.isolateTag);
     _bindingInterceptors(dio);
   }
 
   void _bindingInterceptors(Dio dio) {
     Get.put(AuthorizationInterceptors(
       dio,
-      Get.find<AuthenticationClientBase>(),
-      Get.find<TokenOidcCacheManager>(),
-      Get.find<AccountCacheManager>(),
+      Get.find<AuthenticationClientBase>(tag: BindingTag.isolateTag),
+      Get.find<TokenOidcCacheManager>(tag: BindingTag.isolateTag),
+      Get.find<AccountCacheManager>(tag: BindingTag.isolateTag),
     ), tag: BindingTag.isolateTag);
     dio.interceptors.add(Get.find<DynamicUrlInterceptors>());
     dio.interceptors.add(Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag));

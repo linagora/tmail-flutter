@@ -98,5 +98,5 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   }
 }
 
-AuthenticationClientBase getAuthenticationClientImplementation() =>
-    AuthenticationClientMobile(Get.find<FlutterAppAuth>());
+AuthenticationClientBase getAuthenticationClientImplementation({String? tag}) =>
+    AuthenticationClientMobile(Get.find<FlutterAppAuth>(tag: tag));
