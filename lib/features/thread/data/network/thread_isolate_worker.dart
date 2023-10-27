@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/services.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -13,10 +14,12 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/thread/data/model/empty_mailbox_folder_arguments.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
+import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class ThreadIsolateWorker {
@@ -35,8 +38,20 @@ class ThreadIsolateWorker {
     if (PlatformInfo.isWeb) {
       return _emptyMailboxFolderOnWeb(session, accountId, mailboxId, updateDestroyedEmailCache);
     } else {
+      final rootIsolateToken = RootIsolateToken.instance;
+      if (rootIsolateToken == null) {
+        throw CanNotGetRootIsolateToken();
+      }
+
       final result = await _isolateExecutor.execute(
-        arg1: EmptyMailboxFolderArguments(session, _threadAPI, _emailAPI, accountId, mailboxId),
+        arg1: EmptyMailboxFolderArguments(
+          session,
+          _threadAPI,
+          _emailAPI,
+          accountId,
+          mailboxId,
+          rootIsolateToken
+        ),
         fun1: _emptyMailboxFolderAction,
         notification: (value) {
           if (value is List<EmailId>) {
@@ -54,7 +69,14 @@ class ThreadIsolateWorker {
     }
   }
 
-  static Future<List<EmailId>> _emptyMailboxFolderAction(EmptyMailboxFolderArguments args, TypeSendPort sendPort) async {
+  static Future<List<EmailId>> _emptyMailboxFolderAction(
+    EmptyMailboxFolderArguments args,
+    TypeSendPort sendPort
+  ) async {
+    final rootIsolateToken = args.isolateToken;
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+    await HiveCacheConfig().setUp();
+
     List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
       var hasEmails = true;
