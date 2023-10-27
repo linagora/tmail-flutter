@@ -61,9 +61,21 @@ class MarkAsMailboxReadHasSomeEmailFailure extends UIActionState {
   ];
 }
 
-class MarkAsMailboxReadAllFailure extends FeatureFailure {}
+class MarkAsMailboxReadAllFailure extends FeatureFailure {
+  final String mailboxDisplayName;
+
+  MarkAsMailboxReadAllFailure({required this.mailboxDisplayName});
+
+  @override
+  List<Object?> get props => [mailboxDisplayName];
+}
 
 class MarkAsMailboxReadFailure extends FeatureFailure {
 
-  MarkAsMailboxReadFailure(dynamic exception) : super(exception: exception);
+  final String mailboxDisplayName;
+
+  MarkAsMailboxReadFailure({
+    required this.mailboxDisplayName,
+    dynamic exception
+  }) : super(exception: exception);
 }

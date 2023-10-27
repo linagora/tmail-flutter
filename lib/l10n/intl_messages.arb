@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-10-23T15:47:43.102170",
+  "@@last_modified": "2023-10-27T20:44:50.998215",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3297,5 +3297,27 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "toastMessageMarkAsReadFolderAllFailure": "Folder \"{folderName}\" could not be marked as read",
+  "@toastMessageMarkAsReadFolderAllFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "toastMessageMarkAsReadFolderFailureWithReason": "Folder \"{folderName}\" could not be marked as read. Due \"{reason}\"",
+  "@toastMessageMarkAsReadFolderFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName",
+      "reason"
+    ],
+    "placeholders": {
+      "folderName": {},
+      "reason": {}
+    }
   }
 }

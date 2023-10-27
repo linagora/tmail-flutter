@@ -364,8 +364,9 @@ class MailboxDashBoardController extends ReloadableController {
       _handleUpdateEmailAsDraftsFailure(failure);
     } else if (failure is RemoveEmailDraftsFailure) {
       clearState();
-    } else if (failure is MarkAsMailboxReadAllFailure ||
-        failure is MarkAsMailboxReadFailure) {
+    } else if (failure is MarkAsMailboxReadAllFailure) {
+      _markAsReadMailboxAllFailure(failure);
+    }  else if (failure is MarkAsMailboxReadFailure) {
       _markAsReadMailboxFailure(failure);
     } else if (failure is GetEmailByIdFailure) {
       _handleGetEmailDetailedFailed(failure);
@@ -1368,8 +1369,27 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _markAsReadMailboxFailure(Failure failure) {
+  void _markAsReadMailboxFailure(MarkAsMailboxReadFailure failure) {
     viewStateMarkAsReadMailbox.value = Right(UIState.idle);
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageMarkAsReadFolderFailureWithReason(
+          failure.mailboxDisplayName,
+          failure.exception.toString()
+        )
+      );
+    }
+  }
+
+  void _markAsReadMailboxAllFailure(MarkAsMailboxReadAllFailure failure) {
+    viewStateMarkAsReadMailbox.value = Right(UIState.idle);
+    if (currentOverlayContext != null && currentContext != null) {
+      _appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageMarkAsReadFolderAllFailure(failure.mailboxDisplayName)
+      );
+    }
   }
 
   void goToComposer(ComposerArguments arguments) async {
