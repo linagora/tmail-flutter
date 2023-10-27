@@ -1,3 +1,7 @@
+## [0.10.3] - 2023-10-27
+### Fixed
+- Build release on iOS
+
 ## [0.10.2] - 2023-10-27
 ### Added
 - Change font size in composer
@@ -317,6 +321,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.10.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.3
 [0.10.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.2
 [0.10.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.1
 [0.10.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.0
