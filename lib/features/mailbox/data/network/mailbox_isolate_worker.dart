@@ -5,6 +5,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/services.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -19,11 +20,13 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_mark_as_read_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
+import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
 import 'package:worker_manager/worker_manager.dart';
 
 class MailboxIsolateWorker {
@@ -49,13 +52,20 @@ class MailboxIsolateWorker {
         totalEmailUnread,
         onProgressController);
     } else {
+      final rootIsolateToken = RootIsolateToken.instance;
+      if (rootIsolateToken == null) {
+        throw CanNotGetRootIsolateToken();
+      }
+
       final result = await _isolateExecutor.execute(
           arg1: MailboxMarkAsReadArguments(
             session,
             _threadApi,
             _emailApi,
             accountId,
-            mailboxId),
+            mailboxId,
+            rootIsolateToken
+          ),
           fun1: _handleMarkAsMailboxReadAction,
           notification: (value) {
             if (value is List<Email>) {
@@ -74,6 +84,10 @@ class MailboxIsolateWorker {
       MailboxMarkAsReadArguments args,
       TypeSendPort sendPort
   ) async {
+    final rootIsolateToken = args.isolateToken;
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+    await HiveCacheConfig().setUp();
+
     List<Email> emailListCompleted = List.empty(growable: true);
     try {
       bool mailboxHasEmails = true;

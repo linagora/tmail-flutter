@@ -30,9 +30,9 @@ BuildContext? get currentContext => Get.context;
 
 BuildContext? get currentOverlayContext => Get.overlayContext;
 
-T? getBinding<T>() {
-  if (Get.isRegistered<T>()) {
-    return Get.find<T>();
+T? getBinding<T>({String? tag}) {
+  if (Get.isRegistered<T>(tag: tag)) {
+    return Get.find<T>(tag: tag);
   } else {
     return null;
   }

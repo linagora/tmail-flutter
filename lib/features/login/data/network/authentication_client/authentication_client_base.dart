@@ -30,5 +30,5 @@ abstract class AuthenticationClientBase {
 
   Future<bool> logoutOidc(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery);
 
-  factory AuthenticationClientBase() => getAuthenticationClientImplementation();
+  factory AuthenticationClientBase({String? tag}) => getAuthenticationClientImplementation(tag: tag);
 }

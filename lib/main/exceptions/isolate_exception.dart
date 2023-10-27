@@ -1,0 +1,1 @@
+class CanNotGetRootIsolateToken implements Exception {}

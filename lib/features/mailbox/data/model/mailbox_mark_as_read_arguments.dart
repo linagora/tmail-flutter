@@ -1,5 +1,6 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -13,13 +14,16 @@ class MailboxMarkAsReadArguments with EquatableMixin {
   final MailboxId mailboxId;
   final ThreadAPI threadAPI;
   final EmailAPI emailAPI;
+  final RootIsolateToken isolateToken;
 
   MailboxMarkAsReadArguments(
     this.session,
     this.threadAPI,
     this.emailAPI,
     this.accountId,
-    this.mailboxId);
+    this.mailboxId,
+    this.isolateToken,
+  );
 
   @override
   List<Object?> get props => [
@@ -27,6 +31,7 @@ class MailboxMarkAsReadArguments with EquatableMixin {
     accountId,
     threadAPI,
     emailAPI,
-    mailboxId
+    mailboxId,
+    isolateToken,
   ];
 }
