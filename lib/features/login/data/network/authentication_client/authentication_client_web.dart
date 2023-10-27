@@ -108,5 +108,5 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   }
 }
 
-AuthenticationClientBase getAuthenticationClientImplementation() =>
-    AuthenticationClientWeb(Get.find<AppAuthWebPlugin>());
+AuthenticationClientBase getAuthenticationClientImplementation({String? tag}) =>
+    AuthenticationClientWeb(Get.find<AppAuthWebPlugin>(tag: tag));

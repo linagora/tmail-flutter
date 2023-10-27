@@ -80,79 +80,90 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): $err');
+    try {
+      final requestOptions = err.requestOptions;
+      final extraInRequest = requestOptions.extra;
+      var retries = extraInRequest[RETRY_KEY] ?? 0;
 
-    final requestOptions = err.requestOptions;
-    final extraInRequest = requestOptions.extra;
-    var retries = extraInRequest[RETRY_KEY] ?? 0;
+      if (_validateToRefreshToken(err)) {
+        log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
+        final newToken = await _authenticationClient.refreshingTokensOIDC(
+          _configOIDC!.clientId,
+          _configOIDC!.redirectUrl,
+          _configOIDC!.discoveryUrl,
+          _configOIDC!.scopes,
+          _token!.refreshToken
+        );
 
-    if (_validateToRefreshToken(err)) {
-      log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
-      final newToken = await _authenticationClient.refreshingTokensOIDC(
-        _configOIDC!.clientId,
-        _configOIDC!.redirectUrl,
-        _configOIDC!.discoveryUrl,
-        _configOIDC!.scopes,
-        _token!.refreshToken
-      );
+        final currentAccount = await _accountCacheManager.getCurrentAccount();
 
-      final currentAccount = await _accountCacheManager.getCurrentAccount();
+        await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
 
-      await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
-
-      await Future.wait([
-        _tokenOidcCacheManager.persistOneTokenOidc(newToken),
-        _accountCacheManager.setCurrentAccount(
-          PersonalAccount(
-            newToken.tokenIdHash,
-            AuthenticationType.oidc,
-            isSelected: true,
-            accountId: currentAccount.accountId,
-            apiUrl: currentAccount.apiUrl,
-            userName: currentAccount.userName
+        await Future.wait([
+          _tokenOidcCacheManager.persistOneTokenOidc(newToken),
+          _accountCacheManager.setCurrentAccount(
+            PersonalAccount(
+              newToken.tokenIdHash,
+              AuthenticationType.oidc,
+              isSelected: true,
+              accountId: currentAccount.accountId,
+              apiUrl: currentAccount.apiUrl,
+              userName: currentAccount.userName
+            )
           )
-        )
-      ]);
-      _updateNewToken(newToken.toToken());
+        ]);
+        _updateNewToken(newToken.toToken());
 
-      if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
-        final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
+        if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
+          final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
-        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
-        requestOptions.headers[HttpHeaders.contentTypeHeader] = uploadExtra[FileUploader.typeExtraKey];
-        requestOptions.headers[HttpHeaders.contentLengthHeader] = uploadExtra[FileUploader.sizeExtraKey];
+          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+          requestOptions.headers[HttpHeaders.contentTypeHeader] = uploadExtra[FileUploader.typeExtraKey];
+          requestOptions.headers[HttpHeaders.contentLengthHeader] = uploadExtra[FileUploader.sizeExtraKey];
 
-        final newOptions = Options(
-          method: requestOptions.method,
-          headers: requestOptions.headers,
-        );
+          final newOptions = Options(
+            method: requestOptions.method,
+            headers: requestOptions.headers,
+          );
 
-        final response = await _dio.request(
-          requestOptions.path,
-          data: uploadExtra[FileUploader.platformExtraKey] == 'web'
-            ? BodyBytesStream.fromBytes(uploadExtra[FileUploader.bytesExtraKey])
-            : File(uploadExtra[FileUploader.filePathExtraKey]).openRead(),
-          queryParameters: requestOptions.queryParameters,
-          options: newOptions,
-        );
+          final response = await _dio.request(
+            requestOptions.path,
+            data: _getDataUploadRequest(uploadExtra),
+            queryParameters: requestOptions.queryParameters,
+            options: newOptions,
+          );
 
-        return handler.resolve(response);
-      } else {
-        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+          return handler.resolve(response);
+        } else {
+          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+
+          final response = await _dio.fetch(requestOptions);
+          return handler.resolve(response);
+        }
+      } else if (_validateToRetry(err, retries)) {
+        log('AuthorizationInterceptors::onError:>> _validateToRetry | retries: $retries');
+        retries++;
+
+        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
+        requestOptions.extra = {RETRY_KEY: retries};
 
         final response = await _dio.fetch(requestOptions);
         return handler.resolve(response);
+      } else {
+        super.onError(err, handler);
       }
-    } else if (_validateToRetry(err, retries)) {
-      log('AuthorizationInterceptors::onError:>> _validateToRetry | retries: $retries');
-      retries++;
+    } catch (e) {
+      logError('AuthorizationInterceptors::onError:Exception: $e');
+      super.onError(err.copyWith(error: e), handler);
+    }
+  }
 
-      requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
-      requestOptions.extra = {RETRY_KEY: retries};
-
-      final response = await _dio.fetch(requestOptions);
-      return handler.resolve(response);
+  Stream<List<int>>? _getDataUploadRequest(dynamic mapUploadExtra) {
+    final currentPlatform = mapUploadExtra[FileUploader.platformExtraKey];
+    if (currentPlatform == 'web') {
+      return BodyBytesStream.fromBytes(mapUploadExtra[FileUploader.bytesExtraKey]);
     } else {
-      super.onError(err, handler);
+      return File(mapUploadExtra[FileUploader.filePathExtraKey]).openRead();
     }
   }
 

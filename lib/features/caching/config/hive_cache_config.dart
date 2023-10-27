@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -30,6 +29,8 @@ import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscrip
 import 'package:tmail_ui_user/features/session/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
+import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class HiveCacheConfig {
 
@@ -59,7 +60,11 @@ class HiveCacheConfig {
   }
 
   static Future<void> initializeEncryptionKey() async {
-    final encryptionKeyCacheManager = Get.find<EncryptionKeyCacheManager>();
+    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    if (encryptionKeyCacheManager == null) {
+      log('HiveCacheConfig::_initializeEncryptionKey(): encryptionKeyCacheManager not found');
+      return;
+    }
     final encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
     if (encryptionKeyCache == null) {
       final secureKey = Hive.generateSecureKey();
@@ -70,7 +75,11 @@ class HiveCacheConfig {
   }
 
   static Future<Uint8List?> getEncryptionKey() async {
-    final encryptionKeyCacheManager = Get.find<EncryptionKeyCacheManager>();
+    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    if (encryptionKeyCacheManager == null) {
+      log('HiveCacheConfig::getEncryptionKey(): encryptionKeyCacheManager not found');
+      return null;
+    }
     var encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
 
     if (encryptionKeyCache != null) {
