@@ -10,15 +10,18 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:model/upload/upload_response.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/upload/data/model/upload_file_arguments.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
+import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
 import 'package:worker_manager/worker_manager.dart' as worker;
 
 class FileUploader {
@@ -50,13 +53,19 @@ class FileUploader {
           uploadUri,
           cancelToken: cancelToken);
     } else {
+      final rootIsolateToken = RootIsolateToken.instance;
+      if (rootIsolateToken == null) {
+        throw CanNotGetRootIsolateToken();
+      }
+
       final mobileFileUpload = fileInfo.toMobileFileUpload();
       return await _isolateExecutor.execute(
         arg1: UploadFileArguments(
           _dioClient,
           uploadId,
           mobileFileUpload,
-          uploadUri
+          uploadUri,
+          rootIsolateToken,
         ),
         fun1: _handleUploadAttachmentAction,
         notification: (value) {
@@ -75,6 +84,10 @@ class FileUploader {
       UploadFileArguments argsUpload,
       worker.TypeSendPort sendPort
   ) async {
+    final rootIsolateToken = argsUpload.isolateToken;
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+    await HiveCacheConfig().setUp();
+
     final headerParam = argsUpload.dioClient.getHeaders();
     headerParam[HttpHeaders.contentTypeHeader] = argsUpload.mobileFileUpload.mimeType;
     headerParam[HttpHeaders.contentLengthHeader] = argsUpload.mobileFileUpload.fileSize;
@@ -87,7 +100,6 @@ class FileUploader {
         sizeExtraKey: argsUpload.mobileFileUpload.fileSize,
       }
     };
-
 
     final resultJson = await argsUpload.dioClient.post(
       Uri.decodeFull(argsUpload.uploadUri.toString()),
