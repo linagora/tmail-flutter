@@ -3111,5 +3111,95 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "showMoreAttachment": "Thêm (+{count})",
+  "@showMoreAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "messageEmptyFolderDialog": "Tin nhắn trong thư mục {folder} sẽ bị xoá bỏ vĩnh viễn, bạn không thể khôi phục chúng",
+  "@messageEmptyFolderDialog": {
+    "type": "text",
+    "placeholders_order": [
+      "folder"
+    ],
+    "placeholders": {
+      "folder": {}
+    }
+  },
+  "newSubfolder": "Thêm thư mục con",
+  "@newSubfolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAsDraft": "Lưu nháp",
+  "@saveAsDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addCondition": "Thêm điều kiện",
+  "@addCondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markedSingleMessageToast": "Tin nhắn được đánh dấu là {action}",
+  "@markedSingleMessageToast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "formattingOptions": "Định dạng",
+  "@formattingOptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceled": "Huỷ",
+  "@canceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dropFileHereToAttachThem": "Thả tệp đính kèm",
+  "@dropFileHereToAttachThem": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty": "Làm rỗng",
+  "@empty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "embedCode": "Mã",
+  "@embedCode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterASubject": "Điền tiêu đề",
+  "@enterASubject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFolder": "Xoá thư mục",
+  "@clearFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
