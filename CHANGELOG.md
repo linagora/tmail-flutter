@@ -1,3 +1,15 @@
+## [0.10.2] - 2023-10-27
+### Added
+- Change font size in composer
+- New attachment view
+- Scroll to top on web
+
+### Fixed
+- Message content is cutted
+- Signature button is included in email content
+- Download error when token refreshed
+- Upload failed when token expired
+
 ## [0.10.1] - 2023-10-11
 ### Added
 - Scroll up button
@@ -305,6 +317,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.10.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.2
 [0.10.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.1
 [0.10.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.0
 [0.9.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.9.3
