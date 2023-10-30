@@ -64,7 +64,7 @@ class TMailApp extends StatelessWidget {
         }
         return supportedLocales.first;
       },
-      locale: LocalizationService.locale,
+      locale: LocalizationService.getLocaleFromLanguage(),
       fallbackLocale: LocalizationService.fallbackLocale,
       translations: LocalizationService(),
       onGenerateTitle: (context) {
