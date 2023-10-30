@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -12,10 +11,8 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
-import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/reference_id.dart';
@@ -207,7 +204,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
 
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final listEntriesErrors = _handleSetEmailResponse([
+    final listEntriesErrors = handleSetResponse([
       setEmailResponse,
       setEmailSubmissionResponse,
       markAsAnsweredOrForwardedSetResponse
@@ -219,27 +216,6 @@ class EmailAPI with HandleSetErrorMixin {
     } else {
       throw SetEmailMethodException(mapErrors);
     }
-  }
-
-  List<MapEntry<Id, SetError>> _handleSetEmailResponse(List<SetResponse?> listSetResponse) {
-    final listSetResponseNotNull = listSetResponse.whereNotNull().toList();
-    if (listSetResponseNotNull.isEmpty) {
-      return [];
-    }
-
-    final List<MapEntry<Id, SetError>> remainedErrors = [];
-    for (var response in listSetResponseNotNull) {
-      handleSetErrors(
-        notDestroyedError: response.notDestroyed,
-        notUpdatedError: response.notUpdated,
-        notCreatedError: response.notCreated,
-        unCatchErrorHandler: (setErrorEntry) {
-          remainedErrors.add(setErrorEntry);
-          return false;
-        }
-      );
-    }
-    return remainedErrors;
   }
 
   Future<List<Email>> markAsRead(
@@ -507,7 +483,7 @@ class EmailAPI with HandleSetErrorMixin {
     );
 
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final listEntriesErrors = _handleSetEmailResponse([setEmailResponse]);
+    final listEntriesErrors = handleSetResponse([setEmailResponse]);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
     if (emailCreated != null && mapErrors.isEmpty) {
@@ -574,7 +550,7 @@ class EmailAPI with HandleSetErrorMixin {
 
     final emailUpdated = setEmailResponse?.created?[idCreateMethod];
     final isEmailDeleted = setEmailResponse?.destroyed?.contains(oldEmailId.id);
-    final listEntriesErrors = _handleSetEmailResponse([setEmailResponse]);
+    final listEntriesErrors = handleSetResponse([setEmailResponse]);
     final mapErrors = Map.fromEntries(listEntriesErrors);
 
     if (emailUpdated != null && isEmailDeleted == true && mapErrors.isEmpty) {

@@ -40,12 +40,12 @@ extension MailboxExtension on Mailbox {
     );
   }
 
-  Mailbox toMailbox(MailboxName mailboxName, {MailboxId? parentId}) {
+  Mailbox toMailbox(MailboxName mailboxName, {MailboxId? parentId, Role? mailboxRole}) {
     return Mailbox(
         id: id,
         name: mailboxName,
         parentId: parentId,
-        role: role,
+        role: mailboxRole ?? role,
         sortOrder: sortOrder,
         totalEmails: totalEmails,
         unreadEmails: unreadEmails,

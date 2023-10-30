@@ -27,7 +27,9 @@ import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -36,12 +38,14 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_reque
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:uuid/uuid.dart';
 
 class MailboxAPI with HandleSetErrorMixin {
 
   final HttpClient httpClient;
+  final Uuid _uuid;
 
-  MailboxAPI(this.httpClient);
+  MailboxAPI(this.httpClient, this._uuid);
 
   Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
@@ -370,5 +374,128 @@ class MailboxAPI with HandleSetErrorMixin {
 
     log('MailboxAPI::subscribeMultipleMailbox():listMailboxIdSubscribe: $listMailboxIdSubscribe');
     return listMailboxIdSubscribe ?? [];
+  }
+
+  Future<List<Mailbox>> createDefaultMailbox(
+    Session session,
+    AccountId accountId,
+    List<Role> listRole
+  ) async {
+    final mapId = {
+      for (var role in listRole)
+        Id(_uuid.v1()) : role
+    };
+
+    final mapCreate = {
+      for (var id in mapId.keys)
+        id : Mailbox(name: MailboxName(mapId[id]!.mailboxName), isSubscribed: IsSubscribed(true))
+    };
+
+    final setMailboxMethodForCreate = SetMailboxMethod(accountId)
+      ..addCreates(mapCreate);
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final createInvocation = requestBuilder.invocation(setMailboxMethodForCreate);
+
+    final capabilities = setMailboxMethodForCreate.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final createResponse = response.parse<SetMailboxResponse>(
+      createInvocation.methodCallId,
+      SetMailboxResponse.deserialize
+    );
+
+    final listEntriesErrors = handleSetResponse([createResponse]);
+    final mapErrors = Map.fromEntries(listEntriesErrors);
+
+    if (mapErrors.isNotEmpty) {
+      throw SetMailboxMethodException(mapErrors);
+    } else {
+      final mapMailboxCreated = createResponse?.created ?? <Id, Mailbox>{};
+      log('MailboxAPI::createDefaultMailbox:mapMailboxCreated: $mapMailboxCreated');
+      final listMailboxCreated = _convertMapToListMailbox(
+        mapRoles: mapId,
+        mapMailboxName: mapCreate,
+        mapMailboxCreated: mapMailboxCreated
+      );
+      log('MailboxAPI::createDefaultMailbox:listMailboxCreated: ${listMailboxCreated.length}');
+      if (listMailboxCreated.isEmpty) {
+        throw NotFoundMailboxCreatedException();
+      } else {
+        return listMailboxCreated;
+      }
+    }
+  }
+
+  List<Mailbox> _convertMapToListMailbox({
+    required Map<Id, Role> mapRoles,
+    required Map<Id, Mailbox> mapMailboxName,
+    required Map<Id, Mailbox> mapMailboxCreated
+  }) {
+    return mapRoles.keys
+      .where((key) => mapMailboxCreated.containsKey(key))
+      .map((key) {
+        final mailboxName = mapMailboxName[key]?.name;
+        final mailboxRole = mapRoles[key];
+        if (mailboxName != null && mailboxRole != null) {
+          return mapMailboxCreated[key]?.toMailbox(
+            mailboxName,
+            mailboxRole: mailboxRole
+          );
+        } else {
+          return null;
+        }
+      })
+      .whereNotNull()
+      .toList();
+  }
+
+  Future<List<MailboxId>> setRoleDefaultMailbox(
+    Session session,
+    AccountId accountId,
+    List<Mailbox> listMailbox
+  ) async {
+    final mapUpdated = {
+      for (var mailbox in listMailbox)
+        mailbox.id!.id: PatchObject({'role': mailbox.role!.value})
+    };
+
+    final setMailboxMethodForUpdate = SetMailboxMethod(accountId)
+      ..addUpdates(mapUpdated);
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final updateInvocation = requestBuilder.invocation(setMailboxMethodForUpdate);
+
+    final capabilities = setMailboxMethodForUpdate.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final updateResponse = response.parse<SetMailboxResponse>(
+      updateInvocation.methodCallId,
+      SetMailboxResponse.deserialize
+    );
+
+    final listEntriesErrors = handleSetResponse([updateResponse]);
+    final mapErrors = Map.fromEntries(listEntriesErrors);
+
+    if (mapErrors.isNotEmpty) {
+      throw SetMailboxMethodException(mapErrors);
+    } else {
+      final mapMailboxUpdated = updateResponse?.updated ?? <Id, Mailbox>{};
+      final listMailboxIdNotUpdated = listMailbox
+        .map((mailbox) => mailbox.id)
+        .whereNotNull()
+        .where((mailboxId) => !mapMailboxUpdated.containsKey(mailboxId.id))
+        .toList();
+      log('MailboxAPI::setRoleDefaultMailbox:listMailboxIdNotUpdated: ${listMailboxIdNotUpdated.length}');
+      return listMailboxIdNotUpdated;
+    }
   }
 }
