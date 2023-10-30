@@ -1,7 +1,7 @@
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/services.dart';
+import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/mobile_file_upload.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 
