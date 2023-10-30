@@ -47,4 +47,8 @@ abstract class MailboxDataSource {
   Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request);
 
   Future<List<MailboxId>> subscribeMultipleMailbox(Session session, AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest);
+
+  Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole);
+
+  Future<List<MailboxId>> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox);
 }

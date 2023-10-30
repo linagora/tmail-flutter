@@ -83,7 +83,7 @@ class NetworkBindings extends Bindings {
     Get.put(HttpClient(Get.find<Dio>()));
     Get.put(DownloadClient(Get.find<DioClient>(), Get.find<CompressFileUtils>()));
     Get.put(DownloadManager(Get.find<DownloadClient>()));
-    Get.put(MailboxAPI(Get.find<HttpClient>()));
+    Get.put(MailboxAPI(Get.find<HttpClient>(), Get.find<Uuid>()));
     Get.put(SessionAPI(Get.find<HttpClient>()));
     Get.put(ThreadAPI(Get.find<HttpClient>()));
     Get.put(EmailAPI(
