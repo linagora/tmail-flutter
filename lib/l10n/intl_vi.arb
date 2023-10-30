@@ -2750,7 +2750,7 @@
       "recipients": {}
     }
   },
-  "messageDialogDeleteSendingEmail": "Xóa tin nhắn ngoại tuyến sẽ xóa nội dung của nó vĩnh viễn. Bạn sẽ không thể hoàn tác hành động này hoặc khôi phục tin nhắn từ hộp thư Thùng rác.",
+  "messageDialogDeleteSendingEmail": "Xóa tin nhắn ngoại tuyến sẽ xóa nội dung của nó vĩnh viễn. Bạn sẽ không thể hoàn tác hành động này hoặc khôi phục tin nhắn từ Thùng rác.",
   "@messageDialogDeleteSendingEmail": {
     "type": "text",
     "placeholders_order": [],
@@ -2840,7 +2840,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotSelectThisImage": "Không thể chọn hình ảnh này",
+  "cannotSelectThisImage": "Không thể chọn hình ảnh này.",
   "@cannotSelectThisImage": {
     "type": "text",
     "placeholders_order": [],
@@ -3036,7 +3036,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "Tin nhắn đã được lưu vào hàng đợi để gửi",
+  "messageHasBeenSavedToTheSendingQueue": "Tin nhắn đã được lưu vào hàng đợi để gửi.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
@@ -3058,7 +3058,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueView": "Tin nhắn trong thư mục Hàng đợi để gửi sẽ được gửi hoặc lên lịch khi có kết nối mạng",
+  "bannerMessageSendingQueueView": "Tin nhắn trong thư mục Hàng đợi để gửi sẽ được gửi hoặc lên lịch khi có kết nối mạng.",
   "@bannerMessageSendingQueueView": {
     "type": "text",
     "placeholders_order": [],
@@ -3070,7 +3070,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderCreatedMessage": "Để bắt đầu sử dụng hộp thư này, bạn nên thêm một số quy tắc để sắp xếp tất cả thư theo cách riêng của mình.",
+  "folderCreatedMessage": "Để bắt đầu sử dụng thư mục này, bạn nên thêm một số quy tắc để sắp xếp tất cả thư theo cách riêng của mình.",
   "@folderCreatedMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -3082,7 +3082,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailTail": " Hôp thư",
+  "messageDialogWhenStoreSendingEmailTail": " thư mục.",
   "@messageDialogWhenStoreSendingEmailTail": {
     "type": "text",
     "placeholders_order": [],
@@ -3198,6 +3198,288 @@
   },
   "clearFolder": "Xoá thư mục",
   "@clearFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toFolder": "Tới thư mục:",
+  "@toFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderNameCannotContainSpecialCharacters": "Tên thư mục không thể chứa kí tự đặc biệt",
+  "@folderNameCannotContainSpecialCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewFolderFailure": "Tạo thư mục mới thất bại",
+  "@createNewFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMsgHideFolderSuccess": "Thư mục này đã được ẩn khỏi thư mục chính của bạn",
+  "@toastMsgHideFolderSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderVisibility": "Tuỳ chọn hiển thị thư mục",
+  "@folderVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "searchForFolders": "Tìm kiếm thư mục",
+  "@searchForFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueViewOnIOS": "Tin nhắn trong Hàng đợi có thể được gửi khi trực tuyến.",
+  "@bannerMessageSendingQueueViewOnIOS": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectFolder": "Chọn thư mục",
+  "@selectFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintInputCreateNewFolder": "Nhập tên thư mục",
+  "@hintInputCreateNewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogOfflineModeOnIOS": "Tin nhắn sẽ nằm trong hàng đợi. Bạn có thể thử lại khi trực tuyến.",
+  "@messageDialogOfflineModeOnIOS": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameOfFolderIsRequired": "Tên thư mục là bắt buộc",
+  "@nameOfFolderIsRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideFolder": "Ẩn thư mục",
+  "@hideFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Bạn chưa chọn thư mục để lưu trữ",
+  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "movedToFolder": "Đã chuyển đến {destinationMailboxPath}",
+  "@movedToFolder": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationMailboxPath"
+    ],
+    "placeholders": {
+      "destinationMailboxPath": {}
+    }
+  },
+  "renameFolder": "Đổi tên thư mục",
+  "@renameFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folder": "Thư mục",
+  "@folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentList": "Danh sách đính kèm",
+  "@attachmentList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolder": "Di chuyển thư mục",
+  "@moveFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFoldersSuccessfully": "Xoá thư mục thành công",
+  "@deleteFoldersSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moreAttachments": "+ {count} thêm",
+  "@moreAttachments": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "enterSomeSuggestions": "Nhập một số gợi ý",
+  "@enterSomeSuggestions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewFolder": "Tạo thư mục mới",
+  "@createNewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFolder": "Xoá thư mục",
+  "@deleteFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderVisibilitySubtitle": "Hiện/ẩn thư mục, bao gồm các thư mục cá nhân và hộp thư nhóm.",
+  "@folderVisibilitySubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteMultipleFolder": "{numberOfMailbox} thư mục và tất cả các thư mục con, bao gồm tin nhắn bên trong sẽ bị xoá và không thể phục hồi. Bạn có muốn tiếp tục xoá?",
+  "@messageConfirmationDialogDeleteMultipleFolder": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfMailbox"
+    ],
+    "placeholders": {
+      "numberOfMailbox": {}
+    }
+  },
+  "files": "các tập tin",
+  "@files": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFolders": "Xoá thư mục",
+  "@deleteFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clean": "Dọn dẹp",
+  "@clean": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_folder_is_created": "{nameMailbox} đã được tạo",
+  "@new_folder_is_created": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "newFolder": "Thư mục mới",
+  "@newFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSearchFolders": "Thư mục tìm kiếm",
+  "@hintSearchFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_folder": "Thư mục\"{nameMailbox}\" cùng với tất cả thư mục con và tin nhắn bên trong sẽ bị xoá và không thể phục hồi. Bạn có muốn tiếp tục xoá?",
+  "@message_confirmation_dialog_delete_folder": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "allFolders": "Tất cả thư mục",
+  "@allFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFoldersFailure": "Xoá thư mục thất bại",
+  "@deleteFoldersFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageShowFolderSuccess": "Thư mục này đã được hiển thị trong thư mục chính của bạn",
+  "@toastMessageShowFolderSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEmailInYourCurrentFolder": "Xin lỗi, không có thư nào ở thư mục hiện tại",
+  "@noEmailInYourCurrentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textSize": "Cỡ chữ",
+  "@textSize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showFolder": "Hiển thị thư mục",
+  "@showFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadSuccess": "Bạn đã đánh dấu tất cả tin nhắn trong thư mục \"{mailboxName}\" là đã đọc",
+  "@toastMessageMarkAsMailboxReadSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName"
+    ],
+    "placeholders": {
+      "mailboxName": {}
+    }
+  },
+  "openFolderMenu": "Mở menu Thư mục",
+  "@openFolderMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Bạn đã đánh dấu {count} tin nhắn trong thư mục \"{mailboxName}\" là đã đọc",
+  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName",
+      "count"
+    ],
+    "placeholders": {
+      "mailboxName": {},
+      "count": {}
+    }
+  },
+  "downloadAll": "Tải xuống tất cả",
+  "@downloadAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
