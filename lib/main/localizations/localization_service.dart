@@ -5,6 +5,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LocalizationService extends Translations {
 
@@ -29,28 +30,32 @@ class LocalizationService extends Translations {
     Locale(LanguageCodeConstants.italian, 'IT')
   ];
 
-  static final locale = _getLocaleFromLanguage();
-
   static void changeLocale(String langCode) {
-    log('LocalizationService::changeLocale(): langCode: $langCode');
-    final locale = _getLocaleFromLanguage(langCode: langCode);
-    Get.updateLocale(locale);
+    log('LocalizationService::changeLocale():langCode: $langCode');
+    final newLocale = getLocaleFromLanguage(langCode: langCode);
+    log('LocalizationService::changeLocale():newLocale: $newLocale');
+    Get.updateLocale(newLocale);
   }
 
-  static Locale _getLocaleFromLanguage({String? langCode}) {
-    final languageCacheManager = Get.find<LanguageCacheManager>();
-    final localeStored = languageCacheManager.getStoredLanguage();
-
-    log('LocalizationService::_getLocaleFromLanguage(): localeStored: ${localeStored.toString()}');
-
+  static Locale getLocaleFromLanguage({String? langCode}) {
+    final languageCacheManager = getBinding<LanguageCacheManager>();
+    log('LocalizationService::_getLocaleFromLanguage:languageCacheManager: $languageCacheManager');
+    final localeStored = languageCacheManager?.getStoredLanguage();
+    log('LocalizationService::_getLocaleFromLanguage():localeStored: $localeStored');
     if (localeStored != null) {
       return localeStored;
     } else {
       final languageCodeCurrent = langCode ?? Get.deviceLocale?.languageCode;
-      final localeSelected = supportedLocales
-          .firstWhereOrNull((locale) => locale.languageCode == languageCodeCurrent);
-      return localeSelected ?? Get.locale ?? defaultLocale;
+      log('LocalizationService::_getLocaleFromLanguage():languageCodeCurrent: $languageCodeCurrent');
+      final localeSelected = supportedLocales.firstWhereOrNull((locale) => locale.languageCode == languageCodeCurrent);
+      return localeSelected ?? Get.deviceLocale ?? defaultLocale;
     }
+  }
+
+  static String supportedLocalesToLanguageTags() {
+    final listLanguageTags = supportedLocales.map((locale) => locale.toLanguageTag()).join(', ');
+    log('LocalizationService::supportedLocalesToLanguageTags:listLanguageTags: $listLanguageTags');
+    return listLanguageTags;
   }
 
   @override
