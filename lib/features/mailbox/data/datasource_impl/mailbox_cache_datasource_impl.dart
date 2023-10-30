@@ -94,4 +94,14 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   Future<List<MailboxId>> subscribeMultipleMailbox(Session session, AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<MailboxId>> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
+    throw UnimplementedError();
+  }
 }

@@ -1,7 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
 import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
 
 mixin HandleSetErrorMixin {
@@ -52,5 +54,27 @@ mixin HandleSetErrorMixin {
       logError('HandleSetErrorMixin::_handleRemainedError(): $remainedError');
       unCatchErrorHandler?.call(remainedError);
     }
+  }
+
+  List<MapEntry<Id, SetError>> handleSetResponse(List<SetResponse?> listSetResponse) {
+    final listSetResponseNotNull = listSetResponse.whereNotNull().toList();
+    if (listSetResponseNotNull.isEmpty) {
+      return [];
+    }
+
+    final List<MapEntry<Id, SetError>> remainedErrors = [];
+    for (var response in listSetResponseNotNull) {
+      handleSetErrors(
+        notDestroyedError: response.notDestroyed,
+        notUpdatedError: response.notUpdated,
+        notCreatedError: response.notCreated,
+        unCatchErrorHandler: (setErrorEntry) {
+          remainedErrors.add(setErrorEntry);
+          return false;
+        }
+      );
+    }
+    logError('HandleSetErrorMixin::handleSetResponse():remainedErrors: $remainedErrors');
+    return remainedErrors;
   }
 }
