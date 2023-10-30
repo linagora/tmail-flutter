@@ -206,4 +206,14 @@ class MailboxRepositoryImpl extends MailboxRepository {
   Future<List<MailboxId>> subscribeMultipleMailbox(Session session, AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest) {
     return mapDataSource[DataSourceType.network]!.subscribeMultipleMailbox(session, accountId, subscribeRequest);
   }
+
+  @override
+  Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole) {
+    return mapDataSource[DataSourceType.network]!.createDefaultMailbox(session, accountId, listRole);
+  }
+
+  @override
+  Future<List<MailboxId>> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
+    return mapDataSource[DataSourceType.network]!.setRoleDefaultMailbox(session, accountId, listMailbox);
+  }
 }

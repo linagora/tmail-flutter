@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_reque
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/create_default_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
@@ -43,6 +45,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_multiple_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_default_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
@@ -59,6 +62,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -95,6 +99,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final MoveMailboxInteractor _moveMailboxInteractor;
   final SubscribeMailboxInteractor _subscribeMailboxInteractor;
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
+  final CreateDefaultMailboxInteractor _createDefaultMailboxInteractor;
 
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final _activeScrollTop = RxBool(false);
@@ -116,6 +121,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     this._moveMailboxInteractor,
     this._subscribeMailboxInteractor,
     this._subscribeMultipleMailboxInteractor,
+    this._createDefaultMailboxInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
@@ -173,6 +179,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _handleUnsubscribeMultipleMailboxAllSuccess(success);
     } else if (success is SubscribeMultipleMailboxHasSomeSuccess) {
       _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
+    } else if (success is CreateDefaultMailboxAllSuccess) {
+      _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    } else if (success is CreateDefaultMailboxHasSomeFailure) {
+      _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
     }
   }
 
@@ -185,6 +195,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _deleteMailboxFailure(failure);
     } else if (failure is RefreshChangesAllMailboxFailure) {
       _clearNewFolderId();
+    } else if (failure is CreateDefaultMailboxFailure) {
+      _refreshMailboxChanges();
     }
   }
 
@@ -319,7 +331,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _initialMailboxVariableStorage({bool isRefreshChange = false}) {
-    _setMapMailbox();
+    _setMapMailbox(isRefreshChange: isRefreshChange);
     _setOutboxMailbox();
 
     if (isRefreshChange) {
@@ -329,7 +341,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  void _setMapMailbox() {
+  void _setMapMailbox({bool isRefreshChange = false}) {
     final mapDefaultMailboxIdByRole = {
       for (var mailboxNode in defaultMailboxTree.value.root.childrenItems ?? List<MailboxNode>.empty())
         mailboxNode.item.role!: mailboxNode.item.id
@@ -342,6 +354,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
     mailboxDashBoardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
     mailboxDashBoardController.setMapMailboxById(mapMailboxById);
+
+    if (!isRefreshChange) {
+      _handleCreateDefaultFolderIfMissing(mapDefaultMailboxIdByRole);
+    }
   }
 
   void _setOutboxMailbox() {
@@ -396,6 +412,23 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
 
     return null;
+  }
+
+  void _handleCreateDefaultFolderIfMissing(Map<Role, MailboxId> mapDefaultMailboxRole) {
+    final listRoleMissing = MailboxConstants.defaultMailboxRoles
+      .whereNot(mapDefaultMailboxRole.containsKey)
+      .toSet()
+      .toList();
+    log('MailboxController::_handleCreateDefaultFolderIfMissing():listRoleMissing: $listRoleMissing');
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (listRoleMissing.isNotEmpty && accountId != null && session != null) {
+      consumeState(_createDefaultMailboxInteractor.execute(
+        session,
+        accountId,
+        listRoleMissing
+      ));
+    }
   }
 
   void _handleDataFromNavigationRouter() {
