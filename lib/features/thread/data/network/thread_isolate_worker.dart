@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/services.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -14,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
+import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/thread/data/model/empty_mailbox_folder_arguments.dart';
