@@ -41,6 +41,8 @@ extension ListCapabilityIdentifierExtension on List<CapabilityIdentifier> {
 
 extension CapabilityIdentifierExtension on CapabilityIdentifier {
 
+  static const int defaultMaxCallsInRequest = 1;
+
   bool isSupported(Session session, AccountId accountId) {
     try {
       requireCapability(session, accountId, [this]);
