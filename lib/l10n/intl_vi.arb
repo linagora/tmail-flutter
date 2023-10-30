@@ -2840,7 +2840,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotSelectThisImage": "Không thể chọn hình ảnh này",
+  "cannotSelectThisImage": "Không thể chọn hình ảnh này.",
   "@cannotSelectThisImage": {
     "type": "text",
     "placeholders_order": [],
