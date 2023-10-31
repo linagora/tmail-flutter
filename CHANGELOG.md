@@ -1,3 +1,12 @@
+## [0.10.4] - 2023-10-31
+### Added
+- Communicating L18n to remote servers
+
+### Fixed
+- Mark as read multiple message have the trouble on mobile
+- Empty trash have the trouble on mobile
+- Upload image/attachment have the trouble on mobile
+
 ## [0.10.3] - 2023-10-27
 ### Fixed
 - Build release on iOS
@@ -321,6 +330,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.10.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.4
 [0.10.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.3
 [0.10.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.2
 [0.10.1]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.1
