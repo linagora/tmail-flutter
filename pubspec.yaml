@@ -84,7 +84,7 @@ dependencies:
   super_tag_editor:
     git:
       url: https://github.com/dab246/super_tag_editor.git
-      ref: bugfix/fix-suggestion-displayed-on-top-when-having-many-tags
+      ref: master
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.5
