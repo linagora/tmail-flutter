@@ -6540,7 +6540,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t3).toString;
       t8 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(_null, 8, "assets/images/ic_save_to_draft.svg", _null, 20, _null, _null, 1 / 0, _null, _this.saveToDraftAction, D.EdgeInsetsDirectional_5_5_5_5, A.Intl__message("Save as draft", _null, "saveAsDraft", _null, _null));
       t9 = _this.isSending;
-      t9.toString;
       if (t9) {
         A.Localizations_of(context, C.Type_AppLocalizations_swi, t3).toString;
         t3 = A.Intl__message("Sending", _null, "sending", _null, _null);
@@ -11389,7 +11388,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = t3._as(t2.get(t1)).richTextWebController;
       t7 = this.context;
       A.Expando__checkType(t1);
-      return B.BottomBarComposerWidget$(new B.ComposerView_build___closure(t1, t7), new B.ComposerView_build___closure0(t1, t7), new B.ComposerView_build___closure1(t1, t7, this.constraints), t4 === C.CodeViewState_0, t5 === C.FormattingOptionsState_0, null, t6.get$toggleFormattingOptions(), new B.ComposerView_build___closure2(t1, t7), new B.ComposerView_build___closure3(t1, t7), new B.ComposerView_build___closure4(t1, t7), t3._as(t2.get(t1)).richTextWebController.get$toggleCodeView());
+      return B.BottomBarComposerWidget$(new B.ComposerView_build___closure(t1, t7), new B.ComposerView_build___closure0(t1, t7), new B.ComposerView_build___closure1(t1, t7, this.constraints), t4 === C.CodeViewState_0, t5 === C.FormattingOptionsState_0, false, t6.get$toggleFormattingOptions(), new B.ComposerView_build___closure2(t1, t7), new B.ComposerView_build___closure3(t1, t7), new B.ComposerView_build___closure4(t1, t7), t3._as(t2.get(t1)).richTextWebController.get$toggleCodeView());
     },
     $signature: typesOffset + 5
   };
@@ -17332,4 +17331,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Vj1q19aLBxoM3el9ZZiAm15UB+o="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["7rFDlm6INbgsu1tzYnGLIg4rtuw="] = $__dart_deferred_initializers__.current
