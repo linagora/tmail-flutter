@@ -5931,7 +5931,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.ComposeFloatingButton.prototype = {
     build$1(context) {
       var t1, _null = null;
-      A.getBinding(type$.ImagePaths).toString;
+      A.getBinding(_null, type$.ImagePaths).toString;
       t1 = A.SvgPicture$asset("assets/images/ic_compose_web.svg", C.Alignment_0_0, _null, C.BoxFit_0, 28, _null, 28);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return new A.Align(D.AlignmentDirectional_1_1, _null, _null, new B.ScrollingFloatingButtonAnimated(this.onTap, 154, 60, t1, new A.Padding(C.EdgeInsetsDirectional_0_0_16_0, A.Text$(A.Intl__message("Compose", _null, "compose", _null, _null), _null, _null, _null, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_1Gf1, _null, _null, _null, _null, _null), _null), this.scrollController, C.Color_4278221567, false, _null), _null);
@@ -17331,4 +17331,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["if5HuTmuLZLze5tg+axShcFvkts="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["1LUjPmzlNH7R1aPLhSFQgSLih3A="] = $__dart_deferred_initializers__.current
