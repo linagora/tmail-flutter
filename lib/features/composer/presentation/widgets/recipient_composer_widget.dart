@@ -196,6 +196,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                                   isLatestEmail: isLatestEmail,
                                   isCollapsed: _isCollapse,
                                   isLatestTagFocused: _lastTagFocused,
+                                  maxWidth: constraints.maxWidth,
                                   onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                                   onShowFullAction: widget.onShowFullListEmailAddressAction,
                                 );
@@ -270,6 +271,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               isLatestEmail: isLatestEmail,
                               isCollapsed: _isCollapse,
                               isLatestTagFocused: _lastTagFocused,
+                              maxWidth: constraints.maxWidth,
                               onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                               onShowFullAction: widget.onShowFullListEmailAddressAction,
                             );
