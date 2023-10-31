@@ -1552,8 +1552,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "7a78bff62891a6bfcad08106c2e9034a2c9661d8"
+      ref: "bugfix/fix-suggestion-displayed-on-top-when-having-many-tags"
+      resolved-ref: d8711a759932297fc411e9e2993d05d3533b14de
       url: "https://github.com/dab246/super_tag_editor.git"
     source: git
     version: "0.2.0"
