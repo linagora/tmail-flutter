@@ -47,7 +47,7 @@ class RuleFilterActionRowMobile extends StatelessWidget {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(vertical: RuleFilterActionStyles.mainPadding),
               child: Text(
-                AppLocalizations.of(context).toMailbox,
+                AppLocalizations.of(context).toFolder,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 softWrap: CommonTextStyle.defaultSoftWrap,
                 maxLines: RuleFilterActionStyles.maxLines,
