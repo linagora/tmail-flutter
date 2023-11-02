@@ -27,9 +27,6 @@ class PresentationMailbox with EquatableMixin {
   static final roleDrafts = Role(draftsRole);
   static final roleSpam = Role(spamRole);
 
-  static final outboxMailboxName = MailboxName('Outbox');
-  static final lowerCaseOutboxMailboxName = MailboxName('outbox');
-
   final MailboxId id;
   final MailboxName? name;
   final MailboxId? parentId;

@@ -29,24 +29,12 @@ class CreateDefaultMailboxInteractor {
         listRole
       );
       log('CreateDefaultMailboxInteractor::execute:listMailboxCreated: ${listMailboxCreated.length}');
-      final listMailboxIdNotSetRole = await _mailboxRepository.setRoleDefaultMailbox(
+      await _mailboxRepository.setRoleDefaultMailbox(
         session,
         accountId,
         listMailboxCreated
       );
-      log('CreateDefaultMailboxInteractor::execute:listMailboxIdNotSetRole: ${listMailboxIdNotSetRole.length}');
-      if (listMailboxIdNotSetRole.isEmpty) {
-        yield Right<Failure, Success>(CreateDefaultMailboxAllSuccess(currentMailboxState: currentMailboxState));
-      } else if (listMailboxIdNotSetRole.length < listMailboxCreated.length) {
-        yield Right<Failure, Success>(CreateDefaultMailboxHasSomeFailure(currentMailboxState: currentMailboxState));
-      } else {
-        final mapError = await _mailboxRepository.deleteMultipleMailbox(
-          session,
-          accountId,
-          listMailboxIdNotSetRole
-        );
-        yield Left<Failure, Success>(CreateDefaultMailboxFailure(mapError));
-      }
+      yield Right<Failure, Success>(CreateDefaultMailboxAllSuccess(currentMailboxState: currentMailboxState));
     } catch (e) {
       yield Left<Failure, Success>(CreateDefaultMailboxFailure(e));
     }

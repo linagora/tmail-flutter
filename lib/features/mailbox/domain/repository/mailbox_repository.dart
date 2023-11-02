@@ -46,5 +46,5 @@ abstract class MailboxRepository {
 
   Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole);
 
-  Future<List<MailboxId>> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox);
+  Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox);
 }
