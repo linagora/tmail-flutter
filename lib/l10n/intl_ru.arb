@@ -732,7 +732,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "save_to_drafts": "Сохранить в черновики",
+  "save_to_drafts": "В черновики",
   "@save_to_drafts": {
     "type": "text",
     "placeholders_order": [],
@@ -1636,7 +1636,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addNewRule": "Добавить правило",
+  "addNewRule": "Новое правило",
   "@addNewRule": {
     "type": "text",
     "placeholders_order": [],
@@ -2562,7 +2562,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewIdentity": "Создать новый идентификатор",
+  "createNewIdentity": "Создать новый",
   "@createNewIdentity": {
     "type": "text",
     "placeholders_order": [],
@@ -2608,7 +2608,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dismiss": "Отменить",
+  "dismiss": "Скрыть",
   "@dismiss": {
     "type": "text",
     "placeholders_order": [],
