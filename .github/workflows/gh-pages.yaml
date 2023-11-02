@@ -2,6 +2,11 @@ on:
   pull_request:
     paths:
       - "**/*.dart"
+      - "**/*.html"
+      - "**/*.js"
+      - "**/*.css"
+      - "**/*.png"
+      - "**/*.svg"
 
 name: Deploy PR on Github Pages
 
