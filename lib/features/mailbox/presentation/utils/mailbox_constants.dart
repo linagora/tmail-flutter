@@ -5,8 +5,11 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 class MailboxConstants {
   static final List<Role> defaultMailboxRoles = [
     PresentationMailbox.roleInbox,
+    PresentationMailbox.roleOutbox,
     PresentationMailbox.roleDrafts,
     PresentationMailbox.roleSent,
-    PresentationMailbox.roleTrash
+    PresentationMailbox.roleTrash,
+    PresentationMailbox.roleSpam,
+    PresentationMailbox.roleTemplates,
   ];
 }

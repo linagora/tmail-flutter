@@ -539,4 +539,13 @@ abstract class BaseMailboxController extends BaseController {
       consumeState(refreshAllMailboxInteractor!.execute(session, accountId, newMailboxState));
     }
   }
+
+  MailboxNode? findNodeByNameOnFirstLevel(String name) {
+    MailboxNode? mailboxNode = defaultMailboxTree.value.findNodeOnFirstLevel((node) => node.item.name?.name.toLowerCase() == name);
+    if (mailboxNode != null) {
+      return mailboxNode;
+    }
+    mailboxNode = personalMailboxTree.value.findNodeOnFirstLevel((node) => node.item.name?.name.toLowerCase() == name);
+    return mailboxNode;
+  }
 }
