@@ -15,16 +15,6 @@ class CreateDefaultMailboxAllSuccess extends UIActionState {
   List<Object?> get props => [...super.props];
 }
 
-class CreateDefaultMailboxHasSomeFailure extends UIActionState {
-  CreateDefaultMailboxHasSomeFailure({
-    jmap.State? currentEmailState,
-    jmap.State? currentMailboxState,
-  }) : super(currentEmailState, currentMailboxState);
-
-  @override
-  List<Object?> get props => [...super.props];
-}
-
 class CreateDefaultMailboxFailure extends FeatureFailure {
   CreateDefaultMailboxFailure(dynamic exception) : super(exception: exception);
 

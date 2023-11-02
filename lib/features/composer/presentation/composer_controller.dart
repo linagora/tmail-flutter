@@ -957,7 +957,7 @@ class ComposerController extends BaseController {
     final mailboxRequest = mailboxDashBoardController.outboxMailbox?.id == null
       ? CreateNewMailboxRequest(
           Id(_uuid.v1()),
-          PresentationMailbox.outboxMailboxName
+          MailboxName(PresentationMailbox.outboxRole.inCaps)
         )
       : null;
 

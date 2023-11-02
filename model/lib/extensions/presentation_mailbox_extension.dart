@@ -41,7 +41,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isSent => role == PresentationMailbox.roleSent;
 
-  bool get isOutbox => name == PresentationMailbox.lowerCaseOutboxMailboxName || role == PresentationMailbox.roleOutbox;
+  bool get isOutbox => name?.name == PresentationMailbox.outboxRole || role == PresentationMailbox.roleOutbox;
 
   bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
 

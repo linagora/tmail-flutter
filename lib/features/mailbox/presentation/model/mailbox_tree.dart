@@ -1,6 +1,7 @@
 
 import 'dart:collection';
 
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -140,6 +141,8 @@ class MailboxTree with EquatableMixin {
       };
     }
   }
+
+  MailboxNode? findNodeOnFirstLevel(NodeQuery nodeQuery) => root.childrenItems?.firstWhereOrNull(nodeQuery);
 
   @override
   List<Object?> get props => [root];
