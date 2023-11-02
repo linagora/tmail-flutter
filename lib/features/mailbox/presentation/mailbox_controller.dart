@@ -181,8 +181,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
     } else if (success is CreateDefaultMailboxAllSuccess) {
       _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-    } else if (success is CreateDefaultMailboxHasSomeFailure) {
-      _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
     }
   }
 
@@ -196,7 +194,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     } else if (failure is RefreshChangesAllMailboxFailure) {
       _clearNewFolderId();
     } else if (failure is CreateDefaultMailboxFailure) {
-      _refreshMailboxChanges();
+      refreshAllMailbox();
     }
   }
 
@@ -364,8 +362,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     try {
       final outboxMailboxIdByRole = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleOutbox];
       if (outboxMailboxIdByRole == null) {
-        final outboxMailboxByName = allMailboxes
-            .firstWhere((mailbox) => mailbox.name?.toLowerCase() == PresentationMailbox.lowerCaseOutboxMailboxName);
+        final outboxMailboxByName = findNodeByNameOnFirstLevel(PresentationMailbox.outboxRole)?.item;
         mailboxDashBoardController.setOutboxMailbox(outboxMailboxByName);
       } else {
         mailboxDashBoardController.setOutboxMailbox(mailboxDashBoardController.mapMailboxById[outboxMailboxIdByRole]!);
@@ -416,8 +413,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _handleCreateDefaultFolderIfMissing(Map<Role, MailboxId> mapDefaultMailboxRole) {
     final listRoleMissing = MailboxConstants.defaultMailboxRoles
-      .whereNot(mapDefaultMailboxRole.containsKey)
-      .toSet()
+      .whereNot((role) => mapDefaultMailboxRole.containsKey(role) || findNodeByNameOnFirstLevel(role.value) != null)
       .toList();
     log('MailboxController::_handleCreateDefaultFolderIfMissing():listRoleMissing: $listRoleMissing');
     final accountId = mailboxDashBoardController.accountId.value;

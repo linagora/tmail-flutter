@@ -455,7 +455,7 @@ class MailboxAPI with HandleSetErrorMixin {
       .toList();
   }
 
-  Future<List<MailboxId>> setRoleDefaultMailbox(
+  Future<void> setRoleDefaultMailbox(
     Session session,
     AccountId accountId,
     List<Mailbox> listMailbox
@@ -488,15 +488,6 @@ class MailboxAPI with HandleSetErrorMixin {
 
     if (mapErrors.isNotEmpty) {
       throw SetMailboxMethodException(mapErrors);
-    } else {
-      final mapMailboxUpdated = updateResponse?.updated ?? <Id, Mailbox>{};
-      final listMailboxIdNotUpdated = listMailbox
-        .map((mailbox) => mailbox.id)
-        .whereNotNull()
-        .where((mailboxId) => !mapMailboxUpdated.containsKey(mailboxId.id))
-        .toList();
-      log('MailboxAPI::setRoleDefaultMailbox:listMailboxIdNotUpdated: ${listMailboxIdNotUpdated.length}');
-      return listMailboxIdNotUpdated;
     }
   }
 }

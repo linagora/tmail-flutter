@@ -127,7 +127,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<List<MailboxId>> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
+  Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
     return Future.sync(() async {
       return await mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox);
     }).catchError(_exceptionThrower.throwException);
