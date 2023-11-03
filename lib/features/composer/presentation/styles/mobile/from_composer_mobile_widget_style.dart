@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 class FromComposerMobileWidgetStyle {
   static const double space = 8.0;
   static const double identityButtonHeight = 32.0;
-  static const double identityButtonWidthMobileLandscape = 421.0;
 
   static const EdgeInsetsGeometry identityButtonInkWellPadding = EdgeInsets.symmetric(vertical: 8.0);
   static const EdgeInsetsGeometry identityButtonPadding = EdgeInsets.only(
     top: 4,
     bottom: 4,
-    right: 4,
     left: 8,
   );
 
@@ -34,11 +32,13 @@ class FromComposerMobileWidgetStyle {
   static const TextStyle buttonTitleTextStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,
-    color: AppColor.colorCalendarEventUnread
+    color: AppColor.colorCalendarEventUnread,
+    overflow: TextOverflow.ellipsis,
   );
   static const TextStyle buttonSubTitleTextStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,
-    color: AppColor.colorLabelComposer
+    color: AppColor.colorLabelComposer,
+    overflow: TextOverflow.ellipsis,
   );
 }
