@@ -16,6 +16,8 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_b
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_container_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/tablet_container_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/mobile_attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
@@ -98,9 +100,19 @@ class ComposerView extends GetWidget<ComposerController> {
                         children: [
                           Obx(() => Column(
                             children: [
+                              if (controller.fromRecipientState.value == PrefixRecipientState.enabled)
+                                FromComposerMobileWidget(
+                                  selectedIdentity: controller.identitySelected.value,
+                                  imagePaths: _imagePaths,
+                                  responsiveUtils: _responsiveUtils,
+                                  margin: ComposerStyle.mobileRecipientMargin,
+                                  padding: ComposerStyle.mobileRecipientPadding,
+                                  onTap: () => controller.openSelectIdentityBottomSheet(context)
+                                ),
                               RecipientComposerWidget(
                                 prefix: PrefixEmailAddress.to,
                                 listEmailAddress: controller.listToEmailAddress,
+                                fromState: controller.fromRecipientState.value,
                                 ccState: controller.ccRecipientState.value,
                                 bccState: controller.bccRecipientState.value,
                                 expandMode: controller.toAddressExpandMode.value,
@@ -238,9 +250,20 @@ class ComposerView extends GetWidget<ComposerController> {
                     children: [
                       Obx(() => Column(
                         children: [
+                          if (controller.fromRecipientState.value == PrefixRecipientState.enabled)
+                            FromComposerDropDownWidget(
+                              items: controller.listFromIdentities,
+                              itemSelected: controller.identitySelected.value,
+                              dropdownKey: controller.identityDropdownKey,
+                              imagePaths: _imagePaths,
+                              padding: ComposerStyle.mobileRecipientPadding,
+                              margin: ComposerStyle.mobileRecipientMargin,
+                              onChangeIdentity: controller.onChangeIdentity,
+                            ),
                           RecipientComposerWidget(
                             prefix: PrefixEmailAddress.to,
                             listEmailAddress: controller.listToEmailAddress,
+                            fromState: controller.fromRecipientState.value,
                             ccState: controller.ccRecipientState.value,
                             bccState: controller.bccRecipientState.value,
                             expandMode: controller.toAddressExpandMode.value,
