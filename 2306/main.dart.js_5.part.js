@@ -835,13 +835,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     TagsEditorState__createOverlayEntry_closure: function TagsEditorState__createOverlayEntry_closure(t0) {
       this.$this = t0;
     },
-    TagsEditorState__createOverlayEntry__closure: function TagsEditorState__createOverlayEntry__closure(t0, t1, t2, t3, t4) {
+    TagsEditorState__createOverlayEntry__closure: function TagsEditorState__createOverlayEntry__closure(t0, t1, t2, t3) {
       var _ = this;
       _._box_0 = t0;
       _.$this = t1;
-      _.size = t2;
-      _.compositedTransformFollowerOffset = t3;
-      _.showTop = t4;
+      _.showTop = t2;
+      _.size = t3;
     },
     TagsEditorState__createOverlayEntry___closure: function TagsEditorState__createOverlayEntry___closure(t0, t1) {
       this.$this = t0;
@@ -3776,7 +3775,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 252
+    $signature: 251
   };
   B._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -3884,7 +3883,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 405
+    $signature: 404
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -3925,7 +3924,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1555
+    $signature: 1556
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -3986,7 +3985,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1556
+    $signature: 1557
   };
   B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -4012,7 +4011,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1557
+    $signature: 1558
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -4065,7 +4064,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1558
+    $signature: 1559
   };
   B._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -4076,7 +4075,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.context.paintChild$2(child, type$.BoxParentData._as(t1).offset.$add(0, this.offset));
       }
     },
-    $signature: 339
+    $signature: 338
   };
   B._RenderListTile_hitTestChildren_closure.prototype = {
     call$2(result, transformed) {
@@ -4115,7 +4114,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1559
+    $signature: 1560
   };
   B._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -4218,7 +4217,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 318
+    $signature: 317
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -4231,7 +4230,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.TagsEditorState__createOverlayEntry_closure.prototype = {
     call$1(context) {
-      var t4, topAvailableSpace, mq, bottomAvailableSpace, suggestionBoxHeight, showTop, compositedTransformFollowerOffset, _null = null, t1 = {},
+      var t4, topAvailableSpace, mq, bottomAvailableSpace, suggestionBoxHeight, _null = null, t1 = {},
         t2 = this.$this,
         t3 = type$.nullable_RenderBox;
       if (t3._as(t2._framework$_element.get$renderObject()) != null) {
@@ -4239,16 +4238,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4.toString;
         topAvailableSpace = A.MatrixUtils_transformPoint(t3._as(t2._framework$_element.get$renderObject()).getTransformTo$1(0, _null), C.Offset_0_0)._dy;
         mq = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
-        t3 = t4._dy;
-        bottomAvailableSpace = mq.size._dy - mq.viewInsets.bottom - topAvailableSpace - t3;
+        bottomAvailableSpace = mq.size._dy - mq.viewInsets.bottom - topAvailableSpace - t4._dy;
         suggestionBoxHeight = Math.max(topAvailableSpace, bottomAvailableSpace);
         t1.suggestionBoxHeight = suggestionBoxHeight;
-        t1.suggestionBoxHeight = Math.min(suggestionBoxHeight, t2._widget.suggestionsBoxMaxHeight);
-        showTop = topAvailableSpace > bottomAvailableSpace;
-        compositedTransformFollowerOffset = showTop ? new A.Offset(0, -t3) : C.Offset_0_0;
+        t1.suggestionBoxHeight = Math.max(suggestionBoxHeight, t2._widget.suggestionsBoxMaxHeight);
         t3 = t2._suggestionsStreamController;
         t3 = t3 == null ? _null : new A._BroadcastStream(t3, A._instanceType(t3)._eval$1("_BroadcastStream<1>"));
-        return new B.StreamBuilder(new B.TagsEditorState__createOverlayEntry__closure(t1, t2, t4, compositedTransformFollowerOffset, showTop), t2._tag_editor$_suggestions, t3, _null, t2.$ti._eval$1("StreamBuilder<List<1>?>"));
+        return new B.StreamBuilder(new B.TagsEditorState__createOverlayEntry__closure(t1, t2, topAvailableSpace > bottomAvailableSpace, t4), t2._tag_editor$_suggestions, t3, _null, t2.$ti._eval$1("StreamBuilder<List<1>?>"));
       }
       return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
@@ -4256,7 +4252,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.TagsEditorState__createOverlayEntry__closure.prototype = {
     call$2(context, snapshot) {
-      var t2, t3, t4, t5, t6, t7, t8, t9, t10, suggestionsListView, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, suggestionsListView, offsetY, compositedTransformFollowerOffset, _this = this, _null = null,
         t1 = snapshot.data;
       if (t1 != null && J.get$isNotEmpty$asx(t1)) {
         t2 = _this.$this;
@@ -4272,16 +4268,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t8 = t3.suggestionsBoxBackgroundColor;
         t9 = A.BorderRadius$circular(t6);
         t6 = A.BorderRadius$all(new A.Radius(t6, t6));
-        t10 = _this._box_0.suggestionBoxHeight;
+        t10 = _this._box_0;
+        t11 = t10.suggestionBoxHeight;
         t3 = t3.suggestionPadding;
         if (t3 == null)
           t3 = C.EdgeInsets_0_0_0_0;
         t1.toString;
-        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), J.get$length$asx(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t10), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._tag_editor$_highlightedOptionIndex)), _null, _null);
-        t5 = t2._widget.suggestionBoxWidth;
-        t1 = t5 == null ? _this.size._dx : t5;
-        t3 = !_this.showTop ? suggestionsListView : A.FractionalTranslation$(suggestionsListView, true, C.Offset_0_m1);
-        return A.Positioned$(_null, A.CompositedTransformFollower$(t3, t2._tag_editor$_layerLink, _this.compositedTransformFollowerOffset, false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, t1);
+        t12 = J.getInterceptor$asx(t1);
+        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), t12.get$length(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t11), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._tag_editor$_highlightedOptionIndex)), _null, _null);
+        t2._widget.toString;
+        offsetY = Math.min(50 * t12.get$length(t1), t10.suggestionBoxHeight);
+        if (_this.showTop) {
+          t2._widget.toString;
+          compositedTransformFollowerOffset = new A.Offset(0, -1 * (offsetY + 50));
+        } else
+          compositedTransformFollowerOffset = C.Offset_0_0;
+        t1 = t2._widget.suggestionBoxWidth;
+        if (t1 == null)
+          t1 = _this.size._dx;
+        return A.Positioned$(_null, A.CompositedTransformFollower$(suggestionsListView, t2._tag_editor$_layerLink, compositedTransformFollowerOffset, false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, t1);
       }
       return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
@@ -4371,7 +4376,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 318
+    $signature: 317
   };
   B.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
@@ -4444,7 +4449,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 318
+    $signature: 317
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
@@ -4701,4 +4706,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["tCKHMMhUBmSFxi2C9ahMZjN+3yk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["GNSDPImGFfn5D5vdBOeNSAVpNOI="] = $__dart_deferred_initializers__.current
