@@ -46,26 +46,24 @@ class FromComposerMobileWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: FromComposerMobileWidgetStyle.space),
-          Expanded(
-            child: Container(
+          Flexible(
+            child: Padding(
               padding: FromComposerMobileWidgetStyle.identityButtonInkWellPadding,
               child: InkWell(
                 borderRadius: FromComposerMobileWidgetStyle.identityButtonInkWellBorderRadius,
                 onTap: onTap,
                 child: Container(
                   height: FromComposerMobileWidgetStyle.identityButtonHeight,
-                  width: responsiveUtils.isLandscapeMobile(context)
-                    ? FromComposerMobileWidgetStyle.identityButtonWidthMobileLandscape
-                    : 0,
                   padding: FromComposerMobileWidgetStyle.identityButtonPadding,
                   decoration: FromComposerMobileWidgetStyle.identityButtonDecoration,
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       if (selectedIdentity != null)
-                        Expanded(
+                        Flexible(
                           child: RichText(
                             maxLines: 1,
-                            softWrap: CommonTextStyle.defaultSoftWrap,
+                            softWrap: false,
                             overflow: CommonTextStyle.defaultTextOverFlow,
                             text: TextSpan(
                               children: [
@@ -82,11 +80,11 @@ class FromComposerMobileWidget extends StatelessWidget {
                                   )
                               ]
                             ),
-                          )
+                          ),
                         )
                       else 
                         const SizedBox.shrink(),
-                      SvgPicture.asset(imagePaths.icDropDown)
+                      SvgPicture.asset(imagePaths.icDropDown),
                     ],
                   ),
                 ),
