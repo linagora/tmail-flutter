@@ -3533,4 +3533,18 @@ class AppLocalizations {
       name: 'confirmAllEmailHereAreSpam'
     );
   }
+
+  String get yourIdentities {
+    return Intl.message(
+      'Your identities',
+      name: 'yourIdentities',
+    );
+  }
+
+  String get searchForIdentities {
+    return Intl.message(
+      'Search for identities',
+      name: 'searchForIdentities',
+    );
+  }
 }
