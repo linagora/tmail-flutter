@@ -40,6 +40,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final PrefixEmailAddress prefix;
   final List<EmailAddress> listEmailAddress;
   final ExpandMode expandMode;
+  final PrefixRecipientState fromState;
   final PrefixRecipientState ccState;
   final PrefixRecipientState bccState;
   final bool? isInitial;
@@ -66,6 +67,7 @@ class RecipientComposerWidget extends StatefulWidget {
     required this.listEmailAddress,
     this.ccState = PrefixRecipientState.disabled,
     this.bccState = PrefixRecipientState.disabled,
+    this.fromState = PrefixRecipientState.disabled,
     this.isInitial,
     this.controller,
     this.focusNode,
@@ -301,6 +303,15 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
               )
             ),
             const SizedBox(width: RecipientComposerWidgetStyle.space),
+            if (widget.prefix == PrefixEmailAddress.to && widget.fromState == PrefixRecipientState.disabled)
+              TMailButtonWidget.fromText(
+                text: AppLocalizations.of(context).from_email_address_prefix,
+                textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                backgroundColor: Colors.transparent,
+                padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                margin: RecipientComposerWidgetStyle.recipientMargin,
+                onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.from),
+              ),
             if (widget.prefix == PrefixEmailAddress.to && widget.ccState == PrefixRecipientState.disabled)
               TMailButtonWidget.fromText(
                 text: AppLocalizations.of(context).cc_email_address_prefix,
