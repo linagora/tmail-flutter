@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
@@ -58,6 +59,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft
 import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_view_event.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
@@ -109,9 +111,12 @@ class ComposerController extends BaseController {
   final bccAddressExpandMode = ExpandMode.EXPAND.obs;
   final emailContentsViewState = Rxn<Either<Failure, Success>>();
   final hasRequestReadReceipt = false.obs;
+  final fromRecipientState = PrefixRecipientState.disabled.obs;
   final ccRecipientState = PrefixRecipientState.disabled.obs;
   final bccRecipientState = PrefixRecipientState.disabled.obs;
   final isSendEmailLoading = false.obs;
+  final identitySelected = Rxn<Identity>();
+  final listFromIdentities = RxList<Identity>();
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
@@ -136,23 +141,27 @@ class ComposerController extends BaseController {
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
+  final searchIdentitiesInputController = TextEditingController();
 
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyCcEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyBccEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey headerEditorMobileWidgetKey = GlobalKey();
+  final GlobalKey<DropdownButton2State> identityDropdownKey = GlobalKey<DropdownButton2State>();
   final double defaultPaddingCoordinateYCursorEditor = 8;
 
   FocusNode? subjectEmailInputFocusNode;
   FocusNode? toAddressFocusNode;
   FocusNode? ccAddressFocusNode;
   FocusNode? bccAddressFocusNode;
+  FocusNode? searchIdentitiesFocusNode;
 
   final RichTextController keyboardRichTextController = RichTextController();
 
   final ScrollController scrollController = ScrollController();
   final ScrollController scrollControllerEmailAddress = ScrollController();
   final ScrollController scrollControllerAttachment = ScrollController();
+  final ScrollController scrollControllerIdentities = ScrollController();
 
   final _saveToDraftEventController = StreamController<SaveToDraftViewEvent>();
   Stream<SaveToDraftViewEvent> get _saveToDraftEventStream => _saveToDraftEventController.stream;
@@ -164,7 +173,6 @@ class ComposerController extends BaseController {
   double? maxWithEditor;
   EmailId? _emailIdEditing;
   bool isAttachmentCollapsed = false;
-  Identity? identitySelected;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
@@ -227,6 +235,8 @@ class ComposerController extends BaseController {
     ccAddressFocusNode = null;
     bccAddressFocusNode?.dispose();
     bccAddressFocusNode = null;
+    searchIdentitiesFocusNode?.dispose();
+    searchIdentitiesFocusNode = null;
     subjectEmailInputController.dispose();
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
@@ -238,6 +248,7 @@ class ComposerController extends BaseController {
     scrollControllerEmailAddress.removeListener(_scrollControllerEmailAddressListener);
     scrollControllerEmailAddress.dispose();
     scrollControllerAttachment.dispose();
+    scrollControllerIdentities.dispose();
     _saveToDraftStreamSubscription.cancel();
     _saveToDraftEventController.close();
     super.dispose();
@@ -366,6 +377,7 @@ class ComposerController extends BaseController {
     );
     ccAddressFocusNode = FocusNode();
     bccAddressFocusNode = FocusNode();
+    searchIdentitiesFocusNode = FocusNode();
 
     subjectEmailInputFocusNode?.addListener(() {
       log('ComposerController::createFocusNodeInput():subjectEmailInputFocusNode: ${subjectEmailInputFocusNode?.hasFocus}');
@@ -414,7 +426,7 @@ class ComposerController extends BaseController {
   }
 
   void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) {
-    if (identitySelected == null) {
+    if (identitySelected.value == null) {
       _getAllIdentities();
     }
   }
@@ -552,10 +564,13 @@ class ComposerController extends BaseController {
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) async {
     final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
     if (listIdentitiesMayDeleted.isNotEmpty) {
+      listFromIdentities.value = listIdentitiesMayDeleted;
       await _selectIdentity(listIdentitiesMayDeleted.first);
     }
 
-    _autoFocusFieldWhenLauncher();
+    if (fromRecipientState.value == PrefixRecipientState.disabled) {
+      _autoFocusFieldWhenLauncher();
+    }
   }
 
   void _initEmailAddress({
@@ -663,17 +678,17 @@ class ComposerController extends BaseController {
     }
   ) async {
     Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
-    if (identitySelected?.email?.isNotEmpty == true) {
+    if (identitySelected.value?.email?.isNotEmpty == true) {
       listFromEmailAddress = {
         EmailAddress(
-          identitySelected?.name,
-          identitySelected?.email
+          identitySelected.value?.name,
+          identitySelected.value?.email
         )
       };
     }
     Set<EmailAddress> listReplyToEmailAddress = {EmailAddress(null, userProfile.email)};
-    if (identitySelected?.replyTo?.isNotEmpty == true) {
-      listReplyToEmailAddress = identitySelected!.replyTo!;
+    if (identitySelected.value?.replyTo?.isNotEmpty == true) {
+      listReplyToEmailAddress = identitySelected.value!.replyTo!;
     }
 
     final attachments = <EmailBodyPart>{};
@@ -931,7 +946,7 @@ class ComposerController extends BaseController {
       : EmailRequest(
           email: createdEmail,
           sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-          identityId: identitySelected?.id,
+          identityId: identitySelected.value?.id,
           emailIdDestroyed: arguments.emailActionType == EmailActionType.editDraft
             ? arguments.presentationEmail?.id
             : null,
@@ -1502,6 +1517,9 @@ class ComposerController extends BaseController {
 
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
     switch(prefixEmailAddress) {
+      case PrefixEmailAddress.from:
+        fromRecipientState.value = PrefixRecipientState.enabled;
+        break;
       case PrefixEmailAddress.cc:
         ccRecipientState.value = PrefixRecipientState.enabled;
         break;
@@ -1672,8 +1690,8 @@ class ComposerController extends BaseController {
   }
 
   Future<void> _selectIdentity(Identity? newIdentity) async {
-    final formerIdentity = identitySelected;
-    identitySelected = newIdentity;
+    final formerIdentity = identitySelected.value;
+    identitySelected.value = newIdentity;
     if (newIdentity != null) {
       await _applyIdentityForAllFieldComposer(formerIdentity, newIdentity);
     }
@@ -1927,7 +1945,7 @@ class ComposerController extends BaseController {
     richTextWebController.editorController.setFullScreen();
     onChangeTextEditorWeb(initContent);
     richTextWebController.setEnableCodeView();
-    if (identitySelected == null) {
+    if (identitySelected.value == null) {
       _getAllIdentities();
     }
   }
@@ -2134,5 +2152,37 @@ class ComposerController extends BaseController {
         await _applySignature(signatureContent!);
       }
     }
+  }
+
+  Future<void> onChangeIdentity(Identity? newIdentity) async {
+    await _selectIdentity(newIdentity);
+  }
+
+  void _searchIdentities(String searchText) {
+    if (searchText.isEmpty) {
+      _getAllIdentities();
+    } else {
+      listFromIdentities.value = listFromIdentities
+        .where((identity) => identity.name?.toLowerCase().contains(searchText.toLowerCase()) == true)
+        .toList();
+    }
+  }
+
+  void openSelectIdentityBottomSheet(BuildContext context) {
+    (
+      FromComposerBottomSheetBuilder(
+        context,
+        _imagePaths,
+        listFromIdentities,
+        scrollControllerIdentities,
+        searchIdentitiesInputController
+      )
+      ..onCloseAction(() => popBack())
+      ..onChangeIdentityAction((identity) {
+        onChangeIdentity(identity);
+        popBack();
+      })
+      ..onTextSearchChangedAction((searchText) => _searchIdentities(searchText))
+    ).build();
   }
 }
