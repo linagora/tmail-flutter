@@ -227,6 +227,8 @@ extension AppColor on Color {
   static const colorButtonBorder = Color(0xFFD5D7E0);
   static const colorScrollbarTrackColor = Color(0xFFF4EFF4);
   static const colorScrollbarThumbColor = Color(0xFFD8E1EB);
+  static const colorDropDownTitleComposer = Color(0xFF79747E);
+  static const colorDropDownItemTitleComposer = Color(0xFF0A0A0A);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
