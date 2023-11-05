@@ -30,10 +30,10 @@ extension ListEmailIdExtension on List<EmailId> {
     };
   }
 
-  Map<Id, PatchObject> generateMapUpdateObjectMarkAsSpam(MailboxId spamMailboxId) {
+  Map<Id, PatchObject> generateMapUpdateObjectMoveToSpam(MailboxId currentMailboxId, MailboxId spamMailboxId) {
     return {
       for (var emailId in this)
-        emailId.id: spamMailboxId.generateActionPath()
+        emailId.id: currentMailboxId.generateMoveToSpamActionPath(currentMailboxId, spamMailboxId)
     };
   }
 

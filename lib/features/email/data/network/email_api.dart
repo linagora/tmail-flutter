@@ -38,6 +38,7 @@ import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
@@ -52,6 +53,7 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
@@ -388,8 +390,13 @@ class EmailAPI with HandleSetErrorMixin {
 
       final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
       final currentSetEmailInvocations = currentExecuteList.map((currentItem) {
+
+        final moveProperties = (moveRequest.moveAction == MoveAction.moving && moveRequest.emailActionType == EmailActionType.moveToSpam)
+            ? currentItem.value.generateMapUpdateObjectMoveToSpam(currentItem.key, moveRequest.destinationMailboxId)
+            : currentItem.value.generateMapUpdateObjectMoveToMailbox(currentItem.key, moveRequest.destinationMailboxId);
+
         return SetEmailMethod(accountId)
-          ..addUpdates(currentItem.value.generateMapUpdateObjectMoveToMailbox(currentItem.key, moveRequest.destinationMailboxId));
+          ..addUpdates(moveProperties);
       }).map(requestBuilder.invocation).toList();
 
       final capabilities = {CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail}
