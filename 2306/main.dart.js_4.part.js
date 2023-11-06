@@ -1202,15 +1202,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     InsertImageLoadingBarWidget_build__closure0: function InsertImageLoadingBarWidget_build__closure0(t0) {
       this.$this = t0;
     },
-    FromComposerMobileWidget: function FromComposerMobileWidget(t0, t1, t2, t3, t4, t5, t6) {
+    FromComposerMobileWidget: function FromComposerMobileWidget(t0, t1, t2, t3, t4, t5) {
       var _ = this;
       _.selectedIdentity = t0;
       _.imagePaths = t1;
-      _.responsiveUtils = t2;
-      _.padding = t3;
-      _.margin = t4;
-      _.onTap = t5;
-      _.key = t6;
+      _.padding = t2;
+      _.margin = t3;
+      _.onTap = t4;
+      _.key = t5;
     },
     RecipientComposerWidget$(autoDisposeFocusNode, bccState, ccState, controller, expandMode, focusNode, fromState, isInitial, keyTagEditor, listEmailAddress, margin, nextFocusNode, onAddEmailAddressTypeAction, onDeleteEmailAddressTypeAction, onFocusEmailAddressChangeAction, onFocusNextAddressAction, onRemoveDraggableEmailAddressAction, onShowFullListEmailAddressAction, onSuggestionEmailAddress, onUpdateListEmailAddressAction, padding, prefix) {
       return new B.RecipientComposerWidget(prefix, listEmailAddress, expandMode, fromState, ccState, bccState, focusNode, false, keyTagEditor, nextFocusNode, controller, onUpdateListEmailAddressAction, onSuggestionEmailAddress, onAddEmailAddressTypeAction, onDeleteEmailAddressTypeAction, onShowFullListEmailAddressAction, onFocusEmailAddressChangeAction, onRemoveDraggableEmailAddressAction, onFocusNextAddressAction, padding, margin, null);
@@ -6205,32 +6204,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.FromComposerMobileWidget.prototype = {
     build$1(context) {
-      var t3, t4, t5, t6, t7, t8, _this = this, _null = null,
+      var t5, t6, t7, _this = this, _null = null,
         t1 = A.Text$(A.S(B.PrefixEmailAddressExtension_asName(C.PrefixEmailAddress_0, context)) + ":", _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_cw1, _null, _null, _null, _null, _null),
-        t2 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t2).data.size.get$shortestSide() < 600) {
-        t2 = A.InheritedModel_inheritFrom(context, _null, t2).data;
-        t2 = t2.get$orientation(t2) === C.Orientation_1;
+        t2 = type$.JSArray_Widget,
+        t3 = A._setArrayType([], t2),
+        t4 = _this.selectedIdentity;
+      if (t4 != null) {
+        t5 = A._setArrayType([], type$.JSArray_InlineSpan);
+        t6 = t4.name;
+        t7 = t6.length !== 0;
+        if (t7)
+          t5.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_a9q, t6 + " "));
+        t4 = t4.email;
+        t6 = t7 ? D.TextStyle_hiQ : D.TextStyle_a9q;
+        t5.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, t6, "(" + A.S(t4) + ")"));
+        t3.push(new A.Flexible(1, C.FlexFit_1, A.RichText$(_null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextSpan$(t5, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_4, _null, _null, 1, C.TextWidthBasis_0), _null));
       } else
-        t2 = false;
-      t2 = t2 ? 421 : 300;
-      t3 = type$.JSArray_Widget;
-      t4 = A._setArrayType([], t3);
-      t5 = _this.selectedIdentity;
-      if (t5 != null) {
-        t6 = A._setArrayType([], type$.JSArray_InlineSpan);
-        t7 = t5.name;
-        t8 = t7.length !== 0;
-        if (t8)
-          t6.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6xB, t7 + " "));
-        t5 = t5.email;
-        t7 = t8 ? D.TextStyle_cw10 : D.TextStyle_6xB;
-        t6.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, t7, "(" + A.S(t5) + ")"));
-        t4.push(A.Expanded$(A.RichText$(_null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextSpan$(t6, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_4, _null, _null, 1, C.TextWidthBasis_0), 1));
-      } else
-        t4.push(C.SizedBox_0_0_null_null);
-      t4.push(A.SvgPicture$asset("assets/images/ic_dropdown.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null));
-      return A.Container$(_null, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsetsDirectional_0_16_0_0, t1, _null), C.SizedBox_8_null_null_null, A.IntrinsicWidth$(A.Container$(_null, A.InkWell$(false, C.BorderRadius_tLn7, true, A.Container$(_null, A.Row$(t4, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_xK7, _null, 32, _null, _null, D.EdgeInsets_8_4_4_4, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onTap, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, new A.BoxConstraints(0, t2, 0, 1 / 0), _null, _null, _null, _null, _null, C.EdgeInsets_0_8_0_8, _null, _null, _null), _null)], t3), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_rfJ, _null, _null, _null, _this.margin, _this.padding, _null, _null, _null);
+        t3.push(C.SizedBox_0_0_null_null);
+      t3.push(A.SvgPicture$asset("assets/images/ic_dropdown.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null));
+      return A.Container$(_null, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsetsDirectional_0_16_0_0, t1, _null), C.SizedBox_8_null_null_null, new A.Flexible(1, C.FlexFit_1, new A.Padding(C.EdgeInsets_0_8_0_8, A.InkWell$(false, C.BorderRadius_tLn7, true, A.Container$(_null, A.Row$(t3, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, _null), C.Clip_0, _null, _null, D.BoxDecoration_xK7, _null, 32, _null, _null, D.EdgeInsets_8_4_0_4, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onTap, _null, _null, _null, _null, _null, _null, _null), _null), _null)], t2), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_rfJ, _null, _null, _null, _this.margin, _this.padding, _null, _null, _null);
     }
   };
   B.RecipientComposerWidget.prototype = {
@@ -10530,7 +10522,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t5 = "";
         A.Expando__checkType(t2);
         t6 = t4._as(t3.get(t2)).identitySelected;
-        t1.push(A.Tooltip$(new B.FromComposerMobileWidget(t6.get$value(t6), t2._composer_view_web$_imagePaths, t2._composer_view_web$_responsiveUtils, C.EdgeInsetsDirectional_0_0_16_0, E.EdgeInsetsDirectional_16_0_0_0, new B.ComposerView_build___closure19(t2, this.context), _null), t5));
+        t1.push(A.Tooltip$(new B.FromComposerMobileWidget(t6.get$value(t6), t2._composer_view_web$_imagePaths, C.EdgeInsetsDirectional_0_0_16_0, E.EdgeInsetsDirectional_16_0_0_0, new B.ComposerView_build___closure19(t2, this.context), _null), t5));
       }
       A.Expando__checkType(t2);
       t5 = t4._as(t3.get(t2)).listToEmailAddress;
@@ -17389,6 +17381,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_6_0_14_0 = new A.EdgeInsets(6, 0, 14, 0);
     D.EdgeInsets_6_3_6_3 = new A.EdgeInsets(6, 3, 6, 3);
     D.EdgeInsets_8_0_16_0 = new A.EdgeInsets(8, 0, 16, 0);
+    D.EdgeInsets_8_4_0_4 = new A.EdgeInsets(8, 4, 0, 4);
     D.EmailViewEmptyWidget_null = new B.EmailViewEmptyWidget(null);
     D.InputDecoration_Cfr = new A.InputDecoration(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C._NoInputBorder_uXA, true, null, null, null);
     D.LinearProgressIndicator_3Hh = new A.LinearProgressIndicator(2, null, D.Color_4293128703, C.Color_4278221567, null, null, null, null);
@@ -17482,12 +17475,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_IMh0 = new A.TextStyle(true, D.Color_4279773522, null, null, null, null, 25, C.FontWeight_6_700, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.Color_4289967027 = new A.Color(4289967027);
     D.TextStyle_U6R = new A.TextStyle(true, D.Color_4289967027, null, null, null, null, 16, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_a9q = new A.TextStyle(true, C.Color_4280032031, null, null, null, null, 16, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C.TextOverflow_2);
     D.TextStyle_cw12 = new A.TextStyle(true, D.Color_4287405231, null, null, null, null, 11, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_cw11 = new A.TextStyle(true, D.Color_4287405231, null, null, null, null, 13, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_cw1 = new A.TextStyle(true, D.Color_4287405231, null, null, null, null, 14, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_cw10 = new A.TextStyle(true, D.Color_4287405231, null, null, null, null, 16, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_etK0 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_etK = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_hiQ = new A.TextStyle(true, D.Color_4287405231, null, null, null, null, 16, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C.TextOverflow_2);
     D.Color_4289637038 = new A.Color(4289637038);
     D.TextStyle_inH = new A.TextStyle(true, D.Color_4289637038, null, null, null, null, 15, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, C.TextDecoration_1, null, null, null, null, null, null, null, null);
     D.TextStyle_k6K = new A.TextStyle(true, C.Color_4286149758, null, null, null, null, 14, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -17559,4 +17554,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["HPxxByxPkW7gmIgJR8VXU5vbGIc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["5hNPazymHEDc4KPOx9RVFC6SCBk="] = $__dart_deferred_initializers__.current
