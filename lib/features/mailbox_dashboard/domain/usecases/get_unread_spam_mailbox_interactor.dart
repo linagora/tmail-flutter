@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -8,9 +9,9 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_report_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_number_of_unread_spam_emails_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 
 class GetUnreadSpamMailboxInteractor {
-  static const int conditionsForDisplayingSpamReportBanner = 4;
   final SpamReportRepository _spamReportRepository;
 
   GetUnreadSpamMailboxInteractor(this._spamReportRepository);
@@ -25,12 +26,7 @@ class GetUnreadSpamMailboxInteractor {
   ) async* {
     try {
       yield Right(GetUnreadSpamMailboxLoading());
-      final lastTimeDismissedSpamReported = await _spamReportRepository.getLastTimeDismissedSpamReported();
-      final timeLast = DateTime.now().difference(lastTimeDismissedSpamReported);
-
-      final checkTimeCondition = (timeLast.inHours > 0) && (timeLast.inHours > conditionsForDisplayingSpamReportBanner);
-
-      if (checkTimeCondition) {
+      if (await _validateIntervalToShowBanner()) {
         final response =  await _spamReportRepository.getUnreadSpamMailbox(
           session,
           accountId,
@@ -49,5 +45,12 @@ class GetUnreadSpamMailboxInteractor {
     } catch (e) {
       yield Left(GetUnreadSpamMailboxFailure(e));
     }
+  }
+
+  Future<bool> _validateIntervalToShowBanner() async {
+    final lastTimeDismissedSpamReported = await _spamReportRepository.getLastTimeDismissedSpamReported();
+    final currentTime = DateTime.now().difference(lastTimeDismissedSpamReported);
+    log('GetUnreadSpamMailboxInteractor::_compareSpamReportTime:lastTimeDismissedSpamReported: $lastTimeDismissedSpamReported | currentTime: $currentTime');
+    return currentTime.inHours > GetSpamMailboxCachedInteractor.spamReportBannerDisplayIntervalInHour;
   }
 }
