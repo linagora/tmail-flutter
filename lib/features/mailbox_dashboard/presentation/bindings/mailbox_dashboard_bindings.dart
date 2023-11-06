@@ -46,12 +46,12 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/hive_spam_report_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/share_preference_spam_report_data_source_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/spam_report_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/spam_report_datasource_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/spam_report_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_repository_impl.dart';
@@ -215,11 +215,11 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<SpamReportApi>(),
       Get.find<RemoteExceptionThrower>(),
     ));    
-    Get.lazyPut(() => SharePreferenceSpamReportDataSourceImpl(
-      Get.find<SharePreferenceSpamReportDataSource>(),
+    Get.lazyPut(() => LocalSpamReportDataSourceImpl(
+      Get.find<LocalSpamReportManager>(),
       Get.find<CacheExceptionThrower>(),
     ));
-    Get.lazyPut(() => SpamReportCacheDataSourceImpl(
+    Get.lazyPut(() => HiveSpamReportDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
@@ -354,8 +354,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => SpamReportRepositoryImpl(
       {
         DataSourceType.network: Get.find<SpamReportDataSource>(),
-        DataSourceType.local: Get.find<SharePreferenceSpamReportDataSourceImpl>(),
-        DataSourceType.hiveCache: Get.find<SpamReportCacheDataSourceImpl>()
+        DataSourceType.local: Get.find<LocalSpamReportDataSourceImpl>(),
+        DataSourceType.hiveCache: Get.find<HiveSpamReportDataSourceImpl>()
       },
     ));
   }
