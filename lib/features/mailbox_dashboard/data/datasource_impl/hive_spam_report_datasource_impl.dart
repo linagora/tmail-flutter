@@ -11,11 +11,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_repor
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
-class SpamReportCacheDataSourceImpl extends SpamReportDataSource {
+class HiveSpamReportDataSourceImpl extends SpamReportDataSource {
   final MailboxCacheManager _mailboxCacheManager;
   final ExceptionThrower _exceptionThrower;
 
-  SpamReportCacheDataSourceImpl(this._mailboxCacheManager, this._exceptionThrower);
+  HiveSpamReportDataSourceImpl(this._mailboxCacheManager, this._exceptionThrower);
 
   @override
   Future<bool> deleteLastTimeDismissedSpamReported() {

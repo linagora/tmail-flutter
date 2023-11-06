@@ -29,7 +29,7 @@ import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_man
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/share_preference_spam_report_data_source.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
@@ -82,6 +82,7 @@ class LocalBindings extends Bindings {
     Get.put(SendingEmailHiveCacheClient());
     Get.put(SendingEmailCacheManager(Get.find<SendingEmailHiveCacheClient>()));
     Get.put(SessionHiveCacheClient());
+    Get.put(LocalSpamReportManager(Get.find<SharedPreferences>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
@@ -96,8 +97,8 @@ class LocalBindings extends Bindings {
       Get.find<FileUtils>(),
       Get.find<SendingEmailCacheManager>(),
       Get.find<SessionHiveCacheClient>(),
+      Get.find<LocalSpamReportManager>(),
     ));
-    Get.put(SharePreferenceSpamReportDataSource(Get.find<SharedPreferences>()));
   }
 
   void _bindingException() {

@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 
@@ -34,6 +35,7 @@ class CachingManager {
   final FileUtils _fileUtils;
   final SendingEmailCacheManager _sendingEmailCacheManager;
   final SessionHiveCacheClient _sessionHiveCacheClient;
+  final LocalSpamReportManager _localSpamReportManager;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -49,6 +51,7 @@ class CachingManager {
     this._fileUtils,
     this._sendingEmailCacheManager,
     this._sessionHiveCacheClient,
+    this._localSpamReportManager,
   );
 
   Future<void> clearAll() async {
@@ -60,6 +63,7 @@ class CachingManager {
       _fcmSubscriptionCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
       _accountCacheClient.clearAllData(),
+      _localSpamReportManager.clear(),
       if (PlatformInfo.isMobile)
         ...[
           _sessionHiveCacheClient.clearAllData(),
@@ -78,6 +82,7 @@ class CachingManager {
       _fcmCacheClient.clearAllData(),
       _fcmSubscriptionCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
+      _localSpamReportManager.clear(),
       if (PlatformInfo.isMobile)
        ...[
          _newEmailHiveCacheClient.clearAllData(),
