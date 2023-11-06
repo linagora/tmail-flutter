@@ -3526,4 +3526,11 @@ class AppLocalizations {
       name: 'notSelectedMailboxToMoveMessage',
     );
   }
+
+  String get confirmAllEmailHereAreSpam {
+    return Intl.message(
+      'Confirm all email here are Spam',
+      name: 'confirmAllEmailHereAreSpam'
+    );
+  }
 }

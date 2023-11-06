@@ -39,14 +39,16 @@ mixin MailboxWidgetMixin {
       if (PlatformInfo.isWeb)
         MailboxActions.openInNewTab,
       MailboxActions.newSubfolder,
-      if (mailbox.isSpam)
-        _mailboxActionForSpam(spamReportEnabled),
-      if (!mailbox.isTrash && mailbox.countUnReadEmailsAsString.isNotEmpty)
-        MailboxActions.markAsRead,
       if (mailbox.isTrash)
-        MailboxActions.emptyTrash,
-      if (PlatformInfo.isWeb && mailbox.isSpam)
-        MailboxActions.emptySpam,
+        MailboxActions.emptyTrash
+      else if (mailbox.isSpam)
+        ...[
+          _mailboxActionForSpam(spamReportEnabled),
+          MailboxActions.confirmMailSpam,
+          MailboxActions.emptySpam
+        ]
+      else if (mailbox.countUnReadEmailsAsString.isNotEmpty)
+        MailboxActions.markAsRead
     ];
   }
 

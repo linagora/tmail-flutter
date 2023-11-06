@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-29T10:43:27.382543",
+  "@@last_modified": "2023-11-06T13:06:33.363526",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3406,6 +3406,12 @@
   },
   "notSelectedMailboxToMoveMessage": "Please select a mailbox to move the message",
   "@notSelectedMailboxToMoveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "confirmAllEmailHereAreSpam": "Confirm all email here are Spam",
+  "@confirmAllEmailHereAreSpam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
