@@ -1,5 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -119,4 +120,14 @@ class ClearDateRangeToAdvancedSearch extends DashBoardAction {
 
   @override
   List<Object?> get props => [receiveTime];
+}
+
+class SearchEmailByFromFieldsAction extends DashBoardAction {
+
+  final EmailAddress emailAddress;
+
+  SearchEmailByFromFieldsAction(this.emailAddress);
+
+  @override
+  List<Object?> get props => [emailAddress];
 }
