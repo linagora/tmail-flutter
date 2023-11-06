@@ -447,10 +447,21 @@ class AdvancedFilterController extends BaseController {
           );
         } else if (action is ClearDateRangeToAdvancedSearch) {
           _updateDateRangeTime(action.receiveTime);
-        } else if (action is StartSearchEmailAction) {
-          if (action.filter == QuickSearchFilter.fromMe) {
-            _updateFromField();
-          }
+        } else if (action is StartSearchEmailAction && action.filter == QuickSearchFilter.fromMe) {
+          _updateFromField();
+        } else if (action is SearchEmailByFromFieldsAction) {
+          searchController.clearSearchFilter();
+          _resetAllToOriginalValue();
+          _clearAllTextFieldInput();
+          searchController.searchInputController.clear();
+          searchController.deactivateAdvancedSearch();
+          searchController.isAdvancedSearchViewOpen.value = false;
+
+          listFromEmailAddress = List.from({action.emailAddress});
+          final listAddress = listFromEmailAddress.map((emailAddress) => emailAddress.emailAddress).toSet();
+          searchController.updateFilterEmail(fromOption: Some(listAddress));
+
+          _mailboxDashBoardController.dispatchAction(StartSearchEmailAction());
         }
       }
     );

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -18,8 +19,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/email_quick_search_item_tile_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recent_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/contact_quick_search_item.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
@@ -55,7 +57,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             ),
           ),
           portalFollower: const AdvancedSearchFilterOverlay(),
-          child: QuickSearchInputForm<PresentationEmail, RecentSearch>(
+          child: QuickSearchInputForm<PresentationEmail, EmailAddress, RecentSearch>(
             maxHeight: 52,
             suggestionsBoxVerticalOffset: 0.0,
             textFieldConfiguration: _createConfiguration(context),
@@ -105,7 +107,11 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             onRecentSelected: (recent) => _invokeSelectRecentItem(context, recent),
             suggestionsCallback: _dashBoardController.quickSearchEmails,
             itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(email, _dashBoardController.selectedMailbox.value),
-            onSuggestionSelected: (presentationEmail) => _invokeSelectSuggestionItem(context, presentationEmail))
+            onSuggestionSelected: (presentationEmail) => _invokeSelectSuggestionItem(context, presentationEmail),
+            contactItemBuilder: (context, emailAddress) => ContactQuickSearchItem(emailAddress: emailAddress),
+            contactSuggestionsCallback: _dashBoardController.getContactSuggestion,
+            onContactSuggestionSelected: (emailAddress) => _invokeSelectContactSuggestion(context, emailAddress),
+          )
         ),
       );
     });
@@ -245,5 +251,12 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         ),
       );
     });
+  }
+
+  void _invokeSelectContactSuggestion(BuildContext context, EmailAddress emailAddress) {
+    _searchController.searchInputController.clear();
+    _searchController.searchFocus.unfocus();
+    _searchController.enableSearch();
+    _dashBoardController.searchEmailByFromFields(context, emailAddress);
   }
 }
