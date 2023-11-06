@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
@@ -26,9 +27,11 @@ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dar
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
@@ -184,6 +187,7 @@ class MailboxDashBoardController extends ReloadableController {
   DeleteEmailStateToRefreshInteractor? _deleteEmailStateToRefreshInteractor;
   GetMailboxStateToRefreshInteractor? _getMailboxStateToRefreshInteractor;
   DeleteMailboxStateToRefreshInteractor? _deleteMailboxStateToRefreshInteractor;
+  GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -2172,6 +2176,34 @@ class MailboxDashBoardController extends ReloadableController {
         )
       );
     }
+  }
+
+  Future<List<EmailAddress>> getContactSuggestion(String query) async {
+    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+
+    if (_getAutoCompleteInteractor == null || accountId.value == null) {
+      return <EmailAddress>[];
+    }
+
+    final listEmailAddress = await _getAutoCompleteInteractor!
+      .execute(AutoCompletePattern(word: query, accountId: accountId.value!, limit: 2))
+      .then((value) => value.fold(
+        (failure) => <EmailAddress>[],
+        (success) => success is GetAutoCompleteSuccess ? success.listEmailAddress : <EmailAddress>[]
+      ));
+    log('MailboxDashBoardController::getAutoCompleteSuggestion:listEmailAddress: $listEmailAddress');
+    return listEmailAddress;
+  }
+
+  void searchEmailByFromFields(BuildContext context, EmailAddress emailAddress) {
+    KeyboardUtils.hideKeyboard(context);
+    clearFilterMessageOption();
+    searchController.clearFilterSuggestion();
+    if (_searchInsideEmailDetailedViewIsActive(context)) {
+      _closeEmailDetailedView();
+    }
+    _unSelectedMailbox();
+    dispatchAction(SearchEmailByFromFieldsAction(emailAddress));
   }
 
   @override
