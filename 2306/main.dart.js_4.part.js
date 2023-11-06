@@ -6213,7 +6213,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t2.get$orientation(t2) === C.Orientation_1;
       } else
         t2 = false;
-      t2 = t2 ? 421 : 0;
+      t2 = t2 ? 421 : 300;
       t3 = type$.JSArray_Widget;
       t4 = A._setArrayType([], t3);
       t5 = _this.selectedIdentity;
@@ -6230,7 +6230,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         t4.push(C.SizedBox_0_0_null_null);
       t4.push(A.SvgPicture$asset("assets/images/ic_dropdown.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null));
-      return A.Container$(_null, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsetsDirectional_0_16_0_0, t1, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Container$(_null, A.InkWell$(false, C.BorderRadius_tLn7, true, A.Container$(_null, A.Row$(t4, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_xK7, _null, 32, _null, _null, D.EdgeInsets_8_4_4_4, _null, _null, t2), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onTap, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_8_0_8, _null, _null, _null), 1)], t3), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_rfJ, _null, _null, _null, _this.margin, _this.padding, _null, _null, _null);
+      return A.Container$(_null, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsetsDirectional_0_16_0_0, t1, _null), C.SizedBox_8_null_null_null, A.IntrinsicWidth$(A.Container$(_null, A.InkWell$(false, C.BorderRadius_tLn7, true, A.Container$(_null, A.Row$(t4, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_xK7, _null, 32, _null, _null, D.EdgeInsets_8_4_4_4, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onTap, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, new A.BoxConstraints(0, t2, 0, 1 / 0), _null, _null, _null, _null, _null, C.EdgeInsets_0_8_0_8, _null, _null, _null), _null)], t3), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_rfJ, _null, _null, _null, _this.margin, _this.padding, _null, _null, _null);
     }
   };
   B.RecipientComposerWidget.prototype = {
@@ -17559,4 +17559,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["D2w+X0Gvlji/4Cw5aNwJ9hQl0bU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["HPxxByxPkW7gmIgJR8VXU5vbGIc="] = $__dart_deferred_initializers__.current
