@@ -35,7 +35,7 @@ final supportedPlatform = (kIsWeb || Platform.isAndroid || Platform.isIOS);
 ///
 /// * [TypeAheadFieldQuickSearch], A [TextField](https://docs.flutter.io/flutter/material/TextField-class.html)
 /// that displays a list of suggestions as the user types
-class QuickSearchInputForm<T, R> extends FormField<String> {
+class QuickSearchInputForm<T, P, R> extends FormField<String> {
   /// The configuration of the [TextField](https://docs.flutter.io/flutter/material/TextField-class.html)
   /// that the TypeAhead widget displays
   final QuickSearchTextFieldConfiguration textFieldConfiguration;
@@ -87,6 +87,9 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
         BoxDecoration? decoration,
         double? maxHeight,
         bool isDirectionRTL = false,
+        ItemBuilder<P>? contactItemBuilder,
+        SuggestionsCallback<P>? contactSuggestionsCallback,
+        SuggestionSelectionCallback<P>? onContactSuggestionSelected,
       }) : assert(
   initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
@@ -101,7 +104,7 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
           autovalidateMode: autovalidateMode,
           builder: (FormFieldState<String> field) {
             final _TypeAheadFormFieldState state =
-            field as _TypeAheadFormFieldState<dynamic, dynamic>;
+            field as _TypeAheadFormFieldState<dynamic, dynamic, dynamic>;
 
             return TypeAheadFieldQuickSearch(
               getImmediateSuggestions: getImmediateSuggestions,
@@ -151,21 +154,24 @@ class QuickSearchInputForm<T, R> extends FormField<String> {
               decoration: decoration,
               maxHeight: maxHeight,
               isDirectionRTL: isDirectionRTL,
+              contactItemBuilder: contactItemBuilder,
+              contactSuggestionsCallback: contactSuggestionsCallback,
+              onContactSuggestionSelected: onContactSuggestionSelected,
             );
           });
 
   @override
-  FormFieldState<String> createState() => _TypeAheadFormFieldState<T, R>();
+  FormFieldState<String> createState() => _TypeAheadFormFieldState<T, P, R>();
 }
 
-class _TypeAheadFormFieldState<T, R> extends FormFieldState<String> {
+class _TypeAheadFormFieldState<T, P, R> extends FormFieldState<String> {
   TextEditingController? _controller;
 
   TextEditingController? get _effectiveController =>
       widget.textFieldConfiguration.controller ?? _controller;
 
   @override
-  QuickSearchInputForm get widget => super.widget as QuickSearchInputForm<dynamic, dynamic>;
+  QuickSearchInputForm get widget => super.widget as QuickSearchInputForm<dynamic, dynamic, dynamic>;
 
   @override
   void initState() {
@@ -239,7 +245,7 @@ class _TypeAheadFormFieldState<T, R> extends FormFieldState<String> {
 /// * [QuickSearchInputForm], a [FormField](https://docs.flutter.io/flutter/widgets/FormField-class.html)
 /// implementation of [TypeAheadFieldQuickSearch] that allows the value to be saved,
 /// validated, etc.
-class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
+class TypeAheadFieldQuickSearch<T, P, R> extends StatefulWidget {
   /// Called with the search pattern to get the search suggestions.
   ///
   /// This callback must not be null. It is be called by the TypeAhead widget
@@ -517,8 +523,14 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
   final BoxDecoration? decoration;
   /// Max height search input
   final double? maxHeight;
-
+  /// Check direction text input
   final bool isDirectionRTL;
+  ///  Widget contact item
+  final ItemBuilder<P>? contactItemBuilder;
+  ///  Get all contact callback
+  final SuggestionsCallback<P>? contactSuggestionsCallback;
+  ///  On listen select contact
+  final SuggestionSelectionCallback<P>? onContactSuggestionSelected;
 
   /// Creates a [TypeAheadFieldQuickSearch]
   const TypeAheadFieldQuickSearch(
@@ -562,6 +574,9 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
         this.decoration,
         this.maxHeight,
         this.isDirectionRTL = false,
+        this.contactItemBuilder,
+        this.contactSuggestionsCallback,
+        this.onContactSuggestionSelected,
       }) : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
         direction == AxisDirection.down || direction == AxisDirection.up),
@@ -569,10 +584,10 @@ class TypeAheadFieldQuickSearch<T, R> extends StatefulWidget {
         super(key: key);
 
   @override
-  State<TypeAheadFieldQuickSearch<T, R>> createState() => _TypeAheadFieldQuickSearchState<T, R>();
+  State<TypeAheadFieldQuickSearch<T, P, R>> createState() => _TypeAheadFieldQuickSearchState<T, P, R>();
 }
 
-class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSearch<T, R>>
+class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuickSearch<T, P, R>>
     with WidgetsBindingObserver {
   FocusNode? _focusNode;
   TextEditingController? _textEditingController;
@@ -707,7 +722,7 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
 
   void _initOverlayEntry() {
     _suggestionsBox!._overlayEntry = OverlayEntry(builder: (context) {
-      final suggestionsList = _SuggestionsList<T, R>(
+      final suggestionsList = _SuggestionsList<T, P, R>(
         suggestionsBox: _suggestionsBox,
         decoration: widget.suggestionsBoxDecoration,
         debounceDuration: widget.debounceDuration,
@@ -754,6 +769,15 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
         listActionPadding: widget.listActionPadding,
         hideSuggestionsBox: widget.hideSuggestionsBox,
         isDirectionRTL: widget.isDirectionRTL,
+        contactSuggestionBuilder: widget.contactItemBuilder,
+        contactSuggestionCallback: widget.contactSuggestionsCallback,
+        onContactSuggestionSelected: (P selection) {
+          if (!widget.keepSuggestionsOnSuggestionSelected) {
+            _effectiveFocusNode!.unfocus();
+            _suggestionsBox!.close();
+          }
+          widget.onContactSuggestionSelected?.call(selection);
+        },
       );
 
       double w = _suggestionsBox!.textBoxWidth;
@@ -882,7 +906,7 @@ class _TypeAheadFieldQuickSearchState<T, R> extends State<TypeAheadFieldQuickSea
   }
 }
 
-class _SuggestionsList<T, R> extends StatefulWidget {
+class _SuggestionsList<T, P, R> extends StatefulWidget {
   final _SuggestionsBox? suggestionsBox;
   final TextEditingController? controller;
   final bool getImmediateSuggestions;
@@ -915,6 +939,9 @@ class _SuggestionsList<T, R> extends StatefulWidget {
   final EdgeInsets? listActionPadding;
   final bool hideSuggestionsBox;
   final bool isDirectionRTL;
+  final ItemBuilder<P>? contactSuggestionBuilder;
+  final SuggestionsCallback<P>? contactSuggestionCallback;
+  final SuggestionSelectionCallback<P>? onContactSuggestionSelected;
 
   const _SuggestionsList({
     required this.suggestionsBox,
@@ -949,16 +976,20 @@ class _SuggestionsList<T, R> extends StatefulWidget {
     this.listActionPadding,
     this.hideSuggestionsBox = false,
     this.isDirectionRTL = false,
+    this.contactSuggestionBuilder,
+    this.contactSuggestionCallback,
+    this.onContactSuggestionSelected,
   });
 
   @override
-  _SuggestionsListState<T, R> createState() => _SuggestionsListState<T, R>();
+  _SuggestionsListState<T, P, R> createState() => _SuggestionsListState<T, P, R>();
 }
 
-class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
+class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
     with SingleTickerProviderStateMixin {
   Iterable<T>? _suggestions;
   Iterable<R>? _recentItems;
+  Iterable<P>? _contacts;
   late bool _suggestionsValid;
   late VoidCallback _controllerListener;
   Timer? _debounceTimer;
@@ -991,6 +1022,7 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
           setState(() {
             _isLoading = false;
             _suggestions = null;
+            _contacts = null;
             _recentItems = recentItems;
             _suggestionsValid = true;
           });
@@ -1015,7 +1047,7 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
   }
 
   @override
-  void didUpdateWidget(_SuggestionsList<T, R> oldWidget) {
+  void didUpdateWidget(_SuggestionsList<T, P, R> oldWidget) {
     super.didUpdateWidget(oldWidget);
     widget.controller!.addListener(_controllerListener);
     _getSuggestions();
@@ -1067,12 +1099,16 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
 
       Iterable<T>? suggestions;
       Iterable<R>? recentItems;
+      Iterable<P>? contacts;
       Object? error;
 
       try {
         suggestions = await widget.suggestionsCallback!(widget.controller!.text);
         if (widget.fetchRecentActionCallback != null) {
           recentItems = await widget.fetchRecentActionCallback!(widget.controller!.text);
+        }
+        if (widget.contactSuggestionCallback != null) {
+          contacts = await widget.contactSuggestionCallback!(widget.controller!.text);
         }
       } catch (e) {
         error = e;
@@ -1091,6 +1127,7 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
           _isLoading = false;
           _suggestions = suggestions;
           _recentItems = recentItems;
+          _contacts = contacts;
         });
       }
     }
@@ -1111,7 +1148,7 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
 
     Widget child;
 
-    if (_suggestions?.isNotEmpty == true && widget.controller?.text.isNotEmpty == true) {
+    if ((_suggestions?.isNotEmpty == true || _contacts?.isNotEmpty == true) && widget.controller?.text.isNotEmpty == true) {
       child = createSuggestionsWidget();
     } else {
       child = createRecentWidget();
@@ -1165,12 +1202,10 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
 
   Widget createSuggestionsWidget() {
     final listItemSuggestionWidget = _suggestions?.map((T suggestion) {
-      if ( widget.itemBuilder != null) {
+      if (widget.itemBuilder != null) {
         return InkWell(
           child: widget.itemBuilder!(context, suggestion),
-          onTap: () {
-            widget.onSuggestionSelected!(suggestion);
-          },
+          onTap: () => widget.onSuggestionSelected?.call(suggestion),
         );
       } else {
         return const SizedBox.shrink();
@@ -1212,6 +1247,20 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
           }
         }).toList());
 
+    final listItemContactWidget = _contacts?.map((P contact) {
+      if (widget.contactSuggestionBuilder != null) {
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            child: widget.contactSuggestionBuilder!(context, contact),
+            onTap: () => widget.onContactSuggestionSelected?.call(contact),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    }).toList() ?? [];
+
     Widget child = ListView(
       padding: EdgeInsets.zero,
       primary: false,
@@ -1226,6 +1275,8 @@ class _SuggestionsListState<T, R> extends State<_SuggestionsList<T, R>>
           ),
         if (_isLoading == true && widget.hideOnLoading == false && widget.keepSuggestionsOnLoading == false)
           loadingWidget,
+        if (listItemContactWidget.isNotEmpty)
+          ... listItemContactWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
           widget.buttonShowAllResult!(context, widget.controller?.text),
         if (listItemSuggestionWidget.isNotEmpty)
