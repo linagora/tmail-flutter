@@ -266,6 +266,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       case MailboxActions.enableSpamReport:
         dashboardController.storeSpamReportStateAction();
         break;
+      case MailboxActions.confirmMailSpam:
       case MailboxActions.markAsRead:
         markAsReadMailboxAction(context, mailbox, dashboardController);
         break;

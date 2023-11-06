@@ -930,6 +930,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         );
         break;
       case MailboxActions.markAsRead:
+      case MailboxActions.confirmMailSpam:
         markAsReadMailboxAction(
           context,
           mailbox,
