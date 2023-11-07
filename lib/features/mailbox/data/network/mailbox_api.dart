@@ -26,6 +26,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart
 import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
@@ -54,6 +55,8 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final getMailboxCreated = GetMailboxMethod(accountId);
 
+    if (properties != null) getMailboxCreated.addProperties(properties);
+
     final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
 
     final capabilities = getMailboxCreated.requiredCapabilities
@@ -71,7 +74,7 @@ class MailboxAPI with HandleSetErrorMixin {
     return MailboxResponse(mailboxes: resultCreated?.list, state: resultCreated?.state);
   }
 
-  Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState) async {
+  Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
@@ -83,10 +86,17 @@ class MailboxAPI with HandleSetErrorMixin {
     final getMailboxUpdated = GetMailboxMethod(accountId)
       ..addReferenceIds(processingInvocation.createResultReference(
           changesMailboxInvocation.methodCallId,
-          ReferencePath.updatedPath))
-      ..addReferenceProperties(processingInvocation.createResultReference(
+          ReferencePath.updatedPath));
+
+    if (properties == null) {
+      getMailboxUpdated
+        .addReferenceProperties(processingInvocation.createResultReference(
           changesMailboxInvocation.methodCallId,
-          ReferencePath.updatedPropertiesPath));
+          ReferencePath.updatedPropertiesPath
+        ));
+    } else {
+      getMailboxUpdated.addProperties(properties);
+    }
 
     final getMailboxCreated = GetMailboxMethod(accountId)
       ..addReferenceIds(processingInvocation.createResultReference(
@@ -117,7 +127,7 @@ class MailboxAPI with HandleSetErrorMixin {
         GetMailboxResponse.deserialize);
 
     final listMailboxIdDestroyed = resultChanges?.destroyed.map((id) => MailboxId(id)).toList() ?? <MailboxId>[];
-
+    log('MailboxAPI::getChanges:resultUpdated: ${resultUpdated?.toJson().toString()}');
     return MailboxChangeResponse(
       updated: resultUpdated?.list,
       created: resultCreated?.list,
@@ -261,19 +271,23 @@ class MailboxAPI with HandleSetErrorMixin {
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
     final response = await (requestBuilder
-          ..usings(capabilities))
-        .build()
-        .execute();
+        ..usings(capabilities))
+      .build()
+      .execute();
 
     final setMailboxResponse = response.parse<SetMailboxResponse>(
-        setMailboxInvocation.methodCallId,
-        SetMailboxResponse.deserialize);
+      setMailboxInvocation.methodCallId,
+      SetMailboxResponse.deserialize);
 
-    return Future.sync(() async {
-      return setMailboxResponse?.updated?.isNotEmpty == true;
-    }).catchError((error) {
-      throw error;
-    });
+    if (setMailboxResponse?.updated?.containsKey(request.mailboxId.id) == true) {
+      return true;
+    } else {
+      final listEntriesErrors = handleSetResponse([
+        setMailboxResponse,
+      ]);
+      final mapErrors = Map.fromEntries(listEntriesErrors);
+      throw SetMethodException(mapErrors);
+    }
   }
 
   Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request) async {

@@ -21,7 +21,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_m
 abstract class MailboxRepository {
   Stream<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties});
 
-  Stream<MailboxResponse> refresh(Session session, AccountId accountId, State currentState);
+  Stream<MailboxResponse> refresh(Session session, AccountId accountId, State currentState, {Properties? properties});
 
   Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
 
