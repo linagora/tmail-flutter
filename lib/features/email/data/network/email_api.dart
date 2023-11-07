@@ -49,7 +49,7 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
-import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -214,7 +214,7 @@ class EmailAPI with HandleSetErrorMixin {
     if (emailCreated != null && mapErrors.isEmpty) {
       return true;
     } else {
-      throw SetEmailMethodException(mapErrors);
+      throw SetMethodException(mapErrors);
     }
   }
 
@@ -488,7 +488,7 @@ class EmailAPI with HandleSetErrorMixin {
     if (emailCreated != null && mapErrors.isEmpty) {
       return emailCreated;
     } else {
-      throw SetEmailMethodException(mapErrors);
+      throw SetMethodException(mapErrors);
     }
   }
 
@@ -555,7 +555,7 @@ class EmailAPI with HandleSetErrorMixin {
     if (emailUpdated != null && isEmailDeleted == true && mapErrors.isEmpty) {
       return emailUpdated;
     } else {
-      throw SetEmailMethodException(mapErrors);
+      throw SetMethodException(mapErrors);
     }
   }
 

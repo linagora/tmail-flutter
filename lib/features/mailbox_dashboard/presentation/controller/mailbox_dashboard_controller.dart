@@ -24,7 +24,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
-import 'package:tmail_ui_user/features/composer/domain/exceptions/set_email_method_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
@@ -1757,7 +1757,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
     final exception = failure.exception;
     logError('MailboxDashBoardController::_handleSendEmailFailure():exception: $exception');
-    if (exception is SetEmailMethodException) {
+    if (exception is SetMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
       if (!toastSuccess) {
@@ -1801,7 +1801,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
     final exception = failure.exception;
     logError('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():exception: $exception');
-    if (exception is SetEmailMethodException) {
+    if (exception is SetMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
       if (!toastSuccess) {
@@ -1822,7 +1822,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
     final exception = failure.exception;
     logError('MailboxDashBoardController::_handleUpdateEmailAsDraftsFailure():exception: $exception');
-    if (exception is SetEmailMethodException) {
+    if (exception is SetMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
       if (!toastSuccess) {

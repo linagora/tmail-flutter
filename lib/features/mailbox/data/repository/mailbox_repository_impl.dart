@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -52,13 +53,13 @@ class MailboxRepositoryImpl extends MailboxRepository {
       State? sinceState = localMailboxResponse.state!;
 
       while(hasMoreChanges && sinceState != null) {
-        final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState);
+        final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState, properties: properties);
 
         hasMoreChanges = changesResponse.hasMoreChanges;
         sinceState = changesResponse.newStateChanges;
 
         final newMailboxUpdated = await _combineMailboxCache(
-            mailboxUpdated: changesResponse.updated,
+            mailboxUpdatedList: changesResponse.updated,
             updatedProperties: changesResponse.updatedProperties,
             mailboxCacheList: localMailboxResponse.mailboxes!);
 
@@ -94,44 +95,46 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   Future<List<Mailbox>?> _combineMailboxCache({
-    List<Mailbox>? mailboxUpdated,
+    List<Mailbox>? mailboxUpdatedList,
     Properties? updatedProperties,
     List<Mailbox>? mailboxCacheList
   }) async {
-    if (mailboxUpdated != null && mailboxUpdated.isNotEmpty) {
-      final newMailboxUpdated = mailboxUpdated.map((mailboxUpdated) {
-        if (updatedProperties == null) {
-          return mailboxUpdated;
+    if (mailboxUpdatedList == null || mailboxUpdatedList.isEmpty) {
+      return null;
+    }
+    log('MailboxRepositoryImpl::_combineMailboxCache:mailboxUpdatedList: $mailboxUpdatedList');
+    if (updatedProperties == null) {
+      log('MailboxRepositoryImpl::_combineMailboxCache:updatedProperties is null');
+      return mailboxUpdatedList;
+    } else {
+      final newMailboxUpdatedList = mailboxUpdatedList.map((mailboxUpdated) {
+        final mailboxOld = mailboxCacheList?.findMailbox(mailboxUpdated.id!);
+        if (mailboxOld != null) {
+          return mailboxOld.combineMailbox(mailboxUpdated, updatedProperties);
         } else {
-          final mailboxOld = mailboxCacheList?.findMailbox(mailboxUpdated.id!);
-          if (mailboxOld != null) {
-            return mailboxOld.combineMailbox(mailboxUpdated, updatedProperties);
-          } else {
-            return mailboxUpdated;
-          }
+          return mailboxUpdated;
         }
       }).toList();
-
-      return newMailboxUpdated;
+      log('MailboxRepositoryImpl::_combineMailboxCache:newMailboxUpdatedList: ${newMailboxUpdatedList.length}');
+      return newMailboxUpdatedList;
     }
-    return mailboxUpdated;
   }
 
   @override
-  Stream<MailboxResponse> refresh(Session session, AccountId accountId, State currentState) async* {
+  Stream<MailboxResponse> refresh(Session session, AccountId accountId, State currentState, {Properties? properties}) async* {
     final localMailboxList = await mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username);
 
     bool hasMoreChanges = true;
     State? sinceState = currentState;
 
     while(hasMoreChanges && sinceState != null) {
-      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState);
+      final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState, properties: properties);
 
       hasMoreChanges = changesResponse.hasMoreChanges;
       sinceState = changesResponse.newStateChanges;
 
       final newMailboxUpdated = await _combineMailboxCache(
-          mailboxUpdated: changesResponse.updated,
+          mailboxUpdatedList: changesResponse.updated,
           updatedProperties: changesResponse.updatedProperties,
           mailboxCacheList: localMailboxList);
 

@@ -16,7 +16,7 @@ class RenameMailboxInteractor {
       yield Right<Failure, Success>(LoadingRenameMailbox());
 
       final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
-
+      log('RenameMailboxInteractor::execute:currentMailboxState: $currentMailboxState');
       final result = await _mailboxRepository.renameMailbox(session, accountId, request);
       if (result) {
         yield Right<Failure, Success>(RenameMailboxSuccess(currentMailboxState: currentMailboxState));
