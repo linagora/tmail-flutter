@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
@@ -20,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
@@ -39,6 +41,17 @@ class AdvancedFilterController extends BaseController {
   final lastTextTo = ''.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
+
+  final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
+  final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
+  final fromAddressExpandMode = ExpandMode.EXPAND.obs;
+  final toAddressExpandMode = ExpandMode.EXPAND.obs;
+
+  List<EmailAddress> listFromEmailAddress = <EmailAddress>[];
+  List<EmailAddress> listToEmailAddress = <EmailAddress>[];
+
+  TextEditingController fromEmailAddressController = TextEditingController();
+  TextEditingController toEmailAddressController = TextEditingController();
 
   TextEditingController subjectFilterInputController = TextEditingController();
   TextEditingController hasKeyWordFilterInputController = TextEditingController();
@@ -83,6 +96,8 @@ class AdvancedFilterController extends BaseController {
     subjectFilterInputController.text = '';
     hasKeyWordFilterInputController.text = '';
     notKeyWordFilterInputController.text = '';
+    fromEmailAddressController.text = '';
+    toEmailAddressController.text = '';
     hasAttachment.value = false;
     _destinationMailboxSelected = null;
     searchController.searchInputController.clear();
@@ -296,6 +311,138 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
+  void onEmailAddressFocusChange(AdvancedSearchFilterField field, bool hasFocus) {
+    if (hasFocus) {
+      switch(field) {
+        case AdvancedSearchFilterField.form:
+          fromAddressExpandMode.value = ExpandMode.EXPAND;
+          toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          break;
+        case AdvancedSearchFilterField.to:
+          fromAddressExpandMode.value = ExpandMode.COLLAPSE;
+          toAddressExpandMode.value = ExpandMode.EXPAND;
+          break;
+        default:
+          break;
+      }
+
+      _closeSuggestionBox();
+    }
+  }
+
+  void _closeSuggestionBox() {
+    if (fromEmailAddressController.text.isNotEmpty) {
+      keyFromEmailTagEditor.currentState?.closeSuggestionBox();
+    }
+
+    if (toEmailAddressController.text.isNotEmpty) {
+      keyToEmailTagEditor.currentState?.closeSuggestionBox();
+    }
+  }
+
+  void showFullEmailAddress(AdvancedSearchFilterField field) {
+    switch(field) {
+      case AdvancedSearchFilterField.form:
+        fromAddressExpandMode.value = ExpandMode.EXPAND;
+        toAddressExpandMode.value = ExpandMode.COLLAPSE;
+        focusManager.fromFieldFocusNode.requestFocus();
+        focusManager.toFieldFocusNode.unfocus();
+        break;
+      case AdvancedSearchFilterField.to:
+        fromAddressExpandMode.value = ExpandMode.COLLAPSE;
+        toAddressExpandMode.value = ExpandMode.EXPAND;
+        focusManager.toFieldFocusNode.requestFocus();
+        focusManager.fromFieldFocusNode.unfocus();
+        break;
+      default:
+        break;
+    }
+  }
+
+  void updateListEmailAddress(
+    AdvancedSearchFilterField field,
+    List<EmailAddress> listEmailAddress,
+  ) {
+    switch(field) {
+      case AdvancedSearchFilterField.form:
+        listFromEmailAddress = List.from(listEmailAddress);
+        searchEmailFilter.from.addAll(listEmailAddress.map((emailAddress) => emailAddress.emailAddress));
+        break;
+      case AdvancedSearchFilterField.to:
+        listToEmailAddress = List.from(listEmailAddress);
+        searchEmailFilter.to.addAll(listEmailAddress.map((emailAddress) => emailAddress.emailAddress));
+        break;
+      default:
+        break;
+    }
+  }
+
+  bool _isDuplicatedEmailAddress(String inputEmail, List<EmailAddress> listEmailAddress) {
+    return listEmailAddress
+      .map((emailAddress) => emailAddress.email)
+      .whereNotNull()
+      .contains(inputEmail);
+  }
+
+  void _autoCreateFromEmailTag(String inputEmail) {
+    if (!_isDuplicatedEmailAddress(inputEmail, listFromEmailAddress)) {
+      final emailAddress = EmailAddress(null, inputEmail);
+      listFromEmailAddress.add(emailAddress);
+      
+      log('AdvancedFilterController::_autoCreateFromEmailTag(): STATE: ${keyFromEmailTagEditor.currentState}');
+      keyFromEmailTagEditor.currentState?.resetTextField();
+      Future.delayed(const Duration(milliseconds: 300), () {
+        keyFromEmailTagEditor.currentState?.closeSuggestionBox();
+      });
+    }
+  }
+
+  void _autoCreateToEmailTag(String inputEmail) {
+    if (!_isDuplicatedEmailAddress(inputEmail, listToEmailAddress)) {
+      final emailAddress = EmailAddress(null, inputEmail);
+      listToEmailAddress.add(emailAddress);
+
+      log('AdvancedFilterController::_autoCreateToEmailTag(): STATE: ${keyToEmailTagEditor.currentState}');
+      keyToEmailTagEditor.currentState?.resetTextField();
+      Future.delayed(const Duration(milliseconds: 300), () {
+        keyToEmailTagEditor.currentState?.closeSuggestionBox();
+      });
+    }
+  }
+
+  void _autoCreateEmailTag() {
+    final inputFromEmail = fromEmailAddressController.text;
+    final inputToEmail = toEmailAddressController.text;
+
+    if (inputFromEmail.isNotEmpty) {
+      _autoCreateFromEmailTag(inputFromEmail);
+    }
+
+    if (inputToEmail.isNotEmpty) {
+      _autoCreateToEmailTag(inputToEmail);
+    }
+  }
+
+  void handleFocusNextAddressAction() {
+    _autoCreateEmailTag();
+  }
+
+  void removeEmailAddress(EmailAddress emailAddress, AdvancedSearchFilterField field) {
+    log('AdvancedFilterController::removeEMailAddress: $emailAddress - $field');
+    switch(field) {
+      case AdvancedSearchFilterField.form:
+        listFromEmailAddress.remove(emailAddress);
+        fromAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      case AdvancedSearchFilterField.to:
+        listToEmailAddress.remove(emailAddress);
+        toAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      default:
+        break;
+    }
+  }
+
   void _resetAllToOriginalValue() {
     dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
     hasAttachment.value = false;
@@ -310,6 +457,8 @@ class AdvancedFilterController extends BaseController {
     hasKeyWordFilterInputController.clear();
     notKeyWordFilterInputController.clear();
     mailBoxFilterInputController.clear();
+    fromEmailAddressController.clear();
+    toEmailAddressController.clear();
   }
 
   void _registerWorkerListener() {
@@ -347,6 +496,8 @@ class AdvancedFilterController extends BaseController {
     hasKeyWordFilterInputController.dispose();
     notKeyWordFilterInputController.dispose();
     mailBoxFilterInputController.dispose();
+    toEmailAddressController.dispose();
+    fromEmailAddressController.dispose();
     _unregisterWorkerListener();
     super.onClose();
   }
