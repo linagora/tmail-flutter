@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/date_drop_down_button.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_autocomplete_email_adress.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_autocomplete_email_address_web.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -27,23 +27,39 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   @override
   Widget build(BuildContext context) {
     return FocusTraversalGroup(
-      child: Column(
+      child: Obx(() => Column(
         children: [
-          _buildSuggestionFilterField(
-            listTagSelected: controller.searchEmailFilter.from,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.form,
-            listTagInitial: controller.searchEmailFilter.from,
-            currentFocusNode: controller.focusManager.fromFieldFocusNode,
-            nextFocusNode: controller.focusManager.toFieldFocusNode
+          TextFieldAutocompleteEmailAddressWeb(
+            field: AdvancedSearchFilterField.form,
+            listEmailAddress: controller.listFromEmailAddress,
+            expandMode: controller.fromAddressExpandMode.value,
+            controller: controller.fromEmailAddressController,
+            focusNode: controller.focusManager.fromFieldFocusNode,
+            nextFocusNode: controller.focusManager.toFieldFocusNode,
+            autoDisposeFocusNode: false,
+            keyTagEditor: controller.keyFromEmailTagEditor,
+            onFocusEmailAddressChangeAction: controller.onEmailAddressFocusChange,
+            onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+            onUpdateListEmailAddressAction: controller.updateListEmailAddress,
+            onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
+            onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+            onRemoveEmailAddressAction: controller.removeEmailAddress,
           ),
-          _buildSuggestionFilterField(
-            listTagSelected: controller.searchEmailFilter.to,
-            context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.to,
-            listTagInitial: controller.searchEmailFilter.to,
-            currentFocusNode: controller.focusManager.toFieldFocusNode,
-            nextFocusNode: controller.focusManager.subjectFieldFocusNode
+          TextFieldAutocompleteEmailAddressWeb(
+            field: AdvancedSearchFilterField.to,
+            listEmailAddress: controller.listToEmailAddress,
+            expandMode: controller.toAddressExpandMode.value,
+            controller: controller.toEmailAddressController,
+            focusNode: controller.focusManager.toFieldFocusNode,
+            nextFocusNode: controller.focusManager.subjectFieldFocusNode,
+            autoDisposeFocusNode: false,
+            keyTagEditor: controller.keyToEmailTagEditor,
+            onFocusEmailAddressChangeAction: controller.onEmailAddressFocusChange,
+            onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+            onUpdateListEmailAddressAction: controller.updateListEmailAddress,
+            onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
+            onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+            onRemoveEmailAddressAction: controller.removeEmailAddress,
           ),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
@@ -101,7 +117,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           ]),
           AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
         ],
-      ),
+      )),
     );
   }
 
@@ -231,114 +247,6 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           textEditingController: textEditingController,
         );
     }
-  }
-
-  Widget _buildSuggestionFilterField({
-    required AdvancedSearchFilterField advancedSearchFilterField,
-    required BuildContext context,
-    required Set<String> listTagSelected,
-    required Set<String> listTagInitial,
-    FocusNode? currentFocusNode,
-    FocusNode? nextFocusNode,
-  }) {
-    final child = [
-      SizedBox(
-        width: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
-            ? null : 112,
-        child: Text(
-          advancedSearchFilterField.getTitle(context),
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColor.colorContentEmail,
-          ),
-        ),
-      ),
-      const Padding(padding: EdgeInsets.all(4)),
-      _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
-          ? TextFieldAutocompleteEmailAddress(
-              optionsBuilder: controller.getAutoCompleteSuggestion,
-              advancedSearchFilterField: advancedSearchFilterField,
-              initialTags: listTagInitial,
-              currentFocusNode: currentFocusNode,
-              nextFocusNode: nextFocusNode,
-              onAddTag: (value) {
-                if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
-                  controller.searchEmailFilter.from.add(value.trim());
-                  controller.lastTextForm.value = '';
-                }
-                if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
-                  controller.searchEmailFilter.to.add(value.trim());
-                  controller.lastTextTo.value = '';
-                }
-              },
-              onDeleteTag: (tag) {
-                if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
-                  controller.searchEmailFilter.from.remove(tag);
-                  controller.lastTextForm.value = '';
-                }
-                if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
-                  controller.searchEmailFilter.to.remove(tag);
-                  controller.lastTextTo.value = '';
-                }
-              },
-              onChange: (value) {
-                if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
-                  controller.lastTextForm.value = value.trim();
-                }
-                if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
-                  controller.lastTextTo.value = value.trim();
-                }
-              },
-            )
-          : Expanded(
-              child: TextFieldAutocompleteEmailAddress(
-                optionsBuilder: controller.getAutoCompleteSuggestion,
-                advancedSearchFilterField: advancedSearchFilterField,
-                initialTags: listTagInitial,
-                currentFocusNode: currentFocusNode,
-                nextFocusNode: nextFocusNode,
-                onAddTag: (value) {
-                  if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
-                    controller.searchEmailFilter.from.add(value.trim());
-                    controller.lastTextForm.value = '';
-                  }
-                  if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
-                    controller.searchEmailFilter.to.add(value.trim());
-                    controller.lastTextTo.value = '';
-                  }
-                },
-                onChange: (value) {
-                  if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
-                    controller.lastTextForm.value = value.trim();
-                  }
-                  if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
-                    controller.lastTextTo.value = value.trim();
-                  }
-                },
-                onDeleteTag: (tag) {
-                  if (advancedSearchFilterField == AdvancedSearchFilterField.form) {
-                    controller.searchEmailFilter.from.remove(tag);
-                    controller.lastTextForm.value = '';
-                  }
-                  if (advancedSearchFilterField == AdvancedSearchFilterField.to) {
-                    controller.searchEmailFilter.to.remove(tag);
-                    controller.lastTextTo.value = '';
-                  }
-                },
-              ),
-            )
-    ];
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: child,
-            )
-          : SizedBox(height: 44, child: Row(children: child)),
-    );
   }
 
   Widget _buildTextField({
