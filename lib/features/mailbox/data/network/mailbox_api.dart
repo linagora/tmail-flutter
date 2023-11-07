@@ -187,10 +187,8 @@ class MailboxAPI with HandleSetErrorMixin {
 
   Future<Map<Id, SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
     final coreCapability = session.getCapabilityProperties<CoreCapability>(
-      accountId,
-      CapabilityIdentifier.jmapCore
-    );
-    final maxMethodCount = coreCapability.maxCallsInRequest?.value.toInt() ?? CapabilityIdentifierExtension.defaultMaxCallsInRequest;
+        accountId, CapabilityIdentifier.jmapCore);
+    final maxMethodCount = coreCapability?.maxCallsInRequest?.value.toInt() ?? 0;
 
     final Map<Id,SetError> finalDeletedMailboxErrors = {};
     var start = 0;

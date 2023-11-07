@@ -683,7 +683,6 @@ class MailboxDashBoardController extends ReloadableController {
             {success.destinationMailboxId: [success.emailId]},
             success.currentMailboxId,
             MoveAction.undo,
-            sessionCurrent!,
             success.emailActionType
           ));
         },
@@ -909,7 +908,6 @@ class MailboxDashBoardController extends ReloadableController {
           {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       _moveSelectedEmailMultipleToMailboxAction(
@@ -919,7 +917,6 @@ class MailboxDashBoardController extends ReloadableController {
           {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToSpam));
     } else {
       _moveSelectedEmailMultipleToMailboxAction(
@@ -929,7 +926,6 @@ class MailboxDashBoardController extends ReloadableController {
           {currentMailbox.id: listEmailIds},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToMailbox,
           destinationPath: destinationMailbox.mailboxPath));
     }
@@ -973,7 +969,6 @@ class MailboxDashBoardController extends ReloadableController {
             mapListEmails,
             destinationMailbox.id,
             MoveAction.moving,
-            sessionCurrent!,
             EmailActionType.moveToTrash,
           ),
         );
@@ -985,7 +980,6 @@ class MailboxDashBoardController extends ReloadableController {
             mapListEmails,
             destinationMailbox.id,
             MoveAction.moving,
-            sessionCurrent!,
             EmailActionType.moveToSpam,
           ),
         );
@@ -997,7 +991,6 @@ class MailboxDashBoardController extends ReloadableController {
             mapListEmails,
             destinationMailbox.id,
             MoveAction.moving,
-            sessionCurrent!,
             EmailActionType.moveToMailbox,
             destinationPath: destinationMailbox.mailboxPath,
           ),
@@ -1057,7 +1050,6 @@ class MailboxDashBoardController extends ReloadableController {
               {newCurrentMailboxId: movedEmailIds},
               newDestinationMailboxId,
               MoveAction.undo,
-              sessionCurrent!,
               emailActionType!,
               destinationPath: destinationPath
             ));
@@ -1091,7 +1083,6 @@ class MailboxDashBoardController extends ReloadableController {
           {mailboxCurrent.id: listEmails.listEmailIds},
           trashMailboxId,
           MoveAction.moving,
-          sessionCurrent!,
           EmailActionType.moveToTrash)
       );
     }
@@ -1107,7 +1098,6 @@ class MailboxDashBoardController extends ReloadableController {
           {mailboxCurrent.id: listEmail.listEmailIds},
           spamMailboxId,
           MoveAction.moving,
-          sessionCurrent!,
           EmailActionType.moveToSpam)
       );
     }
@@ -1124,7 +1114,6 @@ class MailboxDashBoardController extends ReloadableController {
           {spamMailboxId: listEmail.listEmailIds},
           inboxMailboxId,
           MoveAction.moving,
-          sessionCurrent!,
           EmailActionType.unSpam)
       );
     }
@@ -1306,7 +1295,7 @@ class MailboxDashBoardController extends ReloadableController {
     try {
       if (sessionCurrent != null && accountId.value != null) {
         final mailCapability = sessionCurrent!.getCapabilityProperties<MailCapability>(accountId.value!, CapabilityIdentifier.jmapMail);
-        final maxSizeAttachmentsPerEmail = mailCapability.maxSizeAttachmentsPerEmail;
+        final maxSizeAttachmentsPerEmail = mailCapability?.maxSizeAttachmentsPerEmail;
         log('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): $maxSizeAttachmentsPerEmail');
         return maxSizeAttachmentsPerEmail;
       }
