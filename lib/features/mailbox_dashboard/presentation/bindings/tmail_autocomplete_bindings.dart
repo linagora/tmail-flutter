@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/auto_complete_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/auto_complete_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 
 class TMailAutoCompleteBindings extends BaseBindings {
@@ -25,9 +25,9 @@ class TMailAutoCompleteBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.put(GetAutoCompleteInteractor(Get.find<AutoCompleteRepository>()));
-    Get.put(GetAutoCompleteWithDeviceContactInteractor(
-        Get.find<GetAutoCompleteInteractor>(),
-        Get.find<GetDeviceContactSuggestionsInteractor>()
+    Get.put(GetAllAutoCompleteInteractor(
+      Get.find<GetAutoCompleteInteractor>(),
+      Get.find<GetDeviceContactSuggestionsInteractor>()
     ));
   }
 

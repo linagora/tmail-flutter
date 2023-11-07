@@ -9,18 +9,19 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ForwardRecipientController {
 
   final ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
   final TextEditingController inputRecipientController = TextEditingController();
 
-  GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
+  GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   AccountId? _accountId;
   Session? _session;
@@ -43,8 +44,6 @@ class ForwardRecipientController {
       ContactAutoCompleteBindings().dependencies();
       requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
       TMailAutoCompleteBindings().dependencies();
-      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
     } catch (e) {
       logError('ForwardRecipientController::injectAutoCompleteBindings(): exception: $e');
     }
@@ -52,12 +51,15 @@ class ForwardRecipientController {
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
     log('ForwardRecipientController::getAutoCompleteSuggestion(): $word');
+    _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
+    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAutoCompleteWithDeviceContactInteractor == null || _getAutoCompleteInteractor == null) {
-        log('ForwardRecipientController::getAutoCompleteSuggestion(): _getAutoCompleteWithDeviceContactInteractor is NULL');
+      if (_getAllAutoCompleteInteractor == null || _getAutoCompleteInteractor == null) {
+        log('ForwardRecipientController::getAutoCompleteSuggestion(): _getAllAutoCompleteInteractor is NULL');
         return <EmailAddress>[];
       } else {
-        return await _getAutoCompleteWithDeviceContactInteractor!
+        return await _getAllAutoCompleteInteractor!
           .execute(AutoCompletePattern(word: word, accountId: _accountId))
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],

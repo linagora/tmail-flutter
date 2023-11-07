@@ -18,9 +18,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as web_html_editor;
 import 'package:http_parser/http_parser.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -44,7 +42,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -129,7 +127,7 @@ class ComposerController extends BaseController {
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
 
-  GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
+  GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
@@ -1029,34 +1027,19 @@ class ComposerController extends BaseController {
     }
   }
 
-  @override
-  void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
-    try {
-      super.injectAutoCompleteBindings(session, accountId);
-      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
-    } catch (e) {
-      logError('ComposerController::injectAutoCompleteBindings(): $e');
-    }
-  }
-
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
     log('ComposerController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
-    try {
-      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
-    } catch (e) {
-      logError('ComposerController::getAutoCompleteSuggestion(): Exception $e');
-    }
+    _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
+    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
 
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAutoCompleteWithDeviceContactInteractor == null || _getAutoCompleteInteractor == null) {
+      if (_getAllAutoCompleteInteractor == null || _getAutoCompleteInteractor == null) {
         return <EmailAddress>[];
       }
 
-      final listEmailAddress = await _getAutoCompleteWithDeviceContactInteractor!
+      final listEmailAddress = await _getAllAutoCompleteInteractor!
         .execute(AutoCompletePattern(word: word, accountId: accountId))
         .then((value) => value.fold(
           (failure) => <EmailAddress>[],
