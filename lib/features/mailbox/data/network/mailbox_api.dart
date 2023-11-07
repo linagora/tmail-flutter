@@ -197,12 +197,15 @@ class MailboxAPI with HandleSetErrorMixin {
 
   Future<Map<Id, SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
     final coreCapability = session.getCapabilityProperties<CoreCapability>(
-        accountId, CapabilityIdentifier.jmapCore);
-    final maxMethodCount = coreCapability?.maxCallsInRequest?.value.toInt() ?? 0;
+      accountId,
+      CapabilityIdentifier.jmapCore
+    );
+    int maxMethodCount = coreCapability?.maxCallsInRequest?.value.toInt() ?? CapabilityIdentifierExtension.defaultMaxCallsInRequest;
+    log('MailboxAPI::deleteMultipleMailbox:maxMethodCount: $maxMethodCount');
 
     final Map<Id,SetError> finalDeletedMailboxErrors = {};
-    var start = 0;
-    var end = 0;
+    int start = 0;
+    int end = 0;
     while (end < mailboxIds.length) {
       start = end;
       if (mailboxIds.length - start >= maxMethodCount) {
@@ -282,10 +285,7 @@ class MailboxAPI with HandleSetErrorMixin {
     if (setMailboxResponse?.updated?.containsKey(request.mailboxId.id) == true) {
       return true;
     } else {
-      final listEntriesErrors = handleSetResponse([
-        setMailboxResponse,
-      ]);
-      final mapErrors = Map.fromEntries(listEntriesErrors);
+      final mapErrors = handleSetResponse([setMailboxResponse]);
       throw SetMethodException(mapErrors);
     }
   }
