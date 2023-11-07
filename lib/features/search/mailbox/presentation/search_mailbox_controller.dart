@@ -509,7 +509,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
     }
 
-    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      mailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _handleSubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess success) {
@@ -527,7 +530,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
     }
 
-    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      mailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _handleSubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess success) {
@@ -545,7 +551,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       }
     }
 
-    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      mailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _showToastSubscribeMailboxSuccess(
