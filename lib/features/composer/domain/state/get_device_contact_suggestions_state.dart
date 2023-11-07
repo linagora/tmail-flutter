@@ -1,14 +1,14 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:model/contact/contact.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 
 class GetDeviceContactSuggestionsSuccess extends UIState {
-  final List<Contact> results;
+  final List<EmailAddress> listEmailAddress;
 
-  GetDeviceContactSuggestionsSuccess(this.results);
+  GetDeviceContactSuggestionsSuccess(this.listEmailAddress);
 
   @override
-  List<Object> get props => [results];
+  List<Object> get props => [listEmailAddress];
 }
 
 class GetDeviceContactSuggestionsFailure extends FeatureFailure {
