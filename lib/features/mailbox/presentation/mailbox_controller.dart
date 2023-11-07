@@ -1117,7 +1117,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     }
 
-    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      currentMailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _handleUnsubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess success) {
@@ -1133,7 +1136,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     }
 
-    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      currentMailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _handleUnsubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess success) {
@@ -1149,7 +1155,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     }
 
-    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      currentMailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _closeEmailViewIfMailboxDisabledOrNotExist(List<MailboxId> mailboxIdsDisabled) {
