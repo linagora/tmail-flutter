@@ -407,7 +407,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       );
     }
 
-    _refreshMailboxChanges(mailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      mailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _undoMovingMailbox(MoveMailboxRequest newMoveRequest) {
