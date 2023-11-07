@@ -204,12 +204,11 @@ class EmailAPI with HandleSetErrorMixin {
     }
 
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final listEntriesErrors = handleSetResponse([
+    final mapErrors = handleSetResponse([
       setEmailResponse,
       setEmailSubmissionResponse,
       markAsAnsweredOrForwardedSetResponse
     ]);
-    final mapErrors = Map.fromEntries(listEntriesErrors);
 
     if (emailCreated != null && mapErrors.isEmpty) {
       return true;
@@ -482,8 +481,7 @@ class EmailAPI with HandleSetErrorMixin {
     );
 
     final emailCreated = setEmailResponse?.created?[idCreateMethod];
-    final listEntriesErrors = handleSetResponse([setEmailResponse]);
-    final mapErrors = Map.fromEntries(listEntriesErrors);
+    final mapErrors = handleSetResponse([setEmailResponse]);
 
     if (emailCreated != null && mapErrors.isEmpty) {
       return emailCreated;
@@ -549,8 +547,7 @@ class EmailAPI with HandleSetErrorMixin {
 
     final emailUpdated = setEmailResponse?.created?[idCreateMethod];
     final isEmailDeleted = setEmailResponse?.destroyed?.contains(oldEmailId.id);
-    final listEntriesErrors = handleSetResponse([setEmailResponse]);
-    final mapErrors = Map.fromEntries(listEntriesErrors);
+    final mapErrors = handleSetResponse([setEmailResponse]);
 
     if (emailUpdated != null && isEmailDeleted == true && mapErrors.isEmpty) {
       return emailUpdated;
