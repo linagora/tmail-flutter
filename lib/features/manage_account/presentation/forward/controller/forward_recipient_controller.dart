@@ -9,8 +9,10 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -23,6 +25,7 @@ class ForwardRecipientController {
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
+  GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
   AccountId? _accountId;
   Session? _session;
 
@@ -53,11 +56,21 @@ class ForwardRecipientController {
     log('ForwardRecipientController::getAutoCompleteSuggestion(): $word');
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+    _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAllAutoCompleteInteractor == null || _getAutoCompleteInteractor == null) {
-        log('ForwardRecipientController::getAutoCompleteSuggestion(): _getAllAutoCompleteInteractor is NULL');
+      if (_getAllAutoCompleteInteractor == null && _getDeviceContactSuggestionsInteractor == null) {
         return <EmailAddress>[];
+      } else if (_getDeviceContactSuggestionsInteractor != null) {
+        final listEmailAddress = await _getDeviceContactSuggestionsInteractor!
+            .execute(AutoCompletePattern(word: word, accountId: _accountId))
+            .then((value) => value.fold(
+                (failure) => <EmailAddress>[],
+                (success) => success is GetDeviceContactSuggestionsSuccess
+                  ? success.listEmailAddress
+                  : <EmailAddress>[]
+        ));
+        return listEmailAddress;
       } else {
         return await _getAllAutoCompleteInteractor!
           .execute(AutoCompletePattern(word: word, accountId: _accountId))
