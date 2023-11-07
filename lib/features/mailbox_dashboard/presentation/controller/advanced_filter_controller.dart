@@ -3,8 +3,6 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -13,7 +11,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_with_device_contact_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -33,7 +31,7 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class AdvancedFilterController extends BaseController {
-  GetAutoCompleteWithDeviceContactInteractor? _getAutoCompleteWithDeviceContactInteractor;
+  GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
@@ -190,35 +188,18 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  @override
-  void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
-    try {
-      super.injectAutoCompleteBindings(session, accountId);
-      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
-    } catch (e) {
-      logError('AdvancedFilterController::injectAutoCompleteBindings(): $e');
-    }
-  }
-
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
     log('AdvancedFilterController::getAutoCompleteSuggestion():  $word | $_contactSuggestionSource');
-    final accountId = _mailboxDashBoardController.accountId.value;
-
-    try {
-      _getAutoCompleteWithDeviceContactInteractor = Get.find<GetAutoCompleteWithDeviceContactInteractor>();
-      _getAutoCompleteInteractor = Get.find<GetAutoCompleteInteractor>();
-    } catch (e) {
-      logError('AdvancedFilterController::getAutoCompleteSuggestion(): Exception $e');
-    }
+    _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
+    _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAutoCompleteWithDeviceContactInteractor == null || _getAutoCompleteInteractor == null) {
+      if (_getAllAutoCompleteInteractor == null || _getAutoCompleteInteractor == null) {
         return <EmailAddress>[];
       }
 
-      final listEmailAddress = await _getAutoCompleteWithDeviceContactInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: accountId))
+      final listEmailAddress = await _getAllAutoCompleteInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: _mailboxDashBoardController.accountId.value))
           .then((value) => value.fold(
               (failure) => <EmailAddress>[],
               (success) => success is GetAutoCompleteSuccess
@@ -231,7 +212,7 @@ class AdvancedFilterController extends BaseController {
       }
 
       final listEmailAddress = await _getAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: accountId))
+          .execute(AutoCompletePattern(word: word, accountId: _mailboxDashBoardController.accountId.value))
           .then((value) => value.fold(
               (failure) => <EmailAddress>[],
               (success) => success is GetAutoCompleteSuccess
