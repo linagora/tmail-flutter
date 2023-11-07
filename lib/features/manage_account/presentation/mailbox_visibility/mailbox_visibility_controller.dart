@@ -7,12 +7,14 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
@@ -166,7 +168,10 @@ class MailboxVisibilityController extends BaseMailboxController {
         _showToastSubscribeMailboxSuccess(subscribeMailboxSuccess.mailboxId);
     }
 
-    _refreshMailboxChanges(subscribeMailboxSuccess.currentMailboxState);
+    _refreshMailboxChanges(
+      newMailboxState: subscribeMailboxSuccess.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _handleUnsubscribeMultipleMailboxHasSomeSuccess(SubscribeMultipleMailboxHasSomeSuccess subscribeMailboxSuccess) {
@@ -177,7 +182,10 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
     }
 
-    _refreshMailboxChanges(subscribeMailboxSuccess.currentMailboxState);
+    _refreshMailboxChanges(
+      newMailboxState: subscribeMailboxSuccess.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _handleUnsubscribeMultipleMailboxAllSuccess(SubscribeMultipleMailboxAllSuccess subscribeMailboxSuccess) {
@@ -188,15 +196,23 @@ class MailboxVisibilityController extends BaseMailboxController {
       );
     }
 
-    _refreshMailboxChanges(subscribeMailboxSuccess.currentMailboxState);
+    _refreshMailboxChanges(
+      newMailboxState: subscribeMailboxSuccess.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
-  void _refreshMailboxChanges(jmap.State? newMailboxState) {
+  void _refreshMailboxChanges({jmap.State? newMailboxState, Properties? properties}) {
     final session = _accountDashBoardController.sessionCurrent;
     final accountId = _accountDashBoardController.accountId.value;
     final mailboxState = newMailboxState ?? currentMailboxState;
     if (session != null && accountId != null && mailboxState != null) {
-      refreshMailboxChanges(session, accountId, mailboxState);
+      refreshMailboxChanges(
+        session,
+        accountId,
+        mailboxState,
+        properties: properties
+      );
     }
   }
 
