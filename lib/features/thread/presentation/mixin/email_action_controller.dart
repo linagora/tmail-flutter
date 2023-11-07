@@ -60,7 +60,6 @@ mixin EmailActionController {
           {mailboxContain.id: email.id != null ? [email.id!] : []},
           trashMailboxId,
           MoveAction.moving,
-          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToTrash)
       );
     }
@@ -83,7 +82,6 @@ mixin EmailActionController {
           {mailboxContain.id: email.id != null ? [email.id!] : []},
           spamMailboxId,
           MoveAction.moving,
-          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToSpam)
       );
     }
@@ -103,7 +101,6 @@ mixin EmailActionController {
           {spamMailboxId: email.id != null ? [email.id!] : []},
           inboxMailboxId,
           MoveAction.moving,
-          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.unSpam)
       );
     }
@@ -164,7 +161,6 @@ mixin EmailActionController {
           {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       moveToSpamAction(
@@ -174,7 +170,6 @@ mixin EmailActionController {
           {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToSpam));
     } else {
       _moveToMailboxAction(
@@ -184,7 +179,6 @@ mixin EmailActionController {
           {currentMailbox.id: emailSelected.id != null ? [emailSelected.id!] : []},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToMailbox,
           destinationPath: destinationMailbox.mailboxPath));
     }
