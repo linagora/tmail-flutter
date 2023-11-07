@@ -869,7 +869,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           actionIcon: SvgPicture.asset(_imagePaths.icUndo));
     }
 
-    _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+    _refreshMailboxChanges(
+      currentMailboxState: success.currentMailboxState,
+      properties: MailboxConstants.propertiesDefault
+    );
   }
 
   void _undoMovingMailbox(MoveMailboxRequest newMoveRequest) {
