@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -27,6 +28,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -170,7 +172,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
       _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
     } else if (success is RenameMailboxSuccess) {
-      _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+      _refreshMailboxChanges(
+        currentMailboxState: success.currentMailboxState,
+        properties: MailboxConstants.propertiesDefault
+      );
     } else if (success is MoveMailboxSuccess) {
       _moveMailboxSuccess(success);
     } else if (success is SubscribeMailboxSuccess) {
@@ -315,14 +320,19 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
   
-  void _refreshMailboxChanges({jmap.State? currentMailboxState}) {
+  void _refreshMailboxChanges({jmap.State? currentMailboxState, Properties? properties}) {
     log('MailboxController::_refreshMailboxChanges(): currentMailboxState: $currentMailboxState');
     final newMailboxState = currentMailboxState ?? this.currentMailboxState;
     log('MailboxController::_refreshMailboxChanges(): newMailboxState: $newMailboxState');
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null && newMailboxState != null) {
-      refreshMailboxChanges(session, accountId, newMailboxState);
+      refreshMailboxChanges(
+        session,
+        accountId,
+        newMailboxState,
+        properties: properties
+      );
     } else {
       _newFolderId = null;
     }
@@ -1058,6 +1068,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _handleGetAllMailboxSuccess(GetAllMailboxSuccess success) async {
     currentMailboxState = success.currentMailboxState;
+    log('MailboxController::_handleGetAllMailboxSuccess:currentMailboxState: $currentMailboxState');
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
     await buildTree(listMailboxDisplayed);
     if (currentContext != null) {
@@ -1067,6 +1078,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _handleRefreshChangesAllMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {
     currentMailboxState = success.currentMailboxState;
+    log('MailboxController::_handleRefreshChangesAllMailboxSuccess:currentMailboxState: $currentMailboxState');
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
     await refreshTree(listMailboxDisplayed);
     if (currentContext != null) {

@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -24,6 +25,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -153,7 +155,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
       _refreshMailboxChanges(mailboxState: success.currentMailboxState);
     } else if (success is RenameMailboxSuccess) {
-      _refreshMailboxChanges(mailboxState: success.currentMailboxState);
+      _refreshMailboxChanges(
+        mailboxState: success.currentMailboxState,
+        properties: MailboxConstants.propertiesDefault
+      );
     } else if (success is MoveMailboxSuccess) {
       _moveMailboxSuccess(success);
     } else if (success is DeleteMultipleMailboxAllSuccess) {
@@ -192,13 +197,18 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     }
   }
 
-  void _refreshMailboxChanges({jmap.State? mailboxState}) {
+  void _refreshMailboxChanges({jmap.State? mailboxState, Properties? properties}) {
     dashboardController.dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
     final newMailboxState = mailboxState ?? currentMailboxState;
     final accountId = dashboardController.accountId.value;
     final session = dashboardController.sessionCurrent;
     if (session != null && accountId != null && newMailboxState != null) {
-      refreshMailboxChanges(session, accountId, newMailboxState);
+      refreshMailboxChanges(
+        session,
+        accountId,
+        newMailboxState,
+        properties: properties
+      );
     }
   }
 

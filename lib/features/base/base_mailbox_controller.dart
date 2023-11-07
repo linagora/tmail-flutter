@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -530,13 +531,17 @@ abstract class BaseMailboxController extends BaseController {
   void refreshMailboxChanges(
     Session session,
     AccountId accountId,
-    jmap.State currentMailboxState
+    jmap.State currentMailboxState,
+    {Properties? properties}
   ) {
     if (refreshAllMailboxInteractor != null) {
       log('BaseMailboxController::refreshMailboxChanges(): currentMailboxState: $currentMailboxState');
-      final newMailboxState = currentMailboxState;
-      log('BaseMailboxController::refreshMailboxChanges(): newMailboxState: $newMailboxState');
-      consumeState(refreshAllMailboxInteractor!.execute(session, accountId, newMailboxState));
+      consumeState(refreshAllMailboxInteractor!.execute(
+        session,
+        accountId,
+        currentMailboxState,
+        properties: properties
+      ));
     }
   }
 
