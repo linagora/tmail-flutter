@@ -56,20 +56,20 @@ mixin HandleSetErrorMixin {
     }
   }
 
-  List<MapEntry<Id, SetError>> handleSetResponse(List<SetResponse?> listSetResponse) {
+  Map<Id, SetError> handleSetResponse(List<SetResponse?> listSetResponse) {
     final listSetResponseNotNull = listSetResponse.whereNotNull().toList();
     if (listSetResponseNotNull.isEmpty) {
-      return [];
+      return <Id, SetError>{};
     }
 
-    final List<MapEntry<Id, SetError>> remainedErrors = [];
+    final Map<Id, SetError> remainedErrors = <Id, SetError>{};
     for (var response in listSetResponseNotNull) {
       handleSetErrors(
         notDestroyedError: response.notDestroyed,
         notUpdatedError: response.notUpdated,
         notCreatedError: response.notCreated,
         unCatchErrorHandler: (setErrorEntry) {
-          remainedErrors.add(setErrorEntry);
+          remainedErrors.addEntries({setErrorEntry});
           return false;
         }
       );
