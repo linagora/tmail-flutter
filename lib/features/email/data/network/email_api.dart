@@ -365,20 +365,14 @@ class EmailAPI with HandleSetErrorMixin {
     AccountId accountId,
     MoveToMailboxRequest moveRequest
   ) async {
-    requireCapability(
-      moveRequest.session,
-      accountId,
-      [CapabilityIdentifier.jmapCore, CapabilityIdentifier.jmapMail]
-    );
-
-    final coreCapability = moveRequest.session.getCapabilityProperties<CoreCapability>(
+    final coreCapability = session.getCapabilityProperties<CoreCapability>(
       accountId,
       CapabilityIdentifier.jmapCore
     );
-    final maxMethodCount = coreCapability.maxCallsInRequest?.value.toInt() ?? CapabilityIdentifierExtension.defaultMaxCallsInRequest;
-
-    var start = 0;
-    var end = 0;
+    int maxMethodCount = coreCapability?.maxCallsInRequest?.value.toInt() ?? CapabilityIdentifierExtension.defaultMaxCallsInRequest;
+    log('EmailAPI::moveToMailbox:maxMethodCount: $maxMethodCount');
+    int start = 0;
+    int end = 0;
 
     final List<EmailId> listEmailIdResult = List.empty(growable: true);
     final listCurrentMailboxesEntries = moveRequest.currentMailboxes.entries.toList();

@@ -35,15 +35,19 @@ extension SessionExtension on Session {
     return Uri.parse(uploadUri);
   }
 
-  T getCapabilityProperties<T extends CapabilityProperties>(
+  T? getCapabilityProperties<T extends CapabilityProperties>(
     AccountId accountId,
     CapabilityIdentifier identifier
   ) {
-    var capability = accounts[accountId]!.accountCapabilities[identifier];
-    if (capability is EmptyCapability) {
-      capability = capabilities[identifier] as T;
+    var capability = accounts[accountId]?.accountCapabilities[identifier];
+    if (capability == null || capability is EmptyCapability) {
+      capability = capabilities[identifier];
     }
-    return (capability as T);
+    if (capability is T) {
+      return capability;
+    } else {
+      return null;
+    }
   }
 
   JmapAccount get personalAccount {
