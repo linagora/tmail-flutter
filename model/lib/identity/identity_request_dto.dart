@@ -12,8 +12,8 @@ part 'identity_request_dto.g.dart';
 
 @IdentityIdNullableConverter()
 @SignatureNullableConverter()
-@JsonSerializable()
 @UnsignedIntNullableConverter()
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class IdentityRequestDto with EquatableMixin {
 
   final String? name;
