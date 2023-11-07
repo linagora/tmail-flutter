@@ -788,7 +788,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToTrash));
     } else if (destinationMailbox.isSpam) {
       _moveToSpamAction(
@@ -799,7 +798,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToSpam));
     } else {
       _moveToMailbox(
@@ -810,7 +808,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           {currentMailbox.id: [emailSelected.id!]},
           destinationMailbox.id,
           MoveAction.moving,
-          session,
           EmailActionType.moveToMailbox,
           destinationPath: destinationMailbox.mailboxPath));
     }
@@ -833,7 +830,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               {success.destinationMailboxId: [success.emailId]},
               success.currentMailboxId,
               MoveAction.undo,
-              mailboxDashBoardController.sessionCurrent!,
               success.emailActionType));
         },
         leadingSVGIcon: imagePaths.icFolderMailbox,
@@ -868,7 +864,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           {currentMailbox.id: [email.id!]},
           trashMailboxId,
           MoveAction.moving,
-          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToTrash)
       );
     }
@@ -899,7 +894,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           {currentMailbox.id: [email.id!]},
           spamMailboxId,
           MoveAction.moving,
-          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.moveToSpam)
       );
     }
@@ -920,7 +914,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           {spamMailboxId: [email.id!]},
           inboxMailboxId,
           MoveAction.moving,
-          mailboxDashBoardController.sessionCurrent!,
           EmailActionType.unSpam)
       );
     }
