@@ -52,16 +52,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return 0;
     }
   },
-  B, A, D, E, G, F, J, H;
+  B, A, D, F, E, J, G;
   C = hunkHelpers.updateHolder(holdersList[8], C);
   B = holdersList[2];
   A = holdersList[0];
   D = holdersList[12];
-  E = holdersList[13];
-  G = holdersList[14];
-  F = holdersList[11];
+  F = holdersList[13];
+  E = holdersList[11];
   J = holdersList[1];
-  H = holdersList[9];
+  G = holdersList[9];
   C.ContactView.prototype = {
     build$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, _this = this, _null = null,
@@ -94,13 +93,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t14 = t7._as(t6.get(_this)).get$onTextSearchChange();
       A.Expando__checkType(_this);
-      return A.Scaffold$(_null, B.Color_1627389952, A.GestureDetector$(_null, A.SafeArea$(false, A.Container$(_null, A.ClipRRect$(new A.BorderRadius(new A.Radius(t4, t4), new A.Radius(t1, t1), B.Radius_0_0, B.Radius_0_0), A.SafeArea$(true, A.Container$(_null, A.Column$(A._setArrayType([t5, D.Divider_6xV, A.SearchAppBarWidget$(E.BoxDecoration_Oi2, false, true, 44, t12, t11, _this._imagePaths, G.EdgeInsets_16_10_16_10, t13, t7._as(t6.get(_this)).get$onSearchTextAction(), t14, B.EdgeInsets_0_0_0_0, t9, t10, t8), A.Expanded$(new A.Obx(new C.ContactView_build_closure0(_this), _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, B.EdgeInsets_0_0_0_0, true, true), B.Clip_2), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, _null, new A.BorderRadius(new A.Radius(t2, t2), new A.Radius(t3, t3), B.Radius_0_0, B.Radius_0_0), _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), false, B.EdgeInsets_0_0_0_0, false, false), B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.ContactView_build_closure1(context), _null, _null, _null, _null, _null, _null, _null), _null, _null, true, _null, _null, _null);
+      return A.Scaffold$(_null, B.Color_1627389952, A.GestureDetector$(_null, A.SafeArea$(false, A.Container$(_null, A.ClipRRect$(new A.BorderRadius(new A.Radius(t4, t4), new A.Radius(t1, t1), B.Radius_0_0, B.Radius_0_0), A.SafeArea$(true, A.Container$(_null, A.Column$(A._setArrayType([t5, D.Divider_6xV, A.SearchAppBarWidget$(B.BoxDecoration_Oi2, false, true, 44, t12, t11, _this._imagePaths, F.EdgeInsets_16_10_16_10, t13, t7._as(t6.get(_this)).get$onSearchTextAction(), t14, B.EdgeInsets_0_0_0_0, t9, t10, t8), A.Expanded$(new A.Obx(new C.ContactView_build_closure0(_this), _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, B.EdgeInsets_0_0_0_0, true, true), B.Clip_2), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, _null, new A.BorderRadius(new A.Radius(t2, t2), new A.Radius(t3, t3), B.Radius_0_0, B.Radius_0_0), _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), false, B.EdgeInsets_0_0_0_0, false, false), B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.ContactView_build_closure1(context), _null, _null, _null, _null, _null, _null, _null), _null, _null, true, _null, _null, _null);
     },
     _toSuggestionEmailAddress$2(item, addedEmailAddresses) {
       if (B.JSArray_methods.contains$1(addedEmailAddresses, item))
-        return new F.SuggestionEmailAddress(item, D.SuggestionEmailState_1);
+        return new E.SuggestionEmailAddress(item, D.SuggestionEmailState_1);
       else
-        return new F.SuggestionEmailAddress(item, D.SuggestionEmailState_0);
+        return new E.SuggestionEmailAddress(item, D.SuggestionEmailState_0);
     }
   };
   C.AppBarContactWidget.prototype = {
@@ -155,7 +154,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Padding(B.EdgeInsets_16_0_16_0, B.Divider_I9g, null);
     },
-    $signature: 187
+    $signature: 184
   };
   C.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -177,7 +176,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t4;
       } else
         t2 = A._setArrayType([], t4);
-      return new H.ContactSuggestionBoxItem(t1._toSuggestionEmailAddress$2(emailAddress, t2), new C.ContactView_build___closure(t1, context), G.EdgeInsets_16_10_16_10, null, null);
+      return new G.ContactSuggestionBoxItem(t1._toSuggestionEmailAddress$2(emailAddress, t2), new C.ContactView_build___closure(t1, context), F.EdgeInsets_16_10_16_10, null, null);
     },
     $signature: typesOffset + 0
   };
@@ -191,7 +190,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 75
+    $signature: 79
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -210,9 +209,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     JSArray_Widget: A.findType("JSArray<Widget>"),
     ResponsiveUtils: A.findType("ResponsiveUtils0")
   };
-  (function constants() {
-    E.BoxDecoration_Oi2 = new A.BoxDecoration(B.Color_2582375920, null, null, B.BorderRadius_tLn7, null, null, null, B.BoxShape_0);
-  })();
 };
 
-$__dart_deferred_initializers__["ZXxsczlpYwYhUmBPs/CY9TNVPSU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["kNykM89plX1MaY6CEDo9xL5KH08="] = $__dart_deferred_initializers__.current
