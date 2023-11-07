@@ -13,8 +13,10 @@ import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -31,6 +33,7 @@ class ContactController extends BaseController {
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
+  GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
 
   final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 500), initialValue: '');
   AccountId? _accountId;
@@ -119,10 +122,21 @@ class ContactController extends BaseController {
   Future<List<EmailAddress>> _getAutoCompleteSuggestion(String query) async {
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+    _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAllAutoCompleteInteractor == null || _getAutoCompleteInteractor == null) {
+      if (_getAllAutoCompleteInteractor == null && _getDeviceContactSuggestionsInteractor == null) {
         return <EmailAddress>[];
+      } else if (_getDeviceContactSuggestionsInteractor != null) {
+        final listEmailAddress = await _getDeviceContactSuggestionsInteractor!
+          .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
+          .then((value) => value.fold(
+            (failure) => <EmailAddress>[],
+            (success) => success is GetDeviceContactSuggestionsSuccess
+              ? success.listEmailAddress
+              : <EmailAddress>[]
+          ));
+        return listEmailAddress;
       }
 
       final listEmailAddress = await _getAllAutoCompleteInteractor!

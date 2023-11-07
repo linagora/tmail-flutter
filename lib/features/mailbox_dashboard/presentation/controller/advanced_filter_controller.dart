@@ -10,8 +10,10 @@ import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -33,6 +35,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class AdvancedFilterController extends BaseController {
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
+  GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
 
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final hasAttachment = false.obs;
@@ -192,10 +195,21 @@ class AdvancedFilterController extends BaseController {
     log('AdvancedFilterController::getAutoCompleteSuggestion():  $word | $_contactSuggestionSource');
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
+    _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAllAutoCompleteInteractor == null || _getAutoCompleteInteractor == null) {
+      if (_getAllAutoCompleteInteractor == null && _getDeviceContactSuggestionsInteractor == null) {
         return <EmailAddress>[];
+      } else if (_getDeviceContactSuggestionsInteractor != null) {
+        final listEmailAddress = await _getDeviceContactSuggestionsInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: _mailboxDashBoardController.accountId.value))
+          .then((value) => value.fold(
+            (failure) => <EmailAddress>[],
+            (success) => success is GetDeviceContactSuggestionsSuccess
+              ? success.listEmailAddress
+              : <EmailAddress>[]
+          ));
+        return listEmailAddress;
       }
 
       final listEmailAddress = await _getAllAutoCompleteInteractor!
