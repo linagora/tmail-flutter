@@ -21,7 +21,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   E = holdersList[11];
   B = holdersList[0];
   D = holdersList[12];
-  F = holdersList[14];
+  F = holdersList[13];
   C.ContactSuggestionBoxItem.prototype = {
     build$1(context) {
       var t1, t2, t3, t4, t5, t6, itemChild, _this = this, _null = null;
@@ -76,4 +76,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["1Z2LXE7DM5ChM+Zm1XIelshM+TU="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["iqIhR+y4GsutPbfNzPucyLsF+XM="] = $__dart_deferred_initializers__.current
