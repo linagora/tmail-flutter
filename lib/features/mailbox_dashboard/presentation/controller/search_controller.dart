@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +28,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_bottom_sheet.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -39,8 +37,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;
   final GetAllRecentSearchLatestInteractor _getAllRecentSearchLatestInteractor;
-
-  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final searchInputController = TextEditingController();
   final searchEmailFilter = SearchEmailFilter.initial().obs;
@@ -60,8 +56,12 @@ class SearchController extends BaseController with DateRangePickerMixin {
     this._getAllRecentSearchLatestInteractor,
   );
 
-  void selectOpenAdvanceSearch() {
-    isAdvancedSearchViewOpen.toggle();
+  void openAdvanceSearch() {
+    isAdvancedSearchViewOpen.value = true;
+  }
+
+  void closeAdvanceSearch() {
+    isAdvancedSearchViewOpen.value = false;
   }
 
   void clearSearchFilter() {
@@ -79,10 +79,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
         updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.allTime);
         return;
       case QuickSearchFilter.fromMe:
-        isFilterSelected
-          ? searchEmailFilter.value.from.removeWhere((e) => e == userProfile.email)
-          : searchEmailFilter.value.from.add(userProfile.email);
-        updateFilterEmail(fromOption: Some(searchEmailFilter.value.from));
+        final newListEmailAddress = isFilterSelected ? <String>{} : <String>{userProfile.email};
+        updateFilterEmail(fromOption: Some(newListEmailAddress));
         return;
     }
   }
@@ -242,14 +240,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
             (success) => success is GetAllRecentSearchLatestSuccess
                 ? success.listRecentSearch
                 : <RecentSearch>[]));
-  }
-
-  void showAdvancedFilterView(BuildContext context) async {
-    selectOpenAdvanceSearch();
-    if (_responsiveUtils.isMobile(context)) {
-      await showAdvancedSearchFilterBottomSheet(context);
-      selectOpenAdvanceSearch();
-    }
   }
 
   void activateSimpleSearch() {
