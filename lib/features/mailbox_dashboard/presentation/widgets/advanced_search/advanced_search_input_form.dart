@@ -30,7 +30,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       child: Obx(() => Column(
         children: [
           TextFieldAutocompleteEmailAddressWeb(
-            field: AdvancedSearchFilterField.form,
+            field: AdvancedSearchFilterField.from,
             listEmailAddress: controller.listFromEmailAddress,
             expandMode: controller.fromAddressExpandMode.value,
             controller: controller.fromEmailAddressController,
@@ -40,7 +40,6 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onShowFullListEmailAddressAction: controller.showFullEmailAddress,
             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
-            onRemoveEmailAddressAction: controller.removeEmailAddress,
           ),
           TextFieldAutocompleteEmailAddressWeb(
             field: AdvancedSearchFilterField.to,
@@ -53,7 +52,6 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onShowFullListEmailAddressAction: controller.showFullEmailAddress,
             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
-            onRemoveEmailAddressAction: controller.removeEmailAddress,
           ),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
