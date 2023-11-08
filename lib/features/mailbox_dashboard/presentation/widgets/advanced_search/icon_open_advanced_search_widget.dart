@@ -10,15 +10,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class IconOpenAdvancedSearchWidget extends StatelessWidget {
-  IconOpenAdvancedSearchWidget(
-    this._parentContext, {
-    Key? key,
-  }) : super(key: key);
+  IconOpenAdvancedSearchWidget({Key? key}) : super(key: key);
 
   final _imagePaths = Get.find<ImagePaths>();
   final search.SearchController searchController = Get.find<search.SearchController>();
   final AdvancedFilterController advancedFilterController = Get.find<AdvancedFilterController>();
-  final BuildContext _parentContext;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +40,7 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
             onTap: () {
               log('IconOpenAdvancedSearchWidget::build(): clicked');
               advancedFilterController.initSearchFilterField(context);
-              searchController.showAdvancedFilterView(_parentContext);
+              searchController.openAdvanceSearch();
             }),
       ),
     );

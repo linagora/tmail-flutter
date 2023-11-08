@@ -39,7 +39,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         portalFollower: PointerInterceptor(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => _searchController.selectOpenAdvanceSearch()
+            onTap: _searchController.closeAdvanceSearch
           ),
         ),
         child: PortalTarget(
@@ -210,7 +210,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         ),
         onTap: _searchController.clearTextSearch
       ),
-      rightButton: IconOpenAdvancedSearchWidget(context)
+      rightButton: IconOpenAdvancedSearchWidget()
     );
   }
 

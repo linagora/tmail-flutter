@@ -4,6 +4,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 
@@ -30,7 +31,7 @@ class FilterMessageAction extends DashBoardAction {
   FilterMessageAction(this.context, this.option);
 
   @override
-  List<Object?> get props => [option];
+  List<Object?> get props => [context, option];
 }
 
 class HandleEmailActionTypeAction extends DashBoardAction {
@@ -42,7 +43,7 @@ class HandleEmailActionTypeAction extends DashBoardAction {
   HandleEmailActionTypeAction(this.context, this.listEmailSelected, this.emailAction);
 
   @override
-  List<Object> get props => [listEmailSelected, emailAction];
+  List<Object> get props => [context, listEmailSelected, emailAction];
 }
 
 class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
@@ -53,10 +54,17 @@ class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
   OpenEmailDetailedFromSuggestionQuickSearchAction(this.context, this.presentationEmail);
 
   @override
-  List<Object?> get props => [presentationEmail];
+  List<Object?> get props => [context, presentationEmail];
 }
 
-class StartSearchEmailAction extends DashBoardAction {}
+class StartSearchEmailAction extends DashBoardAction {
+  final QuickSearchFilter? filter;
+
+  StartSearchEmailAction({this.filter});
+
+  @override
+  List<Object?> get props => [filter];
+}
 
 class EmptyTrashAction extends DashBoardAction {
 
@@ -65,7 +73,7 @@ class EmptyTrashAction extends DashBoardAction {
   EmptyTrashAction(this.context);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [context];
 }
 
 class ClearSearchEmailAction extends DashBoardAction {}

@@ -48,37 +48,39 @@ class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
             top: AutoCompleteTagItemWebStyle.paddingTop,
             end: isCollapsed ? AutoCompleteTagItemWebStyle.paddingEnd : 0,
           ),
-          child: InkWell(
-            onTap: () => isCollapsed
-              ? null
-              : onShowFullAction?.call(field),
-            child: MouseRegion(
-              cursor: SystemMouseCursors.grab,
-              child: Chip(
-                labelPadding: EdgeInsetsDirectional.symmetric(
-                  horizontal: AutoCompleteTagItemWebStyle.labelPaddingHorizontal,
-                  vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+          child: TextFieldTapRegion(
+            child: InkWell(
+              onTap: () => isCollapsed
+                ? onShowFullAction?.call(field)
+                : null,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.grab,
+                child: Chip(
+                  labelPadding: EdgeInsetsDirectional.symmetric(
+                    horizontal: AutoCompleteTagItemWebStyle.labelPaddingHorizontal,
+                    vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+                  ),
+                  label: Text(
+                    currentEmailAddress.asString(),
+                    maxLines: 1,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
+                  ),
+                  deleteIcon: SvgPicture.asset(
+                    _imagePaths.icClose,
+                    fit: BoxFit.fill,
+                  ),
+                  labelStyle: AutoCompleteTagItemWebStyle.labelTextStyle,
+                  backgroundColor: _getTagBackgroundColor(),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AutoCompleteTagItemWebStyle.shapeBorderRadius,
+                    side: _getTagBorderSide(),
+                  ),
+                  avatar: currentEmailAddress.emailAddress.isNotEmpty
+                    ? AvatarTagItemWidget(tagName: currentEmailAddress.emailAddress)
+                    : null,
+                  onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
                 ),
-                label: Text(
-                  currentEmailAddress.asString(),
-                  maxLines: 1,
-                  overflow: CommonTextStyle.defaultTextOverFlow,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
-                ),
-                deleteIcon: SvgPicture.asset(
-                  _imagePaths.icClose,
-                  fit: BoxFit.fill,
-                ),
-                labelStyle: AutoCompleteTagItemWebStyle.labelTextStyle,
-                backgroundColor: _getTagBackgroundColor(),
-                shape: RoundedRectangleBorder(
-                  borderRadius: AutoCompleteTagItemWebStyle.shapeBorderRadius,
-                  side: _getTagBorderSide(),
-                ),
-                avatar: currentEmailAddress.emailAddress.isNotEmpty
-                  ? AvatarTagItemWidget(tagName: currentEmailAddress.emailAddress)
-                  : null,
-                onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
               ),
             ),
           ),

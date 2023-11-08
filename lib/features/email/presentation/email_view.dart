@@ -268,13 +268,12 @@ class EmailView extends GetWidget<SingleEmailController> {
     );
   }
 
-  EdgeInsets _getMarginEmailView(BuildContext context) {
+  EdgeInsetsGeometry _getMarginEmailView(BuildContext context) {
     if (PlatformInfo.isWeb) {
       if (responsiveUtils.isDesktop(context)) {
-        return EdgeInsets.only(
-          left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-          right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-          top: 16,
+        return const EdgeInsetsDirectional.only(
+          end: 16,
+          top: 8,
           bottom: 16
         );
       } else {

@@ -535,11 +535,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Obx(() {
       if (supportListButtonQuickSearchFilter(context)) {
         return Padding(
-          padding: EdgeInsets.only(
-            right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-            left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-            top: 16
-          ),
+          padding: const EdgeInsetsDirectional.only(end: 16, top: 8),
           child: Row(children: QuickSearchFilter.values
             .map((filter) => _buildQuickSearchFilterButton(context, filter))
             .toList()
