@@ -52,7 +52,6 @@ class AdvancedFilterController extends BaseController {
 
   TextEditingController fromEmailAddressController = TextEditingController();
   TextEditingController toEmailAddressController = TextEditingController();
-
   TextEditingController subjectFilterInputController = TextEditingController();
   TextEditingController hasKeyWordFilterInputController = TextEditingController();
   TextEditingController notKeyWordFilterInputController = TextEditingController();
@@ -74,6 +73,7 @@ class AdvancedFilterController extends BaseController {
   @override
   void onInit() {
     _registerWorkerListener();
+    _registerFocusListener();
     super.onInit();
   }
 
@@ -311,22 +311,25 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void onEmailAddressFocusChange(AdvancedSearchFilterField field, bool hasFocus) {
-    if (hasFocus) {
-      switch(field) {
-        case AdvancedSearchFilterField.form:
-          fromAddressExpandMode.value = ExpandMode.EXPAND;
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
-          break;
-        case AdvancedSearchFilterField.to:
-          fromAddressExpandMode.value = ExpandMode.COLLAPSE;
-          toAddressExpandMode.value = ExpandMode.EXPAND;
-          break;
-        default:
-          break;
-      }
-
+  void _onFromFieldFocusChange() {
+    if (focusManager.fromFieldFocusNode.hasFocus) {
+      fromAddressExpandMode.value = ExpandMode.EXPAND;
+      toAddressExpandMode.value = ExpandMode.COLLAPSE;
       _closeSuggestionBox();
+    } else {
+      fromAddressExpandMode.value = ExpandMode.COLLAPSE;
+      _autoCreateTagFromField();
+    }
+  }
+
+  void _onToFieldFocusChange() {
+    if (focusManager.toFieldFocusNode.hasFocus) {
+      toAddressExpandMode.value = ExpandMode.EXPAND;
+      fromAddressExpandMode.value = ExpandMode.COLLAPSE;
+      _closeSuggestionBox();
+    } else {
+      toAddressExpandMode.value = ExpandMode.COLLAPSE;
+      _autoCreateTagToField();
     }
   }
 
@@ -342,7 +345,7 @@ class AdvancedFilterController extends BaseController {
 
   void showFullEmailAddress(AdvancedSearchFilterField field) {
     switch(field) {
-      case AdvancedSearchFilterField.form:
+      case AdvancedSearchFilterField.from:
         fromAddressExpandMode.value = ExpandMode.EXPAND;
         toAddressExpandMode.value = ExpandMode.COLLAPSE;
         focusManager.fromFieldFocusNode.requestFocus();
@@ -364,7 +367,7 @@ class AdvancedFilterController extends BaseController {
     List<EmailAddress> listEmailAddress,
   ) {
     switch(field) {
-      case AdvancedSearchFilterField.form:
+      case AdvancedSearchFilterField.from:
         listFromEmailAddress = List.from(listEmailAddress);
         searchEmailFilter.from.addAll(listEmailAddress.map((emailAddress) => emailAddress.emailAddress));
         break;
@@ -384,12 +387,15 @@ class AdvancedFilterController extends BaseController {
       .contains(inputEmail);
   }
 
-  void _autoCreateFromEmailTag(String inputEmail) {
+  void _autoCreateTagFromField() {
+    final inputEmail = fromEmailAddressController.text;
+    if (inputEmail.isEmpty) {
+      return;
+    }
+
     if (!_isDuplicatedEmailAddress(inputEmail, listFromEmailAddress)) {
       final emailAddress = EmailAddress(null, inputEmail);
       listFromEmailAddress.add(emailAddress);
-      
-      log('AdvancedFilterController::_autoCreateFromEmailTag(): STATE: ${keyFromEmailTagEditor.currentState}');
       keyFromEmailTagEditor.currentState?.resetTextField();
       Future.delayed(const Duration(milliseconds: 300), () {
         keyFromEmailTagEditor.currentState?.closeSuggestionBox();
@@ -397,49 +403,19 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void _autoCreateToEmailTag(String inputEmail) {
+  void _autoCreateTagToField() {
+    final inputEmail = toEmailAddressController.text;
+    if (inputEmail.isEmpty) {
+      return;
+    }
+
     if (!_isDuplicatedEmailAddress(inputEmail, listToEmailAddress)) {
       final emailAddress = EmailAddress(null, inputEmail);
       listToEmailAddress.add(emailAddress);
-
-      log('AdvancedFilterController::_autoCreateToEmailTag(): STATE: ${keyToEmailTagEditor.currentState}');
       keyToEmailTagEditor.currentState?.resetTextField();
       Future.delayed(const Duration(milliseconds: 300), () {
         keyToEmailTagEditor.currentState?.closeSuggestionBox();
       });
-    }
-  }
-
-  void _autoCreateEmailTag() {
-    final inputFromEmail = fromEmailAddressController.text;
-    final inputToEmail = toEmailAddressController.text;
-
-    if (inputFromEmail.isNotEmpty) {
-      _autoCreateFromEmailTag(inputFromEmail);
-    }
-
-    if (inputToEmail.isNotEmpty) {
-      _autoCreateToEmailTag(inputToEmail);
-    }
-  }
-
-  void handleFocusNextAddressAction() {
-    _autoCreateEmailTag();
-  }
-
-  void removeEmailAddress(EmailAddress emailAddress, AdvancedSearchFilterField field) {
-    log('AdvancedFilterController::removeEMailAddress: $emailAddress - $field');
-    switch(field) {
-      case AdvancedSearchFilterField.form:
-        listFromEmailAddress.remove(emailAddress);
-        fromAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      case AdvancedSearchFilterField.to:
-        listToEmailAddress.remove(emailAddress);
-        toAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      default:
-        break;
     }
   }
 
@@ -480,8 +456,18 @@ class AdvancedFilterController extends BaseController {
     );
   }
 
+  void _registerFocusListener() {
+    focusManager.fromFieldFocusNode.addListener(_onFromFieldFocusChange);
+    focusManager.toFieldFocusNode.addListener(_onToFieldFocusChange);
+  }
+
   void _unregisterWorkerListener() {
     _dashboardActionWorker.dispose();
+  }
+
+  void _removeFocusListener() {
+    focusManager.fromFieldFocusNode.removeListener(_onFromFieldFocusChange);
+    focusManager.toFieldFocusNode.removeListener(_onToFieldFocusChange);
   }
 
   void _handleClearAllFieldOfAdvancedSearch() {
@@ -491,6 +477,7 @@ class AdvancedFilterController extends BaseController {
 
   @override
   void onClose() {
+    _removeFocusListener();
     focusManager.dispose();
     subjectFilterInputController.dispose();
     hasKeyWordFilterInputController.dispose();
