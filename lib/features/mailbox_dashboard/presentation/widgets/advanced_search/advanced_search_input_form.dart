@@ -27,9 +27,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   @override
   Widget build(BuildContext context) {
     return FocusTraversalGroup(
-      child: Obx(() => Column(
+      child: Column(
         children: [
-          TextFieldAutocompleteEmailAddressWeb(
+          Obx(() => TextFieldAutocompleteEmailAddressWeb(
             field: AdvancedSearchFilterField.from,
             listEmailAddress: controller.listFromEmailAddress,
             expandMode: controller.fromAddressExpandMode.value,
@@ -40,8 +40,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onShowFullListEmailAddressAction: controller.showFullEmailAddress,
             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
-          ),
-          TextFieldAutocompleteEmailAddressWeb(
+          )),
+          Obx(() => TextFieldAutocompleteEmailAddressWeb(
             field: AdvancedSearchFilterField.to,
             listEmailAddress: controller.listToEmailAddress,
             expandMode: controller.toAddressExpandMode.value,
@@ -52,7 +52,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onShowFullListEmailAddressAction: controller.showFullEmailAddress,
             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
-          ),
+          )),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
             context: context,
@@ -109,7 +109,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           ]),
           AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
         ],
-      )),
+      ),
     );
   }
 

@@ -172,7 +172,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void updateFilterEmail({
     Option<Set<String>>? fromOption,
-    Set<String>? to,
+    Option<Set<String>>? toOption,
     SearchQuery? text,
     Option<String>? subjectOption,
     Set<String>? notKeyword,
@@ -185,7 +185,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
-      to: to,
+      toOption: toOption,
       text: text,
       subjectOption: subjectOption,
       notKeyword: notKeyword,
