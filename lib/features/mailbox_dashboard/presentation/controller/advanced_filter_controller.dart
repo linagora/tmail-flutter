@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -342,18 +343,14 @@ class AdvancedFilterController extends BaseController {
   }
 
   void showFullEmailAddress(AdvancedSearchFilterField field) {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     switch(field) {
       case AdvancedSearchFilterField.from:
         fromAddressExpandMode.value = ExpandMode.EXPAND;
-        toAddressExpandMode.value = ExpandMode.COLLAPSE;
-        focusManager.fromFieldFocusNode.requestFocus();
-        focusManager.toFieldFocusNode.unfocus();
         break;
       case AdvancedSearchFilterField.to:
-        fromAddressExpandMode.value = ExpandMode.COLLAPSE;
         toAddressExpandMode.value = ExpandMode.EXPAND;
-        focusManager.toFieldFocusNode.requestFocus();
-        focusManager.fromFieldFocusNode.unfocus();
         break;
       default:
         break;
@@ -446,6 +443,10 @@ class AdvancedFilterController extends BaseController {
           );
         } else if (action is ClearDateRangeToAdvancedSearch) {
           _updateDateRangeTime(action.receiveTime);
+        } else if (action is StartSearchEmailAction) {
+          if (action.filter == QuickSearchFilter.fromMe) {
+            _updateFromField();
+          }
         }
       }
     );
@@ -468,6 +469,11 @@ class AdvancedFilterController extends BaseController {
   void _handleClearAllFieldOfAdvancedSearch() {
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
+  }
+
+  void _updateFromField() {
+    final listEmailAddress = searchEmailFilter.from.map((address) => EmailAddress(null, address)).toList();
+    listFromEmailAddress = List.from(listEmailAddress);
   }
 
   @override

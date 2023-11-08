@@ -1505,7 +1505,7 @@ class MailboxDashBoardController extends ReloadableController {
   void selectQuickSearchFilterAction(QuickSearchFilter filter) {
     log('MailboxDashBoardController::selectQuickSearchFilterAction(): filter: $filter');
     selectQuickSearchFilter(filter);
-    dispatchAction(StartSearchEmailAction());
+    dispatchAction(StartSearchEmailAction(filter: filter));
   }
 
   void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {

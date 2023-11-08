@@ -50,7 +50,7 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
               textOrigin: emailAddress.asString(),
               wordSearched: suggestionValid ?? ''
             ),
-            subtitle: emailAddress.emailAddress.isNotEmpty
+            subtitle: emailAddress.displayName.isNotEmpty
               ? RichTextWidget(
                   textOrigin: emailAddress.emailAddress,
                   wordSearched: suggestionValid ?? '',
@@ -79,7 +79,7 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
               textOrigin: emailAddress.asString(),
               wordSearched: suggestionValid ?? ''
             ),
-            subtitle: emailAddress.emailAddress.isNotEmpty
+            subtitle: emailAddress.displayName.isNotEmpty
               ? RichTextWidget(
                   textOrigin: emailAddress.emailAddress,
                   wordSearched: suggestionValid ?? '',
