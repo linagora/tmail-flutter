@@ -45,7 +45,6 @@ class RecipientComposerWidget extends StatefulWidget {
   final PrefixRecipientState bccState;
   final bool? isInitial;
   final FocusNode? focusNode;
-  final bool autoDisposeFocusNode;
   final GlobalKey? keyTagEditor;
   final FocusNode? nextFocusNode;
   final TextEditingController? controller;
@@ -71,7 +70,6 @@ class RecipientComposerWidget extends StatefulWidget {
     this.isInitial,
     this.controller,
     this.focusNode,
-    this.autoDisposeFocusNode = true,
     this.expandMode = ExpandMode.EXPAND,
     this.keyTagEditor,
     this.nextFocusNode,
@@ -165,7 +163,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               enableBorder: _isDragging,
                               borderRadius: RecipientComposerWidgetStyle.enableBorderRadius,
                               enableBorderColor: RecipientComposerWidgetStyle.enableBorderColor,
-                              autoDisposeFocusNode: widget.autoDisposeFocusNode,
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.done,
                               debounceDuration: RecipientComposerWidgetStyle.suggestionDebounceDuration,
@@ -240,7 +237,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           length: _collapsedListEmailAddress.length,
                           controller: widget.controller,
                           focusNode: widget.focusNode,
-                          autoDisposeFocusNode: widget.autoDisposeFocusNode,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.done,
                           debounceDuration: RecipientComposerWidgetStyle.suggestionDebounceDuration,
