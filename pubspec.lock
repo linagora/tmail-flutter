@@ -1553,7 +1553,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "796d679e3aaf34d0107819d1f12bb3cf45a59d64"
+      resolved-ref: aad6fb53c832fbe3b86f2b9eaefaab7a83392529
       url: "https://github.com/dab246/super_tag_editor.git"
     source: git
     version: "0.2.0"
