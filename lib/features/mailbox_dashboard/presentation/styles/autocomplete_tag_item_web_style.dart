@@ -2,12 +2,12 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
 class AutoCompleteTagItemWebStyle {
-  static const double paddingTop = 6.0;
+  static const double paddingTop = 4.5;
   static const double paddingEnd = 40.0;
   static const double labelPaddingHorizontal = 4.0;
   static const EdgeInsetsGeometry collapsedPadding = EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8);
 
-  static const EdgeInsetsGeometry marginCollapsed = EdgeInsets.only(top: 8.0);
+  static const EdgeInsetsGeometry marginCollapsed = EdgeInsets.only(top: 5.5);
 
   static const BorderRadius shapeBorderRadius = BorderRadius.all(Radius.circular(10.0));
 
