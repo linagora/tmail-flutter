@@ -8535,36 +8535,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.Stack(C.AlignmentDirectional_1_0, _null, C.StackFit_0, C.Clip_1, t8, _null);
     },
     _getTagBackgroundColor$0() {
-      var t1, t2;
       if (this.isLatestTagFocused && this.isLatestEmail)
         return E.Color_4292865791;
-      else {
-        t1 = this.currentEmailAddress.email;
-        if (t1 == null)
-          t1 = "";
-        t2 = A.RegExp_RegExp(string$.x5e_____, true, false, false);
-        t1 = t2._nativeRegExp.test(t1);
-        if (t1)
-          return D.Color_342718597;
-        else
-          return C.Color_4294967295;
-      }
+      else
+        return D.Color_342718597;
     },
     _getTagBorderSide$0() {
-      var t1, t2;
       if (this.isLatestTagFocused && this.isLatestEmail)
         return C.BorderSide_PLF1;
-      else {
-        t1 = this.currentEmailAddress.email;
-        if (t1 == null)
-          t1 = "";
-        t2 = A.RegExp_RegExp(string$.x5e_____, true, false, false);
-        t1 = t2._nativeRegExp.test(t1);
-        if (t1)
-          return C.BorderSide_8xm;
-        else
-          return D.BorderSide_7Lk;
-      }
+      else
+        return C.BorderSide_8xm;
     }
   };
   B.AvatarSuggestionItemWidget.prototype = {
@@ -18967,4 +18947,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["C+Ifx7BksZT1nAfcrx0h58wgSqA="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["vCJoHeVSWULpi/xt0FEWUwTLR4k="] = $__dart_deferred_initializers__.current
