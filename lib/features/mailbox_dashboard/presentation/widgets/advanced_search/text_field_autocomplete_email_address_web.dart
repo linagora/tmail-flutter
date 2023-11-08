@@ -12,6 +12,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/suggesstion_email_address.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/text_field_autocomplete_email_address_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_suggestion_item_widget_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_tag_item_widget_web.dart';
@@ -117,9 +118,13 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                         hintText: widget.field.getHintText(context),
                         hintStyle: TextFieldAutoCompleteEmailAddressWebStyles.textInputHintStyle,
                         isDense: true,
-                        contentPadding: TextFieldAutoCompleteEmailAddressWebStyles.textInputContentPadding,
+                        contentPadding: _currentListEmailAddress.isNotEmpty
+                          ? TextFieldAutoCompleteEmailAddressWebStyles.textInputContentPaddingWithSomeTag
+                          : TextFieldAutoCompleteEmailAddressWebStyles.textInputContentPadding
                       ),
-                      padding: TextFieldAutoCompleteEmailAddressWebStyles.tagEditorPadding,
+                      padding: _currentListEmailAddress.isNotEmpty
+                        ? TextFieldAutoCompleteEmailAddressWebStyles.tagEditorPadding
+                        : EdgeInsets.zero,
                       borderRadius: TextFieldAutoCompleteEmailAddressWebStyles.borderRadius,
                       borderSize: TextFieldAutoCompleteEmailAddressWebStyles.borderWidth,
                       focusedBorderColor: TextFieldAutoCompleteEmailAddressWebStyles.focusedBorderColor,
@@ -132,7 +137,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                       suggestionsBoxRadius: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxRadius,
                       suggestionsBoxMaxHeight: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxMaxHeight,
                       suggestionBoxWidth: _getSuggestionBoxWidth(constraints.maxWidth),
-                      textStyle: TextFieldAutoCompleteEmailAddressWebStyles.textInputTextStyle,
+                      textStyle: AdvancedSearchInputFormStyle.inputTextStyle,
                       onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, setState),
                       onDeleteTagAction: () => _handleDeleteLatestTagAction.call(setState),
                       onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, setState),

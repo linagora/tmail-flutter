@@ -279,10 +279,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         decoration: InputDecoration(
           filled: true,
           fillColor: isSelectFormList ? AppColor.colorItemSelected : Colors.white,
-          contentPadding: const EdgeInsets.only(
-            right: 8,
-            left: 12,
-          ),
+          contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
           enabledBorder: OutlineInputBorder(
             borderRadius: const BorderRadius.all(
               Radius.circular(10),
@@ -299,6 +296,15 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             borderSide: BorderSide(
               width: isSelectFormList ? 0.5 : 1,
               color: AppColor.colorInputBorderCreateMailbox,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            borderSide: BorderSide(
+              width: isSelectFormList ? 0.5 : 1,
+              color: AppColor.primaryColor,
             ),
           ),
           hintText: advancedSearchFilterField.getHintText(context),
