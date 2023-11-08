@@ -40,6 +40,7 @@ class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
   final OnDeleteEmailAddressTypeAction? onDeleteEmailAddressTypeAction;
   final OnShowFullListEmailAddressAction? onShowFullListEmailAddressAction;
   final TextEditingController? controller;
+  final VoidCallback? onSearchAction;
 
   const TextFieldAutocompleteEmailAddressWeb({
     Key? key,
@@ -57,6 +58,7 @@ class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
     this.onDeleteEmailAddressTypeAction,
     this.onShowFullListEmailAddressAction,
     this.controller,
+    this.onSearchAction,
   }) : super(key: key);
 
   @override
@@ -302,6 +304,11 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
     StateSetter stateSetter
   ) {
     final textTrim = value.trim();
+    if (textTrim.isEmpty) {
+      widget.onSearchAction?.call();
+      return;
+    }
+
     if (!_isDuplicated(textTrim)) {
       stateSetter(() => _currentListEmailAddress.add(EmailAddress(null, textTrim)));
       _updateListEmailAddressAction();
