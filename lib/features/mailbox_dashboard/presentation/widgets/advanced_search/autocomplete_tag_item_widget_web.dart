@@ -102,23 +102,16 @@ class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
   Color _getTagBackgroundColor() {
     if (isLatestTagFocused && isLatestEmail) {
       return AppColor.colorItemRecipientSelected;
-    } else if (GetUtils.isEmail(currentEmailAddress.emailAddress)) {
-      return AppColor.colorEmailAddressTag;
     } else {
-      return Colors.white;
+      return AppColor.colorEmailAddressTag;
     }
   }
 
   BorderSide _getTagBorderSide() {
     if (isLatestTagFocused && isLatestEmail) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
-    } else if (GetUtils.isEmail(currentEmailAddress.emailAddress)) {
-      return BorderSide.none;
     } else {
-      return const BorderSide(
-        width: 1,
-        color: AppColor.colorBorderEmailAddressInvalid
-      );
+      return BorderSide.none;
     }
   }
 }
