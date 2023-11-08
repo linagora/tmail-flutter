@@ -110,7 +110,6 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                       textInputAction: TextInputAction.done,
                       debounceDuration: TextFieldAutoCompleteEmailAddressWebStyles.debounceDuration,
                       hasAddButton: false,
-                      autofocus: widget.field == AdvancedSearchFilterField.from && _currentListEmailAddress.isEmpty,
                       inputDecoration: InputDecoration(
                         filled: true,
                         fillColor: TextFieldAutoCompleteEmailAddressWebStyles.textInputFillColor,
