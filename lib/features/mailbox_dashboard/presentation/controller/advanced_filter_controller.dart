@@ -37,8 +37,6 @@ class AdvancedFilterController extends BaseController {
 
   final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
   final hasAttachment = false.obs;
-  final lastTextForm = ''.obs;
-  final lastTextTo = ''.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
 
@@ -90,19 +88,13 @@ class AdvancedFilterController extends BaseController {
     super.onReady();
   }
 
-  void cleanSearchFilter(BuildContext context) {
+  void clearSearchFilter(BuildContext context) {
     searchController.clearSearchFilter();
-    _updateDateRangeTime(EmailReceiveTimeType.allTime);
-    subjectFilterInputController.text = '';
-    hasKeyWordFilterInputController.text = '';
-    notKeyWordFilterInputController.text = '';
-    fromEmailAddressController.text = '';
-    toEmailAddressController.text = '';
-    hasAttachment.value = false;
-    _destinationMailboxSelected = null;
+    _resetAllToOriginalValue();
+    _clearAllTextFieldInput();
     searchController.searchInputController.clear();
     searchController.deactivateAdvancedSearch();
-    searchController.isAdvancedSearchViewOpen.toggle();
+    searchController.isAdvancedSearchViewOpen.value = false;
     _mailboxDashBoardController.searchEmail(context);
   }
 
@@ -120,17 +112,17 @@ class AdvancedFilterController extends BaseController {
       searchController.updateFilterEmail(notKeyword: {});
     }
 
-    if (lastTextForm.isNotEmpty && !searchController.searchEmailFilter.value.from.contains(lastTextForm.value)){
-      searchController.updateFilterEmail(fromOption: Some(searchController.searchEmailFilter.value.from..add(lastTextForm.value)));
-      lastTextForm.value = '';
+    if (listFromEmailAddress.isNotEmpty) {
+      final listAddress = listFromEmailAddress.map((emailAddress) => emailAddress.emailAddress).toSet();
+      searchController.updateFilterEmail(fromOption: Some(listAddress));
+    } else {
+      searchController.updateFilterEmail(fromOption: const None());
     }
-
-    if (lastTextTo.isNotEmpty &&  !searchController.searchEmailFilter.value.to.contains(lastTextTo.value)){
-      searchController.updateFilterEmail(
-        to: searchController.searchEmailFilter.value.to..add(lastTextTo.value),
-      );
-
-      lastTextTo.value = '';
+    if (listToEmailAddress.isNotEmpty) {
+      final listAddress = listToEmailAddress.map((emailAddress) => emailAddress.emailAddress).toSet();
+      searchController.updateFilterEmail(toOption: Some(listAddress));
+    } else {
+      searchController.updateFilterEmail(toOption: const None());
     }
 
     searchController.updateFilterEmail(
@@ -181,7 +173,7 @@ class AdvancedFilterController extends BaseController {
     if (!isAdvancedSearchHasApplied) {
       searchController.updateFilterEmail(beforeOption: const None());
     }
-    searchController.isAdvancedSearchViewOpen.toggle();
+    searchController.isAdvancedSearchViewOpen.value = false;
     _mailboxDashBoardController.searchEmail(context);
   }
 
@@ -271,6 +263,12 @@ class AdvancedFilterController extends BaseController {
       mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.getDisplayName(context));
     }
     hasAttachment.value = searchEmailFilter.hasAttachment;
+    if (searchEmailFilter.from.isEmpty) {
+      listFromEmailAddress.clear();
+    }
+    if (searchEmailFilter.to.isEmpty) {
+      listToEmailAddress.clear();
+    }
   }
 
   void selectDateRange(BuildContext context) {
@@ -369,11 +367,9 @@ class AdvancedFilterController extends BaseController {
     switch(field) {
       case AdvancedSearchFilterField.from:
         listFromEmailAddress = List.from(listEmailAddress);
-        searchEmailFilter.from.addAll(listEmailAddress.map((emailAddress) => emailAddress.emailAddress));
         break;
       case AdvancedSearchFilterField.to:
         listToEmailAddress = List.from(listEmailAddress);
-        searchEmailFilter.to.addAll(listEmailAddress.map((emailAddress) => emailAddress.emailAddress));
         break;
       default:
         break;
@@ -420,12 +416,11 @@ class AdvancedFilterController extends BaseController {
   }
 
   void _resetAllToOriginalValue() {
-    dateFilterSelectedFormAdvancedSearch.value = EmailReceiveTimeType.allTime;
+    _updateDateRangeTime(EmailReceiveTimeType.allTime);
     hasAttachment.value = false;
-    lastTextForm.value = '';
-    lastTextTo.value = '';
-    startDate.value = null;
-    endDate.value = null;
+    listFromEmailAddress.clear();
+    listToEmailAddress.clear();
+    _destinationMailboxSelected = null;
   }
 
   void _clearAllTextFieldInput() {
