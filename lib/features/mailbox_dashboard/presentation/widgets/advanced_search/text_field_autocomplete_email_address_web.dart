@@ -21,7 +21,6 @@ typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String wo
 typedef OnUpdateListEmailAddressAction = void Function(AdvancedSearchFilterField field, List<EmailAddress> newData);
 typedef OnDeleteEmailAddressTypeAction = void Function(AdvancedSearchFilterField field);
 typedef OnShowFullListEmailAddressAction = void Function(AdvancedSearchFilterField field);
-typedef OnRemoveEmailAddressAction = void Function(EmailAddress emailAddress, AdvancedSearchFilterField field);
 typedef OnDeleteTagAction = void Function(EmailAddress emailAddress);
 
 class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
@@ -39,7 +38,6 @@ class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
   final OnUpdateListEmailAddressAction? onUpdateListEmailAddressAction;
   final OnDeleteEmailAddressTypeAction? onDeleteEmailAddressTypeAction;
   final OnShowFullListEmailAddressAction? onShowFullListEmailAddressAction;
-  final OnRemoveEmailAddressAction? onRemoveEmailAddressAction;
   final TextEditingController? controller;
 
   const TextFieldAutocompleteEmailAddressWeb({
@@ -57,7 +55,6 @@ class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
     this.onUpdateListEmailAddressAction,
     this.onDeleteEmailAddressTypeAction,
     this.onShowFullListEmailAddressAction,
-    this.onRemoveEmailAddressAction,
     this.controller,
   }) : super(key: key);
 
@@ -113,7 +110,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                       textInputAction: TextInputAction.done,
                       debounceDuration: TextFieldAutoCompleteEmailAddressWebStyles.debounceDuration,
                       hasAddButton: false,
-                      autofocus: widget.field == AdvancedSearchFilterField.form && _currentListEmailAddress.isEmpty,
+                      autofocus: widget.field == AdvancedSearchFilterField.from && _currentListEmailAddress.isEmpty,
                       inputDecoration: InputDecoration(
                         filled: true,
                         fillColor: TextFieldAutoCompleteEmailAddressWebStyles.textInputFillColor,

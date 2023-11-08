@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum AdvancedSearchFilterField {
-  form,
+  from,
   to,
   subject,
   hasKeyword,
@@ -14,7 +14,7 @@ enum AdvancedSearchFilterField {
 
   String getTitle(BuildContext context) {
     switch (this) {
-      case AdvancedSearchFilterField.form:
+      case AdvancedSearchFilterField.from:
         return AppLocalizations.of(context).form;
       case AdvancedSearchFilterField.to:
         return AppLocalizations.of(context).to;
@@ -35,7 +35,7 @@ enum AdvancedSearchFilterField {
 
   String getHintText(BuildContext context) {
     switch (this) {
-      case AdvancedSearchFilterField.form:
+      case AdvancedSearchFilterField.from:
       case AdvancedSearchFilterField.to:
         return AppLocalizations.of(context).nameOrEmailAddress;
       case AdvancedSearchFilterField.subject:
