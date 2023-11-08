@@ -82,6 +82,7 @@ class AutoCompleteSuggestionItemWidgetWeb extends StatelessWidget {
                   styleWordSearched: AutoCompleteSuggestionItemWebStyle.subTitleWordSearchStyle,
                 )
               : null,
+            onTap: () => onSelectedAction?.call(emailAddress),
           ),
         ),
       );
