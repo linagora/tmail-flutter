@@ -266,9 +266,13 @@ class AdvancedFilterController extends BaseController {
     hasAttachment.value = searchEmailFilter.hasAttachment;
     if (searchEmailFilter.from.isEmpty) {
       listFromEmailAddress.clear();
+    } else {
+      fromAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
     if (searchEmailFilter.to.isEmpty) {
       listToEmailAddress.clear();
+    } else {
+      toAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
   }
 
@@ -474,6 +478,11 @@ class AdvancedFilterController extends BaseController {
   void _updateFromField() {
     final listEmailAddress = searchEmailFilter.from.map((address) => EmailAddress(null, address)).toList();
     listFromEmailAddress = List.from(listEmailAddress);
+  }
+
+  void onSearchAction(BuildContext context) {
+    FocusScope.of(context).unfocus();
+    applyAdvancedSearchFilter(context);
   }
 
   @override
