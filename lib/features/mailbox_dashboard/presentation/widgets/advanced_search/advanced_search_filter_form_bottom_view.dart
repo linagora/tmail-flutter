@@ -47,7 +47,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         Expanded(
           child: _buildButton(
             onAction: () {
-              controller.cleanSearchFilter(context);
+              controller.clearSearchFilter(context);
               popBack();
             },
             colorButton: Colors.white,
@@ -79,7 +79,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         const Spacer(),
         _buildButton(
           onAction: () {
-            controller.cleanSearchFilter(context);
+            controller.clearSearchFilter(context);
             popBack();
           },
           colorButton: Colors.transparent,

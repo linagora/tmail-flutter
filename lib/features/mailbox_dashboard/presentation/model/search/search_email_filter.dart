@@ -47,7 +47,7 @@ class SearchEmailFilter with EquatableMixin {
 
   SearchEmailFilter copyWith({
     Option<Set<String>>? fromOption,
-    Set<String>? to,
+    Option<Set<String>>? toOption,
     SearchQuery? text,
     Option<String>? subjectOption,
     Set<String>? notKeyword,
@@ -60,7 +60,7 @@ class SearchEmailFilter with EquatableMixin {
   }) {
     return SearchEmailFilter(
       from: _getOptionParam(fromOption, from),
-      to: to ?? this.to,
+      to: _getOptionParam(toOption, to),
       text: text ?? this.text,
       subject: _getOptionParam(subjectOption, subject),
       notKeyword: notKeyword ?? this.notKeyword,
