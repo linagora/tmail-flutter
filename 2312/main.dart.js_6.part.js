@@ -17,11 +17,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.emailAddress = t0;
       this.state = t1;
     },
-    SuggestionEmailState: function SuggestionEmailState(t0, t1) {
+    SuggestionEmailState0: function SuggestionEmailState0(t0, t1) {
       this.index = t0;
       this._core$_name = t1;
     },
-    _SuggestionEmailAddress_Object_EquatableMixin: function _SuggestionEmailAddress_Object_EquatableMixin() {
+    _SuggestionEmailAddress_Object_EquatableMixin0: function _SuggestionEmailAddress_Object_EquatableMixin0() {
     }
   },
   B, C, D;
@@ -42,30 +42,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return [this.emailAddress, this.state];
     }
   };
-  A.SuggestionEmailState.prototype = {
+  A.SuggestionEmailState0.prototype = {
     _enumToString$0() {
       return "SuggestionEmailState." + this._core$_name;
     }
   };
-  A._SuggestionEmailAddress_Object_EquatableMixin.prototype = {};
+  A._SuggestionEmailAddress_Object_EquatableMixin0.prototype = {};
   var typesOffset = hunkHelpers.updateTypes([]);
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
       _inherit = hunkHelpers.inherit;
     _inherit(A.GradientCircleAvatarIcon, B.StatelessWidget);
-    _inherit(A._SuggestionEmailAddress_Object_EquatableMixin, B.Object);
-    _inherit(A.SuggestionEmailAddress, A._SuggestionEmailAddress_Object_EquatableMixin);
-    _inherit(A.SuggestionEmailState, B._Enum);
-    _mixin(A._SuggestionEmailAddress_Object_EquatableMixin, B.EquatableMixin);
+    _inherit(A._SuggestionEmailAddress_Object_EquatableMixin0, B.Object);
+    _inherit(A.SuggestionEmailAddress, A._SuggestionEmailAddress_Object_EquatableMixin0);
+    _inherit(A.SuggestionEmailState0, B._Enum);
+    _mixin(A._SuggestionEmailAddress_Object_EquatableMixin0, B.EquatableMixin);
   })();
-  B._Universe_addRules(init.typeUniverse, JSON.parse('{"GradientCircleAvatarIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SuggestionEmailAddress":{"EquatableMixin":[]},"SuggestionEmailState":{"Enum":[]}}'));
+  B._Universe_addRules(init.typeUniverse, JSON.parse('{"GradientCircleAvatarIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SuggestionEmailAddress":{"EquatableMixin":[]},"SuggestionEmailState0":{"Enum":[]}}'));
   (function constants() {
     D.Color_4291217096 = new B.Color(4291217096);
     D.Divider_6xV = new B.Divider(1, null, null, null, D.Color_4291217096, null);
     D.EdgeInsets_0_2_0_0 = new B.EdgeInsets(0, 2, 0, 0);
-    D.SuggestionEmailState_0 = new A.SuggestionEmailState(0, "valid");
-    D.SuggestionEmailState_1 = new A.SuggestionEmailState(1, "duplicated");
+    D.SuggestionEmailState_0 = new A.SuggestionEmailState0(0, "valid");
+    D.SuggestionEmailState_1 = new A.SuggestionEmailState0(1, "duplicated");
   })();
 };
 
-$__dart_deferred_initializers__["yAT2r/ASFJIKFBdgdBQ0LmbjTbs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["pP1fP24mz54Rs1c7u8TniDnUYSA="] = $__dart_deferred_initializers__.current

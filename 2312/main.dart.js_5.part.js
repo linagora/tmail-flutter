@@ -611,6 +611,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.key = t3;
       _.$ti = t4;
     },
+    AutocompleteHighlightedOption: function AutocompleteHighlightedOption(t0, t1, t2) {
+      this.notifier = t0;
+      this.child = t1;
+      this.key = t2;
+    },
     SizeChangedLayoutNotification: function SizeChangedLayoutNotification() {
     },
     SizeChangedLayoutNotifier: function SizeChangedLayoutNotifier(t0, t1) {
@@ -762,10 +767,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.overlayEntry = null;
       this._isOpened = false;
     },
-    TagEditor$(autoDisposeFocusNode, autofocus, backgroundColor, borderRadius, controller, cursorColor, debounceDuration, enableBorder, enableBorderColor, findSuggestions, focusNode, focusedBorderColor, hasAddButton, inputDecoration, key, keyboardType, $length, minTextFieldWidth, onDeleteTagAction, onFocusTagAction, onSelectOptionAction, onSubmitted, onTagChanged, onTapOutside, padding, resetTextOnSubmitted, suggestionBoxWidth, suggestionBuilder, suggestionMargin, suggestionPadding, suggestionsBoxBackgroundColor, suggestionsBoxElevation, suggestionsBoxMaxHeight, suggestionsBoxRadius, tagBuilder, tagSpacing, textInputAction, textStyle, useDefaultHighlight, $T) {
-      return new B.TagEditor($length, minTextFieldWidth, tagSpacing, tagBuilder, false, onTagChanged, true, onSubmitted, focusNode, onDeleteTagAction, onFocusTagAction, enableBorder, controller, textStyle, inputDecoration, keyboardType, textInputAction, autofocus, cursorColor, backgroundColor, focusedBorderColor, enableBorderColor, borderRadius, padding, autoDisposeFocusNode, onTapOutside, suggestionsBoxMaxHeight, suggestionsBoxElevation, suggestionBuilder, findSuggestions, onSelectOptionAction, suggestionsBoxBackgroundColor, suggestionsBoxRadius, debounceDuration, suggestionMargin, suggestionPadding, useDefaultHighlight, suggestionBoxWidth, key, $T._eval$1("TagEditor<0>"));
+    TagEditor$(autofocus, backgroundColor, borderRadius, borderSize, controller, cursorColor, debounceDuration, enableBorder, enableBorderColor, findSuggestions, focusNode, focusNodeKeyboard, focusedBorderColor, hasAddButton, inputDecoration, key, keyboardType, $length, minTextFieldWidth, onDeleteTagAction, onFocusTagAction, onHandleKeyEventAction, onSelectOptionAction, onSubmitted, onTagChanged, onTapOutside, padding, resetTextOnSubmitted, suggestionBoxWidth, suggestionBuilder, suggestionMargin, suggestionPadding, suggestionsBoxBackgroundColor, suggestionsBoxElevation, suggestionsBoxMaxHeight, suggestionsBoxRadius, tagBuilder, tagSpacing, textInputAction, textStyle, useDefaultHighlight, $T) {
+      return new B.TagEditor($length, minTextFieldWidth, tagSpacing, tagBuilder, false, onTagChanged, true, onSubmitted, focusNode, focusNodeKeyboard, onHandleKeyEventAction, onDeleteTagAction, onFocusTagAction, enableBorder, controller, textStyle, inputDecoration, keyboardType, textInputAction, autofocus, cursorColor, backgroundColor, focusedBorderColor, enableBorderColor, borderRadius, borderSize, padding, onTapOutside, suggestionsBoxMaxHeight, suggestionsBoxElevation, suggestionBuilder, findSuggestions, onSelectOptionAction, suggestionsBoxBackgroundColor, suggestionsBoxRadius, debounceDuration, suggestionMargin, suggestionPadding, useDefaultHighlight, suggestionBoxWidth, key, $T._eval$1("TagEditor<0>"));
     },
-    TagEditor: function TagEditor(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39) {
+    TagEditor: function TagEditor(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41) {
       var _ = this;
       _.length = t0;
       _.minTextFieldWidth = t1;
@@ -776,37 +781,39 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.resetTextOnSubmitted = t6;
       _.onSubmitted = t7;
       _.focusNode = t8;
-      _.onDeleteTagAction = t9;
-      _.onFocusTagAction = t10;
-      _.enableBorder = t11;
-      _.controller = t12;
-      _.textStyle = t13;
-      _.inputDecoration = t14;
-      _.keyboardType = t15;
-      _.textInputAction = t16;
-      _.autofocus = t17;
-      _.cursorColor = t18;
-      _.backgroundColor = t19;
-      _.focusedBorderColor = t20;
-      _.enableBorderColor = t21;
-      _.borderRadius = t22;
-      _.padding = t23;
-      _.autoDisposeFocusNode = t24;
-      _.onTapOutside = t25;
-      _.suggestionsBoxMaxHeight = t26;
-      _.suggestionsBoxElevation = t27;
-      _.suggestionBuilder = t28;
-      _.findSuggestions = t29;
-      _.onSelectOptionAction = t30;
-      _.suggestionsBoxBackgroundColor = t31;
-      _.suggestionsBoxRadius = t32;
-      _.debounceDuration = t33;
-      _.suggestionMargin = t34;
-      _.suggestionPadding = t35;
-      _.useDefaultHighlight = t36;
-      _.suggestionBoxWidth = t37;
-      _.key = t38;
-      _.$ti = t39;
+      _.focusNodeKeyboard = t9;
+      _.onHandleKeyEventAction = t10;
+      _.onDeleteTagAction = t11;
+      _.onFocusTagAction = t12;
+      _.enableBorder = t13;
+      _.controller = t14;
+      _.textStyle = t15;
+      _.inputDecoration = t16;
+      _.keyboardType = t17;
+      _.textInputAction = t18;
+      _.autofocus = t19;
+      _.cursorColor = t20;
+      _.backgroundColor = t21;
+      _.focusedBorderColor = t22;
+      _.enableBorderColor = t23;
+      _.borderRadius = t24;
+      _.borderSize = t25;
+      _.padding = t26;
+      _.onTapOutside = t27;
+      _.suggestionsBoxMaxHeight = t28;
+      _.suggestionsBoxElevation = t29;
+      _.suggestionBuilder = t30;
+      _.findSuggestions = t31;
+      _.onSelectOptionAction = t32;
+      _.suggestionsBoxBackgroundColor = t33;
+      _.suggestionsBoxRadius = t34;
+      _.debounceDuration = t35;
+      _.suggestionMargin = t36;
+      _.suggestionPadding = t37;
+      _.useDefaultHighlight = t38;
+      _.suggestionBoxWidth = t39;
+      _.key = t40;
+      _.$ti = t41;
     },
     TagsEditorState: function TagsEditorState(t0, t1, t2, t3, t4) {
       var _ = this;
@@ -819,7 +826,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._tag_editor$_suggestions = null;
       _._countBackspacePressed = _._searchId = 0;
       _._deBouncer = null;
-      _._tag_editor$_highlightedOptionIndex = t1;
+      _._highlightedOptionIndex = t1;
       _._validationSuggestionItemNotifier = t2;
       _._widget = null;
       _._debugLifecycleState = t3;
@@ -3075,6 +3082,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.builder.call$2(arg0, arg1);
     }
   };
+  B.AutocompleteHighlightedOption.prototype = {};
   B.SizeChangedLayoutNotification.prototype = {};
   B.SizeChangedLayoutNotifier.prototype = {
     createRenderObject$1(context) {
@@ -3204,12 +3212,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.TagsEditorState.prototype = {
     initState$0() {
-      var t1, _this = this, _null = null;
+      var t1, t2, _this = this, _null = null;
       _this.super$State$initState();
-      t1 = _this._widget.controller;
-      _this.__TagsEditorState__textFieldController_A = t1;
+      t1 = _this._widget;
+      t2 = t1.controller;
+      _this.__TagsEditorState__textFieldController_A = t2;
       _this.__TagsEditorState__textDirection_A = C.TextDirection_1;
-      t1 = A.FocusNode$(true, _null, true, true, _null, _null, false);
+      t1 = t1.focusNodeKeyboard;
+      if (t1 == null)
+        t1 = A.FocusNode$(true, _null, true, true, _null, _null, false);
       t1.addListener$1(0, _this.get$_onFocusKeyboardChanged());
       _this.__TagsEditorState__focusNodeKeyboard_A = t1;
       t1 = _this._widget.focusNode;
@@ -3222,13 +3233,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     dispose$0() {
       var t2, _this = this,
-        t1 = _this._widget;
-      if (t1.autoDisposeFocusNode || t1.focusNode == null) {
         t1 = _this.__TagsEditorState__focusNode_A;
-        t1 === $ && A.throwUnnamedLateFieldNI();
-        t1.removeListener$1(0, _this.get$_onFocusChanged());
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1.removeListener$1(0, _this.get$_onFocusChanged());
+      if (_this._widget.focusNode == null)
         _this.__TagsEditorState__focusNode_A.dispose$0();
-      }
       t1 = _this._suggestionsStreamController;
       if (t1 != null)
         t1.close$0(0);
@@ -3238,8 +3247,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = _this.__TagsEditorState__focusNodeKeyboard_A;
       t1 === $ && A.throwUnnamedLateFieldNI();
       t1.removeListener$1(0, _this.get$_onFocusKeyboardChanged());
-      _this.__TagsEditorState__focusNodeKeyboard_A.dispose$0();
-      t1 = _this._tag_editor$_highlightedOptionIndex;
+      if (_this._widget.focusNodeKeyboard == null)
+        _this.__TagsEditorState__focusNodeKeyboard_A.dispose$0();
+      t1 = _this._highlightedOptionIndex;
       t2 = $.$get$ChangeNotifier__emptyListeners();
       t1.ChangeNotifier__listeners = t2;
       t1.ChangeNotifier__count = 0;
@@ -3251,7 +3261,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.cancel$0(0);
       _this.super$State$dispose();
     },
-    _tag_editor$_updateHighlight$1(newIndex) {
+    _updateHighlight$1(newIndex) {
       var t1 = this._tag_editor$_suggestions;
       if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true) {
         t1 = this._tag_editor$_suggestions;
@@ -3259,7 +3269,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = C.JSInt_methods.$mod(newIndex, J.get$length$asx(t1));
       } else
         t1 = 0;
-      this._tag_editor$_highlightedOptionIndex.set$value(0, t1);
+      this._highlightedOptionIndex.set$value(0, t1);
     },
     _initializeSuggestionBox$0() {
       var _this = this,
@@ -3344,7 +3354,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               results = $async$result;
               if ($async$self._searchId === t1 && $async$self._framework$_element != null)
                 $async$self.setState$1(new B.TagsEditorState__onSearchChanged_closure($async$self, results));
-              $async$self._tag_editor$_updateHighlight$1(0);
+              $async$self._updateHighlight$1(0);
               $async$self._validationSuggestionItemNotifier.set$value(0, value);
               t1 = $async$self._suggestionsStreamController;
               if (t1 != null) {
@@ -3366,7 +3376,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = _this._suggestionsStreamController;
       if (t1 != null)
         t1.add$1(0, A._setArrayType([], _this.$ti._eval$1("JSArray<1>")));
-      _this._tag_editor$_updateHighlight$1(0);
+      _this._updateHighlight$1(0);
       _this._validationSuggestionItemNotifier.set$value(0, null);
       t1 = _this._suggestionsBoxController;
       if (t1 != null)
@@ -3384,7 +3394,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         t1 = false;
       if (t1) {
-        currentHighlightIndex = _this._tag_editor$_highlightedOptionIndex._change_notifier$_value;
+        currentHighlightIndex = _this._highlightedOptionIndex._change_notifier$_value;
         t1 = _this._tag_editor$_suggestions;
         if ((t1 == null ? null : J.get$isNotEmpty$asx(t1)) === true)
           if (currentHighlightIndex >= 0) {
@@ -3419,7 +3429,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 === $ && A.throwUnnamedLateFieldNI();
       t1.set$text(0, "");
       _this._previousText = "";
-      _this._tag_editor$_updateHighlight$1(0);
+      _this._updateHighlight$1(0);
       _this._validationSuggestionItemNotifier.set$value(0, null);
     },
     _onKeyboardBackspaceListener$0() {
@@ -3476,6 +3486,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var borderColor, borderRadius, t2, t3, t4, t5, t6, t7, t8, _list, t9, index, t10, t11, t12, t13, t14, t15, t16, t17, tagEditorArea, _this = this, _null = null,
         t1 = _this._widget,
         decoration = t1.inputDecoration,
+        borderSize = t1.borderSize;
+      if (borderSize == null)
         borderSize = _this._tag_editor$_isFocused || t1.enableBorder ? 1 : 0.5;
       if (t1.enableBorder)
         borderColor = t1.enableBorderColor;
@@ -3775,7 +3787,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 251
+    $signature: 296
   };
   B._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -3857,7 +3869,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 183
+    $signature: 219
   };
   B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -3906,7 +3918,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 189
+    $signature: 224
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -3924,7 +3936,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1556
+    $signature: 1549
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -3985,7 +3997,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null;
       return A.Container$(_null, child, C.Clip_0, _null, _null, new A.ShapeDecoration(_this.$this._chip$_getBackgroundColor$3(_this.theme, _this.chipTheme, _this.chipDefaults), _null, _null, _null, _this.resolvedShape), _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 1557
+    $signature: 1550
   };
   B._RenderChipRedirectingHitDetection_hitTest_closure.prototype = {
     call$2(result, position) {
@@ -4011,7 +4023,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1558
+    $signature: 1551
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -4064,7 +4076,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1559
+    $signature: 1552
   };
   B._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -4075,7 +4087,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.context.paintChild$2(child, type$.BoxParentData._as(t1).offset.$add(0, this.offset));
       }
     },
-    $signature: 338
+    $signature: 339
   };
   B._RenderListTile_hitTestChildren_closure.prototype = {
     call$2(result, transformed) {
@@ -4114,7 +4126,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this._currentEntry;
       return !J.$eq$(t1, t2 == null ? null : t2.transition.key);
     },
-    $signature: 1560
+    $signature: 1553
   };
   B._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -4140,7 +4152,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new B._StreamBuilderBaseState__subscribe__closure(t1, error, stackTrace));
     },
-    $signature: 101
+    $signature: 102
   };
   B._StreamBuilderBaseState__subscribe__closure.prototype = {
     call$0() {
@@ -4181,19 +4193,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.ancestorContext = $parent;
       return false;
     },
-    $signature: 62
+    $signature: 63
   };
   B.ListEmailAddressExtension_emailAddressToListString_closure.prototype = {
     call$1(emailAddress) {
       return this.isFullEmailAddress ? B.EmailAddressExtension_asFullString(emailAddress) : A.EmailAddressExtension_asString(emailAddress);
     },
-    $signature: 188
+    $signature: 120
   };
   B.ListEmailAddressExtension_emailAddressToListString_closure0.prototype = {
     call$1(emailAddress) {
       return this.isFullEmailAddress ? B.EmailAddressExtension_asFullString(emailAddress) : A.EmailAddressExtension_asString(emailAddress);
     },
-    $signature: 188
+    $signature: 120
   };
   B.TagsEditorState__initializeSuggestionBox_closure.prototype = {
     call$1(_) {
@@ -4217,7 +4229,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 317
+    $signature: 318
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -4275,7 +4287,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t3 = C.EdgeInsets_0_0_0_0;
         t1.toString;
         t12 = J.getInterceptor$asx(t1);
-        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(A.AutocompleteHighlightedOption$(new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), t12.get$length(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t11), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), t2._tag_editor$_highlightedOptionIndex)), _null, _null);
+        suggestionsListView = A.TextFieldTapRegion$(A.PointerInterceptor$(new B.AutocompleteHighlightedOption(t2._highlightedOptionIndex, new B.ValidationSuggestionItem(t2._validationSuggestionItemNotifier, new A.Padding(t4, A.Material$(C.Duration_200000, true, t7, A.ClipRRect$(t9, A.Container$(_null, A.ListView$builder(_null, new B.TagsEditorState__createOverlayEntry___closure(t2, snapshot), t12.get$length(t1), _null, _null, t3, _null, _null, C.Axis_1, true), C.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t11), new A.BoxDecoration(t8, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_2), C.Clip_0, t8, t5, _null, _null, _null, _null, _null, C.MaterialType_0), _null), _null), _null)), _null, _null);
         t2._widget.toString;
         offsetY = Math.min(50 * t12.get$length(t1), t10.suggestionBoxHeight);
         if (_this.showTop) {
@@ -4286,7 +4298,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = t2._widget.suggestionBoxWidth;
         if (t1 == null)
           t1 = _this.size._dx;
-        return A.Positioned$(_null, A.CompositedTransformFollower$(suggestionsListView, t2._tag_editor$_layerLink, compositedTransformFollowerOffset, false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, t1);
+        return A.Positioned$(_null, A.CompositedTransformFollower$(suggestionsListView, t2._tag_editor$_layerLink, compositedTransformFollowerOffset, false), _null, _null, _null, _null, _null, t1);
       }
       return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
@@ -4307,7 +4319,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1._tag_editor$_suggestions;
         t2.toString;
         item = J.$index$asx(t2, index);
-        highlight = A.AutocompleteHighlightedOption_of(context) === index;
+        t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$.AutocompleteHighlightedOption);
+        if (t2 == null)
+          t2 = _null;
+        else
+          t2 = t2.notifier._change_notifier$_value;
+        highlight = (t2 == null ? 0 : t2) === index;
         t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$.ValidationSuggestionItem);
         if (t2 == null)
           t2 = _null;
@@ -4333,7 +4350,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 102
+    $signature: 101
   };
   B.TagsEditorState__onSearchChanged_closure.prototype = {
     call$0() {
@@ -4376,22 +4393,34 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 317
+    $signature: 318
   };
   B.TagsEditorState_build_closure0.prototype = {
     call$1($event) {
-      var t1 = $event instanceof A.RawKeyDownEvent;
-      if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294967304))
-        this.$this._onKeyboardBackspaceListener$0();
-      else if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294968065)) {
-        t1 = this.$this;
-        t1._tag_editor$_updateHighlight$1(t1._tag_editor$_highlightedOptionIndex._change_notifier$_value + 1);
-      } else if (t1 && $event.data.get$logicalKey().$eq(0, C.LogicalKeyboardKey_4294968068)) {
-        t1 = this.$this;
-        t1._tag_editor$_updateHighlight$1(t1._tag_editor$_highlightedOptionIndex._change_notifier$_value - 1);
-      }
+      var _0_0,
+        t1 = this.$this,
+        t2 = t1._widget.onHandleKeyEventAction;
+      if (t2 != null)
+        t2.call$1($event);
+      if ($event instanceof A.RawKeyDownEvent)
+        $label0$0: {
+          _0_0 = $event.data.get$logicalKey();
+          if (C.LogicalKeyboardKey_4294967304.$eq(0, _0_0)) {
+            t1._onKeyboardBackspaceListener$0();
+            break $label0$0;
+          }
+          if (C.LogicalKeyboardKey_4294968065.$eq(0, _0_0)) {
+            t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value + 1);
+            break $label0$0;
+          }
+          if (C.LogicalKeyboardKey_4294968068.$eq(0, _0_0)) {
+            t1._updateHighlight$1(t1._highlightedOptionIndex._change_notifier$_value - 1);
+            break $label0$0;
+          }
+          break $label0$0;
+        }
     },
-    $signature: 94
+    $signature: 107
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -4407,7 +4436,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.setState$1(new B.TagsEditorState_build__closure0(t1, directionByText));
       }
     },
-    $signature: 8
+    $signature: 9
   };
   B.TagsEditorState_build__closure0.prototype = {
     call$0() {
@@ -4449,33 +4478,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 317
+    $signature: 318
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 572
+    $signature: 570
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 572
+    $signature: 570
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 56
+    $signature: 59
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 56
+    $signature: 59
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -4566,13 +4595,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B.PopupMenuDivider, A.PopupMenuEntry);
     _inherit(B._AnimatedSwitcherState, B.__AnimatedSwitcherState_State_TickerProviderStateMixin);
     _inherit(B.StreamBuilder, B.StreamBuilderBase);
+    _inheritMany(A.InheritedNotifier, [B.AutocompleteHighlightedOption, B.ValidationSuggestionItem]);
     _inherit(B.SizeChangedLayoutNotification, A.LayoutChangedNotification);
     _inheritMany(A.RenderProxyBox, [B._RenderSizeChangedWithCallback, B.RenderPortalTheater]);
     _inherit(B.PortalLinkScope, A.InheritedWidget);
     _inherit(B.TagEditorLayoutDelegate, A.MultiChildLayoutDelegate);
     _inherit(B.TagLayout, A.CustomMultiChildLayout);
     _inherit(B.TagRenderLayoutBox, A.RenderCustomMultiChildLayoutBox);
-    _inherit(B.ValidationSuggestionItem, A.InheritedNotifier);
     _mixinHard(B.__ChipRenderWidget_RenderObjectWidget_SlottedMultiChildRenderObjectWidgetMixin, A.SlottedMultiChildRenderObjectWidgetMixin);
     _mixin(B.__RawChipState_State_MaterialStateMixin, A.MaterialStateMixin);
     _mixinHard(B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin, A.TickerProviderStateMixin);
@@ -4581,11 +4610,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixinHard(B.__RenderListTile_RenderBox_SlottedContainerRenderObjectMixin, A.SlottedContainerRenderObjectMixin);
     _mixinHard(B.__AnimatedSwitcherState_State_TickerProviderStateMixin, A.TickerProviderStateMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChipSlot":{"Enum":[]},"_RawChipState":{"State0":["RawChip"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ChipSlot"},"_RenderChip":{"SlottedContainerRenderObjectMixin":["_ChipSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ChipSlot"},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"_ListTileSlot":{"Enum":[]},"ListTileTitleAlignment":{"Enum":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ListTileSlot"},"_RenderListTile":{"SlottedContainerRenderObjectMixin":["_ListTileSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ListTileSlot"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChipSlot":{"Enum":[]},"_RawChipState":{"State0":["RawChip"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ChipSlot"},"_RenderChip":{"SlottedContainerRenderObjectMixin":["_ChipSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ChipSlot"},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"_ListTileSlot":{"Enum":[]},"ListTileTitleAlignment":{"Enum":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.S":"_ListTileSlot"},"_RenderListTile":{"SlottedContainerRenderObjectMixin":["_ListTileSlot"],"RenderBox":[],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.S":"_ListTileSlot"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"AutocompleteHighlightedOption":{"InheritedNotifier":["ValueNotifier<int>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<int>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"AbstractNode":[],"HitTestTarget":[],"ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
       AppLocalizations: findType("AppLocalizations"),
+      AutocompleteHighlightedOption: findType("AutocompleteHighlightedOption"),
       BoxConstraints: findType("BoxConstraints"),
       BoxParentData: findType("BoxParentData"),
       ChipTheme: findType("ChipTheme"),
@@ -4667,6 +4697,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
+    D.EdgeInsets_0_0_16_0 = new A.EdgeInsets(0, 0, 16, 0);
     D.EdgeInsets_0_12_12_0 = new A.EdgeInsets(0, 12, 12, 0);
     D.EdgeInsets_0_4_0_0 = new A.EdgeInsets(0, 4, 0, 0);
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
@@ -4693,7 +4724,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_wsa0 = A._setArrayType(makeConstList([D._ListTileSlot_0, D._ListTileSlot_1, D._ListTileSlot_2, D._ListTileSlot_3]), A.findType("JSArray<_ListTileSlot>"));
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.PopupMenuDivider_null = new B.PopupMenuDivider(null);
+    D.SizedBox_10_null_null_null = new A.SizedBox(10, null, null, null);
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
+    D.TextStyle_g3y1 = new A.TextStyle(true, C.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv = new A.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv3 = new A.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY11 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 15, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -4706,4 +4739,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["z8oOwwam6GS4kB1LM2b3mpcR2vc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["por97QfjLB9/UA5SRbAw3oEyMz0="] = $__dart_deferred_initializers__.current
