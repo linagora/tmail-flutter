@@ -34,7 +34,7 @@ class GetAllAutoCompleteInteractor {
           ? success.listEmailAddress
           : <EmailAddress>[]
       );
-      log('GetAllAutoCompleteInteractor::execute:listEmailAddressFromServerc: $listEmailAddressFromServer');
+      log('GetAllAutoCompleteInteractor::execute:listEmailAddressFromServer: $listEmailAddressFromServer');
       autoCompleteResults.addAll(listEmailAddressFromServer);
 
       final listEmailAddressFromDevice = resultExecutions[1].fold(
