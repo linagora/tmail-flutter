@@ -59,30 +59,29 @@ class ForwardRecipientController {
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAllAutoCompleteInteractor == null && _getDeviceContactSuggestionsInteractor == null) {
-        return <EmailAddress>[];
-      } else if (_getDeviceContactSuggestionsInteractor != null) {
-        final listEmailAddress = await _getDeviceContactSuggestionsInteractor!
-            .execute(AutoCompletePattern(word: word, accountId: _accountId))
-            .then((value) => value.fold(
-                (failure) => <EmailAddress>[],
-                (success) => success is GetDeviceContactSuggestionsSuccess
-                  ? success.listEmailAddress
-                  : <EmailAddress>[]
-        ));
-        return listEmailAddress;
-      } else {
+      if (_getAllAutoCompleteInteractor != null) {
         return await _getAllAutoCompleteInteractor!
           .execute(AutoCompletePattern(word: word, accountId: _accountId))
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],
             (success) => success is GetAutoCompleteSuccess
               ? success.listEmailAddress
-              : <EmailAddress>[]));
+              : <EmailAddress>[]
+          ));
+      } else if (_getDeviceContactSuggestionsInteractor != null) {
+        return await _getDeviceContactSuggestionsInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: _accountId))
+          .then((value) => value.fold(
+            (failure) => <EmailAddress>[],
+            (success) => success is GetDeviceContactSuggestionsSuccess
+              ? success.listEmailAddress
+              : <EmailAddress>[]
+          ));
+      } else {
+        return <EmailAddress>[];
       }
     } else {
       if (_getAutoCompleteInteractor == null) {
-        log('ForwardRecipientController::getAutoCompleteSuggestion(): _getAutoCompleteInteractor is NULL');
         return <EmailAddress>[];
       } else {
         return await _getAutoCompleteInteractor!
@@ -91,7 +90,8 @@ class ForwardRecipientController {
             (failure) => <EmailAddress>[],
             (success) => success is GetAutoCompleteSuccess
               ? success.listEmailAddress
-              : <EmailAddress>[]));
+              : <EmailAddress>[]
+          ));
       }
     }
   }
