@@ -422,8 +422,7 @@ class MailboxAPI with HandleSetErrorMixin {
       SetMailboxResponse.deserialize
     );
 
-    final listEntriesErrors = handleSetResponse([createResponse]);
-    final mapErrors = Map.fromEntries(listEntriesErrors);
+    final mapErrors = handleSetResponse([createResponse]);
 
     if (mapErrors.isNotEmpty) {
       throw SetMailboxMethodException(mapErrors);
@@ -495,9 +494,7 @@ class MailboxAPI with HandleSetErrorMixin {
       SetMailboxResponse.deserialize
     );
 
-    final listEntriesErrors = handleSetResponse([updateResponse]);
-    final mapErrors = Map.fromEntries(listEntriesErrors);
-
+    final mapErrors = handleSetResponse([updateResponse]);
     if (mapErrors.isNotEmpty) {
       throw SetMailboxMethodException(mapErrors);
     }

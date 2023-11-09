@@ -125,10 +125,17 @@ class ContactController extends BaseController {
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAllAutoCompleteInteractor == null && _getDeviceContactSuggestionsInteractor == null) {
-        return <EmailAddress>[];
+      if (_getAllAutoCompleteInteractor != null) {
+        return await _getAllAutoCompleteInteractor!
+          .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
+          .then((value) => value.fold(
+            (failure) => <EmailAddress>[],
+            (success) => success is GetAutoCompleteSuccess
+              ? success.listEmailAddress
+              : <EmailAddress>[]
+          ));
       } else if (_getDeviceContactSuggestionsInteractor != null) {
-        final listEmailAddress = await _getDeviceContactSuggestionsInteractor!
+        return await _getDeviceContactSuggestionsInteractor!
           .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],
@@ -136,30 +143,22 @@ class ContactController extends BaseController {
               ? success.listEmailAddress
               : <EmailAddress>[]
           ));
-        return listEmailAddress;
+      } else {
+        return <EmailAddress>[];
       }
-
-      final listEmailAddress = await _getAllAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
-          .then((value) => value.fold(
-              (failure) => <EmailAddress>[],
-              (success) => success is GetAutoCompleteSuccess
-                  ? success.listEmailAddress
-                  : <EmailAddress>[]));
-      return listEmailAddress;
     } else {
       if (_getAutoCompleteInteractor == null) {
         return <EmailAddress>[];
-      }
-
-      final listEmailAddress = await _getAutoCompleteInteractor!
+      } else {
+        return await _getAutoCompleteInteractor!
           .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
           .then((value) => value.fold(
-              (failure) => <EmailAddress>[],
-              (success) => success is GetAutoCompleteSuccess
-                  ? success.listEmailAddress
-                  : <EmailAddress>[]));
-      return listEmailAddress;
+            (failure) => <EmailAddress>[],
+            (success) => success is GetAutoCompleteSuccess
+              ? success.listEmailAddress
+              : <EmailAddress>[]
+          ));
+      }
     }
   }
 
