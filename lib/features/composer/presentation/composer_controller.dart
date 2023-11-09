@@ -1036,40 +1036,35 @@ class ComposerController extends BaseController {
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
-    final accountId = mailboxDashBoardController.accountId.value;
-
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
-      if (_getAllAutoCompleteInteractor == null && _getDeviceContactSuggestionsInteractor == null) {
-        return <EmailAddress>[];
-      } else if (_getDeviceContactSuggestionsInteractor != null) {
-        final listEmailAddress = await _getDeviceContactSuggestionsInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: accountId))
+      if (_getAllAutoCompleteInteractor != null) {
+        return await _getAllAutoCompleteInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],
             (success) => _getAutoCompleteSuccess(success, word)
           ));
-        return listEmailAddress;
+      } else if (_getDeviceContactSuggestionsInteractor != null) {
+        return await _getDeviceContactSuggestionsInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
+          .then((value) => value.fold(
+            (failure) => <EmailAddress>[],
+            (success) => _getAutoCompleteSuccess(success, word)
+          ));
+      } else {
+        return <EmailAddress>[];
       }
-
-      final listEmailAddress = await _getAllAutoCompleteInteractor!
-        .execute(AutoCompletePattern(word: word, accountId: accountId))
-        .then((value) => value.fold(
-          (failure) => <EmailAddress>[],
-          (success) => _getAutoCompleteSuccess(success, word)
-        ));
-      return listEmailAddress;
     } else {
       if (_getAutoCompleteInteractor == null) {
         return <EmailAddress>[];
-      }
-
-      final listEmailAddress = await _getAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: accountId))
+      } else {
+        return await _getAutoCompleteInteractor!
+          .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],
             (success) => _getAutoCompleteSuccess(success, word)
           ));
-      return listEmailAddress;
+      }
     }
   }
 
