@@ -193,7 +193,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     } else if (failure is RefreshChangesAllMailboxFailure) {
       _clearNewFolderId();
     } else if (failure is CreateDefaultMailboxFailure) {
-      refreshAllMailbox();
+      _refreshMailboxChanges(currentMailboxState: failure.currentMailboxState);
     }
   }
 

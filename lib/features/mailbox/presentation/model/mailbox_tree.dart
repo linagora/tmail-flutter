@@ -127,9 +127,7 @@ class MailboxTree with EquatableMixin {
   }
 
   Map<Role, PresentationMailbox> get mapPresentationMailboxByRole {
-    if (root.childrenItems?.isEmpty == true) {
-      return {};
-    } else {
+    if (root.childrenItems?.isNotEmpty == true) {
       final listPresentationMailboxHasRole = root.childrenItems!
         .where((node) => node.item.role != null)
         .map((node) => node.item)
@@ -139,6 +137,8 @@ class MailboxTree with EquatableMixin {
         for (var mailbox in listPresentationMailboxHasRole)
           mailbox.role!: mailbox
       };
+    } else {
+      return {};
     }
   }
 

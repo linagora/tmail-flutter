@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/query/query_mailbox_method.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
@@ -50,11 +51,10 @@ class SpamReportApi {
     final mailboxResponse = result
         .parse<GetMailboxResponse>(getMailboxInvocation.methodCallId, GetMailboxResponse.deserialize);
 
-     return Future.sync(() async {
-      final unreadSpamMailbox = mailboxResponse?.list.first;
-      return UnreadSpamEmailsResponse(unreadSpamMailbox: unreadSpamMailbox);
-    }).catchError((error) {
-      throw error;
-    });
+    if (mailboxResponse?.list.isNotEmpty == true) {
+      return UnreadSpamEmailsResponse(unreadSpamMailbox: mailboxResponse!.list.first);
+    } else {
+      throw NotFoundSpamMailboxException();
+    }
   }
 }

@@ -3610,4 +3610,18 @@ class AppLocalizations {
       name: 'notFoundSession',
     );
   }
+
+  String get dnsLookupLoginMessage {
+    return Intl.message(
+      'To login and access your message please enter your email',
+      name: 'dnsLookupLoginMessage'
+    );
+  }
+
+  String get enterYourPasswordToSignIn {
+    return Intl.message(
+      'Enter your password to sign in',
+      name: 'enterYourPasswordToSignIn'
+    );
+  }
 }

@@ -46,6 +46,9 @@ class DNSService {
     }
     final url = _removeDotAtEndOfString(listFieldData.last);
     log('DNSService::_parsingUrlFromDataResourceRecord:url: $url');
+    if (url.trim().isEmpty) {
+      throw NotFoundUrlException();
+    }
     return url;
   }
 

@@ -1,3 +1,7 @@
 enum LoginFormType {
-  none, baseUrlForm, credentialForm, ssoForm
+  none,
+  baseUrlForm,
+  credentialForm,
+  passwordForm,
+  dnsLookupForm;
 }

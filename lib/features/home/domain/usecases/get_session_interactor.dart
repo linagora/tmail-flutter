@@ -20,22 +20,19 @@ class GetSessionInteractor {
       if (PlatformInfo.isMobile) {
         yield* _getStoredSessionFromCache(remoteException: e);
       } else {
-        yield Left<Failure, Success>(GetSessionFailure(exception: e));
+        yield Left<Failure, Success>(GetSessionFailure(e));
       }
     }
   }
 
   Stream<Either<Failure, Success>> _getStoredSessionFromCache({dynamic remoteException}) async* {
     try {
-      log('GetSessionInteractor::_getStoredSessionFromCache:');
+      log('GetSessionInteractor::_getStoredSessionFromCache:remoteException: $remoteException');
       yield Right<Failure, Success>(GetSessionLoading());
       final session = await sessionRepository.getStoredSession();
       yield Right<Failure, Success>(GetSessionSuccess(session));
     } catch (e) {
-      yield Left<Failure, Success>(GetSessionFailure(
-        exception: e,
-        remoteException: remoteException
-      ));
+      yield Left<Failure, Success>(GetSessionFailure(remoteException ?? e));
     }
   }
 }
