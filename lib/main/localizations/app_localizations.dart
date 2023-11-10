@@ -3547,4 +3547,60 @@ class AppLocalizations {
       name: 'searchForIdentities',
     );
   }
+
+  String get sortBy {
+    return Intl.message(
+      'Sort by',
+      name: 'sortBy',
+    );
+  }
+
+  String get mostRecent {
+    return Intl.message(
+      'Most recent',
+      name: 'mostRecent',
+    );
+  }
+
+  String get oldest {
+    return Intl.message(
+      'Oldest',
+      name: 'oldest',
+    );
+  }
+
+  String get relevance {
+    return Intl.message(
+      'Relevance',
+      name: 'relevance',
+    );
+  }
+
+  String get senderAscending {
+    return Intl.message(
+      'Sender name: A - Z',
+      name: 'senderAscending',
+    );
+  }
+
+  String get senderDescending {
+    return Intl.message(
+      'Sender name: Z - A',
+      name: 'senderDescending',
+    );
+  }
+
+  String get subjectAscending {
+    return Intl.message(
+      'Subject: A - Z',
+      name: 'subjectAscending',
+    );
+  }
+
+  String get subjectDescending {
+    return Intl.message(
+      'Subject: Z - A',
+      name: 'subjectDescending',
+    );
+  }
 }
