@@ -10,6 +10,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 
 class SearchEmailFilter with EquatableMixin {
   final Set<String> from;
@@ -23,6 +24,7 @@ class SearchEmailFilter with EquatableMixin {
   final UTCDate? before;
   final UTCDate? startDate;
   final UTCDate? endDate;
+  final Set<Comparator>? sortOrder;
 
   factory SearchEmailFilter.initial() => SearchEmailFilter();
 
@@ -38,12 +40,14 @@ class SearchEmailFilter with EquatableMixin {
     this.before,
     this.startDate,
     this.endDate,
+    Set<Comparator>? sortOrder,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         emailReceiveTimeType =
-            emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
+            emailReceiveTimeType ?? EmailReceiveTimeType.allTime,
+        sortOrder = sortOrder ?? <Comparator>{};
 
   SearchEmailFilter copyWith({
     Option<Set<String>>? fromOption,
@@ -57,6 +61,7 @@ class SearchEmailFilter with EquatableMixin {
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
+    Set<Comparator>? sortOrder,
   }) {
     return SearchEmailFilter(
       from: _getOptionParam(fromOption, from),
@@ -70,6 +75,7 @@ class SearchEmailFilter with EquatableMixin {
       before: _getOptionParam(beforeOption, before),
       startDate: _getOptionParam(startDateOption, startDate),
       endDate: _getOptionParam(endDateOption, endDate),
+      sortOrder: sortOrder ?? this.sortOrder,
     );
   }
 
@@ -131,6 +137,7 @@ class SearchEmailFilter with EquatableMixin {
     hasAttachment,
     before,
     startDate,
-    endDate
+    endDate,
+    sortOrder,
   ];
 }
