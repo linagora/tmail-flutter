@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/date_drop_down_button.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/sort_by_drop_down_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_autocomplete_email_address_web.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -109,6 +110,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                 iconPadding: EdgeInsets.zero,
                 onTap: () => controller.selectDateRange(context)),
           ]),
+          _buildFilterField(
+            context: context,
+            advancedSearchFilterField: AdvancedSearchFilterField.sortBy
+          ),
           AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
         ],
       ),
@@ -172,6 +177,12 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
             onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
           ))
+        else if (advancedSearchFilterField == AdvancedSearchFilterField.sortBy)
+          Obx(() => SortByDropDownButton(
+            imagePaths: _imagePaths,
+            sortOrderSelected: controller.searchController.sortOrderFiltered.value,
+            onSortOrderSelected: controller.updateSortOrder,
+          ))
         else
           _buildTextField(
             isSelectFormList: isSelectFormList,
@@ -228,6 +239,12 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           endDate: controller.endDate.value,
           receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
           onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
+        ));
+      case AdvancedSearchFilterField.sortBy:
+        return Obx(() => SortByDropDownButton(
+          imagePaths: _imagePaths,
+          sortOrderSelected: controller.searchController.sortOrderFiltered.value,
+          onSortOrderSelected: controller.updateSortOrder,
         ));
       default:
         return _buildTextField(
