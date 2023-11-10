@@ -10,6 +10,7 @@ enum AdvancedSearchFilterField {
   notKeyword,
   mailBox,
   date,
+  sortBy,
   hasAttachment;
 
   String getTitle(BuildContext context) {
@@ -28,6 +29,8 @@ enum AdvancedSearchFilterField {
         return AppLocalizations.of(context).folder;
       case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).date;
+      case AdvancedSearchFilterField.sortBy:
+        return AppLocalizations.of(context).sortBy;
       case AdvancedSearchFilterField.hasAttachment:
         return AppLocalizations.of(context).hasAttachment;
     }
@@ -47,6 +50,8 @@ enum AdvancedSearchFilterField {
         return AppLocalizations.of(context).allFolders;
       case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).allTime;
+      case AdvancedSearchFilterField.sortBy:
+        return AppLocalizations.of(context).mostRecent;
       case AdvancedSearchFilterField.hasAttachment:
         return AppLocalizations.of(context).hasAttachment;
     }
