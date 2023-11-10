@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-11-06T13:06:33.363526",
+  "@@last_modified": "2023-11-10T18:20:48.278058",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3424,6 +3424,54 @@
   },
   "searchForIdentities": "Search for identities",
   "@searchForIdentities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sortBy": "Sort by",
+  "@sortBy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mostRecent": "Most recent",
+  "@mostRecent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oldest": "Oldest",
+  "@oldest": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "relevance": "Relevance",
+  "@relevance": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderAscending": "Sender name: A - Z",
+  "@senderAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderDescending": "Sender name: Z - A",
+  "@senderDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectAscending": "Subject: A - Z",
+  "@subjectAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectDescending": "Subject: Z - A",
+  "@subjectDescending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
