@@ -14,7 +14,6 @@ class GetSessionSuccess extends UIState {
 }
 
 class GetSessionFailure extends FeatureFailure {
-  final dynamic remoteException;
 
-  GetSessionFailure({dynamic exception, this.remoteException}) : super(exception: exception);
+  GetSessionFailure(dynamic exception) : super(exception: exception);
 }
