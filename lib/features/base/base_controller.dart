@@ -141,21 +141,7 @@ abstract class BaseController extends GetxController
         );
       }
       return error;
-    } else if (error is BadCredentialsException) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).badCredentials
-        );
-      }
-      return error;
-    } else if (error is ConnectionError) {
-      if (authorizationInterceptors.isAppRunning && currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).connectionError
-        );
-      }
+    } else if (error is BadCredentialsException || error is ConnectionError) {
       return error;
     }
 
@@ -166,6 +152,22 @@ abstract class BaseController extends GetxController
 
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     logError('BaseController::handleExceptionAction():failure: $failure | exception: $exception');
+    if (exception is BadCredentialsException) {
+      if (currentOverlayContext != null && currentContext != null) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).badCredentials
+        );
+      }
+    } else if (exception is ConnectionError) {
+      if (currentOverlayContext != null && currentContext != null) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).connectionError
+        );
+      }
+    }
+
     if (!authorizationInterceptors.isAppRunning) {
       return;
     }
@@ -182,7 +184,7 @@ abstract class BaseController extends GetxController
       } else {
         await clearDataAndGoToLoginPage();
       }
-    } else if (failure is GetFCMSubscriptionLocalFailure || 
+    } else if (failure is GetFCMSubscriptionLocalFailure ||
         failure is DestroySubscriptionFailure) {
       await clearDataAndGoToLoginPage();
     }
@@ -326,9 +328,9 @@ abstract class BaseController extends GetxController
     log('BaseController::clearDataAndGoToLoginPage:');
     await clearAllData();
     goToLogin(arguments: LoginArguments(
-      isAuthenticatedWithOidc
-        ? LoginFormType.ssoForm
-        : LoginFormType.credentialForm
+      PlatformInfo.isWeb
+        ? LoginFormType.none
+        : LoginFormType.dnsLookupForm
     ));
   }
 
@@ -346,7 +348,9 @@ abstract class BaseController extends GetxController
       cachingManager.clearAll(),
       languageCacheManager.removeLanguage(),
     ]);
-    await cachingManager.clearAllFileInStorage();
+    if (PlatformInfo.isMobile) {
+      await cachingManager.clearAllFileInStorage();
+    }
     authorizationInterceptors.clear();
     authorizationIsolateInterceptors.clear();
     if (_isFcmEnabled) {
@@ -361,7 +365,9 @@ abstract class BaseController extends GetxController
       cachingManager.clearAll(),
       languageCacheManager.removeLanguage(),
     ]);
-    await cachingManager.clearAllFileInStorage();
+    if (PlatformInfo.isMobile) {
+      await cachingManager.clearAllFileInStorage();
+    }
     authorizationIsolateInterceptors.clear();
     authorizationInterceptors.clear();
     if (_isFcmEnabled) {

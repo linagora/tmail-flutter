@@ -2,16 +2,19 @@
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
-class LoginArguments extends RouterArguments {
+class SessionArguments extends RouterArguments {
 
   final LoginFormType loginFormType;
-  final String? baseUrl;
+  final String baseUrl;
 
-  LoginArguments(this.loginFormType, {this.baseUrl});
+  SessionArguments(
+    this.loginFormType,
+    this.baseUrl
+  );
 
   @override
   List<Object?> get props => [
     loginFormType,
-    baseUrl
+    baseUrl,
   ];
 }
