@@ -429,7 +429,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: _sortOrder,
+        sort: _searchEmailFilter.sortOrder ?? _sortOrder,
         emailFilter: EmailFilter(
           filter: _getFilterCondition(mailboxIdSelected: _currentMailboxId),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
@@ -502,7 +502,7 @@ class ThreadController extends BaseController with EmailActionController {
           _session!,
           _accountId!,
           newEmailState,
-          sort: _sortOrder,
+          sort: _searchEmailFilter.sortOrder ?? _sortOrder,
           propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
           emailFilter: EmailFilter(
@@ -526,7 +526,7 @@ class ThreadController extends BaseController with EmailActionController {
           _session!,
           _accountId!,
           limit: ThreadConstants.defaultLimit,
-          sort: _sortOrder,
+          sort: _searchEmailFilter.sortOrder ?? _sortOrder,
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: _getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: _currentMailboxId),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -720,7 +720,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
-        sort: _sortOrder,
+        sort: _searchEmailFilter.sortOrder,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(moreFilterCondition: _getFilterCondition()),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
       ));
@@ -768,7 +768,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: _sortOrder,
+        sort: _searchEmailFilter.sortOrder ?? _sortOrder,
         filter: searchController.searchEmailFilter.value.mappingToEmailFilterCondition(moreFilterCondition: _getFilterCondition()),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         lastEmailId: oldestEmail?.id
