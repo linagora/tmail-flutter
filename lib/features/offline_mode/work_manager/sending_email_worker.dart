@@ -164,8 +164,8 @@ class SendingEmailWorker extends Worker {
   void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
     _dynamicUrlInterceptors?.setJmapUrl(credentialViewState.baseUrl.toString());
     _authorizationInterceptors?.setBasicAuthorization(
-      credentialViewState.userName.value,
-      credentialViewState.password.value,
+      credentialViewState.userName,
+      credentialViewState.password,
     );
     _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.toString());
     _getSessionAction();
