@@ -256,8 +256,8 @@ class FcmMessageController extends FcmBaseController {
     log('FcmMessageController::_handleGetAccountByBasicAuthSuccess():');
     _dynamicUrlInterceptors?.setJmapUrl(credentialViewState.baseUrl.toString());
     _authorizationInterceptors?.setBasicAuthorization(
-      credentialViewState.userName.value,
-      credentialViewState.password.value,
+      credentialViewState.userName,
+      credentialViewState.password,
     );
     if (FcmUtils.instance.isMobileAndroid) {
       _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.toString());

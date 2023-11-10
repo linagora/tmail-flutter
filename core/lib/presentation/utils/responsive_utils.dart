@@ -14,10 +14,6 @@ class ResponsiveUtils {
   static const int minTabletWidth = 600;
   static const int minTabletLargeWidth = 900;
 
-  static const double _loginTextFieldWidthSmallScreen = 280.0;
-  static const double _loginTextFieldWidthLargeScreen = 320.0;
-  static const double _loginButtonWidth = 240.0;
-
   static const double tabletHorizontalMargin = 120.0;
   static const double tabletVerticalMargin = 200.0;
   static const double desktopVerticalMargin = 120.0;
@@ -62,11 +58,6 @@ class ResponsiveUtils {
         context.mediaQueryShortestSide < minDesktopWidth &&
         isPortrait(context);
   }
-
-  double getWidthLoginTextField(BuildContext context) =>
-      isMobile(context) ? _loginTextFieldWidthSmallScreen : _loginTextFieldWidthLargeScreen;
-
-  double getWidthLoginButton() => _loginButtonWidth;
 
   bool isHeightShortest(BuildContext context) {
     return MediaQuery.of(context).size.shortestSide < heightShortest;

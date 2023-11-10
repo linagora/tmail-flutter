@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/password.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/oidc_configuration.dart';
@@ -38,8 +40,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     this._accountCacheManager
   );
 
-  void setBasicAuthorization(String? userName, String? password) {
-    _authorization = base64Encode(utf8.encode('$userName:$password'));
+  void setBasicAuthorization(UserName userName, Password password) {
+    _authorization = base64Encode(utf8.encode('${userName.value}:${password.value}'));
     _authenticationType = AuthenticationType.basic;
   }
 
