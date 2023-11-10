@@ -44,7 +44,7 @@ abstract class ReloadableController extends BaseController {
         sessionRemoteException: failure.remoteException
       );
     } else if (failure is GetStoredTokenOidcFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
+      goToLogin(arguments: LoginArguments(LoginFormType.none));
     } else if (failure is GetAuthenticatedAccountFailure) {
       goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     }
@@ -77,12 +77,12 @@ abstract class ReloadableController extends BaseController {
     dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
     dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
-      credentialViewState.userName.value,
-      credentialViewState.password.value,
+      credentialViewState.userName,
+      credentialViewState.password,
     );
     authorizationIsolateInterceptors.setBasicAuthorization(
-      credentialViewState.userName.value,
-      credentialViewState.password.value,
+      credentialViewState.userName,
+      credentialViewState.password,
     );
   }
 
