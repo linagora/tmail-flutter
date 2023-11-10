@@ -86,6 +86,11 @@ dependencies:
       url: https://github.com/dab246/super_tag_editor.git
       ref: master
 
+  dns_client:
+    git:
+      url: https://github.com/dab246/dns_client.git
+      ref: twake-supported
+
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.5
 
