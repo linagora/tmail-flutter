@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
@@ -126,6 +127,8 @@ class AdvancedFilterController extends BaseController {
     } else {
       searchController.updateFilterEmail(toOption: const None());
     }
+
+    searchController.updateFilterEmail(sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder());
 
     searchController.updateFilterEmail(
       mailbox: _destinationMailboxSelected,
@@ -410,12 +413,19 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
+  void updateSortOrder(EmailSortOrderType? sortOrder) {
+    if (sortOrder != null) {
+      searchController.sortOrderFiltered.value = sortOrder;
+    }
+  }
+
   void _resetAllToOriginalValue() {
     _updateDateRangeTime(EmailReceiveTimeType.allTime);
     hasAttachment.value = false;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
     _destinationMailboxSelected = null;
+    searchController.sortOrderFiltered.value = EmailSortOrderType.mostRecent;
   }
 
   void _clearAllTextFieldInput() {

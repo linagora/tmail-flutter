@@ -40,14 +40,13 @@ class SearchEmailFilter with EquatableMixin {
     this.before,
     this.startDate,
     this.endDate,
-    Set<Comparator>? sortOrder,
+    this.sortOrder,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         emailReceiveTimeType =
-            emailReceiveTimeType ?? EmailReceiveTimeType.allTime,
-        sortOrder = sortOrder ?? <Comparator>{};
+            emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
 
   SearchEmailFilter copyWith({
     Option<Set<String>>? fromOption,
@@ -61,7 +60,7 @@ class SearchEmailFilter with EquatableMixin {
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
-    Set<Comparator>? sortOrder,
+    Option<Set<Comparator>>? sortOrderOption,
   }) {
     return SearchEmailFilter(
       from: _getOptionParam(fromOption, from),
@@ -75,7 +74,7 @@ class SearchEmailFilter with EquatableMixin {
       before: _getOptionParam(beforeOption, before),
       startDate: _getOptionParam(startDateOption, startDate),
       endDate: _getOptionParam(endDateOption, endDate),
-      sortOrder: sortOrder ?? this.sortOrder,
+      sortOrder: _getOptionParam(sortOrderOption, sortOrder),
     );
   }
 

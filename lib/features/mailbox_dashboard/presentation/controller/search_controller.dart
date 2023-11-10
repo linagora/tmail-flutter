@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -45,6 +46,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   final listFilterOnSuggestionForm = RxList<QuickSearchFilter>();
   final simpleSearchIsActivated = RxBool(false);
   final advancedSearchIsActivated = RxBool(false);
+  final sortOrderFiltered = EmailSortOrderType.mostRecent.obs;
 
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
@@ -81,6 +83,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
       case QuickSearchFilter.fromMe:
         final newListEmailAddress = isFilterSelected ? <String>{} : <String>{userProfile.email};
         updateFilterEmail(fromOption: Some(newListEmailAddress));
+        return;
+      case QuickSearchFilter.sortBy:
         return;
     }
   }
@@ -179,7 +183,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
     bool? hasAttachment,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
-    Option<UTCDate>? endDateOption
+    Option<UTCDate>? endDateOption,
+    Option<Set<Comparator>>? sortOrderOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
@@ -193,6 +198,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
+      sortOrderOption: sortOrderOption,
     );
     searchEmailFilter.refresh();
   }

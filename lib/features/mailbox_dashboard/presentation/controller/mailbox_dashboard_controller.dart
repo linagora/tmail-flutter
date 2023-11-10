@@ -84,6 +84,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/down
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
@@ -1531,6 +1532,14 @@ class MailboxDashBoardController extends ReloadableController {
       );
       dispatchAction(StartSearchEmailAction());
     }
+  }
+
+  void selectSortOrderQuickSearchFilter(BuildContext context, EmailSortOrderType sortOrder) {
+    log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
+    popBack();
+    searchController.sortOrderFiltered.value = sortOrder;
+    searchController.updateFilterEmail(sortOrderOption: sortOrder.getSortOrder());
+    dispatchAction(StartSearchEmailAction());
   }
 
   bool isEmptyTrashBannerEnabledOnWeb(BuildContext context) {

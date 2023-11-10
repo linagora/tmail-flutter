@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -32,34 +33,46 @@ enum EmailSortOrderType {
     }
   }
 
-  Set<Comparator> getSortOrder() {
+  Option<Set<Comparator>> getSortOrder() {
     switch (this) {
       case EmailSortOrderType.mostRecent:
-        return <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-            ..setIsAscending(false));
+        return Some(
+          <Comparator>{}
+            ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+              ..setIsAscending(false))
+        );
       case EmailSortOrderType.oldest:
-        return <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-            ..setIsAscending(true));
+        return Some(
+          <Comparator>{}
+            ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+              ..setIsAscending(true))
+        );
       case EmailSortOrderType.relevance:
-        return <Comparator>{};
+        return const None();
       case EmailSortOrderType.senderAscending:
-        return <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.from)
-            ..setIsAscending(true));
+        return Some(
+          <Comparator>{}
+            ..add(EmailComparator(EmailComparatorProperty.from)
+              ..setIsAscending(true))
+        );
       case EmailSortOrderType.senderDescending:
-        return <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.from)
-            ..setIsAscending(false));
+        return Some(
+          <Comparator>{}
+            ..add(EmailComparator(EmailComparatorProperty.from)
+              ..setIsAscending(false))
+        );
       case EmailSortOrderType.subjectAscending:
-        return <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.subject)
-            ..setIsAscending(true));
+        return Some(
+          <Comparator>{}
+            ..add(EmailComparator(EmailComparatorProperty.subject)
+              ..setIsAscending(true))
+        );
       case EmailSortOrderType.subjectDescending:
-        return <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.subject)
-            ..setIsAscending(false));
+        return Some(
+          <Comparator>{}
+            ..add(EmailComparator(EmailComparatorProperty.subject)
+              ..setIsAscending(false))
+        );
     }
   }
 
