@@ -68,7 +68,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             debounceDuration: const Duration(milliseconds: 300),
             listActionButton: QuickSearchFilter.values,
             actionButtonBuilder: (context, filterAction) {
-              if (filterAction is QuickSearchFilter) {
+              if (filterAction is QuickSearchFilter && filterAction != QuickSearchFilter.sortBy) {
                 return buildListButtonForQuickSearchForm(context, filterAction);
               } else {
                 return const SizedBox.shrink();
