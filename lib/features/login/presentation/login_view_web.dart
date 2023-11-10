@@ -8,6 +8,7 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/login_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LoginView extends BaseLoginView {
@@ -47,13 +48,14 @@ class LoginView extends BaseLoginView {
                     style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
                 )
               ),
-              Obx(() => buildLoginMessage(context, controller.viewState.value)),
+              Obx(() => LoginMessageWidget(
+                formType: controller.loginFormType.value,
+                viewState: controller.viewState.value,
+              )),
               Obx(() {
                 switch (controller.loginFormType.value) {
                   case LoginFormType.credentialForm:
                     return buildInputCredentialForm(context);
-                  case LoginFormType.ssoForm:
-                    return const SizedBox(height: 150);
                   default:
                     return const SizedBox.shrink();
                 }
@@ -179,13 +181,14 @@ class LoginView extends BaseLoginView {
                             style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
                           )
                         ),
-                        Obx(() => buildLoginMessage(context, controller.viewState.value)),
+                        Obx(() => LoginMessageWidget(
+                          formType: controller.loginFormType.value,
+                          viewState: controller.viewState.value,
+                        )),
                         Obx(() {
                           switch (controller.loginFormType.value) {
                             case LoginFormType.credentialForm:
                               return buildInputCredentialForm(context);
-                            case LoginFormType.ssoForm:
-                              return const SizedBox(height: 150);
                             default:
                               return const SizedBox.shrink();
                           }
@@ -232,41 +235,12 @@ class LoginView extends BaseLoginView {
     );
   }
 
-  Widget _buildSSOButton(BuildContext context) {
-    return Container(
-        margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
-        width: controller.responsiveUtils.getDeviceWidth(context),height: 48,
-        child: ElevatedButton(
-            key: const Key('ssoSubmitForm'),
-            style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) => AppColor.primaryColor),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(width: 0, color: AppColor.primaryColor)
-                ))
-            ),
-            child: Text(AppLocalizations.of(context).singleSignOn,
-                style: const TextStyle(fontSize: 16, color: Colors.white)
-            ),
-            onPressed: () {
-              controller.handleSSOPressed();
-            }
-        )
-    );
-  }
-
   Widget _buildLoadingProgress(BuildContext context) {
     return Obx(() => controller.viewState.value.fold(
       (failure) {
         switch (controller.loginFormType.value) {
-          case LoginFormType.baseUrlForm:
-            return const SizedBox.shrink();
           case LoginFormType.credentialForm:
             return buildLoginButton(context);
-          case LoginFormType.ssoForm:
-            return _buildSSOButton(context);
           default:
             return const SizedBox.shrink();
         }
@@ -276,12 +250,8 @@ class LoginView extends BaseLoginView {
           return buildLoadingCircularProgress();
         } else {
           switch (controller.loginFormType.value) {
-            case LoginFormType.baseUrlForm:
-              return const SizedBox.shrink();
             case LoginFormType.credentialForm:
               return buildLoginButton(context);
-            case LoginFormType.ssoForm:
-              return _buildSSOButton(context);
             default:
               return const SizedBox.shrink();
           }

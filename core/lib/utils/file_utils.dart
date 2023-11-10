@@ -105,7 +105,7 @@ class FileUtils {
       log('FileUtils::removeFolder():folderPath: $folderPath');
       final dir = Directory(folderPath);
       if (await dir.exists()) {
-       await dir.delete(recursive: true);
+        await dir.delete(recursive: true);
       }
     } catch (e) {
       logError('FileUtils::removeFolder():EXCEPTION: $e');

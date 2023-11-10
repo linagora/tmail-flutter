@@ -129,12 +129,10 @@ class CachingManager {
   }
 
   Future<void> clearAllFileInStorage() async {
-    if (PlatformInfo.isMobile) {
-      await Future.wait([
-        _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
-        _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
-      ]);
-    }
+    await Future.wait([
+      _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
+      _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
+    ]);
   }
 
   Future<void> _clearSendingEmailCache() async {
