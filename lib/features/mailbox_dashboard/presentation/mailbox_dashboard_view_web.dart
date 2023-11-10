@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
@@ -536,9 +537,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       if (supportListButtonQuickSearchFilter(context)) {
         return Padding(
           padding: const EdgeInsetsDirectional.only(end: 16, top: 8),
-          child: Row(children: QuickSearchFilter.values
-            .map((filter) => _buildQuickSearchFilterButton(context, filter))
-            .toList()
+          child: Row(
+            children: [
+                ...QuickSearchFilter.values
+                  .where((filter) => filter != QuickSearchFilter.sortBy)
+                  .map((filter) => _buildQuickSearchFilterButton(context, filter)),
+                const Spacer(),
+                _buildQuickSearchFilterButton(context, QuickSearchFilter.sortBy)
+              ]
           ),
         );
       } else {
@@ -588,6 +594,25 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 )
               );
             }
+            if (filter == QuickSearchFilter.sortBy) {
+              final screenSize = MediaQuery.of(context).size;
+              final offset = detail.globalPosition;
+              final position = RelativeRect.fromLTRB(
+                offset.dx,
+                offset.dy,
+                screenSize.width - offset.dx,
+                screenSize.height - offset.dy,
+              );
+              controller.openPopupMenuAction(
+                context,
+                position,
+                popupMenuEmailSortOrderType(
+                  context,
+                  controller.searchController.sortOrderFiltered.value,
+                  onCallBack: (sortOrder) => controller.selectSortOrderQuickSearchFilter(context, sortOrder)
+                )
+              );
+            }
           },
           borderRadius: const BorderRadius.all(Radius.circular(10)),
           child: Container(
@@ -607,7 +632,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     context,
                     receiveTimeType: controller.searchController.receiveTimeFiltered,
                     startDate: controller.searchController.startDateFiltered,
-                    endDate: controller.searchController.endDateFiltered
+                    endDate: controller.searchController.endDateFiltered,
+                    sortOrderType: controller.searchController.sortOrderFiltered.value,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -642,6 +668,24 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           maxWidth: 320,
           isSelected: receiveTimeSelected == receiveTime,
           onCallbackAction: () => onCallBack?.call(receiveTime),
+        )))
+      .toList();
+  }
+
+  List<PopupMenuEntry> popupMenuEmailSortOrderType(
+    BuildContext context,
+    EmailSortOrderType? sortOrderSelected,
+    {Function(EmailSortOrderType)? onCallBack}
+  ) {
+    return EmailSortOrderType.values
+      .map((sortType) => PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemNoIconWidget(
+          sortType.getTitle(context),
+          svgIconSelected: imagePaths.icFilterSelected,
+          maxWidth: 332,
+          isSelected: sortOrderSelected == sortType,
+          onCallbackAction: () => onCallBack?.call(sortType),
         )))
       .toList();
   }
