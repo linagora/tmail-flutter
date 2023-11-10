@@ -17,7 +17,7 @@ class SortByDropdownStyle {
     color: Colors.white
   );
 
-  static const EdgeInsetsGeometry buttonPadding = EdgeInsets.only(left: 12, right: 10);
+  static const EdgeInsetsDirectional buttonPadding = EdgeInsetsDirectional.only(start: 12, end: 10);
   static const MenuItemStyleData menuItemStyleData = MenuItemStyleData(
     height: height,
     padding: EdgeInsets.symmetric(horizontal: 12),

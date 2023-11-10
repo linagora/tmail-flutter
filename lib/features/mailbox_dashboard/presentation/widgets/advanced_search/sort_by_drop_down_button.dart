@@ -8,11 +8,13 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/sort_by_drop_down_style.dart';
 
+typedef OnSortOrderSelected = void Function(EmailSortOrderType?);
+
 class SortByDropDownButton extends StatelessWidget {
 
   final ImagePaths imagePaths;
   final EmailSortOrderType? sortOrderSelected;
-  final Function(EmailSortOrderType?)? onSortOrderSelected;
+  final OnSortOrderSelected? onSortOrderSelected;
 
   const SortByDropDownButton({
     Key? key,
