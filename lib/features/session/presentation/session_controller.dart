@@ -53,9 +53,12 @@ class SessionController extends ReloadableController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is GetSessionFailure) {
       _handleSessionFailure(failure);
+    } if (failure is GetStoredSessionFailure) {
+      _handleSessionFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -71,9 +74,10 @@ class SessionController extends ReloadableController {
 
   @override
   void handleExceptionAction({Failure? failure, Exception? exception}) {
-    super.handleExceptionAction(failure: failure, exception: exception);
-    if (PlatformInfo.isMobile && failure is GetSessionFailure && exception is NoNetworkError) {
+    if (PlatformInfo.isMobile && failure is GetSessionFailure) {
       _handleGetStoredSession();
+    } else {
+      super.handleExceptionAction(failure: failure, exception: exception);
     }
   }
 
@@ -85,7 +89,6 @@ class SessionController extends ReloadableController {
   }
 
   void _handleGetStoredSession() {
-    log('SessionController::_handleGetStoredSession():');
     consumeState(_getStoredSessionInteractor.execute());
   }
 
@@ -93,31 +96,34 @@ class SessionController extends ReloadableController {
     consumeState(_getSessionInteractor.execute());
   }
 
-  void _handleSessionFailure(Failure failure) {
-    log('SessionController::_handleSessionFailure(): $failure');
-    if (failure is GetSessionFailure) {
-      final sessionException = failure.exception;
-      var errorMessage = '';
-      if (_checkUrlError(sessionException) && currentContext != null) {
-        errorMessage = AppLocalizations.of(currentContext!).wrongUrlMessage;
-      } else if (sessionException is BadCredentialsException && currentContext != null) {
-        errorMessage = AppLocalizations.of(currentContext!).badCredentials;
-      } else if (sessionException is ConnectionError && currentContext != null) {
-        errorMessage = AppLocalizations.of(currentContext!).connectionError;
-      } else if (sessionException is UnknownError && currentContext != null) {
-        if (sessionException.message != null && sessionException.code != null) {
-          errorMessage = '[${sessionException.code}] ${sessionException.message}';
-        } else if (sessionException.message != null) {
-          errorMessage = sessionException.message!;
-        } else {
-          errorMessage = AppLocalizations.of(currentContext!).unknownError;
-        }
+  void _handleSessionFailure(FeatureFailure failure) {
+    final sessionException = failure.exception;
+    var errorMessage = '';
+    if (_checkUrlError(sessionException) && currentContext != null) {
+      errorMessage = AppLocalizations.of(currentContext!).wrongUrlMessage;
+    } else if (sessionException is BadCredentialsException && currentContext != null) {
+      errorMessage = AppLocalizations.of(currentContext!).badCredentials;
+    } else if (sessionException is ConnectionError && currentContext != null) {
+      errorMessage = AppLocalizations.of(currentContext!).connectionError;
+    } else if (sessionException is UnknownError && currentContext != null) {
+      if (sessionException.message != null && sessionException.code != null) {
+        errorMessage = '[${sessionException.code}] ${sessionException.message}';
+      } else if (sessionException.message != null) {
+        errorMessage = sessionException.message!;
+      } else {
+        errorMessage = AppLocalizations.of(currentContext!).unknownError;
       }
+    }
 
-      logError('SessionController::_handleSessionFailure():errorMessage: $errorMessage');
-      if (errorMessage.isNotEmpty && currentOverlayContext != null) {
-        _appToast.showToastErrorMessage(currentOverlayContext!, errorMessage);
-      }
+    logError('SessionController::_handleSessionFailure():errorMessage: $errorMessage');
+    if (errorMessage.isNotEmpty && currentOverlayContext != null) {
+      _appToast.showToastErrorMessage(currentOverlayContext!, errorMessage);
+    }
+
+    if (PlatformInfo.isMobile) {
+      _handleGetStoredSession();
+    } else {
+      performInvokeLogoutAction();
     }
   }
 

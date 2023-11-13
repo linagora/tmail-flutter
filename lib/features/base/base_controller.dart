@@ -94,6 +94,7 @@ abstract class BaseController extends GetxController
       (failure) {
         if (failure is FeatureFailure) {
           final exception = _performFilterExceptionInError(failure.exception);
+          logError('BaseController::onData:exception: $exception');
           if (exception != null) {
             handleExceptionAction(failure: failure, exception: exception);
           } else {
@@ -121,42 +122,33 @@ abstract class BaseController extends GetxController
   Exception? _performFilterExceptionInError(dynamic error) {
     logError('BaseController::_performFilterExceptionInError(): $error');
     if (error is NoNetworkError || error is ConnectionTimeout || error is InternalServerError) {
-      logError('BaseController::_performFilterExceptionInError(): NoNetworkError');
-      if (PlatformInfo.isWeb) {
-        if (currentOverlayContext != null && currentContext != null) {
-          _appToast.showToastMessage(
-            currentOverlayContext!,
-            AppLocalizations.of(currentContext!).no_internet_connection,
-            actionName: AppLocalizations.of(currentContext!).skip,
-            onActionClick: ToastView.dismiss,
-            leadingSVGIcon: _imagePaths.icNotConnection,
-            backgroundColor: AppColor.textFieldErrorBorderColor,
-            textColor: Colors.white,
-            infinityToast: true,
-          );
-        }
+      if (PlatformInfo.isWeb && currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).no_internet_connection,
+          actionName: AppLocalizations.of(currentContext!).skip,
+          onActionClick: ToastView.dismiss,
+          leadingSVGIcon: _imagePaths.icNotConnection,
+          backgroundColor: AppColor.textFieldErrorBorderColor,
+          textColor: Colors.white,
+          infinityToast: true,
+        );
       }
       return error;
     } else if (error is BadCredentialsException) {
-      logError('BaseController::_performFilterExceptionInError(): BadCredentialsException');
       if (currentOverlayContext != null && currentContext != null) {
         _appToast.showToastErrorMessage(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).badCredentials);
-      }
-      if (authorizationInterceptors.isAppRunning) {
-        performInvokeLogoutAction();
+          AppLocalizations.of(currentContext!).badCredentials
+        );
       }
       return error;
     } else if (error is ConnectionError) {
-      logError('BaseController::_performFilterExceptionInError(): ConnectionError');
-      if (authorizationInterceptors.isAppRunning) {
-        if (currentOverlayContext != null && currentContext != null) {
-          _appToast.showToastErrorMessage(
-            currentOverlayContext!,
-            AppLocalizations.of(currentContext!).connectionError);
-        }
-        performInvokeLogoutAction();
+      if (authorizationInterceptors.isAppRunning && currentOverlayContext != null && currentContext != null) {
+        _appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).connectionError
+        );
       }
       return error;
     }
@@ -168,6 +160,12 @@ abstract class BaseController extends GetxController
 
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     logError('BaseController::handleExceptionAction():failure: $failure | exception: $exception');
+    if (!authorizationInterceptors.isAppRunning) {
+      return;
+    }
+    if (exception is BadCredentialsException || exception is ConnectionError) {
+      performInvokeLogoutAction();
+    }
   }
 
   void handleFailureViewState(Failure failure) {
