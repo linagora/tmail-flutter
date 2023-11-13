@@ -16139,7 +16139,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_build__closure.prototype = {
     call$2(context, filterAction) {
-      if (filterAction instanceof A.QuickSearchFilter)
+      if (filterAction instanceof A.QuickSearchFilter && filterAction !== C.QuickSearchFilter_3)
         return this.$this.buildListButtonForQuickSearchForm$2(context, filterAction);
       else
         return C.SizedBox_0_0_null_null;
@@ -19250,4 +19250,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["SPnFbOJdIMddXAsGC570ffr+RAY="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Sz0KIdyCUiQFRTGuWI2NzbvjdQc="] = $__dart_deferred_initializers__.current
