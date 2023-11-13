@@ -627,10 +627,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1 === B.LoginFormType_2) {
         A.Localizations_of(_this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         return A.Intl__message("Enter your credentials to sign in", _null, "loginInputCredentialMessage", _null, _null);
-      } else if (t1 === B.LoginFormType_4) {
+      } else if (t1 === D.LoginFormType_4) {
         A.Localizations_of(_this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         return A.Intl__message("To login and access your message please enter your email", _null, "dnsLookupLoginMessage", _null, _null);
-      } else if (t1 === B.LoginFormType_3) {
+      } else if (t1 === D.LoginFormType_3) {
         A.Localizations_of(_this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         return A.Intl__message("Enter your password to sign in", _null, "enterYourPasswordToSignIn", _null, _null);
       } else if (t1 === B.LoginFormType_1) {
@@ -724,6 +724,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_31_0_31_0 = new A.EdgeInsets(31, 0, 31, 0);
     D.List_email = A._setArrayType(makeConstList(["email"]), type$.JSArray_String);
     D.List_password = A._setArrayType(makeConstList(["password"]), type$.JSArray_String);
+    D.LoginFormType_3 = new A.LoginFormType(3, "passwordForm");
+    D.LoginFormType_4 = new A.LoginFormType(4, "dnsLookupForm");
     D.BorderSide_PLF2 = new A.BorderSide(B.Color_4278221567, 2, B.BorderStyle_1, -1);
     D.OutlineInputBorder_EjN1 = new A.OutlineInputBorder(4, B.BorderRadius_tLn7, D.BorderSide_PLF2);
     D.BorderSide_A4L = new A.BorderSide(B.Color_4294112245, 1, B.BorderStyle_1, -1);
@@ -748,4 +750,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["iWSHDV7ZEqFSTPJ/W5A/NQbZF/k="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["hdbToynFuq/Bg+Uin6FS8oRz514="] = $__dart_deferred_initializers__.current

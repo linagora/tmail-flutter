@@ -4484,13 +4484,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 569
+    $signature: 570
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 569
+    $signature: 570
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
@@ -4739,4 +4739,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["nFrWdRw8eZuywuOYQUaKpljocHo="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["UMUB0gnAOMQxBPRR7oYsjVj9UMY="] = $__dart_deferred_initializers__.current
