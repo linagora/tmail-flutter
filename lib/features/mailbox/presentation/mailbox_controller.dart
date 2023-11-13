@@ -207,10 +207,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     super.onDone();
     viewState.value.fold((failure) => null, (success) {
       if (success is GetAllMailboxSuccess) {
-        _initialMailboxVariableStorage();
+        _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
+        _handleDataFromNavigationRouter();
         mailboxDashBoardController.getSpamReportBanner();
       } else if (success is RefreshChangesAllMailboxSuccess) {
-        _initialMailboxVariableStorage(isRefreshChange: true);
+        _selectSelectedMailboxDefault();
         mailboxDashBoardController.refreshSpamReportBanner();
 
         if (_newFolderId != null) {
@@ -337,18 +338,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  void _initialMailboxVariableStorage({bool isRefreshChange = false}) {
-    _setMapMailbox(isRefreshChange: isRefreshChange);
-    _setOutboxMailbox();
-
-    if (isRefreshChange) {
-      _selectSelectedMailboxDefault();
-    } else {
-      _handleDataFromNavigationRouter();
-    }
-  }
-
-  void _setMapMailbox({bool isRefreshChange = false}) {
+  void _setMapMailbox() {
     final mapDefaultMailboxIdByRole = {
       for (var mailboxNode in defaultMailboxTree.value.root.childrenItems ?? List<MailboxNode>.empty())
         mailboxNode.item.role!: mailboxNode.item.id
@@ -361,10 +351,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
     mailboxDashBoardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
     mailboxDashBoardController.setMapMailboxById(mapMailboxById);
-
-    if (!isRefreshChange) {
-      _handleCreateDefaultFolderIfMissing(mapDefaultMailboxIdByRole);
-    }
   }
 
   void _setOutboxMailbox() {
@@ -1076,6 +1062,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (currentContext != null) {
       await syncAllMailboxWithDisplayName(currentContext!);
     }
+    _setMapMailbox();
+    _setOutboxMailbox();
+    _selectSelectedMailboxDefault();
   }
 
   void _handleRefreshChangesAllMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {
@@ -1086,6 +1075,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (currentContext != null) {
       await syncAllMailboxWithDisplayName(currentContext!);
     }
+    _setMapMailbox();
+    _setOutboxMailbox();
   }
 
   void _unsubscribeMailboxAction(MailboxId mailboxId) {
