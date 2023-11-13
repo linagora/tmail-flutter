@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   static const int _maxRetryCount = 3;
-  static const String RETRY_KEY = 'Retry';
+  static const String _retryKey = 'Retry';
 
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
@@ -59,7 +59,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    log('AuthorizationInterceptors::onRequest():data: ${options.data} | header: ${options.headers}');
+    log('AuthorizationInterceptors::onRequest():url: ${options.uri} | data: ${options.data} | header: ${options.headers}');
     switch(_authenticationType) {
       case AuthenticationType.basic:
         if (_authorization != null) {
@@ -83,7 +83,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
-      var retries = extraInRequest[RETRY_KEY] ?? 0;
+      var retries = extraInRequest[_retryKey] ?? 0;
 
       if (_validateToRefreshToken(err)) {
         log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
@@ -145,7 +145,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         retries++;
 
         requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
-        requestOptions.extra = {RETRY_KEY: retries};
+        requestOptions.extra = {_retryKey: retries};
 
         final response = await _dio.fetch(requestOptions);
         return handler.resolve(response);
