@@ -15353,7 +15353,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), null);
       t2 = t1.searchController;
       t2.sortOrderFiltered.set$value(0, sortOrder);
-      t2.updateFilterEmail$1$sortOrder(sortOrder.getSortOrder$0());
+      t2.updateFilterEmail$1$sortOrderOption(sortOrder.getSortOrder$0());
       t2 = new A.StartSearchEmailAction(null);
       A.log(string$.Mailbo + A.getRuntimeTypeOfDartObject(t2).toString$0(0), C.Level_3);
       t1.dashBoardAction.set$value(0, t2);
@@ -17849,6 +17849,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             t9 = $.$get$ThreadConstants_defaultLimit();
             t3 = t3.searchEmailFilter;
             t10 = t3.get$value(t3).sortOrder;
+            if (t10 == null)
+              t10 = t1.get$_sortOrder();
             t3 = t3.get$value(t3).mappingToEmailFilterCondition$1$moreFilterCondition(t1._getFilterCondition$0());
             t2 = t2.sessionCurrent;
             t2.toString;
@@ -17883,6 +17885,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             t7 = $.$get$ThreadConstants_defaultLimit();
             t8 = t2.searchController.searchEmailFilter;
             t8 = t8.get$value(t8).sortOrder;
+            if (t8 == null)
+              t8 = t1.get$_sortOrder();
             t9 = t2.filterMessageOption;
             t9 = t9.get$value(t9);
             t10 = t1._getFilterCondition$2$mailboxIdSelected$oldestEmail(t1._currentMailboxId, oldestEmail);
@@ -19250,4 +19254,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["Sz0KIdyCUiQFRTGuWI2NzbvjdQc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["bUjH32WjAdBAbJ0T4orP4s2c8Cg="] = $__dart_deferred_initializers__.current
