@@ -1,5 +1,3 @@
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -10,16 +8,13 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/iden
 
 class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidgetMixin, AppLoaderMixin {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
   IdentitiesView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(24),
-      child: _responsiveUtils.isWebDesktop(context)
+      child: controller.responsiveUtils.isWebDesktop(context)
         ? _buildIdentitiesViewWebDesktop(context)
         : _buildIdentitiesViewMobile(context),
     );
@@ -35,8 +30,8 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
         const SizedBox(height: 12),
         IdentitiesRadioListBuilder(
           controller: controller,
-          responsiveUtils: _responsiveUtils,
-          imagePaths: _imagePaths
+          responsiveUtils: controller.responsiveUtils,
+          imagePaths: controller.imagePaths
         )
       ],
     );
@@ -55,8 +50,8 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
         const SizedBox(width: 12),
         Expanded(child: IdentitiesRadioListBuilder(
           controller: controller,
-          responsiveUtils: _responsiveUtils,
-          imagePaths: _imagePaths
+          responsiveUtils: controller.responsiveUtils,
+          imagePaths: controller.imagePaths
         )),
       ],
     );

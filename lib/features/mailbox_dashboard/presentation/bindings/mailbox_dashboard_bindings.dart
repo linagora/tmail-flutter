@@ -27,9 +27,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/repository/session_repository.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -93,8 +92,6 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_send
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
-import 'package:tmail_ui_user/features/session/domain/repository/session_repository.dart';
-import 'package:tmail_ui_user/features/session/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -147,8 +144,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetSpamMailboxCachedInteractor>()));
 
     Get.put(MailboxDashBoardController(
-      Get.find<GetAuthenticatedAccountInteractor>(),
-      Get.find<UpdateAuthenticationAccountInteractor>(),
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
@@ -288,7 +283,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetEmailByIdInteractor(
       Get.find<ThreadRepository>(),
       Get.find<EmailRepository>()));
-    Get.lazyPut(() => UpdateAuthenticationAccountInteractor(Get.find<AccountRepository>()));
     Get.lazyPut(() => StoreSpamReportInteractor(
       Get.find<SpamReportRepository>()));
     Get.lazyPut(() => GetUnreadSpamMailboxInteractor(

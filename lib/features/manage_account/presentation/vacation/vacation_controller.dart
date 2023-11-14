@@ -26,7 +26,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class VacationController extends BaseController {
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
-  final _appToast = Get.find<AppToast>();
   final _settingController = Get.find<SettingsController>();
 
   final GetAllVacationInteractor _getAllVacationInteractor;
@@ -242,7 +241,7 @@ class VacationController extends BaseController {
       final fromDate = vacationPresentation.value.fromDate;
       if (fromDate == null) {
         if (currentOverlayContext != null && currentContext != null) {
-          _appToast.showToastErrorMessage(
+          appToast.showToastErrorMessage(
             currentOverlayContext!,
             AppLocalizations.of(currentContext!).errorMessageWhenStartDateVacationIsEmpty);
         }
@@ -253,7 +252,7 @@ class VacationController extends BaseController {
       final toDate = vacationPresentation.value.toDate;
       if (vacationStopEnabled && toDate != null && toDate.isBefore(fromDate)) {
         if (currentOverlayContext != null && currentContext != null) {
-          _appToast.showToastErrorMessage(
+          appToast.showToastErrorMessage(
             currentOverlayContext!,
             AppLocalizations.of(currentContext!).errorMessageWhenEndDateVacationIsInValid);
         }
@@ -263,7 +262,7 @@ class VacationController extends BaseController {
       final messageHtmlText = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
       if (messageHtmlText.isEmpty && context.mounted) {
         if (currentOverlayContext != null && currentContext != null) {
-          _appToast.showToastErrorMessage(
+          appToast.showToastErrorMessage(
             currentOverlayContext!,
             AppLocalizations.of(currentContext!).errorMessageWhenMessageVacationIsEmpty);
         }
@@ -299,7 +298,7 @@ class VacationController extends BaseController {
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastSuccessMessage(
+        appToast.showToastSuccessMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).vacationSettingSaved);
       }

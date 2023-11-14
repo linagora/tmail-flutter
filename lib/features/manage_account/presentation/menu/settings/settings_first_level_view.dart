@@ -1,6 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
@@ -11,10 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SettingsFirstLevelView extends GetWidget<SettingsController> {
-  SettingsFirstLevelView({Key? key}) : super(key: key);
-
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
+  const SettingsFirstLevelView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,40 +17,40 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
       child: Column(children: [
         Obx(() => UserInformationWidget(
           userProfile: controller.manageAccountDashboardController.userProfile.value,
-          padding: SettingsUtils.getPaddingInFirstLevel(context, _responsiveUtils),
+          padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
           titlePadding: const EdgeInsetsDirectional.only(start: 16))),
         Divider(
           color: AppColor.colorDividerComposer,
           height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
         ),
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).profiles,
-          AccountMenuItem.profiles.getIcon(_imagePaths),
+          AccountMenuItem.profiles.getIcon(controller.imagePaths),
           subtitle: AppLocalizations.of(context).profilesSettingExplanation,
           () => controller.selectSettings(AccountMenuItem.profiles)
         ),
         Divider(
           color: AppColor.colorDividerComposer,
           height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
         ),
         Obx(() {
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
                 AccountMenuItem.emailRules.getName(context),
-                AccountMenuItem.emailRules.getIcon(_imagePaths),
+                AccountMenuItem.emailRules.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).emailRuleSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.emailRules)
               ),
               Divider(
                 color: AppColor.colorDividerComposer,
                 height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
               ),
             ]);
           } else {
@@ -67,15 +62,15 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             return Column(children: [
               SettingFirstLevelTileBuilder(
                 AccountMenuItem.forward.getName(context),
-                AccountMenuItem.forward.getIcon(_imagePaths),
+                AccountMenuItem.forward.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).forwardingSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.forward)
               ),
               Divider(
                 color: AppColor.colorDividerComposer,
                 height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
               ),
             ]);
           } else {
@@ -87,15 +82,15 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             return Column(children: [
               SettingFirstLevelTileBuilder(
                 AccountMenuItem.vacation.getName(context),
-                AccountMenuItem.vacation.getIcon(_imagePaths),
+                AccountMenuItem.vacation.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).vacationSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.vacation)
               ),
               Divider(
                 color: AppColor.colorDividerComposer,
                 height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
               ),
             ]);
           } else {
@@ -105,31 +100,31 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Column(children: [
           SettingFirstLevelTileBuilder(
             AccountMenuItem.mailboxVisibility.getName(context),
-            AccountMenuItem.mailboxVisibility.getIcon(_imagePaths),
+            AccountMenuItem.mailboxVisibility.getIcon(controller.imagePaths),
             subtitle: AppLocalizations.of(context).folderVisibilitySubtitle,
             () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
           ),
           Divider(
             color: AppColor.colorDividerComposer,
             height: 1,
-            indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-            endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+            indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+            endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
           ),
         ]),
         SettingFirstLevelTileBuilder(
           AccountMenuItem.languageAndRegion.getName(context),
-          AccountMenuItem.languageAndRegion.getIcon(_imagePaths),
+          AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
           () => controller.selectSettings(AccountMenuItem.languageAndRegion)
         ),
         Divider(
           color: AppColor.colorDividerComposer,
           height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, _responsiveUtils)
+          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
         ),
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).sign_out,
-          _imagePaths.icSignOut,
+          controller.imagePaths.icSignOut,
           () => controller.manageAccountDashboardController.logout(
               controller.manageAccountDashboardController.sessionCurrent,
               controller.manageAccountDashboardController.accountId.value)

@@ -2,9 +2,7 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/html_utils.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
@@ -33,9 +31,6 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 class IdentityCreatorView extends GetWidget<IdentityCreatorController>
     with RichTextButtonMixin {
 
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
   @override
   final controller = Get.find<IdentityCreatorController>();
 
@@ -44,7 +39,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
   @override
   Widget build(BuildContext context) {
     final responsiveWidget = ResponsiveWidget(
-      responsiveUtils: _responsiveUtils,
+      responsiveUtils: controller.responsiveUtils,
       mobile: Scaffold(
         backgroundColor: Colors.black38,
         body: GestureDetector(
@@ -103,8 +98,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(16))
                   ),
-                  width: math.max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 700),
-                  height: _responsiveUtils.getSizeScreenHeight(context) * 0.8,
+                  width: math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 700),
+                  height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.8,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(16)),
                     child: _buildBodyView(context)
@@ -129,8 +124,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(16))
               ),
-              width: math.max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 800),
-              height: _responsiveUtils.getSizeScreenHeight(context) * 0.8,
+              width: math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 800),
+              height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.8,
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
                 child: _buildBodyView(context)
@@ -150,7 +145,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           backgroundKeyboardToolBarColor: PlatformInfo.isIOS
             ? AppColor.colorBackgroundKeyboard
             : AppColor.colorBackgroundKeyboardAndroid,
-          isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
+          isLandScapeMode: controller.responsiveUtils.isLandscapeMobile(context),
           richTextController: controller.keyboardRichTextController,
           titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
           titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
@@ -185,7 +180,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           Obx(() {
             if (controller.actionType.value == IdentityActionType.create) {
               return IdentityDropListFieldBuilder(
-                _imagePaths,
+                controller.imagePaths,
                 AppLocalizations.of(context).email.inCaps,
                 controller.emailOfIdentity.value,
                 controller.listEmailAddressDefault,
@@ -198,7 +193,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           }),
           const SizedBox(height: 24),
           Obx(() => IdentityDropListFieldBuilder(
-            _imagePaths,
+            controller.imagePaths,
             AppLocalizations.of(context).reply_to,
             controller.replyToOfIdentity.value,
             controller.listEmailAddressOfReplyTo,
@@ -291,7 +286,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         buildIconWeb(
           iconSize: 24,
           icon: SvgPicture.asset(
-            _imagePaths.icComposerClose,
+            controller.imagePaths.icComposerClose,
             fit: BoxFit.fill,
             colorFilter: AppColor.colorDeleteContactIcon.asFilter()
           ),
@@ -317,7 +312,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                 padding: const EdgeInsetsDirectional.only(end: 4.0),
                 child: buildWrapIconStyleText(
                   icon: buildIconWithTooltip(
-                    path: _imagePaths.icAddPicture,
+                    path: controller.imagePaths.icAddPicture,
                     tooltip: AppLocalizations.of(context).insertImage
                   ),
                   hasDropdown: false,
@@ -405,7 +400,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
     return Obx(() {
       if (controller.isDefaultIdentitySupported.isTrue) {
         return SetDefaultIdentityCheckboxBuilder(
-          imagePaths: _imagePaths,
+          imagePaths: controller.imagePaths,
           isCheck: controller.isDefaultIdentity.value,
           onCheckboxChanged: controller.onCheckboxChanged);
       } else {
@@ -460,16 +455,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
   }
 
   bool _isMobile(BuildContext context) =>
-    _responsiveUtils.isPortraitMobile(context) ||
-    _responsiveUtils.isLandscapeMobile(context);
+    controller.responsiveUtils.isPortraitMobile(context) ||
+    controller.responsiveUtils.isLandscapeMobile(context);
 
   double _getMaxWidth(BuildContext context) {
     if (_isMobile(context)) {
-      return _responsiveUtils.getSizeScreenWidth(context);
-    } else if (_responsiveUtils.isDesktop(context)) {
-      return math.max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 800);
+      return controller.responsiveUtils.getSizeScreenWidth(context);
+    } else if (controller.responsiveUtils.isDesktop(context)) {
+      return math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 800);
     } else {
-      return math.max(_responsiveUtils.getSizeScreenWidth(context) * 0.4, 700);
+      return math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 700);
     }
   }
 }

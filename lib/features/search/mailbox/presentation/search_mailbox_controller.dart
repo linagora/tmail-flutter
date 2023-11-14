@@ -1,11 +1,8 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
@@ -69,7 +66,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:uuid/uuid.dart';
 
 class SearchMailboxController extends BaseMailboxController with MailboxActionHandlerMixin {
 
@@ -82,10 +78,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
 
   final dashboardController = Get.find<MailboxDashBoardController>();
-  final responsiveUtils = Get.find<ResponsiveUtils>();
-  final imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
-  final _uuid = Get.find<Uuid>();
 
   final currentSearchQuery = RxString('');
   final listMailboxSearched = RxList<PresentationMailbox>();
@@ -387,7 +379,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void _moveMailboxSuccess(MoveMailboxSuccess success) {
     if (success.moveAction == MoveAction.moving && currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastMessage(
+      appToast.showToastMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).movedToFolder(success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allFolders),
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -449,7 +441,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void _deleteMultipleMailboxSuccess(List<MailboxId> listMailboxIdDeleted, jmap.State? currentMailboxState) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).deleteFoldersSuccessfully);
     }
@@ -464,7 +456,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).deleteFoldersFailure);
     }
@@ -563,7 +555,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       {List<MailboxId>? listDescendantMailboxIds}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastMessage(
+      appToast.showToastMessage(
         currentOverlayContext!,
         subscribeAction.getToastMessageSuccess(currentContext!),
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -683,7 +675,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         : await push(AppRoutes.mailboxCreator, arguments: arguments);
 
       if (result != null && result is NewMailboxArguments) {
-        final generateCreateId = Id(_uuid.v1());
+        final generateCreateId = Id(uuid.v1());
         _createNewMailboxAction(session, accountId, CreateNewMailboxRequest(
           generateCreateId,
           result.newName,
@@ -698,7 +690,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).createFolderSuccessfullyMessage(success.newMailbox.name?.name ?? ''),
         leadingSVGIconColor: Colors.white,
@@ -715,7 +707,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       if (exception is ErrorMethodResponse) {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
       }
-      _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
+      appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
   }
 

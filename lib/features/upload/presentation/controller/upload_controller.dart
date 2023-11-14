@@ -1,10 +1,8 @@
 
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -27,13 +25,9 @@ import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_sta
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:uuid/uuid.dart';
 
 class UploadController extends BaseController {
 
-  final _imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
-  final _uuid = Get.find<Uuid>();
   final _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
   final UploadAttachmentInteractor _uploadAttachmentInteractor;
@@ -130,11 +124,11 @@ class UploadController extends BaseController {
           _deleteInlineFileUploaded(failure.uploadId);
 
           if (currentContext != null && currentOverlayContext != null) {
-            _appToast.showToastErrorMessage(
+            appToast.showToastErrorMessage(
               currentOverlayContext!,
               AppLocalizations.of(currentContext!).thisImageCannotBeAdded,
               leadingSVGIconColor: Colors.white,
-              leadingSVGIcon: _imagePaths.icInsertImage);
+              leadingSVGIcon: imagePaths.icInsertImage);
           }
         }
       },
@@ -158,7 +152,7 @@ class UploadController extends BaseController {
           log('UploadController::_handleProgressUploadInlineImageStateStream():succeed[${success.uploadId}]');
           final inlineAttachment = success.attachment.toAttachmentWithDisposition(
             disposition: ContentDisposition.inline,
-            cid: _uuid.v1()
+            cid: uuid.v1()
           );
 
           final uploadFileState = _uploadingStateInlineFiles.getUploadFileStateById(success.uploadId);
@@ -256,21 +250,21 @@ class UploadController extends BaseController {
 
   void _handleUploadAttachmentsFailure(ErrorAttachmentUploadState failure) {
     if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         currentOverlayContext!,
         '${AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments}. ${failure.exception ?? ''}',
         leadingSVGIconColor: Colors.white,
-        leadingSVGIcon: _imagePaths.icAttachment);
+        leadingSVGIcon: imagePaths.icAttachment);
     }
   }
 
   void _handleUploadAttachmentsSuccess(SuccessAttachmentUploadState success) {
     if (currentContext != null && currentOverlayContext != null && _uploadingStateFiles.allSuccess) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).attachments_uploaded_successfully,
         leadingSVGIconColor: Colors.white,
-        leadingSVGIcon: _imagePaths.icAttachment);
+        leadingSVGIcon: imagePaths.icAttachment);
     }
   }
 
@@ -361,19 +355,19 @@ class UploadController extends BaseController {
     if (failure is UploadAttachmentFailure) {
       if (failure.isInline) {
         if (currentContext != null && currentOverlayContext != null) {
-          _appToast.showToastErrorMessage(
+          appToast.showToastErrorMessage(
             currentOverlayContext!,
             AppLocalizations.of(currentContext!).thisImageCannotBeAdded,
             leadingSVGIconColor: Colors.white,
-            leadingSVGIcon: _imagePaths.icInsertImage);
+            leadingSVGIcon: imagePaths.icInsertImage);
         }
       } else {
         if (currentContext != null && currentOverlayContext != null) {
-          _appToast.showToastErrorMessage(
+          appToast.showToastErrorMessage(
             currentOverlayContext!,
             AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments,
             leadingSVGIconColor: Colors.white,
-            leadingSVGIcon: _imagePaths.icAttachment);
+            leadingSVGIcon: imagePaths.icAttachment);
         }
       }
     }

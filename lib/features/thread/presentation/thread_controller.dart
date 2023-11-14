@@ -1,7 +1,5 @@
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -85,8 +83,6 @@ typedef EndRangeSelection = int;
 
 class ThreadController extends BaseController with EmailActionController {
 
-  final _imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
   final GetEmailsInMailboxInteractor _getEmailsInMailboxInteractor;
@@ -377,6 +373,14 @@ class ThreadController extends BaseController with EmailActionController {
         await cachingManager.clearEmailCacheAndAllStateCache();
       }
       _getAllEmailAction();
+    } else if (error is MethodLevelErrors) {
+      if (currentOverlayContext != null && error.message?.isNotEmpty == true) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          error.message!
+        );
+      }
+      clearState();
     }
   }
 
@@ -683,10 +687,10 @@ class ThreadController extends BaseController with EmailActionController {
 
     mailboxDashBoardController.filterMessageOption.value = newFilterOption;
 
-    _appToast.showToastMessage(
+    appToast.showToastMessage(
       context,
       newFilterOption.getMessageToast(context),
-      leadingSVGIcon: newFilterOption.getIconToast(_imagePaths),
+      leadingSVGIcon: newFilterOption.getIconToast(imagePaths),
     );
 
     if (searchController.isSearchEmailRunning) {
@@ -1060,7 +1064,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (success.newListRules.isNotEmpty == true &&
         currentOverlayContext != null &&
         currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).newFilterWasCreated
       );

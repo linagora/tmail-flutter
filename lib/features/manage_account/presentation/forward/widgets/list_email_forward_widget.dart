@@ -1,6 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,16 +13,13 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ListEmailForwardsWidget extends GetWidget<ForwardController> {
 
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
-  ListEmailForwardsWidget({Key? key}) : super(key: key);
+  const ListEmailForwardsWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      padding: SettingsUtils.getPaddingListRecipientForwarding(context, _responsiveUtils),
+      padding: SettingsUtils.getPaddingListRecipientForwarding(context, controller.responsiveUtils),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -106,7 +101,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
         children: [
           buildIconWeb(
             icon: SvgPicture.asset(
-              _imagePaths.icClose,
+              controller.imagePaths.icClose,
               colorFilter: AppColor.colorTextButton.asFilter(),
               fit: BoxFit.fill),
             tooltip: AppLocalizations.of(context).cancel,

@@ -1,5 +1,4 @@
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -46,8 +45,6 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/r
 
 
 class RulesFilterCreatorController extends BaseMailboxController {
-
-  final _appToast = Get.find<AppToast>();
 
   final GetAllMailboxInteractor _getAllMailboxInteractor;
 
@@ -373,7 +370,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
       }
       final int duplicatedIndex = listEmailRuleFilterActionSelected.indexWhere((filterAction) => filterAction.action == newAction);
       if (duplicatedIndex != -1) {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).duplicatedActionError,
         );
@@ -440,7 +437,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
     if (listRuleCondition.isEmpty == true || listEmailRuleFilterActionSelected.isEmpty == true) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).toastErrorMessageWhenCreateNewRule);
       }
@@ -454,7 +451,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
           log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
           if (errorAction?.isNotEmpty == true) {
             if (currentOverlayContext != null && currentContext != null) {
-              _appToast.showToastErrorMessage(
+              appToast.showToastErrorMessage(
                 currentOverlayContext!,
                 AppLocalizations.of(currentContext!).notSelectedMailboxToMoveMessage);
             }

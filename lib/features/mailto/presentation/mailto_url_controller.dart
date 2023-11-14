@@ -2,8 +2,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -11,14 +9,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class MailtoUrlController extends ReloadableController {
-
-  MailtoUrlController(
-    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
-    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
-  ) : super(
-    getAuthenticatedAccountInteractor,
-    updateAuthenticationAccountInteractor
-  );
 
   @override
   void onReady() {

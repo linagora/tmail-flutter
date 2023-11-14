@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LoginView extends BaseLoginView {
 
-  LoginView({Key? key}) : super(key: key);
+  const LoginView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class LoginView extends BaseLoginView {
           children: [
             Padding(
               padding: EdgeInsets.only(
-                top: responsiveUtils.isHeightShortest(context) ? 64 : 0),
+                top: controller.responsiveUtils.isHeightShortest(context) ? 64 : 0),
               child: Text(
                 AppLocalizations.of(context).login,
                 style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
@@ -102,7 +102,7 @@ class LoginView extends BaseLoginView {
           key: const Key('login_arrow_back_button'),
           onPressed: () => controller.handleBackInCredentialForm(),
           icon: SvgPicture.asset(
-            imagePaths.icBack,
+            controller.imagePaths.icBack,
             alignment: Alignment.center,
             colorFilter: AppColor.primaryColor.asFilter()
           )
@@ -127,7 +127,7 @@ class LoginView extends BaseLoginView {
           controller.formatUrl(pattern);
           return controller.getAllRecentLoginUrlAction(pattern);
         },
-        itemBuilder: (context, loginUrl) => RecentItemTileWidget(loginUrl, imagePath: imagePaths),
+        itemBuilder: (context, loginUrl) => RecentItemTileWidget(loginUrl, imagePath: controller.imagePaths),
         onSuggestionSelected: (loginUrl) => controller.formatUrl(loginUrl.url),
         suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
         noItemsFoundBuilder: (context) => const SizedBox(),
@@ -149,7 +149,7 @@ class LoginView extends BaseLoginView {
   Widget _buildNextButton(BuildContext context) {
     return Container(
       margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
-      width: responsiveUtils.getDeviceWidth(context),height: 48,
+      width: controller.responsiveUtils.getDeviceWidth(context),height: 48,
       child: ElevatedButton(
         key: const Key('nextToCredentialForm'),
         style: ButtonStyle(
@@ -184,7 +184,7 @@ class LoginView extends BaseLoginView {
   }
   
   bool _supportScrollForm(BuildContext context) {
-    return !(responsiveUtils.isMobile(context) && responsiveUtils.isPortrait(context));
+    return !(controller.responsiveUtils.isMobile(context) && controller.responsiveUtils.isPortrait(context));
   }
 
   Widget _buildLoadingProgress(BuildContext context) {
