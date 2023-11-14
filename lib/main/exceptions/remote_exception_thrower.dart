@@ -42,6 +42,8 @@ class RemoteExceptionThrower extends ExceptionThrower {
               throw ConnectionTimeout(message: error.message);
             case DioErrorType.connectionError:
               throw ConnectionError(message: error.message);
+            case DioErrorType.badResponse:
+              throw const BadCredentialsException();
             default:
               if (error.error is SocketException) {
                 throw const SocketError();

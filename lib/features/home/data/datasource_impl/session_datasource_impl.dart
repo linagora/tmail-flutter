@@ -1,6 +1,6 @@
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:tmail_ui_user/features/session/data/datasource/session_datasource.dart';
-import 'package:tmail_ui_user/features/session/data/network/session_api.dart';
+import 'package:tmail_ui_user/features/home/data/datasource/session_datasource.dart';
+import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class SessionDataSourceImpl extends SessionDataSource {

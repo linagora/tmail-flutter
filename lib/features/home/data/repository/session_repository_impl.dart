@@ -1,7 +1,7 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:tmail_ui_user/features/session/data/datasource/session_datasource.dart';
-import 'package:tmail_ui_user/features/session/domain/repository/session_repository.dart';
+import 'package:tmail_ui_user/features/home/data/datasource/session_datasource.dart';
+import 'package:tmail_ui_user/features/home/domain/repository/session_repository.dart';
 
 class SessionRepositoryImpl extends SessionRepository {
 

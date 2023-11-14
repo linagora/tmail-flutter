@@ -1,14 +1,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
@@ -25,16 +24,13 @@ import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_inp
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 abstract class BaseLoginView extends GetWidget<LoginController> {
-  BaseLoginView({Key? key}) : super(key: key);
-
-  final responsiveUtils = Get.find<ResponsiveUtils>();
-  final imagePaths = Get.find<ImagePaths>();
+  const BaseLoginView({Key? key}) : super(key: key);
 
   Widget buildLoginMessage(BuildContext context, Either<Failure, Success> viewState) {
     return Padding(
       padding: const EdgeInsets.only(top: 11, bottom: 36, left: 58, right: 58),
       child: SizedBox(
-        width: responsiveUtils.getWidthLoginTextField(context),
+        width: controller.responsiveUtils.getWidthLoginTextField(context),
         child: Text(
           viewState.fold(
             (failure) {
@@ -50,6 +46,12 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
                 return _getMessageFailure(context, failure.exception);
               } else if (failure is GetOIDCConfigurationFailure) {
                 return AppLocalizations.of(context).canNotVerifySSOConfiguration;
+              } else if (failure is GetSessionFailure) {
+                return controller.getErrorMessageFromSessionFailure(
+                  context: context,
+                  sessionRemoteException: failure.remoteException,
+                  sessionCacheException: failure.exception
+                );
               } else {
                 return AppLocalizations.of(context).unknownError;
               }
@@ -93,7 +95,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
   Widget buildLoginButton(BuildContext context) {
     return Container(
       margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
-      width: responsiveUtils.getDeviceWidth(context),height: 48,
+      width: controller.responsiveUtils.getDeviceWidth(context),height: 48,
       child: ElevatedButton(
         key: const Key('loginSubmitForm'),
         style: ButtonStyle(
@@ -144,7 +146,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         .build(),
       debounceDuration: const Duration(milliseconds: 300),
       suggestionsCallback: controller.getAllRecentLoginUsernameAction,
-      itemBuilder: (context, loginUsername) => RecentItemTileWidget(loginUsername, imagePath: imagePaths),
+      itemBuilder: (context, loginUsername) => RecentItemTileWidget(loginUsername, imagePath: controller.imagePaths),
       onSuggestionSelected: (recentUsername) {
         controller.setUsername(recentUsername.username);
         controller.passFocusNode.requestFocus();

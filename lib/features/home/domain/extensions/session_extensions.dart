@@ -5,10 +5,10 @@ import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:tmail_ui_user/features/session/data/model/session_hive_obj.dart';
-import 'package:tmail_ui_user/features/session/domain/converter/session_account_converter.dart';
-import 'package:tmail_ui_user/features/session/domain/converter/session_capabilities_converter.dart';
-import 'package:tmail_ui_user/features/session/domain/converter/session_primary_account_converter.dart';
+import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
+import 'package:tmail_ui_user/features/home/domain/converter/session_account_converter.dart';
+import 'package:tmail_ui_user/features/home/domain/converter/session_capabilities_converter.dart';
+import 'package:tmail_ui_user/features/home/domain/converter/session_primary_account_converter.dart';
 
 extension SessionExtensions on Session {
 

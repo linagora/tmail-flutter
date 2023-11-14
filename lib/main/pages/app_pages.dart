@@ -27,8 +27,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_view.dart' deferred as manage_account_dashboard;
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
-import 'package:tmail_ui_user/features/session/presentation/session_page_bindings.dart';
-import 'package:tmail_ui_user/features/session/presentation/session_view.dart' deferred as session;
 import 'package:tmail_ui_user/features/unknown_route_page/unknown_route_page_view.dart';
 import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -45,10 +43,6 @@ class AppPages {
         name: AppRoutes.login,
         page: () => DeferredWidget(login.loadLibrary, () => login.LoginView()),
         binding: LoginBindings()),
-    GetPage(
-        name: AppRoutes.session,
-        page: () => DeferredWidget(session.loadLibrary, () => session.SessionView()),
-        binding: SessionPageBindings()),
     GetPage(
       name: AppRoutes.dashboard,
       page: () => DeferredWidget(
