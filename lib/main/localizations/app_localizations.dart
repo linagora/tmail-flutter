@@ -3603,4 +3603,11 @@ class AppLocalizations {
       name: 'subjectDescending',
     );
   }
+
+  String get notFoundSession {
+    return Intl.message(
+      'Session not found',
+      name: 'notFoundSession',
+    );
+  }
 }

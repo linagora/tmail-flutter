@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/session/data/extensions/session_hive_obj_extension.dart';
-import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/home/data/extensions/session_hive_obj_extension.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
 import '../../fixtures/session_fixtures.dart';
 

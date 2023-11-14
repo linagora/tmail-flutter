@@ -1,7 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 
-class StoreSessionLoading extends UIState {}
+class StoreSessionLoading extends LoadingState {}
 
 class StoreSessionSuccess extends UIState {}
 

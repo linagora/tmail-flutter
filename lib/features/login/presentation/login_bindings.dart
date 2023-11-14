@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
@@ -19,7 +18,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
@@ -27,7 +25,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 
@@ -36,10 +33,7 @@ class LoginBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.create(() => LoginController(
-      Get.find<GetAuthenticatedAccountInteractor>(),
-      Get.find<UpdateAuthenticationAccountInteractor>(),
       Get.find<AuthenticationInteractor>(),
-      Get.find<DynamicUrlInterceptors>(),
       Get.find<CheckOIDCIsAvailableInteractor>(),
       Get.find<GetOIDCIsAvailableInteractor>(),
       Get.find<GetOIDCConfigurationInteractor>(),
@@ -106,7 +100,6 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut(() => GetAllRecentLoginUsernameOnMobileInteractor(
       Get.find<LoginUsernameRepository>()
     ));
-    Get.lazyPut(() => UpdateAuthenticationAccountInteractor(Get.find<AccountRepository>()));
   }
 
   @override

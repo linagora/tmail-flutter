@@ -1,4 +1,3 @@
-import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource/cleanup_datasource.dart';
@@ -15,7 +14,6 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_se
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -25,13 +23,11 @@ class HomeBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => HomeController(
-        Get.find<GetAuthenticatedAccountInteractor>(),
-        Get.find<DynamicUrlInterceptors>(),
-        Get.find<CleanupEmailCacheInteractor>(),
-        Get.find<EmailReceiveManager>(),
-        Get.find<CleanupRecentSearchCacheInteractor>(),
-        Get.find<CleanupRecentLoginUrlCacheInteractor>(),
-        Get.find<CleanupRecentLoginUsernameCacheInteractor>(),
+      Get.find<CleanupEmailCacheInteractor>(),
+      Get.find<EmailReceiveManager>(),
+      Get.find<CleanupRecentSearchCacheInteractor>(),
+      Get.find<CleanupRecentLoginUrlCacheInteractor>(),
+      Get.find<CleanupRecentLoginUsernameCacheInteractor>(),
     ));
   }
 
