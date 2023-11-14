@@ -128,10 +128,12 @@ class CachingManager {
     return await HiveCacheConfig().closeHive();
   }
 
-  void clearAllFileInStorage() {
+  Future<void> clearAllFileInStorage() async {
     if (PlatformInfo.isMobile) {
-      _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName);
-      _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName);
+      await Future.wait([
+        _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
+        _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
+      ]);
     }
   }
 
