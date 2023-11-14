@@ -18,7 +18,7 @@ class CachingConstants {
   static const int EMAIL_HEADER_HIVE_CACHE_ID = 16;
   static const int DETAILED_EMAIL_HIVE_CACHE_ID = 17;
   static const int SENDING_EMAIL_HIVE_CACHE_ID = 18;
-  static const int typeIdSessionHiveObj = 19;
+  static const int SESSION_HIVE_CACHE_ID = 19;
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
   static const String newEmailCacheBoxName = 'new_email_cache_box';

@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
@@ -26,7 +27,6 @@ import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_ca
 import 'package:tmail_ui_user/features/offline_mode/model/email_header_hive_cache.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscription.dart';
-import 'package:tmail_ui_user/features/session/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -167,7 +167,7 @@ class HiveCacheConfig {
     );
     registerCacheAdapter<SessionHiveObj>(
       SessionHiveObjAdapter(),
-      CachingConstants.typeIdSessionHiveObj
+      CachingConstants.SESSION_HIVE_CACHE_ID
     );
   }
 
