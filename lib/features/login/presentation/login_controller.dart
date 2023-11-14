@@ -1,4 +1,3 @@
-import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/extensions/url_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -16,6 +15,7 @@ import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/login_constants.dart';
@@ -37,7 +37,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
@@ -45,7 +44,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -58,7 +56,6 @@ import 'package:universal_html/html.dart' as html;
 class LoginController extends ReloadableController {
 
   final AuthenticationInteractor _authenticationInteractor;
-  final DynamicUrlInterceptors _dynamicUrlInterceptors;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
   final GetOIDCIsAvailableInteractor _getOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
@@ -77,10 +74,7 @@ class LoginController extends ReloadableController {
   final FocusNode passFocusNode = FocusNode();
 
   LoginController(
-    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
-    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor,
     this._authenticationInteractor,
-    this._dynamicUrlInterceptors,
     this._checkOIDCIsAvailableInteractor,
     this._getOIDCIsAvailableInteractor,
     this._getOIDCConfigurationInteractor,
@@ -92,9 +86,6 @@ class LoginController extends ReloadableController {
     this._getAllRecentLoginUrlOnMobileInteractor,
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
-  ) : super(
-    getAuthenticatedAccountInteractor,
-    updateAuthenticationAccountInteractor
   );
 
   final loginFormType = LoginFormType.baseUrlForm.obs;
@@ -138,21 +129,24 @@ class LoginController extends ReloadableController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is GetAuthenticationInfoFailure) {
       getAuthenticatedAccountAction();
     } else if (failure is CheckOIDCIsAvailableFailure ||
         failure is GetStoredOidcConfigurationFailure ||
-        failure is GetOIDCIsAvailableFailure) {
+        failure is GetOIDCIsAvailableFailure ||
+        failure is GetTokenOIDCFailure) {
       _showFormLoginWithCredentialAction();
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
+    } else if (failure is GetSessionFailure) {
+      clearAllData();
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetAuthenticationInfoSuccess) {
       _getStoredOidcConfiguration();
     } else if (success is GetStoredOidcConfigurationSuccess) {
@@ -168,13 +162,18 @@ class LoginController extends ReloadableController {
       _getTokenOIDCSuccess(success);
     } else if (success is AuthenticationUserSuccess) {
       _loginSuccessAction(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     super.handleExceptionAction(failure: failure, exception: exception);
-    if (failure is CheckOIDCIsAvailableFailure || failure is GetOIDCIsAvailableFailure) {
+    if (failure is CheckOIDCIsAvailableFailure ||
+        failure is GetStoredOidcConfigurationFailure ||
+        failure is GetOIDCIsAvailableFailure ||
+        failure is GetTokenOIDCFailure) {
       _showFormLoginWithCredentialAction();
     } else {
       clearState();
@@ -307,15 +306,15 @@ class LoginController extends ReloadableController {
 
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
     log('LoginController::_getTokenOIDCSuccess(): ${success.tokenOIDC.toString()}');
-    _dynamicUrlInterceptors.setJmapUrl(_getBaseUrl().toString());
-    _dynamicUrlInterceptors.changeBaseUrl(_getBaseUrl().toString());
+    dynamicUrlInterceptors.setJmapUrl(_getBaseUrl().toString());
+    dynamicUrlInterceptors.changeBaseUrl(_getBaseUrl().toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
     authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
         newToken: success.tokenOIDC.toToken(),
         newConfig: success.configuration);
-    popAndPush(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
+    getSessionAction();
   }
 
   void _loginAction({Uri? baseUrl, UserName? userName, Password? password}) {
@@ -327,11 +326,11 @@ class LoginController extends ReloadableController {
   }
 
   void _loginSuccessAction(AuthenticationUserSuccess success) {
-    _dynamicUrlInterceptors.setJmapUrl(_getBaseUrl().toString());
-    _dynamicUrlInterceptors.changeBaseUrl(_getBaseUrl().toString());
+    dynamicUrlInterceptors.setJmapUrl(_getBaseUrl().toString());
+    dynamicUrlInterceptors.changeBaseUrl(_getBaseUrl().toString());
     authorizationInterceptors.setBasicAuthorization(_userNameText, _passwordText);
     authorizationIsolateInterceptors.setBasicAuthorization(_userNameText, _passwordText);
-    popAndPush(AppRoutes.session, arguments: _dynamicUrlInterceptors.baseUrl);
+    getSessionAction();
   }
 
   void formatUrl(String url) {

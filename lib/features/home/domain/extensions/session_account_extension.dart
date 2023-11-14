@@ -1,7 +1,7 @@
 
 import 'package:jmap_dart_client/http/converter/account_name_converter.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
-import 'package:tmail_ui_user/features/session/domain/converter/session_capabilities_converter.dart';
+import 'package:tmail_ui_user/features/home/domain/converter/session_capabilities_converter.dart';
 
 extension SessionAccountExtension on Account {
 
