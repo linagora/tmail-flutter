@@ -1,7 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/list/tree_view.dart';
@@ -38,8 +36,6 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     MailboxWidgetMixin {
 
   final _maxHeight = 656.0;
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   @override
   final controller = Get.find<DestinationPickerController>();
@@ -59,7 +55,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           borderOnForeground: false,
           color: Colors.transparent,
           child: SafeArea(
-            top: PlatformInfo.isMobile && _responsiveUtils.isPortraitMobile(context),
+            top: PlatformInfo.isMobile && controller.responsiveUtils.isPortraitMobile(context),
             bottom: false,
             left: false,
             right: false,
@@ -90,8 +86,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                             child: SafeArea(
                               top: false,
                               bottom: false,
-                              left: PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context),
-                              right: PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context),
+                              left: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
+                              right: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
                               child: Column(children: [
                                 Obx(() => TopBarDestinationPickerBuilder(
                                   controller.mailboxAction.value,
@@ -201,7 +197,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           if (actions?.canSearch() == true &&
             controller.destinationScreenType.value == DestinationScreenType.destinationPicker)
               SearchBarView(
-                _imagePaths,
+                controller.imagePaths,
                 margin: const EdgeInsets.all(16),
                 hintTextSearch: AppLocalizations.of(context).hintSearchFolders,
                 onOpenSearchViewAction: controller.enableSearch
@@ -294,8 +290,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         children: [
           buildHeaderMailboxCategory(
             context,
-            _responsiveUtils,
-            _imagePaths,
+            controller.responsiveUtils,
+            controller.imagePaths,
             categories,
             controller,
             toggleMailboxCategories: controller.toggleMailboxCategories,
@@ -404,8 +400,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
           return Obx(() => DestinationPickerSearchMailboxItemBuilder(
-            _imagePaths,
-            _responsiveUtils,
+            controller.imagePaths,
+            controller.responsiveUtils,
             controller.listMailboxSearched[index],
             mailboxActions: actions,
             mailboxIdAlreadySelected: mailboxIdSelected,
@@ -443,7 +439,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               : Colors.transparent,
             child: Row(children: [
               SvgPicture.asset(
-                _imagePaths.icFolderMailbox,
+                controller.imagePaths.icFolderMailbox,
                 width: PlatformInfo.isWeb ? 20 : 24,
                 height: PlatformInfo.isWeb ? 20 : 24,
                 fit: BoxFit.fill
@@ -469,7 +465,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                     left: AppUtils.isDirectionRTL(context) ? 30 : 0.0,
                   ),
                   child: SvgPicture.asset(
-                    _imagePaths.icFilterSelected,
+                    controller.imagePaths.icFilterSelected,
                     width: 20,
                     height: 20,
                     fit: BoxFit.fill
@@ -528,12 +524,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 ),
                 child: buildIconWeb(
                   icon: SvgPicture.asset(
-                    _imagePaths.icBack,
+                    controller.imagePaths.icBack,
                     colorFilter: AppColor.colorTextButton.asFilter(),
                     fit: BoxFit.fill),
                   onTap: () => controller.disableSearch(context))),
               Expanded(child: SearchAppBarWidget(
-                imagePaths: _imagePaths,
+                imagePaths: controller.imagePaths,
                 searchQuery: controller.searchQuery.value,
                 searchFocusNode: controller.searchFocus,
                 searchInputController: controller.searchInputController,
@@ -547,7 +543,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                   color: AppColor.colorBgSearchBar),
                 iconClearText: SvgPicture.asset(
-                  _imagePaths.icClearTextSearch,
+                  controller.imagePaths.icClearTextSearch,
                   width: 18,
                   height: 18,
                   fit: BoxFit.fill),
@@ -562,9 +558,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   BorderRadius _getRadiusDestinationPicker(BuildContext context) {
-    if (PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context)) {
+    if (PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context)) {
       return BorderRadius.zero;
-    } else if (_responsiveUtils.isMobile(context)) {
+    } else if (controller.responsiveUtils.isMobile(context)) {
       return const BorderRadius.only(
           topRight: Radius.circular(16),
           topLeft: Radius.circular(16));
@@ -575,14 +571,14 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
 
   double _getWidthDestinationPicker(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      if (_responsiveUtils.isMobile(context)) {
+      if (controller.responsiveUtils.isMobile(context)) {
         return double.infinity;
       } else {
         return 556;
       }
     } else {
-      if (_responsiveUtils.isLandscapeMobile(context) ||
-          _responsiveUtils.isPortraitMobile(context)) {
+      if (controller.responsiveUtils.isLandscapeMobile(context) ||
+          controller.responsiveUtils.isPortraitMobile(context)) {
         return double.infinity;
       } else {
         return 556;
@@ -592,21 +588,21 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
 
   double _getHeightDestinationPicker(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      if (_responsiveUtils.isMobile(context)) {
+      if (controller.responsiveUtils.isMobile(context)) {
         return double.infinity;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return _maxHeight;
         } else {
           return double.infinity;
         }
       }
     } else {
-      if (_responsiveUtils.isLandscapeMobile(context) ||
-          _responsiveUtils.isPortraitMobile(context)) {
+      if (controller.responsiveUtils.isLandscapeMobile(context) ||
+          controller.responsiveUtils.isPortraitMobile(context)) {
         return double.infinity;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return _maxHeight;
         } else {
           return double.infinity;
@@ -618,21 +614,21 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
 
   EdgeInsets _getMarginDestinationPicker(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      if (_responsiveUtils.isMobile(context)) {
+      if (controller.responsiveUtils.isMobile(context)) {
         return EdgeInsets.zero;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return const EdgeInsets.symmetric(vertical: 12);
         } else {
           return const EdgeInsets.symmetric(vertical: 50);
         }
       }
     } else {
-      if (_responsiveUtils.isLandscapeMobile(context) ||
-          _responsiveUtils.isPortraitMobile(context)) {
+      if (controller.responsiveUtils.isLandscapeMobile(context) ||
+          controller.responsiveUtils.isPortraitMobile(context)) {
         return EdgeInsets.zero;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return const EdgeInsets.symmetric(vertical: 12);
         } else {
           return const EdgeInsets.symmetric(vertical: 50);

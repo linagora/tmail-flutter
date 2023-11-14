@@ -1,9 +1,11 @@
 import 'package:contact/contact/model/capability_contact.dart';
+import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/fps_manager.dart';
@@ -52,26 +54,30 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
     with MessageDialogActionMixin,
         PopupContextMenuActionMixin {
 
   final CachingManager cachingManager = Get.find<CachingManager>();
-  final languageCacheManager = Get.find<LanguageCacheManager>();
-  final authorizationInterceptors = Get.find<AuthorizationInterceptors>();
-  final authorizationIsolateInterceptors = Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag);
+  final LanguageCacheManager languageCacheManager = Get.find<LanguageCacheManager>();
+  final AuthorizationInterceptors authorizationInterceptors = Get.find<AuthorizationInterceptors>();
+  final AuthorizationInterceptors authorizationIsolateInterceptors = Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag);
+  final DynamicUrlInterceptors dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final DeleteCredentialInteractor deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final LogoutOidcInteractor logoutOidcInteractor = Get.find<LogoutOidcInteractor>();
   final DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor = Get.find<DeleteAuthorityOidcInteractor>();
+  final AppToast appToast = Get.find<AppToast>();
+  final ImagePaths imagePaths = Get.find<ImagePaths>();
+  final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
+  final Uuid uuid = Get.find<Uuid>();
+
   final _fcmReceiver = FcmReceiver.instance;
   bool _isFcmEnabled = false;
 
   GetFCMSubscriptionLocalInteractor? _getSubscriptionLocalInteractor;
   DestroySubscriptionInteractor? _destroySubscriptionInteractor;
-
-  final AppToast _appToast = Get.find<AppToast>();
-  final ImagePaths _imagePaths = Get.find<ImagePaths>();
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
@@ -123,12 +129,12 @@ abstract class BaseController extends GetxController
     logError('BaseController::_performFilterExceptionInError(): $error');
     if (error is NoNetworkError || error is ConnectionTimeout || error is InternalServerError) {
       if (PlatformInfo.isWeb && currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastMessage(
+        appToast.showToastMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).no_internet_connection,
           actionName: AppLocalizations.of(currentContext!).skip,
           onActionClick: ToastView.dismiss,
-          leadingSVGIcon: _imagePaths.icNotConnection,
+          leadingSVGIcon: imagePaths.icNotConnection,
           backgroundColor: AppColor.textFieldErrorBorderColor,
           textColor: Colors.white,
           infinityToast: true,
@@ -137,7 +143,7 @@ abstract class BaseController extends GetxController
       return error;
     } else if (error is BadCredentialsException) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).badCredentials
         );
@@ -145,7 +151,7 @@ abstract class BaseController extends GetxController
       return error;
     } else if (error is ConnectionError) {
       if (authorizationInterceptors.isAppRunning && currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).connectionError
         );
@@ -164,38 +170,36 @@ abstract class BaseController extends GetxController
       return;
     }
     if (exception is BadCredentialsException || exception is ConnectionError) {
-      performInvokeLogoutAction();
+      clearDataAndGoToLoginPage();
     }
   }
 
-  void handleFailureViewState(Failure failure) {
+  void handleFailureViewState(Failure failure) async {
     logError('BaseController::handleFailureViewState(): ${failure.runtimeType}');
     if (failure is LogoutOidcFailure) {
       if (_isFcmEnabled) {
         _getSubscriptionLocalAction();
       } else {
-        _logoutOIDCAction();
+        await clearDataAndGoToLoginPage();
       }
-    } else if (failure is GetFCMSubscriptionLocalFailure) {
-      performInvokeLogoutAction();
-    } else if (failure is DestroySubscriptionFailure) {
-      performInvokeLogoutAction();
+    } else if (failure is GetFCMSubscriptionLocalFailure || 
+        failure is DestroySubscriptionFailure) {
+      await clearDataAndGoToLoginPage();
     }
   }
 
-  void handleSuccessViewState(Success success) {
+  void handleSuccessViewState(Success success) async {
     log('BaseController::handleSuccessViewState(): ${success.runtimeType}');
     if (success is LogoutOidcSuccess) {
       if (_isFcmEnabled) {
         _getSubscriptionLocalAction();
       } else {
-        _logoutOIDCAction();
+        await clearDataAndGoToLoginPage();
       }
     } else if (success is GetFCMSubscriptionLocalSuccess) {
-      final subscriptionId = success.fcmSubscription.subscriptionId;
-      _destroySubscriptionAction(subscriptionId);
+      _destroySubscriptionAction(success.fcmSubscription.subscriptionId);
     } else if (success is DestroySubscriptionSuccess) {
-      performInvokeLogoutAction();
+      await clearDataAndGoToLoginPage();
     }
   }
 
@@ -275,7 +279,7 @@ abstract class BaseController extends GetxController
   bool get isAuthenticatedWithOidc => authenticationType == AuthenticationType.oidc;
 
   bool _isFcmActivated(Session session, AccountId accountId) =>
-    [FirebaseCapability.fcmIdentifier].isSupported(session, accountId) && AppConfig.fcmAvailable;
+    FirebaseCapability.fcmIdentifier.isSupported(session, accountId) && AppConfig.fcmAvailable;
 
   void goToLogin({LoginArguments? arguments}) {
     if (Get.currentRoute != AppRoutes.login) {
@@ -283,10 +287,9 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void logout(Session? session, AccountId? accountId) {
+  void logout(Session? session, AccountId? accountId) async {
     if (session == null || accountId == null) {
-      logError('BaseController::logout(): Session is $session OR AccountId is $accountId');
-      performInvokeLogoutAction();
+      await clearDataAndGoToLoginPage();
       return;
     }
     _isFcmEnabled = _isFcmActivated(session, accountId);
@@ -296,71 +299,74 @@ abstract class BaseController extends GetxController
       if (_isFcmEnabled) {
         _getSubscriptionLocalAction();
       } else {
-        _logoutAction();
+        await clearDataAndGoToLoginPage();
       }
     }
   }
 
-  void _destroySubscriptionAction(String subscriptionId) {
-    try {
-      _destroySubscriptionInteractor = Get.find<DestroySubscriptionInteractor>();
+  void _destroySubscriptionAction(String subscriptionId) async {
+    _destroySubscriptionInteractor = getBinding<DestroySubscriptionInteractor>();
+    if (_destroySubscriptionInteractor != null) {
       consumeState(_destroySubscriptionInteractor!.execute(subscriptionId));
-    } catch(e) {
-      logError('BaseController::destroySubscriptionAction(): exception: $e');
-      performInvokeLogoutAction();
-    }
-  }
-
-  void _getSubscriptionLocalAction() {
-    try {
-      _getSubscriptionLocalInteractor = Get.find<GetFCMSubscriptionLocalInteractor>();
-      consumeState(_getSubscriptionLocalInteractor!.execute());
-    } catch (e) {
-      logError('BaseController::getSubscriptionLocalAction(): exception: $e');
-      performInvokeLogoutAction();
-    }
-  }
-
-  void performInvokeLogoutAction() {
-    log('BaseController::performInvokeLogoutAction():');
-    if (isAuthenticatedWithOidc) {
-      _logoutOIDCAction();
     } else {
-      _logoutAction();
+      await clearDataAndGoToLoginPage();
     }
   }
 
-  void _logoutAction() async {
-    log('BaseController::_logoutAction():');
+  void _getSubscriptionLocalAction() async {
+    _getSubscriptionLocalInteractor = getBinding<GetFCMSubscriptionLocalInteractor>();
+    if (_getSubscriptionLocalInteractor != null) {
+      consumeState(_getSubscriptionLocalInteractor!.execute());
+    } else {
+      await clearDataAndGoToLoginPage();
+    }
+  }
+
+  Future<void> clearDataAndGoToLoginPage() async {
+    log('BaseController::clearDataAndGoToLoginPage:');
+    await clearAllData();
+    goToLogin(arguments: LoginArguments(
+      isAuthenticatedWithOidc
+        ? LoginFormType.ssoForm
+        : LoginFormType.credentialForm
+    ));
+  }
+
+  Future<void> clearAllData() async {
+    if (isAuthenticatedWithOidc) {
+      await _clearOidcAuthData();
+    } else {
+      await _clearBasicAuthData();
+    }
+  }
+
+  Future<void> _clearBasicAuthData() async {
     await Future.wait([
       deleteCredentialInteractor.execute(),
       cachingManager.clearAll(),
       languageCacheManager.removeLanguage(),
     ]);
-    cachingManager.clearAllFileInStorage();
+    await cachingManager.clearAllFileInStorage();
     authorizationInterceptors.clear();
     authorizationIsolateInterceptors.clear();
     if (_isFcmEnabled) {
       _fcmReceiver.deleteFcmToken();
     }
     await cachingManager.closeHive();
-    goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
   }
 
-  void _logoutOIDCAction() async {
-    log('BaseController::_logoutOIDCAction():');
+  Future<void> _clearOidcAuthData() async {
     await Future.wait([
       deleteAuthorityOidcInteractor.execute(),
       cachingManager.clearAll(),
       languageCacheManager.removeLanguage(),
     ]);
-    cachingManager.clearAllFileInStorage();
+    await cachingManager.clearAllFileInStorage();
     authorizationIsolateInterceptors.clear();
     authorizationInterceptors.clear();
     if (_isFcmEnabled) {
       _fcmReceiver.deleteFcmToken();
     }
     await cachingManager.closeHive();
-    goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
   }
 }

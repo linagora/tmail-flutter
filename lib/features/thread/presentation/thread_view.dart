@@ -44,9 +44,6 @@ class ThreadView extends GetWidget<ThreadController>
     FilterEmailPopupMenuMixin,
     PopupMenuWidgetMixin {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
   ThreadView({Key? key}) : super(key: key);
 
   @override
@@ -63,12 +60,12 @@ class ThreadView extends GetWidget<ThreadController>
               if (supportVerticalDivider(context))
                 const VerticalDivider(color: AppColor.colorDividerVertical, width: 1),
               Expanded(child: SafeArea(
-                  right: _responsiveUtils.isLandscapeMobile(context),
-                  left: _responsiveUtils.isLandscapeMobile(context),
+                  right: controller.responsiveUtils.isLandscapeMobile(context),
+                  left: controller.responsiveUtils.isLandscapeMobile(context),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (!_responsiveUtils.isWebDesktop(context))
+                        if (!controller.responsiveUtils.isWebDesktop(context))
                           ... [
                             Obx(() {
                               return AppBarThreadWidget(
@@ -86,13 +83,13 @@ class ThreadView extends GetWidget<ThreadController>
                                     selectionEmail
                                   );
                                 },
-                                onContextMenuFilterEmailAction: _responsiveUtils.isScreenWithShortestSide(context)
+                                onContextMenuFilterEmailAction: controller.responsiveUtils.isScreenWithShortestSide(context)
                                   ? (filterOption) => controller.openContextMenuAction(
                                       context,
                                       _filterMessagesCupertinoActionTile(context, filterOption)
                                     )
                                   : null,
-                                onPopupMenuFilterEmailAction: !_responsiveUtils.isScreenWithShortestSide(context)
+                                onPopupMenuFilterEmailAction: !controller.responsiveUtils.isScreenWithShortestSide(context)
                                   ? (filterOption, position) => controller.openPopupMenuAction(
                                       context,
                                       position,
@@ -148,7 +145,7 @@ class ThreadView extends GetWidget<ThreadController>
                             return const SizedBox.shrink();
                           }
                         }),
-                        if (!_responsiveUtils.isDesktop(context))
+                        if (!controller.responsiveUtils.isDesktop(context))
                           _buildMarkAsMailboxReadLoading(context),
                         Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
                         Expanded(child: _buildListEmail(context)),
@@ -167,9 +164,9 @@ class ThreadView extends GetWidget<ThreadController>
                 child: ScrollToTopButtonWidget(
                   scrollController: controller.listEmailController,
                   onTap: controller.scrollToTop,
-                  responsiveUtils: _responsiveUtils,
+                  responsiveUtils: controller.responsiveUtils,
                   icon: SvgPicture.asset(
-                    _imagePaths.icArrowUpOutline,
+                    controller.imagePaths.icArrowUpOutline,
                     width: ScrollToTopButtonWidgetStyles.iconWidth,
                     height: ScrollToTopButtonWidgetStyles.iconHeight,
                     fit: BoxFit.fill,
@@ -188,11 +185,11 @@ class ThreadView extends GetWidget<ThreadController>
 
   bool supportVerticalDivider(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      return _responsiveUtils.isTabletLarge(context);
+      return controller.responsiveUtils.isTabletLarge(context);
     } else {
-      return _responsiveUtils.isDesktop(context) ||
-        _responsiveUtils.isTabletLarge(context) ||
-        _responsiveUtils.isLandscapeTablet(context);
+      return controller.responsiveUtils.isDesktop(context) ||
+        controller.responsiveUtils.isTabletLarge(context) ||
+        controller.responsiveUtils.isLandscapeTablet(context);
     }
   }
 
@@ -201,9 +198,9 @@ class ThreadView extends GetWidget<ThreadController>
       color: Colors.white,
       padding: EdgeInsets.symmetric(
         horizontal: 16,
-        vertical: _responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
+        vertical: controller.responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
       margin: EdgeInsets.only(bottom: PlatformInfo.isMobile ? 8 : 0),
-      child: SearchBarView(_imagePaths,
+      child: SearchBarView(controller.imagePaths,
         hintTextSearch: AppLocalizations.of(context).search_emails,
         onOpenSearchViewAction: controller.goToSearchView));
   }
@@ -226,11 +223,11 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
     return Obx(() {
       if ((PlatformInfo.isMobile || (PlatformInfo.isWeb && controller.isSelectionEnabled()
-            && controller.isSearchActive() && !_responsiveUtils.isDesktop(context)))
+            && controller.isSearchActive() && !controller.responsiveUtils.isDesktop(context)))
           && controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected.isNotEmpty) {
         return BottomBarThreadSelectionWidget(
-          _imagePaths,
-          _responsiveUtils,
+          controller.imagePaths,
+          controller.responsiveUtils,
           controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
           controller.mailboxDashBoardController.selectedMailbox.value,
           onPressEmailSelectionActionClick: (actionType, selectionEmail) =>
@@ -247,7 +244,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildFloatingButtonCompose(BuildContext context) {
-    if (_responsiveUtils.isWebDesktop(context)) {
+    if (controller.responsiveUtils.isWebDesktop(context)) {
       return const SizedBox.shrink();
     }
 
@@ -255,7 +252,7 @@ class ThreadView extends GetWidget<ThreadController>
       if (controller.isAllSearchInActive) {
         return Container(
           padding: PlatformInfo.isMobile && controller.listEmailSelected.isNotEmpty
-            ? EdgeInsets.only(bottom: _responsiveUtils.isTabletLarge(context) ? 85 : 70)
+            ? EdgeInsets.only(bottom: controller.responsiveUtils.isTabletLarge(context) ? 85 : 70)
             : EdgeInsets.zero,
           child: ComposeFloatingButton(
             scrollController: controller.listEmailController,
@@ -278,7 +275,7 @@ class ThreadView extends GetWidget<ThreadController>
     return listFilter.map((filter) => (FilterMessageCupertinoActionSheetActionBuilder(
              Key('filter_email_${filter.name}'),
             SvgPicture.asset(
-                filter.getIcon(_imagePaths),
+                filter.getIcon(controller.imagePaths),
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill,
@@ -288,14 +285,14 @@ class ThreadView extends GetWidget<ThreadController>
             filter.getName(context),
             filter,
             optionCurrent: optionCurrent,
-            iconLeftPadding: _responsiveUtils.isMobile(context)
+            iconLeftPadding: controller.responsiveUtils.isMobile(context)
                 ? const EdgeInsets.only(left: 12, right: 16)
                 : const EdgeInsets.only(right: 12),
-            iconRightPadding: _responsiveUtils.isMobile(context)
+            iconRightPadding: controller.responsiveUtils.isMobile(context)
                 ? const EdgeInsets.only(right: 12)
                 : EdgeInsets.zero,
             actionSelected: SvgPicture.asset(
-                _imagePaths.icFilterSelected,
+                controller.imagePaths.icFilterSelected,
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill))
@@ -305,7 +302,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   Widget _buildListEmail(BuildContext context) {
     return Container(
-      margin: PlatformInfo.isWeb && _responsiveUtils.isDesktop(context)
+      margin: PlatformInfo.isWeb && controller.responsiveUtils.isDesktop(context)
           ? const EdgeInsets.symmetric(horizontal: 4)
           : EdgeInsets.zero,
       alignment: Alignment.center,
@@ -371,7 +368,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildEmailItem(BuildContext context, PresentationEmail presentationEmail) {
-    if (_responsiveUtils.isWebDesktop(context)) {
+    if (controller.responsiveUtils.isWebDesktop(context)) {
       return _buildEmailItemDraggable(context, presentationEmail);
     } else {
       return _buildEmailItemNotDraggable(context, presentationEmail);
@@ -421,7 +418,7 @@ class ThreadView extends GetWidget<ThreadController>
 
     return Dismissible(
       key: ValueKey<EmailId?>(presentationEmail.id),
-      direction: controller.getSwipeDirection(_responsiveUtils.isWebDesktop(context), selectModeAll),
+      direction: controller.getSwipeDirection(controller.responsiveUtils.isWebDesktop(context), selectModeAll),
       background: Container(
         color: AppColor.colorItemRecipientSelected,
         child: Padding(
@@ -435,11 +432,11 @@ class ThreadView extends GetWidget<ThreadController>
                   radius: 24,
                   child: !presentationEmail.hasRead
                       ? SvgPicture.asset(
-                          _imagePaths.icMarkAsRead,
+                          controller.imagePaths.icMarkAsRead,
                           fit: BoxFit.fill,
                         )
                       : SvgPicture.asset(
-                          _imagePaths.icUnreadEmail,
+                          controller.imagePaths.icUnreadEmail,
                           fit: BoxFit.fill,
                           colorFilter: AppColor.primaryColor.asFilter(),
                         ),
@@ -493,7 +490,7 @@ class ThreadView extends GetWidget<ThreadController>
     PresentationEmail presentationEmail,
     RelativeRect? position
   ) {
-    if (_responsiveUtils.isScreenWithShortestSide(context)) {
+    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
       controller.openContextMenuAction(
         context,
         _contextMenuActionTile(context, presentationEmail)
@@ -519,7 +516,7 @@ class ThreadView extends GetWidget<ThreadController>
           child: Row(
             children: [
               SvgPicture.asset(
-                _imagePaths.icFilterMessageAll,
+                controller.imagePaths.icFilterMessageAll,
                 width: 24,
                 height: 24,
                 fit: BoxFit.fill,
@@ -546,7 +543,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   double? _getItemExtent(BuildContext context) {
     if (PlatformInfo.isWeb) {
-     return _responsiveUtils.isDesktop(context) ? 52 : 98;
+     return controller.responsiveUtils.isDesktop(context) ? 52 : 98;
     } else {
       return null;
     }
@@ -559,7 +556,7 @@ class ThreadView extends GetWidget<ThreadController>
         ? EmptyEmailsWidget(
             key: const Key('empty_thread_view'),
             title: _getMessageEmptyEmail(context),
-            iconSVG: _imagePaths.icEmptyEmail,
+            iconSVG: controller.imagePaths.icEmptyEmail,
             subTitle: _getSubMessageEmptyEmail(context),
             onCreateFiltersActionCallback: controller.isNewFolderCreated
               ? controller.goToCreateEmailRuleView
@@ -612,7 +609,7 @@ class ThreadView extends GetWidget<ThreadController>
     return (EmailActionCupertinoActionSheetActionBuilder(
         const Key('mark_as_spam_or_un_spam_action'),
         SvgPicture.asset(
-          mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+          mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
           width: 24,
           height: 24,
           fit: BoxFit.fill,
@@ -621,10 +618,10 @@ class ThreadView extends GetWidget<ThreadController>
           ? AppLocalizations.of(context).remove_from_spam
           : AppLocalizations.of(context).mark_as_spam,
         email,
-        iconLeftPadding: _responsiveUtils.isMobile(context)
+        iconLeftPadding: controller.responsiveUtils.isMobile(context)
           ? const EdgeInsets.only(left: 12, right: 16)
           : const EdgeInsets.only(right: 12),
-        iconRightPadding: _responsiveUtils.isMobile(context)
+        iconRightPadding: controller.responsiveUtils.isMobile(context)
           ? const EdgeInsets.only(right: 12)
           : EdgeInsets.zero)
       ..onActionClick((email) => controller.pressEmailAction(context,
@@ -639,17 +636,17 @@ class ThreadView extends GetWidget<ThreadController>
     return (EmailActionCupertinoActionSheetActionBuilder(
       const Key('open_in_new_tab_action'),
       SvgPicture.asset(
-        _imagePaths.icOpenInNewTab,
+        controller.imagePaths.icOpenInNewTab,
         width: 24,
         height: 24,
         fit: BoxFit.fill,
         colorFilter: AppColor.colorTextButton.asFilter()),
       AppLocalizations.of(context).openInNewTab,
       email,
-      iconLeftPadding: _responsiveUtils.isMobile(context)
+      iconLeftPadding: controller.responsiveUtils.isMobile(context)
         ? const EdgeInsets.only(left: 12, right: 16)
         : const EdgeInsets.only(right: 12),
-      iconRightPadding: _responsiveUtils.isMobile(context)
+      iconRightPadding: controller.responsiveUtils.isMobile(context)
         ? const EdgeInsets.only(right: 12)
         : EdgeInsets.zero)
       ..onActionClick((email) {
@@ -677,7 +674,7 @@ class ThreadView extends GetWidget<ThreadController>
     return PopupMenuItem(
       padding: EdgeInsets.zero,
       child: popupItem(
-        mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+        mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
         mailboxContain?.isSpam == true
           ? AppLocalizations.of(context).remove_from_spam
           : AppLocalizations.of(context).mark_as_spam,
@@ -705,7 +702,7 @@ class ThreadView extends GetWidget<ThreadController>
     return PopupMenuItem(
       padding: EdgeInsets.zero,
       child: popupItem(
-        _imagePaths.icOpenInNewTab,
+        controller.imagePaths.icOpenInNewTab,
         AppLocalizations.of(context).openInNewTab,
         colorIcon: AppColor.colorTextButton,
         styleName: const TextStyle(
@@ -730,19 +727,19 @@ class ThreadView extends GetWidget<ThreadController>
           if (success is MarkAsMailboxReadLoading) {
             return Padding(
                 padding: EdgeInsets.only(
-                    top: _responsiveUtils.isDesktop(context) ? 16 : 0,
+                    top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
                     left: 16,
                     right: 16,
-                    bottom: _responsiveUtils.isDesktop(context) ? 0 : 16),
+                    bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
                 child: horizontalLoadingWidget);
           } else if (success is UpdatingMarkAsMailboxReadState) {
             final percent = success.countRead / success.totalUnread;
             return Padding(
                 padding: EdgeInsets.only(
-                    top: _responsiveUtils.isDesktop(context) ? 16 : 0,
+                    top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
                     left: 16,
                     right: 16,
-                    bottom: _responsiveUtils.isDesktop(context) ? 0 : 16),
+                    bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
                 child: horizontalPercentLoadingWidget(percent));
           }
           return const SizedBox.shrink();

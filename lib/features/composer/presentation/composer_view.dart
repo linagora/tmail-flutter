@@ -1,5 +1,3 @@
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/context_menu/simple_context_menu_action_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:file_picker/file_picker.dart';
@@ -31,15 +29,12 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
-  ComposerView({Key? key}) : super(key: key);
+  const ComposerView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
-      responsiveUtils: _responsiveUtils,
+      responsiveUtils: controller.responsiveUtils,
       mobile: MobileContainerView(
         keyboardRichTextController: controller.keyboardRichTextController,
         onCloseViewAction: () => controller.saveToDraftAndClose(context, canPop: false),
@@ -55,13 +50,13 @@ class ComposerView extends GetWidget<ComposerController> {
           : null,
         backgroundColor: MobileAppBarComposerWidgetStyle.backgroundColor,
         childBuilder: (context) => SafeArea(
-          left: !_responsiveUtils.isLandscapeMobile(context),
-          right: !_responsiveUtils.isLandscapeMobile(context),
+          left: !controller.responsiveUtils.isLandscapeMobile(context),
+          right: !controller.responsiveUtils.isLandscapeMobile(context),
           child: Container(
             color: ComposerStyle.mobileBackgroundColor,
             child: Column(
               children: [
-                if (_responsiveUtils.isLandscapeMobile(context))
+                if (controller.responsiveUtils.isLandscapeMobile(context))
                   Obx(() => LandscapeAppBarComposerWidget(
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.saveToDraftAndClose(context),
@@ -103,8 +98,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               if (controller.fromRecipientState.value == PrefixRecipientState.enabled)
                                 FromComposerMobileWidget(
                                   selectedIdentity: controller.identitySelected.value,
-                                  imagePaths: _imagePaths,
-                                  responsiveUtils: _responsiveUtils,
+                                  imagePaths: controller.imagePaths,
+                                  responsiveUtils: controller.responsiveUtils,
                                   margin: ComposerStyle.mobileRecipientMargin,
                                   padding: ComposerStyle.mobileRecipientPadding,
                                   onTap: () => controller.openSelectIdentityBottomSheet(context)
@@ -252,7 +247,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               items: controller.listFromIdentities,
                               itemSelected: controller.identitySelected.value,
                               dropdownKey: controller.identityDropdownKey,
-                              imagePaths: _imagePaths,
+                              imagePaths: controller.imagePaths,
                               padding: ComposerStyle.mobileRecipientPadding,
                               margin: ComposerStyle.mobileRecipientMargin,
                               onChangeIdentity: controller.onChangeIdentity,
@@ -390,7 +385,7 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget _pickPhotoAndVideoAction(BuildContext context) {
     return (SimpleContextMenuActionBuilder(
             const Key('pick_photo_and_video_context_menu_action'),
-            SvgPicture.asset(_imagePaths.icPhotoLibrary, width: 24, height: 24, fit: BoxFit.fill),
+            SvgPicture.asset(controller.imagePaths.icPhotoLibrary, width: 24, height: 24, fit: BoxFit.fill),
             AppLocalizations.of(context).photos_and_videos)
         ..onActionClick((_) => controller.openFilePickerByType(context, FileType.media)))
       .build();
@@ -399,7 +394,7 @@ class ComposerView extends GetWidget<ComposerController> {
   Widget _browseFileAction(BuildContext context) {
     return (SimpleContextMenuActionBuilder(
             const Key('browse_file_context_menu_action'),
-            SvgPicture.asset(_imagePaths.icMore, width: 24, height: 24, fit: BoxFit.fill),
+            SvgPicture.asset(controller.imagePaths.icMore, width: 24, height: 24, fit: BoxFit.fill),
             AppLocalizations.of(context).browse)
         ..onActionClick((_) => controller.openFilePickerByType(context, FileType.any)))
       .build();
@@ -410,11 +405,11 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icReadReceipt,
+          controller.imagePaths.icReadReceipt,
           AppLocalizations.of(context).requestReadReceipt,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,
-          selectedIcon: _imagePaths.icFilterSelected,
+          selectedIcon: controller.imagePaths.icFilterSelected,
           isSelected: controller.hasRequestReadReceipt.value,
           onCallbackAction: () {
             popBack();
@@ -430,12 +425,12 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icReadReceipt,
+          controller.imagePaths.icReadReceipt,
           AppLocalizations.of(context).requestReadReceipt,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,
           colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: _imagePaths.icFilterSelected,
+          selectedIcon: controller.imagePaths.icFilterSelected,
           isSelected: controller.hasRequestReadReceipt.value,
           onCallbackAction: () {
             popBack();
@@ -446,7 +441,7 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icSaveToDraft,
+          controller.imagePaths.icSaveToDraft,
           AppLocalizations.of(context).saveAsDraft,
           colorIcon: ComposerStyle.popupItemIconColor,
           styleName: ComposerStyle.popupItemTextStyle,
@@ -460,7 +455,7 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icDeleteMailbox,
+          controller.imagePaths.icDeleteMailbox,
           AppLocalizations.of(context).delete,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,

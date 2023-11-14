@@ -1,6 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -27,10 +25,8 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 typedef CloseSettingsViewAction = void Function();
 
 class SettingsView extends GetWidget<SettingsController> {
-  SettingsView({Key? key, this.closeAction}) : super(key: key);
+  const SettingsView({Key? key, this.closeAction}) : super(key: key);
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
   final CloseSettingsViewAction? closeAction;
 
   @override
@@ -44,7 +40,7 @@ class SettingsView extends GetWidget<SettingsController> {
             SizedBox.fromSize(
               size: const Size.fromHeight(52),
               child: Padding(
-                padding: SettingsUtils.getPaddingAppBar(context, _responsiveUtils),
+                padding: SettingsUtils.getPaddingAppBar(context, controller.responsiveUtils),
                 child: _buildAppbar(context))),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
             Obx(() {
@@ -138,8 +134,8 @@ class SettingsView extends GetWidget<SettingsController> {
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 SvgPicture.asset(
                   DirectionUtils.isDirectionRTLByLanguage(context)
-                    ? _imagePaths.icCollapseFolder
-                    : _imagePaths.icBack,
+                    ? controller.imagePaths.icCollapseFolder
+                    : controller.imagePaths.icBack,
                   colorFilter: AppColor.colorTextButton.asFilter(),
                   fit: BoxFit.fill),
                 Container(
@@ -179,7 +175,7 @@ class SettingsView extends GetWidget<SettingsController> {
 
   Widget _buildCloseSettingButton(BuildContext context) {
     return buildIconWeb(
-      icon: SvgPicture.asset(_imagePaths.icClose, width: 28, height: 28, fit: BoxFit.fill),
+      icon: SvgPicture.asset(controller.imagePaths.icClose, width: 28, height: 28, fit: BoxFit.fill),
       tooltip: AppLocalizations.of(context).close,
       onTap: closeAction);
   }
@@ -188,7 +184,7 @@ class SettingsView extends GetWidget<SettingsController> {
     return Obx(() {
       switch (controller.manageAccountDashboardController.settingsPageLevel.value) {
         case SettingsPageLevel.universal:
-          return SettingsFirstLevelView();
+          return const SettingsFirstLevelView();
         case SettingsPageLevel.level1:
           return _viewDisplayedOfAccountMenuItem();
       }
@@ -201,7 +197,7 @@ class SettingsView extends GetWidget<SettingsController> {
         case AccountMenuItem.profiles:
           return ProfilesView();
         case AccountMenuItem.languageAndRegion:
-          return LanguageAndRegionView();
+          return const LanguageAndRegionView();
         case AccountMenuItem.emailRules:
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return EmailRulesView();

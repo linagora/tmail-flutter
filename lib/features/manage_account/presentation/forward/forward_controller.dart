@@ -1,8 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +39,6 @@ class ForwardController extends BaseController {
   EditLocalCopyInForwardingInteractor? _editLocalCopyInForwardingInteractor;
 
   final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
 
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
@@ -120,7 +116,7 @@ class ForwardController extends BaseController {
       AppLocalizations.of(context).remove,
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
-      icon: SvgPicture.asset(_imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
+      icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
       titleStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
@@ -153,7 +149,7 @@ class ForwardController extends BaseController {
 
   void _handleDeleteRecipientSuccess(DeleteRecipientInForwardingSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMessageDeleteRecipientSuccessfully);
     }
@@ -205,7 +201,7 @@ class ForwardController extends BaseController {
       AppLocalizations.of(currentContext!).remove,
       onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
-      icon: SvgPicture.asset(_imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
+      icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
       titleStyle: const TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.w600,
@@ -255,7 +251,7 @@ class ForwardController extends BaseController {
 
   void _handleAddRecipientsSuccess(AddRecipientsInForwardingSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMessageAddRecipientsSuccessfully);
     }
@@ -281,7 +277,7 @@ class ForwardController extends BaseController {
 
   void _handleEditLocalCopySuccess(EditLocalCopyInForwardingSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         success.forward.localCopy
           ? AppLocalizations.of(currentContext!).toastMessageLocalCopyEnable
@@ -306,11 +302,11 @@ class ForwardController extends BaseController {
 
   void handleExceptionCallback(BuildContext context, bool isListEmailEmpty) {
     if (isListEmailEmpty) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).emptyListEmailForward);
     } else {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).incorrectEmailFormat);
     }

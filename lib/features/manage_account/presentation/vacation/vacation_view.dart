@@ -22,9 +22,6 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class VacationView extends GetWidget<VacationController> with RichTextButtonMixin {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
   VacationView({Key? key}) : super(key: key);
 
   @override
@@ -52,18 +49,18 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
 
   Widget _buildVacationFormView(BuildContext context) {
     return SettingDetailViewBuilder(
-      responsiveUtils: _responsiveUtils,
+      responsiveUtils: controller.responsiveUtils,
       padding: const EdgeInsets.symmetric(horizontal: 4),
       onTapGestureDetector: () => controller.clearFocusEditor(context),
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         controller: controller.scrollController,
         child: Padding(
-          padding: VacationUtils.getPaddingView(context, _responsiveUtils),
+          padding: VacationUtils.getPaddingView(context, controller.responsiveUtils),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (_responsiveUtils.isWebDesktop(context))
+              if (controller.responsiveUtils.isWebDesktop(context))
                 ...[
                   Text(
                     AppLocalizations.of(context).vacation,
@@ -94,7 +91,9 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                       controller.updateVacationPresentation(newStatus: newStatus);
                     },
                     child: SvgPicture.asset(
-                      controller.isVacationDeactivated ? _imagePaths.icSwitchOff : _imagePaths.icSwitchOn,
+                      controller.isVacationDeactivated
+                        ? controller.imagePaths.icSwitchOff
+                        : controller.imagePaths.icSwitchOn,
                       fit: BoxFit.fill,
                       width: 24,
                       height: 24
@@ -121,7 +120,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                     absorbing: controller.isVacationDeactivated,
                     child: Opacity(
                       opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                      child: _responsiveUtils.isPortraitMobile(context)
+                      child: controller.responsiveUtils.isPortraitMobile(context)
                         ? Column(children: [
                             BorderButtonField<DateTime>(
                               label: AppLocalizations.of(context).startDate,
@@ -175,8 +174,8 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                           },
                           child: SvgPicture.asset(
                             controller.vacationPresentation.value.vacationStopEnabled
-                              ? _imagePaths.icSwitchOn
-                              : _imagePaths.icSwitchOff,
+                              ? controller.imagePaths.icSwitchOn
+                              : controller.imagePaths.icSwitchOff,
                             fit: BoxFit.fill,
                             width: 24,
                             height: 24
@@ -201,7 +200,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                     absorbing: !controller.canChangeEndDate,
                     child: Opacity(
                       opacity: !controller.canChangeEndDate ? 0.3 : 1.0,
-                      child: _responsiveUtils.isPortraitMobile(context)
+                      child: controller.responsiveUtils.isPortraitMobile(context)
                         ? Column(children: [
                             BorderButtonField<DateTime>(
                               label: AppLocalizations.of(context).endDate,
@@ -245,7 +244,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                   const SizedBox(height: 24),
                   Obx(() => AbsorbPointer(
                     absorbing: controller.isVacationDeactivated,
-                    child: _responsiveUtils.isPortraitMobile(context)
+                    child: controller.responsiveUtils.isPortraitMobile(context)
                       ? Opacity(
                           opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
                           child: TextInputFieldBuilder(
@@ -289,7 +288,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
   }
 
   Widget _buildListButtonAction(BuildContext context) {
-    if (_responsiveUtils.isWebDesktop(context)) {
+    if (controller.responsiveUtils.isWebDesktop(context)) {
       return Align(
         alignment: Alignment.centerRight,
         child: buildTextButton(
@@ -305,7 +304,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
             onTap: () => controller.saveVacation(context)),
       );
     } else {
-      if (_responsiveUtils.isPortraitMobile(context)) {
+      if (controller.responsiveUtils.isPortraitMobile(context)) {
         return Row(children: [
           Expanded(
             child: buildTextButton(

@@ -50,7 +50,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Portal(
       child: Stack(children: [
         ResponsiveWidget(
-            responsiveUtils: responsiveUtils,
+            responsiveUtils: controller.responsiveUtils,
             desktop: Scaffold(
               body: GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
@@ -73,7 +73,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             text: AppLocalizations.of(context).app_name,
                             textAlign: TextAlign.center,
                             textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                            logoSVG: imagePaths.icTMailLogo,
+                            logoSVG: controller.imagePaths.icTMailLogo,
                             onTapCallback: controller.redirectToInboxAction,
                           ),
                           Obx(() {
@@ -160,7 +160,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             case DashboardRoutes.thread:
                               return _buildThreadViewForWebDesktop(context);
                             case DashboardRoutes.emailDetailed:
-                              return EmailView();
+                              return const EmailView();
                             default:
                               return const SizedBox.shrink();
                           }
@@ -177,7 +177,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   return SearchEmailView();
                 case DashboardRoutes.emailDetailed:
                   return controller.searchController.isSearchEmailRunning
-                      ? EmailView()
+                      ? const EmailView()
                       : _buildScaffoldHaveDrawer(
                         body: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +186,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                                   child: ThreadView()),
                               const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
-                              Expanded(child: EmailView()),
+                              const Expanded(child: EmailView()),
                             ],
                           ),
                       );
@@ -199,7 +199,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                             child: ThreadView()),
                         const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
-                        Expanded(child: EmailView()),
+                        const Expanded(child: EmailView()),
                       ],
                     ),
                   );
@@ -210,7 +210,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 case DashboardRoutes.thread:
                   return _buildScaffoldHaveDrawer(body: ThreadView());
                 case DashboardRoutes.emailDetailed:
-                  return EmailView();
+                  return const EmailView();
                 case DashboardRoutes.searchEmail:
                   return SearchEmailView();
                 default:
@@ -219,10 +219,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             }),
         ),
         Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
-            ? ComposerView()
+            ? const ComposerView()
             : const SizedBox.shrink()
         ),
-        Obx(() => controller.searchMailboxActivated.value == true && !responsiveUtils.isWebDesktop(context)
+        Obx(() => controller.searchMailboxActivated.value == true && !controller.responsiveUtils.isWebDesktop(context)
           ? const SearchMailboxView()
           : const SizedBox.shrink()
         ),
@@ -235,7 +235,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Scaffold(
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
-        responsiveUtils: responsiveUtils,
+        responsiveUtils: controller.responsiveUtils,
         mobile: SizedBox(width: ResponsiveUtils.defaultSizeDrawer, child: MailboxView()),
         tabletLarge: SizedBox(width: ResponsiveUtils.defaultSizeLeftMenuMobile, child: MailboxView()),
         desktop: const SizedBox.shrink()
@@ -326,7 +326,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   onTap: controller.showAppDashboardAction,
                   splashRadius: 20,
                   icon: SvgPicture.asset(
-                    imagePaths.icAppDashboard,
+                    controller.imagePaths.icAppDashboard,
                     width: 28,
                     height: 28,
                     fit: BoxFit.fill
@@ -370,7 +370,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           (failure) {
             return TMailButtonWidget.fromIcon(
               key: const Key('refresh_mailbox_button'),
-              icon: imagePaths.icRefresh,
+              icon: controller.imagePaths.icRefresh,
               borderRadius: 10,
               iconSize: 16,
               onTapActionCallback: controller.refreshMailboxAction,
@@ -385,7 +385,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             } else {
               return TMailButtonWidget.fromIcon(
                 key: const Key('refresh_mailbox_button'),
-                icon: imagePaths.icRefresh,
+                icon: controller.imagePaths.icRefresh,
                 borderRadius: 10,
                 iconSize: 16,
                 onTapActionCallback: controller.refreshMailboxAction,
@@ -398,7 +398,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       TMailButtonWidget(
         key: const Key('select_all_emails_button'),
         text: AppLocalizations.of(context).select_all,
-        icon: imagePaths.icSelectAll,
+        icon: controller.imagePaths.icSelectAll,
         borderRadius: 10,
         iconSize: 16,
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
@@ -410,7 +410,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           child: TMailButtonWidget(
             key: const Key('mark_as_read_emails_button'),
             text: AppLocalizations.of(context).mark_all_as_read,
-            icon: imagePaths.icSelectAll,
+            icon: controller.imagePaths.icSelectAll,
             borderRadius: 10,
             iconSize: 16,
             padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
@@ -423,13 +423,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         text: controller.filterMessageOption.value == FilterMessageOption.all
           ? AppLocalizations.of(context).filter_messages
           : controller.filterMessageOption.value.getTitle(context),
-        icon: controller.filterMessageOption.value.getIconSelected(imagePaths),
+        icon: controller.filterMessageOption.value.getIconSelected(controller.imagePaths),
         borderRadius: 10,
         iconSize: 16,
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
         backgroundColor: controller.filterMessageOption.value.getBackgroundColor(),
         textStyle: controller.filterMessageOption.value.getTextStyle(),
-        trailingIcon: imagePaths.icArrowDown,
+        trailingIcon: controller.imagePaths.icArrowDown,
         onTapActionAtPositionCallback: (position) {
           return controller.openPopupMenuAction(
             context,
@@ -455,19 +455,19 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             if (success is MarkAsMailboxReadLoading) {
               return Padding(
                   padding: EdgeInsets.only(
-                      top: responsiveUtils.isDesktop(context) ? 16 : 0,
+                      top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
                       left: 16,
                       right: 16,
-                      bottom: responsiveUtils.isDesktop(context) ? 0 : 16),
+                      bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
                   child: horizontalLoadingWidget);
             } else if (success is UpdatingMarkAsMailboxReadState) {
               final percent = success.countRead / success.totalUnread;
               return Padding(
                   padding: EdgeInsets.only(
-                      top: responsiveUtils.isDesktop(context) ? 16 : 0,
+                      top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
                       left: 16,
                       right: 16,
-                      bottom: responsiveUtils.isDesktop(context) ? 0 : 16),
+                      bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
                   child: horizontalPercentLoadingWidget(percent));
             }
             return const SizedBox.shrink();
@@ -622,7 +622,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filter.getIcon(imagePaths, isFilterSelected: isFilterSelected),
+                    filter.getIcon(controller.imagePaths, isFilterSelected: isFilterSelected),
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
@@ -643,7 +643,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   ... [
                     const SizedBox(width: 4),
                     SvgPicture.asset(
-                        imagePaths.icChevronDown,
+                        controller.imagePaths.icChevronDown,
                         width: 16,
                         height: 16,
                         fit: BoxFit.fill),
@@ -664,7 +664,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         padding: EdgeInsets.zero,
         child: PopupItemNoIconWidget(
           receiveTime.getTitle(context),
-          svgIconSelected: imagePaths.icFilterSelected,
+          svgIconSelected: controller.imagePaths.icFilterSelected,
           maxWidth: 320,
           isSelected: receiveTimeSelected == receiveTime,
           onCallbackAction: () => onCallBack?.call(receiveTime),
@@ -682,7 +682,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         padding: EdgeInsets.zero,
         child: PopupItemNoIconWidget(
           sortType.getTitle(context),
-          svgIconSelected: imagePaths.icFilterSelected,
+          svgIconSelected: controller.imagePaths.icFilterSelected,
           maxWidth: 332,
           isSelected: sortOrderSelected == sortType,
           onCallbackAction: () => onCallBack?.call(sortType),
@@ -703,7 +703,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       child: TMailButtonWidget(
         key: const Key('compose_email_button'),
         text: AppLocalizations.of(context).compose,
-        icon: imagePaths.icComposeWeb,
+        icon: controller.imagePaths.icComposeWeb,
         borderRadius: 10,
         iconSize: 24,
         iconColor: Colors.white,

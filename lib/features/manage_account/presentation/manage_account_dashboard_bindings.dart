@@ -1,8 +1,5 @@
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/manage_account_datasource_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -26,10 +23,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.put(ManageAccountDashBoardController(
-      Get.find<GetAuthenticatedAccountInteractor>(),
-      Get.find<UpdateAuthenticationAccountInteractor>()
-    ));
+    Get.put(ManageAccountDashBoardController());
   }
 
   @override
@@ -45,9 +39,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
   }
 
   @override
-  void bindingsInteractor() {
-    Get.lazyPut(() => UpdateAuthenticationAccountInteractor(Get.find<AccountRepository>()));
-  }
+  void bindingsInteractor() {}
 
   @override
   void bindingsRepository() {

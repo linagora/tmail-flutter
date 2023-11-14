@@ -27,9 +27,9 @@ class MailboxView extends BaseMailboxView {
     ThemeUtils.setStatusBarTransparentColor();
 
     return SafeArea(bottom: false, left: false, right: false,
-        top: responsiveUtils.isMobile(context),
+        top: controller.responsiveUtils.isMobile(context),
         child: ClipRRect(
-            borderRadius: responsiveUtils.isPortraitMobile(context)
+            borderRadius: controller.responsiveUtils.isPortraitMobile(context)
                 ? const BorderRadius.only(
                     topRight: Radius.circular(14),
                     topLeft: Radius.circular(14))
@@ -88,7 +88,7 @@ class MailboxView extends BaseMailboxView {
                           final appInformation = controller.mailboxDashBoardController.appInformation.value;
                           if (appInformation != null
                               && !controller.isSelectionEnabled()) {
-                            if (responsiveUtils.isLandscapeMobile(context)) {
+                            if (controller.responsiveUtils.isLandscapeMobile(context)) {
                               return const SizedBox.shrink();
                             }
                             return _buildVersionInformation(context, appInformation);
@@ -108,7 +108,7 @@ class MailboxView extends BaseMailboxView {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(top: responsiveUtils.isMobile(context) ? 10 : 30, bottom: 8),
+          padding: EdgeInsets.only(top: controller.responsiveUtils.isMobile(context) ? 10 : 30, bottom: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -124,7 +124,7 @@ class MailboxView extends BaseMailboxView {
             ]
           )
         ),
-        if (!responsiveUtils.isTabletLarge(context))
+        if (!controller.responsiveUtils.isTabletLarge(context))
           const Divider(color: AppColor.colorDividerMailbox, height: 1),
       ]
     );
@@ -132,7 +132,7 @@ class MailboxView extends BaseMailboxView {
 
   Widget _buildCloseScreenButton(BuildContext context) {
     return buildIconWeb(
-        icon: SvgPicture.asset(imagePaths.icCircleClose, width: 28, height: 28, fit: BoxFit.fill),
+        icon: SvgPicture.asset(controller.imagePaths.icCircleClose, width: 28, height: 28, fit: BoxFit.fill),
         tooltip: AppLocalizations.of(context).close,
         onTap: () => controller.closeMailboxScreen(context));
   }
@@ -163,7 +163,7 @@ class MailboxView extends BaseMailboxView {
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(children: [
         Obx(() {
-          if (controller.isSelectionEnabled() && responsiveUtils.isLandscapeMobile(context)) {
+          if (controller.isSelectionEnabled() && controller.responsiveUtils.isLandscapeMobile(context)) {
             return const SizedBox.shrink();
           }
           return UserInformationWidget(
@@ -180,7 +180,7 @@ class MailboxView extends BaseMailboxView {
         }),
         Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
         AppConfig.appGridDashboardAvailable
-          ? buildAppGridDashboard(context, responsiveUtils, imagePaths, controller)
+          ? buildAppGridDashboard(context, controller.responsiveUtils, controller.imagePaths, controller)
           : const SizedBox.shrink(),
         const SizedBox(height: 8),
         Obx(() {
@@ -212,7 +212,7 @@ class MailboxView extends BaseMailboxView {
         const SizedBox(height: 12),
         Container(
           margin: EdgeInsetsDirectional.only(
-            start: responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
+            start: controller.responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
             end: 16),
           padding: const EdgeInsetsDirectional.only(start: 8),
           child: Row(
@@ -232,7 +232,7 @@ class MailboxView extends BaseMailboxView {
                   minSize: 40,
                   iconPadding: EdgeInsets.zero,
                   icon: SvgPicture.asset(
-                    imagePaths.icSearchBar,
+                    controller.imagePaths.icSearchBar,
                     colorFilter: AppColor.colorTextButton.asFilter(),
                     fit: BoxFit.fill
                   ),
@@ -245,7 +245,7 @@ class MailboxView extends BaseMailboxView {
                   iconPadding: EdgeInsets.zero,
                   splashRadius: 15,
                   icon: SvgPicture.asset(
-                    imagePaths.icAddNewFolder,
+                    controller.imagePaths.icAddNewFolder,
                     colorFilter: AppColor.colorTextButton.asFilter(),
                     fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).newFolder,
@@ -285,7 +285,7 @@ class MailboxView extends BaseMailboxView {
     return Padding(
         padding: EdgeInsetsDirectional.only(
           start: 4,
-          end: responsiveUtils.isLandscapeMobile(context) ? 8 : 28),
+          end: controller.responsiveUtils.isLandscapeMobile(context) ? 8 : 28),
         child: Row(children: [
          buildIconWeb(
               minSize: 40,
@@ -294,8 +294,8 @@ class MailboxView extends BaseMailboxView {
               splashRadius: 15,
               icon: SvgPicture.asset(
                   categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-                    ? imagePaths.icArrowBottom
-                    : DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icArrowLeft : imagePaths.icArrowRight,
+                    ? controller.imagePaths.icArrowBottom
+                    : DirectionUtils.isDirectionRTLByLanguage(context) ? controller.imagePaths.icArrowLeft : controller.imagePaths.icArrowRight,
                   colorFilter: AppColor.primaryColor.asFilter(),
                   fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).collapse,
@@ -312,7 +312,7 @@ class MailboxView extends BaseMailboxView {
 
     return Container(
         margin: EdgeInsetsDirectional.only(
-          start: responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
+          start: controller.responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
           end: 16
         ),
         padding: const EdgeInsetsDirectional.only(start: 12),
@@ -348,7 +348,7 @@ class MailboxView extends BaseMailboxView {
                 mailboxNode: mailboxNode,
                 selectionMode: controller.currentSelectMode.value,
                 mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
-                onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, imagePaths, mailboxNode.item, controller),
+                onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, controller.imagePaths, mailboxNode.item, controller),
                 onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
                 onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
                 onSelectMailboxFolderClick: (mailboxNode) => controller.selectMailboxNode(mailboxNode),
@@ -360,7 +360,7 @@ class MailboxView extends BaseMailboxView {
               mailboxNode: mailboxNode,
               selectionMode: controller.currentSelectMode.value,
               mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
-              onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, imagePaths, mailboxNode.item, controller),
+              onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, controller.imagePaths, mailboxNode.item, controller),
               onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
               onSelectMailboxFolderClick: (mailboxNode) => controller.selectMailboxNode(mailboxNode)
             ));

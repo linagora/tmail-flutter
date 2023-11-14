@@ -1,10 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -42,9 +39,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class IdentitiesController extends BaseController {
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
-  final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
@@ -179,7 +173,7 @@ class IdentitiesController extends BaseController {
 
   void _createNewIdentitySuccess(CreateNewIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).you_have_created_a_new_identity);
     }
@@ -189,7 +183,7 @@ class IdentitiesController extends BaseController {
 
   void _createNewDefaultIdentitySuccess(CreateNewDefaultIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).you_have_created_a_new_default_identity);
     }
@@ -202,8 +196,8 @@ class IdentitiesController extends BaseController {
       context: context,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       builder: (BuildContext context) => DeleteIdentityDialogBuilder(
-        responsiveUtils: _responsiveUtils,
-        imagePaths: _imagePaths,
+        responsiveUtils: responsiveUtils,
+        imagePaths: imagePaths,
         onDeleteIdentityAction: () => _deleteIdentityAction(identity),
       ));
   }
@@ -220,10 +214,10 @@ class IdentitiesController extends BaseController {
 
   void _deleteIdentitySuccess(DeleteIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).identity_has_been_deleted,
-        leadingSVGIcon: _imagePaths.icDeleteToast);
+        leadingSVGIcon: imagePaths.icDeleteToast);
     }
 
     _refreshAllIdentities();
@@ -234,10 +228,10 @@ class IdentitiesController extends BaseController {
       showDialog(
           context: currentContext!,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => (ConfirmDialogBuilder(_imagePaths)
+          builder: (BuildContext context) => (ConfirmDialogBuilder(imagePaths)
               ..key(const Key('dialog_message_delete_identity_failed'))
               ..title(AppLocalizations.of(context).delete_failed)
-              ..addIcon(SvgPicture.asset(_imagePaths.icDeleteDialogFailed, fit: BoxFit.fill))
+              ..addIcon(SvgPicture.asset(imagePaths.icDeleteDialogFailed, fit: BoxFit.fill))
               ..marginIcon(EdgeInsets.zero)
               ..styleTitle(const TextStyle(fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -291,15 +285,13 @@ class IdentitiesController extends BaseController {
 
   void _editIdentitySuccess(EditIdentitySuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).you_are_changed_your_identity_successfully);
     }
 
     _refreshAllIdentities();
   }
-
-  ImagePaths get imagePaths => _imagePaths;
 
   bool get isSignatureShow => identitySelected.value != null;
 }
