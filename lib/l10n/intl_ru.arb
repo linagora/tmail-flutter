@@ -412,7 +412,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit": "Редактировать",
+  "edit": "Править",
   "@edit": {
     "type": "text",
     "placeholders_order": [],
@@ -868,7 +868,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_now": "Корзина пуста",
+  "empty_trash_now": "Очистить корзину",
   "@empty_trash_now": {
     "type": "text",
     "placeholders_order": [],
@@ -982,7 +982,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_identity": "Новый идентификатор",
+  "new_identity": "Новый аккаунт",
   "@new_identity": {
     "type": "text",
     "placeholders_order": [],
@@ -1054,7 +1054,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identities": "Идентификаторы",
+  "identities": "Отправлять письма как",
   "@identities": {
     "type": "text",
     "placeholders_order": [],
@@ -1126,19 +1126,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_identity": "Вы уверены, что хотите удалить этот идентификатор?",
+  "message_confirmation_dialog_delete_identity": "Вы уверены, что хотите удалить этот аккаунт?",
   "@message_confirmation_dialog_delete_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_identity": "Удалить идентификатор",
+  "delete_identity": "Удалить аккаунт",
   "@delete_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identity_has_been_deleted": "Идентификатор удален",
+  "identity_has_been_deleted": "Аккаунт удален",
   "@identity_has_been_deleted": {
     "type": "text",
     "placeholders_order": [],
@@ -1240,25 +1240,25 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_have_created_a_new_identity": "Вы создали новый идентификатор",
+  "you_have_created_a_new_identity": "Вы создали новый аккаунт",
   "@you_have_created_a_new_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "all_identities": "Все идентификаторы",
+  "all_identities": "Все аккаунты",
   "@all_identities": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit_identity": "Изменить идентификатор",
+  "edit_identity": "Изменить аккаунт",
   "@edit_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_are_changed_your_identity_successfully": "Вы успешно изменили идентификатор",
+  "you_are_changed_your_identity_successfully": "Вы успешно изменили аккаунт",
   "@you_are_changed_your_identity_successfully": {
     "type": "text",
     "placeholders_order": [],
@@ -2462,7 +2462,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identitiesSettingExplanation": "Выберите идентификатор или адрес электронной почты, который вы хотите использовать для отправки писем",
+  "identitiesSettingExplanation": "Выберите аккаунт или адрес электронной почты, который вы хотите использовать для отправки писем",
   "@identitiesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -2522,7 +2522,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "setDefaultIdentity": "Сделать идентификатором по умолчанию",
+  "setDefaultIdentity": "Сделать аккаунтом по умолчанию",
   "@setDefaultIdentity": {
     "type": "text",
     "placeholders_order": [],
@@ -2586,7 +2586,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_have_created_a_new_default_identity": "Вы создали новый идентификатор по умолчанию",
+  "you_have_created_a_new_default_identity": "Вы создали новый аккаунт по умолчанию",
   "@you_have_created_a_new_default_identity": {
     "type": "text",
     "placeholders_order": [],
