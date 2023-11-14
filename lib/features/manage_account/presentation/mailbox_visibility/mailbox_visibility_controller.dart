@@ -1,7 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +38,6 @@ class MailboxVisibilityController extends BaseMailboxController {
   SubscribeMailboxInteractor? _subscribeMailboxInteractor;
   SubscribeMultipleMailboxInteractor? _subscribeMultipleMailboxInteractor;
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
-  final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
   final mailboxListScrollController = ScrollController();
 
   MailboxVisibilityController(
@@ -221,7 +217,7 @@ class MailboxVisibilityController extends BaseMailboxController {
       {List<MailboxId>? listDescendantMailboxIds}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastMessage(
+      appToast.showToastMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMsgHideFolderSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -233,10 +229,10 @@ class MailboxVisibilityController extends BaseMailboxController {
           )
         ),
         leadingSVGIconColor: Colors.white,
-        leadingSVGIcon: _imagePaths.icFolderMailbox,
+        leadingSVGIcon: imagePaths.icFolderMailbox,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
-        actionIcon: SvgPicture.asset(_imagePaths.icUndo),
+        actionIcon: SvgPicture.asset(imagePaths.icUndo),
       );
     }
   }

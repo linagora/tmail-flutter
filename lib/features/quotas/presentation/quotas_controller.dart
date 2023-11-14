@@ -1,6 +1,4 @@
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -15,8 +13,6 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 class QuotasController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  final responsiveUtils = Get.find<ResponsiveUtils>();
-  final imagePaths = Get.find<ImagePaths>();
 
   final GetQuotasInteractor _getQuotasInteractor;
 

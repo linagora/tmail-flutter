@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
@@ -28,9 +27,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardController>
     with UserSettingPopupMenuMixin {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
   ManageAccountDashBoardView({Key? key}) : super(key: key);
 
   @override
@@ -43,7 +39,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: ResponsiveWidget(
-              responsiveUtils: _responsiveUtils,
+              responsiveUtils: controller.responsiveUtils,
               desktop: Column(children: [
                 Row(children: [
                   Container(width: 256, color: Colors.white,
@@ -54,7 +50,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                           text: AppLocalizations.of(context).app_name,
                           textAlign: TextAlign.center,
                           textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                          logoSVG: _imagePaths.icTMailLogo,
+                          logoSVG: controller.imagePaths.icTMailLogo,
                           onTapCallback: () => controller.backToMailboxDashBoard(context),
                         ),
                         Obx(() {
@@ -78,7 +74,10 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 Expanded(child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(width: ResponsiveUtils.defaultSizeMenu, child: ManageAccountMenuView()),
+                    const SizedBox(
+                      width: ResponsiveUtils.defaultSizeMenu,
+                      child: ManageAccountMenuView()
+                    ),
                     Expanded(child: Container(
                       color: AppColor.colorBgDesktop,
                       child: Column(children: [
@@ -162,7 +161,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         case AccountMenuItem.profiles:
           return ProfilesView();
         case AccountMenuItem.languageAndRegion:
-          return LanguageAndRegionView();
+          return const LanguageAndRegionView();
         case AccountMenuItem.emailRules:
           if(controller.isRuleFilterCapabilitySupported){
             return EmailRulesView();

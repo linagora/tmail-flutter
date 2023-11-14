@@ -8,31 +8,29 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/w
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 
 class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin {
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
 
   EmailRulesView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _responsiveUtils.isWebDesktop(context)
+      backgroundColor: controller.responsiveUtils.isWebDesktop(context)
           ? AppColor.colorBgDesktop
           : Colors.white,
       body: Container(
         width: double.infinity,
-        margin: SettingsUtils.getMarginViewForSettingDetails(context, _responsiveUtils),
+        margin: SettingsUtils.getMarginViewForSettingDetails(context, controller.responsiveUtils),
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               EmailRulesHeaderWidget(
-                imagePaths: _imagePaths,
-                responsiveUtils: _responsiveUtils,
+                imagePaths: controller.imagePaths,
+                responsiveUtils: controller.responsiveUtils,
                 createRule: () => controller.goToCreateNewRule(context),
               ),
-              SizedBox(height: _responsiveUtils.isWebDesktop(context) ? 24 : 16),
+              SizedBox(height: controller.responsiveUtils.isWebDesktop(context) ? 24 : 16),
               _buildLoadingView(),
               const ListEmailRulesWidget()
             ],

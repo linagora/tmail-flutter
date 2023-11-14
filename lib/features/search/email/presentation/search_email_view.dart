@@ -1,7 +1,5 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
@@ -35,14 +33,11 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class SearchEmailView extends GetWidget<SearchEmailController>
     with AppLoaderMixin {
 
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
   SearchEmailView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (_responsiveUtils.isWebDesktop(context)) {
+    if (controller.responsiveUtils.isWebDesktop(context)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         controller.closeSearchView(context);
       });
@@ -57,7 +52,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             Container(
                 height: 52,
                 color: Colors.white,
-                padding: SearchEmailUtils.getPaddingAppBar(context, _responsiveUtils),
+                padding: SearchEmailUtils.getPaddingAppBar(context, controller.responsiveUtils),
                 child: Obx(() {
                   if (controller.selectionMode.value == SelectMode.ACTIVE) {
                     return AppBarSelectionMode(
@@ -110,7 +105,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         children: [
           buildIconWeb(
               icon: SvgPicture.asset(
-                DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icCollapseFolder : _imagePaths.icBack,
+                DirectionUtils.isDirectionRTLByLanguage(context) ? controller.imagePaths.icCollapseFolder : controller.imagePaths.icBack,
                 colorFilter: AppColor.colorTextButton.asFilter(),
                 fit: BoxFit.fill
               ),
@@ -138,7 +133,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               return
                 buildIconWeb(
                     icon: SvgPicture.asset(
-                        _imagePaths.icClearTextSearch,
+                        controller.imagePaths.icClearTextSearch,
                         width: 18,
                         height: 18,
                         fit: BoxFit.fill),
@@ -154,8 +149,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
   Widget _buildListSearchFilterAction(BuildContext context) {
     return Container(
-      margin: SearchEmailUtils.getMarginSearchFilterButton(context, _responsiveUtils),
-      padding: SearchEmailUtils.getPaddingSearchFilterButton(context, _responsiveUtils),
+      margin: SearchEmailUtils.getMarginSearchFilterButton(context, controller.responsiveUtils),
+      padding: SearchEmailUtils.getPaddingSearchFilterButton(context, controller.responsiveUtils),
       height: 60,
       child: ListView(
           scrollDirection: Axis.horizontal,
@@ -181,7 +176,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           onTap: () {
             if (filter != QuickSearchFilter.last7Days) {
               controller.selectQuickSearchFilter(context, filter);
-            } else if (_responsiveUtils.isMobile(context)) {
+            } else if (controller.responsiveUtils.isMobile(context)) {
               controller.openContextMenuAction(
                   context,
                   _emailReceiveTimeCupertinoActionTile(
@@ -192,7 +187,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           },
           onTapDown: (detail) {
             if (filter == QuickSearchFilter.last7Days &&
-                !_responsiveUtils.isMobile(context)) {
+                !controller.responsiveUtils.isMobile(context)) {
               final screenSize = MediaQuery.of(context).size;
               final offset = detail.globalPosition;
               final position = RelativeRect.fromLTRB(
@@ -218,7 +213,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filter.getIcon(_imagePaths, isFilterSelected: filterSelected),
+                    filter.getIcon(controller.imagePaths, isFilterSelected: filterSelected),
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
@@ -239,7 +234,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   ... [
                     const SizedBox(width: 4),
                     SvgPicture.asset(
-                        _imagePaths.icChevronDownOutline,
+                        controller.imagePaths.icChevronDownOutline,
                         colorFilter: filterSelected
                           ? AppColor.primaryColor.asFilter()
                           : AppColor.colorDefaultRichTextButton.asFilter(),
@@ -278,14 +273,14 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 timeType.getTitle(context),
                 timeType,
                 timeTypeCurrent: receiveTimeSelected,
-                iconLeftPadding: _responsiveUtils.isMobile(context)
+                iconLeftPadding: controller.responsiveUtils.isMobile(context)
                     ? const EdgeInsets.only(left: 12, right: 16)
                     : const EdgeInsets.only(right: 12),
-                iconRightPadding: _responsiveUtils.isMobile(context)
+                iconRightPadding: controller.responsiveUtils.isMobile(context)
                     ? const EdgeInsets.only(right: 12)
                     : EdgeInsets.zero,
                 actionSelected: SvgPicture.asset(
-                    _imagePaths.icFilterSelected,
+                    controller.imagePaths.icFilterSelected,
                     width: 20,
                     height: 20,
                     fit: BoxFit.fill))
@@ -306,7 +301,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           }
         },
         child: Padding(
-            padding: SearchEmailUtils.getPaddingShowAllResultButton(context, _responsiveUtils),
+            padding: SearchEmailUtils.getPaddingShowAllResultButton(context, controller.responsiveUtils),
             child: Row(children: [
               Text(AppLocalizations.of(context).showingResultsFor,
                   style: const TextStyle(fontSize: 13.0,
@@ -331,7 +326,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   ) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-          padding: SearchEmailUtils.getPaddingSearchRecentTitle(context, _responsiveUtils),
+          padding: SearchEmailUtils.getPaddingSearchRecentTitle(context, controller.responsiveUtils),
           child: Text(AppLocalizations.of(context).recent,
               style: const TextStyle(fontSize: 13.0,
                   color: AppColor.colorTextButtonHeaderThread,
@@ -349,7 +344,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               child: InkWell(
                 child: RecentSearchItemTileWidget(
                     recentSearch,
-                    contentPadding: SearchEmailUtils.getPaddingListRecentSearch(context, _responsiveUtils)),
+                    contentPadding: SearchEmailUtils.getPaddingListRecentSearch(context, controller.responsiveUtils)),
                 onTap: () => controller.searchEmailByRecentAction(context, recentSearch),
               ),
             );
@@ -372,7 +367,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               child: EmailQuickSearchItemTileWidget(
                   listSuggestionSearch[index],
                   controller.currentMailbox,
-                  contentPadding: SearchEmailUtils.getPaddingSearchSuggestionList(context, _responsiveUtils)),
+                  contentPadding: SearchEmailUtils.getPaddingSearchSuggestionList(context, controller.responsiveUtils)),
               onTap: () {
                 final emailPreview = listSuggestionSearch[index];
                 final mailboxContain = emailPreview
@@ -395,7 +390,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             ? EmptyEmailsWidget(
                 key: const Key('empty_search_email_view'),
                 title: AppLocalizations.of(context).no_emails_matching_your_search,
-                iconSVG: _imagePaths.icEmptyEmail
+                iconSVG: controller.imagePaths.icEmptyEmail
               )
             : const SizedBox.shrink())
     );
@@ -426,12 +421,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     controller.searchQuery,
                     controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
                     isSearchEmailRunning: true,
-                    padding: SearchEmailUtils.getPaddingSearchResultList(context, _responsiveUtils),
-                    paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, _responsiveUtils),
+                    padding: SearchEmailUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                    paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
                     mailboxContain: currentPresentationEmail.mailboxContain)
                 ..addOnPressEmailActionClick((action, email) =>
                     controller.pressEmailAction(context, action, email, mailboxContain: currentPresentationEmail.mailboxContain))
-                ..addOnMoreActionClick((email, position) => _responsiveUtils.isScreenWithShortestSide(context)
+                ..addOnMoreActionClick((email, position) => controller.responsiveUtils.isScreenWithShortestSide(context)
                     ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
                     : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
               ).build());
@@ -441,7 +436,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
   double? _getItemExtent(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      return _responsiveUtils.isDesktop(context) ? 52 : 95;
+      return controller.responsiveUtils.isDesktop(context) ? 52 : 95;
     } else {
       return null;
     }
@@ -469,7 +464,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
     return (EmailActionCupertinoActionSheetActionBuilder(
         const Key('mark_as_spam_or_un_spam_action'),
         SvgPicture.asset(
-          mailboxContain?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
+          mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
           width: 28,
           height: 28,
           fit: BoxFit.fill,
@@ -478,10 +473,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             ? AppLocalizations.of(context).remove_from_spam
             : AppLocalizations.of(context).mark_as_spam,
         email,
-        iconLeftPadding: _responsiveUtils.isMobile(context)
+        iconLeftPadding: controller.responsiveUtils.isMobile(context)
             ? const EdgeInsets.only(left: 12, right: 16)
             : const EdgeInsets.only(right: 12),
-        iconRightPadding: _responsiveUtils.isMobile(context)
+        iconRightPadding: controller.responsiveUtils.isMobile(context)
             ? const EdgeInsets.only(right: 12)
             : EdgeInsets.zero)
       ..onActionClick((email) => controller.pressEmailAction(context,
@@ -531,7 +526,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filterSelected ? _imagePaths.icSelectedSB : _imagePaths.icFolderMailbox,
+                    filterSelected ? controller.imagePaths.icSelectedSB : controller.imagePaths.icFolderMailbox,
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
@@ -555,7 +550,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 ),
                 const SizedBox(width: 4),
                 SvgPicture.asset(
-                    _imagePaths.icChevronDownOutline,
+                    controller.imagePaths.icChevronDownOutline,
                     colorFilter: filterSelected
                       ? AppColor.primaryColor.asFilter()
                       : AppColor.colorDefaultRichTextButton.asFilter(),
@@ -585,7 +580,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filterSelected ? _imagePaths.icSelectedSB : _imagePaths.icUserSB,
+                    filterSelected ? controller.imagePaths.icSelectedSB : controller.imagePaths.icUserSB,
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
@@ -609,7 +604,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 ),
                 const SizedBox(width: 4),
                 SvgPicture.asset(
-                    _imagePaths.icChevronDownOutline,
+                    controller.imagePaths.icChevronDownOutline,
                     colorFilter: filterSelected
                       ? AppColor.primaryColor.asFilter()
                       : AppColor.colorDefaultRichTextButton.asFilter(),

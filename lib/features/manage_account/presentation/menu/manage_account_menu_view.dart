@@ -10,21 +10,18 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
-  ManageAccountMenuView({Key? key}) : super(key: key);
+  const ManageAccountMenuView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
      return Drawer(
-        elevation: _responsiveUtils.isDesktop(context) ? 0 : 16.0,
+        elevation: controller.responsiveUtils.isDesktop(context) ? 0 : 16.0,
         child: Scaffold(
           backgroundColor: Colors.white,
           body: SafeArea(right: false, bottom: false,
               child: Column(
                   children: [
-                    if (!_responsiveUtils.isWebDesktop(context))
+                    if (!controller.responsiveUtils.isWebDesktop(context))
                       Container(
                           color: Colors.white,
                           padding: const EdgeInsets.only(top: 16, bottom: 16, left: 16),
@@ -34,7 +31,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                               text: AppLocalizations.of(context).app_name,
                               textAlign: TextAlign.center,
                               textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                              logoSVG: _imagePaths.icTMailLogo
+                              logoSVG: controller.imagePaths.icTMailLogo
                             ),
                             Obx(() {
                               if (controller.dashBoardController.appInformation.value != null) {
@@ -52,10 +49,10 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                             }),
                           ])
                       ),
-                    if (!_responsiveUtils.isWebDesktop(context))
+                    if (!controller.responsiveUtils.isWebDesktop(context))
                       const Divider(color: AppColor.colorDividerMailbox, height: 1),
                     Expanded(child: Container(
-                      color: _responsiveUtils.isWebDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
+                      color: controller.responsiveUtils.isWebDesktop(context) ? AppColor.colorBgDesktop : Colors.white,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -65,8 +62,8 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                               key: const Key('back_to_dashboard_button'),
                               text: AppLocalizations.of(context).back,
                               icon: DirectionUtils.isDirectionRTLByLanguage(context)
-                                ? _imagePaths.icArrowRight
-                                : _imagePaths.icBack,
+                                ? controller.imagePaths.icArrowRight
+                                : controller.imagePaths.icBack,
                               borderRadius: 10,
                               backgroundColor: AppColor.colorBgMailboxSelected,
                               iconColor: AppColor.colorTextButton,
@@ -133,7 +130,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   child: Row(children: [
-                                    SvgPicture.asset(_imagePaths.icSignOut, fit: BoxFit.fill),
+                                    SvgPicture.asset(controller.imagePaths.icSignOut, fit: BoxFit.fill),
                                     const SizedBox(width: 12),
                                     Expanded(child: Text(
                                       AppLocalizations.of(context).sign_out,

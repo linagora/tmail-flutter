@@ -22,9 +22,6 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     Key? key,
   }) : super(key: key);
 
-  final ImagePaths _imagePaths = Get.find<ImagePaths>();
-  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
-
   @override
   Widget build(BuildContext context) {
     return FocusTraversalGroup(
@@ -102,7 +99,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             const SizedBox(width: 10),
             buildIconWeb(
                 icon: SvgPicture.asset(
-                    _imagePaths.icCalendarSB,
+                    controller.imagePaths.icCalendarSB,
                     width: 24,
                     height: 24,
                     fit: BoxFit.fill),
@@ -126,7 +123,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         padding: EdgeInsets.zero,
         child: PopupItemNoIconWidget(
           receiveTime.getTitle(context),
-          svgIconSelected: _imagePaths.icFilterSelected,
+          svgIconSelected: controller.imagePaths.icFilterSelected,
           maxWidth: 320,
           isSelected: controller.dateFilterSelectedFormAdvancedSearch.value == receiveTime,
           onCallbackAction: () => controller.updateReceiveDateSearchFilter(context, receiveTime),
@@ -146,7 +143,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   }) {
     final child = [
       SizedBox(
-        width: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
+        width: controller.responsiveUtils.isMobile(context) || controller.responsiveUtils.landscapeTabletSupported(context)
             ? null : 112,
         child: Text(
           advancedSearchFilterField.getTitle(context),
@@ -157,7 +154,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         ),
       ),
       const Padding(padding: EdgeInsets.all(4)),
-      if (_responsiveUtils.isMobile(context))
+      if (controller.responsiveUtils.isMobile(context))
         _buildTextField(
           isSelectFormList: isSelectFormList,
           onTap: onTap,
@@ -168,10 +165,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           advancedSearchFilterField: advancedSearchFilterField,
           textEditingController: textEditingController,
         )
-      else if (_responsiveUtils.landscapeTabletSupported(context))
+      else if (controller.responsiveUtils.landscapeTabletSupported(context))
         if (advancedSearchFilterField == AdvancedSearchFilterField.date)
           Obx(() => DateDropDownButton(
-            _imagePaths,
+            controller.imagePaths,
             startDate: controller.startDate.value,
             endDate: controller.endDate.value,
             receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
@@ -179,7 +176,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           ))
         else if (advancedSearchFilterField == AdvancedSearchFilterField.sortBy)
           Obx(() => SortByDropDownButton(
-            imagePaths: _imagePaths,
+            imagePaths: controller.imagePaths,
             sortOrderSelected: controller.searchController.sortOrderFiltered.value,
             onSortOrderSelected: controller.updateSortOrder,
           ))
@@ -210,7 +207,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: _responsiveUtils.isMobile(context) || _responsiveUtils.landscapeTabletSupported(context)
+      child: controller.responsiveUtils.isMobile(context) || controller.responsiveUtils.landscapeTabletSupported(context)
           ? Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +231,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     switch (advancedSearchFilterField) {
       case AdvancedSearchFilterField.date:
         return Obx(() => DateDropDownButton(
-          _imagePaths,
+          controller.imagePaths,
           startDate: controller.startDate.value,
           endDate: controller.endDate.value,
           receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
@@ -242,7 +239,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         ));
       case AdvancedSearchFilterField.sortBy:
         return Obx(() => SortByDropDownButton(
-          imagePaths: _imagePaths,
+          imagePaths: controller.imagePaths,
           sortOrderSelected: controller.searchController.sortOrderFiltered.value,
           onSortOrderSelected: controller.updateSortOrder,
         ));
@@ -336,7 +333,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           suffixIcon: isSelectFormList
               ? buildIconWeb(
                   icon: SvgPicture.asset(
-                    _imagePaths.icDropDown,
+                    controller.imagePaths.icDropDown,
                   ),
                 )
               : null,

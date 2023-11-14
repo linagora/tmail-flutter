@@ -86,7 +86,6 @@ import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:uuid/uuid.dart';
 import 'package:universal_html/html.dart' as html;
 
 class ComposerController extends BaseController {
@@ -94,10 +93,6 @@ class ComposerController extends BaseController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final richTextMobileTabletController = Get.find<RichTextMobileTabletController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
-  final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _uuid = Get.find<Uuid>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
 
   final expandModeAttachments = ExpandMode.EXPAND.obs;
@@ -726,7 +721,7 @@ class ComposerController extends BaseController {
     final inReplyTo = _generateInReplyTo(arguments);
     final references = _generateReferences(arguments);
 
-    final generatePartId = PartId(_uuid.v1());
+    final generatePartId = PartId(uuid.v1());
 
     return Email(
       mailboxIds: mailboxIds.isNotEmpty ? mailboxIds : null,
@@ -828,7 +823,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).add_recipients,
           onConfirmAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
+          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
     }
@@ -848,7 +843,7 @@ class ComposerController extends BaseController {
             isSendEmailLoading.value = false;
           },
           title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
+          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
     }
@@ -860,7 +855,7 @@ class ComposerController extends BaseController {
           onConfirmAction: () => _handleSendMessages(context),
           onCancelAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).empty_subject,
-          icon: SvgPicture.asset(_imagePaths.icEmpty, fit: BoxFit.fill),
+          icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
       );
       return;
     }
@@ -872,7 +867,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).got_it,
           onConfirmAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
+          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
     }
@@ -885,7 +880,7 @@ class ComposerController extends BaseController {
           AppLocalizations.of(context).got_it,
           onConfirmAction: () => {isSendEmailLoading.value = false},
           title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(_imagePaths.icSendToastError, fit: BoxFit.fill),
+          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
           hasCancelButton: false);
       return;
     }
@@ -957,7 +952,7 @@ class ComposerController extends BaseController {
 
     final mailboxRequest = mailboxDashBoardController.outboxMailbox?.id == null
       ? CreateNewMailboxRequest(
-          Id(_uuid.v1()),
+          Id(uuid.v1()),
           MailboxName(PresentationMailbox.outboxRole.inCaps)
         )
       : null;
@@ -985,7 +980,7 @@ class ComposerController extends BaseController {
       },
       onCancelAction: _closeComposerAction,
       title: AppLocalizations.of(context).youAreInOfflineMode,
-      icon: SvgPicture.asset(_imagePaths.icDialogOfflineMode),
+      icon: SvgPicture.asset(imagePaths.icDialogOfflineMode),
       alignCenter: true,
       messageStyle: const TextStyle(
         color: AppColor.colorTitleSendingItem,
@@ -1124,7 +1119,7 @@ class ComposerController extends BaseController {
   void _pickFileFailure(Failure failure) {
     if (failure is LocalFilePickerFailure) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments);
       }
@@ -1765,7 +1760,7 @@ class ComposerController extends BaseController {
   void insertImage(BuildContext context, double maxWith) async {
     clearFocusEditor(context);
 
-    if (_responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isMobile(context)) {
       maxWithEditor = maxWith - 40;
     } else {
       maxWithEditor = maxWith - 120;
@@ -1779,7 +1774,7 @@ class ComposerController extends BaseController {
       }
     } else {
       if (context.mounted) {
-        _appToast.showToastErrorMessage(context, AppLocalizations.of(context).cannotSelectThisImage);
+        appToast.showToastErrorMessage(context, AppLocalizations.of(context).cannotSelectThisImage);
       }
     }
   }
@@ -1912,7 +1907,7 @@ class ComposerController extends BaseController {
     BuildContext context,
   ) {
     scrollController.jumpTo(
-      realCoordinateY - (_responsiveUtils.isLandscapeMobile(context) ? 0 : headerEditorMobileHeight / 2),
+      realCoordinateY - (responsiveUtils.isLandscapeMobile(context) ? 0 : headerEditorMobileHeight / 2),
     );
   }
 
@@ -1978,7 +1973,7 @@ class ComposerController extends BaseController {
   ) async {
     log('ComposerController::handleImageUploadSuccess:NAME: ${fileUpload.name} | TYPE: ${fileUpload.type} | SIZE: ${fileUpload.size}');
     if (fileUpload.base64 == null) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).can_not_upload_this_file_as_attachments
       );
@@ -1990,7 +1985,7 @@ class ComposerController extends BaseController {
       if (fileInfo != null) {
         _uploadInlineAttachmentsAction(fileInfo);
       } else if (context.mounted) {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           context,
           AppLocalizations.of(context).can_not_upload_this_file_as_attachments
         );
@@ -2000,7 +1995,7 @@ class ComposerController extends BaseController {
       if (fileInfo != null) {
         _addAttachmentFromDragAndDrop(fileInfo: fileInfo);
       } else if (context.mounted) {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           context,
           AppLocalizations.of(context).can_not_upload_this_file_as_attachments
         );
@@ -2015,7 +2010,7 @@ class ComposerController extends BaseController {
     String? base64Str,
   }) {
     logError('ComposerController::handleImageUploadFailure:fileUpload: $fileUpload | uploadError: $uploadError');
-    _appToast.showToastErrorMessage(
+    appToast.showToastErrorMessage(
       context,
       '${AppLocalizations.of(context).can_not_upload_this_file_as_attachments}. (${uploadError.name})'
     );
@@ -2083,7 +2078,7 @@ class ComposerController extends BaseController {
     var contentHtml = '';
 
     if (PlatformInfo.isWeb) {
-      if (_responsiveUtils.isDesktop(context) &&
+      if (responsiveUtils.isDesktop(context) &&
           screenDisplayMode.value == ScreenDisplayMode.minimize) {
         contentHtml = _textEditorWeb ?? '';
       } else {
@@ -2176,7 +2171,7 @@ class ComposerController extends BaseController {
     (
       FromComposerBottomSheetBuilder(
         context,
-        _imagePaths,
+        imagePaths,
         listFromIdentities,
         scrollControllerIdentities,
         searchIdentitiesInputController

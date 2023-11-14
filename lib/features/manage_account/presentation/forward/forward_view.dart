@@ -1,7 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,33 +13,31 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
 
   ForwardView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: SettingsUtils.getBackgroundColor(context, _responsiveUtils),
+      backgroundColor: SettingsUtils.getBackgroundColor(context, controller.responsiveUtils),
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: SettingsUtils.getContentBackgroundColor(context, _responsiveUtils),
-        decoration: SettingsUtils.getBoxDecorationForContent(context, _responsiveUtils),
-        margin: SettingsUtils.getMarginViewForForwardSettingDetails(context, _responsiveUtils),
+        color: SettingsUtils.getContentBackgroundColor(context, controller.responsiveUtils),
+        decoration: SettingsUtils.getBoxDecorationForContent(context, controller.responsiveUtils),
+        margin: SettingsUtils.getMarginViewForForwardSettingDetails(context, controller.responsiveUtils),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_responsiveUtils.isWebDesktop(context))
+            if (controller.responsiveUtils.isWebDesktop(context))
               ...[
-                ForwardHeaderWidget(imagePaths: _imagePaths, responsiveUtils: _responsiveUtils),
+                ForwardHeaderWidget(imagePaths: controller.imagePaths, responsiveUtils: controller.responsiveUtils),
                 const Divider(height: 1, color: AppColor.colorDividerHeaderSetting)
               ],
             Expanded(child: SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                if (!_responsiveUtils.isWebDesktop(context))
+                if (!controller.responsiveUtils.isWebDesktop(context))
                   _buildTitleHeader(context),
                 _buildKeepLocalSwitchButton(context),
                 Obx(() => controller.currentForward.value != null
@@ -51,7 +47,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                 _buildLoadingView(),
                 Obx(() {
                   if (controller.listRecipientForward.isNotEmpty) {
-                    return ListEmailForwardsWidget();
+                    return const ListEmailForwardsWidget();
                   } else {
                     return const SizedBox.shrink();
                   }
@@ -68,7 +64,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
     return Container(
       color: Colors.transparent,
       width: double.infinity,
-      padding: SettingsUtils.getPaddingTitleHeaderForwarding(context, _responsiveUtils),
+      padding: SettingsUtils.getPaddingTitleHeaderForwarding(context, controller.responsiveUtils),
       child: Text(
         AppLocalizations.of(context).forwardingSettingExplanation,
         style: const TextStyle(
@@ -85,7 +81,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
       return controller.listRecipientForward.isNotEmpty
           ? Container(
               color: Colors.transparent,
-              padding: SettingsUtils.getPaddingKeepLocalSwitchButtonForwarding(context, _responsiveUtils),
+              padding: SettingsUtils.getPaddingKeepLocalSwitchButtonForwarding(context, controller.responsiveUtils),
               child: Row(children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 16),
@@ -93,8 +89,8 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                     onTap: controller.handleEditLocalCopy,
                     child: SvgPicture.asset(
                       controller.currentForwardLocalCopyState
-                        ? _imagePaths.icSwitchOn
-                        : _imagePaths.icSwitchOff,
+                        ? controller.imagePaths.icSwitchOn
+                        : controller.imagePaths.icSwitchOff,
                       fit: BoxFit.fill,
                       width: 36,
                       height: 24))),

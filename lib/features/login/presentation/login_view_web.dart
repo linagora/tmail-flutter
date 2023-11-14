@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LoginView extends BaseLoginView {
 
-  LoginView({Key? key}) : super(key: key);
+  const LoginView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class LoginView extends BaseLoginView {
       backgroundColor: AppColor.primaryLightColor,
       body: Center(child: SingleChildScrollView(
           child: ResponsiveWidget(
-            responsiveUtils: responsiveUtils,
+            responsiveUtils: controller.responsiveUtils,
             mobile: _buildMobileForm(context),
             desktop: _buildWebForm(context),
           ))),
@@ -71,7 +71,7 @@ class LoginView extends BaseLoginView {
           child: Align(
             alignment: Alignment.bottomCenter,
             child: SvgPicture.asset(
-              imagePaths.icPowerByLinagora,
+              controller.imagePaths.icPowerByLinagora,
               width: 97,
               height: 44,
               fit: BoxFit.fill)))
@@ -101,7 +101,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 24),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: imagePaths.icJMAPStandard,
+                    logoSVG: controller.imagePaths.icJMAPStandard,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).jmapStandard,
@@ -112,7 +112,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 16),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: imagePaths.icEncrypted,
+                    logoSVG: controller.imagePaths.icEncrypted,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).encryptedMailbox,
@@ -123,7 +123,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 16),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: imagePaths.icTeam,
+                    logoSVG: controller.imagePaths.icTeam,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).manageEmailAsATeam,
@@ -134,7 +134,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 16),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: imagePaths.icIntegration,
+                    logoSVG: controller.imagePaths.icIntegration,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).multipleIntegrations,
@@ -144,7 +144,7 @@ class LoginView extends BaseLoginView {
                 Padding(
                   padding: const EdgeInsets.only(top: 44),
                   child: SvgPicture.asset(
-                    imagePaths.icLoginGraphic,
+                    controller.imagePaths.icLoginGraphic,
                     fit: BoxFit.fill,
                     alignment: Alignment.center
                   )
@@ -202,7 +202,7 @@ class LoginView extends BaseLoginView {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 44, bottom: 10),
-                child: SvgPicture.asset(imagePaths.icPowerByLinagora, width: 97, height: 44, fit: BoxFit.fill)
+                child: SvgPicture.asset(controller.imagePaths.icPowerByLinagora, width: 97, height: 44, fit: BoxFit.fill)
               )
             ]
           )
@@ -216,7 +216,7 @@ class LoginView extends BaseLoginView {
       mainAxisSize: MainAxisSize.min,
       children: [
         SvgPicture.asset(
-          imagePaths.icTMailLogo,
+          controller.imagePaths.icTMailLogo,
           fit: BoxFit.fill,
           width: 36,
           height: 36,
@@ -235,7 +235,7 @@ class LoginView extends BaseLoginView {
   Widget _buildSSOButton(BuildContext context) {
     return Container(
         margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
-        width: responsiveUtils.getDeviceWidth(context),height: 48,
+        width: controller.responsiveUtils.getDeviceWidth(context),height: 48,
         child: ElevatedButton(
             key: const Key('ssoSubmitForm'),
             style: ButtonStyle(

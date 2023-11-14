@@ -1,7 +1,6 @@
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +39,8 @@ import 'package:tmail_ui_user/features/thread/presentation/model/search_state.da
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:uuid/uuid.dart';
 
 class DestinationPickerController extends BaseMailboxController {
-
-  final _uuid = Get.find<Uuid>();
-  final _appToast = Get.find<AppToast>();
 
   final SearchMailboxInteractor _searchMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
@@ -310,7 +305,7 @@ class DestinationPickerController extends BaseMailboxController {
 
   void openCreateNewMailboxView(BuildContext context) async {
     if (mailboxDestination.value == null) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox);
     } else {
@@ -346,7 +341,7 @@ class DestinationPickerController extends BaseMailboxController {
       if (exception is ErrorMethodResponse) {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
       }
-      _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
+      appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
   }
 
@@ -379,7 +374,7 @@ class DestinationPickerController extends BaseMailboxController {
     KeyboardUtils.hideKeyboard(context);
 
     if (mailboxDestination.value == null) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox);
       return;
@@ -392,7 +387,7 @@ class DestinationPickerController extends BaseMailboxController {
 
     final nameMailbox = newNameMailbox.value;
     if (nameMailbox != null && nameMailbox.isNotEmpty) {
-      final generateCreateId = Id(_uuid.v1());
+      final generateCreateId = Id(uuid.v1());
       final parentId = mailboxDestination.value == PresentationMailbox.unifiedMailbox
         ? null
         : mailboxDestination.value?.id;

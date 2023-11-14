@@ -26,34 +26,34 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             width: ResponsiveUtils.defaultSizeLeftMenuMobile,
             child: _buildScaffoldHaveDrawer(body: ThreadView())),
         const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
-        Expanded(child: EmailView()),
+        const Expanded(child: EmailView()),
       ],
     );
 
     return FocusDetector(
       onForegroundGained: controller.handleOnForegroundGained,
       child: Scaffold(
-        drawerEnableOpenDragGesture: responsiveUtils.hasLeftMenuDrawerActive(context),
+        drawerEnableOpenDragGesture: controller.responsiveUtils.hasLeftMenuDrawerActive(context),
         body: Obx(() {
           var bodyView = controller.searchController.isSearchEmailRunning
-            ? EmailView()
+            ? const EmailView()
             : bodyLandscapeTablet;
           
           switch(controller.dashboardRoute.value) {
             case DashboardRoutes.thread:
               return ResponsiveWidget(
-                  responsiveUtils: responsiveUtils,
+                  responsiveUtils: controller.responsiveUtils,
                   desktop: bodyView,
                   tabletLarge: bodyView,
                   landscapeTablet: bodyView,
                   mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
             case DashboardRoutes.emailDetailed:
               return ResponsiveWidget(
-                  responsiveUtils: responsiveUtils,
+                  responsiveUtils: controller.responsiveUtils,
                   desktop: bodyView,
                   tabletLarge: bodyView,
                   landscapeTablet: bodyView,
-                  mobile: EmailView());
+                  mobile: const EmailView());
             case DashboardRoutes.searchEmail:
               return SafeArea(child: SearchEmailView());
             case DashboardRoutes.sendingQueue:
@@ -64,11 +64,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                     child: _buildScaffoldHaveDrawer(body: const SendingQueueView())),
                   const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
-                  Expanded(child: EmailView()),
+                  const Expanded(child: EmailView()),
                 ],
               );
               return ResponsiveWidget(
-                responsiveUtils: responsiveUtils,
+                responsiveUtils: controller.responsiveUtils,
                 desktop: bodyView,
                 tabletLarge: bodyView,
                 landscapeTablet: bodyView,
@@ -81,7 +81,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
             default:
               return ResponsiveWidget(
-                  responsiveUtils: responsiveUtils,
+                  responsiveUtils: controller.responsiveUtils,
                   desktop: bodyView,
                   tabletLarge: bodyView,
                   landscapeTablet: bodyView,
@@ -97,7 +97,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       key: controller.scaffoldKey,
       body: body,
       drawer: ResponsiveWidget(
-        responsiveUtils: responsiveUtils,
+        responsiveUtils: controller.responsiveUtils,
         mobile: SizedBox(
           width: double.infinity,
           child: MailboxView()

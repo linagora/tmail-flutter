@@ -84,15 +84,10 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
-import 'package:uuid/uuid.dart';
 
 class MailboxController extends BaseMailboxController with MailboxActionHandlerMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  final _appToast = Get.find<AppToast>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _uuid = Get.find<Uuid>();
   final isMailboxListScrollable = false.obs;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final DeleteMultipleMailboxInteractor _deleteMultipleMailboxInteractor;
@@ -302,7 +297,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _initCollapseMailboxCategories() {
     if (kIsWeb && currentContext != null
-        && (_responsiveUtils.isMobile(currentContext!) || _responsiveUtils.isTablet(currentContext!))) {
+        && (responsiveUtils.isMobile(currentContext!) || responsiveUtils.isTablet(currentContext!))) {
       mailboxCategoriesExpandMode.value = MailboxCategoriesExpandMode(
           defaultMailbox: ExpandMode.COLLAPSE,
           personalFolders: ExpandMode.COLLAPSE,
@@ -533,7 +528,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         : await push(AppRoutes.mailboxCreator, arguments: arguments);
 
       if (result != null && result is NewMailboxArguments) {
-        final generateCreateId = Id(_uuid.v1());
+        final generateCreateId = Id(uuid.v1());
         _createNewMailboxAction(session, accountId, CreateNewMailboxRequest(
           generateCreateId,
           result.newName,
@@ -548,11 +543,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _createNewMailboxSuccess(CreateNewMailboxSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).createFolderSuccessfullyMessage(success.newMailbox.name?.name ?? ''),
         leadingSVGIconColor: Colors.white,
-        leadingSVGIcon: _imagePaths.icFolderMailbox);
+        leadingSVGIcon: imagePaths.icFolderMailbox);
 
       _newFolderId = success.newMailbox.id;
     }
@@ -567,7 +562,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       if (exception is ErrorMethodResponse) {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
       }
-      _appToast.showToastErrorMessage(currentOverlayContext!, messageError);
+      appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
   }
 
@@ -650,7 +645,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         openDialogRenameMailboxAction(
           context,
           selectedMailboxList.first,
-          _responsiveUtils,
+          responsiveUtils,
           onRenameMailboxAction: _renameMailboxAction
         );
         break;
@@ -705,7 +700,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       jmap.State? currentMailboxState
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).deleteFoldersSuccessfully);
     }
@@ -721,8 +716,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       BuildContext context,
       List<PresentationMailbox> selectedMailboxList
   ) {
-    if (_responsiveUtils.isLandscapeMobile(context) ||
-        _responsiveUtils.isPortraitMobile(context)) {
+    if (responsiveUtils.isLandscapeMobile(context) ||
+        responsiveUtils.isPortraitMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
         ..messageText(AppLocalizations.of(context)
             .messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
@@ -735,12 +730,12 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
             ..key(const Key('confirm_dialog_delete_multiple_mailbox'))
             ..title(AppLocalizations.of(context).deleteFolders)
             ..content(AppLocalizations.of(context)
                 .messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
-            ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
+            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog,
                 fit: BoxFit.fill))
             ..colorConfirmButton(AppColor.colorConfirmActionDialog)
             ..styleTextConfirmButton(const TextStyle(
@@ -789,10 +784,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   void _deleteMailboxFailure(DeleteMultipleMailboxFailure failure) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).deleteFoldersFailure,
-        leadingSVGIcon: _imagePaths.icDeleteToast
+        leadingSVGIcon: imagePaths.icDeleteToast
       );
     }
   }
@@ -835,7 +830,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (success.moveAction == MoveAction.moving
         && currentOverlayContext != null
         && currentContext != null) {
-      _appToast.showToastMessage(
+      appToast.showToastMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).movedToFolder(
               success.destinationMailboxDisplayName ?? AppLocalizations.of(currentContext!).allFolders),
@@ -847,11 +842,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
                 destinationMailboxId: success.parentId,
                 parentId: success.destinationMailboxId));
           },
-          leadingSVGIcon: _imagePaths.icFolderMailbox,
+          leadingSVGIcon: imagePaths.icFolderMailbox,
           leadingSVGIconColor: Colors.white,
           backgroundColor: AppColor.toastSuccessBackgroundColor,
           textColor: Colors.white,
-          actionIcon: SvgPicture.asset(_imagePaths.icUndo));
+          actionIcon: SvgPicture.asset(imagePaths.icUndo));
     }
 
     _refreshMailboxChanges(
@@ -934,8 +929,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       case MailboxActions.delete:
         openConfirmationDialogDeleteMailboxAction(
           context,
-          _responsiveUtils,
-          _imagePaths,
+          responsiveUtils,
+          imagePaths,
           mailbox,
           onDeleteMailboxAction: _deleteMailboxAction
         );
@@ -944,7 +939,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         openDialogRenameMailboxAction(
           context,
           mailbox,
-          _responsiveUtils,
+          responsiveUtils,
           onRenameMailboxAction: _renameMailboxAction
         );
         break;
@@ -1168,7 +1163,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       {List<MailboxId>? listDescendantMailboxIds}
   ) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastMessage(
+      appToast.showToastMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMsgHideFolderSuccess,
         actionName: AppLocalizations.of(currentContext!).undo,
@@ -1176,11 +1171,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           mailboxIdSubscribed,
           listDescendantMailboxIds: listDescendantMailboxIds
         ),
-        leadingSVGIcon: _imagePaths.icFolderMailbox,
+        leadingSVGIcon: imagePaths.icFolderMailbox,
         leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
         textColor: Colors.white,
-        actionIcon: SvgPicture.asset(_imagePaths.icUndo));
+        actionIcon: SvgPicture.asset(imagePaths.icUndo));
     }
   }
 

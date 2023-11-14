@@ -1,7 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,19 +19,16 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
   with AppLoaderMixin,
     MailboxWidgetMixin {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
   MailboxVisibilityView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SettingDetailViewBuilder(
-      responsiveUtils: _responsiveUtils,
+      responsiveUtils: controller.responsiveUtils,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_responsiveUtils.isWebDesktop(context))
+          if (controller.responsiveUtils.isWebDesktop(context))
             ...[
               const SizedBox(height: 24),
               const MailboxVisibilityHeaderWidget(),
@@ -46,7 +41,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
             ],
           _buildLoadingView(),
           Expanded(child: Padding(
-            padding: MailboxVisibilityUtils.getPaddingListView(context, _responsiveUtils),
+            padding: MailboxVisibilityUtils.getPaddingListView(context, controller.responsiveUtils),
             child: _buildListMailbox(context)
           ))
         ]
@@ -100,8 +95,8 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
     return Column(children: [
       buildHeaderMailboxCategory(
         context,
-        _responsiveUtils,
-        _imagePaths,
+        controller.responsiveUtils,
+        controller.imagePaths,
         categories,
         controller,
         padding: const EdgeInsets.all(8),
@@ -139,7 +134,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
             paddingChild: const EdgeInsetsDirectional.only(start: 10),
             parent: MailBoxVisibilityFolderTileBuilder(
-              _imagePaths,
+              controller.imagePaths,
               mailboxNode,
               onClickExpandMailboxNodeAction: (mailboxNode) {
                 controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController);
@@ -148,7 +143,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
             ),
             children: _buildListChildTileWidget(context, mailboxNode)).build()
         : MailBoxVisibilityFolderTileBuilder(
-            _imagePaths,
+            controller.imagePaths,
             mailboxNode,
             onClickExpandMailboxNodeAction: (mailboxNode) {
               controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController);
