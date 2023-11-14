@@ -17,6 +17,9 @@ import 'package:model/oidc/token_oidc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
@@ -34,9 +37,6 @@ import 'package:tmail_ui_user/features/push_notification/presentation/listener/e
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
-import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
-import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
-import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 

@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 
 part 'session_hive_obj.g.dart';
 
-@HiveType(typeId: CachingConstants.typeIdSessionHiveObj)
+@HiveType(typeId: CachingConstants.SESSION_HIVE_CACHE_ID)
 class SessionHiveObj extends HiveObject with EquatableMixin {
 
   static const String keyValue = 'session';

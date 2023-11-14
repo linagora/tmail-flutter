@@ -1,7 +1,7 @@
-import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -10,6 +10,11 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
@@ -18,21 +23,15 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_authenticati
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
-import 'package:tmail_ui_user/features/session/domain/extensions/session_extensions.dart';
-import 'package:tmail_ui_user/features/session/domain/state/get_session_state.dart';
-import 'package:tmail_ui_user/features/session/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 abstract class ReloadableController extends BaseController {
-  final DynamicUrlInterceptors dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
-  final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor;
-  final UpdateAuthenticationAccountInteractor _updateAuthenticationAccountInteractor;
-
-  ReloadableController(
-    this._getAuthenticatedAccountInteractor,
-    this._updateAuthenticationAccountInteractor
-  );
+  final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
+  final UpdateAuthenticationAccountInteractor _updateAuthenticationAccountInteractor = Get.find<UpdateAuthenticationAccountInteractor>();
 
   @override
   void handleFailureViewState(Failure failure) {
@@ -40,7 +39,10 @@ abstract class ReloadableController extends BaseController {
     if (failure is GetCredentialFailure) {
       goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
     } else if (failure is GetSessionFailure) {
-      _handleGetSessionFailure();
+      _handleGetSessionFailure(
+        sessionCacheException: failure.exception,
+        sessionRemoteException: failure.remoteException
+      );
     } else if (failure is GetStoredTokenOidcFailure) {
       goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
     } else if (failure is GetAuthenticatedAccountFailure) {
@@ -86,29 +88,73 @@ abstract class ReloadableController extends BaseController {
 
   void _handleGetCredentialSuccess(GetCredentialViewState credentialViewState) {
     _setUpInterceptors(credentialViewState);
-    _getSessionAction();
+    getSessionAction();
   }
 
-  void _getSessionAction() {
+  void getSessionAction() {
     consumeState(_getSessionInteractor.execute());
   }
 
-  void _handleGetSessionFailure() {
-    performInvokeLogoutAction();
+  void _handleGetSessionFailure({
+    dynamic sessionRemoteException,
+    dynamic sessionCacheException
+  }) {
+    showToastErrorMessageSessionFailure(
+      sessionRemoteException: sessionRemoteException,
+      sessionCacheException: sessionCacheException,
+    );
+    clearDataAndGoToLoginPage();
+  }
+
+  void showToastErrorMessageSessionFailure({
+    dynamic sessionRemoteException,
+    dynamic sessionCacheException
+  }) {
+    if (currentContext == null || currentOverlayContext == null) {
+      return;
+    }
+    appToast.showToastErrorMessage(
+      currentOverlayContext!,
+      getErrorMessageFromSessionFailure(
+        context: currentContext!,
+        sessionRemoteException: sessionRemoteException,
+        sessionCacheException: sessionCacheException,
+      )
+    );
+  }
+
+  String getErrorMessageFromSessionFailure({
+    required BuildContext context,
+    dynamic sessionRemoteException,
+    dynamic sessionCacheException,
+ }) {
+    if (sessionRemoteException is ConnectionTimeout ||
+        sessionRemoteException is BadGateway ||
+        sessionRemoteException is SocketError) {
+      return AppLocalizations.of(context).wrongUrlMessage;
+    } else if (sessionRemoteException is BadCredentialsException) {
+      return AppLocalizations.of(context).badCredentials;
+    } else if (sessionRemoteException is ConnectionError) {
+      return AppLocalizations.of(context).connectionError;
+    } else if (sessionRemoteException is UnknownError && sessionRemoteException.message != null) {
+      return '[${sessionRemoteException.code ?? ''}] ${sessionRemoteException.message}';
+    } else if (sessionCacheException is NotFoundSessionException) {
+      return AppLocalizations.of(context).notFoundSession;
+    } else {
+      return AppLocalizations.of(context).unknownError;
+    }
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
     final session = success.session;
     final personalAccount = session.personalAccount;
     final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
-    log('ReloadableController::_handleGetSessionSuccess():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       dynamicUrlInterceptors.changeBaseUrl(apiUrl);
       updateAuthenticationAccount(session, personalAccount.accountId, session.username);
       handleReloaded(session);
     } else {
-      logError('ReloadableController::_handleGetSessionSuccess(): apiUrl is NULL');
-      performInvokeLogoutAction();
+      clearDataAndGoToLoginPage();
     }
   }
 
@@ -116,7 +162,7 @@ abstract class ReloadableController extends BaseController {
 
   void _handleGetStoredTokenOIDCSuccess(GetStoredTokenOidcSuccess tokenOidcSuccess) {
     _setUpInterceptorsOidc(tokenOidcSuccess);
-    _getSessionAction();
+    getSessionAction();
   }
 
   void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
@@ -141,7 +187,6 @@ abstract class ReloadableController extends BaseController {
 
   void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
     final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
-    log('ReloadableController::updateAuthenticationAccount():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));
     }
