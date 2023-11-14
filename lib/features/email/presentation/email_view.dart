@@ -1,11 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -42,17 +39,14 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmailView extends GetWidget<SingleEmailController> {
 
-  final responsiveUtils = Get.find<ResponsiveUtils>();
-  final imagePaths = Get.find<ImagePaths>();
-
-  EmailView({Key? key}) : super(key: key);
+  const EmailView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => controller.backButtonPressedCallbackAction.call(context),
       child: Scaffold(
-        backgroundColor: responsiveUtils.isWebDesktop(context)
+        backgroundColor: controller.responsiveUtils.isWebDesktop(context)
           ? AppColor.colorBgDesktop
           : Colors.white,
         appBar: PlatformInfo.isIOS
@@ -93,12 +87,12 @@ class EmailView extends GetWidget<SingleEmailController> {
             )
           : null,
         body: SafeArea(
-          right: responsiveUtils.isLandscapeMobile(context),
-          left: responsiveUtils.isLandscapeMobile(context),
+          right: controller.responsiveUtils.isLandscapeMobile(context),
+          left: controller.responsiveUtils.isLandscapeMobile(context),
           bottom: !PlatformInfo.isIOS,
           child: Container(
             clipBehavior: Clip.antiAlias,
-            decoration: responsiveUtils.isWebDesktop(context)
+            decoration: controller.responsiveUtils.isWebDesktop(context)
               ? BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
@@ -139,9 +133,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                     final vacation = controller.mailboxDashBoardController.vacationResponse.value;
                     if (vacation?.vacationResponderIsValid == true &&
                         (
-                          responsiveUtils.isMobile(context) ||
-                          responsiveUtils.isTablet(context) ||
-                          responsiveUtils.isLandscapeMobile(context)
+                          controller.responsiveUtils.isMobile(context) ||
+                          controller.responsiveUtils.isTablet(context) ||
+                          controller.responsiveUtils.isLandscapeMobile(context)
                         )
                     ) {
                       return VacationNotificationMessageWidget(
@@ -270,7 +264,7 @@ class EmailView extends GetWidget<SingleEmailController> {
 
   EdgeInsetsGeometry _getMarginEmailView(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      if (responsiveUtils.isDesktop(context)) {
+      if (controller.responsiveUtils.isDesktop(context)) {
         return const EdgeInsetsDirectional.only(
           end: 16,
           top: 8,
@@ -292,8 +286,8 @@ class EmailView extends GetWidget<SingleEmailController> {
     return [
       TMailButtonWidget.fromIcon(
         icon: DirectionUtils.isDirectionRTLByLanguage(context)
-          ? imagePaths.icOlder
-          : imagePaths.icNewer,
+          ? controller.imagePaths.icOlder
+          : controller.imagePaths.icNewer,
         iconColor: controller.emailSupervisorController.nextEmailActivated
           ? AppColor.primaryColor
           : AppColor.colorAttachmentIcon,
@@ -305,8 +299,8 @@ class EmailView extends GetWidget<SingleEmailController> {
       ),
       TMailButtonWidget.fromIcon(
         icon: DirectionUtils.isDirectionRTLByLanguage(context)
-          ? imagePaths.icNewer
-          : imagePaths.icOlder,
+          ? controller.imagePaths.icNewer
+          : controller.imagePaths.icOlder,
         iconColor: controller.emailSupervisorController.previousEmailActivated
           ? AppColor.primaryColor
           : AppColor.colorAttachmentIcon,
@@ -332,22 +326,18 @@ class EmailView extends GetWidget<SingleEmailController> {
         InformationSenderAndReceiverBuilder(
           controller: controller,
           emailSelected: presentationEmail,
-          imagePaths: imagePaths,
-          responsiveUtils: responsiveUtils,
+          imagePaths: controller.imagePaths,
+          responsiveUtils: controller.responsiveUtils,
         ),
         Obx(() {
           final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
           if (attachments.isNotEmpty) {
             return EmailAttachmentsWidget(
-              responsiveUtils: responsiveUtils,
+              responsiveUtils: controller.responsiveUtils,
               attachments: attachments,
-              imagePaths: imagePaths,
-              onDragStarted: () {
-                log('EmailView::_buildEmailMessage:onDragStarted:');
-                controller.mailboxDashBoardController.enableDraggableApp();
-              },
+              imagePaths: controller.imagePaths,
+              onDragStarted: controller.mailboxDashBoardController.enableDraggableApp,
               onDragEnd: (details) {
-                log('EmailView::_buildEmailMessage:onDragEnd:');
                 controller.mailboxDashBoardController.disableDraggableApp();
               },
               downloadAttachmentAction: (attachment) {
@@ -463,7 +453,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     return (EmailActionCupertinoActionSheetActionBuilder(
           const Key('mark_as_unread_action'),
           SvgPicture.asset(
-            imagePaths.icUnreadEmail,
+            controller.imagePaths.icUnreadEmail,
             width: 24,
             height: 24,
             fit: BoxFit.fill,
@@ -471,7 +461,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           ),
           AppLocalizations.of(context).mark_as_unread,
           email,
-          iconLeftPadding: responsiveUtils.isMobile(context)
+          iconLeftPadding: controller.responsiveUtils.isMobile(context)
             ? EdgeInsets.only(
                 left: AppUtils.isDirectionRTL(context) ? 16 : 12,
                 right: AppUtils.isDirectionRTL(context) ? 12 : 16,
@@ -480,7 +470,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 left: AppUtils.isDirectionRTL(context) ? 12 : 0,
                 right: AppUtils.isDirectionRTL(context) ? 0 : 12,
               ),
-          iconRightPadding: responsiveUtils.isMobile(context)
+          iconRightPadding: controller.responsiveUtils.isMobile(context)
             ? EdgeInsets.only(
                 left: AppUtils.isDirectionRTL(context) ? 12 : 0,
                 right: AppUtils.isDirectionRTL(context) ? 0 : 12,
@@ -500,7 +490,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     return (EmailActionCupertinoActionSheetActionBuilder(
           const Key('mark_as_spam_or_un_spam_action'),
           SvgPicture.asset(
-            currentMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
+            currentMailbox?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
             width: 24,
             height: 24,
             fit: BoxFit.fill,
@@ -510,7 +500,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             ? AppLocalizations.of(context).remove_from_spam
             : AppLocalizations.of(context).mark_as_spam,
           email,
-          iconLeftPadding: responsiveUtils.isMobile(context)
+          iconLeftPadding: controller.responsiveUtils.isMobile(context)
             ? EdgeInsets.only(
                 left: AppUtils.isDirectionRTL(context) ? 16 : 12,
                 right: AppUtils.isDirectionRTL(context) ? 12 : 16,
@@ -519,7 +509,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 left: AppUtils.isDirectionRTL(context) ? 12 : 0,
                 right: AppUtils.isDirectionRTL(context) ? 0 : 12,
               ),
-          iconRightPadding: responsiveUtils.isMobile(context)
+          iconRightPadding: controller.responsiveUtils.isMobile(context)
             ? EdgeInsets.only(
                 left: AppUtils.isDirectionRTL(context) ? 12 : 0,
                 right: AppUtils.isDirectionRTL(context) ? 0 : 12,
@@ -537,14 +527,14 @@ class EmailView extends GetWidget<SingleEmailController> {
     return (EmailActionCupertinoActionSheetActionBuilder(
           const Key('quick_creating_rule_action'),
           SvgPicture.asset(
-            imagePaths.icQuickCreatingRule,
+            controller.imagePaths.icQuickCreatingRule,
             width: 24,
             height: 24,
             fit: BoxFit.fill,
             colorFilter: AppColor.colorTextButton.asFilter()),
           AppLocalizations.of(context).quickCreatingRule,
           email,
-          iconLeftPadding: responsiveUtils.isMobile(context)
+          iconLeftPadding: controller.responsiveUtils.isMobile(context)
             ? EdgeInsets.only(
                 left: AppUtils.isDirectionRTL(context) ? 16 : 12,
                 right: AppUtils.isDirectionRTL(context) ? 12 : 16,
@@ -553,7 +543,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 left: AppUtils.isDirectionRTL(context) ? 12 : 0,
                 right: AppUtils.isDirectionRTL(context) ? 0 : 12,
               ),
-          iconRightPadding: responsiveUtils.isMobile(context)
+          iconRightPadding: controller.responsiveUtils.isMobile(context)
             ? EdgeInsets.only(
                 left: AppUtils.isDirectionRTL(context) ? 12 : 0,
                 right: AppUtils.isDirectionRTL(context) ? 0 : 12,
@@ -577,7 +567,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
       child: PopupItemWidget(
-        imagePaths.icUnreadEmail,
+        controller.imagePaths.icUnreadEmail,
         AppLocalizations.of(context).mark_as_unread,
         colorIcon: AppColor.colorTextButton,
         padding: const EdgeInsetsDirectional.only(start: 12),
@@ -603,7 +593,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
       child: PopupItemWidget(
-        mailboxContain?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam,
+        mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
         mailboxContain?.isSpam == true
           ? AppLocalizations.of(context).remove_from_spam
           : AppLocalizations.of(context).mark_as_spam,
@@ -627,7 +617,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
       child: PopupItemWidget(
-        imagePaths.icQuickCreatingRule,
+        controller.imagePaths.icQuickCreatingRule,
         AppLocalizations.of(context).quickCreatingRule,
         colorIcon: AppColor.colorTextButton,
         padding: const EdgeInsetsDirectional.only(start: 12),

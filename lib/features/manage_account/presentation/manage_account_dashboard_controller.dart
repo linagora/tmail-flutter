@@ -1,6 +1,5 @@
 
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -13,8 +12,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -40,9 +37,6 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class ManageAccountDashBoardController extends ReloadableController {
 
-  final _appToast = Get.find<AppToast>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
 
@@ -56,14 +50,6 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   Session? sessionCurrent;
 
-  ManageAccountDashBoardController(
-    GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor,
-    UpdateAuthenticationAccountInteractor updateAuthenticationAccountInteractor
-  ) : super(
-    getAuthenticatedAccountInteractor,
-    updateAuthenticationAccountInteractor
-  );
-
   @override
   void onReady() {
     _initialPageLevel();
@@ -74,7 +60,6 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetUserProfileSuccess) {
       userProfile.value = success.userProfile;
     } else if (success is GetAllVacationSuccess) {
@@ -83,13 +68,15 @@ class ManageAccountDashBoardController extends ReloadableController {
       }
     } else if (success is UpdateVacationSuccess) {
       _handleUpdateVacationSuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleReloaded(Session session) {
     sessionCurrent = session;
-    accountId.value = session.accounts.keys.first;
+    accountId.value = session.personalAccount.accountId;
     _getUserProfile();
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
@@ -100,22 +87,20 @@ class ManageAccountDashBoardController extends ReloadableController {
     log('ManageAccountDashBoardController::_getArguments(): $arguments');
     if (arguments is ManageAccountArguments) {
       sessionCurrent = arguments.session;
-      accountId.value = arguments.session?.accounts.keys.first;
+      accountId.value = arguments.session?.personalAccount.accountId;
       _getUserProfile();
       _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
         _goToSettingMenuCurrent(arguments.menuSettingCurrent!);
       }
-    } else {
-      if (kIsWeb) {
-        reload();
-      }
+    } else if (PlatformInfo.isWeb) {
+      reload();
     }
   }
 
   void _initialPageLevel() {
-    if (currentContext != null && _responsiveUtils.isWebDesktop(currentContext!)) {
+    if (currentContext != null && responsiveUtils.isWebDesktop(currentContext!)) {
       settingsPageLevel.value = SettingsPageLevel.level1;
     } else {
       settingsPageLevel.value = SettingsPageLevel.universal;
@@ -261,7 +246,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty) {
       if (currentContext != null && currentOverlayContext != null) {
-        _appToast.showToastSuccessMessage(
+        appToast.showToastSuccessMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully);
       }

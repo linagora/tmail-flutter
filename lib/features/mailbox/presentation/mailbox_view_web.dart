@@ -22,25 +22,25 @@ class MailboxView extends BaseMailboxView {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        elevation: responsiveUtils.isDesktop(context) ? 0 : 16.0,
+        elevation: controller.responsiveUtils.isDesktop(context) ? 0 : 16.0,
         child: Scaffold(
-          backgroundColor: responsiveUtils.isWebDesktop(context)
+          backgroundColor: controller.responsiveUtils.isWebDesktop(context)
             ? AppColor.colorBgDesktop
             : Colors.white,
           body: Column(children: [
-            if (!responsiveUtils.isDesktop(context)) _buildLogoApp(context),
-            if (!responsiveUtils.isDesktop(context))
+            if (!controller.responsiveUtils.isDesktop(context)) _buildLogoApp(context),
+            if (!controller.responsiveUtils.isDesktop(context))
               const Divider(
                   color: AppColor.colorDividerMailbox,
                   height: 0.5,
                   thickness: 0.2),
             Expanded(child: Container(
-              padding: EdgeInsetsDirectional.only(start: responsiveUtils.isDesktop(context) ? 16 : 0),
-              color: responsiveUtils.isDesktop(context)
+              padding: EdgeInsetsDirectional.only(start: controller.responsiveUtils.isDesktop(context) ? 16 : 0),
+              color: controller.responsiveUtils.isDesktop(context)
                   ? AppColor.colorBgDesktop
                   : Colors.white,
               child: Container(
-                color: responsiveUtils.isDesktop(context)
+                color: controller.responsiveUtils.isDesktop(context)
                   ? AppColor.colorBgDesktop
                   : Colors.white,
                 child: _buildListMailbox(context),
@@ -56,9 +56,9 @@ class MailboxView extends BaseMailboxView {
     return Container(
         color: Colors.white,
         padding: EdgeInsetsDirectional.only(
-          top: responsiveUtils.isDesktop(context) ? 25 : 16,
-          bottom: responsiveUtils.isDesktop(context) ? 25 : 16,
-          start: responsiveUtils.isDesktop(context) ? 32 : 16,
+          top: controller.responsiveUtils.isDesktop(context) ? 25 : 16,
+          bottom: controller.responsiveUtils.isDesktop(context) ? 25 : 16,
+          start: controller.responsiveUtils.isDesktop(context) ? 32 : 16,
         ),
         child: Row(children: [
           SloganBuilder(
@@ -66,7 +66,7 @@ class MailboxView extends BaseMailboxView {
             text: AppLocalizations.of(context).app_name,
             textAlign: TextAlign.center,
             textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-            logoSVG: imagePaths.icTMailLogo
+            logoSVG: controller.imagePaths.icTMailLogo
           ),
           Obx(() {
             if (controller.mailboxDashBoardController.appInformation.value != null) {
@@ -98,9 +98,9 @@ class MailboxView extends BaseMailboxView {
               controller: controller.mailboxListScrollController,
               key: const PageStorageKey('mailbox_list'),
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(end: responsiveUtils.isDesktop(context) ? 16 : 0),
+              padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 16 : 0),
               child: Column(children: [
-                if (!responsiveUtils.isDesktop(context))
+                if (!controller.responsiveUtils.isDesktop(context))
                   Obx(() => UserInformationWidget(
                     userProfile: controller.mailboxDashBoardController.userProfile.value,
                     subtitle: AppLocalizations.of(context).manage_account,
@@ -113,8 +113,8 @@ class MailboxView extends BaseMailboxView {
                     ),
                   )),
                 Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
-                AppConfig.appGridDashboardAvailable && responsiveUtils.isWebNotDesktop(context)
-                  ? buildAppGridDashboard(context, responsiveUtils, imagePaths, controller)
+                AppConfig.appGridDashboardAvailable && controller.responsiveUtils.isWebNotDesktop(context)
+                  ? buildAppGridDashboard(context, controller.responsiveUtils, controller.imagePaths, controller)
                   : const SizedBox.shrink(),
                 const SizedBox(height: 8),
                 Obx(() {
@@ -133,7 +133,7 @@ class MailboxView extends BaseMailboxView {
                 const SizedBox(height: 13),
                 Padding(
                   padding: EdgeInsetsDirectional.only(
-                    start: responsiveUtils.isDesktop(context) ? 0 : 12,
+                    start: controller.responsiveUtils.isDesktop(context) ? 0 : 12,
                     bottom: 8
                   ),
                   child: Row(
@@ -148,14 +148,14 @@ class MailboxView extends BaseMailboxView {
                         )
                       )),
                       Padding(
-                        padding: EdgeInsetsDirectional.only(end: responsiveUtils.isDesktop(context) ? 0 : 12),
+                        padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 0 : 12),
                         child: Row(
                           children: [
                             buildIconWeb(
                               minSize: 40,
                               iconPadding: EdgeInsets.zero,
                               icon: SvgPicture.asset(
-                                imagePaths.icSearchBar,
+                                controller.imagePaths.icSearchBar,
                                 colorFilter: AppColor.colorTextButton.asFilter(),
                                 fit: BoxFit.fill
                               ),
@@ -167,7 +167,7 @@ class MailboxView extends BaseMailboxView {
                                 iconPadding: EdgeInsets.zero,
                                 splashRadius: 15,
                                 icon: SvgPicture.asset(
-                                  imagePaths.icAddNewFolder,
+                                  controller.imagePaths.icAddNewFolder,
                                   colorFilter: AppColor.colorTextButton.asFilter(),
                                   fit: BoxFit.fill),
                                 tooltip: AppLocalizations.of(context).newFolder,
@@ -233,8 +233,8 @@ class MailboxView extends BaseMailboxView {
 
     return Container(
         padding: EdgeInsets.only(
-            right: responsiveUtils.isDesktop(context) ? 0 : 16,
-            left: responsiveUtils.isDesktop(context) ? 0 : 16),
+            right: controller.responsiveUtils.isDesktop(context) ? 0 : 16,
+            left: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
         child: TreeView(
             key: Key('${categories.keyValue}_mailbox_list'),
             children: _buildListChildTileWidget(
@@ -255,8 +255,8 @@ class MailboxView extends BaseMailboxView {
         children: [
           buildHeaderMailboxCategory(
             context,
-            responsiveUtils,
-            imagePaths,
+            controller.responsiveUtils,
+            controller.imagePaths,
             categories,
             controller,
             toggleMailboxCategories: controller.toggleMailboxCategories
@@ -295,8 +295,8 @@ class MailboxView extends BaseMailboxView {
             onMenuActionClick: (position, mailboxNode) {
               openMailboxMenuActionOnWeb(
                 context,
-                imagePaths,
-                responsiveUtils,
+                controller.imagePaths,
+                controller.responsiveUtils,
                 position,
                 mailboxNode.item,
                 controller
@@ -316,8 +316,8 @@ class MailboxView extends BaseMailboxView {
           onMenuActionClick: (position, mailboxNode) {
             openMailboxMenuActionOnWeb(
               context,
-              imagePaths,
-              responsiveUtils,
+              controller.imagePaths,
+              controller.responsiveUtils,
               position,
               mailboxNode.item,
               controller

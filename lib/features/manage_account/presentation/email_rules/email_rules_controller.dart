@@ -1,8 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
@@ -42,9 +39,6 @@ class EmailRulesController extends BaseController {
   EditEmailRuleFilterInteractor? _editEmailRuleFilterInteractor;
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final listEmailRule = <TMailRule>[].obs;
 
@@ -111,7 +105,7 @@ class EmailRulesController extends BaseController {
   void _createNewRuleFilterSuccess(CreateNewRuleFilterSuccess success) {
     if (success.newListRules.isNotEmpty == true) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastSuccessMessage(
+        appToast.showToastSuccessMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).newFilterWasCreated);
       }
@@ -152,7 +146,7 @@ class EmailRulesController extends BaseController {
   void _editEmailRuleFilterSuccess(EditEmailRuleFilterSuccess success) {
     if (success.listRulesUpdated.isNotEmpty == true) {
       if (currentOverlayContext != null && currentContext != null) {
-        _appToast.showToastSuccessMessage(
+        appToast.showToastSuccessMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).yourFilterHasBeenUpdated);
       }
@@ -162,7 +156,7 @@ class EmailRulesController extends BaseController {
   }
 
   void deleteEmailRule(BuildContext context, TMailRule emailRule) {
-    if (_responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
         ..messageText(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
         ..onCancelAction(AppLocalizations.of(context).cancel, () =>
@@ -176,10 +170,10 @@ class EmailRulesController extends BaseController {
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) =>
-              PointerInterceptor(child: (ConfirmDialogBuilder(_imagePaths)
+              PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
                 ..title(AppLocalizations.of(context).deleteEmailRule)
                 ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
-                ..addIcon(SvgPicture.asset(_imagePaths.icRemoveDialog,
+                ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog,
                     fit: BoxFit.fill))
                 ..marginIcon(EdgeInsets.zero)
                 ..colorConfirmButton(AppColor.colorConfirmActionDialog)
@@ -236,7 +230,7 @@ class EmailRulesController extends BaseController {
 
   void _handleDeleteEmailRuleSuccess(DeleteEmailRuleSuccess success) {
     if (currentOverlayContext != null && currentContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMessageDeleteEmailRuleSuccessfully);
     }
@@ -267,7 +261,7 @@ class EmailRulesController extends BaseController {
     return (EmailRuleBottomSheetActionTileBuilder(
       const Key('delete_emailRule_action'),
       SvgPicture.asset(
-        _imagePaths.icDeleteComposer,
+        imagePaths.icDeleteComposer,
         colorFilter: AppColor.colorActionDeleteConfirmDialog.asFilter()),
       AppLocalizations.of(context).deleteRule,
       rule,
@@ -284,7 +278,7 @@ class EmailRulesController extends BaseController {
   Widget _editEmailRuleActionTile(BuildContext context, TMailRule rule) {
     return (EmailRuleBottomSheetActionTileBuilder(
           const Key('edit_emailRule_action'),
-          SvgPicture.asset(_imagePaths.icEdit),
+          SvgPicture.asset(imagePaths.icEdit),
           AppLocalizations.of(context).editRule,
           rule,
           iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),

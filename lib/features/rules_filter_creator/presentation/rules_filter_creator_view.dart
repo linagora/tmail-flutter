@@ -23,9 +23,6 @@ import 'model/rule_filter_condition_type.dart';
 
 class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
   @override
   final controller = Get.find<RulesFilterCreatorController>();
 
@@ -35,7 +32,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
   Widget build(BuildContext context) {
     return PointerInterceptor(
       child: ResponsiveWidget(
-          responsiveUtils: _responsiveUtils,
+          responsiveUtils: controller.responsiveUtils,
           mobile: Scaffold(
               backgroundColor: PlatformInfo.isWeb
                   ? Colors.black.withAlpha(24)
@@ -75,7 +72,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           topRight: Radius.circular(16),
                         )),
                     width: double.infinity,
-                    height: _responsiveUtils.getSizeScreenHeight(context) * 0.7,
+                    height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.7,
                     child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(16),
@@ -97,8 +94,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(16))),
-                        width: _responsiveUtils.getSizeScreenWidth(context) * 0.6,
-                        height: _responsiveUtils.getSizeScreenHeight(context) * 0.7,
+                        width: controller.responsiveUtils.getSizeScreenWidth(context) * 0.6,
+                        height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.7,
                         child: ClipRRect(
                             borderRadius: const BorderRadius.all(Radius.circular(16)),
                             child: _buildRulesFilterFormOnDesktop(context)
@@ -153,7 +150,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SvgPicture.asset(
-                            _imagePaths.icAddNewFolder,
+                            controller.imagePaths.icAddNewFolder,
                             fit: BoxFit.fill,
                           ),
                           const SizedBox(width: 15,),
@@ -182,7 +179,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   const SizedBox(height: 24),
                   Obx(() {
                     return RuleFilterActionListWidget(
-                      responsiveUtils: _responsiveUtils,
+                      responsiveUtils: controller.responsiveUtils,
                       actionList: controller.listEmailRuleFilterActionSelected,
                       onActionChanged: (newAction, index) {
                         controller.selectEmailRuleFilterAction(newAction, index);
@@ -195,7 +192,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         controller.selectMailbox(context, index);
                       },
                       tapRemoveCallback: (index) => controller.tapRemoveAction(index),
-                      imagePaths: _imagePaths,
+                      imagePaths: controller.imagePaths,
                       errorForwardEmail: controller.errorForwardEmailValue.value,
                       errorMailboxSelected: controller.errorMailboxSelectedValue.value,
                     );
@@ -210,7 +207,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               SvgPicture.asset(
-                                _imagePaths.icAddNewFolder,
+                                controller.imagePaths.icAddNewFolder,
                                 fit: BoxFit.fill,
                               ),
                               const SizedBox(width: 15,),
@@ -264,7 +261,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         Positioned(top: 8, right: 8,
             child: buildIconWeb(
               icon: SvgPicture.asset(
-                  _imagePaths.icCircleClose,
+                  controller.imagePaths.icCircleClose,
                   fit: BoxFit.fill),
               tooltip: AppLocalizations.of(context).close,
               onTap: () => controller.closeView(context)))
@@ -314,7 +311,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               SvgPicture.asset(
-                                _imagePaths.icAddNewFolder,
+                                controller.imagePaths.icAddNewFolder,
                                 fit: BoxFit.fill,
                               ),
                               const SizedBox(width: 15,),
@@ -343,7 +340,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       const SizedBox(height: 24),
                       Obx(() {
                         return RuleFilterActionListWidget(
-                          responsiveUtils: _responsiveUtils,
+                          responsiveUtils: controller.responsiveUtils,
                           actionList: controller.listEmailRuleFilterActionSelected,
                           onActionChanged: (newAction, index) {
                             controller.selectEmailRuleFilterAction(newAction, index);
@@ -356,7 +353,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             controller.selectMailbox(context, index);
                           },
                           tapRemoveCallback: (index) => controller.tapRemoveAction(index),
-                          imagePaths: _imagePaths,
+                          imagePaths: controller.imagePaths,
                           errorForwardEmail: controller.errorForwardEmailValue.value,
                           errorMailboxSelected: controller.errorMailboxSelectedValue.value,
                         );
@@ -371,7 +368,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(
-                                    _imagePaths.icAddNewFolder,
+                                    controller.imagePaths.icAddNewFolder,
                                     fit: BoxFit.fill,
                                   ),
                                   const SizedBox(width: 15,),
@@ -424,7 +421,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
           Positioned(top: 8, right: 8,
               child: buildIconWeb(
                   icon: SvgPicture.asset(
-                      _imagePaths.icCircleClose,
+                      controller.imagePaths.icCircleClose,
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).close,
                   onTap: () => controller.closeView(context)))
@@ -489,7 +486,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SvgPicture.asset(
-                                _imagePaths.icAddNewFolder,
+                                controller.imagePaths.icAddNewFolder,
                                 fit: BoxFit.fill,
                               ),
                               const SizedBox(width: 15,),
@@ -523,7 +520,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       const SizedBox(height: 24),
                       Obx(() {
                         return RuleFilterActionListWidget(
-                          responsiveUtils: _responsiveUtils,
+                          responsiveUtils: controller.responsiveUtils,
                           actionList: controller.listEmailRuleFilterActionSelected,
                           onActionChangeMobile: (currentAction, index) {
                             KeyboardUtils.hideKeyboard(context);
@@ -544,7 +541,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             controller.selectMailbox(context, index);
                           },
                           tapRemoveCallback: (index) => controller.tapRemoveAction(index),
-                          imagePaths: _imagePaths,
+                          imagePaths: controller.imagePaths,
                           errorForwardEmail: controller.errorForwardEmailValue.value,
                           errorMailboxSelected: controller.errorMailboxSelectedValue.value,
                         );
@@ -560,7 +557,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SvgPicture.asset(
-                                    _imagePaths.icAddNewFolder,
+                                    controller.imagePaths.icAddNewFolder,
                                     fit: BoxFit.fill,
                                   ),
                                   const SizedBox(width: 15,),
@@ -613,7 +610,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
           Positioned(top: 8, right: 8,
               child: buildIconWeb(
                   icon: SvgPicture.asset(
-                      _imagePaths.icCircleClose,
+                      controller.imagePaths.icCircleClose,
                       fit: BoxFit.fill),
                   tooltip: AppLocalizations.of(context).close,
                   onTap: () => controller.closeView(context)))
@@ -634,7 +631,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             key: ValueKey(controller.listRuleConditionValueArguments[index].focusNode),
             ruleFilterConditionScreenType: ruleFilterConditionScreenType,
             ruleCondition: controller.listRuleCondition[index],
-            imagePaths: _imagePaths,
+            imagePaths: controller.imagePaths,
             conditionValueErrorText: controller.listRuleConditionValueArguments[index].errorText,
             conditionValueFocusNode: controller.listRuleConditionValueArguments[index].focusNode,
             conditionValueEditingController: controller.listRuleConditionValueArguments[index].controller,
@@ -702,7 +699,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
         iconRightPadding: const EdgeInsets.only(right: 12),
         actionSelected: SvgPicture.asset(
-            _imagePaths.icFilterSelected,
+            controller.imagePaths.icFilterSelected,
             width: 20,
             height: 20,
             fit: BoxFit.fill))
@@ -737,7 +734,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
         iconRightPadding: const EdgeInsets.only(right: 12),
         actionSelected: SvgPicture.asset(
-            _imagePaths.icFilterSelected,
+            controller.imagePaths.icFilterSelected,
             width: 20,
             height: 20,
             fit: BoxFit.fill))
@@ -770,7 +767,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
         iconRightPadding: const EdgeInsets.only(right: 12),
         actionSelected: SvgPicture.asset(
-            _imagePaths.icFilterSelected,
+            controller.imagePaths.icFilterSelected,
             width: 20,
             height: 20,
             fit: BoxFit.fill))
@@ -808,7 +805,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
         iconRightPadding: const EdgeInsets.only(right: 12),
         actionSelected: SvgPicture.asset(
-            _imagePaths.icFilterSelected,
+            controller.imagePaths.icFilterSelected,
             width: 20,
             height: 20,
             fit: BoxFit.fill))

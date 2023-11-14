@@ -1,9 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -53,8 +51,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   final dashboardController = Get.find<MailboxDashBoardController>();
   final _networkConnectionController = Get.find<NetworkConnectionController>();
   final _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _appToast = Get.find<AppToast>();
 
   final listSendingEmailController = ScrollController();
 
@@ -210,7 +206,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
       AppLocalizations.of(context).messageDialogDeleteSendingEmail,
       AppLocalizations.of(currentContext!).delete,
       title: AppLocalizations.of(currentContext!).deleteOfflineEmail,
-      icon: SvgPicture.asset(_imagePaths.icDeleteDialogRecipients),
+      icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients),
       alignCenter: true,
       messageStyle: const TextStyle(
         color: AppColor.colorTitleSendingItem,
@@ -259,7 +255,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     }
 
     if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).messageHaveBeenDeletedSuccessfully);
     }
@@ -329,7 +325,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     }
 
     if (currentContext != null && currentOverlayContext != null) {
-      _appToast.showToastSuccessMessage(
+      appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).messagesHaveBeenResent);
     }

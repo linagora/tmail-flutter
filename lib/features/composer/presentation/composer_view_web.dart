@@ -1,5 +1,3 @@
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -30,15 +28,12 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-
-  ComposerView({Key? key}) : super(key: key);
+  const ComposerView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ResponsiveWidget(
-      responsiveUtils: _responsiveUtils,
+      responsiveUtils: controller.responsiveUtils,
       mobile: MobileResponsiveContainerView(
         childBuilder: (context, constraints) {
           return Column(
@@ -67,7 +62,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   maxHeight: ComposerStyle.getMaxHeightEmailAddressWidget(
                     context,
                     constraints,
-                    _responsiveUtils
+                    controller.responsiveUtils
                   )
                 ),
                 child: SingleChildScrollView(
@@ -79,8 +74,8 @@ class ComposerView extends GetWidget<ComposerController> {
                           message: controller.identitySelected.value?.email ?? '',
                           child: FromComposerMobileWidget(
                             selectedIdentity: controller.identitySelected.value,
-                            imagePaths: _imagePaths,
-                            responsiveUtils: _responsiveUtils,
+                            imagePaths: controller.imagePaths,
+                            responsiveUtils: controller.responsiveUtils,
                             margin: ComposerStyle.mobileRecipientMargin,
                             padding: ComposerStyle.mobileRecipientPadding,
                             onTap: () => controller.openSelectIdentityBottomSheet(context)
@@ -247,7 +242,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 maxHeight: ComposerStyle.getMaxHeightEmailAddressWidget(
                   context,
                   constraints,
-                  _responsiveUtils
+                  controller.responsiveUtils
                 )
               ),
               child: SingleChildScrollView(
@@ -259,7 +254,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         items: controller.listFromIdentities,
                         itemSelected: controller.identitySelected.value,
                         dropdownKey: controller.identityDropdownKey,
-                        imagePaths: _imagePaths,
+                        imagePaths: controller.imagePaths,
                         padding: ComposerStyle.desktopRecipientPadding,
                         margin: ComposerStyle.desktopRecipientMargin,
                         onChangeIdentity: controller.onChangeIdentity,
@@ -477,7 +472,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 maxHeight: ComposerStyle.getMaxHeightEmailAddressWidget(
                   context,
                   constraints,
-                  _responsiveUtils
+                  controller.responsiveUtils
                 )
               ),
               child: SingleChildScrollView(
@@ -489,7 +484,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         items: controller.listFromIdentities,
                         itemSelected: controller.identitySelected.value,
                         dropdownKey: controller.identityDropdownKey,
-                        imagePaths: _imagePaths,
+                        imagePaths: controller.imagePaths,
                         padding: ComposerStyle.tabletRecipientPadding,
                         margin: ComposerStyle.tabletRecipientMargin,
                         onChangeIdentity: controller.onChangeIdentity,
@@ -683,11 +678,11 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icReadReceipt,
+          controller.imagePaths.icReadReceipt,
           AppLocalizations.of(context).requestReadReceipt,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,
-          selectedIcon: _imagePaths.icFilterSelected,
+          selectedIcon: controller.imagePaths.icFilterSelected,
           isSelected: controller.hasRequestReadReceipt.value,
           onCallbackAction: () {
             popBack();
@@ -703,12 +698,12 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icStyleCodeView,
+          controller.imagePaths.icStyleCodeView,
           AppLocalizations.of(context).embedCode,
           styleName: ComposerStyle.popupItemTextStyle,
           colorIcon: ComposerStyle.popupItemIconColor,
           padding: ComposerStyle.popupItemPadding,
-          selectedIcon: _imagePaths.icFilterSelected,
+          selectedIcon: controller.imagePaths.icFilterSelected,
           isSelected: controller.richTextWebController.codeViewEnabled,
           onCallbackAction: () {
             popBack();
@@ -719,12 +714,12 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icReadReceipt,
+          controller.imagePaths.icReadReceipt,
           AppLocalizations.of(context).requestReadReceipt,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,
           colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: _imagePaths.icFilterSelected,
+          selectedIcon: controller.imagePaths.icFilterSelected,
           isSelected: controller.hasRequestReadReceipt.value,
           onCallbackAction: () {
             popBack();
@@ -735,7 +730,7 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icSaveToDraft,
+          controller.imagePaths.icSaveToDraft,
           AppLocalizations.of(context).saveAsDraft,
           colorIcon: ComposerStyle.popupItemIconColor,
           styleName: ComposerStyle.popupItemTextStyle,
@@ -749,7 +744,7 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          _imagePaths.icDeleteMailbox,
+          controller.imagePaths.icDeleteMailbox,
           AppLocalizations.of(context).delete,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,

@@ -1,6 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/app_logger.dart';
@@ -19,8 +17,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   final _maxHeight = 656.0;
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   @override
   final controller = Get.find<MailboxCreatorController>();
@@ -38,7 +34,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
           borderOnForeground: false,
           color: Colors.transparent,
           child: SafeArea(
-            top: PlatformInfo.isMobile && _responsiveUtils.isPortraitMobile(context),
+            top: PlatformInfo.isMobile && controller.responsiveUtils.isPortraitMobile(context),
             bottom: false,
             left: false,
             right: false,
@@ -69,8 +65,8 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                           child: SafeArea(
                             top: false,
                             bottom: false,
-                            left: PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context),
-                            right: PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context),
+                            left: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
+                            right: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
                             child: Column(children: [
                               _buildAppBar(context),
                               const Divider(color: AppColor.colorDividerDestinationPicker, height: 1),
@@ -148,7 +144,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
               child: Row(children: [
                 const SizedBox(width: 12),
                 Obx(() => SvgPicture.asset(
-                    controller.selectedMailbox.value?.getMailboxIcon(_imagePaths) ?? _imagePaths.icFolderMailbox,
+                    controller.selectedMailbox.value?.getMailboxIcon(controller.imagePaths) ?? controller.imagePaths.icFolderMailbox,
                     width: PlatformInfo.isWeb ? 20 : 24,
                     height: PlatformInfo.isWeb ? 20 : 24,
                     fit: BoxFit.fill)),
@@ -168,7 +164,9 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                 IconButton(
                     color: AppColor.primaryColor,
                     icon: SvgPicture.asset(
-                        DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
+                        DirectionUtils.isDirectionRTLByLanguage(context)
+                          ? controller.imagePaths.icBack
+                          : controller.imagePaths.icCollapseFolder,
                         colorFilter: AppColor.colorCollapseMailbox.asFilter(),
                         fit: BoxFit.fill),
                     onPressed: () => controller.selectMailboxLocation(context))
@@ -180,14 +178,14 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   double _getWidthView(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      if (_responsiveUtils.isMobile(context)) {
+      if (controller.responsiveUtils.isMobile(context)) {
         return double.infinity;
       } else {
         return 556;
       }
     } else {
-      if (_responsiveUtils.isLandscapeMobile(context) ||
-          _responsiveUtils.isPortraitMobile(context)) {
+      if (controller.responsiveUtils.isLandscapeMobile(context) ||
+          controller.responsiveUtils.isPortraitMobile(context)) {
         return double.infinity;
       } else {
         return 556;
@@ -197,21 +195,21 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   double _getHeightView(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      if (_responsiveUtils.isMobile(context)) {
+      if (controller.responsiveUtils.isMobile(context)) {
         return double.infinity;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return _maxHeight;
         } else {
           return double.infinity;
         }
       }
     } else {
-      if (_responsiveUtils.isLandscapeMobile(context) ||
-          _responsiveUtils.isPortraitMobile(context)) {
+      if (controller.responsiveUtils.isLandscapeMobile(context) ||
+          controller.responsiveUtils.isPortraitMobile(context)) {
         return double.infinity;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return _maxHeight;
         } else {
           return double.infinity;
@@ -223,21 +221,21 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   EdgeInsets _getMarginView(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      if (_responsiveUtils.isMobile(context)) {
+      if (controller.responsiveUtils.isMobile(context)) {
         return EdgeInsets.zero;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return const EdgeInsets.symmetric(vertical: 12);
         } else {
           return const EdgeInsets.symmetric(vertical: 50);
         }
       }
     } else {
-      if (_responsiveUtils.isLandscapeMobile(context) ||
-          _responsiveUtils.isPortraitMobile(context)) {
+      if (controller.responsiveUtils.isLandscapeMobile(context) ||
+          controller.responsiveUtils.isPortraitMobile(context)) {
         return EdgeInsets.zero;
       } else {
-        if (_responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
+        if (controller.responsiveUtils.getSizeScreenHeight(context) > _maxHeight) {
           return const EdgeInsets.symmetric(vertical: 12);
         } else {
           return const EdgeInsets.symmetric(vertical: 50);
@@ -247,9 +245,9 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
   }
 
   BorderRadius _getRadiusView(BuildContext context) {
-    if (PlatformInfo.isMobile && _responsiveUtils.isLandscapeMobile(context)) {
+    if (PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context)) {
       return BorderRadius.zero;
-    } else if (_responsiveUtils.isMobile(context)) {
+    } else if (controller.responsiveUtils.isMobile(context)) {
       return const BorderRadius.only(
           topRight: Radius.circular(16),
           topLeft: Radius.circular(16));

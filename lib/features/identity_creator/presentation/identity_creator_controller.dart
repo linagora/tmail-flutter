@@ -1,4 +1,3 @@
-import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -40,16 +39,12 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/iden
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:uuid/uuid.dart';
 
 class IdentityCreatorController extends BaseController {
 
   final VerifyNameInteractor _verifyNameInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final IdentityUtils _identityUtils;
-
-  final _uuid = Get.find<Uuid>();
-  final _appToast = Get.find<AppToast>();
 
   final noneEmailAddress = EmailAddress(null, 'None');
   final listEmailAddressDefault = <EmailAddress>[].obs;
@@ -343,7 +338,7 @@ class IdentityCreatorController extends BaseController {
       htmlSignature: Signature(signatureHtmlText ?? ''),
       sortOrder: sortOrder);
 
-    final generateCreateId = Id(_uuid.v1());
+    final generateCreateId = Id(uuid.v1());
 
     if (actionType.value == IdentityActionType.create) {
       final identityRequest = CreateNewIdentityRequest(
@@ -486,7 +481,7 @@ class IdentityCreatorController extends BaseController {
         final platformFile = filePickerResult!.files.first;
         _insertInlineImage(context, platformFile, maxWidth: maxWidth);
       } else {
-        _appToast.showToastErrorMessage(
+        appToast.showToastErrorMessage(
           context,
           AppLocalizations.of(context).cannotSelectThisImage
         );
@@ -505,7 +500,7 @@ class IdentityCreatorController extends BaseController {
     {int? maxWidth}
   ) {
     if (_isExceedMaxSizeInlineImage(platformFile.size)) {
-      _appToast.showToastErrorMessage(
+      appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).pleaseChooseAnImageSizeCorrectly(
           IdentityCreatorConstants.maxKBSizeIdentityInlineImage
