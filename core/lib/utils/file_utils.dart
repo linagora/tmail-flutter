@@ -98,13 +98,15 @@ class FileUtils {
     return File(internalStorageDirPath).exists();
   }
 
-  void removeFolder(String folderName) async {
+  Future<void> removeFolder(String folderName) async {
     try {
       String folderPath = (await getApplicationDocumentsDirectory()).absolute.path;
       folderPath = '$folderPath/$folderName';
       log('FileUtils::removeFolder():folderPath: $folderPath');
       final dir = Directory(folderPath);
-      dir.deleteSync(recursive: true);
+      if (await dir.exists()) {
+       await dir.delete(recursive: true);
+      }
     } catch (e) {
       logError('FileUtils::removeFolder():EXCEPTION: $e');
     }
