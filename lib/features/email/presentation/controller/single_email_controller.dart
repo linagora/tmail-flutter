@@ -58,6 +58,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
@@ -113,6 +115,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final calendarEvent = Rxn<CalendarEvent>();
   final eventActions = <EventAction>[].obs;
   final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final emailUnsubscribe = Rxn<EmailUnsubscribe>();
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -472,8 +475,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           emailId: currentEmail!.id!,
           createdTime: currentEmail?.receivedAt?.value ?? DateTime.now(),
           attachments: success.attachments,
-          headers: currentEmail?.emailHeader?.toSet(),
-          keywords: currentEmail?.keywords,
+          headers: success.emailCurrent?.headers,
+          keywords: success.emailCurrent?.keywords,
           htmlEmailContent: success.htmlEmailContent,
           messageId: success.emailCurrent?.messageId,
           references: success.emailCurrent?.references,
@@ -491,7 +494,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (isShowMessageReadReceipt) {
         _handleReadReceipt();
       }
+
+      if (success.emailCurrent?.hasListUnsubscribe == true) {
+        _handleUnsubscribe(success.emailCurrent!.listUnsubscribe);
+      } else {
+        emailUnsubscribe.value = null;
+      }
     }
+  }
+
+  void _handleUnsubscribe(String listUnsubscribe) {
+    emailUnsubscribe.value = EmailUtils.parsingUnsubscribe(listUnsubscribe);
   }
 
   void _handleReadReceipt() {
@@ -514,6 +527,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     attachments.clear();
     calendarEvent.value = null;
     eventActions.clear();
+    emailUnsubscribe.value = null;
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
