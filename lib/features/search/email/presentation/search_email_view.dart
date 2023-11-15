@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
@@ -23,6 +24,8 @@ import 'package:tmail_ui_user/features/search/email/presentation/utils/search_em
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/app_bar_selection_mode.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_action_tile_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_action_tile_widget.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
@@ -162,6 +165,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               QuickSearchFilter.last7Days
             ].map((filter) => _buildQuickSearchFilterButton(context, filter)),
             _buildSearchFilterByMailboxButton(context),
+            _buildQuickSearchFilterButton(context, QuickSearchFilter.sortBy)
           ],
       ),
     );
@@ -174,20 +178,30 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         padding: const EdgeInsets.only(right: 8),
         child: InkWell(
           onTap: () {
-            if (filter != QuickSearchFilter.last7Days) {
+            if (filter == QuickSearchFilter.hasAttachment) {
               controller.selectQuickSearchFilter(context, filter);
-            } else if (controller.responsiveUtils.isMobile(context)) {
-              controller.openContextMenuAction(
+            } else if (_responsiveUtils.isMobile(context)) {
+              if (filter == QuickSearchFilter.last7Days) {
+                controller.openContextMenuAction(
                   context,
                   _emailReceiveTimeCupertinoActionTile(
                       context,
                       controller.emailReceiveTimeType.value,
                       (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(context, receiveTime)));
+              } else {
+                controller.openContextMenuAction(
+                context,
+                _emailSortOrderCupertinoActionTitle(
+                  context,
+                  controller.emailSortOrderType.value,
+                  controller.selectSortOrderQuickSearchFilter
+                )
+              );
+              }
             }
           },
           onTapDown: (detail) {
-            if (filter == QuickSearchFilter.last7Days &&
-                !controller.responsiveUtils.isMobile(context)) {
+            if (!_responsiveUtils.isMobile(context)) {
               final screenSize = MediaQuery.of(context).size;
               final offset = detail.globalPosition;
               final position = RelativeRect.fromLTRB(
@@ -196,13 +210,25 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 screenSize.width - offset.dx,
                 screenSize.height - offset.dy,
               );
-              controller.openPopupMenuAction(
+              if (filter == QuickSearchFilter.last7Days) {
+                controller.openPopupMenuAction(
                   context,
                   position,
                   _popupMenuEmailReceiveTimeType(
                       context,
                       controller.emailReceiveTimeType.value,
                       (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(context, receiveTime)));
+              } else if (filter == QuickSearchFilter.sortBy) {
+                controller.openPopupMenuAction(
+                  context,
+                  position,
+                  _popupMenuEmailSortOrderType(
+                    context,
+                    controller.emailSortOrderType.value,
+                    controller.selectSortOrderQuickSearchFilter
+                  )
+                );
+              }
             }
           },
           borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -223,14 +249,15 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     context,
                     receiveTimeType: controller.emailReceiveTimeType.value,
                     startDate: controller.simpleSearchFilter.value.startDate?.value.toLocal(),
-                    endDate: controller.simpleSearchFilter.value.endDate?.value.toLocal()
+                    endDate: controller.simpleSearchFilter.value.endDate?.value.toLocal(),
+                    sortOrderType: controller.emailSortOrderType.value
                   ),
                   maxLines: 1,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   softWrap: CommonTextStyle.defaultSoftWrap,
                   style: filter.getTextStyle(isFilterSelected: filterSelected),
                 ),
-                if (filter == QuickSearchFilter.last7Days)
+                if (filter == QuickSearchFilter.last7Days || filter == QuickSearchFilter.sortBy)
                   ... [
                     const SizedBox(width: 4),
                     SvgPicture.asset(
@@ -287,6 +314,53 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             ..onActionClick((timeType) => onCallBack?.call(timeType)))
             .build())
         .toList();
+  }
+
+  List<PopupMenuEntry> _popupMenuEmailSortOrderType(
+    BuildContext context,
+    EmailSortOrderType? sortTypeSelected,
+    Function(BuildContext, EmailSortOrderType)? onCallBack
+  ) {
+    return EmailSortOrderType.values
+      .map((sortType) => PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: EmailSortByActionTitleWidget(
+          sortType: sortType,
+          imagePaths: _imagePaths,
+          onSortOrderSelected: onCallBack,
+          sortTypeSelected: sortTypeSelected,
+        ),
+      )).toList();
+  }
+
+  List<Widget> _emailSortOrderCupertinoActionTitle(
+    BuildContext context,
+    EmailSortOrderType? sortOrderSelected,
+    Function(BuildContext context, EmailSortOrderType)? onCallBack,
+  ) {
+    return EmailSortOrderType.values
+      .map(
+        (sortType) => (
+          EmailSortByCupertinoActionSheetActionBuilder(
+            sortType.getTitle(context),
+            sortType,
+            sortTypeCurrent: sortOrderSelected,
+            iconLeftPadding: _responsiveUtils.isMobile(context)
+              ? const EdgeInsets.only(left: 12, right: 16)
+              : const EdgeInsets.only(right: 12),
+            iconRightPadding: _responsiveUtils.isMobile(context)
+              ? const EdgeInsets.only(right: 12)
+              : EdgeInsets.zero,
+            actionSelected: SvgPicture.asset(
+              _imagePaths.icFilterSelected,
+              width: 20,
+              height: 20,
+              fit: BoxFit.fill
+            )
+          )
+          ..onActionClick((sortType) => onCallBack?.call(context, sortType))
+        ).build()
+      ).toList();
   }
 
   Widget _buildShowAllResultSearchButton(BuildContext context, String textSearch) {
