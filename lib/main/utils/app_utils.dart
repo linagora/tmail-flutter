@@ -25,8 +25,8 @@ class AppUtils {
     );
   }
 
-  static Future<void> launchLink(String url, {bool isNewTab = true}) async {
-    await launchUrl(
+  static Future<bool> launchLink(String url, {bool isNewTab = true}) async {
+    return await launchUrl(
       Uri.parse(url),
       webOnlyWindowName: isNewTab ? '_blank' : '_self',
       mode: LaunchMode.externalApplication

@@ -3645,4 +3645,11 @@ class AppLocalizations {
       name: 'unsubscribeMailDialogMessage',
     );
   }
+
+  String get unsubscribedFromThisMailingList {
+    return Intl.message(
+      'Unsubscribed from this mailing list',
+      name: 'unsubscribedFromThisMailingList',
+    );
+  }
 }
