@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/email_avatar_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_receiver_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/received_time_builder.dart';
@@ -14,17 +14,19 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class InformationSenderAndReceiverBuilder extends StatelessWidget {
 
-  final SingleEmailController controller;
   final PresentationEmail emailSelected;
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
+  final EmailUnsubscribe? emailUnsubscribe;
+  final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
-    required this.controller,
     required this.emailSelected,
     required this.responsiveUtils,
-    required this.imagePaths
+    required this.imagePaths,
+    required this.emailUnsubscribe,
+    this.openEmailAddressDetailAction,
   }) : super(key: key);
 
   @override
@@ -54,10 +56,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                               transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
                               child: EmailSenderBuilder(
                                 emailAddress: emailSelected.from!.first,
-                                openEmailAddressDetailAction: controller.openEmailAddressDialog,
+                                openEmailAddressDetailAction: openEmailAddressDetailAction,
                               )
                             )),
-                            if (!responsiveUtils.isPortraitMobile(context))
+                            if (emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
                               TMailButtonWidget.fromText(
                                 text: AppLocalizations.of(context).unsubscribe,
                                 textStyle: const TextStyle(
@@ -81,7 +83,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                     EmailReceiverWidget(
                       emailSelected: emailSelected,
                       maxWidth: constraints.maxWidth,
-                      onPreviewEmailAddressActionCallback: controller.openEmailAddressDialog,
+                      openEmailAddressDetailAction: openEmailAddressDetailAction,
                     )
                 ]
               ),

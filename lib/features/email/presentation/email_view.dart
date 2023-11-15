@@ -298,12 +298,13 @@ class EmailView extends GetWidget<SingleEmailController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         EmailSubjectWidget(presentationEmail: presentationEmail),
-        InformationSenderAndReceiverBuilder(
-          controller: controller,
+        Obx(() => InformationSenderAndReceiverBuilder(
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
           responsiveUtils: controller.responsiveUtils,
-        ),
+          emailUnsubscribe: controller.emailUnsubscribe.value,
+          openEmailAddressDetailAction: controller.openEmailAddressDialog,
+        )),
         Obx(() {
           final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
           if (attachments.isNotEmpty) {
@@ -429,7 +430,8 @@ class EmailView extends GetWidget<SingleEmailController> {
         EmailActionType.moveToSpam,
       if (presentationEmail.from?.isNotEmpty == true)
         EmailActionType.createRule,
-      EmailActionType.unsubscribe
+      if (controller.emailUnsubscribe.value != null)
+        EmailActionType.unsubscribe
     ];
 
     if (position == null) {

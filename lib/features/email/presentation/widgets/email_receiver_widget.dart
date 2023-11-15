@@ -15,22 +15,21 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
-
-typedef OnPreviewEmailAddressActionCallback = Function(BuildContext context, EmailAddress emailAddress);
 
 class EmailReceiverWidget extends StatefulWidget {
 
   final PresentationEmail emailSelected;
   final double maxWidth;
-  final OnPreviewEmailAddressActionCallback? onPreviewEmailAddressActionCallback;
+  final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
 
   const EmailReceiverWidget({
     Key? key,
     required this.emailSelected,
     this.maxWidth = 200,
-    this.onPreviewEmailAddressActionCallback,
+    this.openEmailAddressDetailAction,
   }) : super(key: key);
 
   @override
@@ -218,7 +217,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         label: lastEmailAddress == emailAddress
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
-        onTap: () => widget.onPreviewEmailAddressActionCallback?.call(context, emailAddress),
+        onTap: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
         onLongPress: () {
           AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
         },
