@@ -3631,4 +3631,18 @@ class AppLocalizations {
       name: 'unsubscribe',
     );
   }
+
+  String get unsubscribeMail {
+    return Intl.message(
+      'Unsubscribe mail',
+      name: 'unsubscribeMail',
+    );
+  }
+
+  String get unsubscribeMailDialogMessage {
+    return Intl.message(
+      'Are you sure you\'d like to stop receiving similar messages from',
+      name: 'unsubscribeMailDialogMessage',
+    );
+  }
 }
