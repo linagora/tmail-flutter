@@ -180,7 +180,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           onTap: () {
             if (filter == QuickSearchFilter.hasAttachment) {
               controller.selectQuickSearchFilter(context, filter);
-            } else if (_responsiveUtils.isMobile(context)) {
+            } else if (controller.responsiveUtils.isMobile(context)) {
               if (filter == QuickSearchFilter.last7Days) {
                 controller.openContextMenuAction(
                   context,
@@ -201,7 +201,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             }
           },
           onTapDown: (detail) {
-            if (!_responsiveUtils.isMobile(context)) {
+            if (!controller.responsiveUtils.isMobile(context)) {
               final screenSize = MediaQuery.of(context).size;
               final offset = detail.globalPosition;
               final position = RelativeRect.fromLTRB(
@@ -326,7 +326,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         padding: EdgeInsets.zero,
         child: EmailSortByActionTitleWidget(
           sortType: sortType,
-          imagePaths: _imagePaths,
+          imagePaths: controller.imagePaths,
           onSortOrderSelected: onCallBack,
           sortTypeSelected: sortTypeSelected,
         ),
@@ -345,14 +345,14 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             sortType.getTitle(context),
             sortType,
             sortTypeCurrent: sortOrderSelected,
-            iconLeftPadding: _responsiveUtils.isMobile(context)
-              ? const EdgeInsets.only(left: 12, right: 16)
-              : const EdgeInsets.only(right: 12),
-            iconRightPadding: _responsiveUtils.isMobile(context)
-              ? const EdgeInsets.only(right: 12)
-              : EdgeInsets.zero,
+            iconLeftPadding: controller.responsiveUtils.isMobile(context)
+              ? const EdgeInsetsDirectional.only(start: 12, end: 16)
+              : const EdgeInsetsDirectional.only(start: 12),
+            iconRightPadding: controller.responsiveUtils.isMobile(context)
+              ? const EdgeInsetsDirectional.only(end: 12)
+              : EdgeInsetsDirectional.zero,
             actionSelected: SvgPicture.asset(
-              _imagePaths.icFilterSelected,
+              controller.imagePaths.icFilterSelected,
               width: 20,
               height: 20,
               fit: BoxFit.fill
