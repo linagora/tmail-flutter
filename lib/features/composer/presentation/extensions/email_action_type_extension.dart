@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/html_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -115,6 +116,40 @@ extension EmailActionTypeExtension on EmailActionType {
         return headerQuoted;
       default:
         return null;
+    }
+  }
+
+  String getIcon(ImagePaths imagePaths) {
+    switch(this) {
+      case EmailActionType.markAsUnread:
+        return imagePaths.icUnreadEmail;
+      case EmailActionType.unSpam:
+        return imagePaths.icNotSpam;
+      case EmailActionType.moveToSpam:
+        return imagePaths.icSpam;
+      case EmailActionType.createRule:
+        return imagePaths.icQuickCreatingRule;
+      case EmailActionType.unsubscribe:
+        return imagePaths.icUnsubscribe;
+      default:
+        return '';
+    }
+  }
+
+  String getTitle(BuildContext context) {
+    switch(this) {
+      case EmailActionType.markAsUnread:
+        return AppLocalizations.of(context).mark_as_unread;
+      case EmailActionType.unSpam:
+        return AppLocalizations.of(context).remove_from_spam;
+      case EmailActionType.moveToSpam:
+        return AppLocalizations.of(context).mark_as_spam;
+      case EmailActionType.createRule:
+        return AppLocalizations.of(context).quickCreatingRule;
+      case EmailActionType.unsubscribe:
+        return AppLocalizations.of(context).unsubscribe;
+      default:
+        return '';
     }
   }
 }
