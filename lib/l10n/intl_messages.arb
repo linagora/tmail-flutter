@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-11-16T00:13:28.374001",
+  "@@last_modified": "2023-11-16T00:29:04.650547",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3508,6 +3508,12 @@
   },
   "unsubscribeMailDialogMessage": "Are you sure you'd like to stop receiving similar messages from",
   "@unsubscribeMailDialogMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribedFromThisMailingList": "Unsubscribed from this mailing list",
+  "@unsubscribedFromThisMailingList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -1404,7 +1404,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       context,
       '',
       AppLocalizations.of(context).unsubscribe,
-      onConfirmAction: () => {},
+      onConfirmAction: () {
+        if (emailUnsubscribe.value?.httpLinks.isNotEmpty == true) {
+          _handleUnsubscribeMailByHttpsLink(context, emailUnsubscribe.value!.httpLinks);
+        }
+      },
       showAsBottomSheet: true,
       title: AppLocalizations.of(context).unsubscribeMail,
       icon: SvgPicture.asset(imagePaths.icEmpty),
@@ -1426,5 +1430,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         const TextSpan(text: ' ?'),
       ]
     );
+  }
+
+  void _handleUnsubscribeMailByHttpsLink(BuildContext context, List<String> httpLinks) async {
+    log('SingleEmailController::_handleUnsubscribeMailByHttpsLink:httpLinks: $httpLinks');
+    final result = await AppUtils.launchLink(httpLinks.first);
+    if (result && context.mounted) {
+      _appToast.showToastSuccessMessage(
+        context,
+        AppLocalizations.of(context).unsubscribedFromThisMailingList);
+    }
   }
 }
