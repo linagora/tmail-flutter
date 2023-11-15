@@ -121,6 +121,7 @@ class LoginView extends BaseLoginView {
         textInputAction: TextInputAction.next,
         keyboardType: TextInputType.url,
         onTextSubmitted: (value) => controller.handleNextInUrlInputFormPress(),
+        onTextChange: controller.formatUrl,
         decoration: (LoginInputDecorationBuilder()
             ..setLabelText(AppLocalizations.of(context).prefix_https)
             ..setPrefixText(AppLocalizations.of(context).prefix_https))
