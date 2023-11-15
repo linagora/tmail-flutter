@@ -1,6 +1,7 @@
-
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
@@ -9,6 +10,7 @@ import 'package:tmail_ui_user/features/email/presentation/controller/single_emai
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_receiver_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/received_time_builder.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class InformationSenderAndReceiverBuilder extends StatelessWidget {
 
@@ -45,15 +47,35 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                 children: [
                   if (emailSelected.from?.isNotEmpty == true)
                     Row(children: [
-                      Expanded(child: Transform(
-                        transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
-                        child: EmailSenderBuilder(
-                          emailAddress: emailSelected.from!.first,
-                          openEmailAddressDetailAction: controller.openEmailAddressDialog,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Flexible(child: Transform(
+                              transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
+                              child: EmailSenderBuilder(
+                                emailAddress: emailSelected.from!.first,
+                                openEmailAddressDetailAction: controller.openEmailAddressDialog,
+                              )
+                            )),
+                            if (!responsiveUtils.isPortraitMobile(context))
+                              TMailButtonWidget.fromText(
+                                text: AppLocalizations.of(context).unsubscribe,
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                  color: AppColor.colorTextBody,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+                                backgroundColor: Colors.transparent,
+                              ),
+                          ],
                         )
-                      )),
-                      const SizedBox(width: 12),
-                      ReceivedTimeBuilder(emailSelected),
+                      ),
+                      ReceivedTimeBuilder(
+                        emailSelected: emailSelected,
+                        margin: const EdgeInsetsDirectional.only(start: 16),
+                      ),
                     ]),
                   if (emailSelected.numberOfAllEmailAddress() > 0)
                     EmailReceiverWidget(

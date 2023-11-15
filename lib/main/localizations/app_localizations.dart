@@ -3624,4 +3624,11 @@ class AppLocalizations {
       name: 'enterYourPasswordToSignIn'
     );
   }
+
+  String get unsubscribe {
+    return Intl.message(
+      'Unsubscribe',
+      name: 'unsubscribe',
+    );
+  }
 }
