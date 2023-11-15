@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 
 class SimpleSearchFilter with EquatableMixin {
   final Set<String> from;
@@ -24,6 +25,7 @@ class SimpleSearchFilter with EquatableMixin {
   final UTCDate? before;
   final UTCDate? startDate;
   final UTCDate? endDate;
+  final Set<Comparator>? sortOrder;
 
   SimpleSearchFilter({
     Set<String>? from,
@@ -34,7 +36,8 @@ class SimpleSearchFilter with EquatableMixin {
     this.before,
     this.mailbox,
     this.startDate,
-    this.endDate
+    this.endDate,
+    this.sortOrder,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         hasAttachment = hasAttachment ?? false,
@@ -49,7 +52,8 @@ class SimpleSearchFilter with EquatableMixin {
     Option<bool>? hasAttachmentOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
-    Option<UTCDate>? endDateOption
+    Option<UTCDate>? endDateOption,
+    Option<Set<Comparator>>? sortOrderOption,
   }) {
     return SimpleSearchFilter(
       from: _getOptionParam(fromOption, from),
@@ -60,7 +64,8 @@ class SimpleSearchFilter with EquatableMixin {
       hasAttachment: _getOptionParam(hasAttachmentOption, hasAttachment),
       before: _getOptionParam(beforeOption, before),
       startDate: _getOptionParam(startDateOption, startDate),
-      endDate: _getOptionParam(endDateOption, endDate)
+      endDate: _getOptionParam(endDateOption, endDate),
+      sortOrder: _getOptionParam(sortOrderOption, sortOrder)
     );
   }
 
@@ -111,7 +116,8 @@ class SimpleSearchFilter with EquatableMixin {
     hasAttachment,
     before,
     startDate,
-    endDate
+    endDate,
+    sortOrder
   ];
 }
 
