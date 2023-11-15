@@ -10,8 +10,8 @@ class EmailActionCupertinoActionSheetActionBuilder extends CupertinoActionSheetA
   final PresentationEmail presentationEmail;
   final SvgPicture? actionSelected;
   final Color? bgColor;
-  final EdgeInsets? iconLeftPadding;
-  final EdgeInsets? iconRightPadding;
+  final EdgeInsetsGeometry? iconLeftPadding;
+  final EdgeInsetsGeometry? iconRightPadding;
 
   EmailActionCupertinoActionSheetActionBuilder(
       Key key,

@@ -206,6 +206,7 @@ class ImagePaths {
   String get icDropZoneIcon => _getImagePath('ic_drop_zone_icon.svg');
   String get icArrowUpOutline => _getImagePath('ic_arrow_up_outline.svg');
   String get icFilterSB => _getImagePath('ic_filter_sb.svg');
+  String get icUnsubscribe => _getImagePath('ic_unsubscribe.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
