@@ -968,6 +968,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         popBack();
         unSpam(context, presentationEmail);
         break;
+      case EmailActionType.createRule:
+        quickCreatingRule(context, presentationEmail.from!.first);
+        break;
       default:
         break;
     }
