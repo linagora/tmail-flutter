@@ -440,6 +440,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (isShowMessageReadReceipt) {
         _handleReadReceipt();
       }
+
+      if (success.emailCurrent?.hasListUnsubscribe == true) {
+        _handleUnsubscribe(success.emailCurrent!.listUnsubscribe);
+      } else {
+        emailUnsubscribe.value = null;
+      }
     }
   }
 
@@ -956,7 +962,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
     switch(actionType) {
       case EmailActionType.markAsUnread:
-        popBack();
         markAsEmailRead(presentationEmail, ReadActions.markAsUnread, MarkReadAction.tap);
         break;
       case EmailActionType.markAsStarred:
@@ -975,15 +980,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         deleteEmailPermanently(context, presentationEmail);
         break;
       case EmailActionType.moveToSpam:
-        popBack();
         moveToSpam(context, presentationEmail);
         break;
       case EmailActionType.unSpam:
-        popBack();
         unSpam(context, presentationEmail);
         break;
       case EmailActionType.createRule:
         quickCreatingRule(context, presentationEmail.from!.first);
+        break;
+      case EmailActionType.unsubscribe:
+        _unsubscribeEmail(context, presentationEmail);
         break;
       default:
         break;
@@ -1391,5 +1397,34 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           )
       );
     }
+  }
+
+  void _unsubscribeEmail(BuildContext context, PresentationEmail presentationEmail) {
+    showConfirmDialogAction(
+      context,
+      '',
+      AppLocalizations.of(context).unsubscribe,
+      onConfirmAction: () => {},
+      showAsBottomSheet: true,
+      title: AppLocalizations.of(context).unsubscribeMail,
+      icon: SvgPicture.asset(imagePaths.icEmpty),
+      messageStyle: const TextStyle(
+        color: AppColor.messageDialogColor,
+        fontSize: 14,
+        fontWeight: FontWeight.w500
+      ),
+      listTextSpan: [
+        TextSpan(text: AppLocalizations.of(context).unsubscribeMailDialogMessage),
+        TextSpan(
+          text: ' ${presentationEmail.getSenderName()}',
+          style: const TextStyle(
+            color: AppColor.messageDialogHighlightColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w500
+          ),
+        ),
+        const TextSpan(text: ' ?'),
+      ]
+    );
   }
 }
