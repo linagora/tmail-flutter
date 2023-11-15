@@ -11,8 +11,8 @@ class EmailSortByCupertinoActionSheetActionBuilder extends CupertinoActionSheetN
   final EmailSortOrderType? sortTypeCurrent;
   final SvgPicture? actionSelected;
   final Color? bgColor;
-  final EdgeInsets? iconLeftPadding;
-  final EdgeInsets? iconRightPadding;
+  final EdgeInsetsDirectional? iconLeftPadding;
+  final EdgeInsetsDirectional? iconRightPadding;
 
   EmailSortByCupertinoActionSheetActionBuilder(
     String actionName,
