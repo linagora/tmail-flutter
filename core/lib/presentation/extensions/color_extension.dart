@@ -229,6 +229,8 @@ extension AppColor on Color {
   static const colorScrollbarThumbColor = Color(0xFFD8E1EB);
   static const colorDropDownTitleComposer = Color(0xFF79747E);
   static const colorDropDownItemTitleComposer = Color(0xFF0A0A0A);
+  static const messageDialogColor = Color(0xFF8C9CAF);
+  static const messageDialogHighlightColor = Color(0xFF37383A);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

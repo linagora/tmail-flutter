@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/information_se
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmailView extends GetWidget<SingleEmailController> {
@@ -304,6 +305,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           responsiveUtils: controller.responsiveUtils,
           emailUnsubscribe: controller.emailUnsubscribe.value,
           openEmailAddressDetailAction: controller.openEmailAddressDialog,
+          onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
         )),
         Obx(() {
           final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
@@ -472,7 +474,10 @@ class EmailView extends GetWidget<SingleEmailController> {
           ? const EdgeInsetsDirectional.only(end: 12)
           : EdgeInsets.zero
       )
-      ..onActionClick((presentationEmail) => controller.handleEmailAction(context, presentationEmail, action))).build();
+      ..onActionClick((presentationEmail) {
+        popBack();
+        controller.handleEmailAction(context, presentationEmail, action);
+      })).build();
     }).toList();
   }
 
@@ -483,6 +488,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   ) {
     return actionTypes.map((action) {
       return PopupMenuItem(
+        key: Key('${action.name}_action'),
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           action.getIcon(controller.imagePaths),
@@ -494,7 +500,10 @@ class EmailView extends GetWidget<SingleEmailController> {
             fontSize: 16,
             color: Colors.black
           ),
-          onCallbackAction: () => controller.handleEmailAction(context, presentationEmail, action)
+          onCallbackAction: () {
+            popBack();
+            controller.handleEmailAction(context, presentationEmail, action);
+          }
         )
       );
     }).toList();
