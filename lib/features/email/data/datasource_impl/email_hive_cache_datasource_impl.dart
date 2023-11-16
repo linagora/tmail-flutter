@@ -287,4 +287,9 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
       return sendingEmailCache.toSendingEmail();
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
+    throw UnimplementedError();
+  }
 }
