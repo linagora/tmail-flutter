@@ -1407,6 +1407,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       onConfirmAction: () {
         if (emailUnsubscribe.value?.httpLinks.isNotEmpty == true) {
           _handleUnsubscribeMailByHttpsLink(context, emailUnsubscribe.value!.httpLinks);
+        } else if (emailUnsubscribe.value?.mailtoLinks.isNotEmpty == true) {
+          _handleUnsubscribeMailByMailtoLink(context, emailUnsubscribe.value!.mailtoLinks);
         }
       },
       showAsBottomSheet: true,
@@ -1440,5 +1442,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         context,
         AppLocalizations.of(context).unsubscribedFromThisMailingList);
     }
+  }
+
+  void _handleUnsubscribeMailByMailtoLink(BuildContext context, List<String> mailtoLinks) {
+    log('SingleEmailController::_handleUnsubscribeMailByMailtoLink:mailtoLinks: $mailtoLinks');
+    final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(mailtoLinks.first);
+    mailboxDashBoardController.goToComposer(
+      ComposerArguments.fromUnsubscribeMailtoLink(
+        emailAddress: navigationRouter.emailAddress,
+        subject: navigationRouter.subject,
+        body: navigationRouter.body
+      )
+    );
   }
 }
