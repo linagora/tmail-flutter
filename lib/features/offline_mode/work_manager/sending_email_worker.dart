@@ -6,6 +6,8 @@ import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
@@ -13,6 +15,8 @@ import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
@@ -43,6 +47,7 @@ class SendingEmailWorker extends Worker {
   GetSessionInteractor? _getSessionInteractor;
   SendingQueueIsolateManager? _sendingQueueIsolateManager;
   SendingEmailCacheManager? _sendingEmailCacheManager;
+  UnsubscribeEmailInteractor? _unsubscribeEmailInteractor;
 
   late Completer<bool> _completer;
   late SendingEmail _sendingEmail;
@@ -97,6 +102,8 @@ class SendingEmailWorker extends Worker {
         failure is GetStoredTokenOidcFailure ||
         failure is GetCredentialFailure) {
       _handleWorkerTaskToRetry();
+    } else if (failure is UnsubscribeEmailFailure) {
+      _handleWorkerTaskSuccess();
     }
   }
 
@@ -111,6 +118,8 @@ class SendingEmailWorker extends Worker {
       _handleGetAccountByBasicAuthSuccess(success);
     } else if (success is SendEmailSuccess) {
       _handleSendEmailSuccess(success);
+    } else if (success is UnsubscribeEmailSuccess) {
+      _handleWorkerTaskSuccess();
     }
   }
 
@@ -128,6 +137,7 @@ class SendingEmailWorker extends Worker {
     _sendEmailInteractor = getBinding<SendEmailInteractor>();
     _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
     _sendingEmailCacheManager = getBinding<SendingEmailCacheManager>();
+    _unsubscribeEmailInteractor = getBinding<UnsubscribeEmailInteractor>();
   }
 
   void _updatingSendingStateToMainUI({String? sendingId, SendingState? sendingState}) {
@@ -204,7 +214,12 @@ class SendingEmailWorker extends Worker {
   }
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {
-    _handleWorkerTaskSuccess();
+    if (success.emailRequest.emailActionType == EmailActionType.composeFromUnsubscribeMailtoLink &&
+        success.emailRequest.previousEmailId != null) {
+      _unsubscribeMail(success.emailRequest.previousEmailId!);
+    } else {
+      _handleWorkerTaskSuccess();
+    }
   }
 
   void _handleSendEmailFailure(SendEmailFailure failure) {
@@ -246,4 +261,21 @@ class SendingEmailWorker extends Worker {
       UserName? userName
     }
   ) => TupleKey(sendingId, sendingState.name, accountId?.asString, userName?.value).toString();
+
+  void _unsubscribeMail(EmailId emailId) {
+    if (_unsubscribeEmailInteractor != null &&
+        _currentSession != null &&
+        _currentAccountId != null
+    ) {
+      consumeState(
+        _unsubscribeEmailInteractor!.execute(
+          _currentSession!,
+          _currentAccountId!,
+          emailId
+        )
+      );
+    } else {
+      _handleWorkerTaskSuccess();
+    }
+  }
 }
