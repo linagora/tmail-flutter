@@ -23,7 +23,8 @@ extension EmailRequestExtension on EmailRequest {
       identityId: identityId,
       mailboxNameRequest: mailboxRequest?.newName,
       creationIdRequest: mailboxRequest?.creationId,
-      sendingState: newState
+      sendingState: newState,
+      previousEmailId: previousEmailId
     );
   }
 }
