@@ -49,11 +49,13 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_s
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -174,6 +176,7 @@ class MailboxDashBoardController extends ReloadableController {
   final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
   final DeleteSendingEmailInteractor _deleteSendingEmailInteractor;
+  final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -251,6 +254,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._saveEmailAsDraftsInteractor,
     this._updateEmailDraftsInteractor,
     this._deleteSendingEmailInteractor,
+    this._unsubscribeEmailInteractor,
   );
 
   @override
@@ -343,6 +347,8 @@ class MailboxDashBoardController extends ReloadableController {
       _markAsReadEmailSuccess(success);
     } else if (success is DeleteSendingEmailSuccess) {
       getAllSendingEmails();
+    } else if (success is UnsubscribeEmailSuccess) {
+      _handleUnsubscribeMailSuccess(success.newEmail);
     }
   }
 
@@ -2123,14 +2129,14 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {
     if (PlatformInfo.isIOS &&
-        success.storedSendingId != null &&
+        success.emailRequest.storedSendingId != null &&
         accountId.value != null &&
         sessionCurrent != null
     ) {
       consumeState(_deleteSendingEmailInteractor.execute(
         accountId.value!,
         sessionCurrent!.username,
-        success.storedSendingId!
+        success.emailRequest.storedSendingId!
       ));
     }
     if (currentOverlayContext != null && currentContext != null) {
@@ -2139,6 +2145,11 @@ class MailboxDashBoardController extends ReloadableController {
         AppLocalizations.of(currentContext!).message_has_been_sent_successfully,
         leadingSVGIcon: imagePaths.icSendSuccessToast
       );
+    }
+
+    if (success.emailRequest.emailActionType == EmailActionType.composeFromUnsubscribeMailtoLink &&
+        success.emailRequest.previousEmailId != null) {
+      unsubscribeMail(success.emailRequest.previousEmailId!);
     }
   }
 
@@ -2190,6 +2201,27 @@ class MailboxDashBoardController extends ReloadableController {
     }
     _unSelectedMailbox();
     dispatchAction(SearchEmailByFromFieldsAction(emailAddress));
+  }
+
+  void unsubscribeMail(EmailId emailId) {
+    if (accountId.value != null && sessionCurrent != null) {
+      consumeState(
+        _unsubscribeEmailInteractor.execute(
+          sessionCurrent!,
+          accountId.value!,
+          emailId
+        )
+      );
+    }
+  }
+
+  void _handleUnsubscribeMailSuccess(Email email) {
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).unsubscribedFromThisMailingList);
+    }
+    setSelectedEmail(email.toPresentationEmail());
   }
 
   @override
