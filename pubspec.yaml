@@ -78,7 +78,7 @@ dependencies:
 
   flutter_date_range_picker:
     git:
-      url: https://github.com/linagora/flutter-date-range-picker.git
+      url: https://github.com/aryan-more/flutter-date-range-picker
       ref: master
 
   super_tag_editor:
@@ -87,13 +87,13 @@ dependencies:
       ref: master
 
   ### Dependencies from pub.dev ###
-  cupertino_icons: 1.0.5
+  cupertino_icons: 1.0.6
 
   get: 4.6.5
 
   intl_generator: 0.4.1
 
-  flutter_svg: 2.0.2
+  flutter_svg: 2.0.9
 
   dio: 5.0.0
 
@@ -111,7 +111,7 @@ dependencies:
 
   http_parser: 4.0.2
 
-  collection: 1.17.1
+  collection: 1.17.2
 
   filesize: 2.0.1
 
@@ -121,15 +121,15 @@ dependencies:
 
   external_path: 1.0.3
 
-  path_provider: 2.0.13
+  path_provider: 2.1.1
 
   device_info_plus: 8.1.0
 
   permission_handler: 10.2.0
 
-  share_plus: 6.3.1
+  share_plus: 7.2.1
 
-  file_picker: 5.2.5
+  file_picker: 5.3.1
 
   hive: 2.2.3
 
@@ -141,7 +141,7 @@ dependencies:
 
   connectivity_plus: 3.0.3
 
-  package_info_plus: 3.0.3
+  package_info_plus: 4.2.0
 
   dropdown_button2: 2.0.0
 
@@ -153,7 +153,7 @@ dependencies:
 
   better_open_file: 3.6.4
 
-  flutter_appauth: 4.2.1
+  flutter_appauth: 6.0.2
 
   percent_indicator: 4.2.2
 
@@ -187,9 +187,9 @@ dependencies:
 
   debounce_throttle: 2.0.0
 
-  flutter_appauth_platform_interface: 5.2.0
+  flutter_appauth_platform_interface: 6.0.0
 
-  intl: 0.18.0
+  intl: 0.18.1
 
   external_app_launcher: 3.1.0
 
@@ -199,7 +199,7 @@ dependencies:
 
   flutter_keyboard_visibility: 5.4.1
 
-  extended_text: 11.0.1
+  extended_text: 11.1.0
 
   flutter_app_badger: 1.5.0
 
@@ -231,7 +231,7 @@ dev_dependencies:
 
   flutter_launcher_icons: 0.12.0
 
-  xml: 6.2.2
+  xml: 6.3.0
 
   json_serializable: 6.6.1
 
