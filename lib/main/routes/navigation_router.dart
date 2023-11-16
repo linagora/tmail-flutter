@@ -18,6 +18,7 @@ class NavigationRouter with EquatableMixin {
   final String? routeName;
   final EmailAddress? emailAddress;
   final String? subject;
+  final String? body;
 
   NavigationRouter({
     this.emailId,
@@ -27,6 +28,7 @@ class NavigationRouter with EquatableMixin {
     this.routeName,
     this.emailAddress,
     this.subject,
+    this.body,
   });
 
   factory NavigationRouter.initial() => NavigationRouter();
@@ -40,5 +42,6 @@ class NavigationRouter with EquatableMixin {
     routeName,
     emailAddress,
     subject,
+    body,
   ];
 }

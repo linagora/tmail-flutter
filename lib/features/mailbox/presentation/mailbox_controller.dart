@@ -425,7 +425,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         mailboxDashBoardController.goToComposer(
           ComposerArguments.fromMailtoUri(
             emailAddress: navigationRouter?.emailAddress,
-            subject: navigationRouter?.subject
+            subject: navigationRouter?.subject,
+            body: navigationRouter?.body
           )
         );
       }
