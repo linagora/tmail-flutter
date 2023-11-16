@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-11-16T00:29:04.650547",
+  "@@last_modified": "2023-11-16T12:39:33.304952",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3517,5 +3517,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "mailUnsubscribedMessage": "You unsubscribe from {senderName}",
+  "@mailUnsubscribedMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
   }
 }

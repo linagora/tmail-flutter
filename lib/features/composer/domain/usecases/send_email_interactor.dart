@@ -52,7 +52,7 @@ class SendEmailInteractor {
           SendEmailSuccess(
             currentEmailState: currentEmailState,
             currentMailboxState: currentMailboxState,
-            storedSendingId: emailRequest.storedSendingId
+            emailRequest: emailRequest
           )
         );
       } else {

@@ -14,6 +14,7 @@ class EmailRequest with EquatableMixin {
   final IdentityId? identityId;
   final EmailActionType emailActionType;
   final String? storedSendingId;
+  final EmailId? previousEmailId;
 
   EmailRequest({
     required this.email,
@@ -23,6 +24,7 @@ class EmailRequest with EquatableMixin {
     this.emailIdDestroyed,
     this.emailIdAnsweredOrForwarded,
     this.storedSendingId,
+    this.previousEmailId,
   });
 
   @override
@@ -34,6 +36,7 @@ class EmailRequest with EquatableMixin {
     emailIdAnsweredOrForwarded,
     emailActionType,
     storedSendingId,
+    previousEmailId,
   ];
 
   bool get isEmailAnswered => emailIdAnsweredOrForwarded != null &&

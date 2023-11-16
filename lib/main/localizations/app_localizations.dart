@@ -3652,4 +3652,12 @@ class AppLocalizations {
       name: 'unsubscribedFromThisMailingList',
     );
   }
+
+  String mailUnsubscribedMessage(String senderName) {
+    return Intl.message(
+      'You unsubscribe from $senderName',
+      name: 'mailUnsubscribedMessage',
+      args: [senderName]
+    );
+  }
 }

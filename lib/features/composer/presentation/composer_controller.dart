@@ -489,9 +489,7 @@ class ComposerController extends BaseController {
             isInitialRecipient.value = true;
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }
-          if (arguments.body?.isNotEmpty == true) {
-            _getEmailContentFromMailtoUri(arguments.body!);
-          }
+          _getEmailContentFromMailtoUri(arguments.body ?? '');
           _updateStatusEmailSendButton();
           break;
         case EmailActionType.reply:
@@ -537,9 +535,7 @@ class ComposerController extends BaseController {
             isInitialRecipient.value = true;
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }
-          if (arguments.body?.isNotEmpty == true) {
-            _getEmailContentFromUnsubscribeMailtoLink(arguments.body!);
-          }
+          _getEmailContentFromUnsubscribeMailtoLink(arguments.body ?? '');
           _updateStatusEmailSendButton();
           break;
         default:
@@ -969,7 +965,8 @@ class ComposerController extends BaseController {
             ? arguments.presentationEmail?.id
             : null,
           emailIdAnsweredOrForwarded: arguments.presentationEmail?.id,
-          emailActionType: arguments.emailActionType
+          emailActionType: arguments.emailActionType,
+          previousEmailId: arguments.previousEmailId,
         );
 
     final mailboxRequest = mailboxDashBoardController.outboxMailbox?.id == null

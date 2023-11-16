@@ -25,6 +25,8 @@ extension EmailExtension on Email {
 
   bool get isDraft => keywords?.containsKey(KeyWordIdentifier.emailDraft) == true;
 
+  bool get isUnsubscribed => keywords?.containsKey(KeyWordIdentifierExtension.unsubscribeMail) == true;
+
   bool get withAttachments => hasAttachment == true;
 
   String get listUnsubscribe {
