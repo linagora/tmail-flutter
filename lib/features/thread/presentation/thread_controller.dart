@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -348,6 +349,8 @@ class ThreadController extends BaseController with EmailActionController {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
         } else if (success is EmptyTrashFolderSuccess || success is EmptySpamFolderSuccess) {
           refreshAllEmail();
+        } else if (success is UnsubscribeEmailSuccess) {
+          _refreshEmailChanges(currentEmailState: success.currentEmailState);
         }
       });
     });

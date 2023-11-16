@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -307,6 +308,10 @@ class EmailView extends GetWidget<SingleEmailController> {
           openEmailAddressDetailAction: controller.openEmailAddressDialog,
           onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
         )),
+        Obx(() => MailUnsubscribedBanner(
+          presentationEmail: controller.currentEmail,
+          emailUnsubscribe: controller.emailUnsubscribe.value
+        )),
         Obx(() {
           final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
           if (attachments.isNotEmpty) {
@@ -432,7 +437,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         EmailActionType.moveToSpam,
       if (presentationEmail.from?.isNotEmpty == true)
         EmailActionType.createRule,
-      if (controller.emailUnsubscribe.value != null)
+      if (!presentationEmail.isSubscribed && controller.emailUnsubscribe.value != null)
         EmailActionType.unsubscribe
     ];
 
