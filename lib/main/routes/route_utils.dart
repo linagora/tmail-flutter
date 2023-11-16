@@ -23,6 +23,7 @@ abstract class RouteUtils {
   static const String paramRouteName = 'routeName';
   static const String paramMailtoAddress = 'mailtoAddress';
   static const String paramSubject = 'subject';
+  static const String paramBody = 'body';
 
   static const String mailtoPrefix = 'mailto:';
 
@@ -76,6 +77,7 @@ abstract class RouteUtils {
     final routeName = parameters[paramRouteName];
     final mailtoAddress = parameters[paramMailtoAddress];
     final subject = parameters[paramSubject];
+    final body = parameters[paramBody];
 
     final emailId = idParam != null ? EmailId(Id(idParam)) : null;
     final mailboxId = contextPram != null ? MailboxId(Id(contextPram)) : null;
@@ -95,6 +97,7 @@ abstract class RouteUtils {
       routeName: routeName,
       emailAddress: emailAddress,
       subject: subject,
+      body: body,
     );
   }
 
@@ -121,6 +124,9 @@ abstract class RouteUtils {
       if (mapQueryParam.containsKey(paramSubject)) {
         mapMailto[paramSubject] = mapQueryParam[paramSubject];
       }
+      if (mapQueryParam.containsKey(paramBody)) {
+        mapMailto[paramBody] = mapQueryParam[paramBody];
+      }
     } else if (mailtoUri != null) {
       final mailtoUrlDecoded = Uri.decodeFull(mailtoUri);
       mapMailto[paramMailtoAddress] = mailtoUrlDecoded;
@@ -129,5 +135,12 @@ abstract class RouteUtils {
     }
     log('RouteUtils::parseMapMailtoFromUri:mapMailto: $mapMailto');
     return mapMailto;
+  }
+
+  static NavigationRouter generateNavigationRouterFromMailtoLink(String mailtoLink) {
+    final mailtoMap = parseMapMailtoFromUri(mailtoLink);
+    final navigationRouter = parsingRouteParametersToNavigationRouter(mailtoMap);
+    log('RouteUtils::generateNavigationRouterFromMailtoLink:navigationRouter: $navigationRouter');
+    return navigationRouter;
   }
 }
