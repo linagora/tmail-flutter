@@ -2698,7 +2698,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueView": "Les messages de la file d'attente seront envoyés ou planifiés lorsqu'ils seront en ligne.",
+  "bannerMessageSendingQueueView": "Les messages dans le dossier de la file d'attente seront envoyés ou planifiés lorsque vous serez en ligne.",
   "@bannerMessageSendingQueueView": {
     "type": "text",
     "placeholders_order": [],
@@ -2768,7 +2768,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailTail": " boîte aux lettres.",
+  "messageDialogWhenStoreSendingEmailTail": " dossier.",
   "@messageDialogWhenStoreSendingEmailTail": {
     "type": "text",
     "placeholders_order": [],
@@ -3082,7 +3082,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderCreatedMessage": "Pour commencer à utiliser cette boîte aux lettres, vous pouvez ajouter quelques règles pour organiser tout votre courrier à votre manière.",
+  "folderCreatedMessage": "Pour commencer à utiliser ce dossier, vous pouvez ajouter quelques règles pour organiser tout votre courrier à votre manière.",
   "@folderCreatedMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -3096,6 +3096,384 @@
   },
   "messageEventActionBannerAttendeeCounter": " a proposé des modifications à l'événement",
   "@messageEventActionBannerAttendeeCounter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMoreAttachment": "Afficher plus (+{count})",
+  "@showMoreAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "messageEmptyFolderDialog": "Les messages du dossier {folder} seront définitivement supprimés et vous ne pourrez pas les restaurer",
+  "@messageEmptyFolderDialog": {
+    "type": "text",
+    "placeholders_order": [
+      "folder"
+    ],
+    "placeholders": {
+      "folder": {}
+    }
+  },
+  "toFolder": "Vers le dossier :",
+  "@toFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderNameCannotContainSpecialCharacters": "Le nom du dossier ne peut pas contenir de caractères spéciaux",
+  "@folderNameCannotContainSpecialCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newSubfolder": "Nouveau sous-dossier",
+  "@newSubfolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewFolderFailure": "Échec de la création d'un nouveau dossier",
+  "@createNewFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAsDraft": "Enregistrer comme brouillon",
+  "@saveAsDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMsgHideFolderSuccess": "Ce dossier a été masqué dans votre dossier principal",
+  "@toastMsgHideFolderSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderVisibility": "Visibilité des dossiers",
+  "@folderVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "searchForFolders": "Rechercher des dossiers",
+  "@searchForFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addCondition": "Ajouter une condition",
+  "@addCondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueViewOnIOS": "Les messages du dossier de la file d'attente d'envoi peuvent être envoyés lorsque vous êtes en ligne.",
+  "@bannerMessageSendingQueueViewOnIOS": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectFolder": "Sélectionner le dossier",
+  "@selectFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintInputCreateNewFolder": "Entrez le nom du dossier",
+  "@hintInputCreateNewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogOfflineModeOnIOS": "Le message sera dans la file d'attente d'envoi. Vous pouvez réessayer lorsque vous serez en ligne.",
+  "@messageDialogOfflineModeOnIOS": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameOfFolderIsRequired": "Le nom du dossier est obligatoire",
+  "@nameOfFolderIsRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideFolder": "Cacher le dossier",
+  "@hideFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Vous n'avez pas sélectionné de dossier de sauvegarde pour enregistrer",
+  "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "movedToFolder": "Déplacé vers {destinationMailboxPath}",
+  "@movedToFolder": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationMailboxPath"
+    ],
+    "placeholders": {
+      "destinationMailboxPath": {}
+    }
+  },
+  "teamMailBoxes": "Team-mailboxes",
+  "@teamMailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolder": "Renommer le dossier",
+  "@renameFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folder": "Dossier",
+  "@folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentList": "Liste des pièces jointes",
+  "@attachmentList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolder": "Déplacer le dossier",
+  "@moveFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markedSingleMessageToast": "Le message a été marqué comme {action}",
+  "@markedSingleMessageToast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "deleteFoldersSuccessfully": "Supprimer les dossiers avec succès",
+  "@deleteFoldersSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moreAttachments": "+ {count} plus",
+  "@moreAttachments": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "enterSomeSuggestions": "Entrez quelques suggestions",
+  "@enterSomeSuggestions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewFolder": "Créer un nouveau dossier",
+  "@createNewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFolder": "Supprimer le dossier",
+  "@deleteFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folderVisibilitySubtitle": "Afficher/masquer vos dossiers, y compris vos dossiers personnels et vos boîtes aux lettres d'équipe.",
+  "@folderVisibilitySubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteMultipleFolder": "Le dossier {numberOfMailbox} et tous les sous-dossiers et messages qu'il contient seront supprimés et ne pourront pas être récupérés. Voulez-vous continuer la suppression ?",
+  "@messageConfirmationDialogDeleteMultipleFolder": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfMailbox"
+    ],
+    "placeholders": {
+      "numberOfMailbox": {}
+    }
+  },
+  "files": "fichiers",
+  "@files": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formattingOptions": "Options de formatage",
+  "@formattingOptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFolders": "Suppression des dossiers",
+  "@deleteFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clean": "Nettoyage",
+  "@clean": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceled": "Annulé",
+  "@canceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_folder_is_created": "{nameMailbox} est créé",
+  "@new_folder_is_created": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "newFolder": "Nouveau dossier",
+  "@newFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSearchFolders": "Rechercher dans les dossiers",
+  "@hintSearchFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_folder": "Le dossier \"{nameMailbox}\" et tous les sous-dossiers et messages qu'il contiennent seront supprimés et ne pourront pas être récupérés. Voulez-vous continuer la suppression ?",
+  "@message_confirmation_dialog_delete_folder": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "allFolders": "Tous les dossiers",
+  "@allFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFoldersFailure": "Échec de la suppression des dossiers",
+  "@deleteFoldersFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageShowFolderSuccess": "Ce dossier est déjà affiché dans votre dossier principal",
+  "@toastMessageShowFolderSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dropFileHereToAttachThem": "Déposez le fichier ici pour le joindre",
+  "@dropFileHereToAttachThem": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEmailInYourCurrentFolder": "Nous sommes désolés, il n'y a aucun e-mail dans votre dossier actuel",
+  "@noEmailInYourCurrentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardingSettingExplanation": "Les adresses e-mail répertoriées ci-dessous recevront vos e-mails.",
+  "@forwardingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textSize": "Taille du texte",
+  "@textSize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showFolder": "Afficher le dossier",
+  "@showFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadSuccess": "Vous avez marqué tous les messages dans \"{mailboxName}\" comme lus",
+  "@toastMessageMarkAsMailboxReadSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName"
+    ],
+    "placeholders": {
+      "mailboxName": {}
+    }
+  },
+  "openFolderMenu": "Menu Ouvrir le dossier",
+  "@openFolderMenu": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "embedCode": "Intégrer du code",
+  "@embedCode": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Vous avez marqué {count} messages dans \"{mailboxName}\" comme lus",
+  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName",
+      "count"
+    ],
+    "placeholders": {
+      "mailboxName": {},
+      "count": {}
+    }
+  },
+  "downloadAll": "Tout télécharger",
+  "@downloadAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterASubject": "Entrez un sujet",
+  "@enterASubject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFolder": "Vider le dossier",
+  "@clearFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
