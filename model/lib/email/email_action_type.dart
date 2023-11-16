@@ -25,4 +25,5 @@ enum EmailActionType {
   openInNewTab,
   createRule,
   unsubscribe,
+  composeFromUnsubscribeMailtoLink,
 }

@@ -47,6 +47,8 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
       case EmailActionType.editSendingEmail:
       case EmailActionType.composeFromContentShared:
       case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromMailtoUri:
+      case EmailActionType.composeFromUnsubscribeMailtoLink:
         if (contentViewState == null) {
           return const SizedBox.shrink();
         }

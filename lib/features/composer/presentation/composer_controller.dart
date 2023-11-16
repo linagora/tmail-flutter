@@ -489,6 +489,9 @@ class ComposerController extends BaseController {
             isInitialRecipient.value = true;
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }
+          if (arguments.body?.isNotEmpty == true) {
+            _getEmailContentFromMailtoUri(arguments.body!);
+          }
           _updateStatusEmailSendButton();
           break;
         case EmailActionType.reply:
@@ -523,6 +526,21 @@ class ComposerController extends BaseController {
           );
           _initAttachments(arguments.attachments ?? []);
           _getEmailContentFromSessionStorageBrowser(arguments.emailContents!);
+          break;
+        case EmailActionType.composeFromUnsubscribeMailtoLink:
+          if (arguments.subject != null) {
+            setSubjectEmail(arguments.subject!);
+            subjectEmailInputController.text = arguments.subject!;
+          }
+          if (arguments.emailAddress != null) {
+            listToEmailAddress.add(arguments.emailAddress!);
+            isInitialRecipient.value = true;
+            toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          }
+          if (arguments.body?.isNotEmpty == true) {
+            _getEmailContentFromUnsubscribeMailtoLink(arguments.body!);
+          }
+          _updateStatusEmailSendButton();
           break;
         default:
           break;
@@ -1414,6 +1432,26 @@ class ComposerController extends BaseController {
   }
 
   void _getEmailContentFromContentShared(String content) {
+    consumeState(Stream.value(
+      Right(GetEmailContentSuccess(
+        htmlEmailContent: content,
+        attachments: [],
+      ))
+    ));
+  }
+
+  void _getEmailContentFromMailtoUri(String content) {
+    log('ComposerController::_getEmailContentFromMailtoUri:content: $content');
+    consumeState(Stream.value(
+      Right(GetEmailContentSuccess(
+        htmlEmailContent: content,
+        attachments: [],
+      ))
+    ));
+  }
+
+  void _getEmailContentFromUnsubscribeMailtoLink(String content) {
+    log('ComposerController::_getEmailContentFromUnsubscribeMailtoLink:content: $content');
     consumeState(Stream.value(
       Right(GetEmailContentSuccess(
         htmlEmailContent: content,
