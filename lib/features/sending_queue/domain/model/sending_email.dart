@@ -31,6 +31,7 @@ class SendingEmail with EquatableMixin {
   final DateTime createTime;
   final SelectMode selectMode;
   final SendingState sendingState;
+  final EmailId? previousEmailId;
 
   SendingEmail({
     required this.sendingId,
@@ -44,7 +45,8 @@ class SendingEmail with EquatableMixin {
     this.mailboxNameRequest,
     this.creationIdRequest,
     this.selectMode = SelectMode.INACTIVE,
-    this.sendingState = SendingState.waiting
+    this.sendingState = SendingState.waiting,
+    this.previousEmailId,
   });
 
   Map<String, dynamic> toJson() {
@@ -66,6 +68,7 @@ class SendingEmail with EquatableMixin {
     writeNotNull('identityId', const IdentityIdNullableConverter().toJson(identityId));
     writeNotNull('mailboxNameRequest', mailboxNameRequest?.name);
     writeNotNull('creationIdRequest', const IdNullableConverter().toJson(creationIdRequest));
+    writeNotNull('previousEmailId', const EmailIdNullableConverter().toJson(previousEmailId));
 
     return val;
   }
@@ -88,6 +91,7 @@ class SendingEmail with EquatableMixin {
       identityId: const IdentityIdNullableConverter().fromJson(json['identityId'] as String?),
       mailboxNameRequest: const MailboxNameConverter().fromJson(json['mailboxNameRequest'] as String?),
       creationIdRequest: const IdNullableConverter().fromJson(json['creationIdRequest'] as String?),
+      previousEmailId: const EmailIdNullableConverter().fromJson(json['previousEmailId'] as String?),
     );
   }
 
@@ -134,5 +138,6 @@ class SendingEmail with EquatableMixin {
     creationIdRequest,
     selectMode,
     sendingState,
+    previousEmailId,
   ];
 }

@@ -26,7 +26,8 @@ extension SendingEmailHiveCacheExtension on SendingEmailHiveCache {
       identityId: const IdentityIdNullableConverter().fromJson(identityId),
       mailboxNameRequest: const MailboxNameConverter().fromJson(mailboxNameRequest),
       creationIdRequest: const IdNullableConverter().fromJson(creationIdRequest),
-      sendingState: SendingState.values.firstWhere((value) => value.name == sendingState)
+      sendingState: SendingState.values.firstWhere((value) => value.name == sendingState),
+      previousEmailId: const EmailIdNullableConverter().fromJson(previousEmailId),
     );
   }
 }
