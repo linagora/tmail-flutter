@@ -104,4 +104,6 @@ abstract class EmailRepository {
     String htmlContent,
     TransformConfiguration configuration
   );
+
+  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
 }

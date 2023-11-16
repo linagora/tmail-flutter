@@ -104,4 +104,6 @@ abstract class EmailDataSource {
   Future<List<SendingEmail>> updateMultipleSendingEmail(AccountId accountId, UserName userName, List<SendingEmail> newSendingEmails);
 
   Future<SendingEmail> getStoredSendingEmail(AccountId accountId, UserName userName, String sendingId);
+
+  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
 }
