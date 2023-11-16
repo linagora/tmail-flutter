@@ -4,6 +4,8 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 
 extension KeyWordIdentifierExtension on KeyWordIdentifier {
+  static final unsubscribeMail = KeyWordIdentifier('\$unsubscribe');
+
   String generatePath() {
     return '${PatchObject.keywordsProperty}/$value';
   }
@@ -27,6 +29,12 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
   }
 
   PatchObject generateForwardedActionPath() {
+    return PatchObject({
+      generatePath(): true
+    });
+  }
+
+  PatchObject generateUnsubscribeActionPath() {
     return PatchObject({
       generatePath(): true
     });
