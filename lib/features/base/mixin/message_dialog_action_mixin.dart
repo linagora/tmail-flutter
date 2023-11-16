@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin MessageDialogActionMixin {
 
-  void showConfirmDialogAction(
+  Future<dynamic> showConfirmDialogAction(
       BuildContext context,
       String message,
       String actionName,
@@ -34,7 +34,7 @@ mixin MessageDialogActionMixin {
     final imagePaths = Get.find<ImagePaths>();
 
     if (alignCenter) {
-      await showDialog(
+      return await showDialog(
         context: context,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
         builder: (BuildContext context) => PointerInterceptor(
@@ -71,7 +71,7 @@ mixin MessageDialogActionMixin {
     } else {
       if (responsiveUtils.isMobile(context)) {
         if (showAsBottomSheet) {
-          await showModalBottomSheet(
+          return await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -110,7 +110,7 @@ mixin MessageDialogActionMixin {
                 ..onCloseButtonAction(() => popBack()))
               .build()));
         } else {
-          (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
+          return (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
             ..messageText(message)
             ..styleConfirmButton(const TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
             ..styleMessage(messageStyle)
@@ -128,7 +128,7 @@ mixin MessageDialogActionMixin {
             })).show();
         }
       } else {
-        await showDialog(
+        return await showDialog(
           context: context,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           builder: (BuildContext context) => PointerInterceptor(
