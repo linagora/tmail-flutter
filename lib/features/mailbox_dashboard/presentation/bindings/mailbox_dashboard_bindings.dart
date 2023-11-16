@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_ema
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
@@ -165,6 +166,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<SaveEmailAsDraftsInteractor>(),
       Get.find<UpdateEmailDraftsInteractor>(),
       Get.find<DeleteSendingEmailInteractor>(),
+      Get.find<UnsubscribeEmailInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -306,6 +308,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>()
     ));
+    Get.lazyPut(() => UnsubscribeEmailInteractor(Get.find<EmailRepository>()));
   }
 
   @override

@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/media_type_nullable_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -109,6 +110,8 @@ class PresentationEmail with EquatableMixin {
   bool get isAnswered => keywords?.containsKey(KeyWordIdentifier.emailAnswered) == true;
 
   bool get isForwarded => keywords?.containsKey(KeyWordIdentifier.emailForwarded) == true;
+
+  bool get isSubscribed => keywords?.containsKey(KeyWordIdentifierExtension.unsubscribeMail) == true;
 
   bool get isAnsweredAndForwarded => isAnswered && isForwarded;
 

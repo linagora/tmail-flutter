@@ -63,7 +63,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 openEmailAddressDetailAction: openEmailAddressDetailAction,
                               )
                             )),
-                            if (emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
+                            if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
                               TMailButtonWidget.fromText(
                                 text: AppLocalizations.of(context).unsubscribe,
                                 textStyle: const TextStyle(

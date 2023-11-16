@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -230,6 +231,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
         mailboxDashBoardController.clearEmailUIAction();
       }
+    });
+
+    ever(mailboxDashBoardController.viewState, (viewState) {
+      viewState.map((success) {
+        if (success is UnsubscribeEmailSuccess) {
+          emailUnsubscribe.value = null;
+        }
+      });
     });
   }
 
@@ -441,7 +450,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _handleReadReceipt();
       }
 
-      if (success.emailCurrent?.hasListUnsubscribe == true) {
+      if (currentEmail?.isSubscribed == false && success.emailCurrent?.hasListUnsubscribe == true) {
         _handleUnsubscribe(success.emailCurrent!.listUnsubscribe);
       } else {
         emailUnsubscribe.value = null;
@@ -501,7 +510,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _handleReadReceipt();
       }
 
-      if (success.emailCurrent?.hasListUnsubscribe == true) {
+      if (currentEmail?.isSubscribed == false && success.emailCurrent?.hasListUnsubscribe == true) {
         _handleUnsubscribe(success.emailCurrent!.listUnsubscribe);
       } else {
         emailUnsubscribe.value = null;
@@ -951,11 +960,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _markAsEmailStarSuccess(Success success) {
-    if (success is MarkAsStarEmailSuccess) {
-      final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-      mailboxDashBoardController.setSelectedEmail(selectedEmail?.updateKeywords(success.updatedEmail.keywords));
-    }
+  void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
+    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+    mailboxDashBoardController.setSelectedEmail(selectedEmail?.updateKeywords(success.updatedEmail.keywords));
     mailboxDashBoardController.dispatchState(Right(success));
   }
 
@@ -1406,9 +1413,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       AppLocalizations.of(context).unsubscribe,
       onConfirmAction: () {
         if (emailUnsubscribe.value?.httpLinks.isNotEmpty == true) {
-          _handleUnsubscribeMailByHttpsLink(context, emailUnsubscribe.value!.httpLinks);
+          _handleUnsubscribeMailByHttpsLink(
+            context: context,
+            emailId: presentationEmail.id!,
+            httpLinks: emailUnsubscribe.value!.httpLinks
+          );
         } else if (emailUnsubscribe.value?.mailtoLinks.isNotEmpty == true) {
-          _handleUnsubscribeMailByMailtoLink(context, emailUnsubscribe.value!.mailtoLinks);
+          _handleUnsubscribeMailByMailtoLink(
+            context: context,
+            emailId: presentationEmail.id!,
+            mailtoLinks: emailUnsubscribe.value!.mailtoLinks
+          );
         }
       },
       showAsBottomSheet: true,
@@ -1434,24 +1449,29 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void _handleUnsubscribeMailByHttpsLink(BuildContext context, List<String> httpLinks) async {
+  void _handleUnsubscribeMailByHttpsLink({
+    required BuildContext context,
+    required EmailId emailId,
+    required List<String> httpLinks
+  }) {
     log('SingleEmailController::_handleUnsubscribeMailByHttpsLink:httpLinks: $httpLinks');
-    final result = await AppUtils.launchLink(httpLinks.first);
-    if (result && context.mounted) {
-      _appToast.showToastSuccessMessage(
-        context,
-        AppLocalizations.of(context).unsubscribedFromThisMailingList);
-    }
+    mailboxDashBoardController.unsubscribeMail(emailId);
+    AppUtils.launchLink(httpLinks.first);
   }
 
-  void _handleUnsubscribeMailByMailtoLink(BuildContext context, List<String> mailtoLinks) {
+  void _handleUnsubscribeMailByMailtoLink({
+    required BuildContext context,
+    required EmailId emailId,
+    required List<String> mailtoLinks
+  }) {
     log('SingleEmailController::_handleUnsubscribeMailByMailtoLink:mailtoLinks: $mailtoLinks');
     final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(mailtoLinks.first);
     mailboxDashBoardController.goToComposer(
       ComposerArguments.fromUnsubscribeMailtoLink(
         emailAddress: navigationRouter.emailAddress,
         subject: navigationRouter.subject,
-        body: navigationRouter.body
+        body: navigationRouter.body,
+        previousEmailId: emailId,
       )
     );
   }

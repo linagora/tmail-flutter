@@ -21,6 +21,7 @@ class ComposerArguments extends RouterArguments {
   final String? body;
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
+  final EmailId? previousEmailId;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -35,6 +36,7 @@ class ComposerArguments extends RouterArguments {
     this.body,
     this.messageId,
     this.references,
+    this.previousEmailId,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -139,12 +141,18 @@ class ComposerArguments extends RouterArguments {
     ? SendingEmailActionType.edit
     : SendingEmailActionType.create;
 
-  factory ComposerArguments.fromUnsubscribeMailtoLink({EmailAddress? emailAddress, String? subject, String? body}) =>
+  factory ComposerArguments.fromUnsubscribeMailtoLink({
+    EmailAddress? emailAddress,
+    String? subject,
+    String? body,
+    EmailId? previousEmailId
+  }) =>
     ComposerArguments(
       emailActionType: EmailActionType.composeFromUnsubscribeMailtoLink,
       emailAddress: emailAddress,
       subject: subject,
       body: body,
+      previousEmailId: previousEmailId,
     );
 
 

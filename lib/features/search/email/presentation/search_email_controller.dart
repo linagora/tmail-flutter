@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -209,7 +210,8 @@ class SearchEmailController extends BaseController
             success is EmptyTrashFolderSuccess ||
             success is EmptySpamFolderSuccess ||
             success is DeleteMultipleEmailsPermanentlyAllSuccess ||
-            success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure
+            success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure ||
+            success is UnsubscribeEmailSuccess
         ) {
           _refreshEmailChanges();
         }
