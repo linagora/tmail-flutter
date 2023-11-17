@@ -111,7 +111,7 @@ dependencies:
 
   http_parser: 4.0.2
 
-  collection: 1.17.2
+  collection: 1.18.0
 
   filesize: 2.0.1
 
@@ -161,7 +161,7 @@ dependencies:
 
   async: 2.11.0
 
-  html: 0.15.1
+  html: 0.15.3
 
   custom_pop_up_menu: 1.2.4
 
@@ -183,7 +183,7 @@ dependencies:
 
   focus_detector_v2: 3.0.0+2
 
-  universal_html: 2.0.9
+  universal_html: 2.2.4
 
   debounce_throttle: 2.0.0
 
@@ -199,7 +199,7 @@ dependencies:
 
   flutter_keyboard_visibility: 5.4.1
 
-  extended_text: 11.1.0
+  extended_text: 12.0.0
 
   flutter_app_badger: 1.5.0
 
