@@ -380,19 +380,20 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: c2247abea5baa644fc60c123df7bb7d6a81ed81f
-      url: "https://github.com/linagora/enough_html_editor.git"
+      ref: patch-1
+      resolved-ref: "1bb76de05950cb16a3062290ddd5539a3d8e4208"
+      url: "https://github.com/aryan-more/enough_html_editor.git"
     source: git
     version: "0.0.5"
   enough_platform_widgets:
     dependency: transitive
     description:
-      name: enough_platform_widgets
-      sha256: "107921eeeac05218d2a0d8e8c3c302e90aa416cbd528b466d62b77ccaabb359c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: cca0690807cc8c7a2226c8d56328845e243b89e7
+      url: "https://github.com/Enough-Software/enough_platform_widgets"
+    source: git
+    version: "0.8.0"
   equatable:
     dependency: "direct main"
     description:
@@ -776,10 +777,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_platform_widgets
-      sha256: "107d5bc9a167b4e268cba44075ee399b6b2c63d44ede28f7e8c983d7fa4b59be"
+      sha256: "4970c211af1dad0a161e6379d04de2cace80283da0439f2f87d31a541f9b2b84"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.5"
+    version: "6.0.2"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1372,8 +1373,8 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: d4c4d60136be789bc0d370737caa75256701d843
-      url: "https://github.com/linagora/rich-text-composer.git"
+      resolved-ref: c6cfdb70a1e606b7991932b8b29ed8b27595edcb
+      url: "https://github.com/aryan-more/rich-text-composer.git"
     source: git
     version: "0.0.2"
   rule_filter:

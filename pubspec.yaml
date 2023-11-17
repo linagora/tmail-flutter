@@ -48,7 +48,7 @@ dependencies:
   ### Dependencies from git ###
   rich_text_composer:
     git:
-      url: https://github.com/linagora/rich-text-composer.git
+      url: https://github.com/aryan-more/rich-text-composer.git
       ref: master
 
   html_editor_enhanced:
