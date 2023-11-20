@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -352,8 +351,8 @@ class ThreadView extends GetWidget<ThreadController>
       },
       child: Focus(
         focusNode: controller.focusNodeKeyBoard,
-        autofocus: kIsWeb,
-        onKey: kIsWeb ? controller.handleKeyEvent : null,
+        autofocus: PlatformInfo.isWeb,
+        onKey: PlatformInfo.isWeb ? controller.handleKeyEvent : null,
         child: ListView.builder(
           controller: controller.listEmailController,
           physics: const AlwaysScrollableScrollPhysics(),
@@ -400,16 +399,15 @@ class ThreadView extends GetWidget<ThreadController>
     final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
     final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
 
-    return (EmailTileBuilder(
-      context,
-      presentationEmail,
-      selectModeAll,
-      controller.searchQuery,
-      isShowingEmailContent,
+    return EmailTileBuilder(
+      presentationEmail: presentationEmail,
+      selectAllMode: selectModeAll,
+      isShowingEmailContent: isShowingEmailContent,
+      searchQuery: controller.searchQuery,
       mailboxContain: presentationEmail.mailboxContain,
       isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
       isDrag: true
-    )).build();
+    );
   }
 
   Widget _buildEmailItemNotDraggable(BuildContext context, PresentationEmail presentationEmail) {
@@ -457,18 +455,16 @@ class ThreadView extends GetWidget<ThreadController>
         ),
       ),
       confirmDismiss: (direction) => controller.swipeEmailAction(context, presentationEmail, direction),
-      child: (EmailTileBuilder(
-        context,
-        presentationEmail,
-        selectModeAll,
-        controller.searchQuery,
-        isShowingEmailContent,
+      child: EmailTileBuilder(
+        presentationEmail: presentationEmail,
+        selectAllMode: selectModeAll,
+        isShowingEmailContent: isShowingEmailContent,
+        searchQuery: controller.searchQuery,
         mailboxContain: presentationEmail.mailboxContain,
-        isSearchEmailRunning: controller.searchController.isSearchEmailRunning
-      )
-        ..addOnPressEmailActionClick((action, email) => _handleEmailActionClicked(context, email, action))
-        ..addOnMoreActionClick((email, position) => _handleEmailContextMenuAction(context, email, position))
-      ).build(),
+        isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
+        emailActionClick: (action, email) => _handleEmailActionClicked(context, email, action),
+        onMoreActionClick: (email, position) => _handleEmailContextMenuAction(context, email, position),
+      ),
     );
   }
 

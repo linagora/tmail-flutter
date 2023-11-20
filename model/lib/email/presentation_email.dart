@@ -114,6 +114,8 @@ class PresentationEmail with EquatableMixin {
 
   bool get withAttachments => hasAttachment == true;
 
+  bool get isSelected => selectMode == SelectMode.ACTIVE;
+
   String get routeWebAsString => routeWeb.toString();
 
   bool get pushNotificationActivated => !isDraft && !hasRead;
