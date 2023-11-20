@@ -483,7 +483,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 483
+    $signature: 437
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -581,7 +581,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 255
+    $signature: 254
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -601,7 +601,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 83
+    $signature: 76
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -763,4 +763,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["jZkJt8RtcGwGXOvYtpiHq3PERuo="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["c6reWXr85ayHuLewqu6L2DCLpfk="] = $__dart_deferred_initializers__.current
