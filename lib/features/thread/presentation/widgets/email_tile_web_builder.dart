@@ -628,4 +628,10 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
       );
     }
   }
+
+  @override
+  void dispose() {
+    _hoverNotifier.dispose();
+    super.dispose();
+  }
 }
