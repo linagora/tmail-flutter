@@ -1,4 +1,4 @@
-## Unreleased
+## [0.10.5] - 2023-11-21
 ### Added
 - Support multiple condition/actions for Filter Rule
 - Support Cyrus/Stalwart server
@@ -349,6 +349,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.10.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.5
 [0.10.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.4
 [0.10.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.3
 [0.10.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.2
