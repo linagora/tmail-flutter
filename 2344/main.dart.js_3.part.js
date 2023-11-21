@@ -10721,6 +10721,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _email_tile_web_builder$_buildAvatarIcon$2$context$isHovered(context, isHovered) {
       return this._email_tile_web_builder$_buildAvatarIcon$4$context$iconSize$isHovered$textStyle(context, null, isHovered, null);
+    },
+    dispose$0() {
+      var t1 = this._hoverNotifier;
+      t1.ChangeNotifier__listeners = $.$get$ChangeNotifier__emptyListeners();
+      t1.ChangeNotifier__count = 0;
+      this.super$State$dispose();
     }
   };
   B.__EmailTileBuilderState_State_BaseEmailItemTile.prototype = {};
@@ -19726,4 +19732,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["+ewf44jeXTC4HnjtoNAQRrP16oQ="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["2r0UxPJar7tAKZP6M7vGiyNMebE="] = $__dart_deferred_initializers__.current
