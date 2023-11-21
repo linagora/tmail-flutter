@@ -1,3 +1,22 @@
+## Unreleased
+### Added
+- Support multiple condition/actions for Filter Rule
+- Support Cyrus/Stalwart server
+- Sorting search results
+- Autocompleting people in quick search
+- JMAP endpoint auto discovery
+- Unsubscribe from email/mailing lists
+
+### Fixed
+- Suggestion displayed on top when having many recipients
+- Add field 'From' to composer
+- Change input suggestion field for fields 'From/To' in advance search
+- Spam banner
+- Mark as read when moved to spam
+- User has been log out once the network connection is not stable
+- Offline mode on iOS
+- Selection mode when dragging and moving email
+
 ## [0.10.4] - 2023-10-31
 ### Added
 - Communicating L18n to remote servers
