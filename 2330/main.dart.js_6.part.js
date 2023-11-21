@@ -2,70 +2,30 @@
 self.$__dart_deferred_initializers__ = self.$__dart_deferred_initializers__ || Object.create(null);
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A = {
-    GradientCircleAvatarIcon$(colors, iconSize, label, labelFontSize) {
-      return new A.GradientCircleAvatarIcon(colors, iconSize, labelFontSize, label, null);
+    MailtoUrlView$() {
+      return new A.MailtoUrlView(null);
     },
-    GradientCircleAvatarIcon: function GradientCircleAvatarIcon(t0, t1, t2, t3, t4) {
-      var _ = this;
-      _.colors = t0;
-      _.iconSize = t1;
-      _.labelFontSize = t2;
-      _.label = t3;
-      _.key = t4;
-    },
-    SuggestionEmailAddress: function SuggestionEmailAddress(t0, t1) {
-      this.emailAddress = t0;
-      this.state = t1;
-    },
-    SuggestionEmailState0: function SuggestionEmailState0(t0, t1) {
-      this.index = t0;
-      this._core$_name = t1;
-    },
-    _SuggestionEmailAddress_Object_EquatableMixin0: function _SuggestionEmailAddress_Object_EquatableMixin0() {
+    MailtoUrlView: function MailtoUrlView(t0) {
+      this.key = t0;
     }
   },
-  B, C, D;
-  A = hunkHelpers.updateHolder(holdersList[11], A);
+  B, C;
+  A = hunkHelpers.updateHolder(holdersList[5], A);
   B = holdersList[0];
   C = holdersList[2];
-  D = holdersList[12];
-  A.GradientCircleAvatarIcon.prototype = {
+  A.MailtoUrlView.prototype = {
     build$1(context) {
-      var _this = this, _null = null,
-        t1 = _this.iconSize,
-        t2 = B.TextStyle$(_null, _null, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _this.labelFontSize, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
-      return B.Container$(C.Alignment_0_0, B.DefaultTextStyle$(B.Text$(_this.label, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, t2, _null, _null, C.TextWidthBasis_0), C.Clip_0, _null, _null, new B.BoxDecoration(C.Color_4294506744, _null, _null, _null, _null, new B.LinearGradient(C.Alignment_0_m1, C.Alignment_0_1, C.TileMode_0, _this.colors, C.List_0_1, _null), _null, C.BoxShape_1), _null, t1, _null, _null, _null, _null, _null, t1);
+      var _null = null;
+      B.SystemChrome_setSystemUIOverlayStyle(C.SystemUiOverlayStyle_ePs);
+      return B.Container$(_null, C.SizedBox_Yes, C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     }
   };
-  A.SuggestionEmailAddress.prototype = {
-    get$props() {
-      return [this.emailAddress, this.state];
-    }
-  };
-  A.SuggestionEmailState0.prototype = {
-    _enumToString$0() {
-      return "SuggestionEmailState." + this._core$_name;
-    }
-  };
-  A._SuggestionEmailAddress_Object_EquatableMixin0.prototype = {};
   var typesOffset = hunkHelpers.updateTypes([]);
   (function inheritance() {
-    var _mixin = hunkHelpers.mixin,
-      _inherit = hunkHelpers.inherit;
-    _inherit(A.GradientCircleAvatarIcon, B.StatelessWidget);
-    _inherit(A._SuggestionEmailAddress_Object_EquatableMixin0, B.Object);
-    _inherit(A.SuggestionEmailAddress, A._SuggestionEmailAddress_Object_EquatableMixin0);
-    _inherit(A.SuggestionEmailState0, B._Enum);
-    _mixin(A._SuggestionEmailAddress_Object_EquatableMixin0, B.EquatableMixin);
+    var _inherit = hunkHelpers.inherit;
+    _inherit(A.MailtoUrlView, B.GetWidget);
   })();
-  B._Universe_addRules(init.typeUniverse, JSON.parse('{"GradientCircleAvatarIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SuggestionEmailAddress":{"EquatableMixin":[]},"SuggestionEmailState0":{"Enum":[]}}'));
-  (function constants() {
-    D.Color_4291217096 = new B.Color(4291217096);
-    D.Divider_6xV = new B.Divider(1, null, null, null, D.Color_4291217096, null);
-    D.EdgeInsets_0_2_0_0 = new B.EdgeInsets(0, 2, 0, 0);
-    D.SuggestionEmailState_0 = new A.SuggestionEmailState0(0, "valid");
-    D.SuggestionEmailState_1 = new A.SuggestionEmailState0(1, "duplicated");
-  })();
+  B._Universe_addRules(init.typeUniverse, JSON.parse('{"MailtoUrlView":{"GetWidget":["MailtoUrlController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailtoUrlController"}}'));
 };
 
-$__dart_deferred_initializers__["pP1fP24mz54Rs1c7u8TniDnUYSA="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["hLxWMl9gjYcJaQAU8BbdCHRFM4M="] = $__dart_deferred_initializers__.current
