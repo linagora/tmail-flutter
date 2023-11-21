@@ -113,8 +113,6 @@ class LoginController extends ReloadableController {
       }
       if (PlatformInfo.isWeb) {
         _checkOIDCIsAvailable();
-      } else if (arguments.baseUrl?.isNotEmpty == true) {
-        onBaseUrlChange(arguments.baseUrl!);
       }
     } else {
       if (PlatformInfo.isWeb) {
