@@ -23,6 +23,7 @@ extension SendingEmailExtension on SendingEmail {
       mailboxNameRequest?.name,
       creationIdRequest?.value,
       sendingState.name,
+      previousEmailId?.asString,
     );
   }
 
@@ -34,7 +35,8 @@ extension SendingEmailExtension on SendingEmail {
       emailIdDestroyed: emailIdDestroyed,
       emailIdAnsweredOrForwarded: emailIdAnsweredOrForwarded,
       identityId: identityId,
-      storedSendingId: sendingId
+      storedSendingId: sendingId,
+      previousEmailId: previousEmailId,
     );
   }
 
@@ -51,7 +53,8 @@ extension SendingEmailExtension on SendingEmail {
       mailboxNameRequest: mailboxNameRequest,
       creationIdRequest: creationIdRequest,
       sendingState: sendingState,
-      selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE
+      selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
+      previousEmailId: previousEmailId,
     );
   }
 
@@ -68,7 +71,8 @@ extension SendingEmailExtension on SendingEmail {
       mailboxNameRequest: mailboxNameRequest,
       creationIdRequest: creationIdRequest,
       sendingState: sendingState,
-      selectMode: SelectMode.INACTIVE
+      selectMode: SelectMode.INACTIVE,
+      previousEmailId: previousEmailId,
     );
   }
 
@@ -85,7 +89,8 @@ extension SendingEmailExtension on SendingEmail {
       mailboxNameRequest: mailboxNameRequest,
       creationIdRequest: creationIdRequest,
       sendingState: newState,
-      selectMode: selectMode
+      selectMode: selectMode,
+      previousEmailId: previousEmailId,
     );
   }
 }

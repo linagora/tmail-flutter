@@ -1,7 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -10,11 +10,9 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
@@ -24,9 +22,9 @@ import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/message_toast_utils.dart';
 
 abstract class ReloadableController extends BaseController {
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
@@ -37,16 +35,19 @@ abstract class ReloadableController extends BaseController {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is GetCredentialFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+      goToLogin(arguments: LoginArguments(LoginFormType.dnsLookupForm));
     } else if (failure is GetSessionFailure) {
-      _handleGetSessionFailure(
-        sessionCacheException: failure.exception,
-        sessionRemoteException: failure.remoteException
-      );
+      _handleGetSessionFailure(failure.exception);
     } else if (failure is GetStoredTokenOidcFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.ssoForm));
+      goToLogin(arguments: LoginArguments(LoginFormType.none));
     } else if (failure is GetAuthenticatedAccountFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.credentialForm));
+      goToLogin(
+        arguments: LoginArguments(
+          PlatformInfo.isMobile
+            ? LoginFormType.dnsLookupForm
+            : LoginFormType.none
+        )
+      );
     }
   }
 
@@ -77,12 +78,12 @@ abstract class ReloadableController extends BaseController {
     dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
     dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
-      credentialViewState.userName.value,
-      credentialViewState.password.value,
+      credentialViewState.userName,
+      credentialViewState.password,
     );
     authorizationIsolateInterceptors.setBasicAuthorization(
-      credentialViewState.userName.value,
-      credentialViewState.password.value,
+      credentialViewState.userName,
+      credentialViewState.password,
     );
   }
 
@@ -95,54 +96,14 @@ abstract class ReloadableController extends BaseController {
     consumeState(_getSessionInteractor.execute());
   }
 
-  void _handleGetSessionFailure({
-    dynamic sessionRemoteException,
-    dynamic sessionCacheException
-  }) {
-    showToastErrorMessageSessionFailure(
-      sessionRemoteException: sessionRemoteException,
-      sessionCacheException: sessionCacheException,
-    );
+  void _handleGetSessionFailure(dynamic exception) {
+    if (currentContext != null || currentOverlayContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        MessageToastUtils.getMessageByException(currentContext!, exception) ?? AppLocalizations.of(currentContext!).unknownError
+      );
+    }
     clearDataAndGoToLoginPage();
-  }
-
-  void showToastErrorMessageSessionFailure({
-    dynamic sessionRemoteException,
-    dynamic sessionCacheException
-  }) {
-    if (currentContext == null || currentOverlayContext == null) {
-      return;
-    }
-    appToast.showToastErrorMessage(
-      currentOverlayContext!,
-      getErrorMessageFromSessionFailure(
-        context: currentContext!,
-        sessionRemoteException: sessionRemoteException,
-        sessionCacheException: sessionCacheException,
-      )
-    );
-  }
-
-  String getErrorMessageFromSessionFailure({
-    required BuildContext context,
-    dynamic sessionRemoteException,
-    dynamic sessionCacheException,
- }) {
-    if (sessionRemoteException is ConnectionTimeout ||
-        sessionRemoteException is BadGateway ||
-        sessionRemoteException is SocketError) {
-      return AppLocalizations.of(context).wrongUrlMessage;
-    } else if (sessionRemoteException is BadCredentialsException) {
-      return AppLocalizations.of(context).badCredentials;
-    } else if (sessionRemoteException is ConnectionError) {
-      return AppLocalizations.of(context).connectionError;
-    } else if (sessionRemoteException is UnknownError && sessionRemoteException.message != null) {
-      return '[${sessionRemoteException.code ?? ''}] ${sessionRemoteException.message}';
-    } else if (sessionCacheException is NotFoundSessionException) {
-      return AppLocalizations.of(context).notFoundSession;
-    } else {
-      return AppLocalizations.of(context).unknownError;
-    }
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {

@@ -3610,4 +3610,54 @@ class AppLocalizations {
       name: 'notFoundSession',
     );
   }
+
+  String get dnsLookupLoginMessage {
+    return Intl.message(
+      'To login and access your message please enter your email',
+      name: 'dnsLookupLoginMessage'
+    );
+  }
+
+  String get enterYourPasswordToSignIn {
+    return Intl.message(
+      'Enter your password to sign in',
+      name: 'enterYourPasswordToSignIn'
+    );
+  }
+
+  String get unsubscribe {
+    return Intl.message(
+      'Unsubscribe',
+      name: 'unsubscribe',
+    );
+  }
+
+  String get unsubscribeMail {
+    return Intl.message(
+      'Unsubscribe mail',
+      name: 'unsubscribeMail',
+    );
+  }
+
+  String get unsubscribeMailDialogMessage {
+    return Intl.message(
+      'Are you sure you\'d like to stop receiving similar messages from',
+      name: 'unsubscribeMailDialogMessage',
+    );
+  }
+
+  String get unsubscribedFromThisMailingList {
+    return Intl.message(
+      'Unsubscribed from this mailing list',
+      name: 'unsubscribedFromThisMailingList',
+    );
+  }
+
+  String mailUnsubscribedMessage(String senderName) {
+    return Intl.message(
+      'You unsubscribe from $senderName',
+      name: 'mailUnsubscribedMessage',
+      args: [senderName]
+    );
+  }
 }

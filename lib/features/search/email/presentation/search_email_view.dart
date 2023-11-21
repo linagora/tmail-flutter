@@ -414,22 +414,38 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             itemCount: listPresentationEmail.length,
             itemBuilder: (context, index) {
               final currentPresentationEmail = listPresentationEmail[index];
-              return Obx(() => (EmailTileBuilder(
+              return Obx(() => EmailTileBuilder(
+                presentationEmail: currentPresentationEmail,
+                selectAllMode: controller.selectionMode.value,
+                searchQuery: controller.searchQuery,
+                isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
+                isSearchEmailRunning: true,
+                padding: SearchEmailUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                mailboxContain: currentPresentationEmail.mailboxContain,
+                emailActionClick: (action, email) {
+                  controller.pressEmailAction(
                     context,
-                    currentPresentationEmail,
-                    controller.selectionMode.value,
-                    controller.searchQuery,
-                    controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
-                    isSearchEmailRunning: true,
-                    padding: SearchEmailUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                    paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
-                    mailboxContain: currentPresentationEmail.mailboxContain)
-                ..addOnPressEmailActionClick((action, email) =>
-                    controller.pressEmailAction(context, action, email, mailboxContain: currentPresentationEmail.mailboxContain))
-                ..addOnMoreActionClick((email, position) => controller.responsiveUtils.isScreenWithShortestSide(context)
-                    ? controller.openContextMenuAction(context, _contextMenuActionTile(context, email))
-                    : controller.openPopupMenuAction(context, position, _popupMenuActionTile(context, email)))
-              ).build());
+                    action,
+                    email,
+                    mailboxContain: currentPresentationEmail.mailboxContain
+                  );
+                },
+                onMoreActionClick: (email, position) {
+                  if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+                    controller.openContextMenuAction(
+                      context,
+                      _contextMenuActionTile(context, email)
+                    );
+                  } else {
+                    controller.openPopupMenuAction(
+                      context,
+                      position,
+                      _popupMenuActionTile(context, email)
+                    );
+                  }
+                },
+              ));
             })
     );
   }

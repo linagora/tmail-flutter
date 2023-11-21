@@ -3,7 +3,6 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
@@ -11,7 +10,12 @@ import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart'
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/dns_lookup_input_form.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/horizontal_progress_loading_button.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/login_back_button.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_decoration_builder.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/login_message_widget.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/password_input_form.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LoginView extends BaseLoginView {
@@ -31,13 +35,16 @@ class LoginView extends BaseLoginView {
           child: SafeArea(
             child: _supportScrollForm(context)
                 ? Stack(children: [
-                    Center(child: SingleChildScrollView(
+                    Center(
+                      child: SingleChildScrollView(
                         scrollDirection: Axis.vertical,
-                        child: _buildCenterForm(context))),
+                        child: _buildCenterForm(context)
+                      )
+                    ),
                     Obx(() {
-                      if (controller.loginFormType.value == LoginFormType.credentialForm
-                          || controller.loginFormType.value == LoginFormType.ssoForm) {
-                        return _buildBackButton(context);
+                      if (controller.loginFormType.value == LoginFormType.passwordForm ||
+                          controller.loginFormType.value == LoginFormType.credentialForm) {
+                        return LoginBackButton(onBackAction: controller.handleBackButtonAction);
                       }
                       return const SizedBox.shrink();
                     })
@@ -45,9 +52,9 @@ class LoginView extends BaseLoginView {
                 : Stack(children: [
                     _buildCenterForm(context),
                     Obx(() {
-                      if (controller.loginFormType.value == LoginFormType.credentialForm
-                          || controller.loginFormType.value == LoginFormType.ssoForm) {
-                        return _buildBackButton(context);
+                      if (controller.loginFormType.value == LoginFormType.passwordForm ||
+                          controller.loginFormType.value == LoginFormType.credentialForm) {
+                        return LoginBackButton(onBackAction: controller.handleBackButtonAction);
                       }
                       return const SizedBox.shrink();
                     })
@@ -75,9 +82,28 @@ class LoginView extends BaseLoginView {
                 style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
               )
             ),
-            Obx(() => buildLoginMessage(context, controller.viewState.value)),
+            Obx(() => LoginMessageWidget(
+              formType: controller.loginFormType.value,
+              viewState: controller.viewState.value,
+            )),
             Obx(() {
               switch (controller.loginFormType.value) {
+                case LoginFormType.dnsLookupForm:
+                  return DNSLookupInputForm(
+                    textEditingController: controller.usernameInputController,
+                    onTextChange: controller.onUsernameChange,
+                    onTextSubmitted: (_) => controller.invokeDNSLookupToGetJmapUrl(),
+                    suggestionsCallback: controller.getAllRecentLoginUsernameAction,
+                    onSuggestionSelected: controller.selectUsernameFromSuggestion
+                  );
+                case LoginFormType.passwordForm:
+                  return PasswordInputForm(
+                    key: const Key('password_input_form'),
+                    textEditingController: controller.passwordInputController,
+                    focusNode: controller.passFocusNode,
+                    onTextChange: controller.onPasswordChange,
+                    onTextSubmitted: (_) => controller.handleLoginPressed(),
+                  );
                 case LoginFormType.baseUrlForm:
                   return _buildUrlInput(context);
                 case LoginFormType.credentialForm:
@@ -97,22 +123,6 @@ class LoginView extends BaseLoginView {
     );
   }
 
-  Widget _buildBackButton(BuildContext context) {
-    return Positioned(
-        left: 12,
-        top: 12,
-        child: IconButton(
-          key: const Key('login_arrow_back_button'),
-          onPressed: () => controller.handleBackInCredentialForm(),
-          icon: SvgPicture.asset(
-            controller.imagePaths.icBack,
-            alignment: Alignment.center,
-            colorFilter: AppColor.primaryColor.asFilter()
-          )
-        ),
-    );
-  }
-
   Widget _buildUrlInput(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24),
@@ -120,19 +130,17 @@ class LoginView extends BaseLoginView {
         controller: controller.urlInputController,
         textInputAction: TextInputAction.next,
         keyboardType: TextInputType.url,
+        focusNode: controller.baseUrlFocusNode,
+        onTextChange: controller.onBaseUrlChange,
         onTextSubmitted: (value) => controller.handleNextInUrlInputFormPress(),
-        onTextChange: controller.formatUrl,
         decoration: (LoginInputDecorationBuilder()
             ..setLabelText(AppLocalizations.of(context).prefix_https)
             ..setPrefixText(AppLocalizations.of(context).prefix_https))
          .build(),
         debounceDuration: const Duration(milliseconds: 300),
-        suggestionsCallback: (pattern) async {
-          controller.formatUrl(pattern);
-          return controller.getAllRecentLoginUrlAction(pattern);
-        },
-        itemBuilder: (context, loginUrl) => RecentItemTileWidget(loginUrl, imagePath: controller.imagePaths),
-        onSuggestionSelected: (loginUrl) => controller.formatUrl(loginUrl.url),
+        suggestionsCallback: controller.getAllRecentLoginUrlAction,
+        itemBuilder: (_, loginUrl) => RecentItemTileWidget(loginUrl),
+        onSuggestionSelected: (loginUrl) => controller.selectBaseUrlFromSuggestion(loginUrl.url),
         suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
         noItemsFoundBuilder: (context) => const SizedBox(),
         hideOnEmpty: true,
@@ -156,20 +164,23 @@ class LoginView extends BaseLoginView {
       width: controller.responsiveUtils.getDeviceWidth(context),height: 48,
       child: ElevatedButton(
         key: const Key('nextToCredentialForm'),
-        style: ButtonStyle(
-          foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white),
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (Set<MaterialState> states) => AppColor.primaryColor),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.white,
+          backgroundColor: AppColor.primaryColor,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: const BorderSide(width: 0, color: AppColor.primaryColor)
-          ))
+          )
         ),
         child: Text(AppLocalizations.of(context).next,
           style: const TextStyle(fontSize: 16, color: Colors.white)
         ),
         onPressed: () {
-          controller.handleNextInUrlInputFormPress();
+          if (controller.loginFormType.value == LoginFormType.dnsLookupForm) {
+            controller.invokeDNSLookupToGetJmapUrl();
+          } else {
+            controller.handleNextInUrlInputFormPress();
+          }
         }
       )
     );
@@ -195,11 +206,11 @@ class LoginView extends BaseLoginView {
     return Obx(() => controller.viewState.value.fold(
       (failure) {
         switch (controller.loginFormType.value) {
+          case LoginFormType.dnsLookupForm:
           case LoginFormType.baseUrlForm:
             return _buildNextButtonInContext(context);
+          case LoginFormType.passwordForm:
           case LoginFormType.credentialForm:
-            return _buildLoginButtonInContext(context);
-          case LoginFormType.ssoForm:
             return _buildLoginButtonInContext(context);
           default:
             return const SizedBox.shrink();
@@ -207,14 +218,16 @@ class LoginView extends BaseLoginView {
       },
       (success) {
         if (success is LoadingState) {
-          return buildLoadingCircularProgress();
+          return _supportScrollForm(context)
+            ? const HorizontalProgressLoadingButton()
+            : _buildExpandedButton(context, const HorizontalProgressLoadingButton());
         } else {
           switch (controller.loginFormType.value) {
+            case LoginFormType.dnsLookupForm:
             case LoginFormType.baseUrlForm:
               return _buildNextButtonInContext(context);
+            case LoginFormType.passwordForm:
             case LoginFormType.credentialForm:
-              return _buildLoginButtonInContext(context);
-            case LoginFormType.ssoForm:
               return _buildLoginButtonInContext(context);
             default:
               return const SizedBox.shrink();

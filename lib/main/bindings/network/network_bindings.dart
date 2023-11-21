@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/time_out_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
@@ -41,6 +42,7 @@ class NetworkBindings extends Bindings {
     _bindingDio();
     _bindingApi();
     _bindingTransformer();
+    _bindingServices();
     _bindingException();
   }
 
@@ -118,5 +120,9 @@ class NetworkBindings extends Bindings {
     Get.put(const HtmlEscape());
     Get.put(HtmlTransform(Get.find<DioClient>(), Get.find<HtmlEscape>()));
     Get.put(HtmlAnalyzer(Get.find<HtmlTransform>()));
+  }
+
+  void _bindingServices() {
+    Get.put(DNSService());
   }
 }

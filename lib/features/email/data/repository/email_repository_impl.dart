@@ -212,4 +212,9 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<String> transformHtmlEmailContent(String htmlContent, TransformConfiguration configuration) {
     return _htmlDataSource.transformHtmlEmailContent(htmlContent, configuration);
   }
+
+  @override
+  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
+    return emailDataSource[DataSourceType.network]!.unsubscribeMail(session, accountId, emailId);
+  }
 }

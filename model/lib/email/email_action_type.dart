@@ -22,5 +22,8 @@ enum EmailActionType {
   selection,
   moveToSpam,
   unSpam,
-  openInNewTab
+  openInNewTab,
+  createRule,
+  unsubscribe,
+  composeFromUnsubscribeMailtoLink,
 }

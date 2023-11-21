@@ -360,6 +360,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  dns_client:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: twake-supported
+      resolved-ref: "0ba4d48f287d408c70612dfc8bacc5ba11cd421b"
+      url: "https://github.com/dab246/dns_client.git"
+    source: git
+    version: "0.2.1"
   dotted_border:
     dependency: "direct main"
     description:
@@ -862,6 +871,14 @@ packages:
       relative: true
     source: path
     version: "1.0.0+1"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      sha256: "1be037f901137bf2b9a0c309e9bf2694d6ec77687645211218191ade4f41a4b8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   frontend_server_client:
     dependency: transitive
     description:

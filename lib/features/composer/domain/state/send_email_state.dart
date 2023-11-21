@@ -12,18 +12,18 @@ class SendEmailLoading extends UIState {}
 
 class SendEmailSuccess extends UIActionState {
 
-  final String? storedSendingId;
+  final EmailRequest emailRequest;
 
   SendEmailSuccess({
     jmap.State? currentEmailState,
     jmap.State? currentMailboxState,
-    this.storedSendingId,
+    required this.emailRequest,
   }) : super(currentEmailState, currentMailboxState);
 
   @override
   List<Object?> get props => [
     ...super.props,
-    storedSendingId,
+    emailRequest,
   ];
 }
 

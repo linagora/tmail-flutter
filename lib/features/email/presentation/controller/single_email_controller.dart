@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -58,6 +59,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
@@ -113,6 +116,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final calendarEvent = Rxn<CalendarEvent>();
   final eventActions = <EventAction>[].obs;
   final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final emailUnsubscribe = Rxn<EmailUnsubscribe>();
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -227,6 +231,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
         mailboxDashBoardController.clearEmailUIAction();
       }
+    });
+
+    ever(mailboxDashBoardController.viewState, (viewState) {
+      viewState.map((success) {
+        if (success is UnsubscribeEmailSuccess) {
+          emailUnsubscribe.value = null;
+        }
+      });
     });
   }
 
@@ -437,6 +449,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (isShowMessageReadReceipt) {
         _handleReadReceipt();
       }
+
+      if (currentEmail?.isSubscribed == false && success.emailCurrent?.hasListUnsubscribe == true) {
+        _handleUnsubscribe(success.emailCurrent!.listUnsubscribe);
+      } else {
+        emailUnsubscribe.value = null;
+      }
     }
   }
 
@@ -472,8 +490,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           emailId: currentEmail!.id!,
           createdTime: currentEmail?.receivedAt?.value ?? DateTime.now(),
           attachments: success.attachments,
-          headers: currentEmail?.emailHeader?.toSet(),
-          keywords: currentEmail?.keywords,
+          headers: success.emailCurrent?.headers,
+          keywords: success.emailCurrent?.keywords,
           htmlEmailContent: success.htmlEmailContent,
           messageId: success.emailCurrent?.messageId,
           references: success.emailCurrent?.references,
@@ -491,7 +509,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (isShowMessageReadReceipt) {
         _handleReadReceipt();
       }
+
+      if (currentEmail?.isSubscribed == false && success.emailCurrent?.hasListUnsubscribe == true) {
+        _handleUnsubscribe(success.emailCurrent!.listUnsubscribe);
+      } else {
+        emailUnsubscribe.value = null;
+      }
     }
+  }
+
+  void _handleUnsubscribe(String listUnsubscribe) {
+    emailUnsubscribe.value = EmailUtils.parsingUnsubscribe(listUnsubscribe);
   }
 
   void _handleReadReceipt() {
@@ -514,6 +542,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     attachments.clear();
     calendarEvent.value = null;
     eventActions.clear();
+    emailUnsubscribe.value = null;
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
@@ -931,18 +960,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _markAsEmailStarSuccess(Success success) {
-    if (success is MarkAsStarEmailSuccess) {
-      final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-      mailboxDashBoardController.setSelectedEmail(selectedEmail?.updateKeywords(success.updatedEmail.keywords));
-    }
+  void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
+    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+    mailboxDashBoardController.setSelectedEmail(selectedEmail?.updateKeywords(success.updatedEmail.keywords));
     mailboxDashBoardController.dispatchState(Right(success));
   }
 
   void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
     switch(actionType) {
       case EmailActionType.markAsUnread:
-        popBack();
         markAsEmailRead(presentationEmail, ReadActions.markAsUnread, MarkReadAction.tap);
         break;
       case EmailActionType.markAsStarred:
@@ -961,12 +987,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         deleteEmailPermanently(context, presentationEmail);
         break;
       case EmailActionType.moveToSpam:
-        popBack();
         moveToSpam(context, presentationEmail);
         break;
       case EmailActionType.unSpam:
-        popBack();
         unSpam(context, presentationEmail);
+        break;
+      case EmailActionType.createRule:
+        quickCreatingRule(context, presentationEmail.from!.first);
+        break;
+      case EmailActionType.unsubscribe:
+        _unsubscribeEmail(context, presentationEmail);
         break;
       default:
         break;
@@ -1374,5 +1404,75 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           )
       );
     }
+  }
+
+  void _unsubscribeEmail(BuildContext context, PresentationEmail presentationEmail) {
+    showConfirmDialogAction(
+      context,
+      '',
+      AppLocalizations.of(context).unsubscribe,
+      onConfirmAction: () {
+        if (emailUnsubscribe.value?.httpLinks.isNotEmpty == true) {
+          _handleUnsubscribeMailByHttpsLink(
+            context: context,
+            emailId: presentationEmail.id!,
+            httpLinks: emailUnsubscribe.value!.httpLinks
+          );
+        } else if (emailUnsubscribe.value?.mailtoLinks.isNotEmpty == true) {
+          _handleUnsubscribeMailByMailtoLink(
+            context: context,
+            emailId: presentationEmail.id!,
+            mailtoLinks: emailUnsubscribe.value!.mailtoLinks
+          );
+        }
+      },
+      showAsBottomSheet: true,
+      title: AppLocalizations.of(context).unsubscribeMail,
+      icon: SvgPicture.asset(imagePaths.icEmpty),
+      messageStyle: const TextStyle(
+        color: AppColor.messageDialogColor,
+        fontSize: 14,
+        fontWeight: FontWeight.w500
+      ),
+      listTextSpan: [
+        TextSpan(text: AppLocalizations.of(context).unsubscribeMailDialogMessage),
+        TextSpan(
+          text: ' ${presentationEmail.getSenderName()}',
+          style: const TextStyle(
+            color: AppColor.messageDialogHighlightColor,
+            fontSize: 15,
+            fontWeight: FontWeight.w500
+          ),
+        ),
+        const TextSpan(text: ' ?'),
+      ]
+    );
+  }
+
+  void _handleUnsubscribeMailByHttpsLink({
+    required BuildContext context,
+    required EmailId emailId,
+    required List<String> httpLinks
+  }) {
+    log('SingleEmailController::_handleUnsubscribeMailByHttpsLink:httpLinks: $httpLinks');
+    mailboxDashBoardController.unsubscribeMail(emailId);
+    AppUtils.launchLink(httpLinks.first);
+  }
+
+  void _handleUnsubscribeMailByMailtoLink({
+    required BuildContext context,
+    required EmailId emailId,
+    required List<String> mailtoLinks
+  }) {
+    log('SingleEmailController::_handleUnsubscribeMailByMailtoLink:mailtoLinks: $mailtoLinks');
+    final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(mailtoLinks.first);
+    mailboxDashBoardController.goToComposer(
+      ComposerArguments.fromUnsubscribeMailtoLink(
+        emailAddress: navigationRouter.emailAddress,
+        subject: navigationRouter.subject,
+        body: navigationRouter.body,
+        previousEmailId: emailId,
+      )
+    );
   }
 }

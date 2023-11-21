@@ -18,8 +18,10 @@ class ComposerArguments extends RouterArguments {
   final Role? mailboxRole;
   final SendingEmail? sendingEmail;
   final String? subject;
+  final String? body;
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
+  final EmailId? previousEmailId;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -31,8 +33,10 @@ class ComposerArguments extends RouterArguments {
     this.listSharedMediaFile,
     this.sendingEmail,
     this.subject,
+    this.body,
     this.messageId,
     this.references,
+    this.previousEmailId,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -59,11 +63,12 @@ class ComposerArguments extends RouterArguments {
       emailAddress: emailAddress
     );
 
-  factory ComposerArguments.fromMailtoUri({EmailAddress? emailAddress, String? subject}) =>
+  factory ComposerArguments.fromMailtoUri({EmailAddress? emailAddress, String? subject, String? body}) =>
     ComposerArguments(
       emailActionType: EmailActionType.composeFromMailtoUri,
       emailAddress: emailAddress,
       subject: subject,
+      body: body,
     );
 
   factory ComposerArguments.editDraftEmail(PresentationEmail presentationEmail) =>
@@ -136,6 +141,21 @@ class ComposerArguments extends RouterArguments {
     ? SendingEmailActionType.edit
     : SendingEmailActionType.create;
 
+  factory ComposerArguments.fromUnsubscribeMailtoLink({
+    EmailAddress? emailAddress,
+    String? subject,
+    String? body,
+    EmailId? previousEmailId
+  }) =>
+    ComposerArguments(
+      emailActionType: EmailActionType.composeFromUnsubscribeMailtoLink,
+      emailAddress: emailAddress,
+      subject: subject,
+      body: body,
+      previousEmailId: previousEmailId,
+    );
+
+
   @override
   List<Object?> get props => [
     emailActionType,
@@ -147,6 +167,7 @@ class ComposerArguments extends RouterArguments {
     listSharedMediaFile,
     sendingEmail,
     subject,
+    body,
     messageId,
     references,
   ];

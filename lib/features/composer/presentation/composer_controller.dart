@@ -489,6 +489,7 @@ class ComposerController extends BaseController {
             isInitialRecipient.value = true;
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }
+          _getEmailContentFromMailtoUri(arguments.body ?? '');
           _updateStatusEmailSendButton();
           break;
         case EmailActionType.reply:
@@ -523,6 +524,19 @@ class ComposerController extends BaseController {
           );
           _initAttachments(arguments.attachments ?? []);
           _getEmailContentFromSessionStorageBrowser(arguments.emailContents!);
+          break;
+        case EmailActionType.composeFromUnsubscribeMailtoLink:
+          if (arguments.subject != null) {
+            setSubjectEmail(arguments.subject!);
+            subjectEmailInputController.text = arguments.subject!;
+          }
+          if (arguments.emailAddress != null) {
+            listToEmailAddress.add(arguments.emailAddress!);
+            isInitialRecipient.value = true;
+            toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          }
+          _getEmailContentFromUnsubscribeMailtoLink(arguments.body ?? '');
+          _updateStatusEmailSendButton();
           break;
         default:
           break;
@@ -819,12 +833,13 @@ class ComposerController extends BaseController {
 
     if (!isEnableEmailSendButton.value) {
       showConfirmDialogAction(context,
-          AppLocalizations.of(context).message_dialog_send_email_without_recipient,
-          AppLocalizations.of(context).add_recipients,
-          onConfirmAction: () => {isSendEmailLoading.value = false},
-          title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
-          hasCancelButton: false);
+        AppLocalizations.of(context).message_dialog_send_email_without_recipient,
+        AppLocalizations.of(context).add_recipients,
+        onConfirmAction: () => isSendEmailLoading.value = false,
+        title: AppLocalizations.of(context).sending_failed,
+        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
+        hasCancelButton: false
+      ).whenComplete(() => isSendEmailLoading.value = false);
       return;
     }
 
@@ -834,54 +849,57 @@ class ComposerController extends BaseController {
         .toList();
     if (listEmailAddressInvalid.isNotEmpty) {
       showConfirmDialogAction(context,
-          AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
-          AppLocalizations.of(context).fix_email_addresses,
-          onConfirmAction: () {
-            toAddressExpandMode.value = ExpandMode.EXPAND;
-            ccAddressExpandMode.value = ExpandMode.EXPAND;
-            bccAddressExpandMode.value = ExpandMode.EXPAND;
-            isSendEmailLoading.value = false;
-          },
-          title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
-          hasCancelButton: false);
+        AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
+        AppLocalizations.of(context).fix_email_addresses,
+        onConfirmAction: () {
+          toAddressExpandMode.value = ExpandMode.EXPAND;
+          ccAddressExpandMode.value = ExpandMode.EXPAND;
+          bccAddressExpandMode.value = ExpandMode.EXPAND;
+          isSendEmailLoading.value = false;
+        },
+        title: AppLocalizations.of(context).sending_failed,
+        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
+        hasCancelButton: false
+      ).whenComplete(() => isSendEmailLoading.value = false);
       return;
     }
 
     if (subjectEmail.value == null || subjectEmail.isEmpty == true) {
       showConfirmDialogAction(context,
-          AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
-          AppLocalizations.of(context).send_anyway,
-          onConfirmAction: () => _handleSendMessages(context),
-          onCancelAction: () => {isSendEmailLoading.value = false},
-          title: AppLocalizations.of(context).empty_subject,
-          icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
-      );
+        AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
+        AppLocalizations.of(context).send_anyway,
+        onConfirmAction: () => _handleSendMessages(context),
+        onCancelAction: () => isSendEmailLoading.value = false,
+        title: AppLocalizations.of(context).empty_subject,
+        icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
+      ).whenComplete(() => isSendEmailLoading.value = false);
       return;
     }
 
     if (!uploadController.allUploadAttachmentsCompleted) {
       showConfirmDialogAction(
-          context,
-          AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
-          AppLocalizations.of(context).got_it,
-          onConfirmAction: () => {isSendEmailLoading.value = false},
-          title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
-          hasCancelButton: false);
+        context,
+        AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
+        AppLocalizations.of(context).got_it,
+        onConfirmAction: () => isSendEmailLoading.value = false,
+        title: AppLocalizations.of(context).sending_failed,
+        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
+        hasCancelButton: false
+      ).whenComplete(() => isSendEmailLoading.value = false);
       return;
     }
 
     if (!uploadController.hasEnoughMaxAttachmentSize()) {
       showConfirmDialogAction(
-          context,
-          AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
-              filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-          AppLocalizations.of(context).got_it,
-          onConfirmAction: () => {isSendEmailLoading.value = false},
-          title: AppLocalizations.of(context).sending_failed,
-          icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
-          hasCancelButton: false);
+        context,
+        AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
+            filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
+        AppLocalizations.of(context).got_it,
+        onConfirmAction: () => isSendEmailLoading.value = false,
+        title: AppLocalizations.of(context).sending_failed,
+        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
+        hasCancelButton: false
+      ).whenComplete(() => isSendEmailLoading.value = false);
       return;
     }
 
@@ -947,7 +965,8 @@ class ComposerController extends BaseController {
             ? arguments.presentationEmail?.id
             : null,
           emailIdAnsweredOrForwarded: arguments.presentationEmail?.id,
-          emailActionType: arguments.emailActionType
+          emailActionType: arguments.emailActionType,
+          previousEmailId: arguments.previousEmailId,
         );
 
     final mailboxRequest = mailboxDashBoardController.outboxMailbox?.id == null
@@ -1010,7 +1029,7 @@ class ComposerController extends BaseController {
             ),
             TextSpan(text: AppLocalizations.of(context).messageDialogWhenStoreSendingEmailTail)
           ]
-    );
+    ).whenComplete(() => isSendEmailLoading.value = false);
   }
 
   void _checkContactPermission() async {
@@ -1410,6 +1429,26 @@ class ComposerController extends BaseController {
   }
 
   void _getEmailContentFromContentShared(String content) {
+    consumeState(Stream.value(
+      Right(GetEmailContentSuccess(
+        htmlEmailContent: content,
+        attachments: [],
+      ))
+    ));
+  }
+
+  void _getEmailContentFromMailtoUri(String content) {
+    log('ComposerController::_getEmailContentFromMailtoUri:content: $content');
+    consumeState(Stream.value(
+      Right(GetEmailContentSuccess(
+        htmlEmailContent: content,
+        attachments: [],
+      ))
+    ));
+  }
+
+  void _getEmailContentFromUnsubscribeMailtoLink(String content) {
+    log('ComposerController::_getEmailContentFromUnsubscribeMailtoLink:content: $content');
     consumeState(Stream.value(
       Right(GetEmailContentSuccess(
         htmlEmailContent: content,

@@ -39,9 +39,11 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/email_property.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
+import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
@@ -230,7 +232,7 @@ class EmailAPI with HandleSetErrorMixin {
 
     final getEmailMethod = GetEmailMethod(accountId)
       ..addIds(emails.listEmailIds.toIds().toSet())
-      ..addProperties(Properties({'keywords'}));
+      ..addProperties(Properties({EmailProperty.keywords}));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
@@ -438,7 +440,7 @@ class EmailAPI with HandleSetErrorMixin {
 
     final getEmailMethod = GetEmailMethod(accountId)
       ..addIds(emails.listEmailIds.toIds().toSet())
-      ..addProperties(Properties({'keywords'}));
+      ..addProperties(Properties({EmailProperty.keywords}));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
@@ -651,6 +653,36 @@ class EmailAPI with HandleSetErrorMixin {
 
     if (resultList?.list.isNotEmpty == true) {
       return resultList!.list;
+    } else {
+      throw NotFoundEmailException();
+    }
+  }
+
+  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(emailId.generateMapUpdateObjectUnsubscribeMail());
+
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addIds({emailId.id})
+      ..addProperties(ThreadConstants.propertiesDefault);
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    requestBuilder.invocation(setEmailMethod);
+    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final getEmailResponse = response.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize);
+
+    if (getEmailResponse?.list.isNotEmpty == true) {
+      return getEmailResponse!.list.first;
     } else {
       throw NotFoundEmailException();
     }
