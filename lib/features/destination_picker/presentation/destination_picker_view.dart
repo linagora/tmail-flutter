@@ -7,6 +7,7 @@ import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_screen_type.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_search_mailbox_item_builder.dart';
@@ -131,15 +133,65 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                     ]);
                                   }
                                 }),
-                                Expanded(child: Container(
+                                Expanded(
+                                  child: Container(
                                     color: Colors.white,
-                                    child: RefreshIndicator(
-                                        color: AppColor.primaryColor,
-                                        onRefresh: () async => controller.getAllMailboxAction(),
-                                        child: Obx(() => controller.isSearchActive()
-                                            ? _buildListMailboxSearched(context, actions, mailboxIdSelected)
-                                            : _buildListMailbox(context, actions, mailboxIdSelected)))
-                                ))
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    child: Obx(() {
+                                      if (controller.isSearchActive()) {
+                                        if (PlatformInfo.isMobile) {
+                                          return RefreshIndicator(
+                                            color: AppColor.primaryColor,
+                                            onRefresh: () async => controller.getAllMailboxAction(),
+                                            child: _buildListMailboxSearched(context, actions, mailboxIdSelected)
+                                          );
+                                        } else {
+                                          return ScrollbarListView(
+                                            scrollBehavior: ScrollConfiguration.of(context).copyWith(
+                                              physics: const BouncingScrollPhysics(),
+                                              dragDevices: {
+                                                PointerDeviceKind.touch,
+                                                PointerDeviceKind.mouse,
+                                                PointerDeviceKind.trackpad
+                                              },
+                                            ),
+                                            scrollController: controller.destinationListScrollController,
+                                            child: RefreshIndicator(
+                                              color: AppColor.primaryColor,
+                                              onRefresh: () async => controller.getAllMailboxAction(),
+                                              child: _buildListMailboxSearched(context, actions, mailboxIdSelected)
+                                            )
+                                          );
+                                        }
+                                      } else {
+                                        if (PlatformInfo.isMobile) {
+                                          return RefreshIndicator(
+                                            color: AppColor.primaryColor,
+                                            onRefresh: () async => controller.getAllMailboxAction(),
+                                            child: _buildListMailbox(context, actions, mailboxIdSelected)
+                                          );
+                                        } else {
+                                          return ScrollbarListView(
+                                            scrollBehavior: ScrollConfiguration.of(context).copyWith(
+                                              physics: const BouncingScrollPhysics(),
+                                              dragDevices: {
+                                                PointerDeviceKind.touch,
+                                                PointerDeviceKind.mouse,
+                                                PointerDeviceKind.trackpad
+                                              },
+                                            ),
+                                            scrollController: controller.destinationListScrollController,
+                                            child: RefreshIndicator(
+                                              color: AppColor.primaryColor,
+                                              onRefresh: () async => controller.getAllMailboxAction(),
+                                              child: _buildListMailbox(context, actions, mailboxIdSelected)
+                                            )
+                                          );
+                                        }
+                                      }
+                                    })
+                                  )
+                                )
                               ]),
                             ))
                     )
@@ -396,6 +448,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         key: const Key('list_mailbox_searched'),
         itemCount: controller.listMailboxSearched.length,
         shrinkWrap: true,
+        controller: controller.destinationListScrollController,
         primary: false,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemBuilder: (context, index) {
