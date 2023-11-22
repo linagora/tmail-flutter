@@ -34,6 +34,8 @@ class Attachment with EquatableMixin {
 
   bool hasCid() => cid != null && cid?.isNotEmpty == true;
 
+  bool isInlined() => disposition == ContentDisposition.inline;
+
   String getDownloadUrl(String baseDownloadUrl, AccountId accountId) {
     final downloadUriTemplate = UriTemplate(baseDownloadUrl);
     final downloadUri = downloadUriTemplate.expand({
