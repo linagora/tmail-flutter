@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
@@ -46,6 +47,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   Widget _buildSearchBody(BuildContext context) {
     return Container(
       color: backgroundColor ?? Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(children: [
         Container(
           color: Colors.transparent,
@@ -55,7 +57,14 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         if (!controller.responsiveUtils.isWebDesktop(context))
           const Divider(color: AppColor.colorDividerComposer, height: 1),
         _buildLoadingView(),
-        Expanded(child: _buildMailboxListView(context))
+        Expanded(
+          child: PlatformInfo.isMobile
+            ? _buildMailboxListView(context)
+            : ScrollbarListView(
+                scrollController: controller.scrollbarController,
+                child: _buildMailboxListView(context)
+              )
+        )
       ]),
     );
   }
@@ -170,6 +179,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         padding: SearchMailboxUtils.getPaddingListViewMailboxSearched(context, controller.responsiveUtils),
         key: const Key('list_mailbox_searched'),
         itemCount: controller.listMailboxSearched.length,
+        controller: controller.scrollbarController,
         shrinkWrap: true,
         primary: false,
         itemBuilder: (context, index) {
