@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -82,8 +83,9 @@ class MailboxView extends BaseMailboxView {
   Widget _buildListMailbox(BuildContext context) {
     return Stack(
       children: [
-        ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(
+        ScrollbarListView(
+          scrollController: controller.mailboxListScrollController,
+          scrollBehavior: ScrollConfiguration.of(context).copyWith(
             physics: const BouncingScrollPhysics(),
             dragDevices: {
               PointerDeviceKind.touch,
