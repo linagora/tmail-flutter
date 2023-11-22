@@ -13,7 +13,7 @@ extension ListAttachmentExtension on List<Attachment> {
     return 0;
   }
 
-  List<Attachment> get listAttachmentsDisplayedOutSide => where((attachment) => attachment.noCid()).toList();
+  List<Attachment> get listAttachmentsDisplayedOutSide => where((attachment) => attachment.noCid() || !attachment.isInlined()).toList();
 
   List<Attachment> get listAttachmentsDisplayedInContent => where((attachment) => attachment.hasCid()).toList();
 
