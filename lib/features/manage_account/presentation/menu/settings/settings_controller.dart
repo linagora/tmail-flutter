@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -10,6 +11,7 @@ class SettingsController extends GetxController {
   final manageAccountDashboardController = Get.find<ManageAccountDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
+  final settingScrollController = ScrollController();
 
   void selectSettings(AccountMenuItem accountMenuItem) {
     log('SettingsController::selectSettings(): $accountMenuItem');
@@ -22,5 +24,11 @@ class SettingsController extends GetxController {
     manageAccountDashboardController.clearInputFormView();
     manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.none);
     manageAccountDashboardController.settingsPageLevel.value = SettingsPageLevel.universal;
+  }
+
+  @override
+  void onClose() {
+    settingScrollController.dispose();
+    super.onClose();
   }
 }
