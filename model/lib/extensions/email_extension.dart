@@ -133,6 +133,8 @@ extension EmailExtension on Email {
     return emailContents ?? [];
   }
 
+  List<Attachment> get htmlBodyAttachments => htmlBody?.map((item) => item.toAttachment()).toList() ?? [];
+
   List<Attachment> get allAttachments => attachments?.map((item) => item.toAttachment()).toList() ?? [];
 
   List<Attachment> get attachmentsWithCid => allAttachments.where((attachment) => attachment.hasCid()).toList();

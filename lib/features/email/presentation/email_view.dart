@@ -11,7 +11,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -313,11 +312,10 @@ class EmailView extends GetWidget<SingleEmailController> {
           emailUnsubscribe: controller.emailUnsubscribe.value
         )),
         Obx(() {
-          final attachments = controller.attachments.listAttachmentsDisplayedOutSide;
-          if (attachments.isNotEmpty) {
+          if (controller.attachments.isNotEmpty) {
             return EmailAttachmentsWidget(
               responsiveUtils: controller.responsiveUtils,
-              attachments: attachments,
+              attachments: controller.attachments,
               imagePaths: controller.imagePaths,
               onDragStarted: controller.mailboxDashBoardController.enableDraggableApp,
               onDragEnd: (details) {
@@ -330,7 +328,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   controller.exportAttachment(context, attachment);
                 }
               },
-              onTapShowAllAttachmentFile: () => controller.openAttachmentList(context, attachments),
+              onTapShowAllAttachmentFile: () => controller.openAttachmentList(context, controller.attachments),
             );
           } else {
             return const SizedBox.shrink();
