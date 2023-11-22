@@ -112,7 +112,6 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.done,
                       debounceDuration: TextFieldAutoCompleteEmailAddressWebStyles.debounceDuration,
-                      hasAddButton: false,
                       inputDecoration: InputDecoration(
                         filled: true,
                         fillColor: TextFieldAutoCompleteEmailAddressWebStyles.textInputFillColor,
@@ -134,6 +133,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                       enableBorderColor: AppColor.colorInputBorderCreateMailbox,
                       minTextFieldWidth: TextFieldAutoCompleteEmailAddressWebStyles.minTextFieldWidth,
                       resetTextOnSubmitted: true,
+                      autoScrollToInput: false,
                       suggestionsBoxElevation: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxElevation,
                       suggestionsBoxBackgroundColor: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxBackgroundColor,
                       suggestionsBoxRadius: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxRadius,
