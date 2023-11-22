@@ -559,7 +559,7 @@ class ComposerController extends BaseController {
   void _initAttachments(List<Attachment> attachments) {
     if (attachments.isNotEmpty) {
       initialAttachments = attachments;
-      uploadController.initializeUploadAttachments(attachments.listAttachmentsDisplayedOutSide);
+      uploadController.initializeUploadAttachments(attachments);
     }
   }
 
