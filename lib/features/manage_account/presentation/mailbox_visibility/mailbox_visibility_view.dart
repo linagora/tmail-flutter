@@ -1,10 +1,12 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/list/tree_view.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -42,7 +44,12 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
           _buildLoadingView(),
           Expanded(child: Padding(
             padding: MailboxVisibilityUtils.getPaddingListView(context, controller.responsiveUtils),
-            child: _buildListMailbox(context)
+            child: PlatformInfo.isMobile
+              ? _buildListMailbox(context)
+              : ScrollbarListView(
+                  scrollController: controller.mailboxListScrollController,
+                  child: _buildListMailbox(context)
+                )
           ))
         ]
       ),
