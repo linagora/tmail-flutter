@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/email/attachment.dart';
 
@@ -13,7 +14,19 @@ extension ListAttachmentExtension on List<Attachment> {
     return 0;
   }
 
-  List<Attachment> get listAttachmentsDisplayedOutSide => where((attachment) => attachment.noCid() || !attachment.isInlined()).toList();
+  List<Attachment> getListAttachmentsDisplayedOutside(List<Attachment>? htmlBodyAttachments) {
+    return where((attachment) => _validateOutsideAttachment(attachment, htmlBodyAttachments)).toList();
+  }
+
+  bool _validateOutsideAttachment(Attachment attachment, List<Attachment>? htmlBodyAttachments) {
+    final result = (attachment.noCid() || !attachment.isInlined()) && (htmlBodyAttachments == null || !htmlBodyAttachments._include(attachment));
+    return result;
+  }
+
+  bool _include(Attachment newAttachment) {
+    final matchedAttachment = firstWhereOrNull((attachment) => attachment.blobId == newAttachment.blobId);
+    return matchedAttachment != null;
+  }
 
   List<Attachment> get listAttachmentsDisplayedInContent => where((attachment) => attachment.hasCid()).toList();
 

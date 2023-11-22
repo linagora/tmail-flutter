@@ -61,13 +61,13 @@ class GetEmailContentInteractor {
 
         yield Right<Failure, Success>(GetEmailContentSuccess(
           htmlEmailContent: newEmailContents.asHtmlString,
-          attachments: email.allAttachments,
+          attachments: email.allAttachments.getListAttachmentsDisplayedOutside(email.htmlBodyAttachments),
           emailCurrent: email
         ));
       } else {
         yield Right<Failure, Success>(GetEmailContentSuccess(
           htmlEmailContent: '',
-          attachments: email.allAttachments,
+          attachments: email.allAttachments.getListAttachmentsDisplayedOutside(email.htmlBodyAttachments),
           emailCurrent: email
         ));
       }
