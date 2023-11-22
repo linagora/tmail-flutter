@@ -30,12 +30,13 @@ class ContactController extends BaseController {
 
   final searchQuery = SearchQuery.initial().obs;
   final listContactSearched = RxList<EmailAddress>();
+  final scrollListViewController = ScrollController();
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
 
-  final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 500), initialValue: '');
+  final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 300), initialValue: '');
   AccountId? _accountId;
   Session? _session;
 
@@ -84,6 +85,7 @@ class ContactController extends BaseController {
     textInputSearchFocus.dispose();
     textInputSearchController.dispose();
     _deBouncerTime.cancel();
+    scrollListViewController.dispose();
     super.onClose();
   }
 
