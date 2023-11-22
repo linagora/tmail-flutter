@@ -8,6 +8,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -301,11 +302,10 @@ class ThreadView extends GetWidget<ThreadController>
 
   Widget _buildListEmail(BuildContext context) {
     return Container(
-      margin: PlatformInfo.isWeb && controller.responsiveUtils.isDesktop(context)
-          ? const EdgeInsets.symmetric(horizontal: 4)
-          : EdgeInsets.zero,
+      padding: PlatformInfo.isWeb
+        ? const EdgeInsets.symmetric(horizontal: 4)
+        : EdgeInsets.zero,
       alignment: Alignment.center,
-      padding: EdgeInsets.zero,
       color: Colors.white,
       child: Obx(() {
         return Visibility(
@@ -340,7 +340,6 @@ class ThreadView extends GetWidget<ThreadController>
             && !controller.loadingMoreStatus.isRunning
             && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent
         ) {
-          log('ThreadView::_buildListEmailBody(): CALL LOAD MORE');
           if (controller.isSearchActive() || controller.searchController.advancedSearchIsActivated.isTrue) {
             controller.searchMoreEmails();
           } else {
@@ -349,20 +348,33 @@ class ThreadView extends GetWidget<ThreadController>
         }
         return false;
       },
-      child: Focus(
-        focusNode: controller.focusNodeKeyBoard,
-        autofocus: PlatformInfo.isWeb,
-        onKey: PlatformInfo.isWeb ? controller.handleKeyEvent : null,
-        child: ListView.builder(
-          controller: controller.listEmailController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
-          key: const PageStorageKey('list_presentation_email_in_threads'),
-          itemExtent: _getItemExtent(context),
-          itemCount: listPresentationEmail.length,
-          itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index]))
-        ),
-      )
+      child: PlatformInfo.isMobile
+        ? ListView.builder(
+            key: const PageStorageKey('list_presentation_email_in_threads'),
+            controller: controller.listEmailController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.zero,
+            itemExtent: _getItemExtent(context),
+            itemCount: listPresentationEmail.length,
+            itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index]))
+          )
+        : Focus(
+            focusNode: controller.focusNodeKeyBoard,
+            autofocus: true,
+            onKey: controller.handleKeyEvent,
+            child: ScrollbarListView(
+              scrollController: controller.listEmailController,
+              child: ListView.builder(
+                key: const PageStorageKey('list_presentation_email_in_threads'),
+                controller: controller.listEmailController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemExtent: _getItemExtent(context),
+                itemCount: listPresentationEmail.length,
+                itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index]))
+              ),
+            ),
+          )
     );
   }
 
