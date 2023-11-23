@@ -249,6 +249,8 @@ dependency_overrides:
 
   pointer_interceptor: 0.9.1
 
+  firebase_core_platform_interface: 4.6.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
