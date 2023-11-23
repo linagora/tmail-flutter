@@ -2386,7 +2386,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         B.JSArray_methods.addAll$1(t5, A._setArrayType([B.SizedBox_null_24_null_null, D.MailboxVisibilityHeaderWidget_null, B.SizedBox_null_16_null_null, B.Divider_CZ5], t4));
       t5.push(_this._buildLoadingView$0());
       A.Expando__checkType(_this);
-      t5.push(A.Expanded$(new A.Padding(C.MailboxVisibilityUtils_getPaddingListView(context, t2._as(t1.get(_this)).responsiveUtils), _this._buildListMailbox$1(context), _null), 1));
+      t4 = C.MailboxVisibilityUtils_getPaddingListView(context, t2._as(t1.get(_this)).responsiveUtils);
+      A.Expando__checkType(_this);
+      t1 = t2._as(t1.get(_this)).mailboxListScrollController;
+      t5.push(A.Expanded$(new A.Padding(t4, new A.ScrollbarListView(_this._buildListMailbox$1(context), t1, _null, _null), _null), 1));
       return new C.SettingDetailViewBuilder(t3, A.Column$(t5, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, _null);
     },
     _buildLoadingView$0() {
@@ -2637,47 +2640,51 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.SettingsFirstLevelView.prototype = {
     build$1(context) {
-      var t2, t3, t4, t5, t6, t7, t8, t9, t10, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, child, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      t3 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
+      t3 = t2._as(t1.get(_this)).settingScrollController;
       A.Expando__checkType(_this);
-      t3 = F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t3);
-      t4 = type$.AppLocalizations;
-      A.Localizations_of(context, B.Type_AppLocalizations_swi, t4).toString;
-      t5 = A.Intl__message("Profiles", _null, "profiles", _null, _null);
+      t4 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
       A.Expando__checkType(_this);
-      t6 = B.AccountMenuItem_0.getIcon$1(t2._as(t1.get(_this)).imagePaths);
-      A.Localizations_of(context, B.Type_AppLocalizations_swi, t4).toString;
-      t6 = C.SettingFirstLevelTileBuilder$(t5, t6, new C.SettingsFirstLevelView_build_closure(_this), A.Intl__message(string$.Info_a, _null, "profilesSettingExplanation", _null, _null));
+      t4 = F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t4);
+      t5 = type$.AppLocalizations;
+      A.Localizations_of(context, B.Type_AppLocalizations_swi, t5).toString;
+      t6 = A.Intl__message("Profiles", _null, "profiles", _null, _null);
       A.Expando__checkType(_this);
-      t5 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
+      t7 = B.AccountMenuItem_0.getIcon$1(t2._as(t1.get(_this)).imagePaths);
+      A.Localizations_of(context, B.Type_AppLocalizations_swi, t5).toString;
+      t7 = C.SettingFirstLevelTileBuilder$(t6, t7, new C.SettingsFirstLevelView_build_closure(_this), A.Intl__message(string$.Info_a, _null, "profilesSettingExplanation", _null, _null));
       A.Expando__checkType(_this);
-      t5 = F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t5);
-      t7 = B.AccountMenuItem_5.getName$1(context);
+      t6 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
       A.Expando__checkType(_this);
-      t8 = B.AccountMenuItem_5.getIcon$1(t2._as(t1.get(_this)).imagePaths);
-      A.Localizations_of(context, B.Type_AppLocalizations_swi, t4).toString;
-      t8 = C.SettingFirstLevelTileBuilder$(t7, t8, new C.SettingsFirstLevelView_build_closure0(_this), A.Intl__message(string$.Show__, _null, "folderVisibilitySubtitle", _null, _null));
+      t6 = F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t6);
+      t8 = B.AccountMenuItem_5.getName$1(context);
       A.Expando__checkType(_this);
-      t7 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
+      t9 = B.AccountMenuItem_5.getIcon$1(t2._as(t1.get(_this)).imagePaths);
+      A.Localizations_of(context, B.Type_AppLocalizations_swi, t5).toString;
+      t9 = C.SettingFirstLevelTileBuilder$(t8, t9, new C.SettingsFirstLevelView_build_closure0(_this), A.Intl__message(string$.Show__, _null, "folderVisibilitySubtitle", _null, _null));
       A.Expando__checkType(_this);
-      t9 = type$.JSArray_Widget;
-      t7 = A.Column$(A._setArrayType([t8, F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t7)], t9), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
-      t8 = B.AccountMenuItem_1.getName$1(context);
+      t8 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
       A.Expando__checkType(_this);
-      t8 = C.SettingFirstLevelTileBuilder$(t8, B.AccountMenuItem_1.getIcon$1(t2._as(t1.get(_this)).imagePaths), new C.SettingsFirstLevelView_build_closure1(_this), _null);
+      t10 = type$.JSArray_Widget;
+      t8 = A.Column$(A._setArrayType([t9, F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t8)], t10), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
+      t9 = B.AccountMenuItem_1.getName$1(context);
       A.Expando__checkType(_this);
-      t10 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
+      t9 = C.SettingFirstLevelTileBuilder$(t9, B.AccountMenuItem_1.getIcon$1(t2._as(t1.get(_this)).imagePaths), new C.SettingsFirstLevelView_build_closure1(_this), _null);
       A.Expando__checkType(_this);
-      t10 = F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t10);
-      A.Localizations_of(context, B.Type_AppLocalizations_swi, t4).toString;
-      t4 = A.Intl__message("Sign out", _null, "sign_out", _null, _null);
+      t11 = C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils);
+      A.Expando__checkType(_this);
+      t11 = F.Divider$(G.Color_4291217096, C.SettingsUtils_getHorizontalPadding(context, t2._as(t1.get(_this)).responsiveUtils), 1, t11);
+      A.Localizations_of(context, B.Type_AppLocalizations_swi, t5).toString;
+      t5 = A.Intl__message("Sign out", _null, "sign_out", _null, _null);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      return A.SingleChildScrollView$(A.Column$(A._setArrayType([new A.Obx(new C.SettingsFirstLevelView_build_closure2(_this, context), _null), t3, t6, t5, new A.Obx(new C.SettingsFirstLevelView_build_closure3(_this, context), _null), new A.Obx(new C.SettingsFirstLevelView_build_closure4(_this, context), _null), new A.Obx(new C.SettingsFirstLevelView_build_closure5(_this, context), _null), t7, t8, t10, C.SettingFirstLevelTileBuilder$(t4, "assets/images/ic_sign_out.svg", new C.SettingsFirstLevelView_build_closure6(_this), _null)], t9), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, _null, _null, _null, B.Axis_1);
+      child = A.SingleChildScrollView$(A.Column$(A._setArrayType([new A.Obx(new C.SettingsFirstLevelView_build_closure2(_this, context), _null), t4, t7, t6, new A.Obx(new C.SettingsFirstLevelView_build_closure3(_this, context), _null), new A.Obx(new C.SettingsFirstLevelView_build_closure4(_this, context), _null), new A.Obx(new C.SettingsFirstLevelView_build_closure5(_this, context), _null), t8, t9, t11, C.SettingFirstLevelTileBuilder$(t5, "assets/images/ic_sign_out.svg", new C.SettingsFirstLevelView_build_closure6(_this), _null)], t10), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), t3, _null, _null, _null, _null, B.Axis_1);
+      A.Expando__checkType(_this);
+      return new A.Padding(B.EdgeInsets_4_0_4_0, new A.ScrollbarListView(child, t2._as(t1.get(_this)).settingScrollController, _null, _null), _null);
     }
   };
   C.SettingsView.prototype = {
@@ -3187,7 +3194,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t2.get$isEmpty(t2))
         t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure5(t1));
     },
-    $signature: 6
+    $signature: 7
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure5.prototype = {
     call$0() {
@@ -4192,7 +4199,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t3._as(t2.get(t1)).accountId;
       t4.logout$2(t5, t1.get$value(t1));
     },
-    $signature: 6
+    $signature: 7
   };
   C.ManageAccountDashBoardView__buildRightHeader___closure0.prototype = {
     call$0() {
@@ -4203,7 +4210,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A.popAndPush("/settings", new A.ManageAccountArguments(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).sessionCurrent, null));
     },
-    $signature: 6
+    $signature: 7
   };
   C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure.prototype = {
     call$0() {
@@ -5373,7 +5380,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1))._richTextControllerForWeb.editorController._evaluateJavascriptWeb$1$data(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: setFocus"], type$.String, type$.nullable_Object));
     },
-    $signature: 6
+    $signature: 7
   };
   (function aliases() {
     var _ = C.__RadioState_State_TickerProviderStateMixin.prototype;
@@ -5584,4 +5591,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["G77oN0KL+syE2n56jsSKyJIetBs="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["4SyJI5UoZqSoV8i1SvouZzom490="] = $__dart_deferred_initializers__.current
