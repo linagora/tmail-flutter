@@ -1,5 +1,7 @@
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 11 * * *"
 
 name: Build dev binaries
 
