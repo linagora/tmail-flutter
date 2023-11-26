@@ -628,18 +628,20 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     fit: BoxFit.fill),
                 const SizedBox(width: 4),
                 Text(
-                  filter.getTitle(
-                    context,
-                    receiveTimeType: controller.searchController.receiveTimeFiltered,
-                    startDate: controller.searchController.startDateFiltered,
-                    endDate: controller.searchController.endDateFiltered,
-                    sortOrderType: controller.searchController.sortOrderFiltered.value,
-                  ),
+                  filter == QuickSearchFilter.fromMe
+                    ? _getQuickSearchFilterFromTitle(context)
+                    :  filter.getTitle(
+                        context,
+                        receiveTimeType: controller.searchController.receiveTimeFiltered,
+                        startDate: controller.searchController.startDateFiltered,
+                        endDate: controller.searchController.endDateFiltered,
+                        sortOrderType: controller.searchController.sortOrderFiltered.value,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: filter.getTextStyle(isFilterSelected: isFilterSelected),
                 ),
-                if (filter == QuickSearchFilter.last7Days)
+                if (filter == QuickSearchFilter.last7Days || filter == QuickSearchFilter.fromMe)
                   ... [
                     const SizedBox(width: 4),
                     SvgPicture.asset(
@@ -723,5 +725,18 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         onTapActionCallback: () => controller.goToComposer(ComposerArguments()),
       ),
     );
+  }
+
+  String _getQuickSearchFilterFromTitle(BuildContext context) {
+    final searchEmailFilterFromFiled = controller.searchController.searchEmailFilter.value.from;
+    if (searchEmailFilterFromFiled.length == 1) {
+      if (searchEmailFilterFromFiled.first == controller.userProfile.value?.email) {
+        return QuickSearchFilter.fromMe.getTitle(context);
+      } else {
+        return '${AppLocalizations.of(context).from_email_address_prefix} ${searchEmailFilterFromFiled.first}';
+      }
+    } else {
+      return AppLocalizations.of(context).from_email_address_prefix;
+    }
   }
 }
