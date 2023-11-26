@@ -2,6 +2,8 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dart';
+import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
@@ -41,6 +43,9 @@ class DialogRouter {
       case AppRoutes.destinationPicker:
         DestinationPickerBindings().dependencies();
         break;
+      case AppRoutes.contact:
+        ContactBindings().dependencies();
+        break;
     }
   }
 
@@ -55,6 +60,8 @@ class DialogRouter {
         return IdentityCreatorView();
       case AppRoutes.destinationPicker:
         return DestinationPickerView();
+      case AppRoutes.contact:
+        return const ContactView();
       default:
         return const SizedBox.shrink();
     }
