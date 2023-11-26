@@ -3667,4 +3667,11 @@ class AppLocalizations {
       name: 'cannotCompressInlineImage',
     );
   }
+
+  String get me {
+    return Intl.message(
+      'Me',
+      name: 'me',
+    );
+  }
 }
