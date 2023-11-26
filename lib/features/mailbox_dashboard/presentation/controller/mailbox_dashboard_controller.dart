@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.d
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_arguments.dart';
+import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -1438,6 +1439,14 @@ class MailboxDashBoardController extends ReloadableController {
     return searchController.selectQuickSearchFilter(filter, userProfile.value!);
   }
 
+  void selectQuickSearchFilterFrom(EmailAddress fromEmailFilter) {
+    return searchController.selectQuickSearchFilter(
+      QuickSearchFilter.fromMe,
+      userProfile.value!,
+      fromEmailFilter: fromEmailFilter
+    );
+  }
+
   void addFilterToSuggestionForm(QuickSearchFilter filter) {
     searchController.addFilterToSuggestionForm(filter);
   }
@@ -1518,9 +1527,23 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void selectQuickSearchFilterAction(QuickSearchFilter filter) {
+  void selectQuickSearchFilterAction(QuickSearchFilter filter) async {
     log('MailboxDashBoardController::selectQuickSearchFilterAction(): filter: $filter');
-    selectQuickSearchFilter(filter);
+    if (filter == QuickSearchFilter.fromMe &&
+      accountId.value != null &&
+      sessionCurrent != null
+    ) {
+      final listContactSelected = searchController.searchEmailFilter.value.from;
+      final arguments = ContactArguments(accountId.value!, sessionCurrent!, listContactSelected);
+
+      final newContact = await DialogRouter.pushGeneralDialog(routeName: AppRoutes.contact, arguments: arguments);
+
+      if (newContact is EmailAddress) {
+        selectQuickSearchFilterFrom(newContact);
+      }
+    } else {
+      selectQuickSearchFilter(filter);
+    }
     dispatchAction(StartSearchEmailAction(filter: filter));
   }
 
