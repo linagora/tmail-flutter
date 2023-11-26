@@ -18,11 +18,9 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ContactController extends BaseController {
@@ -174,11 +172,6 @@ class ContactController extends BaseController {
   void selectContact(BuildContext context, EmailAddress emailAddress) {
     KeyboardUtils.hideKeyboard(context);
     popBack(result: emailAddress);
-  }
-
-  SuggestionEmailAddress getFromMeSuggestion(BuildContext context) {
-    final userEmailAddress = EmailAddress(AppLocalizations.of(context).me, userProfile.value?.email);
-    return SuggestionEmailAddress(userEmailAddress, state: SuggestionEmailState.valid);
   }
 
   void closeContactView(BuildContext context) {
