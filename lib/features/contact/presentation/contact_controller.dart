@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
+import 'package:model/user/user_profile.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -17,9 +18,11 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ContactController extends BaseController {
@@ -31,6 +34,7 @@ class ContactController extends BaseController {
   final searchQuery = SearchQuery.initial().obs;
   final listContactSearched = RxList<EmailAddress>();
   final scrollListViewController = ScrollController();
+  final userProfile = Rxn<UserProfile>();
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -64,6 +68,9 @@ class ContactController extends BaseController {
     if (arguments != null) {
       _accountId = arguments!.accountId;
       _session = arguments!.session;
+      if (_session != null) {
+        userProfile.value = UserProfile(_session!.username.value);
+      }
       final listContactSelected = arguments!.listContactSelected;
       log('ContactController::onReady(): arguments: $arguments');
       log('ContactController::onReady(): listContactSelected: $listContactSelected');
@@ -167,6 +174,11 @@ class ContactController extends BaseController {
   void selectContact(BuildContext context, EmailAddress emailAddress) {
     KeyboardUtils.hideKeyboard(context);
     popBack(result: emailAddress);
+  }
+
+  SuggestionEmailAddress getFromMeSuggestion(BuildContext context) {
+    final userEmailAddress = EmailAddress(AppLocalizations.of(context).me, userProfile.value?.email);
+    return SuggestionEmailAddress(userEmailAddress, state: SuggestionEmailState.valid);
   }
 
   void closeContactView(BuildContext context) {
