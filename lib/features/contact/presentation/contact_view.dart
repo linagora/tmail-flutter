@@ -78,25 +78,34 @@ class ContactView extends GetWidget<ContactController> {
                               onTextChangeSearchAction: controller.onTextSearchChange,
                               onSearchTextAction: controller.onSearchTextAction,
                             ),
-                            if (PlatformInfo.isWeb && !controller.responsiveUtils.isMobile(context))
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
-                                child: Column(
-                                  children: [
-                                    Obx(() => ContactSuggestionBoxItem(
-                                      controller.getFromMeSuggestion(context),
-                                      padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                                      selectedContactCallbackAction: (contact) {
-                                        controller.selectContact(context, contact);
-                                      },
-                                    )),
-                                    Padding(
-                                      padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
-                                      child: const Divider(height: 1, color: AppColor.colorDivider),
+                            if (PlatformInfo.isWeb)
+                              Obx(() {
+                                final userEmail = controller.userProfile.value?.email;
+                                if (userEmail != null && userEmail.isNotEmpty) {
+                                  final userEmailAddress = EmailAddress(AppLocalizations.of(context).me, controller.userProfile.value?.email);
+                                  final fromMeSuggestionEmailAddress = SuggestionEmailAddress(userEmailAddress, state: SuggestionEmailState.valid);
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                                    child: Column(
+                                      children: [
+                                        ContactSuggestionBoxItem(
+                                          fromMeSuggestionEmailAddress,
+                                          padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                                          selectedContactCallbackAction: (contact) {
+                                            controller.selectContact(context, contact);
+                                          },
+                                        ),
+                                        Padding(
+                                          padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                                          child: const Divider(height: 1, color: AppColor.colorDivider),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
                             Expanded(child: Obx(() {
                               if (controller.listContactSearched.isNotEmpty) {
                                 if (PlatformInfo.isMobile) {
