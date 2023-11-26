@@ -96,9 +96,7 @@ enum QuickSearchFilter {
       case QuickSearchFilter.last7Days:
         return true;
       case QuickSearchFilter.fromMe:
-        return userProfile != null &&
-          filter.from.contains(userProfile.email) &&
-          filter.from.length == 1;
+        return filter.from.length == 1;
       case QuickSearchFilter.sortBy:
         return true;
     }
