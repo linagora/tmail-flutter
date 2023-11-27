@@ -2,7 +2,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
-import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -378,7 +377,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                               widthContent: constraints.maxWidth,
                               heightContent: constraints.maxHeight,
                               contentHtml: allEmailContents,
-                              controller: HtmlViewerControllerForWeb(),
                               mailtoDelegate: controller.openMailToLink,
                               direction: AppUtils.getCurrentDirection(context),
                             ),
