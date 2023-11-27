@@ -128,6 +128,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
 
+  EmailLoaded? get currentEmailLoaded => _currentEmailLoaded;
+
   SingleEmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,
