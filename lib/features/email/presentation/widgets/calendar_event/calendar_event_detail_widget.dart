@@ -1,4 +1,5 @@
 
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
@@ -6,6 +7,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_ev
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_detail_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_body_content_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_description_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_link_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
@@ -16,15 +18,21 @@ class CalendarEventDetailWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
   final List<EventAction> eventActions;
+  final String emailContent;
   final OnOpenNewTabAction? onOpenNewTabAction;
   final OnOpenComposerAction? onOpenComposerAction;
+  final bool? isDraggableAppActive;
+  final OnMailtoDelegateAction? onMailtoDelegateAction;
 
   const CalendarEventDetailWidget({
     super.key,
     required this.calendarEvent,
     required this.eventActions,
+    required this.emailContent,
+    this.isDraggableAppActive,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
+    this.onMailtoDelegateAction,
   });
 
   @override
@@ -58,6 +66,15 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 description: calendarEvent.description!,
                 onOpenComposerAction: onOpenComposerAction,
                 onOpenNewTabAction: onOpenNewTabAction,
+              )
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+              child: EventBodyContentWidget(
+                content: emailContent,
+                isDraggableAppActive: isDraggableAppActive,
+                onMailtoDelegateAction: onMailtoDelegateAction,
               )
             ),
           if (calendarEvent.dateTimeEventAsString.isNotEmpty)
