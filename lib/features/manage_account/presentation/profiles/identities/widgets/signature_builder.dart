@@ -1,6 +1,5 @@
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
-import 'package:core/presentation/views/html_viewer/html_viewer_controller_for_web.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -41,7 +40,6 @@ class SignatureBuilder extends StatelessWidget {
           contentHtml: signatureSelected,
           widthContent: width,
           heightContent: height,
-          controller: HtmlViewerControllerForWeb(),
           allowResizeToDocumentSize: false,
           direction: AppUtils.getCurrentDirection(context),
         );
