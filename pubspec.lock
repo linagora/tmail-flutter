@@ -363,9 +363,11 @@ packages:
   dns_client:
     dependency: "direct main"
     description:
-      path: "../dns_client"
-      relative: true
-    source: path
+      path: "."
+      ref: twake-supported
+      resolved-ref: "710c4f09cbde3ea954aa8600529b032a2a9e9e90"
+      url: "https://github.com/aryan-more/dns_client.git"
+    source: git
     version: "0.2.1"
   dotted_border:
     dependency: "direct main"
@@ -387,20 +389,19 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: patch-1
-      resolved-ref: "1bb76de05950cb16a3062290ddd5539a3d8e4208"
-      url: "https://github.com/aryan-more/enough_html_editor.git"
+      ref: "upgrade_v3.16.0"
+      resolved-ref: da81e3d9864ffe97472b54020f83bd1f1d4db2b8
+      url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
   enough_platform_widgets:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: cca0690807cc8c7a2226c8d56328845e243b89e7
-      url: "https://github.com/Enough-Software/enough_platform_widgets"
-    source: git
-    version: "0.8.0"
+      name: enough_platform_widgets
+      sha256: c0defcb43452ba5df1058567fd6b920bf49f3fb6e6c57ee822a091f084cdee5f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   equatable:
     dependency: "direct main"
     description:
@@ -626,9 +627,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: a811326389c06503148f95e8154af1921c52e8a1
-      url: "https://github.com/aryan-more/flutter-date-range-picker"
+      ref: "upgrade_v3.16.0"
+      resolved-ref: "2b4b4613d8afa891f0f5cad9c9cbeea9be6b5637"
+      url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
     version: "1.0.2"
   flutter_dotenv:
@@ -1387,9 +1388,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: c6cfdb70a1e606b7991932b8b29ed8b27595edcb
-      url: "https://github.com/aryan-more/rich-text-composer.git"
+      ref: "upgrade_v3.16.0"
+      resolved-ref: fd3032a78b4c2171929a978b1af9dcad6dc5e650
+      url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"
   rule_filter:

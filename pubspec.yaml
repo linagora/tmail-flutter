@@ -48,8 +48,8 @@ dependencies:
   ### Dependencies from git ###
   rich_text_composer:
     git:
-      url: https://github.com/aryan-more/rich-text-composer.git
-      ref: master
+      url: https://github.com/linagora/rich-text-composer.git
+      ref: upgrade_v3.16.0
 
   html_editor_enhanced:
     git:
@@ -78,8 +78,8 @@ dependencies:
 
   flutter_date_range_picker:
     git:
-      url: https://github.com/aryan-more/flutter-date-range-picker
-      ref: master
+      url: https://github.com/linagora/flutter-date-range-picker.git
+      ref: upgrade_v3.16.0
 
   super_tag_editor:
     git:
@@ -88,10 +88,9 @@ dependencies:
 
   # to do: We will change it when the PR (https://github.com/dietfriends/dns_client/pull/9) in upstream repository will be merged
   dns_client:
-    path: ../dns_client
-    # git:
-      # url: https://github.com/aryan-more/dns_client.git
-      # ref: twake-supported
+    git:
+      url: https://github.com/aryan-more/dns_client.git
+      ref: twake-supported
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
