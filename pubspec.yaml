@@ -89,7 +89,7 @@ dependencies:
   # to do: We will change it when the PR (https://github.com/dietfriends/dns_client/pull/9) in upstream repository will be merged
   dns_client:
     git:
-      url: https://github.com/aryan-more/dns_client.git
+      url: https://github.com/linagora/dns_client.git
       ref: twake-supported
 
   ### Dependencies from pub.dev ###

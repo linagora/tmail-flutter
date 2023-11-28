@@ -365,8 +365,8 @@ packages:
     description:
       path: "."
       ref: twake-supported
-      resolved-ref: "710c4f09cbde3ea954aa8600529b032a2a9e9e90"
-      url: "https://github.com/aryan-more/dns_client.git"
+      resolved-ref: "0966c504c1a813ff40e22ea8896537c32d97b82d"
+      url: "https://github.com/linagora/dns_client.git"
     source: git
     version: "0.2.1"
   dotted_border:
