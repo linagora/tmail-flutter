@@ -1,6 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
@@ -13,7 +15,8 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    final child = SingleChildScrollView(
+      controller: PlatformInfo.isMobile ? null : controller.settingScrollController,
       child: Column(children: [
         Obx(() => UserInformationWidget(
           userProfile: controller.manageAccountDashboardController.userProfile.value,
@@ -131,5 +134,17 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         ),
       ]),
     );
+
+    if (PlatformInfo.isMobile) {
+      return child;
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: ScrollbarListView(
+          scrollController: controller.settingScrollController,
+          child: child
+        ),
+      );
+    }
   }
 }

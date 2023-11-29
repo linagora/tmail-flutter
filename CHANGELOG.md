@@ -1,3 +1,22 @@
+## [0.10.5] - 2023-11-21
+### Added
+- Support multiple condition/actions for Filter Rule
+- Support Cyrus/Stalwart server
+- Sorting search results
+- Autocompleting people in quick search
+- JMAP endpoint auto discovery
+- Unsubscribe from email/mailing lists
+
+### Fixed
+- Suggestion displayed on top when having many recipients
+- Add field 'From' to composer
+- Change input suggestion field for fields 'From/To' in advance search
+- Spam banner
+- Mark as read when moved to spam
+- User has been log out once the network connection is not stable
+- Offline mode on iOS
+- Selection mode when dragging and moving email
+
 ## [0.10.4] - 2023-10-31
 ### Added
 - Communicating L18n to remote servers
@@ -330,6 +349,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.10.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.5
 [0.10.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.4
 [0.10.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.3
 [0.10.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.2

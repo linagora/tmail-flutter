@@ -635,7 +635,11 @@ class ThreadController extends BaseController with EmailActionController {
 
     latestEmailSelectedOrUnselected.value = emailsInCurrentMailbox
       .firstWhereOrNull((e) => e.id == presentationEmailSelected.id);
-    focusNodeKeyBoard.requestFocus();
+
+    if (!PlatformInfo.isMobile) {
+      focusNodeKeyBoard.requestFocus();
+    }
+
     if (_isUnSelectedAll()) {
       mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
       mailboxDashBoardController.listEmailSelected.clear();

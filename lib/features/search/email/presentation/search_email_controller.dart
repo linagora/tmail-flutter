@@ -14,8 +14,6 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -49,6 +47,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
@@ -96,6 +95,7 @@ class SearchEmailController extends BaseController
   final searchIsRunning = RxBool(false);
   final emailReceiveTimeType = EmailReceiveTimeType.allTime.obs;
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
+  final emailSortOrderType = EmailSortOrderType.mostRecent.obs;
 
   late Debouncer<String> _deBouncerTime;
   late Worker dashBoardViewStateWorker;
@@ -229,9 +229,7 @@ class SearchEmailController extends BaseController
         session!,
         accountId!,
         limit: limit,
-        sort: <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-            ..setIsAscending(false)),
+        sort: emailSortOrderType.value.getSortOrder().toNullable(),
         filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ));
@@ -274,9 +272,7 @@ class SearchEmailController extends BaseController
           session,
           accountId,
           limit: UnsignedInt(5),
-            sort: <Comparator>{}..add(
-              EmailComparator(EmailComparatorProperty.receivedAt)
-                ..setIsAscending(false)),
+            sort: emailSortOrderType.value.getSortOrder().toNullable(),
           filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
           properties: ThreadConstants.propertiesQuickSearch)
         .then((result) => result.fold(
@@ -302,9 +298,7 @@ class SearchEmailController extends BaseController
         session!,
         accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-            ..setIsAscending(false)),
+        sort: emailSortOrderType.value.getSortOrder().toNullable(),
         filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ));
@@ -347,9 +341,7 @@ class SearchEmailController extends BaseController
         session!,
         accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-            ..setIsAscending(false)),
+        sort: simpleSearchFilter.value.sortOrder,
         filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
         lastEmailId: lastEmail.id
@@ -416,6 +408,8 @@ class SearchEmailController extends BaseController
         return simpleSearchFilter.value.hasAttachment == true;
       case QuickSearchFilter.last7Days:
         return true;
+      case QuickSearchFilter.sortBy:
+        return true;
       default:
         return false;
     }
@@ -436,6 +430,11 @@ class SearchEmailController extends BaseController
           beforeOption: const None()
         );
         break;
+      case QuickSearchFilter.sortBy:
+        _updateSimpleSearchFilter(
+          sortOrderOption: emailSortOrderType.value.getSortOrder(),
+          beforeOption: const None()
+        );
       default:
         break;
     }
@@ -482,6 +481,16 @@ class SearchEmailController extends BaseController
       _setEmailReceiveTimeType(emailReceiveTimeType);
       _searchEmailAction(context);
     }
+  }
+
+  void selectSortOrderQuickSearchFilter(BuildContext context, EmailSortOrderType sortOrderType) {
+    popBack();
+    _updateSimpleSearchFilter(
+      sortOrderOption: sortOrderType.getSortOrder(),
+      beforeOption: const None()
+    );
+    emailSortOrderType.value = sortOrderType;
+    _searchEmailAction(context);
   }
 
   void selectMailboxForSearchFilter(BuildContext context, PresentationMailbox? mailbox) async {
@@ -599,7 +608,8 @@ class SearchEmailController extends BaseController
     Option<bool>? hasAttachmentOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
-    Option<UTCDate>? endDateOption
+    Option<UTCDate>? endDateOption,
+    Option<Set<Comparator>>? sortOrderOption,
   }) {
     simpleSearchFilter.value = simpleSearchFilter.value.copyWith(
       fromOption: fromOption,
@@ -610,7 +620,8 @@ class SearchEmailController extends BaseController
       hasAttachmentOption: hasAttachmentOption,
       beforeOption: beforeOption,
       startDateOption: startDateOption,
-      endDateOption: endDateOption
+      endDateOption: endDateOption,
+      sortOrderOption: sortOrderOption
     );
     simpleSearchFilter.refresh();
   }

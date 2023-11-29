@@ -559,7 +559,7 @@ class ComposerController extends BaseController {
   void _initAttachments(List<Attachment> attachments) {
     if (attachments.isNotEmpty) {
       initialAttachments = attachments;
-      uploadController.initializeUploadAttachments(attachments.listAttachmentsDisplayedOutSide);
+      uploadController.initializeUploadAttachments(attachments);
     }
   }
 
@@ -1699,18 +1699,12 @@ class ComposerController extends BaseController {
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
           toAddressExpandMode.value = ExpandMode.EXPAND;
-          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
           break;
         case PrefixEmailAddress.cc:
           ccAddressExpandMode.value = ExpandMode.EXPAND;
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
-          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
           break;
         case PrefixEmailAddress.bcc:
           bccAddressExpandMode.value = ExpandMode.EXPAND;
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
-          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
           break;
         default:
           break;
@@ -1720,9 +1714,30 @@ class ComposerController extends BaseController {
         htmlEditorApi?.unfocus();
       }
     } else {
-      if (PlatformInfo.isMobile) {
-        _collapseAllRecipient();
-        _autoCreateEmailTag();
+      switch(prefixEmailAddress) {
+        case PrefixEmailAddress.to:
+          toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          final inputToEmail = toEmailAddressController.text;
+          if (inputToEmail.isNotEmpty) {
+            _autoCreateToEmailTag(inputToEmail);
+          }
+          break;
+        case PrefixEmailAddress.cc:
+          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          final inputCcEmail = ccEmailAddressController.text;
+          if (inputCcEmail.isNotEmpty) {
+            _autoCreateCcEmailTag(inputCcEmail);
+          }
+          break;
+        case PrefixEmailAddress.bcc:
+          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          final inputBccEmail = bccEmailAddressController.text;
+          if (inputBccEmail.isNotEmpty) {
+            _autoCreateBccEmailTag(inputBccEmail);
+          }
+          break;
+        default:
+          break;
       }
     }
   }
