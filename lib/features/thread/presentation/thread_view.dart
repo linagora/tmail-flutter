@@ -48,8 +48,9 @@ class ThreadView extends GetWidget<ThreadController>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => controller.backButtonPressedCallbackAction(context),
+    return PopScope(
+      onPopInvoked: (didPop) => !didPop ? controller.backButtonPressedCallbackAction(context) : null,
+      canPop: controller.systemBackGesturesEnable,
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(

@@ -367,11 +367,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     );
   }
 
-  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
-    if (PlatformInfo.isMobile) {
-      dashboardController.openDefaultMailbox();
-    }
-    return false;
+  void backButtonPressedCallbackAction(BuildContext context) {
+    dashboardController.openDefaultMailbox();
   }
 
   @override

@@ -270,10 +270,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     }
   }
 
-  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
-    if (PlatformInfo.isMobile) {
-      backToMailboxDashBoard(context);
-    }
-    return false;
+  void backButtonPressedCallbackAction(BuildContext context) {
+    backToMailboxDashBoard(context);
   }
 }

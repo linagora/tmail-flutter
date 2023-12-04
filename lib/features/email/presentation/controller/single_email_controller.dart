@@ -1308,11 +1308,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
-    if (PlatformInfo.isMobile) {
-      closeEmailView(context);
-    }
-    return false;
+  void backButtonPressedCallbackAction(BuildContext context) {
+    closeEmailView(context);
   }
 
   void _storeOpenedEmailAction(Session? session, AccountId? accountId, DetailedEmail detailedEmail) async {

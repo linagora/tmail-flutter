@@ -20,8 +20,9 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => controller.backButtonPressedCallbackAction.call(context),
+    return PopScope(
+      onPopInvoked: (didPop) => !didPop ? controller.backButtonPressedCallbackAction(context) : null,
+      canPop: false,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(

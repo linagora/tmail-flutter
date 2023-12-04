@@ -1222,7 +1222,7 @@ class ComposerController extends BaseController {
     return false;
   }
 
-  void saveToDraftAndClose(BuildContext context, {bool canPop = true}) async {
+  void saveToDraftAndClose(BuildContext context) async {
     log('ComposerController::saveToDraftAndClose:');
     clearFocusEditor(context);
 
