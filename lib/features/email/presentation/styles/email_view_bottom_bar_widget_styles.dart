@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 class EmailViewBottomBarWidgetStyles {
   static const double topBorderWidth = 0.5;
-  static const double borderWidth = 0;
   static const double buttonRadius = 0;
   static const double buttonIconSize = 20;
   static const double replyAllButtonIconSize = 15;

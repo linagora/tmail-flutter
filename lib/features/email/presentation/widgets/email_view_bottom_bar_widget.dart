@@ -33,19 +33,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
           top: BorderSide(
             color: EmailViewBottomBarWidgetStyles.topBorderColor,
             width: EmailViewBottomBarWidgetStyles.topBorderWidth,
-          ),
-          bottom: BorderSide(
-            color: EmailViewBottomBarWidgetStyles.topBorderColor,
-            width: EmailViewBottomBarWidgetStyles.borderWidth,
-          ),
-          right: BorderSide(
-            color: EmailViewBottomBarWidgetStyles.topBorderColor,
-            width: EmailViewBottomBarWidgetStyles.borderWidth,
-          ),
-          left: BorderSide(
-            color: EmailViewBottomBarWidgetStyles.topBorderColor,
-            width: EmailViewBottomBarWidgetStyles.borderWidth,
-          ),
+          )
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(EmailViewBottomBarWidgetStyles.radius),
