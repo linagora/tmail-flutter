@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:math' as math;
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -5,9 +8,11 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -17,6 +22,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/identity_extension.dart';
 import 'package:model/user/user_profile.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -39,6 +45,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/iden
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:model/extensions/session_extension.dart';
 
 class IdentityCreatorController extends BaseController {
 
@@ -58,6 +65,7 @@ class IdentityCreatorController extends BaseController {
   final isDefaultIdentity = RxBool(false);
   final isDefaultIdentitySupported = RxBool(false);
   final isMobileEditorFocus = RxBool(false);
+  final isCompressingInlineImage = RxBool(false);
 
   final RichTextController keyboardRichTextController = RichTextController();
   final RichTextMobileTabletController richTextMobileTabletController = RichTextMobileTabletController();
@@ -300,6 +308,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   void createNewIdentity(BuildContext context) async {
+    isCompressingInlineImage.value = false;
     clearFocusEditor(context);
 
     final error = _getErrorInputNameString(context);
@@ -421,6 +430,7 @@ class IdentityCreatorController extends BaseController {
   }
 
   void closeView(BuildContext context) {
+    isCompressingInlineImage.value = false;
     clearFocusEditor(context);
     popBack();
   }
@@ -468,7 +478,7 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void pickImage(BuildContext context, {int? maxWidth}) async {
+  void pickImage(BuildContext context) async {
     clearFocusEditor(context);
 
     final filePickerResult = await FilePicker.platform.pickFiles(
@@ -479,7 +489,7 @@ class IdentityCreatorController extends BaseController {
     if (context.mounted) {
       if (filePickerResult?.files.isNotEmpty == true) {
         final platformFile = filePickerResult!.files.first;
-        _insertInlineImage(context, platformFile, maxWidth: maxWidth);
+        _insertInlineImage(context, platformFile, _getMaxWidthInlineImage(context).toInt());
       } else {
         appToast.showToastErrorMessage(
           context,
@@ -493,27 +503,147 @@ class IdentityCreatorController extends BaseController {
 
   bool _isExceedMaxSizeInlineImage(int fileSize) =>
     fileSize > IdentityCreatorConstants.maxKBSizeIdentityInlineImage.toBytes;
+  
+  bool _isExceedMaxUploadSize(int fileSize) {
+    final coreCapability = session?.getCapabilityProperties<CoreCapability>(
+      accountId!,
+      CapabilityIdentifier.jmapCore
+    );
+
+    int maxUploadSize = coreCapability?.maxSizeUpload?.value.toInt() ?? 0;
+
+    return fileSize > maxUploadSize;
+  }
 
   void _insertInlineImage(
     BuildContext context,
     PlatformFile platformFile,
-    {int? maxWidth}
-  ) {
-    if (_isExceedMaxSizeInlineImage(platformFile.size)) {
+    int maxWidth
+  ) async {
+    final PlatformFile file;
+    try {
+      isCompressingInlineImage.value = true;
+      file = await _compressImage(platformFile, maxWidth);
+      isCompressingInlineImage.value = false;
+    } catch (e) {
+      logError("IdentityCreatorController::_insertInlineImage: compress image error: $e");
+      isCompressingInlineImage.value = false;
       appToast.showToastErrorMessage(
         context,
-        AppLocalizations.of(context).pleaseChooseAnImageSizeCorrectly(
-          IdentityCreatorConstants.maxKBSizeIdentityInlineImage
-        )
+        AppLocalizations.of(context).cannotCompressInlineImage
       );
+      return;
+    }
+    if (_isExceedMaxSizeInlineImage(file.size) || _isExceedMaxUploadSize(file.size)) {
+      if (context.mounted) {
+        appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).pleaseChooseAnImageSizeCorrectly(
+            IdentityCreatorConstants.maxKBSizeIdentityInlineImage
+          )
+        );
+      } else {
+        logError("IdentityCreatorController::_insertInlineImage: context is unmounted");
+      }
     } else {
       if (PlatformInfo.isWeb) {
-        richTextWebController.insertImageAsBase64(platformFile: platformFile);
+        richTextWebController.insertImageAsBase64(platformFile: file);
       } else if (PlatformInfo.isMobile) {
-        richTextMobileTabletController.insertImageData(platformFile: platformFile, maxWidth: maxWidth);
+        richTextMobileTabletController.insertImageData(platformFile: file, maxWidth: maxWidth);
+        if (file.path != null) {
+          _deleteCompressedFileOnMobile(file.path!);
+        }
       } else {
         logError("IdentityCreatorController::_insertInlineImage: Platform not supported");
       }
+    }
+  }
+
+  Future<PlatformFile> _compressImage(PlatformFile originalFile, int maxWidthCompressedImage) async {
+    if (originalFile.size <= IdentityCreatorConstants.maxKBSizeIdentityInlineImage.toBytes) {
+      return originalFile;
+    }
+    
+    final Uint8List? fileBytes;
+
+    if (PlatformInfo.isWeb) {
+      fileBytes = originalFile.bytes;
+    } else if (originalFile.path == null) {
+      log('IdentityCreatorController::_compressImage: path is null');
+      return originalFile;
+    } else {
+      fileBytes = await File(originalFile.path!).readAsBytes();
+    }
+
+    if (fileBytes == null || fileBytes.isEmpty) {
+      log('IdentityCreatorController::_compressImage: fileBytes is null or empty');
+      return originalFile;
+    }
+
+    log('IdentityCreatorController::_compressImage: BEFORE_COMPRESS: bytesData: ${fileBytes.lengthInBytes}');
+    final Uint8List compressedBytes = await FlutterImageCompress.compressWithList(
+      fileBytes,
+      quality: IdentityCreatorConstants.qualityCompressedInlineImage,
+      minWidth: maxWidthCompressedImage
+    );
+    log('IdentityCreatorController::_compressImage: AFTER_COMPRESS: bytesData: ${compressedBytes.lengthInBytes}');
+
+    final PlatformFile compressedFile;
+
+    if (PlatformInfo.isWeb) {
+      compressedFile = PlatformFile(
+        name: originalFile.name,
+        size: compressedBytes.lengthInBytes,
+        bytes: compressedBytes,
+      );
+    } else {
+      final compressedFilePath = await _saveCompressedFileOnMobile(compressedBytes, originalFile.name);
+      compressedFile = PlatformFile(
+        name: originalFile.name,
+        size: compressedBytes.lengthInBytes,
+        path: compressedFilePath,
+      );
+    }
+
+    log('IdentityCreatorController::_compressImage: compressedSize: ${compressedFile.size}');
+    return compressedFile;
+  }
+
+  Future<String> _saveCompressedFileOnMobile(Uint8List compressedBytes, String originalFileName) async {
+    final String compressedFileName = '${IdentityCreatorConstants.prefixCompressedInlineImageTemp}$originalFileName';
+
+    final Directory appDir = await getApplicationDocumentsDirectory();
+    final String compressedFilePath = '${appDir.path}/$compressedFileName';
+
+    await File(compressedFilePath).writeAsBytes(compressedBytes);
+
+    log('IdentityCreatorController::_saveCompressedFileOnMobile: compressedFilePath: $compressedFilePath');
+    return compressedFilePath;
+  }
+
+  Future<void> _deleteCompressedFileOnMobile(String filePath) async {
+    log('IdentityCreatorController::_deleteCompressedFileOnMobile: filePath: $filePath');
+    try {
+      final File file = File(filePath);
+      if (await file.exists() && file.path.contains(IdentityCreatorConstants.prefixCompressedInlineImageTemp)) {
+        await file.delete();
+      }
+    } catch (e) {
+      logError('IdentityCreatorController::_deleteCompressedFileOnMobile: error: $e');
+    }
+  }
+
+  bool isMobile(BuildContext context) =>
+    responsiveUtils.isPortraitMobile(context) ||
+    responsiveUtils.isLandscapeMobile(context);
+
+  double _getMaxWidthInlineImage(BuildContext context) {
+    if (isMobile(context)) {
+      return responsiveUtils.getSizeScreenWidth(context);
+    } else if (responsiveUtils.isDesktop(context)) {
+      return math.max(responsiveUtils.getSizeScreenWidth(context) * 0.4, IdentityCreatorConstants.maxWidthInlineImageDesktop);
+    } else {
+      return math.max(responsiveUtils.getSizeScreenWidth(context) * 0.4, IdentityCreatorConstants.maxWidthInlineImageOther);
     }
   }
 }
