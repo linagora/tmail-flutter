@@ -17,9 +17,16 @@ extension DateTimeExtension on DateTime {
   }
 
   int daysBetween(DateTime from) {
-    from = DateTime(from.year, from.month, from.day);
-    final to = DateTime(year, month, day);
-    return (to.difference(from).inHours / 24).round().abs();
+    from = DateTime(from.year, from.month, from.day, from.hour);
+    final to = DateTime(year, month, day, hour);
+    return (to.difference(from).inHours / Duration.hoursPerDay).round().abs();
+  }
+
+
+  int minutesBetween(DateTime from) {
+    from = DateTime(from.year, from.month, from.day, from.hour, from.minute);
+    final to = DateTime(year, month, day, hour, minute);
+    return to.difference(from).inMinutes.abs();
   }
 }
 
