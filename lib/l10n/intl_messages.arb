@@ -3527,5 +3527,11 @@
     "placeholders": {
       "senderName": {}
     }
+  },
+  "cannotCompressInlineImage": "Cannot compress image",
+  "@cannotCompressInlineImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

@@ -3660,4 +3660,11 @@ class AppLocalizations {
       args: [senderName]
     );
   }
+
+  String get cannotCompressInlineImage {
+    return Intl.message(
+      'Cannot compress image',
+      name: 'cannotCompressInlineImage',
+    );
+  }
 }
