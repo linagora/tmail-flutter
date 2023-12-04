@@ -52,6 +52,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:uuid/uuid.dart';
 
 class EmailChangeListener extends ChangeListener {
 
@@ -155,6 +156,8 @@ class EmailChangeListener extends ChangeListener {
   void _getStoredEmailDeliveryState(AccountId accountId, UserName userName) {
     if (_getStoredEmailDeliveryStateInteractor != null) {
       consumeState(_getStoredEmailDeliveryStateInteractor!.execute(accountId, userName));
+    } else {
+      _showDefaultLocalNotification();
     }
   }
 
@@ -162,6 +165,7 @@ class EmailChangeListener extends ChangeListener {
     if (_getStoredEmailStateInteractor != null && _session != null && _accountId != null) {
       consumeState(_getStoredEmailStateInteractor!.execute(_session!, _accountId!));
     } else {
+      _showDefaultLocalNotification();
       logError('EmailChangeListener::_getStoredEmailState(): _getStoredEmailStateInteractor is null');
     }
   }
@@ -179,12 +183,16 @@ class EmailChangeListener extends ChangeListener {
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
       ));
+    } else {
+      _showDefaultLocalNotification();
     }
   }
 
   void _storeEmailDeliveryStateAction(AccountId accountId, UserName userName, jmap.State state) {
     if (_storeEmailDeliveryStateInteractor != null) {
       consumeState(_storeEmailDeliveryStateInteractor!.execute(accountId, userName, state));
+    } else {
+      _showDefaultLocalNotification();
     }
   }
 
@@ -216,12 +224,32 @@ class EmailChangeListener extends ChangeListener {
     await LocalNotificationManager.instance.setNotificationBadgeForIOS();
   }
 
+  void _showDefaultLocalNotification() {
+    LocalNotificationManager.instance.showPushNotification(
+      id: '${FcmUtils.instance.platformOS}-${const Uuid().v1()}',
+      title: currentContext != null
+        ? AppLocalizations.of(currentContext!).appTitlePushNotification
+        : LocalNotificationConfig.notificationTitle,
+      message: currentContext != null
+        ? AppLocalizations.of(currentContext!).youHaveNewMessages
+        : LocalNotificationConfig.notificationMessage,
+    );
+
+    if (PlatformInfo.isAndroid) {
+      LocalNotificationManager.instance.groupPushNotification();
+    }
+  }
+
   @override
   void handleFailureViewState(Failure failure) {
     log('EmailChangeListener::_handleFailureViewState(): $failure');
     if (failure is GetStoredEmailDeliveryStateFailure &&
         failure.exception is NotFoundEmailDeliveryStateException) {
       _getStoredEmailState();
+    } else if (failure is NotFoundEmailState ||
+        failure is GetStoredEmailStateFailure ||
+        failure is GetEmailChangesToPushNotificationFailure) {
+      _showDefaultLocalNotification();
     } else if (failure is GetMailboxesNotPutNotificationsFailure) {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification();
       _handleLocalPushNotification(listEmails);
@@ -234,6 +262,8 @@ class EmailChangeListener extends ChangeListener {
     if (success is GetStoredEmailDeliveryStateSuccess) {
       if (_newStateEmailDelivery != success.state) {
         _getEmailChangesAction(success.state);
+      } else {
+        _showDefaultLocalNotification();
       }
     } else if (success is GetStoredEmailStateSuccess) {
       _getEmailChangesAction(success.state);
@@ -243,7 +273,11 @@ class EmailChangeListener extends ChangeListener {
 
         if (FcmUtils.instance.isMobileAndroid) {
           _handleListEmailToPushNotification(success.emailList);
+        } else {
+          _showDefaultLocalNotification();
         }
+      } else {
+        _showDefaultLocalNotification();
       }
     } else if (success is GetMailboxesNotPutNotificationsSuccess) {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification(
@@ -274,6 +308,7 @@ class EmailChangeListener extends ChangeListener {
   void _handleLocalPushNotification(List<PresentationEmail> emailList) {
     log('EmailChangeListener::_handleLocalPushNotification():emailList: $emailList');
     if (emailList.isEmpty) {
+      _showDefaultLocalNotification();
       return;
     }
 
