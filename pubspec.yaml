@@ -86,7 +86,8 @@ dependencies:
       url: https://github.com/dab246/super_tag_editor.git
       ref: master
 
-  # to do: We will change it when the PR (https://github.com/dietfriends/dns_client/pull/9) in upstream repository will be merged
+  # TODO: We will change it when the PR in upstream repository will be merged
+  # https://github.com/dietfriends/dns_client/pull/9
   dns_client:
     git:
       url: https://github.com/linagora/dns_client.git
