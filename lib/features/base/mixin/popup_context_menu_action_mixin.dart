@@ -28,6 +28,7 @@ mixin PopupContextMenuActionMixin {
       context: context,
       position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
       color: Colors.white,
+      surfaceTintColor: Colors.white,
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(radius ?? 16))
