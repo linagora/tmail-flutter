@@ -13,7 +13,7 @@ class CachingConstants {
   static const int AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY = 11;
   static const int RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY = 12;
   static const int RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY = 13;
-  static const int FCM_SUBSCRIPTION_HIVE_CACHE_IDENTITY = 14;
+  static const int FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY = 14;
   static const int ATTACHMENT_HIVE_CACHE_ID = 15;
   static const int EMAIL_HEADER_HIVE_CACHE_ID = 16;
   static const int DETAILED_EMAIL_HIVE_CACHE_ID = 17;
@@ -25,6 +25,7 @@ class CachingConstants {
   static const String openedEmailCacheBoxName = 'opened_email_cache_box';
   static const String sendingEmailCacheBoxName = 'sending_email_cache_box';
   static const String sessionCacheBoxName = 'session_cache_box';
+  static const String firebaseRegistrationCacheBoxName = 'firebase_registration_cache_box';
 
   static const String newEmailsContentFolderName = 'new_emails';
   static const String openedEmailContentFolderName = 'opened_email';

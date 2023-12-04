@@ -7,14 +7,14 @@ import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:jmap_dart_client/jmap/core/request/result_reference.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'firebase_subscription_get_method.g.dart';
+part 'firebase_registration_get_method.g.dart';
 
 @IdConverter()
 @PropertiesConverter()
 @JsonSerializable(explicitToJson: true)
-class FirebaseSubscriptionGetMethod extends GetMethodNoNeedAccountId {
+class FirebaseRegistrationGetMethod extends GetMethodNoNeedAccountId {
 
-  FirebaseSubscriptionGetMethod() : super();
+  FirebaseRegistrationGetMethod() : super();
 
   @override
   MethodName get methodName => MethodName('FirebaseRegistration/get');
@@ -28,8 +28,8 @@ class FirebaseSubscriptionGetMethod extends GetMethodNoNeedAccountId {
   @override
   List<Object?> get props => [methodName, ids, requiredCapabilities];
 
-  factory FirebaseSubscriptionGetMethod.fromJson(Map<String, dynamic> json) => _$FirebaseSubscriptionGetMethodFromJson(json);
+  factory FirebaseRegistrationGetMethod.fromJson(Map<String, dynamic> json) => _$FirebaseRegistrationGetMethodFromJson(json);
 
   @override
-  Map<String, dynamic> toJson() => _$FirebaseSubscriptionGetMethodToJson(this);
+  Map<String, dynamic> toJson() => _$FirebaseRegistrationGetMethodToJson(this);
 }

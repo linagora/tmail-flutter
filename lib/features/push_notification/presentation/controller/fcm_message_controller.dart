@@ -95,7 +95,7 @@ class FcmMessageController extends FcmBaseController {
   Future<void> listenTokenStream() {
     FcmService.instance.fcmTokenStream
       .debounceTime(const Duration(milliseconds: FcmService.durationRefreshToken))
-      .listen(FcmTokenController.instance.handleTokenAction);
+      .listen(FcmTokenController.instance.onFcmTokenChanged);
     return Future.value();
   }
 
@@ -199,23 +199,18 @@ class FcmMessageController extends FcmBaseController {
       FcmInteractorBindings().dependencies();
     });
 
-    await _getInteractorBindings();
+    _getInteractorBindings();
 
     await _newEmailCacheManager?.closeNewEmailHiveCacheBox();
   }
 
-  Future<void> _getInteractorBindings() {
-    try {
-      _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
-      _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
-      _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
-      _getSessionInteractor = getBinding<GetSessionInteractor>();
-      _newEmailCacheManager = getBinding<NewEmailCacheManager>();
-      FcmTokenController.instance.initialize();
-    } catch (e) {
-      logError('FcmMessageController::_getBindings(): ${e.toString()}');
-    }
-    return Future.value(null);
+  void _getInteractorBindings() {
+    _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
+    _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
+    _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
+    _getSessionInteractor = getBinding<GetSessionInteractor>();
+    _newEmailCacheManager = getBinding<NewEmailCacheManager>();
+    FcmTokenController.instance.initialize();
   }
 
   void _getAuthenticatedAccount() {

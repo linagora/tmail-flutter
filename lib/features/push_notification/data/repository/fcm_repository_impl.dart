@@ -1,6 +1,8 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:fcm/model/firebase_subscription.dart';
+import 'package:fcm/model/device_client_id.dart';
+import 'package:fcm/model/firebase_registration.dart';
+import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -15,10 +17,9 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/fcm_datasource.dart';
-import 'package:tmail_ui_user/features/push_notification/data/extensions/fcm_subscription_extensions.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/utils/fcm_constants.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
@@ -94,29 +95,28 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<FirebaseSubscription> getFirebaseSubscriptionByDeviceId(String deviceId) {
-    return _fcmDatasource[DataSourceType.network]!.getFirebaseSubscriptionByDeviceId(deviceId);
+  Future<FirebaseRegistration> getFirebaseRegistrationByDeviceId(DeviceClientId deviceId) {
+    return _fcmDatasource[DataSourceType.network]!.getFirebaseRegistrationByDeviceId(deviceId);
   }
 
   @override
-  Future<FirebaseSubscription> registerNewToken(RegisterNewTokenRequest newTokenRequest) {
-    return _fcmDatasource[DataSourceType.network]!.registerNewToken(newTokenRequest);
+  Future<FirebaseRegistration> registerNewFirebaseRegistrationToken(RegisterNewTokenRequest newTokenRequest) {
+    return _fcmDatasource[DataSourceType.network]!.registerNewFirebaseRegistrationToken(newTokenRequest);
   }
 
   @override
-  Future<FCMSubscription> getSubscription() async {
-    final fcmSubScription = await _fcmDatasource[DataSourceType.local]!.geSubscription();
-    return FCMSubscription(fcmSubScription.deviceId, fcmSubScription.subscriptionId);
+  Future<FirebaseRegistration> getStoredFirebaseRegistration()  {
+    return _fcmDatasource[DataSourceType.local]!.getStoredFirebaseRegistration();
   }
   
   @override
-  Future<void> storeSubscription(FCMSubscription fcmSubscription) {
-    return _fcmDatasource[DataSourceType.local]!.storeSubscription(fcmSubscription.toFCMSubscriptionCache());
+  Future<void> storeFirebaseRegistration(FirebaseRegistration firebaseRegistration) {
+    return _fcmDatasource[DataSourceType.local]!.storeFirebaseRegistration(firebaseRegistration);
   }
   
   @override
-  Future<bool> destroySubscription(String subscriptionId) {
-    return _fcmDatasource[DataSourceType.network]!.destroySubscription(subscriptionId);
+  Future<void> destroyFirebaseRegistration(FirebaseRegistrationId registrationId) {
+    return _fcmDatasource[DataSourceType.network]!.destroyFirebaseRegistration(registrationId);
   }
 
   @override
@@ -127,7 +127,7 @@ class FCMRepositoryImpl extends FCMRepository {
       .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)
       .toList();
     log('FCMRepositoryImpl::getMailboxesNotPutNotifications():mailboxesCacheNotPutNotifications: $mailboxesCacheNotPutNotifications');
-    if (mailboxesCacheNotPutNotifications.isNotEmpty && mailboxesCacheNotPutNotifications.length == FcmConstants.mailboxRuleAllowPushNotifications.length) {
+    if (mailboxesCacheNotPutNotifications.isNotEmpty && mailboxesCacheNotPutNotifications.length == FcmConstants.mailboxRuleDoNotAllowPushNotifications.length) {
       return mailboxesCacheNotPutNotifications;
     } else {
       final mailboxResponse = await _mapMailboxDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
@@ -216,5 +216,15 @@ class FCMRepositoryImpl extends FCMRepository {
     } else {
       throw NotFoundNewReceiveEmailException();
     }
+  }
+
+  @override
+  Future<void> updateFirebaseRegistrationToken(UpdateTokenExpiredTimeRequest expiredTimeRequest) {
+    return _fcmDatasource[DataSourceType.network]!.updateFirebaseRegistrationToken(expiredTimeRequest);
+  }
+
+  @override
+  Future<void> deleteFirebaseRegistrationCache() {
+    return _fcmDatasource[DataSourceType.local]!.deleteFirebaseRegistrationCache();
   }
 }

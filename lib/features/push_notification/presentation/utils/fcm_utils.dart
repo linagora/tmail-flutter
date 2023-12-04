@@ -18,6 +18,11 @@ class FcmUtils {
   static FcmUtils get instance => _instance;
 
   static const String hashCodeKey = 'TeamMail';
+  static final List<TypeName> defaultFirebaseRegistrationTypes = [
+    TypeName.emailType,
+    TypeName.mailboxType,
+    TypeName.emailDelivery
+  ];
 
   StateChange? convertFirebaseDataMessageToStateChange(Map<String, dynamic> dataMessage) {
     log('FcmUtils::convertFirebaseDataMessageToStateChange():dataMessage: $dataMessage');

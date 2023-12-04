@@ -1,4 +1,4 @@
-import 'package:fcm/model/firebase_subscription.dart';
+import 'package:fcm/model/firebase_registration.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:jmap_dart_client/http/converter/id_converter.dart';
 import 'package:jmap_dart_client/http/converter/set/set_method_properties_converter.dart';
@@ -6,9 +6,9 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/method/request/set_method.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 
-class FirebaseSubscriptionSetMethod extends SetMethodNoNeedAccountId<FirebaseSubscription> {
+class FirebaseRegistrationSetMethod extends SetMethodNoNeedAccountId<FirebaseRegistration> {
 
-  FirebaseSubscriptionSetMethod() : super();
+  FirebaseRegistrationSetMethod() : super();
 
   @override
   MethodName get methodName => MethodName('FirebaseRegistration/set');
