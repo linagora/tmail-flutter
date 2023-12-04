@@ -18,6 +18,7 @@ import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/compress_image_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_field_no_editable_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_field_builder.dart';
@@ -151,7 +152,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
           titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
           titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-          insertImage: () => controller.pickImage(context, maxWidth: _getMaxWidth(context).toInt()),
+          insertImage: () => controller.pickImage(context),
         ),
         richTextController: controller.keyboardRichTextController,
         paddingChild: EdgeInsets.zero,
@@ -237,7 +238,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
             child: _buildSignatureHtmlTemplate(context),
           ),
           const SizedBox(height: 12),
-          if (_isMobile(context))
+          if (controller.isMobile(context))
             _buildActionButtonMobile(context)
           else
             _buildActionButtonDesktop(context),
@@ -321,7 +322,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
               ),
             ]
           ),
-        htmlEditor,
+        Stack(
+          children: [
+            htmlEditor,
+            Obx(() => Center(
+              child: CompressImageLoadingBarWidget(
+                isCompressing: controller.isCompressingInlineImage.value,
+              ),
+            ))
+          ]
+        ),
       ],
     );
   }
@@ -452,19 +462,5 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         }
       }
     ));
-  }
-
-  bool _isMobile(BuildContext context) =>
-    controller.responsiveUtils.isPortraitMobile(context) ||
-    controller.responsiveUtils.isLandscapeMobile(context);
-
-  double _getMaxWidth(BuildContext context) {
-    if (_isMobile(context)) {
-      return controller.responsiveUtils.getSizeScreenWidth(context);
-    } else if (controller.responsiveUtils.isDesktop(context)) {
-      return math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 800);
-    } else {
-      return math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 700);
-    }
   }
 }
