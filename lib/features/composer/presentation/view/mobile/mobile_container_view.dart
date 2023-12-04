@@ -34,11 +34,9 @@ class MobileContainerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        onCloseViewAction.call();
-        return false;
-      },
+    return PopScope(
+      onPopInvoked: (didPop) => !didPop ? onCloseViewAction : null,
+      canPop: false,
       child: GestureDetector(
         onTap: onClearFocusAction,
         child: Scaffold(
