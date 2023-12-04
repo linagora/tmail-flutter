@@ -27,9 +27,9 @@ dependencies:
     sdk: flutter
 
   ### Dependencies from pub.dev ###
-  cupertino_icons: 1.0.5
+  cupertino_icons: 1.0.6
 
-  flutter_svg: 2.0.2
+  flutter_svg: 2.0.9
 
   dio: 5.0.0
 
@@ -39,7 +39,7 @@ dependencies:
 
   built_collection: 5.1.1
 
-  html: 0.15.1
+  html: 0.15.3
 
   get: 4.6.5
 
@@ -49,9 +49,9 @@ dependencies:
 
   url_launcher: 6.1.10
 
-  universal_html: 2.0.9
+  universal_html: 2.2.4
 
-  http: 0.13.5
+  http: ^1.1.0
 
   pointer_interceptor: 0.9.1
 
@@ -63,13 +63,13 @@ dependencies:
 
   http_parser: 4.0.2
 
-  path_provider: 2.0.13
+  path_provider: 2.1.1
 
-  path_provider_platform_interface: 2.0.1
+  path_provider_platform_interface: 2.1.1
 
-  collection: 1.17.1
+  collection: 1.18.0
 
-  intl: 0.18.0
+  intl: 0.18.1
 
   flutter_typeahead: 4.6.0
 
