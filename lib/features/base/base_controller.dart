@@ -12,6 +12,7 @@ import 'package:core/utils/fps_manager.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
+import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:forward/forward/capability_forward.dart';
@@ -38,10 +39,10 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_subscription_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_fcm_subscription_local.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_subscription_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_firebase_registration_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_firebase_registration_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
@@ -76,8 +77,8 @@ abstract class BaseController extends GetxController
   final _fcmReceiver = FcmReceiver.instance;
   bool _isFcmEnabled = false;
 
-  GetFCMSubscriptionLocalInteractor? _getSubscriptionLocalInteractor;
-  DestroySubscriptionInteractor? _destroySubscriptionInteractor;
+  GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
+  DestroyFirebaseRegistrationInteractor? _destroyFirebaseRegistrationInteractor;
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
@@ -180,12 +181,12 @@ abstract class BaseController extends GetxController
     logError('BaseController::handleFailureViewState(): ${failure.runtimeType}');
     if (failure is LogoutOidcFailure) {
       if (_isFcmEnabled) {
-        _getSubscriptionLocalAction();
+        _getStoredFirebaseRegistrationFromCache();
       } else {
         await clearDataAndGoToLoginPage();
       }
-    } else if (failure is GetFCMSubscriptionLocalFailure ||
-        failure is DestroySubscriptionFailure) {
+    } else if (failure is GetStoredFirebaseRegistrationFailure ||
+        failure is DestroyFirebaseRegistrationFailure) {
       await clearDataAndGoToLoginPage();
     }
   }
@@ -194,13 +195,13 @@ abstract class BaseController extends GetxController
     log('BaseController::handleSuccessViewState(): ${success.runtimeType}');
     if (success is LogoutOidcSuccess) {
       if (_isFcmEnabled) {
-        _getSubscriptionLocalAction();
+        _getStoredFirebaseRegistrationFromCache();
       } else {
         await clearDataAndGoToLoginPage();
       }
-    } else if (success is GetFCMSubscriptionLocalSuccess) {
-      _destroySubscriptionAction(success.fcmSubscription.subscriptionId);
-    } else if (success is DestroySubscriptionSuccess) {
+    } else if (success is GetStoredFirebaseRegistrationSuccess) {
+      _destroyFirebaseRegistration(success.firebaseRegistration.id!);
+    } else if (success is DestroyFirebaseRegistrationSuccess) {
       await clearDataAndGoToLoginPage();
     }
   }
@@ -265,7 +266,7 @@ abstract class BaseController extends GetxController
       if (AppConfig.fcmAvailable) {
         final mapEnvData = Map<String, String>.from(dotenv.env);
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
-        FcmConfiguration.initialize();
+        await FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
         FcmMessageController.instance.initializeFromAccountId(accountId, session);
       } else {
@@ -299,26 +300,26 @@ abstract class BaseController extends GetxController
       consumeState(logoutOidcInteractor.execute());
     } else {
       if (_isFcmEnabled) {
-        _getSubscriptionLocalAction();
+        _getStoredFirebaseRegistrationFromCache();
       } else {
         await clearDataAndGoToLoginPage();
       }
     }
   }
 
-  void _destroySubscriptionAction(String subscriptionId) async {
-    _destroySubscriptionInteractor = getBinding<DestroySubscriptionInteractor>();
-    if (_destroySubscriptionInteractor != null) {
-      consumeState(_destroySubscriptionInteractor!.execute(subscriptionId));
+  void _destroyFirebaseRegistration(FirebaseRegistrationId firebaseRegistrationId) async {
+    _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
+    if (_destroyFirebaseRegistrationInteractor != null) {
+      consumeState(_destroyFirebaseRegistrationInteractor!.execute(firebaseRegistrationId));
     } else {
       await clearDataAndGoToLoginPage();
     }
   }
 
-  void _getSubscriptionLocalAction() async {
-    _getSubscriptionLocalInteractor = getBinding<GetFCMSubscriptionLocalInteractor>();
-    if (_getSubscriptionLocalInteractor != null) {
-      consumeState(_getSubscriptionLocalInteractor!.execute());
+  void _getStoredFirebaseRegistrationFromCache() async {
+    _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
+    if (_getStoredFirebaseRegistrationInteractor != null) {
+      consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
     } else {
       await clearDataAndGoToLoginPage();
     }

@@ -26,7 +26,7 @@ import 'package:tmail_ui_user/features/offline_mode/model/attachment_hive_cache.
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/email_header_hive_cache.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
-import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscription.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/firebase_registration_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_address_hive_cache.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -145,9 +145,9 @@ class HiveCacheConfig {
       RecentLoginUsernameCacheAdapter(),
       CachingConstants.RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY
     );
-    registerCacheAdapter<FCMSubscriptionCache>(
-      FCMSubscriptionCacheAdapter(),
-      CachingConstants.FCM_SUBSCRIPTION_HIVE_CACHE_IDENTITY
+    registerCacheAdapter<FirebaseRegistrationCache>(
+      FirebaseRegistrationCacheAdapter(),
+      CachingConstants.FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY
     );
     registerCacheAdapter<AttachmentHiveCache>(
       AttachmentHiveCacheAdapter(),

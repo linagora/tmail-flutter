@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
@@ -28,7 +28,7 @@ class CachingManager {
   final RecentSearchCacheClient _recentSearchCacheClient;
   final AccountCacheClient _accountCacheClient;
   final FcmCacheClient _fcmCacheClient;
-  final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
+  final FirebaseRegistrationCacheClient _firebaseRegistrationCacheClient;
   final HiveCacheVersionClient _hiveCacheVersionClient;
   final NewEmailHiveCacheClient _newEmailHiveCacheClient;
   final OpenedEmailHiveCacheClient _openedEmailHiveCacheClient;
@@ -44,7 +44,7 @@ class CachingManager {
     this._recentSearchCacheClient,
     this._accountCacheClient,
     this._fcmCacheClient,
-    this._fcmSubscriptionCacheClient,
+    this._firebaseRegistrationCacheClient,
     this._hiveCacheVersionClient,
     this._newEmailHiveCacheClient,
     this._openedEmailHiveCacheClient,
@@ -60,7 +60,7 @@ class CachingManager {
       _mailboxCacheClient.clearAllData(),
       _emailCacheClient.clearAllData(),
       _fcmCacheClient.clearAllData(),
-      _fcmSubscriptionCacheClient.clearAllData(),
+      _firebaseRegistrationCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
       _accountCacheClient.clearAllData(),
       _localSpamReportManager.clear(),
@@ -80,7 +80,7 @@ class CachingManager {
       _mailboxCacheClient.clearAllData(),
       _emailCacheClient.clearAllData(),
       _fcmCacheClient.clearAllData(),
-      _fcmSubscriptionCacheClient.clearAllData(),
+      _firebaseRegistrationCacheClient.clearAllData(),
       _recentSearchCacheClient.clearAllData(),
       _localSpamReportManager.clear(),
       if (PlatformInfo.isMobile)

@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 
 class FcmConfiguration {
 
-  static void initialize() async {
+  static Future<void> initialize() async {
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     await FcmService.instance.recreateStreamController();
     _initMessageListener();

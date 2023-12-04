@@ -4,21 +4,22 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:fcm/model/device_client_id.dart';
-import 'package:fcm/model/firebase_expired_time.dart';
-import 'package:fcm/model/firebase_subscription.dart';
-import 'package:fcm/model/firebase_token.dart';
-import 'package:fcm/model/type_name.dart';
+import 'package:fcm/model/firebase_registration_expired_time.dart';
+import 'package:fcm/model/firebase_registration.dart';
+import 'package:fcm/model/fcm_token.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/model/fcm_subscription.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_fcm_subscription_local.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_firebase_subscription_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/register_new_token_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_fcm_subscription_local_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_subscription_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_token_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_subscription_interator.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_firebase_registration_by_device_id_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/state/register_new_firebase_registration_token_state.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_firebase_registration_cache_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_firebase_registration_by_device_id_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_firebase_registration_token_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_firebase_registration_interator.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/update_firebase_registration_token_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -35,146 +36,137 @@ class FcmTokenController extends FcmBaseController {
   static const int limitedTimeToExpire = 3;
   static const int extensionTimeExpire = 7;
 
-  StoreSubscriptionInteractor? _storeSubscriptionInteractor;
-  GetFirebaseSubscriptionInteractor? _getFirebaseSubscriptionInteractor;
-  RegisterNewTokenInteractor? _registerNewTokenInteractor;
-  GetFCMSubscriptionLocalInteractor? _getFCMSubscriptionLocalInteractor;
-
-  FirebaseToken? _fcmToken;
-  DeviceClientId? _deviceClientId;
+  StoreFirebaseRegistrationInteractor? _storeFirebaseRegistrationInteractor;
+  GetFirebaseRegistrationByDeviceIdInteractor? _getFirebaseRegistrationByDeviceIdInteractor;
+  RegisterNewFirebaseRegistrationTokenInteractor? _registerNewFirebaseRegistrationTokenInteractor;
+  GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
+  UpdateFirebaseRegistrationTokenInteractor? _updateFirebaseRegistrationTokenInteractor;
+  DeleteFirebaseRegistrationCacheInteractor? _deleteFirebaseRegistrationCacheInteractor;
 
   void initialize() {
-    try {
-      _storeSubscriptionInteractor = getBinding<StoreSubscriptionInteractor>();
-      _getFirebaseSubscriptionInteractor = getBinding<GetFirebaseSubscriptionInteractor>();
-      _registerNewTokenInteractor = getBinding<RegisterNewTokenInteractor>();
-      _getFCMSubscriptionLocalInteractor = getBinding<GetFCMSubscriptionLocalInteractor>();
-    } catch (e) {
-      logError('FcmTokenController::initialize(): ${e.toString()}');
-    }
+    _storeFirebaseRegistrationInteractor = getBinding<StoreFirebaseRegistrationInteractor>();
+    _getFirebaseRegistrationByDeviceIdInteractor = getBinding<GetFirebaseRegistrationByDeviceIdInteractor>();
+    _registerNewFirebaseRegistrationTokenInteractor = getBinding<RegisterNewFirebaseRegistrationTokenInteractor>();
+    _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
+    _updateFirebaseRegistrationTokenInteractor = getBinding<UpdateFirebaseRegistrationTokenInteractor>();
+    _deleteFirebaseRegistrationCacheInteractor = getBinding<DeleteFirebaseRegistrationCacheInteractor>();
   }
 
-  void handleTokenAction(String? token) {
-    log('FcmTokenController::handleTokenAction():token: $token');
-    if (token != null) {
-      _fcmToken = FirebaseToken(token);
-      final deviceId = FcmUtils.instance.hashTokenToDeviceId(token);
-      _deviceClientId = DeviceClientId(deviceId);
-      log('FcmTokenController::handleTokenAction(): fcmToken: $_fcmToken');
-      log('FcmTokenController::handleTokenAction(): deviceId: $deviceId');
-      _getFcmTokenFromBackend(deviceId);
+  void onFcmTokenChanged(String? newToken) {
+    log('FcmTokenController::onFcmTokenChanged():newToken: $newToken');
+    if (newToken != null) {
+      _getFirebaseRegistrationFromServer(
+        newFcmToken: FcmToken(newToken),
+        deviceClientId: DeviceClientId(FcmUtils.instance.hashTokenToDeviceId(newToken))
+      );
     } else {
-      _getFCMSubscriptionLocalAction();
+      _getStoredFirebaseRegistrationFromCache();
     }
   }
 
-  void _getFcmTokenFromBackend(String deviceId) {
-    if (_getFirebaseSubscriptionInteractor != null) {
-      consumeState(_getFirebaseSubscriptionInteractor!.execute(deviceId));
+  void _getFirebaseRegistrationFromServer({
+    required DeviceClientId deviceClientId,
+    FcmToken? newFcmToken
+  }) {
+    if (_getFirebaseRegistrationByDeviceIdInteractor != null) {
+      consumeState(
+        _getFirebaseRegistrationByDeviceIdInteractor!.execute(
+          deviceClientId: deviceClientId,
+          newFcmToken: newFcmToken
+        )
+      );
+    } else if (newFcmToken != null) {
+      _registerNewFirebaseRegistrationToken(newFcmToken);
     }
   }
 
-  void _storeSubscriptionAction(FCMSubscription fcmSubscription){
-    if (_storeSubscriptionInteractor != null) {
-      consumeState(_storeSubscriptionInteractor!.execute(fcmSubscription));
+  void _getStoredFirebaseRegistrationFromCache() {
+    if (_getStoredFirebaseRegistrationInteractor != null) {
+      consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
     }
   }
 
-  bool _isTokenExpired(FirebaseExpiredTime? expireTime) {
-    log('FcmTokenController::_isTokenExpired():expireTime: $expireTime');
-    if (expireTime != null) {
-      final expireTimeLocal = expireTime.value.value.toLocal();
+  void _storeFirebaseRegistrationToCache(FirebaseRegistration firebaseRegistration){
+    if (_storeFirebaseRegistrationInteractor != null) {
+      consumeState(_storeFirebaseRegistrationInteractor!.execute(firebaseRegistration));
+    }
+  }
+
+  bool _validateFirebaseRegistrationTokenExpired(FirebaseRegistration firebaseRegistration) {
+    log('FcmTokenController::_validateFirebaseRegistrationTokenExpired():firebaseRegistration: $firebaseRegistration');
+    if (firebaseRegistration.expires != null) {
+      final expireTimeLocal = firebaseRegistration.expires!.value.value.toLocal();
       final currentTime = DateTime.now();
-
-      log('FcmTokenController::_isTokenExpired():expireTimeLocal: $expireTimeLocal');
-      log('FcmTokenController::_isTokenExpired():currentTime: $currentTime');
-
-      return currentTime.isBefore(expireTimeLocal) &&
-        expireTimeLocal.daysBetween(currentTime) <= limitedTimeToExpire;
+      log('FcmTokenController::_validateFirebaseRegistrationTokenExpired():expireTimeLocal: $expireTimeLocal | currentTime: $currentTime');
+      final offsetTime = expireTimeLocal.minutesBetween(currentTime);
+      log('FcmTokenController::_validateFirebaseRegistrationTokenExpired():offsetTime: $offsetTime');
+      return currentTime.isBefore(expireTimeLocal) && offsetTime <= limitedTimeToExpire;
     } else {
       return true;
     }
   }
 
-  void _handleWhenTokenExpired() {
-    if (_fcmToken == null || _deviceClientId == null) {
-      log('FcmTokenController::_handleSuccessViewState():_fcmToken or _deviceClientId is null');
-      return;
+  void _updateNewExpiredTimeForFirebaseRegistration(FirebaseRegistration firebaseRegistration) {
+    log('FcmTokenController::_updateNewExpiredTimeForFirebaseRegistration():firebaseRegistration: $firebaseRegistration');
+    if (_updateFirebaseRegistrationTokenInteractor != null && firebaseRegistration.id != null) {
+      final newExpiredTime = DateTime.now().add(const Duration(days: extensionTimeExpire));
+      consumeState(
+        _updateFirebaseRegistrationTokenInteractor!.execute(
+          UpdateTokenExpiredTimeRequest(
+            firebaseRegistration.id!,
+            FirebaseRegistrationExpiredTime(UTCDate(newExpiredTime)),
+          )
+        )
+      );
     }
-
-    final generateCreationId = Id(const Uuid().v4());
-    final newExpireTime = DateTime.now().add(const Duration(days: extensionTimeExpire));
-
-    log('FcmTokenController::_handleSuccessViewState():newExpireTime: $newExpireTime');
-    final firebaseSubscription = FirebaseSubscription(
-        token: _fcmToken!,
-        expires: FirebaseExpiredTime(newExpireTime.toUTCDate()!),
-        deviceClientId: _deviceClientId!,
-        types: [TypeName.emailType, TypeName.mailboxType, TypeName.emailDelivery]
-    );
-
-    log('FcmTokenController::_handleSuccessViewState():firebaseSubscription: $firebaseSubscription');
-    _invokeRegisterNewTokenAction(RegisterNewTokenRequest(
-      generateCreationId,
-      firebaseSubscription
-    ));
   }
 
-  void _handleRegisterNewToken(FirebaseToken fcmToken, DeviceClientId deviceClientId) {
+  void _registerNewFirebaseRegistrationToken(FcmToken fcmToken) {
     final generateCreationId = Id(const Uuid().v4());
-    final firebaseSubscription = FirebaseSubscription(
+    final firebaseRegistration = FirebaseRegistration(
       token: fcmToken,
-      deviceClientId: deviceClientId,
-      types: [TypeName.emailType, TypeName.mailboxType, TypeName.emailDelivery]
+      deviceClientId: DeviceClientId(FcmUtils.instance.hashTokenToDeviceId(fcmToken.value)),
+      types: FcmUtils.defaultFirebaseRegistrationTypes
     );
-    log('FcmTokenController::_handleRegisterNewToken():firebaseSubscription: $firebaseSubscription');
-    _invokeRegisterNewTokenAction(RegisterNewTokenRequest(
-      generateCreationId,
-      firebaseSubscription
-    ));
-  }
-
-  void _invokeRegisterNewTokenAction(RegisterNewTokenRequest newTokenRequest) {
-    if (_registerNewTokenInteractor != null) {
-      consumeState(_registerNewTokenInteractor!.execute(newTokenRequest));
+    log('FcmTokenController::_registerNewFirebaseRegistrationToken():generateCreationId: $generateCreationId | firebaseRegistration: $firebaseRegistration');
+    if (_registerNewFirebaseRegistrationTokenInteractor != null) {
+      consumeState(
+        _registerNewFirebaseRegistrationTokenInteractor!.execute(
+          RegisterNewTokenRequest(
+            generateCreationId,
+            firebaseRegistration
+          )
+        )
+      );
     }
   }
-
-  void _getFCMSubscriptionLocalAction() {
-    if (_getFCMSubscriptionLocalInteractor != null) {
-      consumeState(_getFCMSubscriptionLocalInteractor!.execute());
+  
+  void _deleteFirebaseRegistrationInCache() {
+    if (_deleteFirebaseRegistrationCacheInteractor != null) {
+      consumeState(_deleteFirebaseRegistrationCacheInteractor!.execute());
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
     log('FcmTokenController::_handleFailureViewState(): $failure');
-    if (failure is GetFirebaseSubscriptionFailure) {
-      if (_fcmToken != null && _deviceClientId != null) {
-        _handleRegisterNewToken(_fcmToken!, _deviceClientId!);
-      }
+    if (failure is GetFirebaseRegistrationByDeviceIdFailure && failure.newFcmToken != null) {
+      _registerNewFirebaseRegistrationToken(failure.newFcmToken!);
+    } else if (failure is RegisterNewFirebaseRegistrationTokenFailure) {
+      _deleteFirebaseRegistrationInCache();
     }
   }
 
   @override
   void handleSuccessViewState(Success success) {
     log('FcmTokenController::_handleSuccessViewState(): $success');
-    if (success is GetFirebaseSubscriptionSuccess) {
-      _deviceClientId = success.firebaseSubscription.deviceClientId;
-      final expireTime = success.firebaseSubscription.expires;
-      log('FcmTokenController::_handleSuccessViewState():_fcmToken: $_fcmToken');
-      if (_isTokenExpired(expireTime))  {
-        log('FcmTokenController::_handleSuccessViewState(): _isTokenExpired true');
-        _handleWhenTokenExpired();
-      }
-    } else if (success is RegisterNewTokenSuccess) {
-      final deviceId = success.firebaseSubscription.deviceClientId?.value;
-      final subscriptionId = success.firebaseSubscription.id?.id.value;
-      if (deviceId != null && subscriptionId != null) {
-        _storeSubscriptionAction(FCMSubscription(deviceId, subscriptionId));
-      }
-    } else if (success is GetFCMSubscriptionLocalSuccess) {
-      _getFcmTokenFromBackend(success.fcmSubscription.deviceId);
+    if (success is GetFirebaseRegistrationByDeviceIdSuccess &&
+        _validateFirebaseRegistrationTokenExpired(success.firebaseRegistration)) {
+      _updateNewExpiredTimeForFirebaseRegistration(success.firebaseRegistration);
+    } else if (success is GetStoredFirebaseRegistrationSuccess) {
+      _getFirebaseRegistrationFromServer(deviceClientId: success.firebaseRegistration.deviceClientId!);
+    } else if (success is RegisterNewFirebaseRegistrationTokenSuccess) {
+      _storeFirebaseRegistrationToCache(success.firebaseRegistration);
     }
   }
 }

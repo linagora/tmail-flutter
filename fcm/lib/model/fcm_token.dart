@@ -1,11 +1,11 @@
 
 import 'package:equatable/equatable.dart';
 
-class FirebaseToken with EquatableMixin {
+class FcmToken with EquatableMixin {
 
   final String value;
 
-  FirebaseToken(this.value);
+  FcmToken(this.value);
 
   @override
   List<Object?> get props => [value];
