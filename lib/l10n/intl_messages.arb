@@ -3539,5 +3539,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "byContinuingYouAreAgreeingToOur": "By continuing, you're agreeing to our",
+  "@byContinuingYouAreAgreeingToOur": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

@@ -13,14 +13,27 @@ class PrivacyLinkWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        text: AppLocalizations.of(context).privacyPolicy,
-        style: const TextStyle(
-          color: AppColor.loginTextFieldFocusedBorder,
-          fontSize: 14),
-        recognizer: TapGestureRecognizer()..onTap = () => AppUtils.launchLink(privacyUrlString)
-      )
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          AppLocalizations.of(context).byContinuingYouAreAgreeingToOur,
+          style: const TextStyle(
+            color: AppColor.colorTextBody,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        RichText(
+          text: TextSpan(
+            text: AppLocalizations.of(context).privacyPolicy,
+            style: const TextStyle(
+              color: AppColor.loginTextFieldFocusedBorder,
+              fontSize: 14),
+            recognizer: TapGestureRecognizer()..onTap = () => AppUtils.launchLink(privacyUrlString)
+          )
+        )
+      ],
     );
   }
 }
