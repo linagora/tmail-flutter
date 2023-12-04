@@ -1,9 +1,9 @@
 PODS:
-  - AppAuth (1.6.0):
-    - AppAuth/Core (= 1.6.0)
-    - AppAuth/ExternalUserAgent (= 1.6.0)
-  - AppAuth/Core (1.6.0)
-  - AppAuth/ExternalUserAgent (1.6.0):
+  - AppAuth (1.6.2):
+    - AppAuth/Core (= 1.6.2)
+    - AppAuth/ExternalUserAgent (= 1.6.2)
+  - AppAuth/Core (1.6.2)
+  - AppAuth/ExternalUserAgent (1.6.2):
     - AppAuth/Core
   - better_open_file (0.0.1):
     - Flutter
@@ -88,7 +88,7 @@ PODS:
   - flutter_app_badger (1.3.0):
     - Flutter
   - flutter_appauth (0.0.1):
-    - AppAuth (= 1.6.0)
+    - AppAuth (= 1.6.2)
     - Flutter
   - flutter_downloader (0.0.1):
     - Flutter
@@ -157,7 +157,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - permission_handler_apple (9.0.4):
+  - permission_handler_apple (9.1.1):
     - Flutter
   - PromisesObjC (2.2.0)
   - ReachabilitySwift (5.0.0)
@@ -285,7 +285,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
-  AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
+  AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
   better_open_file: 03cf320415d4d3f46b6e00adc4a567d76c1a399d
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
@@ -304,7 +304,7 @@ SPEC CHECKSUMS:
   fk_user_agent: 1f47ec39291e8372b1d692b50084b0d54103c545
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_app_badger: b87fc231847b03b92ce1412aa351842e7e97932f
-  flutter_appauth: 525652bda90e43ca5eb7ed748ecc106b79d1f5a1
+  flutter_appauth: cf9b928962105b2a64a9802585d1c8adaf3e0f46
   flutter_downloader: b7301ae057deadd4b1650dc7c05375f10ff12c39
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inappwebview: db0387fb3c2298997710505e7128eda00d15fc54
@@ -317,18 +317,18 @@ SPEC CHECKSUMS:
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
-  package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
-  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
-  permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
+  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
+  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   receive_sharing_intent: c0d87310754e74c0f9542947e7cbdf3a0335a3b1
   SDWebImage: 1c39de67663e5eebb2f41324d5d580eeea12dd4c
-  SDWebImageWebPCoder: 295a6573c512f54ad2dd58098e64e17dcf008499
-  share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
-  shared_preferences_foundation: 986fc17f3d3251412d18b0265f9c64113a8c2472
+  SDWebImageWebPCoder: 4851414d9f8894e328e8b97c93ea4f4f4e4418ae
+  share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
+  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
-  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
+  url_launcher_ios: 68d46cc9766d0c41dbdc884310529557e3cd7a86
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
 
 PODFILE CHECKSUM: e209bf81fb4facf3f68c43dbffa0b2d05ff63db0
