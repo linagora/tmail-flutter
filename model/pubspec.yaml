@@ -36,13 +36,13 @@ dependencies:
       ref: master
 
   ### Dependencies from pub.dev ###
-  cupertino_icons: 1.0.5
+  cupertino_icons: 1.0.6
 
   equatable: 2.0.5
 
   quiver: 3.2.1
 
-  intl: 0.18.0
+  intl: 0.18.1
 
   uri: 1.0.0
 
@@ -52,7 +52,7 @@ dependencies:
 
   mime: 1.0.4
 
-  collection: 1.17.1
+  collection: 1.18.0
 
   dartz: 0.10.1
 
