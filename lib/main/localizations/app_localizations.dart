@@ -3660,4 +3660,11 @@ class AppLocalizations {
       args: [senderName]
     );
   }
+
+  String get byContinuingYouAreAgreeingToOur {
+    return Intl.message(
+      'By continuing, you\'re agreeing to our',
+      name: 'byContinuingYouAreAgreeingToOur',
+    );
+  }
 }

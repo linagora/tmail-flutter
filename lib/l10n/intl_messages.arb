@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-11-16T12:39:33.304952",
+  "@@last_modified": "2023-12-05T02:08:27.311202",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3527,5 +3527,11 @@
     "placeholders": {
       "senderName": {}
     }
+  },
+  "byContinuingYouAreAgreeingToOur": "By continuing, you're agreeing to our",
+  "@byContinuingYouAreAgreeingToOur": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
