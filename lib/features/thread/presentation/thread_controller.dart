@@ -1199,6 +1199,18 @@ class ThreadController extends BaseController with EmailActionController {
     return DismissDirection.startToEnd;
   }
 
+  bool get inboxMailboxSelected => mailboxDashBoardController.selectedMailbox.value?.isInbox == true;
+
+  bool get systemBackGesturesEnable => inboxMailboxSelected && !mailboxDashBoardController.isDrawerOpen;
+
+  void backButtonPressedCallbackAction(BuildContext context) {
+    if (mailboxDashBoardController.isDrawerOpen) {
+      mailboxDashBoardController.closeMailboxMenuDrawer();
+    } else {
+      mailboxDashBoardController.openDefaultMailbox();
+    }
+  }
+
   void scrollToTop() {
     if (listEmailController.hasClients) {
       listEmailController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
