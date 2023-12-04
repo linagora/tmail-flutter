@@ -1,12 +1,12 @@
 
-import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:fcm/model/device_client_id.dart';
-import 'package:fcm/model/firebase_registration_expired_time.dart';
-import 'package:fcm/model/firebase_registration.dart';
 import 'package:fcm/model/fcm_token.dart';
+import 'package:fcm/model/firebase_registration.dart';
+import 'package:fcm/model/firebase_registration_expired_time.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
@@ -92,15 +92,20 @@ class FcmTokenController extends FcmBaseController {
     }
   }
 
-  bool _validateFirebaseRegistrationTokenExpired(FirebaseRegistration firebaseRegistration) {
-    log('FcmTokenController::_validateFirebaseRegistrationTokenExpired():firebaseRegistration: $firebaseRegistration');
+  bool _isFirebaseRegistrationTokenExpired(FirebaseRegistration firebaseRegistration) {
+    log('FcmTokenController::_isFirebaseRegistrationTokenExpired():firebaseRegistration: $firebaseRegistration');
     if (firebaseRegistration.expires != null) {
       final expireTimeLocal = firebaseRegistration.expires!.value.value.toLocal();
       final currentTime = DateTime.now();
       log('FcmTokenController::_validateFirebaseRegistrationTokenExpired():expireTimeLocal: $expireTimeLocal | currentTime: $currentTime');
-      final offsetTime = expireTimeLocal.minutesBetween(currentTime);
-      log('FcmTokenController::_validateFirebaseRegistrationTokenExpired():offsetTime: $offsetTime');
-      return currentTime.isBefore(expireTimeLocal) && offsetTime <= limitedTimeToExpire;
+      return FcmUtils.instance.checkExpirationTimeWithinGivenPeriod(
+        expiredTime: expireTimeLocal,
+        currentTime: currentTime,
+        limitOffsetTime: limitedTimeToExpire,
+        offsetTimeUnit: BuildUtils.isDebugMode
+          ? OffsetTimeUnit.minute
+          : OffsetTimeUnit.day
+      );
     } else {
       return true;
     }
@@ -161,7 +166,7 @@ class FcmTokenController extends FcmBaseController {
   void handleSuccessViewState(Success success) {
     log('FcmTokenController::_handleSuccessViewState(): $success');
     if (success is GetFirebaseRegistrationByDeviceIdSuccess &&
-        _validateFirebaseRegistrationTokenExpired(success.firebaseRegistration)) {
+        _isFirebaseRegistrationTokenExpired(success.firebaseRegistration)) {
       _updateNewExpiredTimeForFirebaseRegistration(success.firebaseRegistration);
     } else if (success is GetStoredFirebaseRegistrationSuccess) {
       _getFirebaseRegistrationFromServer(deviceClientId: success.firebaseRegistration.deviceClientId!);
