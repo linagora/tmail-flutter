@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -9,6 +10,15 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:jmap_dart_client/jmap/push/type_state.dart';
+
+enum OffsetTimeUnit {
+  year,
+  month,
+  day,
+  hour,
+  minute,
+  second
+}
 
 class FcmUtils {
   FcmUtils._internal();
@@ -115,4 +125,31 @@ class FcmUtils {
   }
 
   bool get isMobileAndroid => PlatformInfo.isMobile && Platform.isAndroid;
+
+  bool checkExpirationTimeWithinGivenPeriod({
+    required DateTime expiredTime,
+    required DateTime currentTime,
+    required int limitOffsetTime,
+    required OffsetTimeUnit offsetTimeUnit
+  }) {
+    if (currentTime.isBefore(expiredTime)) {
+      log('FcmUtils::checkExpiredTimeWithOffsetTime: currentTime BEFORE expiredTime');
+      int offsetTime = 0;
+      switch(offsetTimeUnit) {
+        case OffsetTimeUnit.minute:
+          offsetTime = expiredTime.minutesBetween(currentTime);
+          break;
+        case OffsetTimeUnit.day:
+          offsetTime = expiredTime.daysBetween(currentTime);
+          break;
+        default:
+          break;
+      }
+      log('FcmUtils::checkExpiredTimeWithOffsetTime:offsetTime: $offsetTime');
+      return offsetTime <= limitOffsetTime;
+    } else {
+      log('FcmUtils::checkExpiredTimeWithOffsetTime: currentTime AFTER expiredTime');
+      return true;
+    }
+  }
 }
