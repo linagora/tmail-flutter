@@ -233,6 +233,7 @@ extension AppColor on Color {
   static const messageDialogHighlightColor = Color(0xFF37383A);
   static const labelColor = Color(0xFF71767C);
   static const thumbScrollbarColor = Color(0xFFC1C1C1);
+  static const loginViewShadowColor = Color(0x3DBCBCBC);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

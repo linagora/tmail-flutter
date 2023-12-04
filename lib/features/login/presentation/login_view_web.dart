@@ -156,51 +156,58 @@ class LoginView extends BaseLoginView {
           ),
           Column(
             children: [
-              SizedBox(
-                height: 690,
-                width: 445,
-                child: Card(
+              Container(
+                height: 684,
+                width: 458,
+                padding: const EdgeInsets.symmetric(horizontal: 31),
+                clipBehavior: Clip.antiAlias,
+                decoration: const ShapeDecoration(
+                  color: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
-                  elevation: 10,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 31, right: 31),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 66),
-                          child: _buildAppLogo(context)
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 67),
-                          child: Text(
-                            AppLocalizations.of(context).signIn,
-                            style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
-                          )
-                        ),
-                        Obx(() => LoginMessageWidget(
-                          formType: controller.loginFormType.value,
-                          viewState: controller.viewState.value,
-                        )),
-                        Obx(() {
-                          switch (controller.loginFormType.value) {
-                            case LoginFormType.credentialForm:
-                              return buildInputCredentialForm(context);
-                            default:
-                              return const SizedBox.shrink();
-                          }
-                        }),
-                        _buildLoadingProgress(context),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: PrivacyLinkWidget()
-                        ),
-                      ],
+                  shadows: [
+                    BoxShadow(
+                      color: AppColor.loginViewShadowColor,
+                      blurRadius: 40,
+                      offset: Offset(0, 2),
+                      spreadRadius: 2,
                     )
-                  )
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 66),
+                      child: _buildAppLogo(context)
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 67),
+                      child: Text(
+                        AppLocalizations.of(context).signIn,
+                        style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
+                      )
+                    ),
+                    Obx(() => LoginMessageWidget(
+                      formType: controller.loginFormType.value,
+                      viewState: controller.viewState.value,
+                    )),
+                    Obx(() {
+                      switch (controller.loginFormType.value) {
+                        case LoginFormType.credentialForm:
+                          return buildInputCredentialForm(context);
+                        default:
+                          return const SizedBox.shrink();
+                      }
+                    }),
+                    _buildLoadingProgress(context),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: PrivacyLinkWidget()
+                    ),
+                  ],
                 )
               ),
               Padding(
