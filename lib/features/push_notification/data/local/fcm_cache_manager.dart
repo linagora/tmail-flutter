@@ -3,17 +3,17 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
-import 'package:tmail_ui_user/features/push_notification/data/model/fcm_subscription.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/firebase_registration_cache.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class FCMCacheManager {
   final FcmCacheClient _fcmCacheClient;
-  final FCMSubscriptionCacheClient _fcmSubscriptionCacheClient;
+  final FirebaseRegistrationCacheClient _firebaseRegistrationCacheClient;
 
-  FCMCacheManager(this._fcmCacheClient,this._fcmSubscriptionCacheClient);
+  FCMCacheManager(this._fcmCacheClient,this._firebaseRegistrationCacheClient);
 
   Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState) {
     final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
@@ -43,17 +43,23 @@ class FCMCacheManager {
     return _fcmCacheClient.clearAllData();
   }
 
-  Future<void> storeSubscription(FCMSubscriptionCache fcmSubscriptionCache) {
-    return _fcmSubscriptionCacheClient.insertItem(
-        FCMSubscriptionCache.keyCacheValue, fcmSubscriptionCache);
+  Future<void> storeFirebaseRegistration(FirebaseRegistrationCache firebaseRegistrationCache) {
+    return _firebaseRegistrationCacheClient.insertItem(
+      FirebaseRegistrationCache.keyCacheValue,
+      firebaseRegistrationCache
+    );
   }
   
-  Future<FCMSubscriptionCache> getSubscription() async {
-    final fcmSubscription = await _fcmSubscriptionCacheClient.getItem(FCMSubscriptionCache.keyCacheValue);
-    if (fcmSubscription == null) {
-      throw NotFoundSubscriptionException();
+  Future<FirebaseRegistrationCache> getStoredFirebaseRegistration() async {
+    final firebaseRegistration = await _firebaseRegistrationCacheClient.getItem(FirebaseRegistrationCache.keyCacheValue);
+    if (firebaseRegistration == null) {
+      throw NotFoundFirebaseRegistrationCacheException();
     } else {
-      return fcmSubscription;
+      return firebaseRegistration;
     }
+  }
+
+  Future<void> deleteFirebaseRegistration() async {
+    await _firebaseRegistrationCacheClient.deleteItem(FirebaseRegistrationCache.keyCacheValue);
   }
 }
