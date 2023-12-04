@@ -18,7 +18,7 @@ import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_clien
 import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/subscription_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
@@ -71,9 +71,9 @@ class LocalBindings extends Bindings {
     Get.put(RecentLoginUrlCacheManager((Get.find<RecentLoginUrlCacheClient>())));
     Get.put(RecentLoginUsernameCacheClient());
     Get.put(RecentLoginUsernameCacheManager(Get.find<RecentLoginUsernameCacheClient>()));
-    Get.put(FCMSubscriptionCacheClient());
+    Get.put(FirebaseRegistrationCacheClient());
     Get.put(FcmCacheClient());
-    Get.put(FCMCacheManager(Get.find<FcmCacheClient>(),Get.find<FCMSubscriptionCacheClient>()));
+    Get.put(FCMCacheManager(Get.find<FcmCacheClient>(),Get.find<FirebaseRegistrationCacheClient>()));
     Get.put(HiveCacheVersionClient(Get.find<SharedPreferences>(), Get.find<CacheExceptionThrower>()));
     Get.put(NewEmailHiveCacheClient());
     Get.put(NewEmailCacheManager(Get.find<NewEmailHiveCacheClient>(), Get.find<FileUtils>()));
@@ -90,7 +90,7 @@ class LocalBindings extends Bindings {
       Get.find<RecentSearchCacheClient>(),
       Get.find<AccountCacheClient>(),
       Get.find<FcmCacheClient>(),
-      Get.find<FCMSubscriptionCacheClient>(),
+      Get.find<FirebaseRegistrationCacheClient>(),
       Get.find<HiveCacheVersionClient>(),
       Get.find<NewEmailHiveCacheClient>(),
       Get.find<OpenedEmailHiveCacheClient>(),
