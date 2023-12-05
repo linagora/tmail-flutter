@@ -171,7 +171,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     if (isLatestTagFocused && isLatestEmail) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
     } else if (GetUtils.isEmail(currentEmailAddress.emailAddress)) {
-      return BorderSide.none;
+      return const BorderSide(width: 0, color: AppColor.colorEmailAddressTag);
     } else {
       return const BorderSide(
         width: 1,
