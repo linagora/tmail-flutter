@@ -47,7 +47,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 onCloseViewAction: () => controller.saveToDraftAndClose(context),
                 attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                 insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-                sendMessageAction: () => controller.sendEmailAction(context),
+                sendMessageAction: () => controller.validateInformationBeforeSending(context),
                 openContextMenuAction: (position) {
                   controller.openPopupMenuAction(
                     context,
@@ -441,7 +441,7 @@ class ComposerView extends GetWidget<ComposerController> {
               showCodeViewAction: controller.richTextWebController.toggleCodeView,
               deleteComposerAction: () => controller.closeComposer(context),
               saveToDraftAction: () => controller.saveToDraftAction(context),
-              sendMessageAction: () => controller.sendEmailAction(context),
+              sendMessageAction: () => controller.validateInformationBeforeSending(context),
               requestReadReceiptAction: (position) {
                 controller.openPopupMenuAction(
                   context,
@@ -657,7 +657,7 @@ class ComposerView extends GetWidget<ComposerController> {
               showCodeViewAction: controller.richTextWebController.toggleCodeView,
               deleteComposerAction: () => controller.closeComposer(context),
               saveToDraftAction: () => controller.saveToDraftAction(context),
-              sendMessageAction: () => controller.sendEmailAction(context),
+              sendMessageAction: () => controller.validateInformationBeforeSending(context),
               requestReadReceiptAction: (position) {
                 controller.openPopupMenuAction(
                   context,
