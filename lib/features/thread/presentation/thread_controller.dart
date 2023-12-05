@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
@@ -779,10 +780,17 @@ class ThreadController extends BaseController with EmailActionController {
 
   void searchMoreEmails() {
     if (canSearchMore && _session != null && _accountId != null) {
-      final oldestEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
+      final lastEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
-      searchController.updateFilterEmail(beforeOption: optionOf(oldestEmail?.receivedAt));
+      final firstEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
+        ? mailboxDashBoardController.emailsInCurrentMailbox.first
+        : null;
+      if (optionOf(_searchEmailFilter.sortOrder).toString() == EmailSortOrderType.oldest.getSortOrder().toString()) {
+        searchController.updateFilterEmail(beforeOption: optionOf(firstEmail?.receivedAt));
+      } else {
+        searchController.updateFilterEmail(beforeOption: optionOf(lastEmail?.receivedAt));
+      }
       consumeState(_searchMoreEmailInteractor.execute(
         _session!,
         _accountId!,
@@ -790,7 +798,7 @@ class ThreadController extends BaseController with EmailActionController {
         sort: _searchEmailFilter.sortOrder ?? _sortOrder,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(moreFilterCondition: _getFilterCondition()),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        lastEmailId: oldestEmail?.id
+        lastEmailId: lastEmail?.id
       ));
     }
   }
@@ -802,7 +810,7 @@ class ThreadController extends BaseController with EmailActionController {
       canSearchMore = true;
       final resultEmailSearchList = success.emailList
           .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
-          .where((email) => !mailboxDashBoardController.emailsInCurrentMailbox.contains(email))
+          .where((email) => mailboxDashBoardController.emailsInCurrentMailbox.every((emailInCurrentMailbox) => emailInCurrentMailbox.id != email.id))
           .toList()
           .syncPresentationEmail(
             mapMailboxById: mailboxDashBoardController.mapMailboxById,
