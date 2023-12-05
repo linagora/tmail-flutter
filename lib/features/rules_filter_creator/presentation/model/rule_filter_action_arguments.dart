@@ -21,7 +21,7 @@ abstract class RuleFilterActionArguments with EquatableMixin {
         return MoveMessageActionArguments();
       case EmailRuleFilterAction.rejectIt:
         return RejectItActionArguments();
-      case EmailRuleFilterAction.startIt:
+      case EmailRuleFilterAction.starIt:
         return StarItActionArguments();
       default:
         return EmptyRuleFilterActionArguments();
@@ -84,7 +84,7 @@ class RejectItActionArguments extends RuleFilterActionArguments {
 
 class StarItActionArguments extends RuleFilterActionArguments {
   StarItActionArguments() : super(
-    action: EmailRuleFilterAction.startIt,
+    action: EmailRuleFilterAction.starIt,
   );
 }
 

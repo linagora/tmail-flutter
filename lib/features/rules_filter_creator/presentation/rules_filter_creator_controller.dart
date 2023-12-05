@@ -232,7 +232,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
             }
           }
           if (currentAction.markAsImportant == true) {
-            EmailRuleFilterAction? action = EmailRuleFilterAction.startIt;
+            EmailRuleFilterAction? action = EmailRuleFilterAction.starIt;
             RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
             listEmailRuleFilterActionSelected.add(newRuleFilterAction);
           }
