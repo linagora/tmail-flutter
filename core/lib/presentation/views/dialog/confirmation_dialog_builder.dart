@@ -155,7 +155,7 @@ class ConfirmDialogBuilder {
       return Dialog(
         key: _key,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16))),
+          borderRadius: BorderRadius.all(Radius.circular(18))),
         insetPadding: _outsideDialogPadding ?? const EdgeInsets.symmetric(
             horizontal: 24.0,
             vertical: 16.0),
@@ -171,83 +171,89 @@ class ConfirmDialogBuilder {
         width: _widthDialog ?? 400,
         height: _heightDialog,
         decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(16))),
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(18))),
         margin: _margin,
-        child: Wrap(children: [
-          if (_onCloseButtonAction != null)
-            Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                    padding: const EdgeInsets.only(top: 8, right: 8),
-                    child: buildIconWeb(
-                        icon: SvgPicture.asset(_imagePath.icCircleClose, fit: BoxFit.fill),
-                        onTap: () => _onCloseButtonAction?.call())
-                )),
-          if (_iconWidget != null)
-            Container(
-              margin: _marginIcon ?? EdgeInsets.zero,
-              alignment: Alignment.center,
-              child: _iconWidget,
-            ),
-          if (_title.isNotEmpty)
-            Padding(
-                padding: _paddingTitle ?? const EdgeInsets.only(top: 12),
-                child: Center(
-                    child: Text(
-                        _title,
-                        textAlign: TextAlign.center,
-                        style: _styleTitle ?? const TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
-                    )
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_onCloseButtonAction != null)
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TMailButtonWidget.fromIcon(
+                  icon: _imagePath.icCircleClose,
+                  iconSize: 30,
+                  padding: const EdgeInsets.all(3),
+                  backgroundColor: Colors.transparent,
+                  margin: const EdgeInsetsDirectional.only(top: 16, end: 16),
+                  onTapActionCallback: _onCloseButtonAction
                 )
-            ),
-          if (_content.isNotEmpty)
-            Padding(
-              padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              child: Center(
-                child: Text(_content,
-                    textAlign: TextAlign.center,
-                    style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
-                ),
               ),
-            )
-          else if (listTextSpan != null)
-            Padding(
-              padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              child: Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
-                    children: listTextSpan
+            if (_iconWidget != null)
+              Container(
+                margin: _marginIcon ?? EdgeInsets.zero,
+                alignment: Alignment.center,
+                child: _iconWidget,
+              ),
+            if (_title.isNotEmpty)
+              Padding(
+                  padding: _paddingTitle ?? const EdgeInsets.only(top: 12),
+                  child: Center(
+                      child: Text(
+                          _title,
+                          textAlign: TextAlign.center,
+                          style: _styleTitle ?? const TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+                      )
+                  )
+              ),
+            if (_content.isNotEmpty)
+              Padding(
+                padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: Center(
+                  child: Text(_content,
+                      textAlign: TextAlign.center,
+                      style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
+                  ),
+                ),
+              )
+            else if (listTextSpan != null)
+              Padding(
+                padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
+                      children: listTextSpan
+                    ),
                   ),
                 ),
               ),
-            ),
-          Padding(
-              padding: _paddingButton ?? const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-              child: Row(
-                  children: [
-                    if (_cancelText.isNotEmpty)
-                      Expanded(child: _buildButton(
-                          name: _cancelText,
-                          bgColor: _colorCancelButton,
-                          radius: _radiusButton,
-                          height: heightButton,
-                          textStyle: _styleTextCancelButton,
-                          action: _onCancelButtonAction)),
-                    if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 16),
-                    if (_confirmText.isNotEmpty)
-                      Expanded(child: _buildButton(
-                          name: _confirmText,
-                          bgColor: _colorConfirmButton,
-                          radius: _radiusButton,
-                          height: heightButton,
-                          textStyle: _styleTextConfirmButton,
-                          action: _onConfirmButtonAction))
-                  ]
-              ))
-        ])
+            Padding(
+                padding: _paddingButton ?? const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                child: Row(
+                    children: [
+                      if (_cancelText.isNotEmpty)
+                        Expanded(child: _buildButton(
+                            name: _cancelText,
+                            bgColor: _colorCancelButton,
+                            radius: _radiusButton,
+                            height: heightButton,
+                            textStyle: _styleTextCancelButton,
+                            action: _onCancelButtonAction)),
+                      if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 16),
+                      if (_confirmText.isNotEmpty)
+                        Expanded(child: _buildButton(
+                            name: _confirmText,
+                            bgColor: _colorConfirmButton,
+                            radius: _radiusButton,
+                            height: heightButton,
+                            textStyle: _styleTextConfirmButton,
+                            action: _onConfirmButtonAction))
+                    ]
+                ))
+          ]
+        )
     );
   }
 
