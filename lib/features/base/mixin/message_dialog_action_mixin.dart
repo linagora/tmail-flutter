@@ -77,14 +77,18 @@ mixin MessageDialogActionMixin {
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
             backgroundColor: Colors.transparent,
             enableDrag: true,
-            builder: (BuildContext context) => PointerInterceptor(
+            constraints: BoxConstraints(
+              maxWidth: responsiveUtils.getSizeScreenShortestSide(context) - 16
+            ),
+            useSafeArea: true,
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(18))),
+            builder: (context) => PointerInterceptor(
               child: (ConfirmDialogBuilder(imagePaths, showAsBottomSheet: true, listTextSpan: listTextSpan)
                 ..key(const Key('confirm_dialog_action'))
                 ..title(title ?? '')
                 ..content(message)
                 ..addIcon(icon)
-                ..margin(const EdgeInsets.symmetric(vertical: 42, horizontal: 16))
-                ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
+                ..margin(const EdgeInsets.only(bottom: 42))
                 ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
                 ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
                 ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
