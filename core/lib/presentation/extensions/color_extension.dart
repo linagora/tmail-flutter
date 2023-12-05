@@ -210,9 +210,9 @@ extension AppColor on Color {
   static const colorComposerShadowTop = Color(0x28000000);
   static const colorComposerShadowBottom = Color(0x1E000000);
   static const colorComposerAppBar = Color(0xFFF4F4F4);
-  static const colorLabelComposer = Color(0xFF8C9CAF);
+  static const colorLabelComposer = Color(0xFF8B9CAF);
   static const colorLineComposer = Color(0xFFF4F4F4);
-  static const colorPrefixButtonComposer = Color(0xFFAEAAAE);
+  static const colorPrefixButtonComposer = Color(0xFF8B9CAF);
   static const colorRichButtonComposer = Color(0xFFAEAEC0);
   static const colorMobileRichButtonComposer = Color(0xFF8C9CAF);
   static const colorSelected = Color(0xFFE3F1FF);
