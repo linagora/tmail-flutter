@@ -25,7 +25,7 @@ class AppLocalizations {
   }
 
   String get login_text_slogan {
-    return Intl.message('Team Mail',
+    return Intl.message('Twake Mail',
         name: 'login_text_slogan');
   }
 
@@ -825,7 +825,7 @@ class AppLocalizations {
 
   String get app_name {
     return Intl.message(
-        'Team Mail',
+        'Twake Mail',
         name: 'app_name');
   }
 
@@ -980,7 +980,7 @@ class AppLocalizations {
 
   String get page_name {
     return Intl.message(
-        'Team Mail',
+        'Twake Mail',
         name: 'page_name');
   }
 
@@ -2595,7 +2595,7 @@ class AppLocalizations {
 
   String get appTitlePushNotification {
     return Intl.message(
-      'Team Mail',
+      'Twake Mail',
       name: 'appTitlePushNotification');
   }
 
