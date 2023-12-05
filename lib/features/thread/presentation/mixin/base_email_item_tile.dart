@@ -216,31 +216,34 @@ mixin BaseEmailItemTile {
         fit: BoxFit.fill);
   }
 
-  Widget buildIconAvatarText(PresentationEmail email, {
-    double? iconSize,
-    TextStyle? textStyle
-  }) {
+  Widget buildIconAvatarText(
+    PresentationEmail email,
+    {
+      double? iconSize,
+      TextStyle? textStyle
+    }
+  ) {
     return Container(
-        width: iconSize ?? 56,
-        height: iconSize ?? 56,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular((iconSize ?? 56) * 0.5),
-            border: Border.all(color: Colors.transparent),
-            gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: const [0.0, 1.0],
-                colors: email.avatarColors),
-            color: AppColor.avatarColor
-        ),
-        child: Text(
-            email.getAvatarText(),
-            style: textStyle ?? const TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-                fontWeight: FontWeight.w500)
+      width: iconSize ?? ItemEmailTileStyles.avatarIconSize,
+      height: iconSize ?? ItemEmailTileStyles.avatarIconSize,
+      alignment: Alignment.center,
+      decoration: ShapeDecoration(
+        shape: const CircleBorder(),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0.0, 1.0],
+          colors: email.avatarColors
         )
+      ),
+      child: Text(
+        email.getAvatarText(),
+        style: textStyle ?? const TextStyle(
+          fontSize: 22,
+          color: Colors.white,
+          fontWeight: FontWeight.w500
+        )
+      )
     );
   }
 
