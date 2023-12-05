@@ -362,7 +362,12 @@ class SearchEmailController extends BaseController
   void searchMoreEmailsAction() {
     if (canSearchMore && session != null && accountId != null) {
       final lastEmail = listResultSearch.last;
-      _updateSimpleSearchFilter(beforeOption: optionOf(lastEmail.receivedAt));
+      final firstEmail = listResultSearch.first;
+      if (emailSortOrderType.value == EmailSortOrderType.oldest) {
+        _updateSimpleSearchFilter(beforeOption: optionOf(firstEmail.receivedAt));
+      } else {
+        _updateSimpleSearchFilter(beforeOption: optionOf(lastEmail.receivedAt));
+      }
 
       consumeState(_searchMoreEmailInteractor.execute(
         session!,
@@ -384,7 +389,7 @@ class SearchEmailController extends BaseController
     if (success.emailList.isNotEmpty) {
       final resultEmailSearchList = success.emailList
           .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
-          .where((email) => !listResultSearch.contains(email))
+          .where((email) => listResultSearch.every((emailInCurrentList) => emailInCurrentList.id != email.id))
           .toList()
           .syncPresentationEmail(
             mapMailboxById: mailboxDashBoardController.mapMailboxById,
