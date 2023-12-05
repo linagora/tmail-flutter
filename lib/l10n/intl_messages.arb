@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-11-16T12:39:33.304952",
+  "@@last_modified": "2023-12-05T22:37:22.835805",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3356,8 +3356,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startIt": "Start it",
-  "@startIt": {
+  "starIt": "Star it",
+  "@starIt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

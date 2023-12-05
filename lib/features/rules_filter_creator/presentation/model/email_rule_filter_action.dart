@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 enum EmailRuleFilterAction {
   moveMessage,
   maskAsSeen,
-  startIt,
+  starIt,
   rejectIt,
   markAsSpam,
   forwardTo;
@@ -15,8 +15,8 @@ enum EmailRuleFilterAction {
         return AppLocalizations.of(context).moveMessage;
       case EmailRuleFilterAction.maskAsSeen:
         return AppLocalizations.of(context).maskAsSeen;
-      case EmailRuleFilterAction.startIt:
-        return AppLocalizations.of(context).startIt;
+      case EmailRuleFilterAction.starIt:
+        return AppLocalizations.of(context).starIt;
       case EmailRuleFilterAction.rejectIt:
         return AppLocalizations.of(context).rejectIt;
       case EmailRuleFilterAction.markAsSpam:

@@ -47,7 +47,7 @@ class RuleFilterActionDetailed extends StatelessWidget {
           onChangeAction: forwardEmailOnChangeAction,
         );
       case EmailRuleFilterAction.maskAsSeen:
-      case EmailRuleFilterAction.startIt:
+      case EmailRuleFilterAction.starIt:
       case EmailRuleFilterAction.rejectIt:
       case EmailRuleFilterAction.markAsSpam:
       default:
