@@ -621,6 +621,7 @@ class MailboxDashBoardController extends ReloadableController {
     if (queryString?.isNotEmpty == true) {
       searchController.updateFilterEmail(text: SearchQuery(queryString!));
     }
+    searchController.updateFilterEmail(sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder());
     dispatchAction(StartSearchEmailAction());
     KeyboardUtils.hideKeyboard(context);
     if (_searchInsideEmailDetailedViewIsActive(context)) {
