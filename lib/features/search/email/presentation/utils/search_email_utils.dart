@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 class SearchEmailUtils {
   static EdgeInsets getPaddingAppBar(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (PlatformInfo.isWeb) {
-      return const EdgeInsets.symmetric(horizontal: 16);
+      if (responsiveUtils.isMobile(context)) {
+        return const EdgeInsets.symmetric(horizontal: 16);
+      } else {
+        return const EdgeInsets.symmetric(horizontal: 32);
+      }
     } else {
-      if (responsiveUtils.isScreenWithShortestSide(context)) {
-        return const EdgeInsets.symmetric(horizontal: 10);
+      if (responsiveUtils.isPortraitMobile(context)) {
+        return const EdgeInsets.symmetric(horizontal: 8);
       } else {
         return const EdgeInsets.symmetric(horizontal: 32);
       }
@@ -49,31 +53,35 @@ class SearchEmailUtils {
   }
 
   static EdgeInsets getPaddingSearchFilterButton(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
-      return const EdgeInsets.all(12);
-    } else {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(vertical: 12, horizontal: 16);
+    } else {
+      if (responsiveUtils.isPortraitMobile(context)) {
+        return const EdgeInsets.symmetric(vertical: 12, horizontal: 16);
+      } else {
+        return const EdgeInsets.symmetric(vertical: 12, horizontal: 32);
+      }
+    }
+  }
+
+  static EdgeInsets getPaddingItemListMobile(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 32);
     }
   }
 
   static EdgeInsets getMarginSearchFilterButton(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (PlatformInfo.isWeb || !responsiveUtils.isScreenWithShortestSide(context)) {
+    if (PlatformInfo.isWeb) {
       return const EdgeInsets.symmetric(horizontal: 20);
     } else {
       return EdgeInsets.zero;
     }
   }
 
-  static EdgeInsets getPaddingSearchResultList(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (PlatformInfo.isWeb) {
-      return const EdgeInsets.only(left: 10);
-    } else {
-      if (responsiveUtils.isScreenWithShortestSide(context)) {
-        return const EdgeInsets.symmetric(horizontal: 16, vertical: 5);
-      } else {
-        return const EdgeInsets.symmetric(horizontal: 32, vertical: 5);
-      }
-    }
+  static EdgeInsetsGeometry getPaddingSearchResultList(BuildContext context, ResponsiveUtils responsiveUtils) {
+    return const EdgeInsetsDirectional.only(top: 8, bottom: 8, end: 8);
   }
 
   static EdgeInsets getPaddingDividerSearchResultList(BuildContext context, ResponsiveUtils responsiveUtils) {

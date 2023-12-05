@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class DefaultWebAppBarThreadWidget extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final PresentationMailbox? mailboxSelected;
   final FilterMessageOption filterOption;
@@ -34,7 +36,7 @@ class DefaultWebAppBarThreadWidget extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         color: DefaultWebAppBarThreadWidgetStyle.backgroundColor,
-        padding: DefaultWebAppBarThreadWidgetStyle.padding,
+        padding: DefaultWebAppBarThreadWidgetStyle.getPadding(context, _responsiveUtils),
         constraints: const BoxConstraints(minHeight: DefaultWebAppBarThreadWidgetStyle.minHeight),
         child: Row(
           children: [

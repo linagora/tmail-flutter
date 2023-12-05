@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SelectionWebAppBarThreadWidget extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final PresentationMailbox? mailboxSelected;
   final List<PresentationEmail> listEmailSelected;
@@ -42,7 +44,7 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: SelectionWebAppBarThreadWidgetStyle.backgroundColor,
-      padding: SelectionWebAppBarThreadWidgetStyle.padding,
+      padding: SelectionWebAppBarThreadWidgetStyle.getPadding(context, _responsiveUtils),
       constraints: const BoxConstraints(minHeight: SelectionWebAppBarThreadWidgetStyle.minHeight),
       child: Row(
         children: [
