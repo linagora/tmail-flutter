@@ -72,6 +72,7 @@ class RecipientTagItemWidget extends StatelessWidget {
                           horizontal: 4,
                           vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
                         ),
+                        padding: EdgeInsets.zero,
                         label: Text(
                           currentEmailAddress.asString(),
                           maxLines: 1,
@@ -117,6 +118,7 @@ class RecipientTagItemWidget extends StatelessWidget {
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                   ),
+                  padding: EdgeInsets.zero,
                   deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
                   labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
                   backgroundColor: _getTagBackgroundColor(),
