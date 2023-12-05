@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_s
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
@@ -483,11 +484,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           return false;
         },
         child: PlatformInfo.isMobile
-          ? ListView.builder(
+          ? ListView.separated(
               controller: controller.resultSearchScrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               key: const PageStorageKey('list_presentation_email_in_search_view'),
-              itemExtent: _getItemExtent(context),
               itemCount: listPresentationEmail.length,
               itemBuilder: (context, index) {
                 final currentPresentationEmail = listPresentationEmail[index];
@@ -497,8 +497,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   searchQuery: controller.searchQuery,
                   isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
                   isSearchEmailRunning: true,
-                  padding: SearchEmailUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                  paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                  padding: SearchEmailUtils.getPaddingItemListMobile(context, controller.responsiveUtils),
                   mailboxContain: currentPresentationEmail.mailboxContain,
                   emailActionClick: (action, email) {
                     controller.pressEmailAction(
@@ -523,15 +522,23 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     }
                   },
                 ));
-              }
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                if (index < listPresentationEmail.length - 1) {
+                  return Padding(
+                    padding: SearchEmailUtils.getPaddingItemListMobile(context, controller.responsiveUtils),
+                    child: const Divider(color: AppColor.lineItemListColor, height: 1));
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
             )
           : ScrollbarListView(
               scrollController: controller.resultSearchScrollController,
-              child: ListView.builder(
+              child: ListView.separated(
                 controller: controller.resultSearchScrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 key: const PageStorageKey('list_presentation_email_in_search_view'),
-                itemExtent: _getItemExtent(context),
                 itemCount: listPresentationEmail.length,
                 itemBuilder: (context, index) {
                   final currentPresentationEmail = listPresentationEmail[index];
@@ -542,7 +549,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
                     isSearchEmailRunning: true,
                     padding: SearchEmailUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                    paddingDivider: SearchEmailUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
                     mailboxContain: currentPresentationEmail.mailboxContain,
                     emailActionClick: (action, email) {
                       controller.pressEmailAction(
@@ -566,19 +572,24 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                         );
                       }
                     },
+
                   ));
-                }
+                },
+                separatorBuilder: (context, index) {
+                  return Padding(
+                    padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
+                    child: Divider(
+                      color: index < listPresentationEmail.length - 1 &&
+                        controller.selectionMode.value == SelectMode.INACTIVE
+                        ? AppColor.lineItemListColor
+                        : Colors.white,
+                      height: 1
+                    )
+                  );
+                },
               )
             )
     );
-  }
-
-  double? _getItemExtent(BuildContext context) {
-    if (PlatformInfo.isWeb) {
-      return controller.responsiveUtils.isDesktop(context) ? 52 : 95;
-    } else {
-      return null;
-    }
   }
 
   Widget _buildLoadingView() {
