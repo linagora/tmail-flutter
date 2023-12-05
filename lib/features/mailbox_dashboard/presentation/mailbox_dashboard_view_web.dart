@@ -61,10 +61,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       Container(
                         width: ResponsiveUtils.defaultSizeMenu,
                         color: Colors.white,
-                        padding: EdgeInsets.only(
-                          left: AppUtils.isDirectionRTL(context) ? 0 : 28,
-                          right: AppUtils.isDirectionRTL(context) ? 28 : 0,
-                        ),
+                        padding: const EdgeInsetsDirectional.only(start: 28),
                         alignment: Alignment.center,
                         height: 80,
                         child: Row(children: [
@@ -246,26 +243,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildThreadViewForWebDesktop(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(
-        right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-        left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-        top: 8,
-        bottom: 16
-      ),
+      margin: const EdgeInsetsDirectional.only(end: 16, top: 8, bottom: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
         color: Colors.white),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         child: Column(children: [
           Obx(() {
-            if (controller.isSelectionEnabled()) {
+            final listEmailSelected = controller.listEmailSelected;
+            if (controller.isSelectionEnabled() && listEmailSelected.isNotEmpty) {
               return Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.symmetric(vertical: 8.5, horizontal: 16),
                 child: TopBarThreadSelection(
-                  context,
-                  controller.listEmailSelected,
+                  listEmailSelected,
                   controller.mapMailboxById,
                   onCancelSelection: () =>
                     controller.dispatchAction(CancelSelectionAllEmailAction()),
@@ -275,11 +267,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       listEmails,
                       actionType
                     )),
-                ).build(),
+                ),
               );
             } else {
               return Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: _buildListButtonTopBar(context),
               );
             }
