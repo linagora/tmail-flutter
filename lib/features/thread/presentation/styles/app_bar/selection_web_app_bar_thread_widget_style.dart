@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 
 class SelectionWebAppBarThreadWidgetStyle {
@@ -11,7 +12,13 @@ class SelectionWebAppBarThreadWidgetStyle {
   static const Color backgroundColor = Colors.white;
   static const Color cancelButtonColor = AppColor.primaryColor;
 
-  static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(vertical: 8, horizontal: 16);
+  static EdgeInsetsGeometry getPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 8);
+    }
+  }
   static const EdgeInsetsGeometry closeButtonPadding = EdgeInsets.all(3);
 
   static const TextStyle emailCounterStyle = TextStyle(

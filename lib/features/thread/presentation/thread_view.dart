@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.da
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_button_widget_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
@@ -197,10 +198,8 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildSearchBarView(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: controller.responsiveUtils.isWebNotDesktop(context) ? 8 : 0),
-      margin: EdgeInsets.only(bottom: PlatformInfo.isMobile ? 8 : 0),
+      padding: ItemEmailTileStyles.getPaddingItemList(context, controller.responsiveUtils),
+      margin: EdgeInsets.only(bottom: !controller.responsiveUtils.isWebDesktop(context) ? 8 : 0),
       child: SearchBarView(controller.imagePaths,
         hintTextSearch: AppLocalizations.of(context).search_emails,
         onOpenSearchViewAction: controller.goToSearchView));
@@ -350,14 +349,21 @@ class ThreadView extends GetWidget<ThreadController>
         return false;
       },
       child: PlatformInfo.isMobile
-        ? ListView.builder(
+        ? ListView.separated(
             key: const PageStorageKey('list_presentation_email_in_threads'),
             controller: controller.listEmailController,
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemExtent: _getItemExtent(context),
             itemCount: listPresentationEmail.length,
-            itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index]))
+            itemBuilder: (context, index) => Obx(() => _buildEmailItemNotDraggable(context, listPresentationEmail[index])),
+            separatorBuilder: (context, index) {
+              if (index < listPresentationEmail.length - 1) {
+                return Padding(
+                  padding: ItemEmailTileStyles.getPaddingItemList(context, controller.responsiveUtils),
+                  child: const Divider(color: AppColor.lineItemListColor, height: 1));
+              } else {
+                return const SizedBox.shrink();
+              }
+            },
           )
         : Focus(
             focusNode: controller.focusNodeKeyBoard,
@@ -365,14 +371,24 @@ class ThreadView extends GetWidget<ThreadController>
             onKey: controller.handleKeyEvent,
             child: ScrollbarListView(
               scrollController: controller.listEmailController,
-              child: ListView.builder(
+              child: ListView.separated(
                 key: const PageStorageKey('list_presentation_email_in_threads'),
                 controller: controller.listEmailController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                itemExtent: _getItemExtent(context),
                 itemCount: listPresentationEmail.length,
-                itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index]))
+                itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index])),
+                separatorBuilder: (context, index) {
+                  return Padding(
+                    padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
+                    child: Divider(
+                      color: index < listPresentationEmail.length - 1 &&
+                        controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
+                          ? AppColor.lineItemListColor
+                          : Colors.white,
+                      height: 1
+                    )
+                  );
+                },
               ),
             ),
           )
@@ -548,14 +564,6 @@ class ThreadView extends GetWidget<ThreadController>
         ),
       ),
     );
-  }
-
-  double? _getItemExtent(BuildContext context) {
-    if (PlatformInfo.isWeb) {
-     return controller.responsiveUtils.isDesktop(context) ? 52 : 98;
-    } else {
-      return null;
-    }
   }
 
   Widget _buildEmptyEmail(BuildContext context) {

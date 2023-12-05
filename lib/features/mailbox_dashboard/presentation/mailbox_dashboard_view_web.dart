@@ -18,12 +18,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
-import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -31,7 +25,13 @@ import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -61,10 +61,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       Container(
                         width: ResponsiveUtils.defaultSizeMenu,
                         color: Colors.white,
-                        padding: EdgeInsets.only(
-                          left: AppUtils.isDirectionRTL(context) ? 0 : 28,
-                          right: AppUtils.isDirectionRTL(context) ? 28 : 0,
-                        ),
+                        padding: const EdgeInsetsDirectional.only(start: 28),
                         alignment: Alignment.center,
                         height: 80,
                         child: Row(children: [
@@ -246,26 +243,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildThreadViewForWebDesktop(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(
-        right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-        left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-        top: 8,
-        bottom: 16
-      ),
+      margin: const EdgeInsetsDirectional.only(end: 16, top: 8, bottom: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
         color: Colors.white),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         child: Column(children: [
           Obx(() {
-            if (controller.isSelectionEnabled()) {
+            final listEmailSelected = controller.listEmailSelected;
+            if (controller.isSelectionEnabled() && listEmailSelected.isNotEmpty) {
               return Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.symmetric(vertical: 8.5, horizontal: 16),
                 child: TopBarThreadSelection(
-                  context,
-                  controller.listEmailSelected,
+                  listEmailSelected,
                   controller.mapMailboxById,
                   onCancelSelection: () =>
                     controller.dispatchAction(CancelSelectionAllEmailAction()),
@@ -275,11 +267,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       listEmails,
                       actionType
                     )),
-                ).build(),
+                ),
               );
             } else {
               return Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: _buildListButtonTopBar(context),
               );
             }
