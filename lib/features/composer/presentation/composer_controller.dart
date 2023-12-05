@@ -815,7 +815,7 @@ class ComposerController extends BaseController {
     return 'Team-Mail/${mailboxDashBoardController.appInformation.value?.version} $userAgent';
   }
 
-  void sendEmailAction(BuildContext context) async {
+  void validateInformationBeforeSending(BuildContext context) async {
     if (isSendEmailLoading.isTrue) {
       return;
     }
@@ -838,7 +838,8 @@ class ComposerController extends BaseController {
         onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
-        hasCancelButton: false
+        hasCancelButton: false,
+        showAsBottomSheet: true,
       ).whenComplete(() => isSendEmailLoading.value = false);
       return;
     }
@@ -857,6 +858,7 @@ class ComposerController extends BaseController {
           bccAddressExpandMode.value = ExpandMode.EXPAND;
           isSendEmailLoading.value = false;
         },
+        showAsBottomSheet: true,
         title: AppLocalizations.of(context).sending_failed,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
@@ -871,6 +873,7 @@ class ComposerController extends BaseController {
         onConfirmAction: () => _handleSendMessages(context),
         onCancelAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).empty_subject,
+        showAsBottomSheet: true,
         icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
       ).whenComplete(() => isSendEmailLoading.value = false);
       return;
@@ -883,6 +886,7 @@ class ComposerController extends BaseController {
         AppLocalizations.of(context).got_it,
         onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
+        showAsBottomSheet: true,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
       ).whenComplete(() => isSendEmailLoading.value = false);

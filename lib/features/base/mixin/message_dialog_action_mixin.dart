@@ -77,8 +77,7 @@ mixin MessageDialogActionMixin {
                 ..title(title ?? '')
                 ..content(message)
                 ..addIcon(icon)
-                ..margin(const EdgeInsets.symmetric(vertical: 42, horizontal: 16))
-                ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
+                ..margin(const EdgeInsets.only(bottom: 42))
                 ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
                 ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
                 ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
@@ -108,6 +107,11 @@ mixin MessageDialogActionMixin {
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
             backgroundColor: Colors.transparent,
             enableDrag: true,
+            constraints: BoxConstraints(
+                maxWidth: responsiveUtils.getSizeScreenShortestSide(context) - 16
+            ),
+            useSafeArea: true,
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(18))),
           );
         } else {
           return (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
