@@ -19,6 +19,7 @@ class RecipientComposerWidgetStyle {
   static const Color deleteRecipientFieldIconColor = AppColor.colorCollapseMailbox;
   static const Color enableBorderColor = AppColor.primaryColor;
   static const Color suggestionsBoxBackgroundColor = Colors.white;
+  static const Color cursorColor = AppColor.primaryColor;
 
   static const EdgeInsetsGeometry deleteRecipientFieldIconPadding = EdgeInsetsDirectional.all(3);
   static const EdgeInsetsGeometry prefixButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 3, horizontal: 5);
