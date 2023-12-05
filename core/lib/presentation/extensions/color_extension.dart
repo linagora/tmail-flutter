@@ -98,7 +98,7 @@ extension AppColor on Color {
   static const colorButton = Color(0xFF959DAD);
   static const colorTime = Color(0xFF92A1B4);
   static const colorEmailAddressPrefix = Color(0xFF9AA7B6);
-  static const colorEmailAddressTag = Color(0x146D7885);
+  static const colorEmailAddressTag = Color(0xFFF4F4F4);
   static const colorLineLeftEmailView = Color(0x2999A2AD);
   static const colorShadowComposer = Color(0x1F000000);
   static const colorBottomBarComposer = Color(0x5CEBEDF0);
