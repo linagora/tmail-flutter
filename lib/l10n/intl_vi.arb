@@ -6,7 +6,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_slogan": "Team Mail",
+  "login_text_slogan": "Twake Mail",
   "@login_text_slogan": {
     "type": "text",
     "placeholders_order": [],
@@ -642,7 +642,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "app_name": "Team Mail",
+  "app_name": "Twake Mail",
   "@app_name": {
     "type": "text",
     "placeholders_order": [],
@@ -660,7 +660,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page_name": "Team Mail",
+  "page_name": "Twake Mail",
   "@page_name": {
     "type": "text",
     "placeholders_order": [],
@@ -2228,7 +2228,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "appTitlePushNotification": "Team Mail",
+  "appTitlePushNotification": "Twake Mail",
   "@appTitlePushNotification": {
     "type": "text",
     "placeholders_order": [],
@@ -2428,7 +2428,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textQuotasRunningOutOfStorageContent": "Sắp tới bạn sẽ không thể gửi email trong Team Mail. Vui lòng dọn dẹp không gian lưu trữ hoặc nâng cấp dung lượng để sử dụng đầy đủ tính năng trong Team Mail.",
+  "textQuotasRunningOutOfStorageContent": "Sắp tới bạn sẽ không thể gửi email trong Twake Mail. Vui lòng dọn dẹp không gian lưu trữ hoặc nâng cấp dung lượng để sử dụng đầy đủ tính năng trong Twake Mail.",
   "@textQuotasRunningOutOfStorageContent": {
     "type": "text",
     "placeholders_order": [],
@@ -2452,7 +2452,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textQuotasRunOutOfStorageContent": "Bây giờ bạn tạm thời không thể gửi hoặc nhận email. Vui lòng giải phóng hoặc nâng cấp bộ nhớ của bạn để  sử dụng các tính năng đầy đủ của Team Mail.",
+  "textQuotasRunOutOfStorageContent": "Bây giờ bạn tạm thời không thể gửi hoặc nhận email. Vui lòng giải phóng hoặc nâng cấp bộ nhớ của bạn để  sử dụng các tính năng đầy đủ của Twake Mail.",
   "@textQuotasRunOutOfStorageContent": {
     "type": "text",
     "placeholders_order": [],

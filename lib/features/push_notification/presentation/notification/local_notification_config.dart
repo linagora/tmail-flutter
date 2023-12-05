@@ -3,11 +3,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class LocalNotificationConfig {
   static const _groupId = 'team_mail_notification_group_id';
   static const _groupName = 'team_mail_notification_group_name';
-  static const _groupDescription = 'Team Mail group notifications';
+  static const _groupDescription = 'Twake Mail group notifications';
   static const _channelId = 'team_mail_notification_channel_id';
-  static const _channelName = 'Team Mail notifications';
-  static const _channelDescription = 'Team Mail notifications';
-  static const notificationTitle = 'Team Mail';
+  static const _channelName = 'Twake Mail notifications';
+  static const _channelDescription = 'Twake Mail notifications';
+  static const notificationTitle = 'Twake Mail';
   static const notificationMessage = 'You have new messages';
   static const messageHasBeenSentSuccessfully = 'Message has been sent successfully.';
   static const int groupNotificationId = 1995;

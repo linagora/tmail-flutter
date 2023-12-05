@@ -5,7 +5,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_slogan": "Team Mail",
+  "login_text_slogan": "Twake Mail",
   "@login_text_slogan": {
     "type": "text",
     "placeholders_order": [],
@@ -799,7 +799,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "app_name": "Team Mail",
+  "app_name": "Twake Mail",
   "@app_name": {
     "type": "text",
     "placeholders_order": [],
@@ -943,7 +943,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page_name": "Team Mail",
+  "page_name": "Twake Mail",
   "@page_name": {
     "type": "text",
     "placeholders_order": [],
@@ -2523,7 +2523,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "appTitlePushNotification": "Team Mail",
+  "appTitlePushNotification": "Twake Mail",
   "@appTitlePushNotification": {
     "type": "text",
     "placeholders_order": [],
