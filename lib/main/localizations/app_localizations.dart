@@ -3464,10 +3464,10 @@ class AppLocalizations {
     );
   }
 
-  String get startIt {
+  String get starIt {
     return Intl.message(
-      'Start it',
-      name: 'startIt',
+      'Star it',
+      name: 'starIt',
     );
   }
 
