@@ -3753,7 +3753,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(str) {
       return A.CapitalizeExtension_get_inCaps(str);
     },
-    $signature: 33
+    $signature: 34
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
@@ -4713,4 +4713,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["o1b+46Aj8X3FS60fNQJW0exPHJw="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["mDdyzrFgGZsZOan4FblcRjW/3Z0="] = $__dart_deferred_initializers__.current

@@ -11627,13 +11627,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(email) {
       return email.get$hasRead();
     },
-    $signature: 36
+    $signature: 33
   };
   B.ListPresentationEmailExtension_get_isAllEmailStarred_closure.prototype = {
     call$1(email) {
       return email.get$hasStarred();
     },
-    $signature: 36
+    $signature: 33
   };
   B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure.prototype = {
     call$1(email) {
@@ -11689,7 +11689,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = mailboxContain == null ? null : mailboxContain.id;
       return J.$eq$(t1, this.firstMailboxContain.id);
     },
-    $signature: 36
+    $signature: 33
   };
   B.ListPresentationEmailExtension_listEmailCanSpam_closure.prototype = {
     call$1(email) {
@@ -15841,7 +15841,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t7.openPopupMenuAction$3(t1, new A.RelativeRect(t2, t3, screenSize._dx - t2, screenSize._dy - t3), t4.popupMenuEmailSortOrderType$3$onCallBack(t1, t5.get$value(t5), new B.MailboxDashBoardView__buildQuickSearchFilterButton___closure0(t4, t1)));
       }
     },
-    $signature: 35
+    $signature: 36
   };
   B.MailboxDashBoardView__buildQuickSearchFilterButton___closure.prototype = {
     call$1(receiveTime) {
@@ -17268,7 +17268,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 35
+    $signature: 36
   };
   B.SearchEmailView__buildQuickSearchFilterButton___closure.prototype = {
     call$1(receiveTime) {
@@ -17474,7 +17474,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildListEmailBody_closure.prototype = {
     call$1(scrollInfo) {
-      var t1, t2, t3, lastEmail, t4, t5, t6, t7, t8, t9;
+      var t1, t2, t3, lastEmail, firstEmail, t4, t5, t6, t7, t8, t9;
       if (scrollInfo instanceof A.ScrollEndNotification) {
         t1 = this.$this;
         t2 = $.$get$GetWidget__cache();
@@ -17512,7 +17512,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2 = t1.EmailActionController_mailboxDashBoardController;
           t3 = t2.listResultSearch;
           lastEmail = t3.get$last(t3);
-          t1._updateSimpleSearchFilter$1$beforeOption(A.optionOf(lastEmail.receivedAt, type$.UTCDate));
+          firstEmail = t3.get$first(t3);
+          t3 = t1.emailSortOrderType;
+          t4 = type$.UTCDate;
+          if (t3.get$value(t3) === C.EmailSortOrderType_1)
+            t1._updateSimpleSearchFilter$1$beforeOption(A.optionOf(firstEmail.receivedAt, t4));
+          else
+            t1._updateSimpleSearchFilter$1$beforeOption(A.optionOf(lastEmail.receivedAt, t4));
           t3 = t1._search_email_controller$_searchMoreEmailInteractor;
           t4 = t2.sessionCurrent;
           t4.toString;
@@ -18048,7 +18054,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = this.$this._widget;
       t3.onClickOpenMenuMailboxAction.call$2(new A.RelativeRect(t1, t2, screenSize._dx - t1, screenSize._dy - t2), t3._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 35
+    $signature: 36
   };
   B.ThreadView_build_closure5.prototype = {
     call$0() {
@@ -18481,7 +18487,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildListEmailBody_closure.prototype = {
     call$1(scrollInfo) {
-      var t1, t2, t3, t4, t5, oldestEmail, t6, t7, t8, t9, t10, _null = null;
+      var t1, t2, t3, t4, t5, lastEmail, firstEmail, t6, t7, t8, t9, oldestEmail, t10, _null = null;
       if (scrollInfo instanceof A.ScrollEndNotification) {
         t1 = this.$this;
         t2 = $.$get$GetWidget__cache();
@@ -18531,29 +18537,34 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           if (t2) {
             t2 = t1.EmailActionController_mailboxDashBoardController;
             t3 = t2.emailsInCurrentMailbox;
-            oldestEmail = !t3.get$isEmpty(t3) ? t3.get$last(t3) : _null;
+            lastEmail = !t3.get$isEmpty(t3) ? t3.get$last(t3) : _null;
+            firstEmail = !t3.get$isEmpty(t3) ? t3.get$first(t3) : _null;
             t3 = t2.searchController;
-            t4 = oldestEmail == null;
-            t5 = t4 ? _null : oldestEmail.receivedAt;
-            t3.updateFilterEmail$1$beforeOption(A.optionOf(t5, type$.UTCDate));
-            t5 = t1._searchMoreEmailInteractor;
-            t6 = t2.sessionCurrent;
-            t6.toString;
-            t7 = t2.accountId;
-            t8 = t7.get$value(t7);
-            t8.toString;
-            t9 = $.$get$ThreadConstants_defaultLimit();
-            t3 = t3.searchEmailFilter;
-            t10 = t3.get$value(t3).sortOrder;
-            if (t10 == null)
-              t10 = t1.get$_sortOrder();
-            t3 = t3.get$value(t3).mappingToEmailFilterCondition$1$moreFilterCondition(t1._getFilterCondition$0());
+            t4 = t3.searchEmailFilter;
+            if (A.optionOf(t4.get$value(t4).sortOrder, type$.Set_Comparator).toString$0(0) === J.toString$0$(C.EmailSortOrderType_1.getSortOrder$0())) {
+              t5 = firstEmail == null ? _null : firstEmail.receivedAt;
+              t3.updateFilterEmail$1$beforeOption(A.optionOf(t5, type$.UTCDate));
+            } else {
+              t5 = lastEmail == null ? _null : lastEmail.receivedAt;
+              t3.updateFilterEmail$1$beforeOption(A.optionOf(t5, type$.UTCDate));
+            }
+            t3 = t1._searchMoreEmailInteractor;
+            t5 = t2.sessionCurrent;
+            t5.toString;
+            t6 = t2.accountId;
+            t7 = t6.get$value(t6);
+            t7.toString;
+            t8 = $.$get$ThreadConstants_defaultLimit();
+            t9 = t4.get$value(t4).sortOrder;
+            if (t9 == null)
+              t9 = t1.get$_sortOrder();
+            t4 = t4.get$value(t4).mappingToEmailFilterCondition$1$moreFilterCondition(t1._getFilterCondition$0());
             t2 = t2.sessionCurrent;
             t2.toString;
-            t7 = t7.get$value(t7);
-            t7.toString;
-            t7 = A.EmailUtils_getPropertiesForEmailGetMethod(t2, t7);
-            t1.consumeState$1(t5.execute$7$filter$lastEmailId$limit$properties$sort(t6, t8, t3, t4 ? _null : oldestEmail.id, t9, t7, t10));
+            t6 = t6.get$value(t6);
+            t6.toString;
+            t6 = A.EmailUtils_getPropertiesForEmailGetMethod(t2, t6);
+            t1.consumeState$1(t3.execute$7$filter$lastEmailId$limit$properties$sort(t5, t7, t4, lastEmail == null ? _null : lastEmail.id, t8, t6, t9));
           }
         } else {
           A.Expando__checkType(t1);
@@ -18616,12 +18627,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.ThreadView__buildEmailItemDraggable_closure2.prototype = {
     call$1(_) {
     },
-    $signature: 35
+    $signature: 36
   };
   B.ThreadView__buildEmailItemDraggable_closure3.prototype = {
     call$1(_) {
     },
-    $signature: 35
+    $signature: 36
   };
   B.ThreadView__buildEmailItemDraggable_closure0.prototype = {
     call$0() {
@@ -19235,7 +19246,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 35
+    $signature: 36
   };
   B._EmailTileBuilderState__buildSubjectAndContent_closure.prototype = {
     call$2(context, constraints) {
@@ -19576,6 +19587,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ResponsiveUtils: findType("ResponsiveUtils0"),
       RestorableProperty_nullable_Object: findType("RestorableProperty<Object?>"),
       SearchController: findType("SearchController"),
+      Set_Comparator: findType("Set<Comparator0>"),
       Some_SearchQuery: findType("Some<SearchQuery>"),
       SpamReportController: findType("SpamReportController"),
       String: findType("String"),
@@ -19939,4 +19951,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["M/cCE5eyes5Q4xBjAitd5pDxcaQ="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["6z+EtDU7Z8ue2hQ3gxAY7Ri1ogs="] = $__dart_deferred_initializers__.current
