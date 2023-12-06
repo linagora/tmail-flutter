@@ -1,13 +1,12 @@
 
 import 'dart:async';
-import 'dart:math';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -1250,7 +1249,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
     final listItemContactWidget = _contacts?.map((P contact) {
       if (widget.contactSuggestionBuilder != null) {
         return Material(
-          color: Colors.transparent,
+          type: MaterialType.transparency,
           child: InkWell(
             child: widget.contactSuggestionBuilder!(context, contact),
             onTap: () => widget.onContactSuggestionSelected?.call(contact),

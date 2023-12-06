@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -111,6 +112,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                       focusNodeKeyboard: widget.focusNode,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.done,
+                      cursorColor: TextFieldAutoCompleteEmailAddressWebStyles.cursorColor,
                       debounceDuration: TextFieldAutoCompleteEmailAddressWebStyles.debounceDuration,
                       inputDecoration: InputDecoration(
                         filled: true,
