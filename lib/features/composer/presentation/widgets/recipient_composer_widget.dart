@@ -58,7 +58,6 @@ class RecipientComposerWidget extends StatefulWidget {
   final VoidCallback? onFocusNextAddressAction;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
-  final TapRegionCallback? onTapOutside;
 
   const RecipientComposerWidget({
     super.key,
@@ -83,7 +82,6 @@ class RecipientComposerWidget extends StatefulWidget {
     this.onFocusEmailAddressChangeAction,
     this.onFocusNextAddressAction,
     this.onRemoveDraggableEmailAddressAction,
-    this.onTapOutside,
   });
 
   @override
@@ -181,7 +179,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
                               onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
                               onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
-                              onTapOutside: widget.onTapOutside,
+                              onTapOutside: (_) {},
                               inputDecoration: const InputDecoration(border: InputBorder.none),
                               tagBuilder: (context, index) {
                                 final currentEmailAddress = _currentListEmailAddress[index];
@@ -255,7 +253,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
                           onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
                           onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
-                          onTapOutside: widget.onTapOutside,
+                          onTapOutside: (_) {},
                           inputDecoration: const InputDecoration(border: InputBorder.none),
                           tagBuilder: (context, index) {
                             final currentEmailAddress = _currentListEmailAddress[index];

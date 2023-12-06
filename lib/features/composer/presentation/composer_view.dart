@@ -14,16 +14,16 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_b
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_container_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/tablet_container_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_loading_bar_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/mobile_attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/landscape_app_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/mobile_attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/tablet_bottom_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop_app_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -127,7 +127,6 @@ class ComposerView extends GetWidget<ComposerController> {
                             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
-                            onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.to),
                           )),
                           Obx(() {
                             if (controller.ccRecipientState.value == PrefixRecipientState.enabled) {
@@ -148,7 +147,6 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                                 onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                 onFocusNextAddressAction: controller.handleFocusNextAddressAction,
-                                onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.cc),
                               );
                             } else {
                               return const SizedBox.shrink();
@@ -173,7 +171,6 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                                 onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                 onFocusNextAddressAction: controller.handleFocusNextAddressAction,
-                                onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.bcc),
                               );
                             } else {
                               return const SizedBox.shrink();
@@ -283,7 +280,6 @@ class ComposerView extends GetWidget<ComposerController> {
                             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
-                            onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.to),
                           ),
                           if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
@@ -303,7 +299,6 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
-                              onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.cc),
                             ),
                           if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
@@ -323,7 +318,6 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
-                              onTapOutside: (_) => controller.onTapOutsideRecipients(PrefixEmailAddress.bcc),
                             ),
                         ],
                       )),
