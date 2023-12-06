@@ -209,47 +209,38 @@ class MailboxView extends BaseMailboxView {
         }),
         const SizedBox(height: 8),
         const Divider(color: AppColor.colorDividerMailbox, height: 1),
-        const SizedBox(height: 12),
         Container(
-          margin: EdgeInsetsDirectional.only(
-            start: controller.responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
-            end: 16),
-          padding: const EdgeInsetsDirectional.only(start: 8),
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: 16,
+            vertical: 6
+          ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   AppLocalizations.of(context).folders,
                   style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 17,
                     color: Colors.black,
                     fontWeight: FontWeight.bold
                   )
                 ),
               ),
               Row(children: [
-                buildIconWeb(
-                  minSize: 40,
-                  iconPadding: EdgeInsets.zero,
-                  icon: SvgPicture.asset(
-                    controller.imagePaths.icSearchBar,
-                    colorFilter: AppColor.colorTextButton.asFilter(),
-                    fit: BoxFit.fill
-                  ),
-                  tooltip: AppLocalizations.of(context).searchForFolders,
-                  onTap: () => controller.openSearchViewAction(context)
+                TMailButtonWidget.fromIcon(
+                  icon: controller.imagePaths.icSearchBar,
+                  iconColor: AppColor.primaryColor,
+                  backgroundColor: Colors.transparent,
+                  tooltipMessage: AppLocalizations.of(context).searchForFolders,
+                  onTapActionCallback: () => controller.openSearchViewAction(context)
                 ),
-                buildIconWeb(
-                  minSize: 40,
-                  iconSize: 20,
-                  iconPadding: EdgeInsets.zero,
-                  splashRadius: 15,
-                  icon: SvgPicture.asset(
-                    controller.imagePaths.icAddNewFolder,
-                    colorFilter: AppColor.colorTextButton.asFilter(),
-                    fit: BoxFit.fill),
-                  tooltip: AppLocalizations.of(context).newFolder,
-                onTap: () => controller.goToCreateNewMailboxView(context)),
+                TMailButtonWidget.fromIcon(
+                  icon: controller.imagePaths.icAddNewFolder,
+                  iconColor: AppColor.primaryColor,
+                  backgroundColor: Colors.transparent,
+                  tooltipMessage: AppLocalizations.of(context).newFolder,
+                  onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
+                ),
               ]),
             ]),
           ),
@@ -284,26 +275,33 @@ class MailboxView extends BaseMailboxView {
   Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
     return Padding(
         padding: EdgeInsetsDirectional.only(
-          start: 4,
+          start: 12,
           end: controller.responsiveUtils.isLandscapeMobile(context) ? 8 : 28),
         child: Row(children: [
-         buildIconWeb(
-              minSize: 40,
-              iconSize: 20,
-              iconPadding: EdgeInsets.zero,
-              splashRadius: 15,
-              icon: SvgPicture.asset(
-                  categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-                    ? controller.imagePaths.icArrowBottom
-                    : DirectionUtils.isDirectionRTLByLanguage(context) ? controller.imagePaths.icArrowLeft : controller.imagePaths.icArrowRight,
-                  colorFilter: AppColor.primaryColor.asFilter(),
-                  fit: BoxFit.fill),
-              tooltip: AppLocalizations.of(context).collapse,
-              onTap: () => controller.toggleMailboxCategories(categories)),
-          Expanded(child: Text(categories.getTitle(context),
+          TMailButtonWidget.fromIcon(
+            icon: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
+              ? controller.imagePaths.icArrowBottom
+              : DirectionUtils.isDirectionRTLByLanguage(context)
+                  ? controller.imagePaths.icArrowLeft
+                  : controller.imagePaths.icArrowRight,
+            tooltipMessage: AppLocalizations.of(context).collapse,
+            backgroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            iconColor: AppColor.primaryColor,
+            onTapActionCallback: () => controller.toggleMailboxCategories(categories)
+          ),
+          Expanded(
+            child: Text(
+              categories.getTitle(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 20, color: Colors.black, fontWeight: FontWeight.bold))),
+              style: const TextStyle(
+                fontSize: 17,
+                color: Colors.black,
+                fontWeight: FontWeight.bold
+              )
+            )
+          ),
         ]));
   }
 
