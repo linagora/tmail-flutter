@@ -1,7 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
 
@@ -36,10 +35,11 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
         onTap: () {},
         borderRadius: const BorderRadius.all(Radius.circular(8)),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: _mailboxNode.hasChildren()
+            ? const EdgeInsets.symmetric(horizontal: 8, vertical: 5)
+            : const EdgeInsets.all(8),
           child: Row(
             children: [
-              const SizedBox(width: 8),
               _buildLeadingMailboxItem(context),
               Expanded(child: _buildTitleFolderItem(context)),
               if (!_mailboxNode.item.isDefault)
@@ -57,30 +57,34 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (_mailboxNode.hasChildren() && _mailboxNode.item.isPersonal)
-          buildIconWeb(
-            splashRadius: 12,
-            iconPadding: EdgeInsets.zero,
-            minSize: 12,
-            icon: SvgPicture.asset(
-              _mailboxNode.expandMode == ExpandMode.EXPAND
-                ? _imagePaths.icExpandFolder
-                : DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePaths.icBack : _imagePaths.icCollapseFolder,
-              colorFilter: _mailboxNode.item.allowedToDisplay
-                ? AppColor.primaryColor.asFilter()
-                : AppColor.colorIconUnSubscribedMailbox.asFilter(),
-              fit: BoxFit.fill
-            ),
-            tooltip: _mailboxNode.expandMode == ExpandMode.EXPAND
+          TMailButtonWidget.fromIcon(
+            icon: _getExpandIcon(context, _imagePaths),
+            iconColor: _mailboxNode.item.allowedToDisplay
+              ? AppColor.primaryColor
+              : AppColor.colorIconUnSubscribedMailbox,
+            padding: EdgeInsets.zero,
+            backgroundColor: Colors.transparent,
+            tooltipMessage: _mailboxNode.expandMode == ExpandMode.EXPAND
               ? AppLocalizations.of(context).collapse
               : AppLocalizations.of(context).expand,
-            onTap: () => onClickExpandMailboxNodeAction?.call(_mailboxNode)
+            onTapActionCallback: () => onClickExpandMailboxNodeAction?.call(_mailboxNode)
           )
         else
-          const SizedBox(width: 24),
+          const SizedBox(width: 28),
         if (!_mailboxNode.item.isTeamMailboxes)
           _buildMailboxIcon(context),
       ]
     );
+  }
+
+  String _getExpandIcon(BuildContext context, ImagePaths imagePaths) {
+    if (_mailboxNode.expandMode == ExpandMode.EXPAND) {
+      return imagePaths.icArrowBottom;
+    } else {
+      return DirectionUtils.isDirectionRTLByLanguage(context)
+        ? imagePaths.icArrowLeft
+        : imagePaths.icArrowRight;
+    }
   }
 
   Widget _buildTitleFolderItem(BuildContext context) {
@@ -118,10 +122,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
 
   Widget _buildMailboxIcon(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-        left: AppUtils.isDirectionRTL(context) ? 8 : 0,
-      ),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: SvgPicture.asset(
         _mailboxNode.item.getMailboxIcon(_imagePaths),
         width: 20,
