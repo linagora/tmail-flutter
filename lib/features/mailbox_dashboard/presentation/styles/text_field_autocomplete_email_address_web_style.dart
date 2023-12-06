@@ -28,6 +28,7 @@ class TextFieldAutoCompleteEmailAddressWebStyles {
   static const Color focusedBorderColor = AppColor.primaryColor;
   static const Color enableBorderColor = AppColor.colorInputBorderCreateMailbox;
   static const Color suggestionBoxBackgroundColor = Colors.white;
+  static const Color cursorColor = AppColor.primaryColor;
 
   static const TextStyle fieldTitleTextStyle = TextStyle(
     color: AppColor.colorContentEmail,
