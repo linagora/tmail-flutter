@@ -3722,7 +3722,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t2, t3, t4, t5, t6, t7, t8, _this = this, _null = null,
         t1 = _this.padding;
       if (t1 == null)
-        t1 = C.EdgeInsets_12_0_0_0;
+        t1 = C.EdgeInsetsDirectional_12_0_0_0;
       t2 = A.BorderRadius$circular(8);
       $.$get$Get();
       t3 = $.GetInstance__getInstance;
@@ -4269,7 +4269,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 586
+    $signature: 587
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -4487,19 +4487,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 586
+    $signature: 587
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 587
+    $signature: 588
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 587
+    $signature: 588
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
@@ -4750,5 +4750,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "OXtCdofFmXLHkU4h6/KaCaVjkpw=");
+})($__dart_deferred_initializers__, "nFnoJ0h/JiJS3BhTrxp5pj2CMVA=");
 ;
