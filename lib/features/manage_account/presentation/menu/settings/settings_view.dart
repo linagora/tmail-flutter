@@ -20,7 +20,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/prof
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef CloseSettingsViewAction = void Function();
 
@@ -46,9 +45,9 @@ class SettingsView extends GetWidget<SettingsController> {
             Obx(() {
               if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
                 return VacationNotificationMessageWidget(
-                    margin: const EdgeInsets.only(
-                        left: PlatformInfo.isWeb ? 24 : 16,
-                        right: PlatformInfo.isWeb ? 24 : 16,
+                    margin: const EdgeInsetsDirectional.only(
+                        start: PlatformInfo.isWeb ? 24 : 16,
+                        end: PlatformInfo.isWeb ? 24 : 16,
                         top: 16),
                     fromAccountDashBoard: true,
                     vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
@@ -60,19 +59,16 @@ class SettingsView extends GetWidget<SettingsController> {
                   || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
                   && controller.manageAccountDashboardController.inVacationSettings()) {
                 return VacationNotificationMessageWidget(
-                  margin: const EdgeInsets.only(
-                    left: PlatformInfo.isWeb ? 24 : 16,
-                    right: PlatformInfo.isWeb ? 24 : 16,
+                  margin: const EdgeInsetsDirectional.only(
+                    start: PlatformInfo.isWeb ? 24 : 16,
+                    end: PlatformInfo.isWeb ? 24 : 16,
                     top: 16),
                   fromAccountDashBoard: true,
                   vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  leadingIcon: Padding(
-                    padding: EdgeInsets.only(
-                      right: AppUtils.isDirectionRTL(context) ? 0 : 16,
-                      left: AppUtils.isDirectionRTL(context) ? 16 : 0,
-                    ),
-                    child: const Icon(Icons.timer, size: 20),
+                  leadingIcon: const Padding(
+                    padding: EdgeInsetsDirectional.only(end: 16),
+                    child: Icon(Icons.timer, size: 20),
                   )
                 );
               } else {
@@ -139,10 +135,7 @@ class SettingsView extends GetWidget<SettingsController> {
                   colorFilter: AppColor.colorTextButton.asFilter(),
                   fit: BoxFit.fill),
                 Container(
-                  margin: EdgeInsets.only(
-                    left: AppUtils.isDirectionRTL(context) ? 0 : 4,
-                    right: AppUtils.isDirectionRTL(context) ? 4 : 0,
-                  ),
+                  margin: const EdgeInsetsDirectional.only(start: 4),
                   constraints: const BoxConstraints(maxWidth: 80),
                   child: Text(
                     AppLocalizations.of(context).settings,

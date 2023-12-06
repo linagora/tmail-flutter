@@ -23,7 +23,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
           titlePadding: const EdgeInsetsDirectional.only(start: 16))),
         Divider(
-          color: AppColor.colorDividerComposer,
+          color: AppColor.colorDividerHorizontal,
           height: 1,
           indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
           endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
@@ -35,7 +35,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           () => controller.selectSettings(AccountMenuItem.profiles)
         ),
         Divider(
-          color: AppColor.colorDividerComposer,
+          color: AppColor.colorDividerHorizontal,
           height: 1,
           indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
           endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
@@ -50,7 +50,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
                 () => controller.selectSettings(AccountMenuItem.emailRules)
               ),
               Divider(
-                color: AppColor.colorDividerComposer,
+                color: AppColor.colorDividerHorizontal,
                 height: 1,
                 indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
                 endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
@@ -70,7 +70,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
                 () => controller.selectSettings(AccountMenuItem.forward)
               ),
               Divider(
-                color: AppColor.colorDividerComposer,
+                color: AppColor.colorDividerHorizontal,
                 height: 1,
                 indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
                 endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
@@ -90,7 +90,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
                 () => controller.selectSettings(AccountMenuItem.vacation)
               ),
               Divider(
-                color: AppColor.colorDividerComposer,
+                color: AppColor.colorDividerHorizontal,
                 height: 1,
                 indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
                 endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
@@ -108,7 +108,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
           ),
           Divider(
-            color: AppColor.colorDividerComposer,
+            color: AppColor.colorDividerHorizontal,
             height: 1,
             indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
             endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
@@ -120,7 +120,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           () => controller.selectSettings(AccountMenuItem.languageAndRegion)
         ),
         Divider(
-          color: AppColor.colorDividerComposer,
+          color: AppColor.colorDividerHorizontal,
           height: 1,
           indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
           endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
