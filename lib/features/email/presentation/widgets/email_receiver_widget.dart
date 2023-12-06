@@ -3,9 +3,9 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -38,7 +38,7 @@ class EmailReceiverWidget extends StatefulWidget {
 
 class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
 
-  static const double _maxSizeFullDisplayEmailAddressArrowDownButton = 30.0;
+  static const double _maxSizeFullDisplayEmailAddressArrowDownButton = 50.0;
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -120,32 +120,19 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
               ]
             ),
           ),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => setState(() => _isDisplayAll = true),
-              customBorder: const CircleBorder(),
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                color: Colors.transparent,
-                constraints: const BoxConstraints(
-                  maxHeight: _maxSizeFullDisplayEmailAddressArrowDownButton,
-                  maxWidth: _maxSizeFullDisplayEmailAddressArrowDownButton
-                ),
-                child: SvgPicture.asset(
-                  _imagePaths.icChevronDown,
-                  width: 16,
-                  height: 16,
-                  fit: BoxFit.fill
-                ),
-              ),
+          Transform(
+            transform: Matrix4.translationValues(0.0, -5.0, 0.0),
+            child: TMailButtonWidget.fromIcon(
+              icon: _imagePaths.icChevronDown,
+              backgroundColor: Colors.transparent,
+              onTapActionCallback: () => setState(() => _isDisplayAll = true),
             ),
-          ),
+          )
         ]
       );
     } else {
       return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (presentationEmail.to.numberEmailAddress() > 0)
@@ -181,14 +168,18 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     bool isDisplayFull
   ) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '${prefixEmailAddress.asName(context)}:',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: AppColor.colorEmailAddressFull
-          )
+        Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: Text(
+            '${prefixEmailAddress.asName(context)}:',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: AppColor.colorEmailAddressFull
+            )
+          ),
         ),
         if (!isDisplayFull && presentationEmail.numberOfAllEmailAddress() > 1)
           _buildListEmailAddressWidget(
