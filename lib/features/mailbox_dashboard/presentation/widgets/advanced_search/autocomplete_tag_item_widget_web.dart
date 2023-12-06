@@ -70,6 +70,7 @@ class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
                     _imagePaths.icClose,
                     fit: BoxFit.fill,
                   ),
+                  padding: EdgeInsets.zero,
                   labelStyle: AutoCompleteTagItemWebStyle.labelTextStyle,
                   backgroundColor: _getTagBackgroundColor(),
                   shape: RoundedRectangleBorder(
@@ -111,7 +112,7 @@ class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
     if (isLatestTagFocused && isLatestEmail) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
     } else {
-      return BorderSide.none;
+      return const BorderSide(width: 0, color: AppColor.colorEmailAddressTag);
     }
   }
 }
