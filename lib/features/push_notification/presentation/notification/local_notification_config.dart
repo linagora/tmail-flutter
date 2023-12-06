@@ -14,7 +14,7 @@ class LocalNotificationConfig {
 
   static const iosInitializationSettings = DarwinInitializationSettings();
 
-  static const androidInitializationSettings = AndroidInitializationSettings('ic_notification');
+  static const androidInitializationSettings = AndroidInitializationSettings('notification_icon');
 
   static const androidNotificationChannel = AndroidNotificationChannel(
     _channelId,
