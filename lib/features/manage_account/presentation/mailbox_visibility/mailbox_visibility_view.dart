@@ -37,8 +37,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
               const SizedBox(height: 16),
               const Divider(
                 color: AppColor.colorDividerMailbox,
-                height: 0.5,
-                thickness: 0.2
+                height: 1
               )
             ],
           _buildLoadingView(),
@@ -106,8 +105,8 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
         controller.imagePaths,
         categories,
         controller,
-        padding: const EdgeInsets.all(8),
-        toggleMailboxCategories: controller.toggleMailboxCategories
+        toggleMailboxCategories: controller.toggleMailboxCategories,
+        padding: EdgeInsetsDirectional.symmetric(vertical: 8)
       ),
       AnimatedContainer(
         duration: const Duration(milliseconds: 400),
