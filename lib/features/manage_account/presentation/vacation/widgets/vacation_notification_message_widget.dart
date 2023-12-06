@@ -14,8 +14,8 @@ class VacationNotificationMessageWidget extends StatelessWidget {
   final VacationResponse vacationResponse;
   final EndNowVacationSettingAction? actionEndNow;
   final GoToVacationSettingAction? actionGotoVacationSetting;
-  final EdgeInsets? margin;
-  final EdgeInsets? padding;
+  final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
   final double? radius;
   final Widget? leadingIcon;
   final Color? backgroundColor;
@@ -41,7 +41,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 12),
-      padding: padding ?? const EdgeInsets.only(left: 12),
+      padding: padding ?? const EdgeInsetsDirectional.only(start: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius ?? 8),
         color: backgroundColor ?? AppColor.colorBackgroundNotificationVacationSetting,
