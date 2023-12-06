@@ -1,11 +1,6 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/core.dart';
 import 'package:core/utils/direction_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -290,33 +285,27 @@ mixin MailboxWidgetMixin {
     BaseMailboxController baseMailboxController,
     {
       required Function(MailboxCategories categories) toggleMailboxCategories,
-      EdgeInsets? padding
+      EdgeInsetsGeometry? padding
     }
   ) {
     return Padding(
-      padding: padding ?? EdgeInsets.only(
-        top: 10,
-        left: responsiveUtils.isDesktop(context) ? 0 : 16,
-        right: responsiveUtils.isDesktop(context) ? 0 : 16
-      ),
+      padding: padding ?? EdgeInsets.zero,
       child: Row(children: [
         Obx(() {
           final expandMode = categories.getExpandMode(baseMailboxController.mailboxCategoriesExpandMode.value);
-          return buildIconWeb(
-            splashRadius: 12,
-            iconPadding: EdgeInsets.zero,
-            minSize: 12,
-            icon: SvgPicture.asset(
-              expandMode == ExpandMode.EXPAND
-                ? imagePaths.icArrowBottom
-                : DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icArrowLeft : imagePaths.icArrowRight,
-              colorFilter: AppColor.primaryColor.asFilter(),
-              fit: BoxFit.fill
-            ),
-            tooltip: expandMode == ExpandMode.EXPAND
+          return TMailButtonWidget.fromIcon(
+            icon: expandMode == ExpandMode.EXPAND
+              ? imagePaths.icArrowBottom
+              : DirectionUtils.isDirectionRTLByLanguage(context)
+                  ? imagePaths.icArrowLeft
+                  : imagePaths.icArrowRight,
+            iconColor: AppColor.primaryColor,
+            backgroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            tooltipMessage: expandMode == ExpandMode.EXPAND
               ? AppLocalizations.of(context).collapse
               : AppLocalizations.of(context).expand,
-            onTap: () => toggleMailboxCategories(categories)
+            onTapActionCallback: () => toggleMailboxCategories(categories)
           );
         }),
         Expanded(child: Text(

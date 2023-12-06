@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -132,12 +131,8 @@ class MailboxView extends BaseMailboxView {
                 }),
                 const SizedBox(height: 8),
                 const Divider(color: AppColor.colorDividerMailbox, height: 1),
-                const SizedBox(height: 13),
                 Padding(
-                  padding: EdgeInsetsDirectional.only(
-                    start: controller.responsiveUtils.isDesktop(context) ? 0 : 12,
-                    bottom: 8
-                  ),
+                  padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -153,29 +148,23 @@ class MailboxView extends BaseMailboxView {
                         padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 0 : 12),
                         child: Row(
                           children: [
-                            buildIconWeb(
-                              minSize: 40,
-                              iconPadding: EdgeInsets.zero,
-                              icon: SvgPicture.asset(
-                                controller.imagePaths.icSearchBar,
-                                colorFilter: AppColor.colorTextButton.asFilter(),
-                                fit: BoxFit.fill
-                              ),
-                              onTap: () => controller.openSearchViewAction(context)
+                            TMailButtonWidget.fromIcon(
+                              icon: controller.imagePaths.icSearchBar,
+                              backgroundColor: Colors.transparent,
+                              iconColor: AppColor.primaryColor,
+                              tooltipMessage: AppLocalizations.of(context).searchForFolders,
+                              onTapActionCallback: () => controller.openSearchViewAction(context)
                             ),
-                            buildIconWeb(
-                                minSize: 40,
-                                iconSize: 20,
-                                iconPadding: EdgeInsets.zero,
-                                splashRadius: 15,
-                                icon: SvgPicture.asset(
-                                  controller.imagePaths.icAddNewFolder,
-                                  colorFilter: AppColor.colorTextButton.asFilter(),
-                                  fit: BoxFit.fill),
-                                tooltip: AppLocalizations.of(context).newFolder,
-                                onTap: () => controller.goToCreateNewMailboxView(context)),
+                            TMailButtonWidget.fromIcon(
+                              icon: controller.imagePaths.icAddNewFolder,
+                              backgroundColor: Colors.transparent,
+                              iconColor: AppColor.primaryColor,
+                              tooltipMessage: AppLocalizations.of(context).newFolder,
+                              onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
+                            ),
                           ],
-                          )),
+                        )
+                      ),
                     ]),
                 ),
                 Obx(() {
