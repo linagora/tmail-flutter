@@ -153,7 +153,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5 = t3._as(t2.get(t1)).listContactSearched;
         t5 = J.get$length$asx(t5.get$value(t5));
         A.Expando__checkType(t1);
-        return A.Container$(_null, new A.ScrollbarListView(A.ListView$separated(t3._as(t2.get(t1)).scrollListViewController, new C.ContactView_build__closure(t1), t5, B.ScrollViewKeyboardDismissBehavior_0, _null, _null, _null, false, B.Axis_1, new C.ContactView_build__closure0(t1), false), t4, _null, _null), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, B.EdgeInsets_4_0_4_0, _null, _null, _null);
+        return A.Container$(_null, new A.ScrollbarListView(A.ListView$separated(t3._as(t2.get(t1)).scrollListViewController, new C.ContactView_build__closure(t1), t5, _null, B.ScrollViewKeyboardDismissBehavior_0, _null, _null, _null, false, B.Axis_1, new C.ContactView_build__closure0(t1), false), t4, _null, _null), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, B.EdgeInsets_4_0_4_0, _null, _null, _null);
       } else
         return B.SizedBox_0_0_null_null;
     },
@@ -167,7 +167,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).toString;
       return new A.Padding(B.EdgeInsets_16_0_16_0, B.Divider_I9g, null);
     },
-    $signature: 197
+    $signature: 127
   };
   C.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -228,5 +228,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_9", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "yCzC0RviG6NMIFwj2dAZy+1HmIw=");
+})($__dart_deferred_initializers__, "SMKZL3hwm5jFq9wHE+y6kYr0dbE=");
 ;

@@ -365,27 +365,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     __RenderChip_RenderBox_SlottedContainerRenderObjectMixin: function __RenderChip_RenderBox_SlottedContainerRenderObjectMixin() {
     },
-    Drawer$(child, elevation) {
-      return new B.Drawer(elevation, child, null);
-    },
-    Drawer: function Drawer(t0, t1, t2) {
-      this.elevation = t0;
-      this.child = t1;
-      this.key = t2;
-    },
-    _DrawerDefaultsM3: function _DrawerDefaultsM3(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
-      var _ = this;
-      _.context = t0;
-      _.___DrawerDefaultsM3_direction_FI = $;
-      _.backgroundColor = t1;
-      _.scrimColor = t2;
-      _.elevation = t3;
-      _.shadowColor = t4;
-      _.surfaceTintColor = t5;
-      _.shape = t6;
-      _.endShape = t7;
-      _.width = t8;
-    },
     Ink$(child, decoration, padding) {
       return new B.Ink(child, padding, decoration, null);
     },
@@ -550,13 +529,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._widget = null;
       this._debugLifecycleState = t0;
       this._framework$_element = null;
-    },
-    BorderRadiusDirectional: function BorderRadiusDirectional(t0, t1, t2, t3) {
-      var _ = this;
-      _.topStart = t0;
-      _.topEnd = t1;
-      _.bottomStart = t2;
-      _.bottomEnd = t3;
     },
     AnimatedSwitcher$(child, duration, switchInCurve) {
       return new B.AnimatedSwitcher(child, duration, switchInCurve, null);
@@ -2194,93 +2166,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1[_i].detach$0(0);
     }
   };
-  B.Drawer.prototype = {
-    build$1(context) {
-      var label, t1, defaults, effectiveShape, t2, t3, t4, t5, t6, _null = null,
-        drawerTheme = A.DrawerTheme_of(context);
-      switch (A.Theme_of(context).platform.index) {
-        case 2:
-        case 4:
-          label = _null;
-          break;
-        case 0:
-        case 1:
-        case 3:
-        case 5:
-          t1 = A.Localizations_of(context, C.Type_MaterialLocalizations_flR, type$.MaterialLocalizations);
-          t1.toString;
-          label = t1.get$drawerLabel();
-          break;
-        default:
-          label = _null;
-      }
-      A.Theme_of(context);
-      t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$._DrawerControllerScope);
-      t1 = t1 == null ? _null : t1.controller;
-      t1 = t1 == null ? _null : t1.alignment;
-      defaults = new B._DrawerDefaultsM3(context, _null, _null, 1, _null, _null, _null, _null, _null);
-      if (t1 !== C.DrawerAlignment_1) {
-        t1 = drawerTheme.shape;
-        if (t1 == null)
-          t1 = defaults.get$shape(defaults);
-        effectiveShape = t1;
-      } else {
-        t1 = drawerTheme.endShape;
-        if (t1 == null)
-          t1 = defaults.get$endShape();
-        effectiveShape = t1;
-      }
-      t1 = drawerTheme.width;
-      if (t1 == null)
-        t1 = 304;
-      t2 = drawerTheme.backgroundColor;
-      if (t2 == null)
-        t2 = defaults.get$backgroundColor(defaults);
-      t3 = this.elevation;
-      t4 = drawerTheme.shadowColor;
-      if (t4 == null)
-        t4 = defaults.get$shadowColor(defaults);
-      t5 = drawerTheme.surfaceTintColor;
-      if (t5 == null)
-        t5 = defaults.get$surfaceTintColor();
-      if (effectiveShape != null)
-        t6 = C.Clip_1;
-      else
-        t6 = C.Clip_0;
-      t5 = A.Material$(C.Duration_200000, true, _null, this.child, t6, t2, t3, _null, t4, effectiveShape, t5, _null, C.MaterialType_0);
-      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, label, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, true, false, false, new A.ConstrainedBox(new A.BoxConstraints(t1, t1, 1 / 0, 1 / 0), t5, _null), _null);
-    }
-  };
-  B._DrawerDefaultsM3.prototype = {
-    get$direction(_) {
-      var t1, _this = this,
-        value = _this.___DrawerDefaultsM3_direction_FI;
-      if (value === $) {
-        t1 = _this.context.dependOnInheritedWidgetOfExactType$1$0(type$.Directionality);
-        t1.toString;
-        _this.___DrawerDefaultsM3_direction_FI !== $ && A.throwUnnamedLateFieldADI();
-        value = _this.___DrawerDefaultsM3_direction_FI = t1.textDirection;
-      }
-      return value;
-    },
-    get$backgroundColor(_) {
-      return A.Theme_of(this.context).colorScheme.surface;
-    },
-    get$surfaceTintColor() {
-      var t1 = A.Theme_of(this.context).colorScheme,
-        t2 = t1._surfaceTint;
-      return t2 == null ? t1.primary : t2;
-    },
-    get$shadowColor(_) {
-      return C.Color_0;
-    },
-    get$shape(_) {
-      return new A.RoundedRectangleBorder(D.BorderRadiusDirectional_DpJ0.resolve$1(this.get$direction(this)), C.BorderSide_8xm);
-    },
-    get$endShape() {
-      return new A.RoundedRectangleBorder(D.BorderRadiusDirectional_DpJ.resolve$1(this.get$direction(this)), C.BorderSide_8xm);
-    }
-  };
   B.Ink.prototype = {
     get$_ink_decoration$_paddingIncludingDecoration() {
       var decorationPadding,
@@ -2408,7 +2293,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t4, effectiveIconColor, effectiveColor, leadingAndTrailingStyle, leadingIcon, titleStyle, titleText, subtitleStyle, subtitleText, trailingIcon, resolvedContentPadding, effectiveMouseCursor, t5, color, t6, t7, t8, t9, t10, _this = this, _null = null,
         theme = A.Theme_of(context),
         tileTheme = A.ListTileTheme_of(context),
-        defaults = new B._LisTileDefaultsM3(context, _null, C.RoundedRectangleBorder_27D7, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_16_0_24_0, _null, _null, _null, 8, 24, _null, _null, _null, _null),
+        defaults = new B._LisTileDefaultsM3(context, _null, C.RoundedRectangleBorder_27D8, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_16_0_24_0, _null, _null, _null, 8, 24, _null, _null, _null, _null),
         t1 = type$.MaterialState,
         t2 = new B.ListTile_build_resolveColor(A.LinkedHashSet_LinkedHashSet$_empty(t1)),
         t3 = t2.call$3(_null, _null, _null);
@@ -2987,53 +2872,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       this._widget.toString;
       return A.Divider$(null, null, 0.5, null);
-    }
-  };
-  B.BorderRadiusDirectional.prototype = {
-    get$_topStart() {
-      return this.topStart;
-    },
-    get$_topEnd() {
-      return this.topEnd;
-    },
-    get$_bottomStart() {
-      return this.bottomStart;
-    },
-    get$_bottomEnd() {
-      return this.bottomEnd;
-    },
-    get$_topLeft() {
-      return C.Radius_0_0;
-    },
-    get$_topRight() {
-      return C.Radius_0_0;
-    },
-    get$_bottomLeft() {
-      return C.Radius_0_0;
-    },
-    get$_bottomRight() {
-      return C.Radius_0_0;
-    },
-    $sub(_, other) {
-      var _this = this;
-      return new B.BorderRadiusDirectional(_this.topStart.$sub(0, other.topStart), _this.topEnd.$sub(0, other.topEnd), _this.bottomStart.$sub(0, other.bottomStart), _this.bottomEnd.$sub(0, other.bottomEnd));
-    },
-    $add(_, other) {
-      var _this = this;
-      return new B.BorderRadiusDirectional(_this.topStart.$add(0, other.topStart), _this.topEnd.$add(0, other.topEnd), _this.bottomStart.$add(0, other.bottomStart), _this.bottomEnd.$add(0, other.bottomEnd));
-    },
-    $mul(_, other) {
-      var _this = this;
-      return new B.BorderRadiusDirectional(_this.topStart.$mul(0, other), _this.topEnd.$mul(0, other), _this.bottomStart.$mul(0, other), _this.bottomEnd.$mul(0, other));
-    },
-    resolve$1(direction) {
-      var _this = this;
-      switch (direction.index) {
-        case 0:
-          return new A.BorderRadius(_this.topEnd, _this.topStart, _this.bottomEnd, _this.bottomStart);
-        case 1:
-          return new A.BorderRadius(_this.topStart, _this.topEnd, _this.bottomStart, _this.bottomEnd);
-      }
     }
   };
   B._ChildEntry.prototype = {
@@ -4066,7 +3904,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 227
+    $signature: 188
   };
   B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -4115,7 +3953,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 157
+    $signature: 162
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -4401,13 +4239,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return this.isFullEmailAddress ? B.EmailAddressExtension_asFullString(emailAddress) : A.EmailAddressExtension_asString(emailAddress);
     },
-    $signature: 121
+    $signature: 120
   };
   B.ListEmailAddressExtension_emailAddressToListString_closure0.prototype = {
     call$1(emailAddress) {
       return this.isFullEmailAddress ? B.EmailAddressExtension_asFullString(emailAddress) : A.EmailAddressExtension_asString(emailAddress);
     },
-    $signature: 121
+    $signature: 120
   };
   B.TagsEditorState__initializeSuggestionBox_closure.prototype = {
     call$1(_) {
@@ -4591,7 +4429,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           break $label0$0;
         }
     },
-    $signature: 125
+    $signature: 124
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -4745,7 +4583,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(A.State0, [B._HtmlContentViewerOnWebState, B.__RawChipState_State_MaterialStateMixin, B._InkState, B._PopupMenuDividerState, B.__AnimatedSwitcherState_State_TickerProviderStateMixin, B._StreamBuilderBaseState, B._PortalState, B.TagsEditorState]);
     _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__setUpWeb___closure, B._HtmlContentViewerOnWebState__setUpWeb___closure0, B._HtmlContentViewerOnWebState__setUpWeb___closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure1, B.PopupMenuItemWidget_build_closure, B._RawChipState__handleTapDown_closure, B._RawChipState__handleTapCancel_closure, B._RawChipState__handleTap_closure, B._RawChipState_didUpdateWidget_closure, B._RawChipState_didUpdateWidget_closure0, B._AnimatedSwitcherState__newEntry__closure, B._StreamBuilderBaseState__subscribe__closure1, B._StreamBuilderBaseState__subscribe__closure, B._StreamBuilderBaseState__subscribe_closure0, B._StreamBuilderBaseState__subscribe__closure0, B.SizeChangedLayoutNotifier_createRenderObject_closure, B.TagsEditorState__onFocusChanged_closure, B.TagsEditorState__onTextFieldChange_closure, B.TagsEditorState__onSearchChanged_closure, B.TagsEditorState_build__closure0, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, B.VacationNotificationMessageWidget__buildBodyForMobile_closure, B.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
     _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure, B._RawChipState_build_closure, B._RenderChipRedirectingHitDetection_hitTest_closure, B._RenderChip_hitTest_closure, B._RenderChip_performLayout_centerLayout, B._RenderChip__paintAvatar_paintWithOverlay, B._RenderChip__paintChild_closure, B._RenderListTile_hitTestChildren_closure, B._StreamBuilderBaseState__subscribe_closure1, B.TagsEditorState__createOverlayEntry__closure, B.TagsEditorState__createOverlayEntry___closure, B.TagEditorLayoutDelegate__isOverflow_closure, B.TagEditorLayoutDelegate_performLayout_closure]);
-    _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B.Chip, B.Drawer, B.ListTile, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
+    _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B.Chip, B.ListTile, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
     _inherit(B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin, B.__RawChipState_State_MaterialStateMixin);
     _inherit(B._RawChipState, B.__RawChipState_State_MaterialStateMixin_TickerProviderStateMixin);
     _inheritMany(A.MaterialStateProperty, [B._IndividualOverrides0, B._IndividualOverrides]);
@@ -4758,12 +4596,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B._RenderChip, B.__RenderChip_RenderBox_SlottedContainerRenderObjectMixin);
     _inherit(B._UnconstrainedInkSplashFactory, A.InteractiveInkFeatureFactory);
     _inherit(B._ChipDefaultsM3, A.ChipThemeData);
-    _inherit(B._DrawerDefaultsM3, A.DrawerThemeData);
     _inherit(B.InkDecoration, A.InkFeature);
     _inherit(B._RenderListTile, B.__RenderListTile_RenderBox_SlottedContainerRenderObjectMixin);
     _inherit(B._LisTileDefaultsM3, A.ListTileThemeData);
     _inherit(B.PopupMenuDivider, A.PopupMenuEntry);
-    _inherit(B.BorderRadiusDirectional, A.BorderRadiusGeometry);
     _inherit(B._AnimatedSwitcherState, B.__AnimatedSwitcherState_State_TickerProviderStateMixin);
     _inherit(B.StreamBuilder, B.StreamBuilderBase);
     _inheritMany(A.InheritedNotifier, [B.AutocompleteHighlightedOption, B.ValidationSuggestionItem]);
@@ -4779,7 +4615,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixinHard(B.__RenderListTile_RenderBox_SlottedContainerRenderObjectMixin, A.SlottedContainerRenderObjectMixin);
     _mixinHard(B.__AnimatedSwitcherState_State_TickerProviderStateMixin, A.TickerProviderStateMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RawChipState":{"State0":["RawChip"]},"_IndividualOverrides0":{"MaterialStateProperty":["Color?"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot","RenderBox"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.0":"_ChipSlot","SlottedMultiChildRenderObjectWidgetMixin.1":"RenderBox"},"_RenderChip":{"RenderBox":[],"SlottedContainerRenderObjectMixin":["_ChipSlot","RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.0":"_ChipSlot","SlottedContainerRenderObjectMixin.1":"RenderBox"},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot","RenderBox"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.0":"_ListTileSlot","SlottedMultiChildRenderObjectWidgetMixin.1":"RenderBox"},"_RenderListTile":{"RenderBox":[],"SlottedContainerRenderObjectMixin":["_ListTileSlot","RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.0":"_ListTileSlot","SlottedContainerRenderObjectMixin.1":"RenderBox"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"AutocompleteHighlightedOption":{"InheritedNotifier":["ValueNotifier<int>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<int>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[],"RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Chip":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RawChip":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RawChipState":{"State0":["RawChip"]},"_IndividualOverrides0":{"MaterialStateProperty":["Color?"]},"_ChipRedirectingHitDetectionWidget":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderChipRedirectingHitDetection":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"_ChipRenderWidget":{"SlottedMultiChildRenderObjectWidgetMixin":["_ChipSlot","RenderBox"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.0":"_ChipSlot","SlottedMultiChildRenderObjectWidgetMixin.1":"RenderBox"},"_RenderChip":{"RenderBox":[],"SlottedContainerRenderObjectMixin":["_ChipSlot","RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.0":"_ChipSlot","SlottedContainerRenderObjectMixin.1":"RenderBox"},"Ink":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_InkState":{"State0":["Ink"]},"InkDecoration":{"InkFeature":[]},"ListTile":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_IndividualOverrides":{"MaterialStateProperty":["Color?"]},"_ListTile":{"SlottedMultiChildRenderObjectWidgetMixin":["_ListTileSlot","RenderBox"],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[],"SlottedMultiChildRenderObjectWidgetMixin.0":"_ListTileSlot","SlottedMultiChildRenderObjectWidgetMixin.1":"RenderBox"},"_RenderListTile":{"RenderBox":[],"SlottedContainerRenderObjectMixin":["_ListTileSlot","RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[],"SlottedContainerRenderObjectMixin.0":"_ListTileSlot","SlottedContainerRenderObjectMixin.1":"RenderBox"},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"AnimatedSwitcher":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AnimatedSwitcherState":{"State0":["AnimatedSwitcher"]},"StreamBuilderBase":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_StreamBuilderBaseState":{"State0":["StreamBuilderBase<1,2>"]},"StreamBuilder":{"StreamBuilderBase":["1","AsyncSnapshot<1>"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"StreamBuilderBase.T":"1","StreamBuilderBase.S":"AsyncSnapshot<1>"},"AutocompleteHighlightedOption":{"InheritedNotifier":["ValueNotifier<int>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<int>"},"SizeChangedLayoutNotification":{"LayoutChangedNotification":[]},"SizeChangedLayoutNotifier":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RenderSizeChangedWithCallback":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"TagEditor":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagsEditorState":{"State0":["TagEditor<1>"]},"TagLayout":{"MultiChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"TagRenderLayoutBox":{"RenderBoxContainerDefaultsMixin":["RenderBox","MultiChildLayoutParentData"],"RenderBox":[],"ContainerRenderObjectMixin":["RenderBox","MultiChildLayoutParentData"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[],"RenderBoxContainerDefaultsMixin.1":"MultiChildLayoutParentData","ContainerRenderObjectMixin.1":"MultiChildLayoutParentData","RenderBoxContainerDefaultsMixin.0":"RenderBox","ContainerRenderObjectMixin.0":"RenderBox"},"ValidationSuggestionItem":{"InheritedNotifier":["ValueNotifier<String?>"],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[],"InheritedNotifier.T":"ValueNotifier<String?>"},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ChipTheme":{"InheritedTheme":[],"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -4826,7 +4662,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       Widget: findType("Widget"),
       _ChildEntry: findType("_ChildEntry"),
       _ChipSlot: findType("_ChipSlot"),
-      _DrawerControllerScope: findType("_DrawerControllerScope"),
       _ElementEventStreamImpl_Event: findType("_ElementEventStreamImpl<Event>"),
       _ListTileSlot: findType("_ListTileSlot"),
       _LocalizationsScope: findType("_LocalizationsScope"),
@@ -4851,8 +4686,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Alignment_1_1 = new A.Alignment(1, 1);
     D.Aligned_HRf = new A.Aligned(1, null, C.Alignment_1_m1, D.Alignment_1_1, C.Alignment_0_0, C.C_AxisFlag, C.C_AxisFlag, C.Offset_0_0, null);
     D.Aligned_2Lz = new A.Aligned(1, null, C.Alignment_1_m1, D.Alignment_1_1, C.Alignment_0_0, C.C_AxisFlag, C.C_AxisFlag, C.Offset_0_0, D.Aligned_HRf);
-    D.BorderRadiusDirectional_DpJ = new B.BorderRadiusDirectional(C.Radius_16_16, C.Radius_0_0, C.Radius_16_16, C.Radius_0_0);
-    D.BorderRadiusDirectional_DpJ0 = new B.BorderRadiusDirectional(C.Radius_0_0, C.Radius_16_16, C.Radius_0_0, C.Radius_16_16);
     D.Color_4294914887 = new A.Color(4294914887);
     D.BorderSide_tAf4 = new A.BorderSide(C.Color_520093696, 0.5, C.BorderStyle_1, -1);
     D.Offset_chs1 = new A.Offset(0, 0.5);
@@ -4874,10 +4707,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_0_16_0 = new A.EdgeInsets(0, 0, 16, 0);
     D.EdgeInsets_0_12_12_0 = new A.EdgeInsets(0, 12, 12, 0);
     D.EdgeInsets_0_4_0_0 = new A.EdgeInsets(0, 4, 0, 0);
+    D.EdgeInsets_0_4_0_4 = new A.EdgeInsets(0, 4, 0, 4);
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_16_12_16_12 = new A.EdgeInsets(16, 12, 16, 12);
     D.EdgeInsets_20_16_20_16 = new A.EdgeInsets(20, 16, 20, 16);
+    D.EdgeInsets_32_0_32_0 = new A.EdgeInsets(32, 0, 32, 0);
     D.EdgeInsets_32_12_32_12 = new A.EdgeInsets(32, 12, 32, 12);
     D.EdgeInsets_32_16_32_16 = new A.EdgeInsets(32, 16, 32, 16);
     D.EdgeInsets_32_8_32_8 = new A.EdgeInsets(32, 8, 32, 8);
@@ -4915,5 +4750,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "gVTqzdC56ta4Dd9G9GBCteG11Fo=");
+})($__dart_deferred_initializers__, "OXtCdofFmXLHkU4h6/KaCaVjkpw=");
 ;
