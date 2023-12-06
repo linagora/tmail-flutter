@@ -75,7 +75,12 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
                 color: backgroundColorItem
               ),
-              padding: const EdgeInsets.all(MailboxItemWidgetStyles.padding),
+              padding: widget.mailboxNode.hasChildren()
+                ? const EdgeInsetsDirectional.symmetric(
+                    horizontal: MailboxItemWidgetStyles.padding,
+                    vertical: MailboxItemWidgetStyles.space
+                  )
+                : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
               child: Row(
                 children: [
                   LeadingMailboxItemWidget(
@@ -111,7 +116,12 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
                 color: backgroundColorItem
               ),
-              padding: const EdgeInsets.all(MailboxItemWidgetStyles.padding),
+              padding: widget.mailboxNode.hasChildren()
+                ? const EdgeInsetsDirectional.symmetric(
+                    horizontal: MailboxItemWidgetStyles.padding,
+                    vertical: MailboxItemWidgetStyles.space
+                  )
+                : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
               child: Row(
                 children: [
                   LeadingMailboxItemWidget(
@@ -147,7 +157,12 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
                   color: backgroundColorItem
                 ),
-                padding: const EdgeInsets.all(MailboxItemWidgetStyles.padding),
+                padding: widget.mailboxNode.hasChildren()
+                  ? const EdgeInsetsDirectional.symmetric(
+                      horizontal: MailboxItemWidgetStyles.padding,
+                      vertical: MailboxItemWidgetStyles.space
+                    )
+                  : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -198,7 +213,12 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
                 hoverColor: AppColor.colorMailboxHovered,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: MailboxItemWidgetStyles.padding),
+                  padding: widget.mailboxNode.hasChildren()
+                    ? const EdgeInsetsDirectional.symmetric(
+                        horizontal: MailboxItemWidgetStyles.padding,
+                        vertical: MailboxItemWidgetStyles.space
+                      )
+                    : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
                   color: widget.mailboxNode.isSelected
                       ? AppColor.colorItemSelected
                       : Colors.transparent,

@@ -1,10 +1,8 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -36,20 +34,14 @@ class LeadingMailboxItemWidget extends StatelessWidget {
 
     return Row(children: [
       if (mailboxNode.hasChildren())
-        Padding(
-          padding: LeadingMailboxItemWidgetStyles.expandIconPadding,
-          child: buildIconWeb(
-            icon: SvgPicture.asset(
-              _getExpandIcon(context, imagePaths),
-              colorFilter: _expandIconColor.asFilter(),
-              fit: BoxFit.fill,
-            ),
-            splashRadius: LeadingMailboxItemWidgetStyles.expandIconSplashRadius,
-            iconPadding: EdgeInsets.zero,
-            minSize: LeadingMailboxItemWidgetStyles.expandIconSize,
-            tooltip: _getExpandTooltipMessage(context),
-            onTap: () => onExpandFolderActionClick?.call(mailboxNode)
-          ),
+        TMailButtonWidget.fromIcon(
+          icon: _getExpandIcon(context, imagePaths),
+          iconColor: _expandIconColor,
+          padding: EdgeInsets.zero,
+          margin: const EdgeInsetsDirectional.only(start: 4),
+          backgroundColor: Colors.transparent,
+          tooltipMessage: _getExpandTooltipMessage(context),
+          onTapActionCallback: () => onExpandFolderActionClick?.call(mailboxNode)
         )
       else
         const SizedBox(width: LeadingMailboxItemWidgetStyles.emptyBoxSize),

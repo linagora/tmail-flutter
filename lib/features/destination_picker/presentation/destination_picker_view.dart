@@ -272,8 +272,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 children: [
                   const Divider(
                     color: AppColor.colorDividerMailbox,
-                    height: 0.5,
-                    thickness: 0.2
+                    height: 1,
                   ),
                   const SizedBox(height: 8),
                   _buildMailboxCategory(
@@ -297,8 +296,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 children: [
                   const Divider(
                     color: AppColor.colorDividerMailbox,
-                    height: 0.5,
-                    thickness: 0.2
+                    height: 1,
                   ),
                   const SizedBox(height: 8),
                   _buildMailboxCategory(
