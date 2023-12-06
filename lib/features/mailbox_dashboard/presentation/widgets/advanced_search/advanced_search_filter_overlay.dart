@@ -1,5 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -11,14 +10,12 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
-
     return PointerInterceptor(
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Container(
           constraints: BoxConstraints(
-            maxHeight: _getHeightOverlay(context, responsiveUtils),
+            maxHeight: _getHeightOverlay(context),
           ),
           margin: const EdgeInsetsDirectional.only(top: 4, bottom: 16, end: 22),
           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -45,10 +42,10 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
     );
   }
 
-  double _getHeightOverlay(BuildContext context, ResponsiveUtils responsiveUtils) {
+  double _getHeightOverlay(BuildContext context) {
     const double maxHeightTopBar = 80;
     const double paddingBottom = 16;
-    final currentHeight = responsiveUtils.getSizeScreenHeight(context);
+    final currentHeight = context.height;
     double maxHeightForm = currentHeight - maxHeightTopBar - paddingBottom;
     return maxHeightForm;
   }

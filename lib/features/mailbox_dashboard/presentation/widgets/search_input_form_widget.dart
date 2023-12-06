@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
@@ -23,8 +24,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 
 class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   final _searchController = Get.find<search.SearchController>();
@@ -184,6 +183,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       controller: _searchController.searchInputController,
       focusNode: _searchController.searchFocus,
       textInputAction: TextInputAction.done,
+      cursorColor: AppColor.primaryColor,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       onSubmitted: (keyword) => _invokeSearchEmailAction(context, keyword.trim()),
       decoration: InputDecoration(
@@ -196,10 +196,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         labelStyle: const TextStyle(color: Colors.black, fontSize: 16.0)
       ),
       leftButton: Padding(
-        padding: EdgeInsets.only(
-          left: AppUtils.isDirectionRTL(context) ? 0 : 8,
-          right: AppUtils.isDirectionRTL(context) ? 8 : 0
-        ),
+        padding: const EdgeInsetsDirectional.only(start: 8),
         child: buildIconWeb(
           minSize: 40,
           iconPadding: EdgeInsets.zero,
@@ -225,11 +222,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       final isFilterSelected = filter.isApplied(_searchController.listFilterOnSuggestionForm);
 
       return Chip(
-        labelPadding: EdgeInsets.only(
+        labelPadding: const EdgeInsetsDirectional.only(
           top: 2,
           bottom: 2,
-          right: AppUtils.isDirectionRTL(context) ? 0 : 10,
-          left: AppUtils.isDirectionRTL(context) ? 10 : 0,
+          end: 10,
         ),
         label: Text(
           filter.getName(context),
@@ -246,7 +242,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         labelStyle: filter.getTextStyle(isFilterSelected: isFilterSelected),
         backgroundColor: filter.getBackgroundColor(isFilterSelected: isFilterSelected),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           side: BorderSide(color: filter.getBackgroundColor(isFilterSelected: isFilterSelected)),
         ),
       );
