@@ -1563,7 +1563,7 @@ class AppLocalizations {
 
   String get languageAndRegionSubtitle {
     return Intl.message(
-        'Set the language, time zone, time format you use on TeamMail.',
+        'Set the language, time zone, time format you use on Twake Mail.',
         name: 'languageAndRegionSubtitle');
   }
 
