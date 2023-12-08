@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -260,6 +261,7 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void onInit() {
     _registerStreamListener();
+    BackButtonInterceptor.add(onBackButtonInterceptor);
     super.onInit();
   }
 
@@ -2084,7 +2086,7 @@ class MailboxDashBoardController extends ReloadableController {
   void redirectToInboxAction() {
     log('MailboxDashBoardController::redirectToInboxAction:');
     if (dashboardRoute.value == DashboardRoutes.emailDetailed) {
-      dispatchEmailUIAction(CloseEmailDetailedViewAction());
+      dispatchEmailUIAction(CloseEmailDetailedViewToRedirectToTheInboxAction());
     }
 
     final inboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
@@ -2224,6 +2226,25 @@ class MailboxDashBoardController extends ReloadableController {
     setSelectedEmail(email.toPresentationEmail());
   }
 
+  bool onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
+    log('MailboxDashBoardController::onBackButtonInterceptor:stopDefaultButtonEvent: $stopDefaultButtonEvent | routeInfo: ${routeInfo.routeWhenAdded}');
+    switch(dashboardRoute.value) {
+      case DashboardRoutes.emailDetailed:
+        dispatchEmailUIAction(CloseEmailDetailedViewAction());
+        return true;
+      case DashboardRoutes.thread:
+        if (searchController.isSearchEmailRunning) {
+          dispatchMailboxUIAction(SelectMailboxDefaultAction());
+        } else {
+          pushAndPopAll(AppRoutes.home);
+        }
+        return true;
+      default:
+        break;
+    }
+    return false;
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
@@ -2234,6 +2255,7 @@ class MailboxDashBoardController extends ReloadableController {
     _refreshActionEventController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
+    BackButtonInterceptor.remove(onBackButtonInterceptor);
     MailboxDashBoardBindings().deleteController();
     super.onClose();
   }

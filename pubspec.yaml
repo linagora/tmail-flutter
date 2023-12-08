@@ -223,6 +223,8 @@ dependencies:
 
   flutter_image_compress: 2.1.0
 
+  back_button_interceptor: 7.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
