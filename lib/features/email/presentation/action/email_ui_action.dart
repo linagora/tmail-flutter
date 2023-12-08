@@ -1,6 +1,6 @@
 
-import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 
 class EmailUIAction extends UIAction {
   static final idle = EmailUIAction();
@@ -19,5 +19,7 @@ class RefreshChangeEmailAction extends EmailUIAction {
   @override
   List<Object?> get props => [newState];
 }
+
+class CloseEmailDetailedViewToRedirectToTheInboxAction extends EmailUIAction {}
 
 class CloseEmailDetailedViewAction extends EmailUIAction {}
