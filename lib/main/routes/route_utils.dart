@@ -33,9 +33,17 @@ abstract class RouteUtils {
 
   static String get baseUrl => Uri.base.path;
 
-  static String generateNavigationRoute(String route, NavigationRouter router) {
-    ServicePath servicePath = ServicePath(route);
+  static String generateNavigationRoute(String route, {NavigationRouter? router}) {
     if (PlatformInfo.isWeb) {
+      return _createServicePath(route, router: router).path;
+    } else {
+      return route;
+    }
+  }
+
+  static ServicePath _createServicePath(String route, {NavigationRouter? router}) {
+    ServicePath servicePath = ServicePath(route);
+    if (router != null) {
       if (router.emailId != null) {
         servicePath = servicePath.withPathParameter(router.emailId!.id.value);
       }
@@ -46,26 +54,16 @@ abstract class RouteUtils {
         if (router.searchQuery != null)
           StringQueryParameter(paramQuery, router.searchQuery!.value),
       ]);
-      return servicePath.path;
     } else {
-      return servicePath.path;
+      servicePath = servicePath.withQueryParameters([
+        StringQueryParameter(paramType, DashboardType.normal.name)
+      ]);
     }
+    return servicePath;
   }
 
-  static Uri generateRouteBrowser(String route, NavigationRouter router) {
-    final baseRoutePath = '$baseOriginUrl$route';
-    ServicePath servicePath = ServicePath(baseRoutePath);
-    if (router.emailId != null) {
-      servicePath = servicePath.withPathParameter(router.emailId!.id.value);
-    }
-    servicePath = servicePath.withQueryParameters([
-      StringQueryParameter(paramType, router.dashboardType.name),
-      if (router.mailboxId != null)
-        StringQueryParameter(paramContext, router.mailboxId!.id.value),
-      if (router.searchQuery != null)
-        StringQueryParameter(paramQuery, router.searchQuery!.value),
-    ]);
-
+  static Uri createUrlWebLocationBar(String route, {NavigationRouter? router}) {
+    final servicePath = _createServicePath('$baseOriginUrl$route', router: router);
     return Uri.parse(servicePath.path);
   }
 
@@ -101,10 +99,9 @@ abstract class RouteUtils {
     );
   }
 
-  static void updateRouteOnBrowser(String title, Uri newRoute) {
-    log('RouteUtils::updateRouteOnBrowser(): title: $title');
-    log('RouteUtils::updateRouteOnBrowser(): newRoute: $newRoute');
-    html.window.history.replaceState(null, title, newRoute.toString());
+  static void replaceBrowserHistory({required String title, required Uri url}) {
+    log('RouteUtils::replaceBrowserHistory(): title: $title | url: $url');
+    html.window.history.replaceState(null, title, url.toString());
   }
 
   static Map<String, String?> parseMapMailtoFromUri(String? mailtoUri) {

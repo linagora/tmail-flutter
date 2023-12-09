@@ -482,11 +482,11 @@ class ThreadView extends GetWidget<ThreadController>
     PresentationEmail presentationEmail,
     EmailActionType actionType
   ) {
-    controller.pressEmailAction(
-      context,
+    controller.handleEmailActionType(
       actionType,
       presentationEmail,
-      mailboxContain: presentationEmail.mailboxContain
+      mailboxContain: presentationEmail.mailboxContain,
+      context: context
     );
   }
 
@@ -629,11 +629,12 @@ class ThreadView extends GetWidget<ThreadController>
         iconRightPadding: controller.responsiveUtils.isMobile(context)
           ? const EdgeInsets.only(right: 12)
           : EdgeInsets.zero)
-      ..onActionClick((email) => controller.pressEmailAction(context,
+      ..onActionClick((email) => controller.handleEmailActionType(
         mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
         email,
-        mailboxContain: mailboxContain)
-      )
+        mailboxContain: mailboxContain,
+        context: context,
+      ))
     ).build();
   }
 
@@ -689,11 +690,11 @@ class ThreadView extends GetWidget<ThreadController>
           fontSize: 16,
           color: Colors.black
         ),
-        onCallbackAction: () => controller.pressEmailAction(
-          context,
+        onCallbackAction: () => controller.handleEmailActionType(
           mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
           email,
-          mailboxContain: mailboxContain
+          mailboxContain: mailboxContain,
+          context: context
         )
       )
     );
