@@ -160,3 +160,7 @@ class SearchEmailByFromFieldsAction extends DashBoardAction {
   @override
   List<Object?> get props => [emailAddress];
 }
+
+class CloseSearchEmailViewAction extends DashBoardAction {}
+
+class CancelSelectionSearchEmailAction extends DashBoardAction {}

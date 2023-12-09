@@ -787,27 +787,26 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
             _deleteMultipleMailboxAction(selectedMailboxList)))
         .show();
     } else {
-      showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
-            ..key(const Key('confirm_dialog_delete_multiple_mailbox'))
-            ..title(AppLocalizations.of(context).deleteFolders)
-            ..content(AppLocalizations.of(context)
-                .messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
-            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog,
-                fit: BoxFit.fill))
-            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-            ..styleTextConfirmButton(const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: AppColor.colorActionDeleteConfirmDialog))
-            ..onCloseButtonAction(() => popBack())
-            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
-                _deleteMultipleMailboxAction(selectedMailboxList))
-            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
-                popBack()))
-            .build()));
+      Get.dialog(
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+          ..key(const Key('confirm_dialog_delete_multiple_mailbox'))
+          ..title(AppLocalizations.of(context).deleteFolders)
+          ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
+          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
+          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+          ..styleTextConfirmButton(const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+              color: AppColor.colorActionDeleteConfirmDialog))
+          ..onCloseButtonAction(() => popBack())
+          ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
+              _deleteMultipleMailboxAction(selectedMailboxList))
+          ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
+              popBack()))
+          .build()
+        ),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 
