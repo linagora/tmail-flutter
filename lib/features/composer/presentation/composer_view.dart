@@ -37,7 +37,7 @@ class ComposerView extends GetWidget<ComposerController> {
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileContainerView(
         keyboardRichTextController: controller.keyboardRichTextController,
-        onCloseViewAction: () => controller.saveToDraftAndClose(context, canPop: false),
+        onCloseViewAction: () => controller.saveToDraftAndClose(context),
         onClearFocusAction: () => controller.clearFocusEditor(context),
         onAttachFileAction: () => controller.isNetworkConnectionAvailable
           ? controller.openPickAttachmentMenu(
@@ -222,7 +222,7 @@ class ComposerView extends GetWidget<ComposerController> {
       ),
       tablet: TabletContainerView(
         keyboardRichTextController: controller.keyboardRichTextController,
-        onCloseViewAction: () => controller.saveToDraftAndClose(context, canPop: false),
+        onCloseViewAction: () => controller.saveToDraftAndClose(context),
         onClearFocusAction: () => controller.clearFocusEditor(context),
         onAttachFileAction: () => controller.isNetworkConnectionAvailable
           ? controller.openPickAttachmentMenu(

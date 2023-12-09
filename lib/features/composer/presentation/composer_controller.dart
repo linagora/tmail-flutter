@@ -42,11 +42,11 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upload_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
@@ -1222,7 +1222,7 @@ class ComposerController extends BaseController {
     return false;
   }
 
-  void saveToDraftAndClose(BuildContext context, {bool canPop = true}) async {
+  void saveToDraftAndClose(BuildContext context) async {
     log('ComposerController::saveToDraftAndClose:');
     clearFocusEditor(context);
 
