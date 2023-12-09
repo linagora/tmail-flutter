@@ -2232,7 +2232,12 @@ class MailboxDashBoardController extends ReloadableController {
         return true;
       case DashboardRoutes.thread:
         if (PlatformInfo.isMobile) {
-          return false;
+          if (selectedMailbox.value?.isInbox == true) {
+            return false;
+          } else {
+            openDefaultMailbox();
+            return true;
+          }
         }
         if (searchController.isSearchEmailRunning) {
           dispatchMailboxUIAction(SystemBackToInboxAction());
@@ -2240,6 +2245,12 @@ class MailboxDashBoardController extends ReloadableController {
           pushAndPopAll(AppRoutes.home);
         }
         return true;
+      case DashboardRoutes.sendingQueue:
+        if (PlatformInfo.isMobile) {
+          openDefaultMailbox();
+          return true;
+        }
+        return false;
       case DashboardRoutes.searchEmail:
         dispatchAction(CloseSearchEmailViewAction());
         return true;

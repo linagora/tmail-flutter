@@ -2,13 +2,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/app_bar_sending_queue_widget.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/banner_message_sending_queue_widget.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/bottom_bar_sending_queue_widget.dart';
@@ -20,49 +20,46 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => controller.backButtonPressedCallbackAction.call(context),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            children: [
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Obx(() {
+              return AppBarSendingQueueWidget(
+                listSendingEmailSelected: controller.dashboardController.listSendingEmails.listSelected(),
+                onOpenMailboxMenu: controller.openMailboxMenu,
+                onBackAction: controller.disableSelectionMode,
+                selectMode: controller.selectionState.value,
+              );
+            }),
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            if (PlatformInfo.isIOS)
+              const BannerMessageSendingQueueWidget()
+            else
               Obx(() {
-                return AppBarSendingQueueWidget(
-                  listSendingEmailSelected: controller.dashboardController.listSendingEmails.listSelected(),
-                  onOpenMailboxMenu: controller.openMailboxMenu,
-                  onBackAction: controller.disableSelectionMode,
-                  selectMode: controller.selectionState.value,
-                );
-              }),
-              const Divider(color: AppColor.colorDividerComposer, height: 1),
-              if (PlatformInfo.isIOS)
-                const BannerMessageSendingQueueWidget()
-              else
-                Obx(() {
-                  if (!controller.isConnectedNetwork) {
-                    return const BannerMessageSendingQueueWidget();
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-              Expanded(child: _buildListSendingEmails(context)),
-              Obx(() {
-                if (controller.isAllUnSelected) {
-                  return const SizedBox.shrink();
+                if (!controller.isConnectedNetwork) {
+                  return const BannerMessageSendingQueueWidget();
                 } else {
-                 return BottomBarSendingQueueWidget(
-                    listSendingEmailSelected: controller.dashboardController.listSendingEmails.listSelected(),
-                    isConnectedNetwork: controller.isConnectedNetwork,
-                    onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
-                  );
+                  return const SizedBox.shrink();
                 }
               }),
-            ]
-          ),
+            Expanded(child: _buildListSendingEmails(context)),
+            Obx(() {
+              if (controller.isAllUnSelected) {
+                return const SizedBox.shrink();
+              } else {
+               return BottomBarSendingQueueWidget(
+                  listSendingEmailSelected: controller.dashboardController.listSendingEmails.listSelected(),
+                  isConnectedNetwork: controller.isConnectedNetwork,
+                  onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
+                );
+              }
+            }),
+          ]
         ),
-        floatingActionButton: _buildFloatingButtonCompose(),
       ),
+      floatingActionButton: _buildFloatingButtonCompose(),
     );
   }
 
