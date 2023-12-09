@@ -62,7 +62,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     presentationEmail: controller.currentEmail!,
                     mailboxContain: _getMailboxContain(controller.currentEmail!),
                     isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
-                    onBackAction: () => controller.closeEmailView(context),
+                    onBackAction: () => controller.closeEmailView(context: context),
                     onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
                     onMoreActionClick: (presentationEmail, position) => _handleMoreEmailAction(context: context, presentationEmail: presentationEmail, position: position)
                   ),
@@ -96,7 +96,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     presentationEmail: currentEmail,
                     mailboxContain: _getMailboxContain(currentEmail),
                     isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
-                    onBackAction: () => controller.closeEmailView(context),
+                    onBackAction: () => controller.closeEmailView(context: context),
                     onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
                     onMoreActionClick: (presentationEmail, position) => _handleMoreEmailAction(context: context, presentationEmail: presentationEmail, position: position),
                     optionsWidget: PlatformInfo.isWeb && controller.emailSupervisorController.supportedPageView.isTrue

@@ -43,7 +43,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   Widget build(BuildContext context) {
     if (controller.responsiveUtils.isWebDesktop(context)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        controller.closeSearchView(context);
+        controller.closeSearchView(context: context);
       });
     }
 
@@ -115,7 +115,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 fit: BoxFit.fill
               ),
               tooltip: AppLocalizations.of(context).back,
-              onTap: () => controller.closeSearchView(context)
+              onTap: () => controller.closeSearchView(context: context)
           ),
           Expanded(child: TextFieldBuilder(
             onTextChange: controller.onTextSearchChange,

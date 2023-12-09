@@ -31,7 +31,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vaca
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
@@ -205,7 +204,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
       pushAndPopAll(
-        RouteUtils.generateNavigationRoute(AppRoutes.dashboard, NavigationRouter()),
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
         arguments: sessionCurrent);
     }
   }

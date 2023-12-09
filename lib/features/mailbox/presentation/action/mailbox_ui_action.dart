@@ -1,7 +1,7 @@
 
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class MailboxUIAction extends UIAction {
   static final idle = MailboxUIAction();
@@ -32,3 +32,5 @@ class OpenMailboxAction extends MailboxUIAction {
   @override
   List<Object?> get props => [presentationMailbox];
 }
+
+class SystemBackToInboxAction extends MailboxUIAction {}
