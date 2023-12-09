@@ -198,10 +198,8 @@ mixin EmailActionController {
             () => _deleteEmailPermanentlyAction(context, email)))
           .show();
     } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+      Get.dialog(
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
           ..key(const Key('confirm_dialog_delete_email_permanently'))
           ..title(DeleteActionType.single.getTitleDialog(context))
           ..content(DeleteActionType.single.getContentDialog(context))
@@ -219,7 +217,9 @@ mixin EmailActionController {
           ..onCancelButtonAction(
               AppLocalizations.of(context).cancel,
               () => popBack()))
-        .build()));
+        .build()),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 

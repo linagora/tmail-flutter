@@ -23,5 +23,3 @@ class RefreshChangeEmailAction extends EmailUIAction {
 class CloseEmailDetailedViewToRedirectToTheInboxAction extends EmailUIAction {}
 
 class CloseEmailDetailedViewAction extends EmailUIAction {}
-
-class CloseSearchEmailViewAction extends EmailUIAction {}

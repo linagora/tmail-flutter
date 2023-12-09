@@ -338,36 +338,34 @@ abstract class BaseMailboxController extends BaseController {
             )))
       ).show(context);
     } else {
-      showDialog(
-        context: context,
+      Get.dialog(
+        PointerInterceptor(child: (EditTextDialogBuilder()
+          ..key(const Key('rename_mailbox_dialog'))
+          ..title(AppLocalizations.of(context).renameFolder)
+          ..cancelText(AppLocalizations.of(context).cancel)
+          ..setErrorString((value) {
+            return verifyMailboxNameAction(
+              context,
+              value,
+              listMailboxName,
+              MailboxActions.rename
+            );
+          })
+          ..setTextController(TextEditingController.fromValue(
+              TextEditingValue(
+                text: presentationMailbox.name?.name ?? '',
+                selection: TextSelection(
+                  baseOffset: 0,
+                  extentOffset: presentationMailbox.name?.name.length ?? 0
+                )
+              ))
+          )
+          ..onConfirmButtonAction(
+              AppLocalizations.of(context).rename,
+              (value) => onRenameMailboxAction(presentationMailbox, MailboxName(value))
+          )
+        ).build()),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (context) =>
-          PointerInterceptor(child: (EditTextDialogBuilder()
-            ..key(const Key('rename_mailbox_dialog'))
-            ..title(AppLocalizations.of(context).renameFolder)
-            ..cancelText(AppLocalizations.of(context).cancel)
-            ..setErrorString((value) {
-              return verifyMailboxNameAction(
-                context,
-                value,
-                listMailboxName,
-                MailboxActions.rename
-              );
-            })
-            ..setTextController(TextEditingController.fromValue(
-                TextEditingValue(
-                  text: presentationMailbox.name?.name ?? '',
-                  selection: TextSelection(
-                    baseOffset: 0,
-                    extentOffset: presentationMailbox.name?.name.length ?? 0
-                  )
-                ))
-            )
-            ..onConfirmButtonAction(
-                AppLocalizations.of(context).rename,
-                (value) => onRenameMailboxAction(presentationMailbox, MailboxName(value))
-            )
-          ).build())
       );
     }
   }
@@ -418,10 +416,8 @@ abstract class BaseMailboxController extends BaseController {
         ..onConfirmAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
       ).show();
     } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (context) => PointerInterceptor(
+      Get.dialog(
+        PointerInterceptor(
           child: (ConfirmDialogBuilder(imagePaths)
           ..key(const Key('confirm_dialog_delete_mailbox'))
           ..title(AppLocalizations.of(context).deleteFolders)
@@ -436,7 +432,8 @@ abstract class BaseMailboxController extends BaseController {
           ..onCloseButtonAction(() => popBack())
           ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())
-        ).build())
+        ).build()),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
   }

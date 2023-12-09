@@ -11,15 +11,15 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/delete_email_rule_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/delete_email_rule_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_email_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_rules_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_email_rule_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_email_rule_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rule_bottom_sheet_action_tile_builder.dart';
@@ -27,9 +27,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class EmailRulesController extends BaseController {
 
@@ -166,28 +166,29 @@ class EmailRulesController extends BaseController {
         }))
       .show();
     } else {
-      showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) =>
-              PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
-                ..title(AppLocalizations.of(context).deleteEmailRule)
-                ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
-                ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog,
-                    fit: BoxFit.fill))
-                ..marginIcon(EdgeInsets.zero)
-                ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-                ..styleTextConfirmButton(const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
-                    color: AppColor.colorActionDeleteConfirmDialog))
-                ..onCloseButtonAction(() => popBack())
-                ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
-                  _handleDeleteEmailRuleAction(emailRule);
-                })
-                ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
-                    popBack()))
-              .build()));
+      Get.dialog(
+        PointerInterceptor(
+          child: (ConfirmDialogBuilder(imagePaths)
+            ..title(AppLocalizations.of(context).deleteEmailRule)
+            ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
+            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog,
+                fit: BoxFit.fill))
+            ..marginIcon(EdgeInsets.zero)
+            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+            ..styleTextConfirmButton(const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppColor.colorActionDeleteConfirmDialog))
+            ..onCloseButtonAction(() => popBack())
+            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
+              _handleDeleteEmailRuleAction(emailRule);
+            })
+            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
+                popBack()))
+          .build()
+        ),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 

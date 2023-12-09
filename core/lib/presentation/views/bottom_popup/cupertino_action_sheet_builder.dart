@@ -30,8 +30,8 @@ class CupertinoActionSheetBuilder {
     _actionTiles.addAll(tiles);
   }
 
-  void show() {
-    showCupertinoModalPopup(
+  Future<dynamic> show() {
+    return showCupertinoModalPopup(
       context: _context,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       builder: (context) => PointerInterceptor(child: CupertinoActionSheet(
