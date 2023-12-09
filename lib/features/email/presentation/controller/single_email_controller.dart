@@ -234,8 +234,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailboxDashBoardController.clearSelectedEmail();
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
         mailboxDashBoardController.clearEmailUIAction();
-      } else if (action is CloseEmailDetailedViewAction && currentContext != null) {
-        closeEmailView(currentContext!);
+      } else if (action is CloseEmailDetailedViewAction) {
+        closeEmailView(context: currentContext);
         mailboxDashBoardController.clearEmailUIAction();
       }
     });
@@ -575,17 +575,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.dispatchState(Right(success));
 
     if (success is MarkAsEmailReadSuccess
-        && success.readActions == ReadActions.markAsUnread
-        && currentContext != null) {
-      closeEmailView(currentContext!);
+        && success.readActions == ReadActions.markAsUnread) {
+      closeEmailView(context: currentContext);
     }
   }
 
   void _markAsEmailReadFailure(Failure failure) {
     if (failure is MarkAsEmailReadFailure
-        && failure.readActions == ReadActions.markAsUnread
-        && currentContext != null) {
-      closeEmailView(currentContext!);
+        && failure.readActions == ReadActions.markAsUnread) {
+      closeEmailView(context: currentContext);
     }
   }
 
@@ -844,7 +842,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _moveToMailbox(BuildContext context, Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
-    closeEmailView(context);
+    closeEmailView(context: context);
     consumeState(_moveToMailboxInteractor.execute(session, accountId, moveRequest));
   }
 
@@ -905,7 +903,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     AccountId accountId,
     MoveToMailboxRequest moveRequest
   ) {
-    closeEmailView(context);
+    closeEmailView(context: context);
     mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
@@ -955,7 +953,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     AccountId accountId,
     MoveToMailboxRequest moveRequest
   ) {
-    closeEmailView(context);
+    closeEmailView(context: context);
     mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
@@ -1082,7 +1080,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _deleteEmailPermanentlyAction(BuildContext context, PresentationEmail email) {
     popBack();
-    closeEmailView(context);
+    closeEmailView(context: context);
     mailboxDashBoardController.deleteEmailPermanently(email);
   }
 
@@ -1167,7 +1165,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void closeEmailView(BuildContext context) {
+  void closeEmailView({BuildContext? context}) {
     if (emailSupervisorController.supportedPageView.isTrue) {
       emailSupervisorController.popEmailQueue(_currentEmailId);
       emailSupervisorController.setCurrentEmailIndex(-1);
@@ -1176,9 +1174,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.clearSelectedEmail();
     _updateCurrentEmailId(null);
     _resetToOriginalValue();
-    _updateRouteOnBrowser();
+    _replaceBrowserHistory();
     if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
-      if (responsiveUtils.isWebDesktop(context)) {
+      if (context != null && responsiveUtils.isWebDesktop(context)) {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
       } else {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.searchEmail);
@@ -1194,20 +1192,29 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   bool get isOpenEmailNotMailboxFromRoute => emailSupervisorController.supportedPageView.isFalse
     && mailboxDashBoardController.selectedMailbox.value == null;
 
-  void _updateRouteOnBrowser() {
-    log('SingleEmailController::_updateRouteOnBrowser(): isSearchEmailRunning: ${mailboxDashBoardController.searchController.isSearchEmailRunning}');
+  void _replaceBrowserHistory() {
     if (PlatformInfo.isWeb) {
       final selectedMailboxId = mailboxDashBoardController.selectedMailbox.value?.id;
-      final route = RouteUtils.generateRouteBrowser(
-        AppRoutes.dashboard,
-        NavigationRouter(
-          mailboxId: selectedMailboxId,
-          dashboardType: mailboxDashBoardController.searchController.isSearchEmailRunning
-            ? DashboardType.search
-            : DashboardType.normal
+      final isSearchRunning = mailboxDashBoardController.searchController.isSearchEmailRunning;
+      RouteUtils.replaceBrowserHistory(
+        title: isSearchRunning
+          ? 'SearchEmail'
+          : 'Mailbox-${selectedMailboxId?.id.value}',
+        url: RouteUtils.createUrlWebLocationBar(
+          AppRoutes.dashboard,
+          router: NavigationRouter(
+            mailboxId: isSearchRunning
+              ? null
+              : selectedMailboxId,
+            dashboardType: isSearchRunning
+              ? DashboardType.search
+              : DashboardType.normal,
+            searchQuery: isSearchRunning
+              ? mailboxDashBoardController.searchController.searchQuery
+              : null
+          )
         )
       );
-      RouteUtils.updateRouteOnBrowser('Mailbox-${selectedMailboxId?.id.value}', route);
     }
   }
 
@@ -1309,13 +1316,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       emailSupervisorController.backToPreviousEmail();
     }
-  }
-
-  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
-    if (PlatformInfo.isMobile) {
-      closeEmailView(context);
-    }
-    return false;
   }
 
   void _storeOpenedEmailAction(Session? session, AccountId? accountId, DetailedEmail detailedEmail) async {

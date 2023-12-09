@@ -36,8 +36,8 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
@@ -71,7 +71,9 @@ import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_co
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class SearchEmailController extends BaseController
     with EmailActionController,
@@ -99,6 +101,7 @@ class SearchEmailController extends BaseController
 
   late Debouncer<String> _deBouncerTime;
   late Worker dashBoardViewStateWorker;
+  late Worker dashBoardActionWorker;
   late SearchMoreState searchMoreState;
   late bool canSearchMore;
 
@@ -217,6 +220,16 @@ class SearchEmailController extends BaseController
         }
       });
     });
+
+    dashBoardActionWorker = ever(
+      mailboxDashBoardController.dashBoardAction,
+      (action) {
+        if (action is CloseSearchEmailViewAction) {
+          closeSearchView(context: currentContext);
+          mailboxDashBoardController.clearDashBoardAction();
+        }
+      }
+    );
   }
 
   void _refreshEmailChanges() {
@@ -293,7 +306,18 @@ class SearchEmailController extends BaseController
       canSearchMore = true;
       searchIsRunning.value = true;
       cancelSelectionMode(context);
-
+      if (PlatformInfo.isWeb) {
+        RouteUtils.replaceBrowserHistory(
+          title: 'SearchEmail',
+          url: RouteUtils.createUrlWebLocationBar(
+            AppRoutes.dashboard,
+            router: NavigationRouter(
+              searchQuery: searchQuery,
+              dashboardType: DashboardType.search
+            )
+          )
+        );
+      }
       consumeState(_searchEmailInteractor.execute(
         session!,
         accountId!,
@@ -646,7 +670,6 @@ class SearchEmailController extends BaseController
     textInputSearchController.clear();
     currentSearchText.value = '';
     listSuggestionSearch.clear();
-    textInputSearchFocus.requestFocus();
   }
 
   void clearAllResultSearch() {
@@ -658,14 +681,26 @@ class SearchEmailController extends BaseController
     simpleSearchFilter.value = SimpleSearchFilter();
   }
 
-  void closeSearchView(BuildContext context) {
-    log('SearchEmailController::closeSearchView(): ');
+  void closeSearchView({BuildContext? context}) {
     clearAllTextInputSearchForm();
     clearAllResultSearch();
-    KeyboardUtils.hideKeyboard(context);
+    if (context != null) {
+      KeyboardUtils.hideKeyboard(context);
+    }
     mailboxDashBoardController.searchController.disableAllSearchEmail();
-    mailboxDashBoardController.dispatchMailboxUIAction(SelectMailboxDefaultAction());
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+    if (PlatformInfo.isWeb) {
+      RouteUtils.replaceBrowserHistory(
+        title: 'Mailbox-${mailboxDashBoardController.selectedMailbox.value?.id.id.value}',
+        url: RouteUtils.createUrlWebLocationBar(
+          AppRoutes.dashboard,
+          router: NavigationRouter(
+            mailboxId: mailboxDashBoardController.selectedMailbox.value?.id,
+            dashboardType: DashboardType.normal
+          )
+        )
+      );
+    }
     SearchEmailBindings().disposeBindings();
   }
 
@@ -811,6 +846,7 @@ class SearchEmailController extends BaseController
     resultSearchScrollController.dispose();
     _deBouncerTime.cancel();
     dashBoardViewStateWorker.dispose();
+    dashBoardActionWorker.dispose();
     super.onClose();
   }
 }
