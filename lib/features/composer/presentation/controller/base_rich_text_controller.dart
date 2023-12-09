@@ -5,10 +5,10 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:html/parser.dart' show parse;
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:html/parser.dart' show parse;
 
 abstract class BaseRichTextController extends GetxController {
 
@@ -21,7 +21,6 @@ abstract class BaseRichTextController extends GetxController {
     }
   ) async {
     await ColorPickerDialogBuilder(
-        context,
         ValueNotifier<Color>(currentColor),
         title: AppLocalizations.of(context).chooseAColor,
         textActionSetColor: AppLocalizations.of(context).setColor,

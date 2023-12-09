@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 typedef SelectColorActionCallback = Function(Color? colorSelected);
@@ -11,7 +12,6 @@ class ColorPickerDialogBuilder {
   final SelectColorActionCallback? setColorActionCallback;
   final VoidCallback? cancelActionCallback;
   final VoidCallback? resetToDefaultActionCallback;
-  final BuildContext _context;
   final Color defaultColor;
   final ValueNotifier<Color> _currentColor;
   final String? title;
@@ -24,7 +24,6 @@ class ColorPickerDialogBuilder {
   Color _colorCode = Colors.black;
 
   ColorPickerDialogBuilder(
-    this._context,
     this._currentColor,
     {
       this.onSelected,
@@ -39,9 +38,9 @@ class ColorPickerDialogBuilder {
     }
   );
 
-  Future show() async {
-    await showDialog(context: _context, builder: (BuildContext context) {
-      return PointerInterceptor(
+  Future<dynamic> show() async {
+    return Get.dialog(
+      PointerInterceptor(
         child: AlertDialog(
           title: Text(
             title ?? '',
@@ -151,8 +150,8 @@ class ColorPickerDialogBuilder {
                 })
           ],
         ),
-      );
-    });
+      )
+    );
   }
 
   Widget _itemColorWidget(BuildContext context, Color color) {
