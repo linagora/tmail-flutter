@@ -102,6 +102,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final _activeScrollBottom = RxBool(true);
 
   MailboxId? _newFolderId;
+  NavigationRouter? _navigationRouter;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   final mailboxListScrollController = ScrollController();
@@ -291,6 +292,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           }
         }
         mailboxDashBoardController.clearMailboxUIAction();
+      } else if (action is SystemBackToInboxAction) {
+        _disableAllSearchEmail();
+        _switchBackToMailboxDefault();
+        mailboxDashBoardController.clearMailboxUIAction();
       }
     });
   }
@@ -418,68 +423,122 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _handleDataFromNavigationRouter() {
-    log('MailboxController::_handleDataFromNavigationRouter():navigationRouter: $navigationRouter');
-
-    if (isHasDataFromRoute) {
-      if (isRedirectToMailtoURL) {
-        mailboxDashBoardController.goToComposer(
-          ComposerArguments.fromMailtoUri(
-            emailAddress: navigationRouter?.emailAddress,
-            subject: navigationRouter?.subject,
-            body: navigationRouter?.body
-          )
-        );
-      }
-
-      if (mailboxIdFromNavigationRouter != null) {
-        _selectMailboxFromRouter();
-      } else if (emailIdFromNavigationRouter != null) {
-        mailboxDashBoardController.dispatchAction(SelectEmailByIdAction(navigationRouter!));
-        _clearNavigationRouter();
-      } else if (searchQueryFromNavigationRouter != null && searchQueryFromNavigationRouter?.value.isNotEmpty == true) {
-        mailboxDashBoardController.dispatchAction(SearchEmailByQueryAction(navigationRouter!));
-        _clearNavigationRouter();
-      } else {
-        _clearNavigationRouter();
-        _selectSelectedMailboxDefault();
-        _updateSelectedMailboxRouteOnBrowser();
-      }
-    } else {
+    log('MailboxController::_handleDataFromNavigationRouter():navigationRouter: $_navigationRouter');
+    if (!PlatformInfo.isWeb || _navigationRouter == null) {
       _selectSelectedMailboxDefault();
-      _updateSelectedMailboxRouteOnBrowser();
+      _replaceBrowserHistory();
+      return;
+    }
+
+    if (_navigationRouter?.routeName == AppRoutes.mailtoURL) {
+      mailboxDashBoardController.goToComposer(
+        ComposerArguments.fromMailtoUri(
+          emailAddress: _navigationRouter?.emailAddress,
+          subject: _navigationRouter?.subject,
+          body: _navigationRouter?.body
+        )
+      );
+    }
+
+    switch(_navigationRouter!.dashboardType) {
+      case DashboardType.search:
+        if (_navigationRouter!.emailId != null) {
+          _openEmailSearchedFromLocationBar(
+            _navigationRouter!.emailId!,
+            searchQuery: _navigationRouter!.searchQuery,
+          );
+        } else if (_navigationRouter!.searchQuery?.value.isNotEmpty == true) {
+          _searchEmailFromLocationBar(_navigationRouter!.searchQuery!);
+        } else {
+          _clearNavigationRouter();
+          _selectSelectedMailboxDefault();
+          _replaceBrowserHistory();
+        }
+        break;
+      case DashboardType.normal:
+        if (_navigationRouter!.mailboxId != null) {
+          final matchedMailboxNode = findMailboxNodeById(_navigationRouter!.mailboxId!);
+          if (matchedMailboxNode != null) {
+            if (_navigationRouter!.emailId != null) {
+              _openEmailInsideMailboxFromLocationBar(
+                matchedMailboxNode.item,
+                _navigationRouter!.emailId!
+              );
+            } else {
+              _openMailboxFromLocationBar(matchedMailboxNode.item);
+            }
+          } else {
+            _clearNavigationRouter();
+            popAndPush(AppRoutes.unknownRoutePage);
+          }
+        } else if (_navigationRouter!.emailId != null) {
+          _openEmailWithoutMailboxFromLocationBar(_navigationRouter!.emailId!);
+        } else {
+          _clearNavigationRouter();
+          _selectSelectedMailboxDefault();
+          _replaceBrowserHistory();
+        }
+        break;
     }
   }
 
-  NavigationRouter? get navigationRouter => mailboxDashBoardController.navigationRouter;
+  void _openEmailInsideMailboxFromLocationBar(
+    PresentationMailbox presentationMailbox,
+    EmailId emailId
+  ) {
+    mailboxDashBoardController.setSelectedMailbox(presentationMailbox);
+    mailboxDashBoardController.dispatchAction(OpenEmailInsideMailboxFromLocationBar(emailId, presentationMailbox));
+    _clearNavigationRouter();
+  }
 
-  bool get isHasDataFromRoute => PlatformInfo.isWeb && navigationRouter != null;
+  void _openMailboxFromLocationBar(PresentationMailbox presentationMailbox) {
+    mailboxDashBoardController.setSelectedMailbox(presentationMailbox);
+    if (PlatformInfo.isWeb) {
+      RouteUtils.replaceBrowserHistory(
+        title: 'Mailbox-${presentationMailbox.mailboxId?.id.value}',
+        url: RouteUtils.createUrlWebLocationBar(
+          AppRoutes.dashboard,
+          router: NavigationRouter(
+            mailboxId: presentationMailbox.mailboxId,
+            dashboardType: DashboardType.normal
+          )
+        )
+      );
+    }
+    _clearNavigationRouter();
+  }
 
-  MailboxId? get mailboxIdFromNavigationRouter => navigationRouter?.mailboxId;
+  void _openEmailWithoutMailboxFromLocationBar(EmailId emailId) {
+    mailboxDashBoardController.dispatchAction(
+      OpenEmailWithoutMailboxFromLocationBar(emailId)
+    );
+    _clearNavigationRouter();
+  }
 
-  EmailId? get emailIdFromNavigationRouter => navigationRouter?.emailId;
+  void _openEmailSearchedFromLocationBar(
+    EmailId emailId,
+    {
+      SearchQuery? searchQuery,
+    }
+  ) {
+    mailboxDashBoardController.dispatchAction(
+      OpenEmailSearchedFromLocationBar(
+        emailId,
+        searchQuery: searchQuery,
+      )
+    );
+    _clearNavigationRouter();
+  }
 
-  SearchQuery? get searchQueryFromNavigationRouter => navigationRouter?.searchQuery;
-
-  bool get isRedirectToMailtoURL => navigationRouter?.routeName == AppRoutes.mailtoURL;
+  void _searchEmailFromLocationBar(SearchQuery searchQuery) {
+    mailboxDashBoardController.dispatchAction(
+      SearchEmailFromLocationBar(searchQuery)
+    );
+    _clearNavigationRouter();
+  }
 
   void _clearNavigationRouter() {
-    mailboxDashBoardController.navigationRouter = null;
-  }
-
-  void _selectMailboxFromRouter() {
-    final matchedMailboxNode = findMailboxNodeById(mailboxIdFromNavigationRouter!);
-    if (matchedMailboxNode != null) {
-      mailboxDashBoardController.setSelectedMailbox(matchedMailboxNode.item);
-      if (emailIdFromNavigationRouter != null) {
-        mailboxDashBoardController.dispatchAction(SelectEmailByIdAction(navigationRouter!));
-      } else {
-        _updateSelectedMailboxRouteOnBrowser();
-      }
-      _clearNavigationRouter();
-    } else {
-      _clearNavigationRouter();
-      popAndPush(AppRoutes.unknownRoutePage);
-    }
+    _navigationRouter = null;
   }
 
   void _handleOpenMailbox(
@@ -494,7 +553,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       mailboxDashBoardController.clearFilterMessageOption();
     }
     _disableAllSearchEmail();
-    _updateSelectedMailboxRouteOnBrowser();
+    _replaceBrowserHistory();
     mailboxDashBoardController.closeMailboxMenuDrawer();
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
   }
@@ -779,7 +838,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   void _switchBackToMailboxDefault() {
     final inboxMailbox = findMailboxNodeByRole(PresentationMailbox.roleInbox);
     mailboxDashBoardController.setSelectedMailbox(inboxMailbox?.item);
-    _updateSelectedMailboxRouteOnBrowser();
+    _replaceBrowserHistory();
     _autoScrollToTopMailboxList();
   }
 
@@ -911,7 +970,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (parameters != null) {
       final navigationRouter = RouteUtils.parsingRouteParametersToNavigationRouter(parameters);
       log('MailboxController::_handleNavigationRouteParameters():navigationRouter: $navigationRouter');
-      mailboxDashBoardController.navigationRouter = navigationRouter;
+      _navigationRouter = navigationRouter;
     }
   }
 
@@ -1005,12 +1064,13 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
   }
 
-  void _updateSelectedMailboxRouteOnBrowser() {
+  void _replaceBrowserHistory() {
+    log('MailboxController::_updateSelectedMailboxRouteOnBrowser:selectedMailbox: ${selectedMailbox?.id}');
     if (PlatformInfo.isWeb) {
       final selectedMailboxId = selectedMailbox?.id;
-      final route = RouteUtils.generateRouteBrowser(
+      final route = RouteUtils.createUrlWebLocationBar(
         AppRoutes.dashboard,
-        NavigationRouter(
+        router: NavigationRouter(
           mailboxId: selectedMailboxId,
           searchQuery: mailboxDashBoardController.searchController.isSearchEmailRunning
             ? mailboxDashBoardController.searchController.searchQuery
@@ -1020,7 +1080,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
             : DashboardType.normal
         )
       );
-      RouteUtils.updateRouteOnBrowser('Mailbox-${selectedMailboxId?.id.value}', route);
+      RouteUtils.replaceBrowserHistory(
+        title: 'Mailbox-${selectedMailboxId?.id.value}',
+        url: route
+      );
     }
   }
 
@@ -1060,7 +1123,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
     _setMapMailbox();
     _setOutboxMailbox();
-    _selectSelectedMailboxDefault();
   }
 
   void _handleRefreshChangesAllMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {

@@ -140,7 +140,6 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -217,7 +216,6 @@ class MailboxDashBoardController extends ReloadableController {
   final listResultSearch = RxList<PresentationEmail>();
   PresentationMailbox? outboxMailbox;
   ComposerArguments? composerArguments;
-  NavigationRouter? navigationRouter;
 
   late StreamSubscription _emailAddressStreamSubscription;
   late StreamSubscription _emailContentStreamSubscription;
@@ -585,9 +583,9 @@ class MailboxDashBoardController extends ReloadableController {
     setSelectedEmail(presentationEmail);
     dispatchRoute(DashboardRoutes.emailDetailed);
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
-      RouteUtils.updateRouteOnBrowser(
-        'Email-${presentationEmail.id?.id.value ?? ''}',
-        presentationEmail.routeWeb!
+      RouteUtils.replaceBrowserHistory(
+        title: 'Email-${presentationEmail.id?.id.value ?? ''}',
+        url: presentationEmail.routeWeb!
       );
     }
   }
@@ -2233,11 +2231,17 @@ class MailboxDashBoardController extends ReloadableController {
         dispatchEmailUIAction(CloseEmailDetailedViewAction());
         return true;
       case DashboardRoutes.thread:
+        if (PlatformInfo.isMobile) {
+          return false;
+        }
         if (searchController.isSearchEmailRunning) {
-          dispatchMailboxUIAction(SelectMailboxDefaultAction());
+          dispatchMailboxUIAction(SystemBackToInboxAction());
         } else {
           pushAndPopAll(AppRoutes.home);
         }
+        return true;
+      case DashboardRoutes.searchEmail:
+        dispatchAction(CloseSearchEmailViewAction());
         return true;
       default:
         break;

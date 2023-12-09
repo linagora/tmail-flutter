@@ -84,5 +84,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
     }
   }
 
-  Uri get mailboxRouteWeb => RouteUtils.generateRouteBrowser(AppRoutes.dashboard, NavigationRouter(mailboxId: id));
+  Uri get mailboxRouteWeb => RouteUtils.createUrlWebLocationBar(
+    AppRoutes.dashboard,
+    router: NavigationRouter(mailboxId: id)
+  );
 }

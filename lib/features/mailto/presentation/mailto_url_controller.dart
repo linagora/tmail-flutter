@@ -4,7 +4,6 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
@@ -32,10 +31,7 @@ class MailtoUrlController extends ReloadableController {
         mailtoUri: parameters['uri']
       );
       popAndPush(
-        RouteUtils.generateNavigationRoute(
-          AppRoutes.dashboard,
-          NavigationRouter.initial()
-        ),
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
         arguments: mailtoArgument
       );
     } else {

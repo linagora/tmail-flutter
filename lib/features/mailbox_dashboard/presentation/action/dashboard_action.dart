@@ -1,13 +1,15 @@
 
 import 'package:flutter/cupertino.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
 class DashBoardAction extends UIAction {
   static final idle = DashBoardAction();
@@ -81,24 +83,51 @@ class ClearSearchEmailAction extends DashBoardAction {}
 
 class ClearAllFieldOfAdvancedSearchAction extends DashBoardAction {}
 
-class SelectEmailByIdAction extends DashBoardAction {
+class OpenEmailInsideMailboxFromLocationBar extends DashBoardAction {
 
-  final NavigationRouter navigationRouter;
+  final EmailId emailId;
+  final PresentationMailbox presentationMailbox;
 
-  SelectEmailByIdAction(this.navigationRouter);
+  OpenEmailInsideMailboxFromLocationBar(this.emailId, this.presentationMailbox);
 
   @override
-  List<Object?> get props => [navigationRouter];
+  List<Object?> get props => [emailId, presentationMailbox];
 }
 
-class SearchEmailByQueryAction extends DashBoardAction {
+class OpenEmailWithoutMailboxFromLocationBar extends DashBoardAction {
 
-  final NavigationRouter navigationRouter;
+  final EmailId emailId;
 
-  SearchEmailByQueryAction(this.navigationRouter);
+  OpenEmailWithoutMailboxFromLocationBar(this.emailId);
 
   @override
-  List<Object?> get props => [navigationRouter];
+  List<Object?> get props => [emailId];
+}
+
+class OpenEmailSearchedFromLocationBar extends DashBoardAction {
+
+  final EmailId emailId;
+  final SearchQuery? searchQuery;
+
+  OpenEmailSearchedFromLocationBar(
+    this.emailId,
+    {
+      this.searchQuery,
+    }
+  );
+
+  @override
+  List<Object?> get props => [emailId, searchQuery];
+}
+
+class SearchEmailFromLocationBar extends DashBoardAction {
+
+  final SearchQuery searchQuery;
+
+  SearchEmailFromLocationBar(this.searchQuery);
+
+  @override
+  List<Object?> get props => [searchQuery];
 }
 
 class SelectDateRangeToAdvancedSearch extends DashBoardAction {

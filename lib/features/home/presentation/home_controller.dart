@@ -20,7 +20,6 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_lo
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -60,10 +59,7 @@ class HomeController extends ReloadableController {
   @override
   void handleReloaded(Session session) {
     popAndPush(
-      RouteUtils.generateNavigationRoute(
-        AppRoutes.dashboard,
-        NavigationRouter()
-      ),
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: session
     );
   }

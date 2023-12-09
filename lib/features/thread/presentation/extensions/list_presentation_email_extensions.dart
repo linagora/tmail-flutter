@@ -42,11 +42,11 @@ extension ListPresentationEmailExtensions on List<PresentationEmail> {
     SearchQuery? searchQuery,
   }) {
     if (PlatformInfo.isWeb) {
-      final route = RouteUtils.generateRouteBrowser(
+      final route = RouteUtils.createUrlWebLocationBar(
         AppRoutes.dashboard,
-        NavigationRouter(
+        router: NavigationRouter(
           emailId: currentEmail.id,
-          mailboxId: selectedMailbox?.id,
+          mailboxId: isSearchEmailRunning ? null : selectedMailbox?.id,
           searchQuery: isSearchEmailRunning ? searchQuery : null,
           dashboardType: isSearchEmailRunning ? DashboardType.search : DashboardType.normal
         )

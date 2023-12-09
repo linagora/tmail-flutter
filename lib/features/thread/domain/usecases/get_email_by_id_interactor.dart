@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/extensions/email_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
@@ -24,6 +25,7 @@ class GetEmailByIdInteractor {
     EmailId emailId,
     {
       Properties? properties,
+      PresentationMailbox? mailboxContain,
     }
   ) async* {
     try {
@@ -31,7 +33,13 @@ class GetEmailByIdInteractor {
       if (PlatformInfo.isMobile) {
         yield* _getStoredEmail(session, accountId, emailId, properties: properties);
       } else {
-        yield* _getEmailByIdFromServer(session, accountId, emailId, properties: properties);
+        yield* _getEmailByIdFromServer(
+          session,
+          accountId,
+          emailId,
+          properties: properties,
+          mailboxContain: mailboxContain,
+        );
       }
     } catch (e) {
       logError('GetEmailByIdInteractor::execute():EXCEPTION: $e');
@@ -45,11 +53,14 @@ class GetEmailByIdInteractor {
     EmailId emailId,
     {
       Properties? properties,
+      PresentationMailbox? mailboxContain,
     }
   ) async* {
     try {
       final email = await _threadRepository.getEmailById(session, accountId, emailId, properties: properties);
-      yield Right<Failure, Success>(GetEmailByIdSuccess(email));
+      yield Right<Failure, Success>(
+        GetEmailByIdSuccess(email, mailboxContain: mailboxContain)
+      );
     } catch (e) {
       logError('GetEmailByIdInteractor::_getEmailByIdFromServer():EXCEPTION: $e');
       yield Left<Failure, Success>(GetEmailByIdFailure(e));
