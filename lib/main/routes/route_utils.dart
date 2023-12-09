@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -31,17 +32,23 @@ abstract class RouteUtils {
 
   static String get baseOriginUrl => Uri.base.origin;
 
-  static String get baseUrl => Uri.base.path;
+  static Uri get baseUri => Uri.base;
 
   static String generateNavigationRoute(String route, {NavigationRouter? router}) {
     if (PlatformInfo.isWeb) {
-      return _createServicePath(route, router: router).path;
+      if (route == AppRoutes.dashboard) {
+        return _createDashboardServicePath(route, router: router).path;
+      } else if (route == AppRoutes.settings) {
+        return _createSettingServicePath(route, router: router).path;
+      } else {
+        return _createServicePath(route).path;
+      }
     } else {
       return route;
     }
   }
 
-  static ServicePath _createServicePath(String route, {NavigationRouter? router}) {
+  static ServicePath _createDashboardServicePath(String route, {NavigationRouter? router}) {
     ServicePath servicePath = ServicePath(route);
     if (router != null) {
       if (router.emailId != null) {
@@ -62,9 +69,35 @@ abstract class RouteUtils {
     return servicePath;
   }
 
+  static ServicePath _createSettingServicePath(String route, {NavigationRouter? router}) {
+    ServicePath servicePath = ServicePath(route);
+    if (router != null && router.accountMenuItem != AccountMenuItem.none) {
+      servicePath = servicePath.withQueryParameters([
+        StringQueryParameter(paramType, router.accountMenuItem.getAliasBrowser())
+      ]);
+    }
+    return servicePath;
+  }
+
+  static ServicePath _createServicePath(String route) {
+    ServicePath servicePath = ServicePath(route);
+    return servicePath;
+  }
+
   static Uri createUrlWebLocationBar(String route, {NavigationRouter? router}) {
-    final servicePath = _createServicePath('$baseOriginUrl$route', router: router);
-    return Uri.parse(servicePath.path);
+    if (route == AppRoutes.dashboard) {
+      final servicePath = _createDashboardServicePath(
+        '$baseOriginUrl$route',
+        router: router
+      );
+      return Uri.parse(servicePath.path);
+    } else if (route == AppRoutes.settings) {
+      final servicePath = _createSettingServicePath('$baseOriginUrl$route', router: router);
+      return Uri.parse(servicePath.path);
+    } else {
+      final servicePath = _createServicePath('$baseOriginUrl$route');
+      return Uri.parse(servicePath.path);
+    }
   }
 
   static NavigationRouter parsingRouteParametersToNavigationRouter(Map<String, String?> parameters) {
@@ -80,9 +113,8 @@ abstract class RouteUtils {
     final emailId = idParam != null ? EmailId(Id(idParam)) : null;
     final mailboxId = contextPram != null ? MailboxId(Id(contextPram)) : null;
     final searchQuery = queryParam != null ? SearchQuery(queryParam) : null;
-    final dashboardType = typeParam == DashboardType.search.name
-      ? DashboardType.search
-      : DashboardType.normal;
+    final dashboardType = DashboardType.values.firstWhereOrNull((type) => type.name == typeParam) ?? DashboardType.normal;
+    final settingType = AccountMenuItem.values.firstWhereOrNull((type) => type.getAliasBrowser() == typeParam) ?? AccountMenuItem.none;
     final emailAddress = mailtoAddress != null && GetUtils.isEmail(mailtoAddress)
       ? EmailAddress(null, mailtoAddress)
       : EmailAddress(null, INVALID_VALUE);
@@ -96,6 +128,7 @@ abstract class RouteUtils {
       emailAddress: emailAddress,
       subject: subject,
       body: body,
+      accountMenuItem: settingType,
     );
   }
 

@@ -1065,7 +1065,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   }
 
   void _replaceBrowserHistory() {
-    log('MailboxController::_updateSelectedMailboxRouteOnBrowser:selectedMailbox: ${selectedMailbox?.id}');
+    log('MailboxController::_replaceBrowserHistory:selectedMailbox: ${selectedMailbox?.id}');
     if (PlatformInfo.isWeb) {
       final selectedMailboxId = selectedMailbox?.id;
       final route = RouteUtils.createUrlWebLocationBar(
