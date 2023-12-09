@@ -34,10 +34,8 @@ mixin MessageDialogActionMixin {
     final imagePaths = Get.find<ImagePaths>();
 
     if (alignCenter) {
-      return await showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (BuildContext context) => PointerInterceptor(
+      return await Get.dialog(
+        PointerInterceptor(
           child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan, heightButton: 44)
             ..key(const Key('confirm_dialog_action'))
             ..title(title ?? '')
@@ -66,18 +64,14 @@ mixin MessageDialogActionMixin {
                 }
             )
           ).build()
-        )
+        ),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     } else {
       if (responsiveUtils.isMobile(context)) {
         if (showAsBottomSheet) {
-          return await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-            backgroundColor: Colors.transparent,
-            enableDrag: true,
-            builder: (BuildContext context) => PointerInterceptor(
+          return await Get.bottomSheet(
+            PointerInterceptor(
               child: (ConfirmDialogBuilder(imagePaths, showAsBottomSheet: true, listTextSpan: listTextSpan)
                 ..key(const Key('confirm_dialog_action'))
                 ..title(title ?? '')
@@ -108,7 +102,13 @@ mixin MessageDialogActionMixin {
                     }
                 )
                 ..onCloseButtonAction(() => popBack()))
-              .build()));
+              .build()
+            ),
+            isScrollControlled: true,
+            barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+            backgroundColor: Colors.transparent,
+            enableDrag: true,
+          );
         } else {
           return (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
             ..messageText(message)
@@ -128,10 +128,8 @@ mixin MessageDialogActionMixin {
             })).show();
         }
       } else {
-        return await showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(
+        return await Get.dialog(
+          PointerInterceptor(
             child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
               ..key(const Key('confirm_dialog_action'))
               ..title(title ?? '')
@@ -161,7 +159,8 @@ mixin MessageDialogActionMixin {
               )
               ..onCloseButtonAction(() => popBack()))
             .build()
-          )
+          ),
+          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
         );
       }
     }

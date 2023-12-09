@@ -1139,31 +1139,32 @@ class MailboxDashBoardController extends ReloadableController {
                 onCancelSelectionEmail: onCancelSelectionEmail)))
       .show();
     } else {
-      showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
-              ..key(const Key('confirm_dialog_delete_emails_permanently'))
-              ..title(actionType.getTitleDialog(context))
-              ..content(actionType.getContentDialog(
-                  context,
-                  count: listEmails?.length,
-                  mailboxName: mailboxCurrent?.getDisplayName(context)))
-              ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-              ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-              ..styleTextConfirmButton(const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: AppColor.colorActionDeleteConfirmDialog))
-              ..onCloseButtonAction(() => popBack())
-              ..onConfirmButtonAction(
-                  actionType.getConfirmActionName(context),
-                  () => _deleteSelectionEmailsPermanentlyAction(
-                      actionType,
-                      listEmails: listEmails,
-                      onCancelSelectionEmail: onCancelSelectionEmail))
-              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
-            .build()));
+      Get.dialog(
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+          ..key(const Key('confirm_dialog_delete_emails_permanently'))
+          ..title(actionType.getTitleDialog(context))
+          ..content(actionType.getContentDialog(
+              context,
+              count: listEmails?.length,
+              mailboxName: mailboxCurrent?.getDisplayName(context)))
+          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
+          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+          ..styleTextConfirmButton(const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+              color: AppColor.colorActionDeleteConfirmDialog))
+          ..onCloseButtonAction(() => popBack())
+          ..onConfirmButtonAction(
+              actionType.getConfirmActionName(context),
+              () => _deleteSelectionEmailsPermanentlyAction(
+                  actionType,
+                  listEmails: listEmails,
+                  onCancelSelectionEmail: onCancelSelectionEmail))
+          ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+        .build()
+        ),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 
@@ -2046,10 +2047,8 @@ class MailboxDashBoardController extends ReloadableController {
         }))
           .show();
     } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+      Get.dialog(
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
           ..key(const Key('confirm_dialog_empty_spam'))
           ..title(AppLocalizations.of(context).emptySpamFolder)
           ..content(AppLocalizations.of(context).emptySpamMessageDialog)
@@ -2072,7 +2071,8 @@ class MailboxDashBoardController extends ReloadableController {
             }
           })
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack)
-        ).build())
+        ).build()),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
   }
@@ -2270,11 +2270,25 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_navigateToScreen: dashboardRoute: $dashboardRoute');
     switch(dashboardRoute.value) {
       case DashboardRoutes.emailDetailed:
-        dispatchEmailUIAction(CloseEmailDetailedViewAction());
-        return true;
+        if (PlatformInfo.isMobile) {
+          if (currentContext != null && canBack(currentContext!)) {
+            return false;
+          } else {
+            dispatchEmailUIAction(CloseEmailDetailedViewAction());
+            return true;
+          }
+        } else {
+          dispatchEmailUIAction(CloseEmailDetailedViewAction());
+          return true;
+        }
       case DashboardRoutes.thread:
         if (PlatformInfo.isMobile) {
-          if (selectedMailbox.value?.isInbox == true) {
+          if (currentContext != null && canBack(currentContext!)) {
+            return false;
+          } else if (isSelectionEnabled()) {
+            dispatchAction(CancelSelectionAllEmailAction());
+            return true;
+          } else if (selectedMailbox.value?.isInbox == true) {
             return false;
           } else {
             openDefaultMailbox();
@@ -2283,10 +2297,16 @@ class MailboxDashBoardController extends ReloadableController {
         }
         if (searchController.isSearchEmailRunning) {
           dispatchMailboxUIAction(SystemBackToInboxAction());
+          return true;
         } else {
-          pushAndPopAll(AppRoutes.home);
+          if (selectedMailbox.value?.isInbox == true) {
+            pushAndPopAll(AppRoutes.home);
+            return true;
+          } else {
+            openDefaultMailbox();
+            return true;
+          }
         }
-        return true;
       case DashboardRoutes.sendingQueue:
         if (PlatformInfo.isMobile) {
           openDefaultMailbox();
@@ -2294,8 +2314,20 @@ class MailboxDashBoardController extends ReloadableController {
         }
         return false;
       case DashboardRoutes.searchEmail:
-        dispatchAction(CloseSearchEmailViewAction());
-        return true;
+        if (PlatformInfo.isMobile) {
+          if (currentContext != null && canBack(currentContext!)) {
+            return false;
+          } else if (listResultSearch.any((email) => email.selectMode == SelectMode.ACTIVE)) {
+            dispatchAction(CancelSelectionSearchEmailAction());
+            return true;
+          } else {
+            dispatchAction(CloseSearchEmailViewAction());
+            return true;
+          }
+        } else {
+          dispatchAction(CloseSearchEmailViewAction());
+          return true;
+        }
       default:
         return false;
     }
