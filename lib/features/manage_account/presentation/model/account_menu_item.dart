@@ -49,4 +49,23 @@ enum AccountMenuItem {
         return AppLocalizations.of(context).profiles;
     }
   }
+
+  String getAliasBrowser() {
+    switch(this) {
+      case AccountMenuItem.profiles:
+        return 'profiles';
+      case AccountMenuItem.languageAndRegion:
+        return 'language-region';
+      case AccountMenuItem.emailRules:
+        return 'email-rules';
+      case AccountMenuItem.forward:
+        return 'forwarding';
+      case AccountMenuItem.vacation:
+        return 'vacation';
+      case AccountMenuItem.mailboxVisibility:
+        return 'folder-visibility';
+      case AccountMenuItem.none:
+        return 'profiles';
+    }
+  }
 }

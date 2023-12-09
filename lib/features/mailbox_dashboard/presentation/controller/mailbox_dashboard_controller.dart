@@ -140,6 +140,7 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -259,7 +260,7 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void onInit() {
     _registerStreamListener();
-    BackButtonInterceptor.add(onBackButtonInterceptor);
+    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
     super.onInit();
   }
 
@@ -1409,11 +1410,13 @@ class MailboxDashBoardController extends ReloadableController {
 
   void goToSettings() async {
     closeMailboxMenuDrawer();
+    BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
       AppRoutes.settings,
       arguments: ManageAccountArguments(sessionCurrent)
     );
 
+    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
     if (result is VacationResponse) {
       vacationResponse.value = result;
       dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
@@ -1468,11 +1471,16 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void goToVacationSetting() async {
-    final result = await push(AppRoutes.settings,
-        arguments: ManageAccountArguments(
-            sessionCurrent,
-            menuSettingCurrent: AccountMenuItem.vacation));
+    BackButtonInterceptor.removeByName(AppRoutes.dashboard);
+    final result = await push(
+      AppRoutes.settings,
+      arguments: ManageAccountArguments(
+        sessionCurrent,
+        menuSettingCurrent: AccountMenuItem.vacation
+      )
+    );
 
+    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
     if (result is VacationResponse) {
       vacationResponse.value = result;
     }
@@ -2224,8 +2232,42 @@ class MailboxDashBoardController extends ReloadableController {
     setSelectedEmail(email.toPresentationEmail());
   }
 
-  bool onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
-    log('MailboxDashBoardController::onBackButtonInterceptor:stopDefaultButtonEvent: $stopDefaultButtonEvent | routeInfo: ${routeInfo.routeWhenAdded}');
+  void _replaceBrowserHistory() {
+    if (PlatformInfo.isWeb) {
+      final selectedMailboxId = selectedMailbox.value?.id;
+      final selectedEmailId = selectedEmail.value?.id;
+      final isSearchRunning = searchController.isSearchEmailRunning;
+      String title = '';
+      if (selectedEmail.value != null) {
+        title = 'Email-${selectedEmailId?.asString ?? ''}';
+      } else if (isSearchRunning) {
+        title = 'SearchEmail';
+      } else {
+        title = 'Mailbox-${selectedMailboxId?.asString}';
+      }
+      RouteUtils.replaceBrowserHistory(
+        title: title,
+        url: RouteUtils.createUrlWebLocationBar(
+          AppRoutes.dashboard,
+          router: NavigationRouter(
+            emailId: selectedEmail.value?.id,
+            mailboxId: isSearchRunning
+              ? null
+              : selectedMailboxId,
+            dashboardType: isSearchRunning
+              ? DashboardType.search
+              : DashboardType.normal,
+            searchQuery: isSearchRunning
+              ? searchController.searchQuery
+              : null
+          )
+        )
+      );
+    }
+  }
+
+  bool _navigateToScreen() {
+    log('MailboxDashBoardController::_navigateToScreen: dashboardRoute: $dashboardRoute');
     switch(dashboardRoute.value) {
       case DashboardRoutes.emailDetailed:
         dispatchEmailUIAction(CloseEmailDetailedViewAction());
@@ -2255,8 +2297,24 @@ class MailboxDashBoardController extends ReloadableController {
         dispatchAction(CloseSearchEmailViewAction());
         return true;
       default:
-        break;
+        return false;
     }
+  }
+
+  bool get _isDialogViewOpen => Get.isOverlaysOpen == true;
+
+  bool _onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
+    log('MailboxDashBoardController::_onBackButtonInterceptor:currentRoute: ${Get.currentRoute} | _isDialogViewOpen: $_isDialogViewOpen');
+    if (_isDialogViewOpen) {
+      popBack();
+      _replaceBrowserHistory();
+      return true;
+    }
+
+    if (Get.currentRoute.startsWith(AppRoutes.dashboard)) {
+      return _navigateToScreen();
+    }
+
     return false;
   }
 
@@ -2270,7 +2328,7 @@ class MailboxDashBoardController extends ReloadableController {
     _refreshActionEventController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
-    BackButtonInterceptor.remove(onBackButtonInterceptor);
+    BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     MailboxDashBoardBindings().deleteController();
     super.onClose();
   }
