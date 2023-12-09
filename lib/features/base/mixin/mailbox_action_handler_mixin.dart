@@ -74,33 +74,34 @@ mixin MailboxActionHandlerMixin {
         }))
       .show();
     } else {
-      showDialog(
-        context: context,
+      Get.dialog(
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+            ..key(const Key('confirm_dialog_empty_trash'))
+            ..title(AppLocalizations.of(context).emptyTrash)
+            ..content(AppLocalizations.of(context).emptyTrashMessageDialog)
+            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
+            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+            ..styleTextConfirmButton(const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: AppColor.colorActionDeleteConfirmDialog))
+            ..onCloseButtonAction(popBack)
+            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
+                popBack();
+                if (mailbox.countTotalEmails > 0) {
+                  dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
+                } else {
+                  appToast.showToastWarningMessage(
+                    context,
+                    AppLocalizations.of(context).noEmailInYourCurrentFolder
+                  );
+                }
+            })
+            ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack))
+          .build()
+        ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
-          ..key(const Key('confirm_dialog_empty_trash'))
-          ..title(AppLocalizations.of(context).emptyTrash)
-          ..content(AppLocalizations.of(context).emptyTrashMessageDialog)
-          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-          ..styleTextConfirmButton(const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppColor.colorActionDeleteConfirmDialog))
-          ..onCloseButtonAction(popBack)
-          ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
-              popBack();
-              if (mailbox.countTotalEmails > 0) {
-                dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
-              } else {
-                appToast.showToastWarningMessage(
-                  context,
-                  AppLocalizations.of(context).noEmailInYourCurrentFolder
-                );
-              }
-          })
-          ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack))
-        .build()));
+      );
     }
   }
 
@@ -134,10 +135,8 @@ mixin MailboxActionHandlerMixin {
         }))
       .show();
     } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+      Get.dialog(
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
           ..key(const Key('confirm_dialog_empty_spam'))
           ..title(AppLocalizations.of(context).emptySpamFolder)
           ..content(AppLocalizations.of(context).emptySpamMessageDialog)
@@ -160,7 +159,9 @@ mixin MailboxActionHandlerMixin {
             }
           })
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack)
-        ).build()));
+        ).build()),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 }

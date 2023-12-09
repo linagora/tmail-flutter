@@ -192,14 +192,14 @@ class IdentitiesController extends BaseController {
   }
 
   void openConfirmationDialogDeleteIdentityAction(BuildContext context, Identity identity) {
-    showDialog(
-      context: context,
-      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-      builder: (BuildContext context) => DeleteIdentityDialogBuilder(
+    Get.dialog(
+      DeleteIdentityDialogBuilder(
         responsiveUtils: responsiveUtils,
         imagePaths: imagePaths,
         onDeleteIdentityAction: () => _deleteIdentityAction(identity),
-      ));
+      ),
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    );
   }
 
   void _deleteIdentityAction(Identity identity) {
@@ -225,25 +225,25 @@ class IdentitiesController extends BaseController {
 
   void _deleteIdentityFailure(DeleteIdentityFailure failure) {
     if (currentContext != null) {
-      showDialog(
-          context: currentContext!,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => (ConfirmDialogBuilder(imagePaths)
-              ..key(const Key('dialog_message_delete_identity_failed'))
-              ..title(AppLocalizations.of(context).delete_failed)
-              ..addIcon(SvgPicture.asset(imagePaths.icDeleteDialogFailed, fit: BoxFit.fill))
-              ..marginIcon(EdgeInsets.zero)
-              ..styleTitle(const TextStyle(fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black))
-              ..colorConfirmButton(AppColor.colorTextButton)
-              ..paddingTitle(const EdgeInsets.symmetric(vertical: 12))
-              ..styleTextConfirmButton(const TextStyle(fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white))
-              ..onCloseButtonAction(() => popBack())
-              ..onConfirmButtonAction('${AppLocalizations.of(context).got_it}!', () => popBack()))
-            .build());
+      Get.dialog(
+        (ConfirmDialogBuilder(imagePaths)
+            ..key(const Key('dialog_message_delete_identity_failed'))
+            ..title(AppLocalizations.of(currentContext!).delete_failed)
+            ..addIcon(SvgPicture.asset(imagePaths.icDeleteDialogFailed, fit: BoxFit.fill))
+            ..marginIcon(EdgeInsets.zero)
+            ..styleTitle(const TextStyle(fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black))
+            ..colorConfirmButton(AppColor.colorTextButton)
+            ..paddingTitle(const EdgeInsets.symmetric(vertical: 12))
+            ..styleTextConfirmButton(const TextStyle(fontSize: 17,
+                fontWeight: FontWeight.w500,
+                color: Colors.white))
+            ..onCloseButtonAction(() => popBack())
+            ..onConfirmButtonAction('${AppLocalizations.of(currentContext!).got_it}!', () => popBack()))
+          .build(),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 

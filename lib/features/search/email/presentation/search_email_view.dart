@@ -62,7 +62,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     return AppBarSelectionMode(
                         controller.listResultSearch.listEmailSelected,
                         controller.mailboxDashBoardController.mapMailboxById,
-                        onCancelSelection: () => controller.cancelSelectionMode(context),
+                        onCancelSelection: controller.cancelSelectionMode,
                         onHandleEmailAction: (actionType, listEmails) =>
                             controller.handleSelectionEmailAction(context, actionType, listEmails));
                   } else {

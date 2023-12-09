@@ -36,7 +36,6 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
-import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
@@ -45,6 +44,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -227,6 +227,9 @@ class SearchEmailController extends BaseController
         if (action is CloseSearchEmailViewAction) {
           closeSearchView(context: currentContext);
           mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is CancelSelectionSearchEmailAction) {
+          cancelSelectionMode();
+          mailboxDashBoardController.clearDashBoardAction();
         }
       }
     );
@@ -305,7 +308,7 @@ class SearchEmailController extends BaseController
     if (session != null && accountId != null) {
       canSearchMore = true;
       searchIsRunning.value = true;
-      cancelSelectionMode(context);
+      cancelSelectionMode();
       if (PlatformInfo.isWeb) {
         RouteUtils.replaceBrowserHistory(
           title: 'SearchEmail',
@@ -769,7 +772,7 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void cancelSelectionMode(BuildContext context) {
+  void cancelSelectionMode() {
     listResultSearch.value = listResultSearch
         .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
         .toList();
@@ -783,31 +786,31 @@ class SearchEmailController extends BaseController
   ) {
     switch(actionType) {
       case EmailActionType.markAsRead:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
         markAsReadSelectedMultipleEmail(listEmails, ReadActions.markAsRead);
         break;
       case EmailActionType.markAsUnread:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
         markAsReadSelectedMultipleEmail(listEmails, ReadActions.markAsUnread);
         break;
       case EmailActionType.markAsStarred:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
         markAsStarSelectedMultipleEmail(listEmails, MarkStarAction.markStar);
         break;
       case EmailActionType.unMarkAsStarred:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
 
         markAsStarSelectedMultipleEmail(listEmails, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
         final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToMailbox(context, listEmails, mailboxContainCurrent);
         }
         break;
       case EmailActionType.moveToTrash:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
         final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToTrash(listEmails, mailboxContainCurrent);
@@ -821,18 +824,18 @@ class SearchEmailController extends BaseController
               DeleteActionType.multiple,
               listEmails: listEmails,
               mailboxCurrent: mailboxContainCurrent,
-              onCancelSelectionEmail: () => cancelSelectionMode(context));
+              onCancelSelectionEmail: () => cancelSelectionMode());
         }
         break;
       case EmailActionType.moveToSpam:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
         final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
           moveSelectedMultipleEmailToSpam(listEmails, mailboxContainCurrent);
         }
         break;
       case EmailActionType.unSpam:
-        cancelSelectionMode(context);
+        cancelSelectionMode();
         unSpamSelectedMultipleEmail(listEmails);
         break;
       default:

@@ -1017,10 +1017,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) => quickCreatingRule(context, emailAddress))
       ).show();
     } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (BuildContext context) => PointerInterceptor(
+      Get.dialog(
+        PointerInterceptor(
           child: EmailAddressDialogBuilder(
             emailAddress,
             onCloseDialogAction: () => popBack(),
@@ -1028,7 +1026,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onComposeEmailAction: (emailAddress) => composeEmailFromEmailAddress(emailAddress),
             onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreatingRule(context, emailAddress)
           )
-        )
+        ),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
   }
@@ -1061,20 +1060,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ..onConfirmAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email)))
         .show();
     } else {
-      showDialog(
-          context: context,
-          barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-          builder: (BuildContext context) => PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
-              ..key(const Key('confirm_dialog_delete_email_permanently'))
-              ..title(DeleteActionType.single.getTitleDialog(context))
-              ..content(DeleteActionType.single.getContentDialog(context))
-              ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-              ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-              ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
-              ..onCloseButtonAction(() => popBack())
-              ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
-              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
-            .build()));
+      Get.dialog(
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+            ..key(const Key('confirm_dialog_delete_email_permanently'))
+            ..title(DeleteActionType.single.getTitleDialog(context))
+            ..content(DeleteActionType.single.getContentDialog(context))
+            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
+            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
+            ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
+            ..onCloseButtonAction(() => popBack())
+            ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
+            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
+          .build()
+        ),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 
@@ -1388,27 +1388,25 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         })
       ).show();
     } else {
-      showDialog(
-        context: context,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        builder: (BuildContext context) => 
-          PointerInterceptor(
-            child: AttachmentListDialogBuilder(
-              imagePaths: imagePaths,
-              attachments: attachments,
-              responsiveUtils: responsiveUtils,
-              scrollController: _attachmentListScrollController,
-              backgroundColor: Colors.black.withAlpha(24),
-              onCloseButtonAction: () => popBack(),
-              onDownloadAttachmentFileAction: (attachment) {
-                if (PlatformInfo.isWeb) {
-                  downloadAttachmentForWeb(context, attachment);
-                } else {
-                  exportAttachment(context, attachment);
-                }
+      Get.dialog(
+        PointerInterceptor(
+          child: AttachmentListDialogBuilder(
+            imagePaths: imagePaths,
+            attachments: attachments,
+            responsiveUtils: responsiveUtils,
+            scrollController: _attachmentListScrollController,
+            backgroundColor: Colors.black.withAlpha(24),
+            onCloseButtonAction: () => popBack(),
+            onDownloadAttachmentFileAction: (attachment) {
+              if (PlatformInfo.isWeb) {
+                downloadAttachmentForWeb(context, attachment);
+              } else {
+                exportAttachment(context, attachment);
               }
-            )
+            }
           )
+        ),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
   }
