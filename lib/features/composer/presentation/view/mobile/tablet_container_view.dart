@@ -34,7 +34,7 @@ class TabletContainerView extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async {
         onCloseViewAction.call();
-        return true;
+        return false;
       },
       child: GestureDetector(
         onTap: onClearFocusAction,
