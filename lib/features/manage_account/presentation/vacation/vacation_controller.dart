@@ -153,6 +153,7 @@ class VacationController extends BaseController {
   }
 
   void selectDate(BuildContext context, DateType dateType, DateTime? currentDate) async {
+    _accountDashBoardController.isVacationDateDialogDisplayed = true;
     final datePicked = await showDatePicker(
         context: context,
         initialDate: currentDate ?? DateTime.now(),
@@ -161,17 +162,25 @@ class VacationController extends BaseController {
         lastDate: DateTime(2100),
         locale: Localizations.localeOf(context),
         builder: (context, child) {
-          return Theme(
+          return PointerInterceptor(
+            child: Theme(
               data: Theme.of(context).copyWith(
-                  colorScheme: const ColorScheme.light(
-                      primary: AppColor.primaryColor,
-                      onPrimary: Colors.white,
-                      onSurface: Colors.black),
-                  textButtonTheme: TextButtonThemeData(
-                      style: TextButton.styleFrom(foregroundColor: AppColor.primaryColor))),
-              child: child!);
+                colorScheme: const ColorScheme.light(
+                  primary: AppColor.primaryColor,
+                  onPrimary: Colors.white,
+                  onSurface: Colors.black
+                ),
+                textButtonTheme: TextButtonThemeData(
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColor.primaryColor
+                  )
+                )
+              ),
+              child: child!
+            ),
+          );
         }
-    );
+    ).whenComplete(() => _accountDashBoardController.isVacationDateDialogDisplayed = false);
 
     if (datePicked == null) {
       return;
@@ -185,6 +194,7 @@ class VacationController extends BaseController {
   }
 
   void selectTime(BuildContext context, DateType dateType, TimeOfDay? currentTime) async {
+    _accountDashBoardController.isVacationDateDialogDisplayed = true;
     final timePicked = await showTimePicker(
       context: context,
       initialTime: currentTime ?? TimeOfDay.now(),
@@ -204,7 +214,7 @@ class VacationController extends BaseController {
           ),
         );
       }
-    );
+    ).whenComplete(() => _accountDashBoardController.isVacationDateDialogDisplayed = false);
 
     if (timePicked == null) {
       return;

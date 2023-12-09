@@ -1,4 +1,5 @@
 
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:forward/forward/capability_forward.dart';
@@ -31,6 +32,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vaca
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
@@ -48,6 +50,13 @@ class ManageAccountDashBoardController extends ReloadableController {
   final dashboardSettingAction = Rxn<UIAction>();
 
   Session? sessionCurrent;
+  bool? isVacationDateDialogDisplayed;
+
+  @override
+  void onInit() {
+    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.settings);
+    super.onInit();
+  }
 
   @override
   void onReady() {
@@ -74,16 +83,17 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
+    log('ManageAccountDashBoardController::handleReloaded:');
     sessionCurrent = session;
     accountId.value = session.personalAccount.accountId;
     _getUserProfile();
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
+    _getParametersRouter();
   }
 
   void _getArguments() {
     final arguments = Get.arguments;
-    log('ManageAccountDashBoardController::_getArguments(): $arguments');
     if (arguments is ManageAccountArguments) {
       sessionCurrent = arguments.session;
       accountId.value = arguments.session?.personalAccount.accountId;
@@ -91,10 +101,25 @@ class ManageAccountDashBoardController extends ReloadableController {
       _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
-        _goToSettingMenuCurrent(arguments.menuSettingCurrent!);
+        selectAccountMenuItem(arguments.menuSettingCurrent!);
       }
     } else if (PlatformInfo.isWeb) {
       reload();
+    }
+  }
+
+  void _getParametersRouter() {
+    final parameters = Get.parameters;
+    log('ManageAccountDashBoardController::_getParametersRouter:parameters: $parameters');
+    final navigationRouter = RouteUtils.parsingRouteParametersToNavigationRouter(parameters);
+    log('ManageAccountDashBoardController::_getParametersRouter:navigationRouter: $navigationRouter');
+    if (navigationRouter.accountMenuItem == AccountMenuItem.none &&
+        currentContext != null &&
+        responsiveUtils.isWebDesktop(currentContext!)
+    ) {
+      selectAccountMenuItem(AccountMenuItem.profiles);
+    } else {
+      selectAccountMenuItem(navigationRouter.accountMenuItem);
     }
   }
 
@@ -154,6 +179,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     clearInputFormView();
     _bindingControllerMenuItemView(newAccountMenuItem);
     accountMenuItemSelected.value = newAccountMenuItem;
+    _replaceBrowserHistory();
   }
 
   void _bindingControllerMenuItemView(AccountMenuItem item) {
@@ -189,17 +215,15 @@ class ManageAccountDashBoardController extends ReloadableController {
     }
   }
 
-  void _goToSettingMenuCurrent(AccountMenuItem accountMenuItem) {
-    selectAccountMenuItem(accountMenuItem);
-  }
-
   void goToSettings() {
-    popAndPush(AppRoutes.settings,
-        arguments: ManageAccountArguments(sessionCurrent));
+    popAndPush(
+      AppRoutes.settings,
+      arguments: ManageAccountArguments(sessionCurrent)
+    );
   }
 
-  void backToMailboxDashBoard(BuildContext context) {
-    if (canBack(context)) {
+  void backToMailboxDashBoard({BuildContext? context}) {
+    if (context != null && canBack(context)) {
       popBack(result: vacationResponse.value);
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
@@ -269,10 +293,86 @@ class ManageAccountDashBoardController extends ReloadableController {
     }
   }
 
-  Future<bool> backButtonPressedCallbackAction(BuildContext context) async {
-    if (PlatformInfo.isMobile) {
-      backToMailboxDashBoard(context);
+  void selectSettings(AccountMenuItem accountMenuItem) {
+    log('ManageAccountDashBoardController::selectSettings(): $accountMenuItem');
+    selectAccountMenuItem(accountMenuItem);
+    settingsPageLevel.value = SettingsPageLevel.level1;
+  }
+
+  void backToUniversalSettings() {
+    log('ManageAccountDashBoardController::backToUniversalSettings()');
+    clearInputFormView();
+    selectAccountMenuItem(AccountMenuItem.none);
+    settingsPageLevel.value = SettingsPageLevel.universal;
+    _replaceBrowserHistory();
+  }
+
+  void _replaceBrowserHistory() {
+    if (PlatformInfo.isWeb) {
+      RouteUtils.replaceBrowserHistory(
+        title: accountMenuItemSelected.value == AccountMenuItem.none
+          ? 'Setting'
+          : 'Setting-${accountMenuItemSelected.value.getAliasBrowser()}',
+        url: RouteUtils.createUrlWebLocationBar(
+          AppRoutes.settings,
+          router: NavigationRouter(accountMenuItem: accountMenuItemSelected.value)
+        )
+      );
     }
+  }
+
+  bool _navigateToScreen() {
+    log('ManageAccountDashBoardController::_navigateToScreen: settingsPageLevel: $settingsPageLevel');
+    if (PlatformInfo.isMobile) {
+      switch(settingsPageLevel.value) {
+        case SettingsPageLevel.level1:
+          backToUniversalSettings();
+          return true;
+        case SettingsPageLevel.universal:
+          return false;
+      }
+    } else {
+      if (currentContext != null && responsiveUtils.isWebDesktop(currentContext!)) {
+        if (accountMenuItemSelected.value == AccountMenuItem.profiles) {
+          backToMailboxDashBoard(context: currentContext);
+          return true;
+        } else {
+          selectSettings(AccountMenuItem.profiles);
+          return true;
+        }
+      } else {
+        switch(settingsPageLevel.value) {
+          case SettingsPageLevel.level1:
+            backToUniversalSettings();
+            return true;
+          case SettingsPageLevel.universal:
+            backToMailboxDashBoard(context: currentContext);
+            return true;
+        }
+      }
+    }
+  }
+
+  bool get _isDialogViewOpen => Get.isOverlaysOpen == true;
+
+  bool _onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
+    log('ManageAccountDashBoardController::_onBackButtonInterceptor:currentRoute: ${Get.currentRoute} | _isDialogViewOpen: $_isDialogViewOpen');
+    if (_isDialogViewOpen || isVacationDateDialogDisplayed == true) {
+      popBack();
+      _replaceBrowserHistory();
+      return true;
+    }
+
+    if (Get.currentRoute.startsWith(AppRoutes.settings)) {
+      return _navigateToScreen();
+    }
+
     return false;
+  }
+
+  @override
+  void onClose() {
+    BackButtonInterceptor.removeByName(AppRoutes.settings);
+    super.onClose();
   }
 }

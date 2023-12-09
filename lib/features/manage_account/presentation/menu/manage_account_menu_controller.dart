@@ -61,6 +61,6 @@ class ManageAccountMenuController extends GetxController {
   }
 
   void backToMailboxDashBoard(BuildContext context) {
-    dashBoardController.backToMailboxDashBoard(context);
+    dashBoardController.backToMailboxDashBoard(context: context);
   }
 }
