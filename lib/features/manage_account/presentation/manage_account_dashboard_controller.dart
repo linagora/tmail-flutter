@@ -215,13 +215,6 @@ class ManageAccountDashBoardController extends ReloadableController {
     }
   }
 
-  void goToSettings() {
-    popAndPush(
-      AppRoutes.settings,
-      arguments: ManageAccountArguments(sessionCurrent)
-    );
-  }
-
   void backToMailboxDashBoard({BuildContext? context}) {
     if (context != null && canBack(context)) {
       popBack(result: vacationResponse.value);
