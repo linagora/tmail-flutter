@@ -45,6 +45,9 @@ dependencies:
   fcm:
     path: fcm
 
+  email_recovery:
+    path: email_recovery
+
   ### Dependencies from git ###
   rich_text_composer:
     git:
