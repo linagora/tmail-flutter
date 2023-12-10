@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
+import 'package:email_recovery/email_recovery/email_recovery_status.dart.dart';
 import 'package:email_recovery/email_recovery/get/get_email_recovery_action_method.dart';
 import 'package:email_recovery/email_recovery/get/get_email_recovery_action_response.dart';
-import 'package:email_recovery/email_recovery/status.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:http_mock_adapter/src/adapters/dio_adapter.dart';
@@ -14,7 +14,7 @@ void main() {
   group('test to json email recovery action get method', () {
     final expectEmailRecoveryAction = EmailRecoveryAction(
       id: EmailRecoveryActionId(Id('2034-495-05857-57abcd-0876664')),
-      status: Status.inProgress
+      status: EmailRecoveryStatus.inProgress,
     );
 
     test('email recovery action get method and response parsing', () async {
