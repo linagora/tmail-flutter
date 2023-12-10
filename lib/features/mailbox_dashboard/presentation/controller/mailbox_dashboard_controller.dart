@@ -1414,13 +1414,23 @@ class MailboxDashBoardController extends ReloadableController {
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
       AppRoutes.settings,
-      arguments: ManageAccountArguments(sessionCurrent)
+      arguments: ManageAccountArguments(
+        sessionCurrent,
+        previousUri: RouteUtils.baseUri,
+      ),
     );
 
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
-    if (result is VacationResponse) {
-      vacationResponse.value = result;
-      dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
+
+    if (result is Tuple2) {
+      if (result.value1 is VacationResponse) {
+        vacationResponse.value = result.value1;
+        dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
+      }
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _replaceBrowserHistory(uri: result.value2)
+      );
     }
   }
 
@@ -1477,13 +1487,22 @@ class MailboxDashBoardController extends ReloadableController {
       AppRoutes.settings,
       arguments: ManageAccountArguments(
         sessionCurrent,
-        menuSettingCurrent: AccountMenuItem.vacation
+        menuSettingCurrent: AccountMenuItem.vacation,
+        previousUri: RouteUtils.baseUri
       )
     );
 
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
-    if (result is VacationResponse) {
-      vacationResponse.value = result;
+
+    if (result is Tuple2) {
+      if (result.value1 is VacationResponse) {
+        vacationResponse.value = result.value1;
+        dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
+      }
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+        () => _replaceBrowserHistory(uri: result.value2)
+      );
     }
   }
 
@@ -2232,7 +2251,8 @@ class MailboxDashBoardController extends ReloadableController {
     setSelectedEmail(email.toPresentationEmail());
   }
 
-  void _replaceBrowserHistory() {
+  void _replaceBrowserHistory({Uri? uri}) {
+    log('MailboxDashBoardController::_replaceBrowserHistory:uri: $uri');
     if (PlatformInfo.isWeb) {
       final selectedMailboxId = selectedMailbox.value?.id;
       final selectedEmailId = selectedEmail.value?.id;
@@ -2247,7 +2267,7 @@ class MailboxDashBoardController extends ReloadableController {
       }
       RouteUtils.replaceBrowserHistory(
         title: title,
-        url: RouteUtils.createUrlWebLocationBar(
+        url: uri ?? RouteUtils.createUrlWebLocationBar(
           AppRoutes.dashboard,
           router: NavigationRouter(
             emailId: selectedEmail.value?.id,

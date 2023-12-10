@@ -7,9 +7,20 @@ class ManageAccountArguments with EquatableMixin {
 
   final Session? session;
   final AccountMenuItem? menuSettingCurrent;
+  final Uri? previousUri;
 
-  ManageAccountArguments(this.session, {this.menuSettingCurrent});
+  ManageAccountArguments(
+    this.session,
+    {
+      this.menuSettingCurrent,
+      this.previousUri,
+    }
+  );
 
   @override
-  List<Object?> get props => [session, menuSettingCurrent];
+  List<Object?> get props => [
+    session,
+    menuSettingCurrent,
+    previousUri,
+  ];
 }
