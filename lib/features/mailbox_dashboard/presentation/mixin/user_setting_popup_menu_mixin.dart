@@ -8,21 +8,37 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 mixin UserSettingPopupMenuMixin {
   final _imagePaths = Get.find<ImagePaths>();
 
-  List<PopupMenuEntry> popupMenuUserSettingActionTile(BuildContext context, UserProfile? userProfile,
-      {Function? onLogoutAction, Function? onSettingAction}) {
+  List<PopupMenuEntry> popupMenuUserSettingActionTile(
+    BuildContext context,
+    UserProfile? userProfile,
+    {
+      Function? onLogoutAction,
+      Function? onSettingAction
+    }
+  ) {
     return [
       PopupMenuItem(
-          enabled: false,
-          padding: EdgeInsets.zero,
-          child: _userInformation(context, userProfile)),
-      const PopupMenuDivider(height: 0.5),
-      PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: _settingAction(context, onSettingAction)),
-      const PopupMenuDivider(height: 0.5),
-      PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: _logoutAction(context, onLogoutAction)),
+        enabled: false,
+        padding: EdgeInsets.zero,
+        child: _userInformation(context, userProfile)
+      ),
+      if (onSettingAction != null)
+        ...[
+          const PopupMenuDivider(height: 0.5),
+          PopupMenuItem(
+            padding: EdgeInsets.zero,
+            child: _settingAction(context, onSettingAction)
+          ),
+          const PopupMenuDivider(height: 0.5),
+        ],
+      if (onLogoutAction != null)
+        ...[
+          const PopupMenuDivider(height: 0.5),
+          PopupMenuItem(
+            padding: EdgeInsets.zero,
+            child: _logoutAction(context, onLogoutAction)
+          ),
+        ]
     ];
   }
 
