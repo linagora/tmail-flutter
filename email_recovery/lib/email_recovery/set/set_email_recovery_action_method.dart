@@ -6,7 +6,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/method/request/set_method.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 
-class SetEmailRecoveryActionMethod extends SetMethodNoNeedAccountId<EmailRecoveryAction> with OptionalCreate<EmailRecoveryAction> {
+class SetEmailRecoveryActionMethod extends SetMethodNoNeedAccountId<EmailRecoveryAction> {
   SetEmailRecoveryActionMethod() : super();
 
   @override

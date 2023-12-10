@@ -393,6 +393,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  email_recovery:
+    dependency: "direct main"
+    description:
+      path: email_recovery
+      relative: true
+    source: path
+    version: "1.0.0+1"
   enough_html_editor:
     dependency: transitive
     description:

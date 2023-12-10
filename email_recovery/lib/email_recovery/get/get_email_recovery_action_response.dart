@@ -4,7 +4,6 @@ import 'package:jmap_dart_client/jmap/core/method/response/get_response.dart';
 import 'package:jmap_dart_client/http/converter/id_converter.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-
 part 'get_email_recovery_action_response.g.dart';
 
 @IdConverter()
