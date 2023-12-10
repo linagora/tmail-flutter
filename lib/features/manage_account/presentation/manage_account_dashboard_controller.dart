@@ -1,6 +1,7 @@
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -51,6 +52,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   Session? sessionCurrent;
   bool? isVacationDateDialogDisplayed;
+  Uri? previousUri;
 
   @override
   void onInit() {
@@ -97,6 +99,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     if (arguments is ManageAccountArguments) {
       sessionCurrent = arguments.session;
       accountId.value = arguments.session?.personalAccount.accountId;
+      previousUri = arguments.previousUri;
       _getUserProfile();
       _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
       _getVacationResponse();
@@ -217,7 +220,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   void backToMailboxDashBoard({BuildContext? context}) {
     if (context != null && canBack(context)) {
-      popBack(result: vacationResponse.value);
+      popBack(result: Tuple2(vacationResponse.value, previousUri));
     } else {
       log('ManageAccountDashBoardController::backToMailboxDashBoard(): canBack: FALSE');
       pushAndPopAll(
@@ -316,32 +319,22 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   bool _navigateToScreen() {
     log('ManageAccountDashBoardController::_navigateToScreen: settingsPageLevel: $settingsPageLevel');
-    if (PlatformInfo.isMobile) {
+    if (currentContext != null && responsiveUtils.isWebDesktop(currentContext!)) {
+      if (accountMenuItemSelected.value == AccountMenuItem.profiles) {
+        backToMailboxDashBoard(context: currentContext);
+        return true;
+      } else {
+        selectSettings(AccountMenuItem.profiles);
+        return true;
+      }
+    } else {
       switch(settingsPageLevel.value) {
         case SettingsPageLevel.level1:
           backToUniversalSettings();
           return true;
         case SettingsPageLevel.universal:
-          return false;
-      }
-    } else {
-      if (currentContext != null && responsiveUtils.isWebDesktop(currentContext!)) {
-        if (accountMenuItemSelected.value == AccountMenuItem.profiles) {
           backToMailboxDashBoard(context: currentContext);
           return true;
-        } else {
-          selectSettings(AccountMenuItem.profiles);
-          return true;
-        }
-      } else {
-        switch(settingsPageLevel.value) {
-          case SettingsPageLevel.level1:
-            backToUniversalSettings();
-            return true;
-          case SettingsPageLevel.universal:
-            backToMailboxDashBoard(context: currentContext);
-            return true;
-        }
       }
     }
   }
