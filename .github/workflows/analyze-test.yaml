@@ -21,6 +21,7 @@ jobs:
           - forward
           - rule_filter
           - fcm
+          - email_recovery
       fail-fast: false
 
     steps:
