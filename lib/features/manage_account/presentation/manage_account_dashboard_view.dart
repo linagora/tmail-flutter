@@ -132,17 +132,20 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           ..backgroundColor(Colors.white)
           ..textColor(Colors.black)
           ..context(context)
-          ..addOnTapAvatarActionWithPositionClick((position) =>
-              controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
-                  controller.userProfile.value,
-                  onLogoutAction: () {
-                    popBack();
-                    controller.logout(controller.sessionCurrent, controller.accountId.value);
-                    },
-                  onSettingAction: ()  {
-                    popBack();
-                    controller.goToSettings();
-                  })))
+          ..addOnTapAvatarActionWithPositionClick((position) {
+            return controller.openPopupMenuAction(
+              context,
+              position,
+              popupMenuUserSettingActionTile(
+                context,
+                controller.userProfile.value,
+                onLogoutAction: () {
+                  popBack();
+                  controller.logout(controller.sessionCurrent, controller.accountId.value);
+                }
+              )
+            );
+          })
           ..addBoxShadows([const BoxShadow(
               color: AppColor.colorShadowBgContentEmail,
               spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
