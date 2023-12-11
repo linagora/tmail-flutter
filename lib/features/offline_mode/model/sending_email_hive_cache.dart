@@ -33,15 +33,9 @@ class SendingEmailHiveCache extends HiveObject with EquatableMixin {
   final String? identityId;
 
   @HiveField(8)
-  final String? mailboxNameRequest;
-
-  @HiveField(9)
-  final String? creationIdRequest;
-
-  @HiveField(10)
   final String sendingState;
 
-  @HiveField(11)
+  @HiveField(9)
   final String? previousEmailId;
 
   SendingEmailHiveCache(
@@ -53,8 +47,6 @@ class SendingEmailHiveCache extends HiveObject with EquatableMixin {
     this.emailIdDestroyed,
     this.emailIdAnsweredOrForwarded,
     this.identityId,
-    this.mailboxNameRequest,
-    this.creationIdRequest,
     this.sendingState,
     this.previousEmailId,
   );
@@ -69,8 +61,6 @@ class SendingEmailHiveCache extends HiveObject with EquatableMixin {
     emailIdDestroyed,
     emailIdAnsweredOrForwarded,
     identityId,
-    mailboxNameRequest,
-    creationIdRequest,
     sendingState,
     previousEmailId,
   ];

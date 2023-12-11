@@ -18,7 +18,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as web_html_editor;
 import 'package:http_parser/http_parser.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -42,11 +41,11 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upload_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
@@ -66,7 +65,6 @@ import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_c
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -542,7 +540,6 @@ class ComposerController extends BaseController {
           break;
       }
     }
-
     _autoFocusFieldWhenLauncher();
   }
 
@@ -683,7 +680,6 @@ class ComposerController extends BaseController {
     {
       bool asDrafts = false,
       MailboxId? draftMailboxId,
-      MailboxId? outboxMailboxId,
       ComposerArguments? arguments,
     }
   ) async {
@@ -722,10 +718,6 @@ class ComposerController extends BaseController {
     if (asDrafts && draftMailboxId != null) {
       mailboxIds[draftMailboxId] = true;
     }
-    if (outboxMailboxId != null) {
-      mailboxIds[outboxMailboxId] = true;
-    }
-
     Map<KeyWordIdentifier, bool>? mapKeywords = {};
     if (asDrafts) {
       mapKeywords[KeyWordIdentifier.emailDraft] = true;
@@ -951,7 +943,6 @@ class ComposerController extends BaseController {
     final createdEmail = await _generateEmail(
       context,
       userProfile,
-      outboxMailboxId: mailboxDashBoardController.outboxMailbox?.id,
       arguments: arguments
     );
 
@@ -969,18 +960,10 @@ class ComposerController extends BaseController {
           previousEmailId: arguments.previousEmailId,
         );
 
-    final mailboxRequest = mailboxDashBoardController.outboxMailbox?.id == null
-      ? CreateNewMailboxRequest(
-          Id(uuid.v1()),
-          MailboxName(PresentationMailbox.outboxRole.inCaps)
-        )
-      : null;
-
     return SendingEmailArguments(
       session,
       accountId,
-      emailRequest,
-      mailboxRequest,
+      emailRequest
     );
   }
 

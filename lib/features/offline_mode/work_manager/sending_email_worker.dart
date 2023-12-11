@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -25,7 +26,6 @@ import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_acco
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/bindings/sending_email_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
@@ -187,20 +187,8 @@ class SendingEmailWorker extends Worker {
         session,
         accountId,
         _sendingEmail.toEmailRequest(),
-        mailboxRequest: _getMailboxRequest()
       )
     );
-  }
-
-  CreateNewMailboxRequest? _getMailboxRequest() {
-    if (_sendingEmail.mailboxNameRequest != null &&
-        _sendingEmail.creationIdRequest != null) {
-      return CreateNewMailboxRequest(
-        _sendingEmail.creationIdRequest!,
-        _sendingEmail.mailboxNameRequest!);
-    } else {
-      return null;
-    }
   }
 
   void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {

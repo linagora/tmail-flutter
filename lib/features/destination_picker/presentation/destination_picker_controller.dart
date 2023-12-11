@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -387,7 +386,6 @@ class DestinationPickerController extends BaseMailboxController {
 
     final nameMailbox = newNameMailbox.value;
     if (nameMailbox != null && nameMailbox.isNotEmpty) {
-      final generateCreateId = Id(uuid.v1());
       final parentId = mailboxDestination.value == PresentationMailbox.unifiedMailbox
         ? null
         : mailboxDestination.value?.id;
@@ -396,9 +394,10 @@ class DestinationPickerController extends BaseMailboxController {
         _session!,
         accountId!,
         CreateNewMailboxRequest(
-          generateCreateId,
-          MailboxName(nameMailbox),
-          parentId: parentId));
+          newName: MailboxName(nameMailbox),
+          parentId: parentId
+        )
+      );
     }
 
     backToDestinationScreen(context);

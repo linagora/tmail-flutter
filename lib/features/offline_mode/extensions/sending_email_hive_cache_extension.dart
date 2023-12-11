@@ -2,10 +2,8 @@
 import 'dart:convert';
 
 import 'package:jmap_dart_client/http/converter/email_id_nullable_converter.dart';
-import 'package:jmap_dart_client/http/converter/id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/identities/identity_id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/mailbox_id_nullable_converter.dart';
-import 'package:jmap_dart_client/http/converter/mailbox_name_converter.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_email_hive_cache.dart';
@@ -24,8 +22,6 @@ extension SendingEmailHiveCacheExtension on SendingEmailHiveCache {
       emailIdDestroyed: const EmailIdNullableConverter().fromJson(emailIdDestroyed),
       emailIdAnsweredOrForwarded: const EmailIdNullableConverter().fromJson(emailIdAnsweredOrForwarded),
       identityId: const IdentityIdNullableConverter().fromJson(identityId),
-      mailboxNameRequest: const MailboxNameConverter().fromJson(mailboxNameRequest),
-      creationIdRequest: const IdNullableConverter().fromJson(creationIdRequest),
       sendingState: SendingState.values.firstWhere((value) => value.name == sendingState),
       previousEmailId: const EmailIdNullableConverter().fromJson(previousEmailId),
     );

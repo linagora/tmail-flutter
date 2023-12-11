@@ -9,14 +9,12 @@ class SendingEmailArguments extends RouterArguments {
   final Session session;
   final AccountId accountId;
   final EmailRequest emailRequest;
-  final CreateNewMailboxRequest? mailboxRequest;
   final ComposeActionMode actionMode;
 
   SendingEmailArguments(
     this.session,
     this.accountId,
     this.emailRequest,
-    this.mailboxRequest,
     {
       this.actionMode = ComposeActionMode.sent
     }
@@ -32,7 +30,6 @@ class SendingEmailArguments extends RouterArguments {
     session ?? this.session,
     accountId ?? this.accountId,
     emailRequest ?? this.emailRequest,
-    mailboxRequest ?? this.mailboxRequest,
     actionMode: actionMode ?? this.actionMode
   );
 
@@ -41,7 +38,6 @@ class SendingEmailArguments extends RouterArguments {
     session,
     accountId,
     emailRequest,
-    mailboxRequest,
     actionMode
   ];
 }

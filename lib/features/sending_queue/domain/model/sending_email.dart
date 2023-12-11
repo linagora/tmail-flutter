@@ -1,14 +1,12 @@
 import 'dart:convert';
+
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:jmap_dart_client/http/converter/email_id_nullable_converter.dart';
-import 'package:jmap_dart_client/http/converter/id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/identities/identity_id_nullable_converter.dart';
 import 'package:jmap_dart_client/http/converter/mailbox_id_nullable_converter.dart';
-import 'package:jmap_dart_client/http/converter/mailbox_name_converter.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -26,8 +24,6 @@ class SendingEmail with EquatableMixin {
   final EmailId? emailIdAnsweredOrForwarded;
   final IdentityId? identityId;
   final EmailActionType emailActionType;
-  final MailboxName? mailboxNameRequest;
-  final Id? creationIdRequest;
   final DateTime createTime;
   final SelectMode selectMode;
   final SendingState sendingState;
@@ -42,8 +38,6 @@ class SendingEmail with EquatableMixin {
     this.emailIdDestroyed,
     this.emailIdAnsweredOrForwarded,
     this.identityId,
-    this.mailboxNameRequest,
-    this.creationIdRequest,
     this.selectMode = SelectMode.INACTIVE,
     this.sendingState = SendingState.waiting,
     this.previousEmailId,
@@ -66,8 +60,6 @@ class SendingEmail with EquatableMixin {
     writeNotNull('emailIdDestroyed', const EmailIdNullableConverter().toJson(emailIdDestroyed));
     writeNotNull('emailIdAnsweredOrForwarded', const EmailIdNullableConverter().toJson(emailIdAnsweredOrForwarded));
     writeNotNull('identityId', const IdentityIdNullableConverter().toJson(identityId));
-    writeNotNull('mailboxNameRequest', mailboxNameRequest?.name);
-    writeNotNull('creationIdRequest', const IdNullableConverter().toJson(creationIdRequest));
     writeNotNull('previousEmailId', const EmailIdNullableConverter().toJson(previousEmailId));
 
     return val;
@@ -89,8 +81,6 @@ class SendingEmail with EquatableMixin {
       emailIdDestroyed: const EmailIdNullableConverter().fromJson(json['emailIdDestroyed'] as String?),
       emailIdAnsweredOrForwarded: const EmailIdNullableConverter().fromJson(json['emailIdAnsweredOrForwarded'] as String?),
       identityId: const IdentityIdNullableConverter().fromJson(json['identityId'] as String?),
-      mailboxNameRequest: const MailboxNameConverter().fromJson(json['mailboxNameRequest'] as String?),
-      creationIdRequest: const IdNullableConverter().fromJson(json['creationIdRequest'] as String?),
       previousEmailId: const EmailIdNullableConverter().fromJson(json['previousEmailId'] as String?),
     );
   }
@@ -134,8 +124,6 @@ class SendingEmail with EquatableMixin {
     emailIdDestroyed,
     emailIdAnsweredOrForwarded,
     identityId,
-    mailboxNameRequest,
-    creationIdRequest,
     selectMode,
     sendingState,
     previousEmailId,

@@ -21,13 +21,10 @@ class CreateNewMailboxInteractor {
 
       final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
       final newMailbox = await _mailboxRepository.createNewMailbox(session, accountId, newMailboxRequest);
-      if (newMailbox != null) {
-        yield Right<Failure, Success>(CreateNewMailboxSuccess(
-            newMailbox,
-            currentMailboxState: currentMailboxState));
-      } else {
-        yield Left<Failure, Success>(CreateNewMailboxFailure(null));
-      }
+      yield Right<Failure, Success>(CreateNewMailboxSuccess(
+        newMailbox,
+        currentMailboxState: currentMailboxState
+      ));
     } catch (e) {
       yield Left<Failure, Success>(CreateNewMailboxFailure(e));
     }
