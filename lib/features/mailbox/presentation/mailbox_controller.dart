@@ -8,7 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
@@ -348,21 +347,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     mailboxDashBoardController.setMapMailboxById(mapMailboxById);
   }
 
-  void _setOutboxMailbox() {
-    try {
-      final outboxMailboxIdByRole = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleOutbox];
-      if (outboxMailboxIdByRole == null) {
-        final outboxMailboxByName = findNodeByNameOnFirstLevel(PresentationMailbox.outboxRole)?.item;
-        mailboxDashBoardController.setOutboxMailbox(outboxMailboxByName);
-      } else {
-        mailboxDashBoardController.setOutboxMailbox(mailboxDashBoardController.mapMailboxById[outboxMailboxIdByRole]!);
-      }
-    } catch (e) {
-      logError('MailboxController::_setOutboxMailbox: Not found outbox mailbox');
-      mailboxDashBoardController.setOutboxMailbox(null);
-    }
-  }
-
   void _selectSelectedMailboxDefault() {
     final isSearchEmailRunning = mailboxDashBoardController.searchController.isSearchEmailRunning;
     final dashboardRoute = mailboxDashBoardController.dashboardRoute.value;
@@ -529,11 +513,14 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         : await push(AppRoutes.mailboxCreator, arguments: arguments);
 
       if (result != null && result is NewMailboxArguments) {
-        final generateCreateId = Id(uuid.v1());
-        _createNewMailboxAction(session, accountId, CreateNewMailboxRequest(
-          generateCreateId,
-          result.newName,
-          parentId: result.mailboxLocation?.id));
+        _createNewMailboxAction(
+          session,
+          accountId,
+          CreateNewMailboxRequest(
+            newName: result.newName,
+            parentId: result.mailboxLocation?.id
+          )
+        );
       }
     }
   }
@@ -1059,7 +1046,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       await syncAllMailboxWithDisplayName(currentContext!);
     }
     _setMapMailbox();
-    _setOutboxMailbox();
     _selectSelectedMailboxDefault();
   }
 
@@ -1072,7 +1058,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       await syncAllMailboxWithDisplayName(currentContext!);
     }
     _setMapMailbox();
-    _setOutboxMailbox();
   }
 
   void _unsubscribeMailboxAction(MailboxId mailboxId) {

@@ -60,7 +60,6 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -214,7 +213,6 @@ class MailboxDashBoardController extends ReloadableController {
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
   final emailsInCurrentMailbox = <PresentationEmail>[].obs;
   final listResultSearch = RxList<PresentationEmail>();
-  PresentationMailbox? outboxMailbox;
   ComposerArguments? composerArguments;
   NavigationRouter? navigationRouter;
 
@@ -387,14 +385,12 @@ class MailboxDashBoardController extends ReloadableController {
             failure.session,
             failure.accountId,
             failure.emailRequest,
-            failure.mailboxRequest
           );
         } else {
           _handleUpdateSendingEmail(
             failure.session,
             failure.accountId,
             failure.emailRequest,
-            failure.mailboxRequest
           );
         }
       }
@@ -553,11 +549,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   void setMapMailboxById(Map<MailboxId, PresentationMailbox> newMapMailboxById) {
     mapMailboxById = newMapMailboxById;
-  }
-
-  void setOutboxMailbox(PresentationMailbox? newOutbox) {
-    outboxMailbox = newOutbox;
-    log('MailboxDashBoardController::setOutboxMailbox(): $newOutbox');
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
@@ -1753,7 +1744,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSendEmailFailure(SendEmailFailure failure) {
     logError('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
-    _updateSendingStateWhenSendEmailFailureOnIOS(failure);
+    if (PlatformInfo.isIOS) {
+      _updateSendingStateWhenSendEmailFailureOnIOS(failure);
+    }
     if (currentContext == null) {
       clearState();
       return;
@@ -1844,24 +1837,21 @@ class MailboxDashBoardController extends ReloadableController {
         _handleStoreSendingEmail(
           arguments.session,
           arguments.accountId,
-          arguments.emailRequest,
-          arguments.mailboxRequest
+          arguments.emailRequest
         );
         break;
       case ComposeActionMode.editQueue:
         _handleUpdateSendingEmail(
           arguments.session,
           arguments.accountId,
-          arguments.emailRequest,
-          arguments.mailboxRequest
+          arguments.emailRequest
         );
         break;
       case ComposeActionMode.sent:
         consumeState(_sendEmailInteractor.execute(
           arguments.session,
           arguments.accountId,
-          arguments.emailRequest,
-          mailboxRequest: arguments.mailboxRequest
+          arguments.emailRequest
         ));
         break;
     }
@@ -1871,10 +1861,9 @@ class MailboxDashBoardController extends ReloadableController {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    CreateNewMailboxRequest? mailboxRequest,
   ) {
     log('MailboxDashBoardController::_handleStoreSendingEmail:');
-    final sendingEmail = emailRequest.toSendingEmail(uuid.v1(), mailboxRequest: mailboxRequest);
+    final sendingEmail = emailRequest.toSendingEmail(uuid.v1());
     consumeState(_storeSendingEmailInteractor.execute(
       accountId,
       session.username,
@@ -1886,12 +1875,11 @@ class MailboxDashBoardController extends ReloadableController {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    CreateNewMailboxRequest? mailboxRequest,
   ) {
     log('MailboxDashBoardController::_handleUpdateSendingEmail:');
     final storedSendingId = emailRequest.storedSendingId;
     if (storedSendingId != null) {
-      final sendingEmail = emailRequest.toSendingEmail(storedSendingId, mailboxRequest: mailboxRequest);
+      final sendingEmail = emailRequest.toSendingEmail(storedSendingId);
       consumeState(_updateSendingEmailInteractor.execute(
         accountId,
         session.username,
@@ -1902,8 +1890,7 @@ class MailboxDashBoardController extends ReloadableController {
       _handleStoreSendingEmail(
         session,
         accountId,
-        emailRequest,
-        mailboxRequest
+        emailRequest
       );
     }
   }
@@ -2155,14 +2142,12 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _updateSendingStateWhenSendEmailFailureOnIOS(SendEmailFailure failure) {
     log('MailboxDashBoardController::_updateSendingStateWhenSendEmailFailureOnIOS:');
-    if (PlatformInfo.isIOS &&
-        failure.emailRequest.storedSendingId != null &&
+    if (failure.emailRequest.storedSendingId != null &&
         accountId.value != null &&
         sessionCurrent != null
     ) {
       final sendingEmailError = failure.emailRequest.toSendingEmail(
         failure.emailRequest.storedSendingId!,
-        mailboxRequest: failure.mailboxRequest,
         newState: SendingState.error
       );
       consumeState(
