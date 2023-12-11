@@ -56,6 +56,8 @@ extension EmailExtension on Email {
   Email updatedEmail({Map<KeyWordIdentifier, bool>? newKeywords, Map<MailboxId, bool>? newMailboxIds}) {
     return Email(
       id: id,
+      blobId: blobId,
+      threadId: threadId,
       keywords: newKeywords ?? keywords,
       size: size,
       receivedAt: receivedAt,
@@ -63,16 +65,24 @@ extension EmailExtension on Email {
       preview: preview,
       subject: subject,
       sentAt: sentAt,
+      headers: headers,
+      messageId: messageId,
+      inReplyTo: inReplyTo,
+      references: references,
+      sender: sender,
       from: from,
       to: to,
       cc: cc,
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: newMailboxIds ?? mailboxIds,
+      textBody: textBody,
       htmlBody: htmlBody,
       bodyValues: bodyValues,
-      headerUserAgent: headerUserAgent,
       attachments: attachments,
+      bodyStructure: bodyStructure,
+      headerMdn: headerMdn,
+      headerUserAgent: headerUserAgent,
       headerCalendarEvent: headerCalendarEvent
     );
   }

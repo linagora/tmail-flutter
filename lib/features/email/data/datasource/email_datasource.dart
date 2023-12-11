@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
@@ -19,18 +20,12 @@ import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 abstract class EmailDataSource {
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId);
 
-  Future<bool> sendEmail(
-    Session session,
-    AccountId accountId,
-    EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
-  );
+  Future<void> sendEmail(Session session, AccountId accountId, EmailRequest emailRequest, MailboxId outboxId);
 
   Future<List<Email>> markAsRead(Session session, AccountId accountId, List<Email> emails, ReadActions readActions);
 

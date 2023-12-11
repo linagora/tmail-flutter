@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
@@ -28,7 +29,6 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
 class EmailRepositoryImpl extends EmailRepository {
 
@@ -48,13 +48,8 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> sendEmail(
-    Session session,
-    AccountId accountId,
-    EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
-  ) {
-    return emailDataSource[DataSourceType.network]!.sendEmail(session, accountId, emailRequest, mailboxRequest: mailboxRequest);
+  Future<void> sendEmail(Session session, AccountId accountId, EmailRequest emailRequest, MailboxId outboxId) {
+    return emailDataSource[DataSourceType.network]!.sendEmail(session, accountId, emailRequest, outboxId);
   }
 
   @override

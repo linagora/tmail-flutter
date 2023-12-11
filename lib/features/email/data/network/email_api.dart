@@ -11,7 +11,6 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -19,6 +18,7 @@ import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/core/reference_prefix.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
@@ -33,7 +33,6 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/envelope.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
@@ -59,7 +58,6 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uuid/uuid.dart';
@@ -109,34 +107,18 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
+    MailboxId outboxId,
   ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-    Email? emailNeedsToBeCreated;
-    MailboxId? outboxMailboxId;
-
-    if (mailboxRequest != null) {
-      final setMailboxMethod = SetMailboxMethod(accountId)
-        ..addCreate(
-            mailboxRequest.creationId,
-            Mailbox(
-              name: mailboxRequest.newName,
-              parentId: mailboxRequest.parentId,
-              isSubscribed: IsSubscribed(mailboxRequest.isSubscribed)
-            )
-        );
-
-      requestBuilder.invocation(setMailboxMethod);
-
-      outboxMailboxId = MailboxId(ReferenceId(
-          ReferencePrefix.defaultPrefix,
-          mailboxRequest.creationId));
-      emailNeedsToBeCreated = emailRequest.email.updatedEmail(newMailboxIds: {outboxMailboxId: true});
+    Map<MailboxId, bool>? mapMailboxIds = emailRequest.email.mailboxIds;
+    if (mapMailboxIds == null) {
+      mapMailboxIds = {outboxId: true};
     } else {
-      outboxMailboxId = emailRequest.email.mailboxIds?.keys.first;
-      emailNeedsToBeCreated = emailRequest.email;
+      mapMailboxIds[outboxId] = true;
     }
+    log('EmailAPI::sendEmail:mapMailboxIds: $mapMailboxIds');
+    final emailNeedsToBeCreated = emailRequest.email.updatedEmail(newMailboxIds: mapMailboxIds);
 
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
@@ -144,14 +126,15 @@ class EmailAPI with HandleSetErrorMixin {
 
     final submissionCreateId = Id(_uuid.v1());
     final mailFrom = Address(emailNeedsToBeCreated.from?.first.email ?? '');
-    final recipientsList = emailNeedsToBeCreated.getRecipientEmailAddressList()
+    final recipientsList = emailNeedsToBeCreated
+      .getRecipientEmailAddressList()
       .map((emailAddress) => Address(emailAddress))
       .toSet();
     final emailSubmissionId = EmailSubmissionId(ReferenceId(ReferencePrefix.defaultPrefix, submissionCreateId));
     Map<EmailSubmissionId, PatchObject> mapEmailSubmissionUpdated = {
       emailSubmissionId: PatchObject({
-        emailRequest.sentMailboxId!.generatePath() : true,
-        outboxMailboxId!.generatePath() : null,
+        emailRequest.sentMailboxId!.generatePath(): true,
+        outboxId.generatePath(): null,
         KeyWordIdentifier.emailSeen.generatePath(): true,
         KeyWordIdentifier.emailDraft.generatePath(): null
       })
