@@ -161,7 +161,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+  Future<Mailbox> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     return mapDataSource[DataSourceType.network]!.createNewMailbox(session, accountId, newMailboxRequest);
   }
 
@@ -218,5 +218,15 @@ class MailboxRepositoryImpl extends MailboxRepository {
   @override
   Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
     return mapDataSource[DataSourceType.network]!.setRoleDefaultMailbox(session, accountId, listMailbox);
+  }
+
+  @override
+  Future<Mailbox> getMailboxByRole(Session session, AccountId accountId, Role role) {
+    return mapDataSource[DataSourceType.network]!.getMailboxByRole(session, accountId, role);
+  }
+
+  @override
+  Future<Mailbox> getMailboxByName(Session session, AccountId accountId, MailboxName mailboxName) {
+    return mapDataSource[DataSourceType.network]!.getMailboxByName(session, accountId, mailboxName);
   }
 }

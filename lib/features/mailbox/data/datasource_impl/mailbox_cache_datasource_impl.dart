@@ -56,7 +56,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+  Future<Mailbox> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     throw UnimplementedError();
   }
 
@@ -102,6 +102,16 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
 
   @override
   Future<List<MailboxId>> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Mailbox> getMailboxByRole(Session session, AccountId accountId, Role role) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Mailbox> getMailboxByName(Session session, AccountId accountId, MailboxName mailboxName) {
     throw UnimplementedError();
   }
 }

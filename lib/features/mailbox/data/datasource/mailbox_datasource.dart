@@ -29,9 +29,9 @@ abstract class MailboxDataSource {
 
   Future<void> update(AccountId accountId, UserName userName, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed});
 
-  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
+  Future<Mailbox> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest);
 
-  Future<Map<Id,SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds);
+  Future<Map<Id, SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds);
 
   Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request);
 
@@ -51,4 +51,8 @@ abstract class MailboxDataSource {
   Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole);
 
   Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox);
+
+  Future<Mailbox> getMailboxByRole(Session session, AccountId accountId, Role role);
+
+  Future<Mailbox> getMailboxByName(Session session, AccountId accountId, MailboxName mailboxName);
 }

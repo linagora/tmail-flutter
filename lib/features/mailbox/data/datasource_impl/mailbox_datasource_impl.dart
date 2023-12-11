@@ -57,7 +57,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
+  Future<Mailbox> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     return Future.sync(() async {
       return await mailboxAPI.createNewMailbox(session, accountId, newMailboxRequest);
     }).catchError(_exceptionThrower.throwException);
@@ -130,6 +130,20 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
     return Future.sync(() async {
       return await mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<Mailbox> getMailboxByRole(Session session, AccountId accountId, Role role) {
+    return Future.sync(() async {
+      return await mailboxAPI.getMailboxByRole(session, accountId, role);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<Mailbox> getMailboxByName(Session session, AccountId accountId, MailboxName mailboxName) {
+    return Future.sync(() async {
+      return await mailboxAPI.getMailboxByName(session, accountId, mailboxName);
     }).catchError(_exceptionThrower.throwException);
   }
 }

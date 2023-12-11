@@ -21,6 +21,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/changes/changes_mailbox_respo
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/query/query_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
 import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
@@ -43,15 +45,15 @@ import 'package:uuid/uuid.dart';
 
 class MailboxAPI with HandleSetErrorMixin {
 
-  final HttpClient httpClient;
+  final HttpClient _httpClient;
   final Uuid _uuid;
 
-  MailboxAPI(this.httpClient, this._uuid);
+  MailboxAPI(this._httpClient, this._uuid);
 
   Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
 
-    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+    final jmapRequestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     final getMailboxCreated = GetMailboxMethod(accountId);
 
@@ -77,7 +79,7 @@ class MailboxAPI with HandleSetErrorMixin {
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
 
-    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+    final jmapRequestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     final changesMailboxMethod = ChangesMailboxMethod(accountId, sinceState, maxChanges: UnsignedInt(128));
 
@@ -138,10 +140,11 @@ class MailboxAPI with HandleSetErrorMixin {
       updatedProperties: resultChanges?.updatedProperties);
   }
 
-  Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest request) async {
+  Future<Mailbox> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest request) async {
+    final createMethodId = Id(_uuid.v1());
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addCreate(
-          request.creationId,
+          createMethodId,
           Mailbox(
             name: request.newName,
             isSubscribed: IsSubscribed(request.isSubscribed),
@@ -149,7 +152,7 @@ class MailboxAPI with HandleSetErrorMixin {
           )
       );
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
@@ -167,14 +170,14 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final mapMailboxCreated = setMailboxResponse?.created;
     if (mapMailboxCreated != null &&
-        mapMailboxCreated.containsKey(request.creationId)) {
-      final mailboxCreated = mapMailboxCreated[request.creationId]!;
+        mapMailboxCreated.containsKey(createMethodId)) {
+      final mailboxCreated = mapMailboxCreated[createMethodId]!;
       final newMailboxCreated = mailboxCreated.toMailbox(
           request.newName,
           parentId: request.parentId);
       return newMailboxCreated;
     } else {
-      throw _parseErrorForSetMailboxResponse(setMailboxResponse, request.creationId);
+      throw _parseErrorForSetMailboxResponse(setMailboxResponse, createMethodId);
     }
   }
 
@@ -216,7 +219,7 @@ class MailboxAPI with HandleSetErrorMixin {
       log('MailboxAPI::deleteMultipleMailbox(): delete from $start to $end / ${mailboxIds.length}');
       final currentExecuteList = mailboxIds.sublist(start, end);
 
-      final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+      final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
       final currentSetMailboxInvocations = currentExecuteList.map((mailboxId) {
           return SetMailboxMethod(accountId)
             ..addDestroy({mailboxId.id})
@@ -266,7 +269,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates({request.mailboxId.id : PatchObject({'name' : request.newName.name})});
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
@@ -298,7 +301,7 @@ class MailboxAPI with HandleSetErrorMixin {
         })
       });
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
@@ -329,7 +332,7 @@ class MailboxAPI with HandleSetErrorMixin {
         })
       });
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
@@ -363,7 +366,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addUpdates(mapMailboxUpdated);
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
 
@@ -407,7 +410,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxMethodForCreate = SetMailboxMethod(accountId)
       ..addCreates(mapCreate);
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final createInvocation = requestBuilder.invocation(setMailboxMethodForCreate);
 
     final capabilities = setMailboxMethodForCreate.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -479,7 +482,7 @@ class MailboxAPI with HandleSetErrorMixin {
     final setMailboxMethodForUpdate = SetMailboxMethod(accountId)
       ..addUpdates(mapUpdated);
 
-    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final updateInvocation = requestBuilder.invocation(setMailboxMethodForUpdate);
 
     final capabilities = setMailboxMethodForUpdate.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -497,6 +500,79 @@ class MailboxAPI with HandleSetErrorMixin {
     final mapErrors = handleSetResponse([updateResponse]);
     if (mapErrors.isNotEmpty) {
       throw SetMailboxMethodException(mapErrors);
+    }
+  }
+
+  Future<Mailbox> getMailboxByRole(Session session, AccountId accountId, Role role) async {
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+    final queryMailboxMethod = QueryMailboxMethod(accountId)
+      ..addLimit(UnsignedInt(1))
+      ..addFilters(MailboxFilterCondition(role: role));
+
+    final queryMailboxInvocation = requestBuilder.invocation(queryMailboxMethod);
+
+    final getMailBoxMethod = GetMailboxMethod(accountId)
+      ..addReferenceIds(processingInvocation.createResultReference(
+        queryMailboxInvocation.methodCallId,
+        ReferencePath.idsPath,
+      ));
+
+    final getMailboxInvocation = requestBuilder.invocation(getMailBoxMethod);
+
+    final capabilities = queryMailboxMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final getMailboxResponse = result.parse<GetMailboxResponse>(
+      getMailboxInvocation.methodCallId, 
+      GetMailboxResponse.deserialize
+    );
+
+    if (getMailboxResponse?.list.isNotEmpty == true) {
+      return getMailboxResponse!.list.first;
+    } else {
+      throw NotFoundMailboxByRoleException();
+    }
+  }
+
+  Future<Mailbox> getMailboxByName(Session session, AccountId accountId, MailboxName mailboxName) async {
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+    final queryMailboxMethod = QueryMailboxMethod(accountId)
+      ..addLimit(UnsignedInt(1))
+      ..addFilters(MailboxFilterCondition(name: mailboxName));
+
+    final queryMailboxInvocation = requestBuilder.invocation(queryMailboxMethod);
+
+    final getMailBoxMethod = GetMailboxMethod(accountId)
+      ..addReferenceIds(processingInvocation.createResultReference(
+          queryMailboxInvocation.methodCallId,
+          ReferencePath.idsPath,
+        )
+      );
+
+    final getMailboxInvocation = requestBuilder.invocation(getMailBoxMethod);
+
+    final capabilities = queryMailboxMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final getMailboxResponse = result.parse<GetMailboxResponse>(
+      getMailboxInvocation.methodCallId, 
+      GetMailboxResponse.deserialize
+    );
+
+    if (getMailboxResponse?.list.isNotEmpty == true) {
+      return getMailboxResponse!.list.first;
+    } else {
+      throw NotFoundMailboxByNameException();
     }
   }
 }
