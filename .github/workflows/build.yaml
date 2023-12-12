@@ -54,6 +54,7 @@ jobs:
         if: matrix.os == 'ios'
         run: |
           flutter pub get
+          brew install xcbeautify
           pod install && pod update
         working-directory: ${{ matrix.os }}
 
