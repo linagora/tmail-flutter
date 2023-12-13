@@ -1,5 +1,7 @@
 
+import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
@@ -121,5 +123,26 @@ class HtmlUtils {
     } else {
       return '';
     }
+  }
+
+  static String validateHtmlImageResourceMimeType(String mimeType) {
+    if (mimeType.endsWith('svg')) {
+      mimeType = 'image/svg+xml';
+    }
+    log('HtmlUtils::validateHtmlImageResourceMimeType:mimeType: $mimeType');
+    return mimeType;
+  }
+
+  static String convertBase64ToImageResourceData({
+    required String base64Data,
+    required String mimeType
+  }) {
+    mimeType = validateHtmlImageResourceMimeType(mimeType);
+    if (!base64Data.endsWith('==')) {
+      base64Data.append('==');
+    }
+    final imageResource = 'data:$mimeType;base64,$base64Data';
+    log('HtmlUtils::convertBase64ToImageResourceData:imageResource: $imageResource');
+    return imageResource;
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
@@ -40,7 +41,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
         final bytesData = await File(platformFile.path!).readAsBytes();
         await htmlEditorApi?.insertImageData(
           bytesData,
-          'image/${platformFile.extension}',
+          HtmlUtils.validateHtmlImageResourceMimeType('image/${platformFile.extension}'),
           maxWidth: maxWidth
         );
       } else {
