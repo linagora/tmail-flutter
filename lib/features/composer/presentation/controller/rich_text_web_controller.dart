@@ -2,20 +2,21 @@
 import 'dart:convert';
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
+import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
-import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
@@ -288,7 +289,7 @@ class RichTextWebController extends BaseRichTextController {
     if (platformFile.bytes != null) {
       final base64Data = base64Encode(platformFile.bytes!);
       editorController.insertHtml(
-        '<img src="data:image/${platformFile.extension};base64,$base64Data" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width: 100%"/>'
+        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: 'image/${platformFile.extension}')}" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width: 100%"/>'
       );
     } else {
       logError("RichTextWebController::insertImageAsBase64: bytes is null");
