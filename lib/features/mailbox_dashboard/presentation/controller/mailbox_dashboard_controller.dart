@@ -1530,10 +1530,10 @@ class MailboxDashBoardController extends ReloadableController {
 
   void selectQuickSearchFilterAction(QuickSearchFilter filter) async {
     log('MailboxDashBoardController::selectQuickSearchFilterAction(): filter: $filter');
-    if (filter == QuickSearchFilter.fromMe &&
-      accountId.value != null &&
-      sessionCurrent != null
-    ) {
+    if (filter == QuickSearchFilter.fromMe) {
+      if (accountId.value == null || sessionCurrent == null) {
+        logError('MailboxDashBoardController::selectQuickSearchFilterAction(): accountId or sessionCurrent is null');
+      }
       final listContactSelected = searchController.searchEmailFilter.value.from;
       final arguments = ContactArguments(accountId.value!, sessionCurrent!, listContactSelected);
 
@@ -1541,11 +1541,12 @@ class MailboxDashBoardController extends ReloadableController {
 
       if (newContact is EmailAddress) {
         selectQuickSearchFilterFrom(newContact);
+        dispatchAction(StartSearchEmailAction(filter: filter));
       }
     } else {
       selectQuickSearchFilter(filter);
+      dispatchAction(StartSearchEmailAction(filter: filter));
     }
-    dispatchAction(StartSearchEmailAction(filter: filter));
   }
 
   void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
