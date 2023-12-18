@@ -8,12 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -109,10 +106,6 @@ class ThreadController extends BaseController with EmailActionController {
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
-
-  Set<Comparator>? get _sortOrder => <Comparator>{}
-    ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-      ..setIsAscending(false));
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
@@ -439,7 +432,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: _searchEmailFilter.sortOrder ?? _sortOrder,
+        sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
         emailFilter: EmailFilter(
           filter: _getFilterCondition(mailboxIdSelected: _currentMailboxId),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
@@ -512,7 +505,7 @@ class ThreadController extends BaseController with EmailActionController {
           _session!,
           _accountId!,
           newEmailState,
-          sort: _searchEmailFilter.sortOrder ?? _sortOrder,
+          sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
           propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
           emailFilter: EmailFilter(
@@ -537,7 +530,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
           limit: ThreadConstants.defaultLimit,
           position: _searchEmailFilter.position,
-          sort: _searchEmailFilter.sortOrder ?? _sortOrder,
+          sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: _getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: _currentMailboxId),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -747,7 +740,7 @@ class ThreadController extends BaseController with EmailActionController {
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
         position: _searchEmailFilter.position,
-        sort: _searchEmailFilter.sortOrder,
+        sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
           sortOrderType: searchController.sortOrderFiltered.value,
           moreFilterCondition: _getFilterCondition()
@@ -817,7 +810,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: _searchEmailFilter.sortOrder ?? _sortOrder,
+        sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
         position: _searchEmailFilter.position,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
           sortOrderType: searchController.sortOrderFiltered.value,
