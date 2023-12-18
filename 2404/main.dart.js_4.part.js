@@ -4242,7 +4242,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 574
+    $signature: 573
   };
   B.TagsEditorState__onFocusChanged_closure.prototype = {
     call$0() {
@@ -4460,19 +4460,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 574
+    $signature: 573
   };
   B.TagEditorLayoutDelegate__isOverflow_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 575
+    $signature: 574
   };
   B.TagEditorLayoutDelegate_performLayout_closure.prototype = {
     call$2(result, tag) {
       return result + tag._dx;
     },
-    $signature: 575
+    $signature: 574
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
@@ -4721,4 +4721,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["aevDV+iDI9E4hj6lho6NwQmZ9+A="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["8rD/CvOnrT8/OHLPb3h4xfRmcR8="] = $__dart_deferred_initializers__.current
