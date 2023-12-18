@@ -101,4 +101,6 @@ enum QuickSearchFilter {
         return true;
     }
   }
+
+  bool isTapOpenPopupMenu() => this == QuickSearchFilter.last7Days || this == QuickSearchFilter.sortBy;
 }
