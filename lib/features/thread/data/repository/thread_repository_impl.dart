@@ -39,6 +39,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     AccountId accountId,
     {
       UnsignedInt? limit,
+      int? position,
       Set<Comparator>? sort,
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
@@ -67,6 +68,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         session,
         accountId,
         limit: limit,
+        position: position,
         sort: sort,
         filter: emailFilter?.filter,
         properties: propertiesCreated);
@@ -75,6 +77,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           session,
           accountId,
           sort: sort,
+          position: position,
           mailboxId: emailFilter?.mailboxId,
           propertiesCreated: propertiesCreated,
         );
@@ -131,6 +134,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     AccountId accountId,
     {
       Set<Comparator>? sort,
+      int? position,
       MailboxId? mailboxId,
       Properties? propertiesCreated,
       Filter? filter,
@@ -140,6 +144,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         session,
         accountId,
         limit: ThreadConstants.defaultLimit,
+        position: position,
         sort: sort,
         filter: filter ?? EmailFilterCondition(inMailbox: mailboxId),
         properties: propertiesCreated,
@@ -266,6 +271,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           emailRequest.session,
           emailRequest.accountId,
           limit: emailRequest.limit,
+          position: emailRequest.position,
           sort: emailRequest.sort,
           filter: emailRequest.filter,
           properties: emailRequest.properties)
@@ -283,6 +289,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     AccountId accountId,
     {
       UnsignedInt? limit,
+      int? position,
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties
@@ -292,6 +299,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       session,
       accountId,
       limit: limit,
+      position: position,
       sort: sort,
       filter: filter,
       properties: properties);

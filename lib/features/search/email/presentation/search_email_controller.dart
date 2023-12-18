@@ -176,7 +176,8 @@ class SearchEmailController extends BaseController
       currentSearchText.value = value;
       _updateSimpleSearchFilter(
         textOption: value.isNotEmpty ? Some(SearchQuery(value)) : const None(),
-        beforeOption: const None()
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
       );
       if (value.isNotEmpty && session != null && accountId != null) {
         listSuggestionSearch.value = await quickSearchEmails(session: session!, accountId: accountId!);
@@ -240,13 +241,17 @@ class SearchEmailController extends BaseController
       final limit = listResultSearch.isNotEmpty
           ? UnsignedInt(listResultSearch.length)
           : ThreadConstants.defaultLimit;
-      _updateSimpleSearchFilter(beforeOption: const None());
+      _updateSimpleSearchFilter(
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
+      );
       consumeState(_refreshChangesSearchEmailInteractor.execute(
         session!,
         accountId!,
         limit: limit,
+        position: simpleSearchFilter.value.position,
         sort: emailSortOrderType.value.getSortOrder().toNullable(),
-        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
+        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(sortOrderType: emailSortOrderType.value),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ));
     }
@@ -288,8 +293,8 @@ class SearchEmailController extends BaseController
           session,
           accountId,
           limit: UnsignedInt(5),
-            sort: emailSortOrderType.value.getSortOrder().toNullable(),
-          filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
+          sort: emailSortOrderType.value.getSortOrder().toNullable(),
+          filter: simpleSearchFilter.value.mappingToEmailFilterCondition(sortOrderType: emailSortOrderType.value),
           properties: ThreadConstants.propertiesQuickSearch)
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
@@ -321,12 +326,26 @@ class SearchEmailController extends BaseController
           )
         );
       }
+
+      if (emailSortOrderType.value.isScrollByPosition()) {
+        _updateSimpleSearchFilter(
+          positionOption: const Some(0),
+          beforeOption: const None(),
+        );
+      } else {
+        _updateSimpleSearchFilter(
+          positionOption: const None(),
+          beforeOption: const None(),
+        );
+      }
+
       consumeState(_searchEmailInteractor.execute(
         session!,
         accountId!,
         limit: ThreadConstants.defaultLimit,
+        position: simpleSearchFilter.value.position,
         sort: emailSortOrderType.value.getSortOrder().toNullable(),
-        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
+        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(sortOrderType: emailSortOrderType.value),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ));
     }
@@ -362,9 +381,14 @@ class SearchEmailController extends BaseController
   void searchMoreEmailsAction() {
     if (canSearchMore && session != null && accountId != null) {
       final lastEmail = listResultSearch.last;
-      final firstEmail = listResultSearch.first;
-      if (emailSortOrderType.value == EmailSortOrderType.oldest) {
-        _updateSimpleSearchFilter(beforeOption: optionOf(firstEmail.receivedAt));
+
+      if (emailSortOrderType.value.isScrollByPosition()) {
+        _updateSimpleSearchFilter(
+          positionOption: Some(listResultSearch.length),
+          beforeOption: const None()
+        );
+      } else if (emailSortOrderType.value == EmailSortOrderType.oldest) {
+        _updateSimpleSearchFilter(startDateOption: optionOf(lastEmail.receivedAt));
       } else {
         _updateSimpleSearchFilter(beforeOption: optionOf(lastEmail.receivedAt));
       }
@@ -374,7 +398,8 @@ class SearchEmailController extends BaseController
         accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: simpleSearchFilter.value.sortOrder,
-        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(),
+        position: simpleSearchFilter.value.position,
+        filter: simpleSearchFilter.value.mappingToEmailFilterCondition(sortOrderType: emailSortOrderType.value),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
         lastEmailId: lastEmail.id
       ));
@@ -407,7 +432,8 @@ class SearchEmailController extends BaseController
     setTextInputSearchForm(query);
     _updateSimpleSearchFilter(
       textOption: Some(SearchQuery(query)),
-      beforeOption: const None()
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
     );
     _searchEmailAction(context);
   }
@@ -416,7 +442,8 @@ class SearchEmailController extends BaseController
     setTextInputSearchForm(recentSearch.value);
     _updateSimpleSearchFilter(
       textOption: Some(SearchQuery(recentSearch.value)),
-      beforeOption: const None()
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
     );
     _searchEmailAction(context);
   }
@@ -424,7 +451,8 @@ class SearchEmailController extends BaseController
   void submitSearchAction(BuildContext context, String query) {
     _updateSimpleSearchFilter(
       textOption: Some(SearchQuery(query)),
-      beforeOption: const None()
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
     );
     _searchEmailAction(context);
   }
@@ -453,19 +481,22 @@ class SearchEmailController extends BaseController
       case QuickSearchFilter.hasAttachment:
         _updateSimpleSearchFilter(
           hasAttachmentOption: Some(!filterSelected),
-          beforeOption: const None()
+          beforeOption: const None(),
+          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
         );
         break;
       case QuickSearchFilter.last7Days:
         _updateSimpleSearchFilter(
           emailReceiveTimeTypeOption: optionOf(emailReceiveTimeType.value),
-          beforeOption: const None()
+          beforeOption: const None(),
+          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
         );
         break;
       case QuickSearchFilter.sortBy:
         _updateSimpleSearchFilter(
           sortOrderOption: emailSortOrderType.value.getSortOrder(),
-          beforeOption: const None()
+          beforeOption: const None(),
+          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
         );
       default:
         break;
@@ -493,6 +524,7 @@ class SearchEmailController extends BaseController
             beforeOption: const None(),
             startDateOption: optionOf(newStartDate?.toUTCDate()),
             endDateOption: optionOf(newEndDate?.toUTCDate()),
+            positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
           );
 
           _setEmailReceiveTimeType(emailReceiveTimeType);
@@ -507,7 +539,8 @@ class SearchEmailController extends BaseController
           : optionOf(simpleSearchFilter.value.text),
         beforeOption: const None(),
         startDateOption: const None(),
-        endDateOption: const None()
+        endDateOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
       );
 
       _setEmailReceiveTimeType(emailReceiveTimeType);
@@ -519,7 +552,8 @@ class SearchEmailController extends BaseController
     popBack();
     _updateSimpleSearchFilter(
       sortOrderOption: sortOrderType.getSortOrder(),
-      beforeOption: const None()
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
     );
     emailSortOrderType.value = sortOrderType;
     _searchEmailAction(context);
@@ -541,7 +575,8 @@ class SearchEmailController extends BaseController
       if (mailboxSelected != null && mailbox?.id != mailboxSelected.id) {
         _updateSimpleSearchFilter(
           mailboxOption: Some(mailboxSelected),
-          beforeOption: const None()
+          beforeOption: const None(),
+          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
         );
 
         if (context.mounted) {
@@ -615,13 +650,15 @@ class SearchEmailController extends BaseController
       case PrefixEmailAddress.from:
         _updateSimpleSearchFilter(
           fromOption: Some(simpleSearchFilter.value.from),
-          beforeOption: const None()
+          beforeOption: const None(),
+          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
         );
         break;
       case PrefixEmailAddress.to:
         _updateSimpleSearchFilter(
           toOption: Some(simpleSearchFilter.value.to),
-          beforeOption: const None()
+          beforeOption: const None(),
+          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
         );
         break;
       default:
@@ -642,6 +679,7 @@ class SearchEmailController extends BaseController
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<Set<Comparator>>? sortOrderOption,
+    Option<int>? positionOption,
   }) {
     simpleSearchFilter.value = simpleSearchFilter.value.copyWith(
       fromOption: fromOption,
@@ -653,7 +691,8 @@ class SearchEmailController extends BaseController
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
-      sortOrderOption: sortOrderOption
+      sortOrderOption: sortOrderOption,
+      positionOption: positionOption,
     );
     simpleSearchFilter.refresh();
   }
