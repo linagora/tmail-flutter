@@ -3,14 +3,15 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 
 class SearchEmailFilter with EquatableMixin {
   final Set<String> from;
@@ -25,6 +26,7 @@ class SearchEmailFilter with EquatableMixin {
   final UTCDate? startDate;
   final UTCDate? endDate;
   final Set<Comparator>? sortOrder;
+  final int? position;
 
   factory SearchEmailFilter.initial() => SearchEmailFilter();
 
@@ -41,6 +43,7 @@ class SearchEmailFilter with EquatableMixin {
     this.startDate,
     this.endDate,
     this.sortOrder,
+    this.position,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
@@ -61,6 +64,7 @@ class SearchEmailFilter with EquatableMixin {
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<Set<Comparator>>? sortOrderOption,
+    Option<int>? positionOption,
   }) {
     return SearchEmailFilter(
       from: _getOptionParam(fromOption, from),
@@ -75,6 +79,7 @@ class SearchEmailFilter with EquatableMixin {
       startDate: _getOptionParam(startDateOption, startDate),
       endDate: _getOptionParam(endDateOption, endDate),
       sortOrder: _getOptionParam(sortOrderOption, sortOrder),
+      position: _getOptionParam(positionOption, position),
     );
   }
 
@@ -86,18 +91,25 @@ class SearchEmailFilter with EquatableMixin {
     }
   }
 
-  Filter? mappingToEmailFilterCondition({EmailFilterCondition? moreFilterCondition}) {
+  Filter? mappingToEmailFilterCondition({
+    required EmailSortOrderType sortOrderType,
+    EmailFilterCondition? moreFilterCondition
+  }) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value.trim().isNotEmpty == true
         ? text?.value
         : null,
       inMailbox: mailbox?.mailboxId,
-      after: emailReceiveTimeType.getAfterDate(startDate),
+      after: sortOrderType.isScrollByPosition()
+        ? null
+        : emailReceiveTimeType.getAfterDate(startDate),
       hasAttachment: hasAttachment == false ? null : hasAttachment,
       subject: subject?.trim().isNotEmpty == true
         ? subject
         : null,
-      before: emailReceiveTimeType.getBeforeDate(endDate, before)
+      before: sortOrderType.isScrollByPosition()
+        ? null
+        : emailReceiveTimeType.getBeforeDate(endDate, before)
     );
 
     final listEmailCondition = {
@@ -138,5 +150,6 @@ class SearchEmailFilter with EquatableMixin {
     startDate,
     endDate,
     sortOrder,
+    position,
   ];
 }

@@ -31,6 +31,7 @@ class ThreadAPI {
     AccountId accountId,
     {
       UnsignedInt? limit,
+      int? position,
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties
@@ -43,6 +44,8 @@ class ThreadAPI {
     final queryEmailMethod = QueryEmailMethod(accountId);
 
     if (limit != null) queryEmailMethod.addLimit(limit);
+
+    if (position != null) queryEmailMethod.addPosition(position);
 
     if (sort != null) queryEmailMethod.addSorts(sort);
 

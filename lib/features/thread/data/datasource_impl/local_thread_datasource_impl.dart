@@ -31,6 +31,7 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     AccountId accountId,
     {
       UnsignedInt? limit,
+      int? position,
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties
