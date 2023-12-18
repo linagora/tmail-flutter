@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 
 enum EmailSortOrderType {
   mostRecent,
@@ -82,5 +82,12 @@ enum EmailSortOrderType {
       fontWeight: FontWeight.w400,
       color: Colors.black,
     );
+  }
+
+  bool isScrollByPosition() {
+    return this == EmailSortOrderType.subjectDescending ||
+      this == EmailSortOrderType.subjectAscending ||
+      this == EmailSortOrderType.senderDescending ||
+      this == EmailSortOrderType.senderAscending;
   }
 }
