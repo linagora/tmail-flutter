@@ -18,12 +18,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
-import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
-import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -31,7 +25,13 @@ import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -570,48 +570,29 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         ),
         child: InkWell(
           onTap: () {
-            if (filter != QuickSearchFilter.last7Days) {
+            if (!filter.isTapOpenPopupMenu()) {
               controller.selectQuickSearchFilterAction(filter);
             }
           },
           onTapDown: (detail) {
-            if (filter == QuickSearchFilter.last7Days) {
-              final screenSize = MediaQuery.of(context).size;
-              final offset = detail.globalPosition;
-              final position = RelativeRect.fromLTRB(
-                offset.dx,
-                offset.dy,
-                screenSize.width - offset.dx,
-                screenSize.height - offset.dy,
-              );
-              controller.openPopupMenuAction(
-                context,
-                position,
-                popupMenuEmailReceiveTimeType(
-                  context,
-                  controller.searchController.receiveTimeFiltered,
-                  onCallBack: (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(context, receiveTime)
-                )
-              );
-            }
-            if (filter == QuickSearchFilter.sortBy) {
-              final screenSize = MediaQuery.of(context).size;
-              final offset = detail.globalPosition;
-              final position = RelativeRect.fromLTRB(
-                offset.dx,
-                offset.dy,
-                screenSize.width - offset.dx,
-                screenSize.height - offset.dy,
-              );
-              controller.openPopupMenuAction(
-                context,
-                position,
-                popupMenuEmailSortOrderType(
-                  context,
-                  controller.searchController.sortOrderFiltered.value,
-                  onCallBack: (sortOrder) => controller.selectSortOrderQuickSearchFilter(context, sortOrder)
-                )
-              );
+            final screenSize = MediaQuery.of(context).size;
+            final offset = detail.globalPosition;
+            final position = RelativeRect.fromLTRB(
+              offset.dx,
+              offset.dy,
+              screenSize.width - offset.dx,
+              screenSize.height - offset.dy,
+            );
+
+            switch(filter) {
+              case QuickSearchFilter.last7Days:
+                _openPopupMenuDateFilter(context, position);
+                break;
+              case QuickSearchFilter.sortBy:
+                _openPopupMenuSortFilter(context, position);
+                break;
+              default:
+                break;
             }
           },
           borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -690,6 +671,33 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           onCallbackAction: () => onCallBack?.call(sortType),
         )))
       .toList();
+  }
+
+  void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
+    controller.openPopupMenuAction(
+      context,
+      position,
+      popupMenuEmailReceiveTimeType(
+        context,
+        controller.searchController.receiveTimeFiltered,
+        onCallBack: (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(
+          context,
+          receiveTime
+        )
+      )
+    );
+  }
+
+  void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
+    controller.openPopupMenuAction(
+      context,
+      position,
+      popupMenuEmailSortOrderType(
+        context,
+        controller.searchController.sortOrderFiltered.value,
+        onCallBack: (sortOrder) => controller.selectSortOrderQuickSearchFilter(context, sortOrder)
+      )
+    );
   }
 
   Widget _buildComposerButton(BuildContext context) {
