@@ -14,9 +14,9 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
-import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
@@ -38,6 +38,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
     AccountId accountId,
     {
       UnsignedInt? limit,
+      int? position,
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
@@ -48,6 +49,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         session,
         accountId,
         limit: limit,
+        position: position,
         sort: sort,
         filter: filter,
         properties: properties);
