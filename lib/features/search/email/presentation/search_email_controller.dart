@@ -397,7 +397,7 @@ class SearchEmailController extends BaseController
         session!,
         accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: simpleSearchFilter.value.sortOrder,
+        sort: emailSortOrderType.value.getSortOrder().toNullable(),
         position: simpleSearchFilter.value.position,
         filter: simpleSearchFilter.value.mappingToEmailFilterCondition(sortOrderType: emailSortOrderType.value),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),

@@ -88,6 +88,7 @@ enum EmailSortOrderType {
     return this == EmailSortOrderType.subjectDescending ||
       this == EmailSortOrderType.subjectAscending ||
       this == EmailSortOrderType.senderDescending ||
-      this == EmailSortOrderType.senderAscending;
+      this == EmailSortOrderType.senderAscending ||
+      this == EmailSortOrderType.relevance;
   }
 }
