@@ -7,8 +7,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = holdersList[2];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
-    C.TextStyle_kmC = new A.TextStyle(true, B.Color_4278221567, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    C.TextStyle_kmC0 = new A.TextStyle(true, B.Color_4278221567, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   })();
 };
 
-$__dart_deferred_initializers__["S1axGdHdFFH9Gyf2prWQNz2RnVo="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["wbi8BQD5wMzsQq90RuK2jo9Zqtc="] = $__dart_deferred_initializers__.current
