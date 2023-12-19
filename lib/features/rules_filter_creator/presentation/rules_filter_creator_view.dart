@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
 import 'model/rule_filter_condition_type.dart';
 
 class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
@@ -457,10 +458,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         onChangeAction: (value) => controller.updateRuleName(context, value),)),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Divider(
-                            color: AppColor.colorDividerRuleFilter,
-                            height: 1,
-                            thickness: 0.2),
+                        child: Divider(),
                       ),
                       Obx(() => RuleFilterTitle(
                         conditionCombinerType: controller.conditionCombinerType.value,
@@ -505,9 +503,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Divider(
-                            color: AppColor.colorDividerRuleFilter,
-                            height: 1),
+                        child: Divider(),
                       ),
                       Text(AppLocalizations.of(context).actionTitleRulesFilter,
                           overflow: CommonTextStyle.defaultTextOverFlow,
