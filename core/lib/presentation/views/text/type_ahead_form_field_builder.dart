@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -23,6 +24,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
   final List<String>? autofillHints;
   final TextInputType keyboardType;
   final InputDecoration decoration;
+  final Color cursorColor;
 
   const TypeAheadFormFieldBuilder({
     super.key,
@@ -41,6 +43,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.controller,
     this.focusNode,
+    this.cursorColor = AppColor.primaryColor,
     this.autofillHints,
     this.textInputAction,
     this.onTextChange,
@@ -76,6 +79,7 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
         decoration: widget.decoration,
         focusNode: widget.focusNode,
         textDirection: _textDirection,
+        cursorColor: widget.cursorColor,
         onChanged: (value) {
           widget.onTextChange?.call(value);
           if (value.isNotEmpty) {
