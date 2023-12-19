@@ -31,6 +31,7 @@ class ConfirmDialogBuilder {
   EdgeInsets? _margin;
   double? _widthDialog;
   double? _heightDialog;
+  double maxWith;
   Alignment? _alignment;
   Color? _backgroundColor;
   bool showAsBottomSheet;
@@ -46,6 +47,7 @@ class ConfirmDialogBuilder {
       this.showAsBottomSheet = false,
       this.listTextSpan,
       this.heightButton,
+      this.maxWith = double.infinity,
     }
   );
 
@@ -169,6 +171,7 @@ class ConfirmDialogBuilder {
     return Container(
         width: _widthDialog ?? 400,
         height: _heightDialog,
+        constraints: BoxConstraints(maxWidth: maxWith),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(18))),
