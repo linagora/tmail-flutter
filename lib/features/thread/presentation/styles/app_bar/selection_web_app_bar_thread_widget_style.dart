@@ -14,9 +14,9 @@ class SelectionWebAppBarThreadWidgetStyle {
 
   static EdgeInsetsGeometry getPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+      return const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
     } else {
-      return const EdgeInsets.symmetric(horizontal: 32, vertical: 8);
+      return const EdgeInsets.symmetric(horizontal: 24, vertical: 8);
     }
   }
   static const EdgeInsetsGeometry closeButtonPadding = EdgeInsets.all(3);

@@ -118,7 +118,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       ]),
                       Expanded(child: Column(children: [
                         const SpamReportBannerWebWidget(),
-                        const QuotasBannerWidget(),
+                        QuotasBannerWidget(
+                          margin: const EdgeInsetsDirectional.only(end: 16, top: 8),
+                        ),
                         _buildVacationNotificationMessage(context),
                         Obx(() {
                           if (controller.isEmptyTrashBannerEnabledOnWeb(context)) {
@@ -182,7 +184,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               SizedBox(
                                   width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                                   child: ThreadView()),
-                              const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
+                              const VerticalDivider(width: 1),
                               const Expanded(child: EmailView()),
                             ],
                           ),
@@ -195,7 +197,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         SizedBox(
                             width: ResponsiveUtils.defaultSizeLeftMenuMobile,
                             child: ThreadView()),
-                        const VerticalDivider(color: AppColor.lineItemListColor, width: 12),
+                        const VerticalDivider(width: 1),
                         const Expanded(child: EmailView()),
                       ],
                     ),
@@ -276,7 +278,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               );
             }
           }),
-          const Divider(color: AppColor.colorDivider, height: 1),
+          const Divider(),
           Expanded(child: ThreadView())
         ]),
       ),

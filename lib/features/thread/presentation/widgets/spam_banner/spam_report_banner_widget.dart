@@ -8,22 +8,24 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/s
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SpamReportBannerWidget extends StatelessWidget {
-  const SpamReportBannerWidget({ Key? key }) : super(key: key);
+  final EdgeInsetsGeometry? margin;
+  final SpamReportController spamReportController;
+
+  const SpamReportBannerWidget({
+    Key? key,
+    required this.spamReportController,
+    this.margin
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context){
-    final spamReportController = Get.find<SpamReportController>();
 
     return Obx(() {
       if (!spamReportController.enableSpamReport || spamReportController.notShowSpamReportBanner) {
         return const SizedBox.shrink();
       }
       return Container(
-        margin: const EdgeInsetsDirectional.only(
-          start: SpamReportBannerStyles.horizontalMargin,
-          end: SpamReportBannerStyles.horizontalMargin,
-          bottom: SpamReportBannerStyles.verticalMargin
-        ),
+        margin: margin,
         padding: const EdgeInsetsDirectional.all(SpamReportBannerStyles.padding),
         decoration: ShapeDecoration(
           color: SpamReportBannerStyles.backgroundColor,

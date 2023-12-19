@@ -45,9 +45,7 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
                         fontWeight: FontWeight.w500,
                         color: AppColor.colorTextButtonHeaderThread)),
               ),
-              const Divider(
-                color: AppColor.lineItemListColor,
-                height: 1),
+              const Divider(),
               Obx(() {
                 log('ListEmailRulesWidget::build(): ${controller.listEmailRule}');
                 return ListView.separated(
@@ -63,9 +61,7 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
                   },
                   separatorBuilder: (context, index) {
                     if (controller.listEmailRule.isNotEmpty) {
-                      return const Divider(
-                        color: AppColor.lineItemListColor,
-                        height: 1);
+                      return const Divider();
                     } else {
                       return const SizedBox.shrink();
                     }
