@@ -72,7 +72,12 @@ mixin MessageDialogActionMixin {
         if (showAsBottomSheet) {
           return await Get.bottomSheet(
             PointerInterceptor(
-              child: (ConfirmDialogBuilder(imagePaths, showAsBottomSheet: true, listTextSpan: listTextSpan)
+              child: (ConfirmDialogBuilder(
+                imagePaths,
+                showAsBottomSheet: true,
+                listTextSpan: listTextSpan,
+                maxWith: responsiveUtils.getSizeScreenShortestSide(context) - 16
+              )
                 ..key(const Key('confirm_dialog_action'))
                 ..title(title ?? '')
                 ..content(message)
@@ -107,10 +112,7 @@ mixin MessageDialogActionMixin {
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
             backgroundColor: Colors.transparent,
             enableDrag: true,
-            constraints: BoxConstraints(
-                maxWidth: responsiveUtils.getSizeScreenShortestSide(context) - 16
-            ),
-            useSafeArea: true,
+            ignoreSafeArea: false,
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(18))),
           );
         } else {
