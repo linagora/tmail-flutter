@@ -1,18 +1,23 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class NetworkConnectionBannerWidget extends StatelessWidget {
 
-  const NetworkConnectionBannerWidget({super.key});
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  NetworkConnectionBannerWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: AppColor.colorNetworkConnectionBannerBackground,
       width: double.infinity,
-      padding: const EdgeInsetsDirectional.symmetric(vertical: 6, horizontal: 16),
+      padding: _getPadding(context),
+      margin: const EdgeInsetsDirectional.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -30,5 +35,13 @@ class NetworkConnectionBannerWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  EdgeInsetsGeometry _getPadding(BuildContext context) {
+    if (_responsiveUtils.isMobile(context) || _responsiveUtils.isTabletLarge(context)) {
+      return const EdgeInsets.symmetric(horizontal: 12, vertical: 6);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 24, vertical: 6);
+    }
   }
 }

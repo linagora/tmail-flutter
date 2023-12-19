@@ -65,7 +65,6 @@ extension AppColor on Color {
   static const backgroundCountAttachment = Color(0x681C1C1C);
   static const bgStatusResultSearch = Color(0xFFF5F5F7);
   static const bgWordSearch = Color(0x3D007AFF);
-  static const lineItemListColor = Color(0xFFE7E8EC);
   static const colorNameEmail = Color(0xFF000000);
   static const colorContentEmail = Color(0xFF6D7885);
   static const colorTextButton = Color(0xFF007AFF);
@@ -108,7 +107,7 @@ extension AppColor on Color {
   static const colorButtonHeaderThread = Color(0x99EBEDF0);
   static const colorBorderBodyThread = Color(0x5CB8C1CC);
   static const colorBgDesktop = Color(0xFFF6F6F6);
-  static const colorItemEmailSelectedDesktop = Color(0x0F007AFF);
+  static const colorItemEmailSelectedDesktop = Color(0xFFDFEEFF);
   static const colorAvatar = Color(0xFFDE5E5E);
   static const colorFocusButton = Color(0x14818C99);
   static const colorBorderEmailAddressInvalid = Color(0xFFFF3347);
@@ -132,18 +131,12 @@ extension AppColor on Color {
   static const colorBackgroundSnackBar = Color(0xFF343438);
   static const colorBackgroundHeaderListRuleFilter = Color(0xFFFAF7F7);
   static const colorBorderListRuleFilter = Color(0xFFE7E8EC);
-  static const colorBackgroundHeaderListForwards = Color(0xFFF8F9FA);
-  static const colorBorderListForwardsFilter = Color(0xFFE7E8EC);
   static const colorBackgroundFieldConditionRulesFilter = Color(0xFFF2F3F5);
-  static const colorDividerRuleFilter = Color(0xFFE7E8EC);
-  static const colorIconTextField = Color(0xFFB8C1CC);
   static const colorDeletePermanentlyButton = Color(0xffE64646);
-  static const colorDefaultButton = Color(0xff9AA1AD);
   static const colorVacationSettingExplanation = Color(0xFF686E76);
   static const colorBackgroundVacationSettingField = Color(0xFFF2F3F5);
   static const colorBackgroundNotificationVacationSetting= Color(0xFFFFF5C2);
   static const colorDivider = Color(0xFFE7E8EC);
-  static const colorDividerVertical = Color(0xFF99A2AD);
   static const colorCloseButton = Color(0xFF818C99);
   static const colorDropShadow = Color(0x0F000000);
   static const colorBackgroundKeyboard = Color(0xFFD2D5DC);

@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
@@ -144,7 +143,7 @@ class SendingEmailTileWidget extends StatelessWidget {
               ),
               Padding(
                 padding: SendingEmailTileStyle.getPaddingDividerListViewByResponsiveSize(constraints.maxWidth),
-                child: const Divider(color: AppColor.lineItemListColor, height: 1),
+                child: const Divider(),
               )
             ],
           ),
