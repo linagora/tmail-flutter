@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 
 class ItemEmailTileStyles {
@@ -18,31 +17,21 @@ class ItemEmailTileStyles {
     }
   }
 
-  static EdgeInsetsGeometry getPaddingItemList(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (PlatformInfo.isWeb) {
-      if (responsiveUtils.isDesktop(context)) {
-        return const EdgeInsetsDirectional.only(start: 120);
-      } else if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
-        return const EdgeInsets.symmetric(horizontal: 16);
-      } else {
-        return const EdgeInsets.symmetric(horizontal: 32);
-      }
+  static EdgeInsetsGeometry getMobilePaddingItemList(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16);
     } else {
-      if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
-        return const EdgeInsets.symmetric(horizontal: 16);
-      } else {
-        return const EdgeInsets.symmetric(horizontal: 32);
-      }
+      return const EdgeInsets.symmetric(horizontal: 32);
     }
   }
 
   static EdgeInsetsGeometry getPaddingDividerWeb(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isDesktop(context)) {
-      return const EdgeInsetsDirectional.only(start: 120);
-    } else if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
-      return const EdgeInsets.symmetric(horizontal: 12);
-    } else {
+      return const EdgeInsetsDirectional.only(start: 120, top: 2);
+    }else if (responsiveUtils.isTablet(context)) {
       return const EdgeInsets.symmetric(horizontal: 24);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 12);
     }
   }
 }

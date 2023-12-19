@@ -42,7 +42,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
       type: MaterialType.transparency,
       child: ListTile(
         tileColor: isShowingEmailContent ? AppColor.colorItemEmailSelectedDesktop : null,
-        contentPadding: padding ?? ItemEmailTileStyles.getPaddingItemList(context, responsiveUtils),
+        contentPadding: padding ?? ItemEmailTileStyles.getMobilePaddingItemList(context, responsiveUtils),
         onTap: () => emailActionClick?.call(
             EmailActionType.preview,
             presentationEmail),
@@ -98,7 +98,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-                padding: const EdgeInsetsDirectional.only(top: 6),
+                padding: const EdgeInsetsDirectional.only(top: 2),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -121,7 +121,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
                   ],
                 )),
             Padding(
-                padding: const EdgeInsetsDirectional.only(top: 6),
+                padding: const EdgeInsetsDirectional.only(top: 2),
                 child: Row(children: [
                   Expanded(child: buildEmailPartialContent(
                     context,
