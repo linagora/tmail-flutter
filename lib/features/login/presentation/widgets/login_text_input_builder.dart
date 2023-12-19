@@ -123,7 +123,7 @@ class _LoginTextInputBuilderState extends State<LoginTextInputBuilder> {
         ),
         if (widget.passwordInput)
           TMailButtonWidget.fromIcon(
-            icon: widget.obscureText ? imagePaths.icEye : imagePaths.icEyeOff,
+            icon: _obscureText ? imagePaths.icEye : imagePaths.icEyeOff,
             iconSize: 18,
             margin: const EdgeInsetsDirectional.only(end: 4),
             backgroundColor: Colors.transparent,
