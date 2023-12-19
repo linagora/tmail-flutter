@@ -11,6 +11,7 @@ class ThemeUtils {
       fontFamily: ConstantsUI.fontApp,
       appBarTheme: _appBarTheme,
       textTheme: _textTheme,
+      dividerTheme: _dividerTheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       scrollbarTheme: ScrollbarThemeData(
         thickness: MaterialStateProperty.all(2.0), 
@@ -33,6 +34,13 @@ class ThemeUtils {
       systemOverlayStyle: SystemUiOverlayStyle.light,
       iconTheme: IconThemeData(color: Colors.black),
       titleTextStyle: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
+    );
+  }
+
+  static DividerThemeData get _dividerTheme {
+    return const DividerThemeData(
+      color: AppColor.colorDivider,
+      space: 0
     );
   }
 

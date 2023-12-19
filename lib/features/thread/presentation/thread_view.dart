@@ -56,8 +56,8 @@ class ThreadView extends GetWidget<ThreadController>
         backgroundColor: Colors.white,
         body: Portal(
           child: Row(children: [
-            if (supportVerticalDivider(context))
-              const VerticalDivider(color: AppColor.colorDividerVertical, width: 1),
+            if (_supportVerticalDivider(context))
+              const VerticalDivider(),
             Expanded(child: SafeArea(
                 right: controller.responsiveUtils.isLandscapeMobile(context),
                 left: controller.responsiveUtils.isLandscapeMobile(context),
@@ -101,20 +101,41 @@ class ThreadView extends GetWidget<ThreadController>
                                 : null
                             );
                           }),
-                          if (!PlatformInfo.isWeb)
+                          if (PlatformInfo.isMobile)
                             Obx(() {
                               if (!controller.networkConnectionController.isNetworkConnectionAvailable()) {
-                                return const Padding(
-                                  padding: EdgeInsetsDirectional.only(bottom: 8),
-                                  child: NetworkConnectionBannerWidget());
+                                return NetworkConnectionBannerWidget();
                               } else {
                                 return const SizedBox.shrink();
                               }
                             }),
-                          _buildSearchBarView(context),
-                          const SpamReportBannerWidget(),
-                          const QuotasBannerWidget(),
-                          _buildVacationNotificationMessage(context),
+                          SearchBarView(
+                            key: const Key('email_search_bar_view'),
+                            imagePaths: controller.imagePaths,
+                            margin: _getBannerMargin(context, controller.responsiveUtils),
+                            hintTextSearch: AppLocalizations.of(context).search_emails,
+                            onOpenSearchViewAction: controller.goToSearchView
+                          ),
+                          SpamReportBannerWidget(
+                            spamReportController: controller.mailboxDashBoardController.spamReportController,
+                            margin: _getBannerMargin(context, controller.responsiveUtils),
+                          ),
+                          QuotasBannerWidget(
+                            margin: _getBannerMargin(context, controller.responsiveUtils),
+                          ),
+                          Obx(() {
+                            final vacation = controller.mailboxDashBoardController.vacationResponse.value;
+                            if (vacation?.vacationResponderIsValid == true) {
+                              return VacationNotificationMessageWidget(
+                                margin: _getBannerMargin(context, controller.responsiveUtils),
+                                vacationResponse: vacation!,
+                                actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
+                                actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
                         ],
                       Obx(() {
                         if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context)) {
@@ -147,7 +168,21 @@ class ThreadView extends GetWidget<ThreadController>
                       if (!controller.responsiveUtils.isDesktop(context))
                         _buildMarkAsMailboxReadLoading(context),
                       Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
-                      Expanded(child: _buildListEmail(context)),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.center,
+                          color: Colors.white,
+                          child: Obx(() {
+                            return Visibility(
+                              visible: controller.openingEmail.isFalse,
+                              child: _buildResultListEmail(
+                                context,
+                                controller.mailboxDashBoardController.emailsInCurrentMailbox
+                              )
+                            );
+                          })
+                        )
+                      ),
                       Obx(() => ThreadViewBottomLoadingBarWidget(viewState: controller.viewState.value)),
                       _buildListButtonSelectionForMobile(context),
                     ]
@@ -181,7 +216,23 @@ class ThreadView extends GetWidget<ThreadController>
     );
   }
 
-  bool supportVerticalDivider(BuildContext context) {
+  EdgeInsetsGeometry _getBannerMargin(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (PlatformInfo.isWeb) {
+      if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
+        return const EdgeInsetsDirectional.only(start: 12, end: 12, bottom: 8);
+      } else {
+        return const EdgeInsetsDirectional.only(start: 24, end: 24, bottom: 8);
+      }
+    } else {
+      if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
+        return const EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 8);
+      } else {
+        return const EdgeInsetsDirectional.only(start: 32, end: 32, bottom: 8);
+      }
+    }
+  }
+
+  bool _supportVerticalDivider(BuildContext context) {
     if (PlatformInfo.isWeb) {
       return controller.responsiveUtils.isTabletLarge(context);
     } else {
@@ -189,31 +240,6 @@ class ThreadView extends GetWidget<ThreadController>
         controller.responsiveUtils.isTabletLarge(context) ||
         controller.responsiveUtils.isLandscapeTablet(context);
     }
-  }
-
-  Widget _buildSearchBarView(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: ItemEmailTileStyles.getPaddingItemList(context, controller.responsiveUtils),
-      margin: EdgeInsets.only(bottom: !controller.responsiveUtils.isWebDesktop(context) ? 8 : 0),
-      child: SearchBarView(controller.imagePaths,
-        hintTextSearch: AppLocalizations.of(context).search_emails,
-        onOpenSearchViewAction: controller.goToSearchView));
-  }
-
-  Widget _buildVacationNotificationMessage(BuildContext context) {
-    return Obx(() {
-      final vacation = controller.mailboxDashBoardController.vacationResponse.value;
-      if (vacation?.vacationResponderIsValid == true) {
-        return VacationNotificationMessageWidget(
-          margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
-          vacationResponse: vacation!,
-          actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-          actionEndNow: controller.mailboxDashBoardController.disableVacationResponder);
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
   }
 
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
@@ -296,21 +322,6 @@ class ThreadView extends GetWidget<ThreadController>
       .build()).toList();
   }
 
-  Widget _buildListEmail(BuildContext context) {
-    return Container(
-      padding: PlatformInfo.isWeb
-        ? const EdgeInsets.symmetric(horizontal: 4)
-        : EdgeInsets.zero,
-      alignment: Alignment.center,
-      color: Colors.white,
-      child: Obx(() {
-        return Visibility(
-          visible: controller.openingEmail.isFalse,
-          child: _buildResultListEmail(context, controller.mailboxDashBoardController.emailsInCurrentMailbox));
-      })
-    );
-  }
-
   Widget _buildResultListEmail(BuildContext context, List<PresentationEmail> listPresentationEmail) {
     if (controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE) {
       return listPresentationEmail.isNotEmpty
@@ -354,8 +365,8 @@ class ThreadView extends GetWidget<ThreadController>
             separatorBuilder: (context, index) {
               if (index < listPresentationEmail.length - 1) {
                 return Padding(
-                  padding: ItemEmailTileStyles.getPaddingItemList(context, controller.responsiveUtils),
-                  child: const Divider(color: AppColor.lineItemListColor, height: 1));
+                  padding: ItemEmailTileStyles.getMobilePaddingItemList(context, controller.responsiveUtils),
+                  child: const Divider());
               } else {
                 return const SizedBox.shrink();
               }
@@ -379,9 +390,8 @@ class ThreadView extends GetWidget<ThreadController>
                     child: Divider(
                       color: index < listPresentationEmail.length - 1 &&
                         controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
-                          ? AppColor.lineItemListColor
+                          ? null
                           : Colors.white,
-                      height: 1
                     )
                   );
                 },

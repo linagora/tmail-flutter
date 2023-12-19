@@ -527,7 +527,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 if (index < listPresentationEmail.length - 1) {
                   return Padding(
                     padding: SearchEmailUtils.getPaddingItemListMobile(context, controller.responsiveUtils),
-                    child: const Divider(color: AppColor.lineItemListColor, height: 1));
+                    child: const Divider());
                 } else {
                   return const SizedBox.shrink();
                 }
@@ -581,9 +581,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     child: Divider(
                       color: index < listPresentationEmail.length - 1 &&
                         controller.selectionMode.value == SelectMode.INACTIVE
-                        ? AppColor.lineItemListColor
-                        : Colors.white,
-                      height: 1
+                        ? null
+                        : Colors.white
                     )
                   );
                 },

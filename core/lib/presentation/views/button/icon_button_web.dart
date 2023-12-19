@@ -1,10 +1,9 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 typedef IconWebCallback = void Function();
-typedef IconWebHasPositionCallback = void Function(RelativeRect);
 typedef OnTapIconButtonCallbackAction = void Function();
 typedef OnTapDownIconButtonCallbackAction = void Function(TapDownDetails tapDetails);
 
@@ -51,7 +50,7 @@ Widget buildSVGIconButton({
       width: iconSize,
       height: iconSize,
       fit: BoxFit.fill,
-      colorFilter: iconColor.asFilter(),
+      colorFilter: iconColor?.asFilter(),
     ),
   );
 
@@ -73,46 +72,6 @@ Widget buildSVGIconButton({
       customBorder: const CircleBorder(),
       child: itemChild,
     )
-  );
-}
-
-Widget buildIconWebHasPosition(BuildContext context, {
-  required Widget icon,
-  String? tooltip,
-  IconWebHasPositionCallback? onTapDown,
-  IconWebCallback? onTap,
-}) {
-  return Material(
-    color: Colors.transparent,
-    shape: const CircleBorder(),
-    child: InkWell(
-        onTapDown: (detail) {
-          onTapDown?.call(detail.getPosition(context));
-        },
-        onTap: () => onTap?.call(),
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-        child: Tooltip(
-          message: tooltip ?? '',
-          child: icon,
-        )
-    ),
-  );
-}
-
-Widget buildTextIcon(String text, {
-  TextStyle? textStyle,
-  EdgeInsetsGeometry? padding,
-  IconWebCallback? onTap,
-}) {
-  return Material(
-      shape: const CircleBorder(),
-      color: Colors.transparent,
-      child: InkWell(
-          child: Padding(
-              padding: padding ?? const EdgeInsets.all(10),
-              child: Text(text, style: textStyle ?? const TextStyle(fontWeight: FontWeight.normal, fontSize: 15, color: AppColor.lineItemListColor))),
-          onTap: () => onTap?.call()
-      )
   );
 }
 
@@ -187,73 +146,5 @@ Widget buildButtonWrapText(String name, {
                   fontWeight: FontWeight.w500,
                   color: Colors.white)),
     ),
-  );
-}
-
-Widget buildIconWithLowerMenu(
-  Widget icon,
-  BuildContext context,
-  List<PopupMenuEntry> popupMenuItems,
-  Function(BuildContext context, RelativeRect? position,
-          List<PopupMenuEntry> popupMenuItems)
-      openPopUpMenuAction,
-) {
-  return Builder(
-    builder: (iconContext) {
-      final screenSize = MediaQuery.of(context).size;
-
-      return buildIconWeb(
-          icon: icon,
-          onTap: () {
-            // get size and position of the icon
-            RenderBox box = iconContext.findRenderObject() as RenderBox;
-            Offset iconTopLeft = box.localToGlobal(Offset.zero);
-            final iconSize = box.size;
-
-            // calculate the popup position for popup menu action
-            final popupLeft = iconTopLeft.dx + iconSize.width * 3 / 4;
-            final popupTop = iconTopLeft.dy + iconSize.height * 4 / 5;
-            final popupRight = screenSize.width - popupLeft;
-            final popupBottom = screenSize.height - popupRight;
-            final position = RelativeRect.fromLTRB(
-                popupLeft, popupTop, popupRight, popupBottom);
-
-            openPopUpMenuAction(context, position, popupMenuItems);
-          });
-    },
-  );
-}
-
-Widget buildIconWithUpperMenu(
-  Widget icon,
-  BuildContext context,
-  List<PopupMenuEntry> popupMenuItems,
-  Function(BuildContext context, RelativeRect? position,
-          List<PopupMenuEntry> popupMenuItems)
-      openPopUpMenuAction,
-) {
-  return Builder(
-    builder: (iconContext) {
-      final screenSize = MediaQuery.of(context).size;
-
-      return buildIconWeb(
-          icon: icon,
-          onTap: () {
-            // get size and position of the icon
-            RenderBox box = iconContext.findRenderObject() as RenderBox;
-            Offset iconTopLeft = box.localToGlobal(Offset.zero);
-            final iconSize = box.size;
-
-            // calculate the popup position for popup menu action
-            final popupLeft = iconTopLeft.dx + iconSize.width * 3 / 4;
-            final popupTop = iconTopLeft.dy - iconSize.height * 9 / 5;
-            final popupRight = screenSize.width - popupLeft;
-            final popupBottom = screenSize.height - popupRight;
-            final position = RelativeRect.fromLTRB(
-                popupLeft, popupTop, popupRight, popupBottom);
-
-            openPopUpMenuAction(context, position, popupMenuItems);
-          });
-    },
   );
 }

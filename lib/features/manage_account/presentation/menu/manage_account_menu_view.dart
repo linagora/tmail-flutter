@@ -112,7 +112,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                        }),
                        const Padding(
                            padding: EdgeInsets.symmetric(vertical: 16),
-                           child: Divider(color: AppColor.lineItemListColor, height: 1)),
+                           child: Divider()),
                        Padding(
                          padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
                          child: Material(

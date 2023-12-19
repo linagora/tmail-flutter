@@ -249,7 +249,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           if (actions?.canSearch() == true &&
             controller.destinationScreenType.value == DestinationScreenType.destinationPicker)
               SearchBarView(
-                controller.imagePaths,
+                key: const Key('folder_search_bar_view'),
+                imagePaths: controller.imagePaths,
                 margin: const EdgeInsets.all(16),
                 hintTextSearch: AppLocalizations.of(context).hintSearchFolders,
                 onOpenSearchViewAction: controller.enableSearch

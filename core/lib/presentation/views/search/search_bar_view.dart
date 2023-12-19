@@ -1,77 +1,68 @@
 
-import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 typedef OnOpenSearchViewAction = Function();
 
 class SearchBarView extends StatelessWidget {
 
   final OnOpenSearchViewAction? onOpenSearchViewAction;
-  final ImagePaths _imagePaths;
-  final double? heightSearchBar;
-  final EdgeInsets? padding;
-  final EdgeInsets? margin;
+  final ImagePaths imagePaths;
+  final EdgeInsetsGeometry? margin;
   final String? hintTextSearch;
-  final double? maxSizeWidth;
-  final Widget? rightButton;
-  final double? radius;
 
-   const SearchBarView(this._imagePaths, {Key? key,
-    this.heightSearchBar,
-    this.padding,
-    this.margin,
-    this.hintTextSearch,
-    this.maxSizeWidth,
-    this.rightButton,
-    this.onOpenSearchViewAction,
-    this.radius,
+   const SearchBarView({
+     Key? key,
+     required this.imagePaths,
+     this.margin,
+     this.hintTextSearch,
+     this.onOpenSearchViewAction,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        key: const Key('search_bar_widget'),
-        alignment: Alignment.center,
-        height: heightSearchBar ?? 40,
-        width: maxSizeWidth ?? double.infinity,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius ?? 10),
-            color: AppColor.colorBgSearchBar),
-        padding: padding ?? EdgeInsets.zero,
-        margin: margin ?? EdgeInsets.zero,
-        child: InkWell(
-          onTap: onOpenSearchViewAction,
-          mouseCursor: SystemMouseCursors.text,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(width: 8),
-              buildIconWeb(
-                minSize: 40,
-                iconPadding: EdgeInsets.zero,
-                icon: SvgPicture.asset(
-                  _imagePaths.icSearchBar,
-                  fit: BoxFit.fill
+    return Padding(
+      padding: margin ?? EdgeInsets.zero,
+      child: InkWell(
+        onTap: onOpenSearchViewAction,
+        mouseCursor: SystemMouseCursors.text,
+        splashColor: Colors.transparent,
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        child: Container(
+            alignment: Alignment.center,
+            height: 40,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              color: AppColor.colorBgSearchBar
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TMailButtonWidget.fromIcon(
+                  icon: imagePaths.icSearchBar,
+                  backgroundColor: Colors.transparent,
+                  onTapActionCallback: onOpenSearchViewAction
                 ),
-                onTap: onOpenSearchViewAction
-              ),
-              Expanded(
-                child: Text(
+                Expanded(
+                  child: Text(
                     hintTextSearch ?? '',
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     style: const TextStyle(
-                        fontSize: kIsWeb ? 15 : 17,
-                        color: AppColor.colorHintSearchBar)),
-              ),
-              if(rightButton != null)
-                rightButton!
-            ]
-          ),
+                      fontSize: 17,
+                      color: AppColor.colorHintSearchBar
+                    )
+                  ),
+                )
+              ]
+            ),
         ),
+      ),
     );
   }
 }

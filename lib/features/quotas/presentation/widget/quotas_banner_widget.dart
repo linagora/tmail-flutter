@@ -1,5 +1,3 @@
-import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -9,26 +7,25 @@ import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_banner_
 
 class QuotasBannerWidget extends StatelessWidget {
 
-  const QuotasBannerWidget({Key? key}) : super(key: key);
+  final QuotasController _quotasController = Get.find<QuotasController>();
+  final EdgeInsetsGeometry? margin;
+  
+  QuotasBannerWidget({
+    Key? key, 
+    this.margin, 
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<QuotasController>();
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Obx(() {
-      if (controller.octetsQuota.value != null && controller.octetsQuota.value!.allowedDisplayToQuotaBanner) {
-        final octetQuota = controller.octetsQuota.value!;
+      if (_quotasController.octetsQuota.value != null && _quotasController.octetsQuota.value!.allowedDisplayToQuotaBanner) {
+        final octetQuota = _quotasController.octetsQuota.value!;
         return Container(
           decoration: BoxDecoration(
             color: octetQuota.getQuotaBannerBackgroundColor(),
             borderRadius: const BorderRadius.all(Radius.circular(QuotasBannerStyles.borderRadius)),
           ),
-          margin: EdgeInsetsDirectional.only(
-            end: QuotasBannerStyles.endMargin,
-            top: PlatformInfo.isWeb ? QuotasBannerStyles.topMargin : 0,
-            start: responsiveUtils.isWebDesktop(context) ? 0 : QuotasBannerStyles.startMargin,
-            bottom: responsiveUtils.isWebDesktop(context) ? 0 : QuotasBannerStyles.bottomMargin
-          ),
+          margin: margin,
           padding: const EdgeInsetsDirectional.symmetric(
             horizontal: QuotasBannerStyles.horizontalPadding,
             vertical: QuotasBannerStyles.verticalPadding,
@@ -36,7 +33,7 @@ class QuotasBannerWidget extends StatelessWidget {
           child: Row(
             children: [
               SvgPicture.asset(
-                octetQuota.getQuotaBannerIcon(controller.imagePaths),
+                octetQuota.getQuotaBannerIcon(_quotasController.imagePaths),
                 width: QuotasBannerStyles.iconSize,
                 height: QuotasBannerStyles.iconSize,
                 fit: BoxFit.fill,
