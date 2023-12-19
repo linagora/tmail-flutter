@@ -70,16 +70,19 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => widget.emailActionClick?.call(
-                    widget.selectAllMode == SelectMode.ACTIVE
-                      ? EmailActionType.selection
-                      : EmailActionType.preview,
-                    widget.presentationEmail
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.only(top: 8, end: 12),
-                    child: _buildAvatarIcon(context: context),
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () => widget.emailActionClick?.call(
+                      widget.selectAllMode == SelectMode.ACTIVE
+                        ? EmailActionType.selection
+                        : EmailActionType.preview,
+                      widget.presentationEmail
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.only(top: 8, end: 12),
+                      child: _buildAvatarIcon(context: context),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -192,23 +195,26 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      onTap: () => widget.emailActionClick?.call(
-                        EmailActionType.selection,
-                        widget.presentationEmail
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.only(top: 8, end: 12),
-                        child: ValueListenableBuilder(
-                          valueListenable: _hoverNotifier,
-                          builder: (context, value, child) {
-                            return _buildAvatarIcon(
-                              context: context,
-                              isHovered: value
-                            );
-                          }
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () => widget.emailActionClick?.call(
+                          EmailActionType.selection,
+                          widget.presentationEmail
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.only(top: 8, end: 12),
+                          child: ValueListenableBuilder(
+                            valueListenable: _hoverNotifier,
+                            builder: (context, value, child) {
+                              return _buildAvatarIcon(
+                                context: context,
+                                isHovered: value
+                              );
+                            }
+                          )
                         )
-                      )
+                      ),
                     ),
                     Expanded(child: Column(children: [
                       Row(children: [
@@ -368,25 +374,28 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                   iconPadding: const EdgeInsetsDirectional.only(end: 12),
                   splashRadius: 1
                 ),
-                GestureDetector(
-                  onTap: () => widget.emailActionClick?.call(
-                    EmailActionType.selection,
-                    widget.presentationEmail
-                  ),
-                  child: ValueListenableBuilder(
-                    valueListenable: _hoverNotifier,
-                    builder: (context, value, child) {
-                      return _buildAvatarIcon(
-                        context: context,
-                        isHovered: value,
-                        iconSize: 32,
-                        textStyle: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white
-                        )
-                      );
-                    }
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () => widget.emailActionClick?.call(
+                      EmailActionType.selection,
+                      widget.presentationEmail
+                    ),
+                    child: ValueListenableBuilder(
+                      valueListenable: _hoverNotifier,
+                      builder: (context, value, child) {
+                        return _buildAvatarIcon(
+                          context: context,
+                          isHovered: value,
+                          iconSize: 32,
+                          textStyle: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white
+                          )
+                        );
+                      }
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
