@@ -16617,17 +16617,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(success) {
       var t1, t2, t3, _null = null;
       if (success instanceof A.RestoreDeletedMessageLoading || success instanceof A.RestoreDeletedMessageSuccess || success instanceof A.GetRestoredDeletedMessageLoading) {
-        A.log("RecoverDeletedMessageLoadingBannerWidget::not in check: success " + success.toString$0(0), C.Level_3);
         t1 = this.context;
         t2 = type$.MediaQuery;
         t3 = A.InheritedModel_inheritFrom(t1, _null, t2).data.size._dx >= 1200 ? 16 : 0;
         t2 = A.InheritedModel_inheritFrom(t1, _null, t2).data.size._dx >= 1200 ? 0 : 16;
         A.Localizations_of(t1, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         return new A.Padding(new A.EdgeInsets(0, t3, 16, t2), A.Container$(_null, A.Column$(A._setArrayType([A.Text$(A.Intl__message("The recovery is in progress. You can continue using TeamMail", _null, "bannerProgressingRecoveryMessage", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_yzp, _null, _null, _null, _null, _null), C.SizedBox_null_12_null_null, this.$this.horizontalLoadingWidget], type$.JSArray_Widget), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, _null, _null, D.ShapeDecoration_2jN, _null, _null, _null, _null, E.EdgeInsets_16_12_16_12, _null, _null, _null), _null);
-      } else {
-        A.log("RecoverDeletedMessageLoadingBannerWidget::in check success " + success.toString$0(0), C.Level_3);
+      } else
         return C.SizedBox_0_0_null_null;
-      }
     },
     $signature: 55
   };
@@ -19916,4 +19913,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["410VS5z9t3NhZo2Jk7FItfLbd1A="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["DQULe90H5XOpuSsv+ijUvCOn6Qc="] = $__dart_deferred_initializers__.current
