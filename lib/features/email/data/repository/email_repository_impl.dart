@@ -9,6 +9,8 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -25,6 +27,7 @@ import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.da
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
@@ -216,5 +219,15 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
     return emailDataSource[DataSourceType.network]!.unsubscribeMail(session, accountId, emailId);
+  }
+
+  @override
+  Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) {
+    return emailDataSource[DataSourceType.network]!.restoreDeletedMessage(restoredDeletedMessageRequest);
+  }
+
+  @override
+  Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
+    return emailDataSource[DataSourceType.network]!.getRestoredDeletedMessage(emailRecoveryActionId);
   }
 }
