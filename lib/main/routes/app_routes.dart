@@ -14,4 +14,5 @@ abstract class AppRoutes {
   static const unknownRoutePage = '/notfound';
   static const searchMailbox = '/search_mailbox';
   static const mailtoURL = '/mailto';
+  static const emailRecovery = '/email_recovery';
 }
