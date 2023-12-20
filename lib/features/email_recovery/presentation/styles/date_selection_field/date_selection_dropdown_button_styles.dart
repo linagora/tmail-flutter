@@ -12,9 +12,9 @@ class DateSelectionDropdownButtonStyles {
 
   static const Offset dropdownOffset = Offset(0.0, -8.0);
 
-  static const EdgeInsetsGeometry padding = EdgeInsets.only(
-    left: 12,
-    right: 10
+  static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.only(
+    start: 12,
+    end: 10
   );
 
   static const BorderRadius borderRadius = BorderRadius.all(Radius.circular(10));
