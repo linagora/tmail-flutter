@@ -6,6 +6,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -17,6 +19,7 @@ import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.da
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -229,6 +232,20 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.unsubscribeMail(session, accountId, emailId);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) {
+    return Future.sync(() async {
+      return await emailAPI.restoreDeletedMessage(restoredDeletedMessageRequest);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
+    return Future.sync(() async {
+      return await emailAPI.getRestoredDeletedMessage(emailRecoveryActionId);
     }).catchError(_exceptionThrower.throwException);
   }
 }
