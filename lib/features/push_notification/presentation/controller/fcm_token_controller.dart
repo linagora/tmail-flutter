@@ -43,7 +43,7 @@ class FcmTokenController extends FcmBaseController {
   UpdateFirebaseRegistrationTokenInteractor? _updateFirebaseRegistrationTokenInteractor;
   DeleteFirebaseRegistrationCacheInteractor? _deleteFirebaseRegistrationCacheInteractor;
 
-  void initialize() {
+  void initialBindingInteractor() {
     _storeFirebaseRegistrationInteractor = getBinding<StoreFirebaseRegistrationInteractor>();
     _getFirebaseRegistrationByDeviceIdInteractor = getBinding<GetFirebaseRegistrationByDeviceIdInteractor>();
     _registerNewFirebaseRegistrationTokenInteractor = getBinding<RegisterNewFirebaseRegistrationTokenInteractor>();
