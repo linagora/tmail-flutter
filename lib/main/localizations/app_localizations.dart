@@ -3688,4 +3688,88 @@ class AppLocalizations {
       name: 'archiveMessage',
     );
   }
+
+  String get recoverDeletedMessages {
+    return Intl.message(
+      'Recover deleted messages',
+      name: 'recoverDeletedMessages',
+    );
+  }
+
+  String get deletionDate {
+    return Intl.message(
+      'Deletion date',
+      name: 'deletionDate',
+    );
+  }
+
+  String get receptionDate {
+    return Intl.message(
+      'Reception date',
+      name: 'receptionDate',
+    );
+  }
+
+  String get sender {
+    return Intl.message(
+      'Sender',
+      name: 'sender',
+    );
+  }
+
+  String get addSender {
+    return Intl.message(
+      'Add sender',
+      name: 'addSender',
+    );
+  }
+
+  String get last1Year {
+    return Intl.message(
+      'Last 1 year',
+      name: 'last1Year',
+    );
+  }
+
+  String get restore {
+    return Intl.message(
+      'Restore',
+      name: 'restore',
+    );
+  }
+
+  String get recoveredMailboxDisplayName {
+    return Intl.message(
+      'Recovered',
+      name: 'recoveredMailboxDisplayName',
+    );
+  }
+
+  String get restoreDeletedMessageFailed {
+    return Intl.message(
+      'Restore deleted message failed',
+      name: 'restoreDeletedMessageFailed',
+    );
+  }
+
+  String get restoreDeletedMessageSuccess {
+    return Intl.message(
+      'Recover deleted messages successfully',
+      name: 'restoreDeletedMessageSuccess',
+    );
+  }
+
+  String get open {
+    return Intl.message(
+      'Open',
+      name: 'open',
+    );
+  }
+
+  String get bannerProgressingRecoveryMessage {
+    return Intl.message(
+      'The recovery is in progress. You can continue using TeamMail',
+      name: 'bannerProgressingRecoveryMessage',
+    );
+  }
 }
