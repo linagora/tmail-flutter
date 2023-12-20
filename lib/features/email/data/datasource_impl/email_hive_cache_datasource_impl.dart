@@ -10,6 +10,8 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -28,6 +30,7 @@ import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_ex
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_sending_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/sending_email_hive_cache_extension.dart';
@@ -290,6 +293,16 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
   @override
   Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
     throw UnimplementedError();
   }
 }
