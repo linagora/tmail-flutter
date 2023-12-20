@@ -3740,7 +3740,7 @@ class AppLocalizations {
 
   String get bannerProgressingRecoveryMessage {
     return Intl.message(
-      'The recovery is in progress. You can continue using TeamMail',
+      'The recovery is in progress. You can continue using TwakeMail',
       name: 'bannerProgressingRecoveryMessage',
     );
   }

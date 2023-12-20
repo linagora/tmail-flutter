@@ -980,6 +980,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       case MailboxActions.newSubfolder:
         goToCreateNewMailboxView(context, parentMailbox: mailbox);
         break;
+      case MailboxActions.recoverDeletedMessages:
+        mailboxDashBoardController.gotoEmailRecovery();
+        break;
       default:
         break;
     }

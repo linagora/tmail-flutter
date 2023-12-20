@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_bindings.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_bindings.dart';
@@ -41,6 +43,9 @@ class DialogRouter {
       case AppRoutes.destinationPicker:
         DestinationPickerBindings().dependencies();
         break;
+      case AppRoutes.emailRecovery:
+        EmailRecoveryBindings().dependencies();
+        break;
     }
   }
 
@@ -55,6 +60,8 @@ class DialogRouter {
         return IdentityCreatorView();
       case AppRoutes.destinationPicker:
         return DestinationPickerView();
+      case AppRoutes.emailRecovery:
+        return EmailRecoveryView();
       default:
         return const SizedBox.shrink();
     }

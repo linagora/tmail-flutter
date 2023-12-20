@@ -447,17 +447,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       Obx(() {
         final mailboxSelected = controller.selectedMailbox.value;
         if (mailboxSelected != null && mailboxSelected.role == PresentationMailbox.roleTrash) {
-          return Row(
-            children: [
-              const SizedBox(width: 16),
-              TMailButtonWidget.fromIcon(
-                key: const Key('recover_deleted_messages_button'),
-                icon: controller.imagePaths.icRecoverDeletedMessages,
-                borderRadius: 10,
-                iconSize: 16,
-                onTapActionCallback: () => controller.gotoEmailRecovery(),
-              )
-            ],
+          return Padding(
+            padding: const EdgeInsetsDirectional.only(start: 16),
+            child: TMailButtonWidget.fromIcon(
+              key: const Key('recover_deleted_messages_button'),
+              icon: controller.imagePaths.icRecoverDeletedMessages,
+              borderRadius: 10,
+              iconSize: 16,
+              onTapActionCallback: () => controller.gotoEmailRecovery(),
+            ),
           );
         } else {
           return const SizedBox.shrink();
