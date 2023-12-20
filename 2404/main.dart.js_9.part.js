@@ -167,7 +167,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).toString;
       return new A.Padding(B.EdgeInsets_16_0_16_0, B.Divider_LbU, null);
     },
-    $signature: 153
+    $signature: 148
   };
   C.ContactView_build__closure.prototype = {
     call$2(context, index) {
@@ -205,7 +205,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.GetNavigation_back($.$get$Get(), contact);
       return null;
     },
-    $signature: 73
+    $signature: 72
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -228,5 +228,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_9", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "7OKA/S2PZ2VrOWRyIPaZpmcWSAo=");
+})($__dart_deferred_initializers__, "+XfuERUCaDV5VK2/2nflt+qq/Ec=");
 ;
