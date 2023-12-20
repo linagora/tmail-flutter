@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_controller.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_field.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/styles/email_recovery_form_styles.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/date_selection_field/date_selection_field_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailRecoveryFormTabletBuilder extends GetWidget<EmailRecoveryController> {
@@ -26,6 +28,39 @@ class EmailRecoveryFormTabletBuilder extends GetWidget<EmailRecoveryController> 
                 AppLocalizations.of(context).recoverDeletedMessages,
                 style: EmailRecoveryFormStyles.titleTextStyle,
               ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Padding(
+                  padding: EmailRecoveryFormStyles.inputAreaPadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Obx(() => DateSelectionFieldWebWidget(
+                        field: EmailRecoveryField.deletionDate,
+                        imagePaths: controller.imagePaths,
+                        responsiveUtils: controller.responsiveUtils,
+                        startDate: controller.startDeletionDate.value,
+                        endDate: controller.endDeletionDate.value,
+                        recoveryTimeSelected: controller.deletionDateFieldSelected.value,
+                        onTapCalendar: () => controller.onSelectDeletionDateRange(context),
+                        onRecoveryTimeSelected: (type) => controller.onDeletionDateTypeSelected(context, type),
+                      )),
+                      Obx(() => DateSelectionFieldWebWidget(
+                        field: EmailRecoveryField.receptionDate,
+                        imagePaths: controller.imagePaths,
+                        responsiveUtils: controller.responsiveUtils,
+                        startDate: controller.startReceptionDate.value,
+                        endDate: controller.endReceptionDate.value,
+                        recoveryTimeSelected: controller.receptionDateFieldSelected.value,
+                        onTapCalendar: () => controller.onSelectReceptionDateRange(context),
+                        onRecoveryTimeSelected: (type) => controller.onReceptionDateTypeSelected(context, type),
+                      )),
+                    ],
+                  ),
+                ),
+              )
             ),
           ],
         ),
