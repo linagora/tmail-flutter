@@ -23,7 +23,8 @@ enum MailboxActions {
   emptyTrash,
   emptySpam,
   newSubfolder,
-  confirmMailSpam;
+  confirmMailSpam,
+  recoverDeletedMessages;
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -71,6 +72,8 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).deleteAllSpamEmails;
       case MailboxActions.confirmMailSpam:
         return AppLocalizations.of(context).confirmAllEmailHereAreSpam;
+      case MailboxActions.recoverDeletedMessages:
+        return AppLocalizations.of(context).recoverDeletedMessages;
       default:
         return '';
     }
@@ -104,6 +107,8 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icMailboxTrash;
       case MailboxActions.confirmMailSpam:
         return imagePaths.icMarkAsRead;
+      case MailboxActions.recoverDeletedMessages:
+        return imagePaths.icRecoverDeletedMessages;
       default:
         return '';
     }
@@ -177,6 +182,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.emptyTrash:
       case MailboxActions.emptySpam:
       case MailboxActions.confirmMailSpam:
+      case MailboxActions.recoverDeletedMessages:
         return ContextMenuItemState.activated;
       case MailboxActions.markAsRead:
         return mailbox.countUnReadEmailsAsString.isNotEmpty
