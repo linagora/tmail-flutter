@@ -6,6 +6,8 @@ import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dar
 import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_bindings.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_view.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_bindings.dart';
@@ -46,6 +48,9 @@ class DialogRouter {
       case AppRoutes.contact:
         ContactBindings().dependencies();
         break;
+      case AppRoutes.emailRecovery:
+        EmailRecoveryBindings().dependencies();
+        break;
     }
   }
 
@@ -62,6 +67,8 @@ class DialogRouter {
         return DestinationPickerView();
       case AppRoutes.contact:
         return const ContactView();
+      case AppRoutes.emailRecovery:
+        return EmailRecoveryView();
       default:
         return const SizedBox.shrink();
     }
