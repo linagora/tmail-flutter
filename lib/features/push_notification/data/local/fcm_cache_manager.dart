@@ -1,5 +1,6 @@
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
@@ -7,7 +8,6 @@ import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cac
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/firebase_registration_cache.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
 class FCMCacheManager {
   final FcmCacheClient _fcmCacheClient;
@@ -61,5 +61,12 @@ class FCMCacheManager {
 
   Future<void> deleteFirebaseRegistration() async {
     await _firebaseRegistrationCacheClient.deleteItem(FirebaseRegistrationCache.keyCacheValue);
+  }
+
+  Future<void> closeCacheBox() async {
+    await Future.wait([
+      _fcmCacheClient.closeBox(),
+      _firebaseRegistrationCacheClient.closeBox(),
+    ]);
   }
 }

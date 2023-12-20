@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_base_controller.dart';
@@ -52,51 +53,43 @@ class FcmMessageController extends FcmBaseController {
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
   NewEmailCacheManager? _newEmailCacheManager;
+  FCMCacheManager? _fcmCacheManager;
 
-  FcmMessageController._internal() {
-    _listenFcmStream();
-  }
+  FcmMessageController._internal();
 
   static final FcmMessageController _instance = FcmMessageController._internal();
 
   static FcmMessageController get instance => _instance;
 
-  void initializeFromAccountId(AccountId accountId, Session session) {
+  void initialize({AccountId? accountId, Session? session}) {
     _currentAccountId = accountId;
     _currentSession = session;
-    _userName = session.username;
-    FcmTokenController.instance.initialize();
+    _userName = session?.username;
+
+    _listenTokenStream();
+    _listenForegroundMessageStream();
+    _listenBackgroundMessageStream();
   }
 
-  void initialize() {}
-
-  void _listenFcmStream() async {
-    await Future.wait([
-      listenForegroundMessageStream(),
-      listenBackgroundMessageStream(),
-      listenTokenStream()
-    ]);
-  }
-
-  Future<void> listenForegroundMessageStream() {
-    FcmService.instance.foregroundMessageStream
+  void _listenForegroundMessageStream() {
+    FcmService.instance.foregroundMessageStreamController
+      ?.stream
       .throttleTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleForegroundMessageAction);
-    return Future.value();
   }
 
-  Future<void> listenBackgroundMessageStream() {
-    FcmService.instance.backgroundMessageStream
+  void _listenBackgroundMessageStream() {
+    FcmService.instance.backgroundMessageStreamController
+      ?.stream
       .throttleTime(const Duration(milliseconds: FcmService.durationMessageComing))
       .listen(_handleBackgroundMessageAction);
-    return Future.value();
   }
 
-  Future<void> listenTokenStream() {
-    FcmService.instance.fcmTokenStream
-      .debounceTime(const Duration(milliseconds: FcmService.durationRefreshToken))
+  void _listenTokenStream() {
+    FcmService.instance.fcmTokenStreamController
+      ?.stream
+      .throttleTime(const Duration(milliseconds: FcmService.durationRefreshToken))
       .listen(FcmTokenController.instance.onFcmTokenChanged);
-    return Future.value();
   }
 
   void _handleForegroundMessageAction(RemoteMessage newRemoteMessage) {
@@ -201,7 +194,12 @@ class FcmMessageController extends FcmBaseController {
 
     _getInteractorBindings();
 
-    await _newEmailCacheManager?.closeNewEmailHiveCacheBox();
+    await Future.wait([
+      if (_newEmailCacheManager != null)
+        _newEmailCacheManager!.closeNewEmailHiveCacheBox(),
+      if (_fcmCacheManager != null)
+        _fcmCacheManager!.closeCacheBox(),
+    ]);
   }
 
   void _getInteractorBindings() {
@@ -210,7 +208,9 @@ class FcmMessageController extends FcmBaseController {
     _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
     _getSessionInteractor = getBinding<GetSessionInteractor>();
     _newEmailCacheManager = getBinding<NewEmailCacheManager>();
-    FcmTokenController.instance.initialize();
+    _fcmCacheManager = getBinding<FCMCacheManager>();
+
+    FcmTokenController.instance.initialBindingInteractor();
   }
 
   void _getAuthenticatedAccount() {

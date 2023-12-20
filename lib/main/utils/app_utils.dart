@@ -1,14 +1,13 @@
-import 'package:core/utils/platform_info.dart';
+import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/intl.dart' as intl;
-import 'package:date_format/date_format.dart' as date_format;
 
 class AppUtils {
 
@@ -32,8 +31,6 @@ class AppUtils {
       mode: LaunchMode.externalApplication
     );
   }
-
-  static String? get fcmVapidPublicKey => PlatformInfo.isWeb ? AppConfig.fcmVapidPublicKeyWeb : null;
 
   static bool isDirectionRTL(BuildContext context) {
     return intl.Bidi.isRtlLanguage(Localizations.localeOf(context).languageCode);

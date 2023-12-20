@@ -74,7 +74,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
@@ -2381,7 +2380,6 @@ class MailboxDashBoardController extends ReloadableController {
     _notificationManager.closeStream();
     _fcmService.closeStream();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
-    MailboxDashBoardBindings().deleteController();
     super.onClose();
   }
 }

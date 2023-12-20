@@ -25,8 +25,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/repository/session_repository.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
@@ -42,7 +40,6 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
@@ -92,7 +89,6 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sendi
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
-import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -110,7 +106,6 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
-import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -355,14 +350,5 @@ class MailboxDashBoardBindings extends BaseBindings {
         DataSourceType.hiveCache: Get.find<HiveSpamReportDataSourceImpl>()
       },
     ));
-  }
-
-  void deleteController() {
-    Get.delete<MailboxController>();
-    Get.delete<ThreadController>();
-    Get.delete<SingleEmailController>();
-    Get.delete<EmailSupervisorController>();
-    Get.delete<DownloadController>();
-    Get.delete<SendingQueueController>();
   }
 }
