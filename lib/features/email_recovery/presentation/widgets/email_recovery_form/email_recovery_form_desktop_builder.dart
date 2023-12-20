@@ -34,32 +34,30 @@ class EmailRecoveryFormDesktopBuilder extends GetWidget<EmailRecoveryController>
                 physics: const ClampingScrollPhysics(),
                 child: Padding(
                   padding: EmailRecoveryFormStyles.inputAreaPadding,
-                  child: FocusTraversalGroup(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Obx(() => DateSelectionFieldWebWidget(
-                          field: EmailRecoveryField.deletionDate,
-                          imagePaths: controller.imagePaths,
-                          responsiveUtils: controller.responsiveUtils,
-                          startDate: controller.startDeletionDate.value,
-                          endDate: controller.endDeletionDate.value,
-                          recoveryTimeSelected: controller.deletionDateFieldSelected.value,
-                          onTapCalendar: () => controller.onSelectDeletionDateRange(context),
-                          onRecoveryTimeSelected: (type) => controller.onDeletionDateTypeSelected(context, type),
-                        )),
-                        Obx(() => DateSelectionFieldWebWidget(
-                          field: EmailRecoveryField.receptionDate,
-                          imagePaths: controller.imagePaths,
-                          responsiveUtils: controller.responsiveUtils,
-                          startDate: controller.startReceptionDate.value,
-                          endDate: controller.endReceptionDate.value,
-                          recoveryTimeSelected: controller.receptionDateFieldSelected.value,
-                          onTapCalendar: () => controller.onSelectReceptionDateRange(context),
-                          onRecoveryTimeSelected: (type) => controller.onReceptionDateTypeSelected(context, type),
-                        )),
-                      ],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Obx(() => DateSelectionFieldWebWidget(
+                        field: EmailRecoveryField.deletionDate,
+                        imagePaths: controller.imagePaths,
+                        responsiveUtils: controller.responsiveUtils,
+                        startDate: controller.startDeletionDate.value,
+                        endDate: controller.endDeletionDate.value,
+                        recoveryTimeSelected: controller.deletionDateFieldSelected.value,
+                        onTapCalendar: () => controller.onSelectDeletionDateRange(context),
+                        onRecoveryTimeSelected: (type) => controller.onDeletionDateTypeSelected(context, type),
+                      )),
+                      Obx(() => DateSelectionFieldWebWidget(
+                        field: EmailRecoveryField.receptionDate,
+                        imagePaths: controller.imagePaths,
+                        responsiveUtils: controller.responsiveUtils,
+                        startDate: controller.startReceptionDate.value,
+                        endDate: controller.endReceptionDate.value,
+                        recoveryTimeSelected: controller.receptionDateFieldSelected.value,
+                        onTapCalendar: () => controller.onSelectReceptionDateRange(context),
+                        onRecoveryTimeSelected: (type) => controller.onReceptionDateTypeSelected(context, type),
+                      )),
+                    ],
                   ),
                 ),
               )
