@@ -35,7 +35,10 @@ mixin MailboxWidgetMixin {
         MailboxActions.openInNewTab,
       MailboxActions.newSubfolder,
       if (mailbox.isTrash)
-        MailboxActions.emptyTrash
+        ...[
+          MailboxActions.emptyTrash,
+          MailboxActions.recoverDeletedMessages
+        ]
       else if (mailbox.isSpam)
         ...[
           _mailboxActionForSpam(spamReportEnabled),
