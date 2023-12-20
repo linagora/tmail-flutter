@@ -5,6 +5,9 @@ import 'dart:typed_data';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
+import 'package:email_recovery/email_recovery/get/get_email_recovery_action_method.dart';
+import 'package:email_recovery/email_recovery/get/get_email_recovery_action_response.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -34,6 +37,9 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submis
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
+import 'package:email_recovery/email_recovery/set/set_email_recovery_action_method.dart';
+import 'package:email_recovery/email_recovery/set/set_email_recovery_action_response.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
@@ -57,6 +63,7 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -686,5 +693,53 @@ class EmailAPI with HandleSetErrorMixin {
     } else {
       throw NotFoundEmailException();
     }
+  }
+
+  Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) async {
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+
+    final emailRecoveryActionSetMethod = SetEmailRecoveryActionMethod()
+      ..addCreate(
+        restoredDeletedMessageRequest.createRequestId,
+        restoredDeletedMessageRequest.emailRecoveryAction
+      );
+    final emailRecoveryActionSetInvocation = requestBuilder.invocation(emailRecoveryActionSetMethod);
+    final response = await (requestBuilder
+        ..usings(emailRecoveryActionSetMethod.requiredCapabilities))
+      .build()
+      .execute();
+    
+    final emailRecoveryActionSetResponse = response.parse<SetEmailRecoveryActionResponse>(
+      emailRecoveryActionSetInvocation.methodCallId,
+      SetEmailRecoveryActionResponse.deserialize
+    );
+
+    return emailRecoveryActionSetResponse!.created![restoredDeletedMessageRequest.createRequestId]!;
+  }
+
+  Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
+
+    final getEmailRecoveryActionMethod = GetEmailRecoveryActionMethod()
+      ..addIds({emailRecoveryActionId.id});
+    final getEmailRecoveryActionInvocation = requestBuilder.invocation(getEmailRecoveryActionMethod);
+    return (requestBuilder
+        ..usings(getEmailRecoveryActionMethod.requiredCapabilities))
+      .build()
+      .execute()
+      .then((response) {
+        final resultList = response.parse<GetEmailRecoveryActionResponse>(
+          getEmailRecoveryActionInvocation.methodCallId,
+          GetEmailRecoveryActionResponse.deserialize
+        );
+
+        if (resultList?.list.isNotEmpty == true) {
+          return resultList!.list.firstWhere((element) => element.id == emailRecoveryActionId);
+        } else {
+          throw NotFoundEmailRecoveryActionException();
+        }
+      });
   }
 }
