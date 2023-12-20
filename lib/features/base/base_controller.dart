@@ -46,7 +46,9 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_sto
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
@@ -268,7 +270,10 @@ abstract class BaseController extends GetxController
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
         await FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
-        FcmMessageController.instance.initializeFromAccountId(accountId, session);
+        FcmService.instance.initialStreamController();
+        FcmMessageController.instance.initialize(accountId: accountId, session: session);
+        FcmTokenController.instance.initialBindingInteractor();
+        await FcmReceiver.instance.onInitialFcmListener();
       } else {
         throw NotSupportFCMException();
       }
@@ -355,7 +360,7 @@ abstract class BaseController extends GetxController
     authorizationInterceptors.clear();
     authorizationIsolateInterceptors.clear();
     if (_isFcmEnabled) {
-      _fcmReceiver.deleteFcmToken();
+      await _fcmReceiver.deleteFcmToken();
     }
     await cachingManager.closeHive();
   }
@@ -372,7 +377,7 @@ abstract class BaseController extends GetxController
     authorizationIsolateInterceptors.clear();
     authorizationInterceptors.clear();
     if (_isFcmEnabled) {
-      _fcmReceiver.deleteFcmToken();
+      await _fcmReceiver.deleteFcmToken();
     }
     await cachingManager.closeHive();
   }
