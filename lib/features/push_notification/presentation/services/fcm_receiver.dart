@@ -1,13 +1,15 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
-  log('FcmReceiver::handleFirebaseBackgroundMessage(): ${message.data}');
+  FcmService.instance.initialStreamController();
+  FcmMessageController.instance.initialize();
   FcmService.instance.handleFirebaseBackgroundMessage(message);
 }
 
@@ -18,35 +20,48 @@ class FcmReceiver {
 
   static FcmReceiver get instance => _instance;
 
-  void onForegroundMessage() {
+  Future onInitialFcmListener() async {
+    log('FcmReceiver::onInitialFcmListener:');
+    await _onHandleFcmToken();
+
+    _onForegroundMessage();
+    _onBackgroundMessage();
+    _onMessageOpenedApp();
+  }
+
+  void _onForegroundMessage() {
     FirebaseMessaging.onMessage.listen(FcmService.instance.handleFirebaseForegroundMessage);
   }
 
-  void onBackgroundMessage() {
+  void _onBackgroundMessage() {
     FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundMessage);
   }
 
-  void onMessageOpenedApp() {
+  void _onMessageOpenedApp() {
     FirebaseMessaging.onMessageOpenedApp.listen(FcmService.instance.handleFirebaseMessageOpenedApp);
   }
 
-  void getFcmToken() async {
-    try {
-      final currentToken = await FirebaseMessaging.instance.getToken(vapidKey: AppUtils.fcmVapidPublicKey);
-      log('FcmReceiver::onFcmToken():currentToken: $currentToken');
-      if (!FcmUtils.instance.isMobileAndroid) {
-        FcmService.instance.handleGetToken(currentToken);
-      }
-    } catch(e) {
-      log('FcmReceiver::onFcmToken():exception: $e');
-    }
+  Future<String?> _getInitialToken() async {
+    final token = await FirebaseMessaging.instance.getToken(
+      vapidKey: PlatformInfo.isWeb ? AppConfig.fcmVapidPublicKeyWeb : null
+    );
+    log('FcmReceiver::_getInitialToken:token: $token');
+    return token;
   }
 
-  void onRefreshFcmToken() {
-    FirebaseMessaging.instance.onTokenRefresh.listen(FcmService.instance.handleRefreshToken);
+  Future _onHandleFcmToken() async {
+    final token = await _getInitialToken();
+    FcmService.instance.handleToken(token);
+
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: $newToken');
+      if (newToken != token) {
+        FcmService.instance.handleToken(newToken);
+      }
+    });
   }
-  
-  void deleteFcmToken(){
-    FirebaseMessaging.instance.deleteToken();
+
+  Future deleteFcmToken() async {
+    await FirebaseMessaging.instance.deleteToken();
   }
 }
