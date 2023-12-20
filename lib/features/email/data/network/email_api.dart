@@ -718,28 +718,28 @@ class EmailAPI with HandleSetErrorMixin {
     return emailRecoveryActionSetResponse!.created![restoredDeletedMessageRequest.createRequestId]!;
   }
 
-  Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
+  Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) async {
     final processingInvocation = ProcessingInvocation();
     final requestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
 
     final getEmailRecoveryActionMethod = GetEmailRecoveryActionMethod()
       ..addIds({emailRecoveryActionId.id});
     final getEmailRecoveryActionInvocation = requestBuilder.invocation(getEmailRecoveryActionMethod);
-    return (requestBuilder
+    
+    final response = await (requestBuilder
         ..usings(getEmailRecoveryActionMethod.requiredCapabilities))
       .build()
-      .execute()
-      .then((response) {
-        final resultList = response.parse<GetEmailRecoveryActionResponse>(
-          getEmailRecoveryActionInvocation.methodCallId,
-          GetEmailRecoveryActionResponse.deserialize
-        );
+      .execute();
+    
+    final getEmailRecoveryActionResponse = response.parse<GetEmailRecoveryActionResponse>(
+      getEmailRecoveryActionInvocation.methodCallId,
+      GetEmailRecoveryActionResponse.deserialize
+    );
 
-        if (resultList?.list.isNotEmpty == true) {
-          return resultList!.list.firstWhere((element) => element.id == emailRecoveryActionId);
-        } else {
-          throw NotFoundEmailRecoveryActionException();
-        }
-      });
+    if (getEmailRecoveryActionResponse?.list.isNotEmpty == true) {
+      return getEmailRecoveryActionResponse!.list.firstWhere((element) => element.id == emailRecoveryActionId);
+    } else {
+      throw NotFoundEmailRecoveryActionException();
+    }
   }
 }
