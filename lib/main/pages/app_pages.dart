@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
 import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart' deferred as destination_picker;
+import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart' deferred as contact_view;
@@ -32,6 +33,7 @@ import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart' deferred as search_mailbox_view;
 import 'package:tmail_ui_user/features/mailto/presentation/mailto_url_view.dart' deferred as mailto_url_view;
+import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_view.dart' deferred as email_recovery;
 
 class AppPages {
   static final pages = [
@@ -125,6 +127,14 @@ class AppPages {
             () => identity_creator.IdentityCreatorView()
           ),
           binding: IdentityCreatorBindings()),
+        GetPage(
+          name: AppRoutes.emailRecovery,
+          opaque: false,
+          page: () => DeferredWidget(
+            email_recovery.loadLibrary,
+            () => email_recovery.EmailRecoveryView()
+          ),
+          binding: EmailRecoveryBindings()),
       ]
   ];
 
