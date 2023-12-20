@@ -2224,6 +2224,18 @@ class MailboxDashBoardController extends ReloadableController {
     setSelectedEmail(email.toPresentationEmail());
   }
 
+  void gotoEmailRecovery() async {
+    closeMailboxMenuDrawer();
+    if (PlatformInfo.isWeb) {
+      await DialogRouter.pushGeneralDialog(
+        routeName: AppRoutes.emailRecovery,
+        arguments: {},
+      );
+    } else {
+      await push(AppRoutes.emailRecovery);
+    }
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
