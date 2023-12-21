@@ -29,6 +29,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
           return AppLocalizations.of(context).spamMailboxDisplayName;
         case PresentationMailbox.templatesRole:
           return AppLocalizations.of(context).templatesMailboxDisplayName;
+        case PresentationMailbox.recoveredRole:
+          return AppLocalizations.of(context).recoveredMailboxDisplayName;
       }
     }
     return name?.name ?? '';
@@ -53,6 +55,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
           return imagePaths.icMailboxSpam;
         case PresentationMailbox.templatesRole:
           return imagePaths.icMailboxTemplate;
+        case PresentationMailbox.recoveredRole:
+          return imagePaths.icRecoverDeletedMessages;
         case 'all_mail':
           return imagePaths.icMailboxAllMail;
         default:
@@ -76,6 +80,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
           return imagePaths.icMailboxSpam;
         case 'templates':
           return imagePaths.icMailboxTemplate;
+        case 'restored messages':
+          return imagePaths.icRecoverDeletedMessages;
         default:
           return imagePaths.icFolderMailbox;
       }
