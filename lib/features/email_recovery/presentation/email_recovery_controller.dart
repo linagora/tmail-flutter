@@ -1,12 +1,15 @@
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -22,6 +25,7 @@ import 'package:tmail_ui_user/features/email_recovery/presentation/controller/in
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_field.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_time_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class EmailRecoveryController extends BaseController with DateRangePickerMixin {
@@ -35,6 +39,7 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   final endDeletionDate = Rxn<DateTime>();
   final startReceptionDate = Rxn<DateTime>();
   final endReceptionDate = Rxn<DateTime>();
+  final hasAttachment = false.obs;
   final recipientsExpandMode = ExpandMode.EXPAND.obs;
   final senderExpandMode = ExpandMode.EXPAND.obs;
 
@@ -210,6 +215,10 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     }
   }
 
+  void onChangeHasAttachment(bool? value) {
+    hasAttachment.value = value ?? false;
+  }
+
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
     log('EmailRecoveryController::getAutoCompleteSuggestion():  $word | $_contactSuggestionSource');
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
@@ -283,6 +292,45 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
       default:
         break;
     }
+  }
+
+  void onRestore(BuildContext context) {
+    KeyboardUtils.hideKeyboard(context);
+    
+    final UTCDate? deletedBefore;
+    final UTCDate? deletedAfter;
+    final UTCDate? receivedBefore;
+    final UTCDate? receivedAfter;
+    if (deletionDateFieldSelected.value == EmailRecoveryTimeType.customRange) {
+      deletedBefore = endDeletionDate.value?.toUTCDate();
+      deletedAfter = startDeletionDate.value?.toUTCDate();
+      receivedBefore = endReceptionDate.value?.toUTCDate();
+      receivedAfter = startReceptionDate.value?.toUTCDate();
+    } else {
+      deletedBefore = DateTime.now().toUTCDate();
+      deletedAfter = deletionDateFieldSelected.value.toOldestUTCDate();
+      receivedBefore = DateTime.now().toUTCDate();
+      receivedAfter = receptionDateFieldSelected.value.toOldestUTCDate();
+    }
+    
+    final emailRecoveryAction = EmailRecoveryAction(
+      deletedBefore: deletedBefore,
+      deletedAfter: deletedAfter,
+      receivedBefore: receivedBefore,
+      receivedAfter: receivedAfter,
+      hasAttachment: hasAttachment.value,
+      subject: subjectFieldInputController.text,
+      recipients: listRecipients.isNotEmpty ?
+        listRecipients.map((emailAddress) => emailAddress.emailAddress).toList()
+        : null,
+      sender: listSenders.isNotEmpty ?
+        listSenders.first.emailAddress
+        : null
+    );
+
+    log('EmailRecoveryController::onRestore(): emailRecoveryAction: $emailRecoveryAction');
+
+    popBack(result: emailRecoveryAction);
   }
 
   void closeView(BuildContext context) {
