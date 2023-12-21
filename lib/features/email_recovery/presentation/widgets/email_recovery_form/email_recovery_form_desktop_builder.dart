@@ -109,7 +109,6 @@ class EmailRecoveryFormDesktopBuilder extends GetWidget<EmailRecoveryController>
                   Obx(() => CheckBoxHasAttachmentWidget(
                     hasAttachmentValue: controller.hasAttachment.value,
                     currentFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
-                    nextFocusNode: controller.focusManager.createButtonFocusNode,
                     onChanged: (value) => controller.onChangeHasAttachment(value),
                   )),
                   SizedBox(width: controller.responsiveUtils.getDeviceWidth(context) * 0.04),
