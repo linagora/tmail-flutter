@@ -21,6 +21,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/changes/changes_mailbox_respo
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/query/query_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
 import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
@@ -32,6 +34,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_met
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
@@ -497,6 +500,50 @@ class MailboxAPI with HandleSetErrorMixin {
     final mapErrors = handleSetResponse([updateResponse]);
     if (mapErrors.isNotEmpty) {
       throw SetMailboxMethodException(mapErrors);
+    }
+  }
+
+  Future<GetMailboxByRoleResponse> getMailboxByRole(
+    Session session,
+    AccountId accountId,
+    Role role,
+    {
+      UnsignedInt? limit
+    }
+  ) async {
+    const int defaultLimit = 1;
+    final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+    final mailboxQueryMethod = QueryMailboxMethod(accountId)..addLimit(limit ?? UnsignedInt(defaultLimit));
+
+    final mailboxFilterCondition = MailboxFilterCondition(role: role);
+    mailboxQueryMethod.addFilters(mailboxFilterCondition);
+
+    final mailboxQueryMethodInvocation = requestBuilder.invocation(mailboxQueryMethod);
+    final getMailBoxMethod = GetMailboxMethod(accountId)
+        ..addReferenceIds(processingInvocation.createResultReference(
+          mailboxQueryMethodInvocation.methodCallId,
+          ReferencePath.idsPath,
+        ));
+    final getMailboxInvocation = requestBuilder.invocation(getMailBoxMethod);
+
+    final capabilities = getMailBoxMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+    
+    final mailboxResponse = result.parse<GetMailboxResponse>(
+      getMailboxInvocation.methodCallId,
+      GetMailboxResponse.deserialize
+    );
+
+    if (mailboxResponse?.list.isNotEmpty == true) {
+      return GetMailboxByRoleResponse(mailbox: mailboxResponse!.list.first);
+    } else {
+      throw NotFoundMailboxException();
     }
   }
 }
