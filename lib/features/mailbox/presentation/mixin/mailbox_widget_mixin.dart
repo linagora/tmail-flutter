@@ -38,7 +38,8 @@ mixin MailboxWidgetMixin {
     return [
       if (PlatformInfo.isWeb)
         MailboxActions.openInNewTab,
-      MailboxActions.newSubfolder,
+      if (!mailbox.isRecovered)
+        MailboxActions.newSubfolder,
       if (mailbox.isTrash)
         ...[
           MailboxActions.emptyTrash,

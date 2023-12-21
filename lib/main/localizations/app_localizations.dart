@@ -3740,8 +3740,15 @@ class AppLocalizations {
 
   String get bannerProgressingRecoveryMessage {
     return Intl.message(
-      'The recovery is in progress. You can continue using TwakeMail',
+      'The recovery is in progress. You can continue using Twake Mail',
       name: 'bannerProgressingRecoveryMessage',
+    );
+  }
+
+  String get restoreDeletedMessageCanceled {
+    return Intl.message(
+      'Restore deleted message canceled',
+      name: 'restoreDeletedMessageCanceled',
     );
   }
 }

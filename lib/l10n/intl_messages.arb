@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-12-19T16:58:54.709520",
+  "@@last_modified": "2024-01-07T14:01:28.226469",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3594,8 +3594,14 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerProgressingRecoveryMessage": "The recovery is in progress. You can continue using TeamMail",
+  "bannerProgressingRecoveryMessage": "The recovery is in progress. You can continue using Twake Mail",
   "@bannerProgressingRecoveryMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreDeletedMessageCanceled": "Restore deleted message canceled",
+  "@restoreDeletedMessageCanceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

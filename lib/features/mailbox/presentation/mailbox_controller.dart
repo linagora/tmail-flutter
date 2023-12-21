@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -264,6 +265,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         } else if (success is EmptySpamFolderSuccess) {
           _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is GetRestoredDeletedMessageSuccess) {
+          _refreshMailboxChanges(properties: MailboxConstants.propertiesDefault);
         }
       });
     });

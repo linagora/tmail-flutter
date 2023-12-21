@@ -21,9 +21,11 @@ import 'package:tmail_ui_user/features/email/data/repository/email_repository_im
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -167,6 +169,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<UpdateEmailDraftsInteractor>(),
       Get.find<DeleteSendingEmailInteractor>(),
       Get.find<UnsubscribeEmailInteractor>(),
+      Get.find<RestoredDeletedMessageInteractor>(),
+      Get.find<GetRestoredDeletedMessageInterator>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -181,6 +185,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<SessionStorageComposerDatasource>(() => Get.find<SessionStorageComposerDatasourceImpl>());
     Get.lazyPut<SpamReportDataSource>(() => Get.find<SpamReportDataSourceImpl>());
+    Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
+    Get.lazyPut<MailboxCacheDataSourceImpl>(() => Get.find<MailboxCacheDataSourceImpl>());
   }
 
   @override
@@ -309,6 +315,14 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MailboxRepository>()
     ));
     Get.lazyPut(() => UnsubscribeEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => RestoredDeletedMessageInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<MailboxRepository>()
+    ));
+    Get.lazyPut(() => GetRestoredDeletedMessageInterator(
+      Get.find<EmailRepository>(),
+      Get.find<MailboxRepository>()
+    ));
   }
 
   @override
@@ -320,6 +334,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<ComposerCacheRepository>(() => Get.find<ComposerCacheRepositoryImpl>());
     Get.lazyPut<SpamReportRepository>(() => Get.find<SpamReportRepositoryImpl>());
+    Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
   }
 
   @override
@@ -354,6 +369,13 @@ class MailboxDashBoardBindings extends BaseBindings {
         DataSourceType.local: Get.find<LocalSpamReportDataSourceImpl>(),
         DataSourceType.hiveCache: Get.find<HiveSpamReportDataSourceImpl>()
       },
+    ));
+    Get.lazyPut(() => MailboxRepositoryImpl(
+      {
+        DataSourceType.network: Get.find<MailboxDataSource>(),
+        DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
+      },
+      Get.find<StateDataSource>(),
     ));
   }
 
