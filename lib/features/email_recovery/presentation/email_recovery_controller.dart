@@ -297,10 +297,10 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   void onRestore(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
     
-    final UTCDate? deletedBefore;
-    final UTCDate? deletedAfter;
-    final UTCDate? receivedBefore;
-    final UTCDate? receivedAfter;
+    UTCDate? deletedBefore;
+    UTCDate? deletedAfter;
+    UTCDate? receivedBefore;
+    UTCDate? receivedAfter;
     if (deletionDateFieldSelected.value == EmailRecoveryTimeType.customRange) {
       deletedBefore = endDeletionDate.value?.toUTCDate();
       deletedAfter = startDeletionDate.value?.toUTCDate();
@@ -343,6 +343,9 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     focusManager.subjectFieldFocusNode.removeListener(_onSubjectFieldFocusChanged);
     focusManager.recipientsFieldFocusNode.removeListener(_onRecipientsFieldFocusChanged);
     focusManager.senderFieldFocusNode.removeListener(_onSenderFieldFocusChanged);
+    subjectFieldInputController.dispose();
+    recipientsFieldInputController.dispose();
+    senderFieldInputController.dispose();
     focusManager.dispose();
     super.dispose();
   }

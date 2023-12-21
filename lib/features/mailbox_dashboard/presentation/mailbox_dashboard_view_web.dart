@@ -155,7 +155,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           }
                         }),
                         Obx(() => RecoverDeletedMessageLoadingBannerWidget(
-                            viewState: controller.viewStateRestoreDeletedMessage.value,
+                            isLoading: controller.isRecoveringDeletedMessage.value,
                             horizontalLoadingWidget: horizontalLoadingWidget,
                             responsiveUtils: controller.responsiveUtils,
                         )),

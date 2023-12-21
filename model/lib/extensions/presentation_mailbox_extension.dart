@@ -45,6 +45,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isArchive => role == PresentationMailbox.roleArchive;
 
+  bool get isRecovered => role == PresentationMailbox.roleRecovered;
+
   bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
 
   bool get allowedToDisplayCountOfUnreadEmails => !(isTrash || isSpam || isDrafts || isTemplates || isSent) && countUnreadEmails > 0;

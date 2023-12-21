@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +14,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -45,18 +48,23 @@ import 'package:tmail_ui_user/features/destination_picker/presentation/model/des
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/restore_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -147,6 +155,7 @@ import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:uuid/uuid.dart';
 import 'package:workmanager/workmanager.dart' as work_manager;
 
 class MailboxDashBoardController extends ReloadableController {
@@ -181,6 +190,8 @@ class MailboxDashBoardController extends ReloadableController {
   final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
   final DeleteSendingEmailInteractor _deleteSendingEmailInteractor;
   final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
+  final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
+  final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -212,6 +223,7 @@ class MailboxDashBoardController extends ReloadableController {
   final listSendingEmails = RxList<SendingEmail>();
   final refreshingMailboxState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final draggableAppState = Rxn<DraggableAppState>();
+  final isRecoveringDeletedMessage = RxBool(false);
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -258,6 +270,8 @@ class MailboxDashBoardController extends ReloadableController {
     this._updateEmailDraftsInteractor,
     this._deleteSendingEmailInteractor,
     this._unsubscribeEmailInteractor,
+    this._restoreDeletedMessageInteractor,
+    this._getRestoredDeletedMessageInteractor,
   );
 
   @override
@@ -353,6 +367,11 @@ class MailboxDashBoardController extends ReloadableController {
       getAllSendingEmails();
     } else if (success is UnsubscribeEmailSuccess) {
       _handleUnsubscribeMailSuccess(success.newEmail);
+    } else if (success is RestoreDeletedMessageSuccess) {
+      dispatchMailboxUIAction(RefreshChangeMailboxAction(success.currentMailboxState));
+      _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!);
+    } else if (success is GetRestoredDeletedMessageSuccess) {
+      _handleGetRestoredDeletedMessageSuccess(success);
     }
   }
 
@@ -373,6 +392,10 @@ class MailboxDashBoardController extends ReloadableController {
       _markAsReadMailboxFailure(failure);
     } else if (failure is GetEmailByIdFailure) {
       _handleGetEmailDetailedFailed(failure);
+    } else if (failure is RestoreDeletedMessageFailure) {
+      _handleRestoreDeletedMessageFailed();
+    } else if (failure is GetRestoredDeletedMessageFailure) {
+      _handleRestoreDeletedMessageFailed();
     }
   }
 
@@ -2427,26 +2450,94 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
+  void _handleRestoreDeletedMessageSuccess(EmailRecoveryActionId emailRecoveryActionId) async {
+    log('MailboxDashBoardController::_handleRestoreDeletedMessageSuccess():emailRecoveryActionId: $emailRecoveryActionId');
+    _getRestoredDeletedMessage(emailRecoveryActionId);
+  }
+
+  void _getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
+    consumeState(_getRestoredDeletedMessageInteractor.execute(sessionCurrent!, accountId.value!, emailRecoveryActionId));
+  }
+
+  void _handleRestoreDeletedMessageFailed() {
+    appToast.showToastErrorMessage(
+      currentOverlayContext!,
+      AppLocalizations.of(currentOverlayContext!).restoreDeletedMessageFailed
+    );
+  }
+
+  void _handleGetRestoredDeletedMessageSuccess(GetRestoredDeletedMessageSuccess success) async {
+    if (selectedMailbox.value != null && selectedMailbox.value!.isRecovered) {
+      dispatchEmailUIAction(RefreshChangeEmailAction(null));
+    }
+
+    if (success is GetRestoredDeletedMessageCompleted) {
+      isRecoveringDeletedMessage.value = false;
+      if (success.recoveredMailbox != null) {
+        appToast.showToastMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).restoreDeletedMessageSuccess,
+          actionName: AppLocalizations.of(currentContext!).open,
+          onActionClick: () => openMailboxAction(success.recoveredMailbox!.toPresentationMailbox()),
+          leadingSVGIcon: imagePaths.icRecoverDeletedMessages,
+          leadingSVGIconColor: Colors.white,
+          backgroundColor: AppColor.toastSuccessBackgroundColor,
+          textColor: Colors.white,
+          actionIcon: SvgPicture.asset(
+            imagePaths.icFolderMailbox,
+            colorFilter: Colors.white.asFilter(),
+          )
+        );
+      } else {
+        appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).restoreDeletedMessageSuccess
+        );
+      }
+    } else if (success is GetRestoredDeletedMessageInProgress || success is GetRestoredDeletedMessageWaiting) {
+      await Future.delayed(const Duration(seconds: 2));
+      _getRestoredDeletedMessage(success.emailRecoveryAction.id!);
+    } else if (success is GetRestoredDeletedMessageCanceled) {
+      isRecoveringDeletedMessage.value = false;
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).restoreDeletedMessageCanceled,
+        leadingSVGIcon: imagePaths.icRecoverDeletedMessages,
+        leadingSVGIconColor: Colors.white,
+        backgroundColor: AppColor.primaryColor,
+        textColor: Colors.white,  
+      );
+    }
+  }
+
   void gotoEmailRecovery() async {
     closeMailboxMenuDrawer();
-
     final currentAccountId = accountId.value;
     final currentSession = sessionCurrent;
     if (currentAccountId != null && currentSession != null) {
-      final arguments = EmailRecoveryArguments(currentAccountId, currentSession); 
+      final arguments = EmailRecoveryArguments(currentAccountId, currentSession);
 
-      if (PlatformInfo.isWeb) {
-        await DialogRouter.pushGeneralDialog(
+      final result = PlatformInfo.isWeb 
+      ? await DialogRouter.pushGeneralDialog(
           routeName: AppRoutes.emailRecovery,
           arguments: arguments,
-        );
-      } else {
-        await push(
-          AppRoutes.emailRecovery,
-          arguments: arguments
-        );
+        )
+      : await push(AppRoutes.emailRecovery, arguments: arguments);
+
+      if (result is EmailRecoveryAction) {
+        log('MailboxDashBoardController::gotoEmailRecovery():result: $result');
+        handleRestoreEmailAction(result);
       }
     }
+  }
+
+  void handleRestoreEmailAction(EmailRecoveryAction emailRecoveryAction) {
+    log('MailboxController::_handleRestoreEmailAction');
+    final generateId = Id(const Uuid().v4());
+    final restoreDeletedMessageRequest = RestoredDeletedMessageRequest(generateId, emailRecoveryAction);
+
+    consumeState(_restoreDeletedMessageInteractor.execute(sessionCurrent!, accountId.value!, restoreDeletedMessageRequest));
+    isRecoveringDeletedMessage.value = true;
   }
 
   @override
