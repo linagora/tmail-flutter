@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -153,6 +154,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             return const SizedBox.shrink();
                           }
                         }),
+                        Obx(() => RecoverDeletedMessageLoadingBannerWidget(
+                            viewState: controller.viewStateRestoreDeletedMessage.value,
+                            horizontalLoadingWidget: horizontalLoadingWidget,
+                            responsiveUtils: controller.responsiveUtils,
+                        )),
                         _buildListButtonQuickSearchFilter(context),
                         _buildMarkAsMailboxReadLoading(context),
                         Expanded(child: Obx(() {
