@@ -16,6 +16,7 @@ class PresentationMailbox with EquatableMixin {
   static const String draftsRole = 'drafts';
   static const String spamRole = 'spam';
   static const String archiveRole = 'archive';
+  static const String recoveredRole = 'restored messages';
 
   static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')));
 
@@ -27,6 +28,7 @@ class PresentationMailbox with EquatableMixin {
   static final roleDrafts = Role(draftsRole);
   static final roleSpam = Role(spamRole);
   static final roleArchive = Role(archiveRole);
+  static final roleRecovered = Role(recoveredRole);
 
   final MailboxId id;
   final MailboxName? name;
