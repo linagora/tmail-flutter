@@ -6,6 +6,8 @@ import 'package:tmail_ui_user/features/email_recovery/presentation/email_recover
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_field.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/styles/email_recovery_form_styles.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/date_selection_field/date_selection_field_web_widget.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/text_input_field_suggestion_widget.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/text_input_field_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailRecoveryFormTabletBuilder extends GetWidget<EmailRecoveryController> {
@@ -56,6 +58,40 @@ class EmailRecoveryFormTabletBuilder extends GetWidget<EmailRecoveryController> 
                         recoveryTimeSelected: controller.receptionDateFieldSelected.value,
                         onTapCalendar: () => controller.onSelectReceptionDateRange(context),
                         onRecoveryTimeSelected: (type) => controller.onReceptionDateTypeSelected(context, type),
+                      )),
+                      TextInputFieldWidget(
+                        field: EmailRecoveryField.subject,
+                        textEditingController: controller.subjectFieldInputController,
+                        currentFocusNode: controller.focusManager.subjectFieldFocusNode,
+                        nextFocusNode: controller.focusManager.recipientsFieldFocusNode,
+                        responsiveUtils: controller.responsiveUtils,
+                        imagePaths: controller.imagePaths,
+                      ),
+                      Obx(() => TextInputFieldSuggestionWidget(
+                        keyTagEditor: controller.recipientsFieldKey,
+                        field: EmailRecoveryField.recipients,
+                        listEmailAddress: controller.listRecipients,
+                        responsiveUtils: controller.responsiveUtils,
+                        expandMode: controller.recipientsExpandMode.value,
+                        textEditingController: controller.recipientsFieldInputController,
+                        focusNode: controller.focusManager.recipientsFieldFocusNode,
+                        nextFocusNode: controller.focusManager.senderFieldFocusNode,
+                        onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+                        onUpdateListEmailAddressAction: controller.updateListEmailAddress,
+                        onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
+                      )),
+                      Obx(() => TextInputFieldSuggestionWidget(
+                        keyTagEditor: controller.senderFieldKey,
+                        field: EmailRecoveryField.sender,
+                        listEmailAddress: controller.listSenders,
+                        responsiveUtils: controller.responsiveUtils,
+                        expandMode: controller.senderExpandMode.value,
+                        textEditingController: controller.senderFieldInputController,
+                        focusNode: controller.focusManager.senderFieldFocusNode,
+                        nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
+                        onShowFullListEmailAddressAction: controller.showFullEmailAddress,
+                        onUpdateListEmailAddressAction: controller.updateListEmailAddress,
+                        onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                       )),
                     ],
                   ),
