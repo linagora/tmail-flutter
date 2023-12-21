@@ -138,7 +138,7 @@ class ThreadView extends GetWidget<ThreadController>
                             }
                           }),
                             Obx(() => RecoverDeletedMessageLoadingBannerWidget(
-                                viewState: controller.mailboxDashBoardController.viewStateRestoreDeletedMessage.value,
+                                isLoading: controller.mailboxDashBoardController.isRecoveringDeletedMessage.value,
                                 horizontalLoadingWidget: horizontalLoadingWidget,
                                 responsiveUtils: controller.responsiveUtils,
                             )),

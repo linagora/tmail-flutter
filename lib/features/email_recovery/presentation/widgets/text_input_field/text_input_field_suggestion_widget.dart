@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/email_recovery/presentation/styles/text_i
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/suggestion_tag_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/suggesstion_email_address.dart';
-import 'package:tmail_ui_user/main/utils/app_constants.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
 typedef OnUpdateListEmailAddressAction = void Function(EmailRecoveryField field, List<EmailAddress> newDate);
@@ -325,7 +325,7 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
 
     final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
     if (
-      processedQuery.length >= AppConstants.limitCharToStartSearch 
+      processedQuery.length >= AppConfig.limitCharToStartSearch
       && widget.onSuggestionEmailAddress != null
     ) {
       final listEmailAddress = await widget.onSuggestionEmailAddress!(processedQuery);
