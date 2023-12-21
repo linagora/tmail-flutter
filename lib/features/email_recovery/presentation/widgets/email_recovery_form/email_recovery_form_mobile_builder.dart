@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_controller.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_field.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/styles/email_recovery_form_styles.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/check_box_has_attachment_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/date_selection_field/date_selection_field_mobile_widget.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/list_button_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/text_input_field_suggestion_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/text_input_field_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -89,11 +91,25 @@ class EmailRecoveryFormMobileBuilder extends GetWidget<EmailRecoveryController> 
                         onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                         onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                       )),
+                      Obx(() => CheckBoxHasAttachmentWidget(
+                        hasAttachmentValue: controller.hasAttachment.value,
+                        currentFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
+                        nextFocusNode: controller.focusManager.deletionDateFieldFocusNode,
+                        onChanged: (value) => controller.onChangeHasAttachment(value),
+                      ))
                     ],
                   ),
                 ),
               ),
             ),
+            Padding(
+              padding: EmailRecoveryFormStyles.bottomAreaPadding,
+              child: ListButtonWidget(
+                onCancel: () => controller.closeView(context),
+                onRestore: () => controller.onRestore(context),
+                responsiveUtils: controller.responsiveUtils,
+              ),
+            )
           ],
         ),
         Positioned(
