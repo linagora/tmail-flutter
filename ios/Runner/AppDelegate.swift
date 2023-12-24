@@ -6,29 +6,19 @@ import flutter_local_notifications
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
-    
-    /// Registers all pubspec-referenced Flutter plugins in the given registry.
-    static func registerPlugins(with registry: FlutterPluginRegistry) {
-        GeneratedPluginRegistrant.register(with: registry)
-    }
-    
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        /// Register the app's plugins in the context of a normal run
-        AppDelegate.registerPlugins(with: self)
-        
-        UNUserNotificationCenter.current().delegate = self
+        GeneratedPluginRegistrant.register(with: self)
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
         }
         
-        UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
-        
         FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { registry in
-            AppDelegate.registerPlugins(with: registry)
+            GeneratedPluginRegistrant.register(with: registry)
         }
         
         FlutterDownloaderPlugin.setPluginRegistrantCallback { registry in
@@ -62,14 +52,12 @@ import flutter_local_notifications
                 return sharingIntent.application(app, open: url, options: options)
             }
         }
-         // For example load MSALPublicClientApplication
-         // return MSALPublicClientApplication.handleMSALResponse(url, sourceApplication: options[.sourceApplication] as? String)
-
-         // Cancel url handling
-         // return false
-
-         // Proceed url handling for other Flutter libraries like uni_links
-         return super.application(app, open: url, options:options)
+        
+        return super.application(app, open: url, options:options)
+    }
+    
+    override func applicationDidBecomeActive(_ application: UIApplication) {
+        removeAppBadger()
     }
     
     private func handleEmailAndress(open url: URL) -> URL? {
@@ -86,9 +74,49 @@ import flutter_local_notifications
         return URL(string: "ShareMedia-\(appDomain)://dataUrl=\(sharedKey)#text")
     }
     
+    // Receive displayed notifications for iOS 10 or later devices.
     override func userNotificationCenter(_ center: UNUserNotificationCenter,
                                          willPresent notification: UNNotification,
                                          withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler(.alert) // shows banner even if app is in foreground
+        TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent::notification: \(notification)")
+        if let notificationBadgeCount = notification.request.content.badge?.intValue, notificationBadgeCount > 0 {
+            let newBadgeCount = UIApplication.shared.applicationIconBadgeNumber + notificationBadgeCount
+            TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent:newBadgeCount: \(newBadgeCount)")
+            updateAppBadger(currentBadgeCount: newBadgeCount)
+        }
+        
+        completionHandler(isAppForegroundActive() ? [] : [.alert, .badge, .sound])
+    }
+    
+    override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        updateAppBadger(currentBadgeCount: UIApplication.shared.applicationIconBadgeNumber)
+        completionHandler()
+    }
+}
+
+extension AppDelegate {
+    private func updateAppBadger(currentBadgeCount: Int) {
+        let newBadgeCount = currentBadgeCount > 0 ? currentBadgeCount - 1 : 0
+        TwakeLogger.shared.log(message: "AppDelegate::updateAppBadger::newBadgeCount: \(newBadgeCount)")
+        if #available(iOS 16.0, *) {
+            UNUserNotificationCenter.current().setBadgeCount(newBadgeCount)
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = newBadgeCount
+            
+        }
+    }
+    
+    private func removeAppBadger() {
+        TwakeLogger.shared.log(message: "AppDelegate::removeAppBadger")
+        if #available(iOS 16.0, *) {
+            UNUserNotificationCenter.current().setBadgeCount(0)
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+            
+        }
+    }
+    
+    private func isAppForegroundActive() -> Bool {
+        return UIApplication.shared.applicationState == .active
     }
 }
