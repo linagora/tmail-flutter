@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/offline_mode/config/work_manager_config.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -27,10 +26,7 @@ void main() async {
        HiveCacheConfig().setUp(),
        Executor().warmUp(),
        if (PlatformInfo.isMobile)
-         ... [
-           WorkManagerConfig().initialize(),
-           LocalNotificationManager.instance.setUp(),
-         ],
+         WorkManagerConfig().initialize(),
        AppUtils.loadEnvFile()
     ]);
     await HiveCacheConfig.initializeEncryptionKey();
