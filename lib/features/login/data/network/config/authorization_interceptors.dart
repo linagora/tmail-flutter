@@ -3,20 +3,21 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
 import 'package:model/account/personal_account.dart';
-import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/oidc_configuration.dart';
-import 'package:model/oidc/token.dart';
 import 'package:model/oidc/token_oidc.dart';
-import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
+import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
@@ -27,17 +28,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final AccountCacheManager _accountCacheManager;
+  final IOSSharingManager _iosSharingManager;
 
   AuthenticationType _authenticationType = AuthenticationType.none;
   OIDCConfiguration? _configOIDC;
-  Token? _token;
+  TokenOIDC? _token;
   String? _authorization;
 
   AuthorizationInterceptors(
     this._dio,
     this._authenticationClient,
     this._tokenOidcCacheManager,
-    this._accountCacheManager
+    this._accountCacheManager,
+    this._iosSharingManager,
   );
 
   void setBasicAuthorization(UserName userName, Password password) {
@@ -45,13 +48,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _authenticationType = AuthenticationType.basic;
   }
 
-  void setTokenAndAuthorityOidc({Token? newToken, OIDCConfiguration? newConfig}) {
+  void setTokenAndAuthorityOidc({TokenOIDC? newToken, OIDCConfiguration? newConfig}) {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
   }
 
-  void _updateNewToken(Token newToken) {
+  void _updateNewToken(TokenOIDC newToken) {
     _token = newToken;
   }
 
@@ -97,24 +100,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           _token!.refreshToken
         );
 
-        final currentAccount = await _accountCacheManager.getCurrentAccount();
+        _updateNewToken(newToken);
 
-        await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
-
-        await Future.wait([
-          _tokenOidcCacheManager.persistOneTokenOidc(newToken),
-          _accountCacheManager.setCurrentAccount(
-            PersonalAccount(
-              newToken.tokenIdHash,
-              AuthenticationType.oidc,
-              isSelected: true,
-              accountId: currentAccount.accountId,
-              apiUrl: currentAccount.apiUrl,
-              userName: currentAccount.userName
-            )
-          )
-        ]);
-        _updateNewToken(newToken.toToken());
+        await _updateCurrentAccount(tokenOIDC: newToken);
 
         if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
@@ -211,6 +199,28 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         return _configOIDC != null && _token != null;
       case AuthenticationType.none:
         return false;
+    }
+  }
+
+  Future _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
+    final currentAccount = await _accountCacheManager.getCurrentAccount();
+
+    await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
+
+    await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
+
+    final personalAccount = PersonalAccount(
+      tokenOIDC.tokenIdHash,
+      AuthenticationType.oidc,
+      isSelected: true,
+      accountId: currentAccount.accountId,
+      apiUrl: currentAccount.apiUrl,
+      userName: currentAccount.userName
+    );
+    await _accountCacheManager.setCurrentAccount(personalAccount);
+
+    if (PlatformInfo.isIOS) {
+      await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
     }
   }
 
