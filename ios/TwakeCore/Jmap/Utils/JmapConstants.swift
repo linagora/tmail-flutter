@@ -15,4 +15,6 @@ class JmapConstants {
         "preview",
         "from"
     ]
+    
+    static let EMAIL_ID = "email_id"
 }

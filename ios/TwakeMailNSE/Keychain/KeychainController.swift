@@ -48,4 +48,13 @@ class KeychainController: KeychainControllerDelegate {
             }
         } catch {}
     }
+    
+    func updateTokenOidc(accountId: String, newTokenOidc: TokenOidc) {
+        do {
+            if let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId) {
+                let newSharingSession = sharingSession.updateTokenOidc(newTokenOidc: newTokenOidc)
+                try keychain.set(newSharingSession.toJson() ?? "", key: accountId)
+            }
+        } catch {}
+    }
 }

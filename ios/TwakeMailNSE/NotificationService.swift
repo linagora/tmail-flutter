@@ -61,6 +61,8 @@ class NotificationService: UNNotificationServiceExtension {
                 authenticationType: keychainSharingSession.authenticationType,
                 tokenOidc: keychainSharingSession.tokenOIDC,
                 basicAuth: keychainSharingSession.basicAuth,
+                tokenEndpointUrl: keychainSharingSession.tokenEndpoint,
+                oidcScopes: keychainSharingSession.oidcScopes,
                 onSuccess: { emails in
                     self.keychainController.updateEmailStateToKeychain(accountId: keychainSharingSession.accountId, newState: newEmailState)
                     
@@ -90,7 +92,7 @@ class NotificationService: UNNotificationServiceExtension {
                     }
                 },
                 onFailure: { error in
-                    self.modifiedContent?.body = newEmailDefaultMessage
+                    self.modifiedContent?.body = self.newEmailDefaultMessage
                     self.modifiedContent?.badge = NSNumber(value: 1)
                     return self.notify()
                 }

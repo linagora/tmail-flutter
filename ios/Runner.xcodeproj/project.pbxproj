@@ -38,11 +38,24 @@
 		F5BBBF512B2EEC37007930E1 /* NetworkExceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF502B2EEC37007930E1 /* NetworkExceptions.swift */; };
 		F5BBBF532B2EECAA007930E1 /* JmapExceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF522B2EECAA007930E1 /* JmapExceptions.swift */; };
 		F5BBBF552B2EEF3D007930E1 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */; };
+		F5CFE0302B335098005A90A9 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
+		F5CFE0352B335322005A90A9 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D4EA022B2ABF090090DDFC /* NotificationService.swift */; };
 		F5D4EA072B2ABF090090DDFC /* TwakeMailNSE.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F5E7D8742B3578F90009BB8A /* JmapConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E7E2B2E3C2600051FD0 /* JmapConstants.swift */; };
+		F5E7D8792B38763B0009BB8A /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8782B38763B0009BB8A /* DateExtensions.swift */; };
+		F5E7D87A2B38763B0009BB8A /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8782B38763B0009BB8A /* DateExtensions.swift */; };
+		F5E7D87C2B38764F0009BB8A /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D87B2B38764F0009BB8A /* StringExtensions.swift */; };
+		F5E7D87D2B38764F0009BB8A /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D87B2B38764F0009BB8A /* StringExtensions.swift */; };
+		F5E7D8802B3876DE0009BB8A /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D87F2B3876DE0009BB8A /* Authentication.swift */; };
+		F5E7D8822B3876F60009BB8A /* AuthenticationCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8812B3876F60009BB8A /* AuthenticationCredential.swift */; };
+		F5E7D8842B3877050009BB8A /* AuthenticationSSO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8832B3877050009BB8A /* AuthenticationSSO.swift */; };
+		F5E7D8862B3877390009BB8A /* TokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8852B3877390009BB8A /* TokenResponse.swift */; };
+		F5E7D8882B38775C0009BB8A /* TokenRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8872B38775C0009BB8A /* TokenRefreshManager.swift */; };
+		F5E7D88A2B3877D30009BB8A /* NSEPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8892B3877D30009BB8A /* NSEPusher.swift */; };
+		F5E7D88D2B3878580009BB8A /* AuthenticationInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D88C2B3878580009BB8A /* AuthenticationInterceptor.swift */; };
 		F5EFC07D2B328B9F00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
 		F5EFC07E2B328B9F00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
-		F5EFC07F2B3292FA00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +148,15 @@
 		F5D4EA022B2ABF090090DDFC /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		F5D4EA042B2ABF090090DDFC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F5D4EA0C2B2ABF970090DDFC /* TwakeMailNSE.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwakeMailNSE.entitlements; sourceTree = "<group>"; };
+		F5E7D8782B38763B0009BB8A /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
+		F5E7D87B2B38764F0009BB8A /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
+		F5E7D87F2B3876DE0009BB8A /* Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
+		F5E7D8812B3876F60009BB8A /* AuthenticationCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationCredential.swift; sourceTree = "<group>"; };
+		F5E7D8832B3877050009BB8A /* AuthenticationSSO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationSSO.swift; sourceTree = "<group>"; };
+		F5E7D8852B3877390009BB8A /* TokenResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenResponse.swift; sourceTree = "<group>"; };
+		F5E7D8872B38775C0009BB8A /* TokenRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenRefreshManager.swift; sourceTree = "<group>"; };
+		F5E7D8892B3877D30009BB8A /* NSEPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSEPusher.swift; sourceTree = "<group>"; };
+		F5E7D88C2B3878580009BB8A /* AuthenticationInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationInterceptor.swift; sourceTree = "<group>"; };
 		F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwakeLogger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -144,6 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDFECA8C54311B749F044831 /* Pods_Runner.framework in Frameworks */,
+				F5CFE0352B335322005A90A9 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,8 +263,10 @@
 		F53D1E642B2DE84E00051FD0 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				F5E7D8762B385B430009BB8A /* Model */,
+				F5E7D88B2B3878470009BB8A /* Interceptor */,
+				F5CFE0182B334BCD005A90A9 /* Model */,
 				F53D1E652B2DE8B800051FD0 /* AlamofireService.swift */,
+				F5E7D8872B38775C0009BB8A /* TokenRefreshManager.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -324,6 +349,7 @@
 				F5630C7D2B2CE359003CC0FD /* InfoPlistReader.swift */,
 				F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */,
 				F5630C862B2D0387003CC0FD /* PayloadParser.swift */,
+				F5E7D8892B3877D30009BB8A /* NSEPusher.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -335,6 +361,19 @@
 				F5BBBF522B2EECAA007930E1 /* JmapExceptions.swift */,
 			);
 			path = Exceptions;
+			sourceTree = "<group>";
+		};
+		F5CFE0182B334BCD005A90A9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */,
+				F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */,
+				F5E7D87F2B3876DE0009BB8A /* Authentication.swift */,
+				F5E7D8812B3876F60009BB8A /* AuthenticationCredential.swift */,
+				F5E7D8832B3877050009BB8A /* AuthenticationSSO.swift */,
+				F5E7D8852B3877390009BB8A /* TokenResponse.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		F5D4EA012B2ABF090090DDFC /* TwakeMailNSE */ = {
@@ -350,13 +389,21 @@
 			path = TwakeMailNSE;
 			sourceTree = "<group>";
 		};
-		F5E7D8762B385B430009BB8A /* Model */ = {
+		F5E7D8772B38761B0009BB8A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */,
-				F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */,
+				F5E7D8782B38763B0009BB8A /* DateExtensions.swift */,
+				F5E7D87B2B38764F0009BB8A /* StringExtensions.swift */,
 			);
-			path = Model;
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		F5E7D88B2B3878470009BB8A /* Interceptor */ = {
+			isa = PBXGroup;
+			children = (
+				F5E7D88C2B3878580009BB8A /* AuthenticationInterceptor.swift */,
+			);
+			path = Interceptor;
 			sourceTree = "<group>";
 		};
 		F5EFC07B2B328B8600829056 /* Logger */ = {
@@ -370,6 +417,7 @@
 		F5EFC0802B32965100829056 /* TwakeCore */ = {
 			isa = PBXGroup;
 			children = (
+				F5E7D8772B38761B0009BB8A /* Extensions */,
 				F5BBBF4F2B2EEC1B007930E1 /* Exceptions */,
 				F53D1E642B2DE84E00051FD0 /* Network */,
 				F5EFC07B2B328B8600829056 /* Logger */,
@@ -412,6 +460,8 @@
 				F5D4EA062B2ABF090090DDFC /* PBXTargetDependency */,
 			);
 			name = Runner;
+			packageProductDependencies = (
+			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
@@ -607,9 +657,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5E7D87C2B38764F0009BB8A /* StringExtensions.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				F5E7D8792B38763B0009BB8A /* DateExtensions.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				F5EFC07D2B328B9F00829056 /* TwakeLogger.swift in Sources */,
+				F5E7D8742B3578F90009BB8A /* JmapConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,7 +670,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5EFC07F2B3292FA00829056 /* TwakeLogger.swift in Sources */,
+				F5CFE0302B335098005A90A9 /* TwakeLogger.swift in Sources */,
 				F52F993027FD6EB900346091 /* ShareViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -628,15 +681,22 @@
 			files = (
 				F5BBBF512B2EEC37007930E1 /* NetworkExceptions.swift in Sources */,
 				F53D1E7F2B2E3C2600051FD0 /* JmapConstants.swift in Sources */,
+				F5E7D8822B3876F60009BB8A /* AuthenticationCredential.swift in Sources */,
 				F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */,
 				F53D1E8A2B2E4BB700051FD0 /* TokenOidc.swift in Sources */,
 				F53D1E862B2E401B00051FD0 /* JmapRequestGenerator.swift in Sources */,
+				F5E7D87A2B38763B0009BB8A /* DateExtensions.swift in Sources */,
+				F5E7D88D2B3878580009BB8A /* AuthenticationInterceptor.swift in Sources */,
+				F5E7D88A2B3877D30009BB8A /* NSEPusher.swift in Sources */,
 				F5630C7E2B2CE359003CC0FD /* InfoPlistReader.swift in Sources */,
 				F53D1E662B2DE8B800051FD0 /* AlamofireService.swift in Sources */,
 				F5BBBF532B2EECAA007930E1 /* JmapExceptions.swift in Sources */,
 				F53D1E882B2E4B3B00051FD0 /* AuthenticationType.swift in Sources */,
 				F53D1E6C2B2E208C00051FD0 /* Email.swift in Sources */,
 				F5630C872B2D0387003CC0FD /* PayloadParser.swift in Sources */,
+				F5E7D8862B3877390009BB8A /* TokenResponse.swift in Sources */,
+				F5E7D8842B3877050009BB8A /* AuthenticationSSO.swift in Sources */,
+				F5E7D87D2B38764F0009BB8A /* StringExtensions.swift in Sources */,
 				F53D1E782B2E2C7E00051FD0 /* JmapResponseObject.swift in Sources */,
 				F5630C852B2CF50C003CC0FD /* TypeName.swift in Sources */,
 				F5630C7B2B2CE148003CC0FD /* KeychainSharingSession.swift in Sources */,
@@ -644,9 +704,11 @@
 				F5BBBF552B2EEF3D007930E1 /* BundleExtension.swift in Sources */,
 				F53D1E7C2B2E35CC00051FD0 /* EmailAddress.swift in Sources */,
 				F5EFC07E2B328B9F00829056 /* TwakeLogger.swift in Sources */,
+				F5E7D8882B38775C0009BB8A /* TokenRefreshManager.swift in Sources */,
 				F5630C762B2CDFDA003CC0FD /* KeychainController.swift in Sources */,
 				F53D1E832B2E3D4600051FD0 /* JmapRequestObject.swift in Sources */,
 				F5630C782B2CE091003CC0FD /* KeyChainControllerDelegate.swift in Sources */,
+				F5E7D8802B3876DE0009BB8A /* Authentication.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
