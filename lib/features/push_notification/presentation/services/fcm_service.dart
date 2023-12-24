@@ -3,15 +3,14 @@ import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 
 class FcmService {
 
   static const int durationMessageComing = 2000;
   static const int durationRefreshToken = 2000;
 
-  StreamController<RemoteMessage>? foregroundMessageStreamController;
-  StreamController<RemoteMessage>?  backgroundMessageStreamController;
+  StreamController<Map<String, dynamic>>? foregroundMessageStreamController;
+  StreamController<Map<String, dynamic>>?  backgroundMessageStreamController;
   StreamController<String?>? fcmTokenStreamController;
 
   FcmService._internal();
@@ -22,17 +21,16 @@ class FcmService {
 
   void handleFirebaseForegroundMessage(RemoteMessage newRemoteMessage) {
     log('FcmService::handleFirebaseForegroundMessage():data: ${newRemoteMessage.data}');
-    foregroundMessageStreamController?.add(newRemoteMessage);
+    if (newRemoteMessage.data.isNotEmpty) {
+      foregroundMessageStreamController?.add(newRemoteMessage.data);
+    }
   }
 
   void handleFirebaseBackgroundMessage(RemoteMessage newRemoteMessage) {
     log('FcmService::handleFirebaseBackgroundMessage():data: ${newRemoteMessage.data}');
-    backgroundMessageStreamController?.add(newRemoteMessage);
-  }
-
-  void handleFirebaseMessageOpenedApp(RemoteMessage newRemoteMessage) async {
-    log("FcmService::handleFirebaseMessageOpenedApp:");
-    await LocalNotificationManager.instance.removeNotificationBadgeForIOS();
+    if (newRemoteMessage.data.isNotEmpty) {
+      backgroundMessageStreamController?.add(newRemoteMessage.data);
+    }
   }
 
   void handleToken(String? token) {
@@ -42,8 +40,8 @@ class FcmService {
 
   void initialStreamController() {
     log('FcmService::initialStreamController:');
-    foregroundMessageStreamController = StreamController<RemoteMessage>.broadcast();
-    backgroundMessageStreamController = StreamController<RemoteMessage>.broadcast();
+    foregroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
+    backgroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
     fcmTokenStreamController = StreamController<String?>.broadcast();
   }
 

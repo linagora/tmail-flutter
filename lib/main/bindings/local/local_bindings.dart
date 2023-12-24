@@ -1,13 +1,15 @@
 
 import 'package:core/utils/file_utils.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/authentication_info_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/encryption_key_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
@@ -18,7 +20,6 @@ import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_clien
 import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
@@ -29,6 +30,7 @@ import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_man
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -36,6 +38,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_work
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -45,6 +48,7 @@ class LocalBindings extends Bindings {
   @override
   void dependencies() {
     _bindingException();
+    _bindingKeychainSharing();
     _bindingCaching();
     _bindingWorkerQueue();
   }
@@ -52,6 +56,7 @@ class LocalBindings extends Bindings {
   void _bindingCaching() {
     Get.put(MailboxCacheClient());
     Get.put(StateCacheClient());
+    Get.put(StateCacheManager(Get.find<StateCacheClient>()));
     Get.put(MailboxCacheManager(Get.find<MailboxCacheClient>()));
     Get.put(EmailCacheClient());
     Get.put(EmailCacheManager(Get.find<EmailCacheClient>()));
@@ -98,6 +103,7 @@ class LocalBindings extends Bindings {
       Get.find<SendingEmailCacheManager>(),
       Get.find<SessionHiveCacheClient>(),
       Get.find<LocalSpamReportManager>(),
+      Get.find<KeychainSharingManager>(),
     ));
   }
 
@@ -108,5 +114,9 @@ class LocalBindings extends Bindings {
   void _bindingWorkerQueue() {
     Get.put(NewEmailCacheWorkerQueue());
     Get.put(OpenedEmailCacheWorkerQueue());
+  }
+
+  void _bindingKeychainSharing() {
+    Get.put(KeychainSharingManager(Get.find<FlutterSecureStorage>()));
   }
 }

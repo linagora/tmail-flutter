@@ -1,6 +1,4 @@
 
-import 'dart:io';
-
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -94,37 +92,12 @@ class FcmUtils {
     return object == null || (object is String && object.isEmpty);
   }
 
-  String get platformOS {
-    var platformName = '';
-    if (PlatformInfo.isWeb) {
-      platformName = 'Web';
-    } else {
-      if (Platform.isAndroid) {
-        platformName = 'Android';
-      } else if (Platform.isIOS) {
-        platformName = 'IOS';
-      } else if (Platform.isFuchsia) {
-        platformName = 'Fuchsia';
-      } else if (Platform.isLinux) {
-        platformName = 'Linux';
-      } else if (Platform.isMacOS) {
-        platformName = 'MacOS';
-      } else if (Platform.isWindows) {
-        platformName = 'Windows';
-      }
-    }
-    log('FcmUtils::platformOS():$platformName');
-    return platformName;
-  }
-
   String hashTokenToDeviceId(String token) {
     final tokenHashCode = token.hashCode.toString();
-    final deviceId = '$hashCodeKey-$platformOS-$tokenHashCode';
+    final deviceId = '$hashCodeKey-${PlatformInfo.platformNameOS}-$tokenHashCode';
     log('FcmUtils::hashCodeTokenToDeviceId():deviceId: $deviceId');
     return deviceId;
   }
-
-  bool get isMobileAndroid => PlatformInfo.isMobile && Platform.isAndroid;
 
   bool checkExpirationTimeWithinGivenPeriod({
     required DateTime expiredTime,

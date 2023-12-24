@@ -7,9 +7,11 @@ import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
 
@@ -25,6 +27,7 @@ class CoreBindings extends Bindings {
     _bindingReceivingSharingStream();
     _bindingUtils();
     _bindingIsolate();
+    _bindingStorage();
   }
 
   void _bindingAppImagePaths() {
@@ -63,5 +66,14 @@ class CoreBindings extends Bindings {
     if (PlatformInfo.isMobile) {
       Get.put(SendingQueueIsolateManager());
     }
+  }
+
+  void _bindingStorage() {
+    Get.put(const FlutterSecureStorage(
+      iOptions: IOSOptions(
+        groupId: AppConfig.iOSKeychainSharingGroupId,
+        accountName: AppConfig.iOSKeychainSharingService,
+      )
+    ));
   }
 }

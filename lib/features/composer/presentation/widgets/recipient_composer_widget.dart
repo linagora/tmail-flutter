@@ -24,7 +24,7 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_co
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_constants.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
 typedef OnUpdateListEmailAddressAction = void Function(PrefixEmailAddress prefix, List<EmailAddress> newData);
@@ -359,7 +359,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     }
 
     final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
-    if (processedQuery.length >= AppConstants.limitCharToStartSearch &&
+    if (processedQuery.length >= AppConfig.limitCharToStartSearch &&
         widget.onSuggestionEmailAddress != null) {
       final listEmailAddress = await widget.onSuggestionEmailAddress!(processedQuery);
       final listSuggestionEmailAddress =  listEmailAddress.map((emailAddress) => _toSuggestionEmailAddress(emailAddress, _currentListEmailAddress));
