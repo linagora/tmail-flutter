@@ -84,8 +84,13 @@ import flutter_local_notifications
             TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent:newBadgeCount: \(newBadgeCount)")
             updateAppBadger(currentBadgeCount: newBadgeCount)
         }
-        
-        completionHandler(isAppForegroundActive() ? [] : [.alert, .badge, .sound])
+        if let emailId = notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String,
+           !emailId.isEmpty,
+           !isAppForegroundActive() {
+            completionHandler([.alert, .badge, .sound])
+        } else {
+            completionHandler([])
+        }
     }
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
