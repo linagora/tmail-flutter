@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -10,7 +11,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
@@ -206,7 +206,7 @@ class SendingEmailWorker extends Worker {
   void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
     _dynamicUrlInterceptors?.setJmapUrl(storedTokenOidcSuccess.baseUrl.toString());
     _authorizationInterceptors?.setTokenAndAuthorityOidc(
-      newToken: storedTokenOidcSuccess.tokenOidc.toToken(),
+      newToken: storedTokenOidcSuccess.tokenOidc,
       newConfig: storedTokenOidcSuccess.oidcConfiguration
     );
     _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());

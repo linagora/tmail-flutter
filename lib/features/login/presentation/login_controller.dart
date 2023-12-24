@@ -13,7 +13,6 @@ import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
@@ -331,10 +330,10 @@ class LoginController extends ReloadableController {
     dynamicUrlInterceptors.setJmapUrl(_currentBaseUrl?.toString());
     dynamicUrlInterceptors.changeBaseUrl(_currentBaseUrl?.toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
-        newToken: success.tokenOIDC.toToken(),
+        newToken: success.tokenOIDC,
         newConfig: success.configuration);
     authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-        newToken: success.tokenOIDC.toToken(),
+        newToken: success.tokenOIDC,
         newConfig: success.configuration);
     getSessionAction();
   }

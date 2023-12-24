@@ -38,7 +38,7 @@ class ExportAttachmentInteractor {
 
       if (currentAccount.authenticationType == AuthenticationType.oidc) {
         final tokenOidc = await _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id);
-        accountRequest = AccountRequest.withOidc(token: tokenOidc.toToken());
+        accountRequest = AccountRequest.withOidc(token: tokenOidc);
       } else {
         final authenticationInfoCache = await credentialRepository.getAuthenticationInfoStored();
         accountRequest = AccountRequest.withBasic(
