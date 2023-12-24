@@ -133,7 +133,7 @@ class EmailChangeListener extends ChangeListener {
     _userName = userName;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb || PlatformInfo.isIOS) {
       _storeEmailDeliveryStateAction(accountId, userName, _newStateEmailDelivery!);
     } else if (PlatformInfo.isAndroid) {
       _getStoredEmailDeliveryState(accountId, userName);
