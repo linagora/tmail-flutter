@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/adv
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/text_field_autocomplete_email_address_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_suggestion_item_widget_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_tag_item_widget_web.dart';
-import 'package:tmail_ui_user/main/utils/app_constants.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
 typedef OnUpdateListEmailAddressAction = void Function(AdvancedSearchFilterField field, List<EmailAddress> newData);
@@ -216,7 +216,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
     }
 
     final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
-    if (processedQuery.length >= AppConstants.limitCharToStartSearch &&
+    if (processedQuery.length >= AppConfig.limitCharToStartSearch &&
         widget.onSuggestionEmailAddress != null) {
       final listEmailAddress = await widget.onSuggestionEmailAddress!(processedQuery);
       final listSuggestionEmailAddress =  listEmailAddress.map((emailAddress) => _toSuggestionEmailAddress(emailAddress, _currentListEmailAddress));

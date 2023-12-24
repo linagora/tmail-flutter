@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_authenticati
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class CredentialBindings extends InteractorsBindings {
 
@@ -67,6 +68,7 @@ class CredentialBindings extends InteractorsBindings {
   void bindingsDataSourceImpl() {
     Get.put(HiveAccountDatasourceImpl(
       Get.find<AccountCacheManager>(),
+      Get.find<IOSSharingManager>(),
       Get.find<CacheExceptionThrower>())
     );
     Get.put(AuthenticationDataSourceImpl());

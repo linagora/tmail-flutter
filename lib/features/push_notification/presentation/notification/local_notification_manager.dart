@@ -1,16 +1,13 @@
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_config.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -38,15 +35,14 @@ class LocalNotificationManager {
   Future<void> setUp() async {
     try {
       await _initLocalNotification();
-      _checkLocalNotificationPermission();
-      if (Platform.isAndroid) {
+      await _checkLocalNotificationPermission();
+      if (PlatformInfo.isAndroid) {
         await _createAndroidNotificationChannelGroup();
         await _createAndroidNotificationChannel();
       }
     } catch (e) {
       logError('LocalNotificationManager::setUp(): ERROR: ${e.toString()}');
     }
-    return Future.value();
   }
 
   Future<NotificationResponse?> getCurrentNotificationResponse() async {
@@ -56,7 +52,7 @@ class LocalNotificationManager {
     } catch (e) {
       logError('LocalNotificationManager::getCurrentNotificationResponse(): ERROR: ${e.toString()}');
     }
-    return Future.value(null);
+    return null;
   }
 
   set activatedNotificationClickedOnTerminate(bool clicked) => _isNotificationClickedOnTerminate = clicked;
@@ -82,19 +78,19 @@ class LocalNotificationManager {
     }
   }
 
-  void _checkLocalNotificationPermission() async {
+  Future<void> _checkLocalNotificationPermission() async {
     if (_notificationsEnabled) {
-      return;
+      return Future.value(null);
     }
 
-    if (Platform.isAndroid) {
+    if (PlatformInfo.isAndroid) {
       final granted = await _isAndroidPermissionGranted();
       if (!granted) {
         _notificationsEnabled = await _requestPermissions();
       } else {
         _notificationsEnabled = granted;
       }
-    } else {
+    } else if (PlatformInfo.isIOS) {
       _notificationsEnabled = await _requestPermissions();
     }
   }
@@ -106,14 +102,16 @@ class LocalNotificationManager {
   }
 
   Future<bool> _requestPermissions() async {
-    if (Platform.isAndroid) {
+    if (PlatformInfo.isAndroid) {
       return await _localNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestPermission() ?? false;
-    } else {
+    } else if (PlatformInfo.isIOS) {
       return await _localNotificationsPlugin
         .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true) ?? false;
+    } else {
+      return false;
     }
   }
 
@@ -166,14 +164,11 @@ class LocalNotificationManager {
   }
 
   Future<void> removeNotification(String id) async {
-    if (id.startsWith(FcmUtils.instance.platformOS)) {
-      await removeNotificationBadgeForIOS();
-    }
     return _localNotificationsPlugin.cancel(id.hashCode);
   }
 
   void groupPushNotification() async {
-    if (Platform.isIOS) {
+    if (PlatformInfo.isIOS) {
       return;
     }
 
@@ -222,19 +217,5 @@ class LocalNotificationManager {
 
   void closeStream() {
     localNotificationsController.close();
-  }
-
-  Future<void> setNotificationBadgeForIOS() async {
-    log("LocalNotificationManager::setNotificationBadgeForIOS:");
-    if (PlatformInfo.isIOS) {
-      await FlutterAppBadger.updateBadgeCount(1);
-    }
-  }
-
-  Future<void> removeNotificationBadgeForIOS() async {
-    log("LocalNotificationManager::removeNotificationBadgeForIOS:");
-    if (PlatformInfo.isIOS) {
-      await FlutterAppBadger.removeBadge();
-    }
   }
 }
