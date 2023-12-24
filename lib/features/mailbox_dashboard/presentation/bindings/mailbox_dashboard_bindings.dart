@@ -4,7 +4,6 @@ import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
@@ -34,6 +33,7 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cach
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
@@ -194,7 +194,10 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<ThreadIsolateWorker>(),
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>(), Get.find<CacheExceptionThrower>()));
-    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => StateDataSourceImpl(
+      Get.find<StateCacheManager>(),
+      Get.find<CacheExceptionThrower>()
+    ));
     Get.lazyPut(() => MailboxDataSourceImpl(
       Get.find<MailboxAPI>(),
       Get.find<MailboxIsolateWorker>(),
