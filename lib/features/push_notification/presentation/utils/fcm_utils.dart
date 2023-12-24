@@ -31,6 +31,8 @@ class FcmUtils {
     TypeName.mailboxType,
     TypeName.emailDelivery
   ];
+  static const int durationMessageComing = 2000;
+  static const int durationRefreshToken = 2000;
 
   StateChange? convertFirebaseDataMessageToStateChange(Map<String, dynamic> dataMessage) {
     log('FcmUtils::convertFirebaseDataMessageToStateChange():dataMessage: $dataMessage');

@@ -3,11 +3,13 @@ import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class FcmService {
-
-  static const int durationMessageComing = 2000;
-  static const int durationRefreshToken = 2000;
 
   StreamController<Map<String, dynamic>>? foregroundMessageStreamController;
   StreamController<Map<String, dynamic>>?  backgroundMessageStreamController;
@@ -43,6 +45,14 @@ class FcmService {
     foregroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
     backgroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
     fcmTokenStreamController = StreamController<String?>.broadcast();
+  }
+
+  void handleOpenEmailFromNotification(String emailId) {
+    log('FcmService::handleOpenEmailFromNotification:emailId: $emailId');
+    popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.home),
+      arguments: EmailId(Id(emailId))
+    );
   }
 
   void closeStream() {
