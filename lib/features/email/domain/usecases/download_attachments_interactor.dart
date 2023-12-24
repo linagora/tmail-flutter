@@ -1,9 +1,9 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
@@ -12,9 +12,9 @@ import 'package:model/email/attachment.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
-import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -46,7 +46,7 @@ class DownloadAttachmentsInteractor {
 
       if (currentAccount.authenticationType == AuthenticationType.oidc) {
         final tokenOidc = await _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id);
-        accountRequest = AccountRequest.withOidc(token: tokenOidc.toToken());
+        accountRequest = AccountRequest.withOidc(token: tokenOidc);
       } else {
         final authenticationInfoCache = await credentialRepository.getAuthenticationInfoStored();
         accountRequest = AccountRequest.withBasic(
@@ -96,22 +96,24 @@ class DownloadAttachmentsInteractor {
 
       await _accountRepository.deleteCurrentAccount(accountCurrent.id);
 
-      await Future.wait([
-        _authenticationOIDCRepository.persistTokenOIDC(newTokenOIDC),
-        _accountRepository.setCurrentAccount(PersonalAccount(
+      await _authenticationOIDCRepository.persistTokenOIDC(newTokenOIDC);
+
+      await _accountRepository.setCurrentAccount(
+        PersonalAccount(
           newTokenOIDC.tokenIdHash,
           AuthenticationType.oidc,
           isSelected: true,
           accountId: accountId,
           apiUrl: accountCurrent.apiUrl,
-          userName: accountCurrent.userName))
-      ]);
+          userName: accountCurrent.userName
+        )
+      );
 
       _authorizationInterceptors.setTokenAndAuthorityOidc(
-          newToken: newTokenOIDC.toToken(),
+          newToken: newTokenOIDC,
           newConfig: oidcConfig);
 
-      final accountRequest = AccountRequest.withOidc(token: newTokenOIDC.toToken());
+      final accountRequest = AccountRequest.withOidc(token: newTokenOIDC);
 
       final taskIds = await emailRepository.downloadAttachments(
           attachments,

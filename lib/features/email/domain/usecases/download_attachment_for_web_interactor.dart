@@ -10,7 +10,6 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
@@ -45,7 +44,7 @@ class DownloadAttachmentForWebInteractor {
 
       if (currentAccount.authenticationType == AuthenticationType.oidc) {
         final tokenOidc = await _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id);
-        accountRequest = AccountRequest.withOidc(token: tokenOidc.toToken());
+        accountRequest = AccountRequest.withOidc(token: tokenOidc);
       } else {
         final authenticationInfoCache = await credentialRepository.getAuthenticationInfoStored();
         accountRequest = AccountRequest.withBasic(

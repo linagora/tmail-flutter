@@ -8,7 +8,6 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
@@ -130,10 +129,10 @@ abstract class ReloadableController extends BaseController {
     dynamicUrlInterceptors.setJmapUrl(tokenOidcSuccess.baseUrl.toString());
     dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
-        newToken: tokenOidcSuccess.tokenOidc.toToken(),
+        newToken: tokenOidcSuccess.tokenOidc,
         newConfig: tokenOidcSuccess.oidcConfiguration);
     authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-        newToken: tokenOidcSuccess.tokenOidc.toToken(),
+        newToken: tokenOidcSuccess.tokenOidc,
         newConfig: tokenOidcSuccess.oidcConfiguration);
   }
 

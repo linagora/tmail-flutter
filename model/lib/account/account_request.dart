@@ -4,12 +4,12 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
-import 'package:model/oidc/token.dart';
+import 'package:model/oidc/token_oidc.dart';
 
 class AccountRequest with EquatableMixin {
   final UserName? userName;
   final Password? password;
-  final Token? token;
+  final TokenOIDC? token;
   final AuthenticationType authenticationType;
 
   AccountRequest({
@@ -19,7 +19,7 @@ class AccountRequest with EquatableMixin {
     this.authenticationType = AuthenticationType.none,
   });
 
-  factory AccountRequest.withOidc({required Token token}) {
+  factory AccountRequest.withOidc({required TokenOIDC token}) {
     return AccountRequest(
       token: token,
       authenticationType: AuthenticationType.oidc
