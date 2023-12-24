@@ -43,7 +43,6 @@ class AccountCacheManager {
     return _accountCacheClient.insertItem(newAccountCache.id, newAccountCache);
   }
 
-
   Future<void> deleteCurrentAccount(String hashId) {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
     return _accountCacheClient.deleteItem(hashId);
