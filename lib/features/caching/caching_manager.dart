@@ -4,22 +4,23 @@ import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 
 class CachingManager {
   final MailboxCacheClient _mailboxCacheClient;
@@ -36,6 +37,7 @@ class CachingManager {
   final SendingEmailCacheManager _sendingEmailCacheManager;
   final SessionHiveCacheClient _sessionHiveCacheClient;
   final LocalSpamReportManager _localSpamReportManager;
+  final KeychainSharingManager _keychainSharingManager;
 
   CachingManager(
     this._mailboxCacheClient,
@@ -52,6 +54,7 @@ class CachingManager {
     this._sendingEmailCacheManager,
     this._sessionHiveCacheClient,
     this._localSpamReportManager,
+    this._keychainSharingManager,
   );
 
   Future<void> clearAll() async {
@@ -70,7 +73,9 @@ class CachingManager {
           _newEmailHiveCacheClient.clearAllData(),
           _openedEmailHiveCacheClient.clearAllData(),
           _clearSendingEmailCache(),
-        ]
+        ],
+      if (PlatformInfo.isIOS)
+        _keychainSharingManager.delete()
     ], eagerError: true);
   }
 
