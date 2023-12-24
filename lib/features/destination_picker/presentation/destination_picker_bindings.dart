@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -11,8 +10,9 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
-import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
@@ -70,7 +70,10 @@ class DestinationPickerBindings extends BaseBindings {
     Get.lazyPut(() => MailboxCacheDataSourceImpl(
       Get.find<MailboxCacheManager>(),
       Get.find<CacheExceptionThrower>()));
-    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => StateDataSourceImpl(
+      Get.find<StateCacheManager>(),
+      Get.find<CacheExceptionThrower>()
+    ));
     Get.lazyPut(() => EmailDataSourceImpl(
       Get.find<EmailAPI>(),
       Get.find<RemoteExceptionThrower>()));

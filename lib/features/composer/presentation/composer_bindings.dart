@@ -3,7 +3,6 @@ import 'package:core/utils/file_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
@@ -17,8 +16,8 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_dr
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
@@ -36,6 +35,7 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cach
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
@@ -96,7 +96,10 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => HtmlDataSourceImpl(
       Get.find<HtmlAnalyzer>(),
       Get.find<RemoteExceptionThrower>()));
-    Get.lazyPut(() => StateDataSourceImpl(Get.find<StateCacheClient>(), Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => StateDataSourceImpl(
+      Get.find<StateCacheManager>(),
+      Get.find<CacheExceptionThrower>()
+    ));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<NewEmailCacheManager>(),
       Get.find<OpenedEmailCacheManager>(),
