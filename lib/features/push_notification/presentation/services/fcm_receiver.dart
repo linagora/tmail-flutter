@@ -26,7 +26,6 @@ class FcmReceiver {
 
     _onForegroundMessage();
     _onBackgroundMessage();
-    _onMessageOpenedApp();
   }
 
   void _onForegroundMessage() {
@@ -35,10 +34,6 @@ class FcmReceiver {
 
   void _onBackgroundMessage() {
     FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundMessage);
-  }
-
-  void _onMessageOpenedApp() {
-    FirebaseMessaging.onMessageOpenedApp.listen(FcmService.instance.handleFirebaseMessageOpenedApp);
   }
 
   Future<String?> _getInitialToken() async {

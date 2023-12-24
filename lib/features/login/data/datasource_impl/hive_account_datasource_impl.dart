@@ -1,14 +1,21 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class HiveAccountDatasourceImpl extends AccountDatasource {
 
   final AccountCacheManager _accountCacheManager;
+  final IOSSharingManager _iosSharingManager;
   final ExceptionThrower _exceptionThrower;
 
-  HiveAccountDatasourceImpl(this._accountCacheManager, this._exceptionThrower);
+  HiveAccountDatasourceImpl(
+    this._accountCacheManager,
+    this._iosSharingManager,
+    this._exceptionThrower
+  );
 
   @override
   Future<PersonalAccount> getCurrentAccount() {
@@ -20,7 +27,11 @@ class HiveAccountDatasourceImpl extends AccountDatasource {
   @override
   Future<void> setCurrentAccount(PersonalAccount newCurrentAccount) {
     return Future.sync(() async {
-      return await _accountCacheManager.setCurrentAccount(newCurrentAccount);
+      await _accountCacheManager.setCurrentAccount(newCurrentAccount);
+      if (PlatformInfo.isIOS) {
+        await _iosSharingManager.saveKeyChainSharingSession(newCurrentAccount);
+      }
+      return Future.value(null);
     }).catchError(_exceptionThrower.throwException);
   }
 

@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/locale_interceptor.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -43,6 +44,7 @@ class NetworkIsolateBindings extends Bindings {
       Get.find<AuthenticationClientBase>(tag: BindingTag.isolateTag),
       Get.find<TokenOidcCacheManager>(tag: BindingTag.isolateTag),
       Get.find<AccountCacheManager>(tag: BindingTag.isolateTag),
+      Get.find<IOSSharingManager>(),
     ), tag: BindingTag.isolateTag);
     dio.interceptors.add(Get.find<DynamicUrlInterceptors>());
     dio.interceptors.add(Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag));

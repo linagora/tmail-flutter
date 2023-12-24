@@ -480,9 +480,9 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   @override
-  void injectFCMBindings(Session? session, AccountId? accountId) async {
+  Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
-      super.injectFCMBindings(session, accountId);
+      await super.injectFCMBindings(session, accountId);
       await LocalNotificationManager.instance.recreateStreamController();
       _registerLocalNotificationStreamListener();
     } catch (e) {
@@ -1674,7 +1674,6 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleMessageFromNotification(String? payload, {bool onForeground = true}) async {
-    await LocalNotificationManager.instance.removeNotificationBadgeForIOS();
     log('MailboxDashBoardController::_handleMessageFromNotification():payload: $payload');
     if (payload == null || payload.isEmpty) {
       dispatchRoute(DashboardRoutes.thread);
