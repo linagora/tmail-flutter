@@ -8,7 +8,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   var A, B, C;
   A = holdersList[0];
   B = holdersList[2];
-  C = holdersList[14];
+  C = holdersList[10];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
     C.TextStyle_kmC0 = new A.TextStyle(true, B.Color_4278221567, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -18,5 +18,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "8dxA5mYqutCv9uLzomMX+90gDgY=");
+})($__dart_deferred_initializers__, "v6pAZFBvnmYTJNDD22ga7Srb2DI=");
 ;
