@@ -84,6 +84,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/comp
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -112,6 +113,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_ema
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending_email_state.dart';
@@ -438,7 +440,7 @@ class MailboxDashBoardController extends ReloadableController {
     });
 
     _refreshActionEventController.stream
-      .debounceTime(const Duration(milliseconds: FcmService.durationMessageComing))
+      .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
       .listen(_handleRefreshActionWhenBackToApp);
 
     _registerLocalNotificationStreamListener();
@@ -462,6 +464,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleSession(arguments);
     } else if (arguments is MailtoArguments) {
       _handleMailtoURL(arguments);
+    } else if (arguments is PreviewEmailArguments) {
+      _handleOpenEmailAction(arguments);
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -530,6 +534,13 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_handleMailtoURL:');
     routerParameters.value = arguments.toMapRouter();
     _handleSession(arguments.session);
+  }
+
+  void _handleOpenEmailAction(PreviewEmailArguments arguments) {
+    log('MailboxDashBoardController::_handleOpenEmailAction:arguments: $arguments');
+    dispatchRoute(DashboardRoutes.waiting);
+    _handleSession(arguments.session);
+    _handleNotificationMessageFromEmailId(arguments.emailId);
   }
 
   Future<void> _getAppVersion() async {
@@ -1718,7 +1729,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _showWaitingView() {
     popAllRouteIfHave();
-    dispatchRoute( DashboardRoutes.waiting);
+    dispatchRoute(DashboardRoutes.waiting);
   }
 
   void _openInboxMailboxFromNotification() {
