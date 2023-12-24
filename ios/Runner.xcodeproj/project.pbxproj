@@ -17,6 +17,32 @@
 		F52F993027FD6EB900346091 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52F992F27FD6EB900346091 /* ShareViewController.swift */; };
 		F52F993327FD6EB900346091 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F52F993127FD6EB900346091 /* MainInterface.storyboard */; };
 		F52F993727FD6EB900346091 /* TeamMailShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F52F992D27FD6EB900346091 /* TeamMailShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F53D1E632B2DE80200051FD0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = F53D1E622B2DE80200051FD0 /* Alamofire */; };
+		F53D1E662B2DE8B800051FD0 /* AlamofireService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E652B2DE8B800051FD0 /* AlamofireService.swift */; };
+		F53D1E682B2E1CAE00051FD0 /* JmapClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E672B2E1CAE00051FD0 /* JmapClient.swift */; };
+		F53D1E6C2B2E208C00051FD0 /* Email.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E6B2B2E208C00051FD0 /* Email.swift */; };
+		F53D1E782B2E2C7E00051FD0 /* JmapResponseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E772B2E2C7E00051FD0 /* JmapResponseObject.swift */; };
+		F53D1E7C2B2E35CC00051FD0 /* EmailAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E7B2B2E35CC00051FD0 /* EmailAddress.swift */; };
+		F53D1E7F2B2E3C2600051FD0 /* JmapConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E7E2B2E3C2600051FD0 /* JmapConstants.swift */; };
+		F53D1E832B2E3D4600051FD0 /* JmapRequestObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E822B2E3D4600051FD0 /* JmapRequestObject.swift */; };
+		F53D1E862B2E401B00051FD0 /* JmapRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E852B2E401B00051FD0 /* JmapRequestGenerator.swift */; };
+		F53D1E882B2E4B3B00051FD0 /* AuthenticationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */; };
+		F53D1E8A2B2E4BB700051FD0 /* TokenOidc.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */; };
+		F5630C762B2CDFDA003CC0FD /* KeychainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C752B2CDFDA003CC0FD /* KeychainController.swift */; };
+		F5630C782B2CE091003CC0FD /* KeyChainControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C772B2CE091003CC0FD /* KeyChainControllerDelegate.swift */; };
+		F5630C7B2B2CE148003CC0FD /* KeychainSharingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C7A2B2CE148003CC0FD /* KeychainSharingSession.swift */; };
+		F5630C7E2B2CE359003CC0FD /* InfoPlistReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C7D2B2CE359003CC0FD /* InfoPlistReader.swift */; };
+		F5630C812B2CEBC0003CC0FD /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F5630C802B2CEBC0003CC0FD /* KeychainAccess */; };
+		F5630C852B2CF50C003CC0FD /* TypeName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C842B2CF50C003CC0FD /* TypeName.swift */; };
+		F5630C872B2D0387003CC0FD /* PayloadParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C862B2D0387003CC0FD /* PayloadParser.swift */; };
+		F5BBBF512B2EEC37007930E1 /* NetworkExceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF502B2EEC37007930E1 /* NetworkExceptions.swift */; };
+		F5BBBF532B2EECAA007930E1 /* JmapExceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF522B2EECAA007930E1 /* JmapExceptions.swift */; };
+		F5BBBF552B2EEF3D007930E1 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */; };
+		F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D4EA022B2ABF090090DDFC /* NotificationService.swift */; };
+		F5D4EA072B2ABF090090DDFC /* TwakeMailNSE.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F5EFC07D2B328B9F00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
+		F5EFC07E2B328B9F00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
+		F5EFC07F2B3292FA00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,6 +52,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = F52F992C27FD6EB900346091;
 			remoteInfo = TeamMailShareExtension;
+		};
+		F5D4EA052B2ABF090090DDFC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5D4E9FF2B2ABF090090DDFC;
+			remoteInfo = TwakeMailNSE;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -47,6 +80,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				F52F993727FD6EB900346091 /* TeamMailShareExtension.appex in Embed App Extensions */,
+				F5D4EA072B2ABF090090DDFC /* TwakeMailNSE.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -78,6 +112,30 @@
 		F52F993427FD6EB900346091 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F52F993D27FD733C00346091 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		F52F993E27FD741100346091 /* TeamMailShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TeamMailShareExtension.entitlements; sourceTree = "<group>"; };
+		F53D1E652B2DE8B800051FD0 /* AlamofireService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlamofireService.swift; sourceTree = "<group>"; };
+		F53D1E672B2E1CAE00051FD0 /* JmapClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapClient.swift; sourceTree = "<group>"; };
+		F53D1E6B2B2E208C00051FD0 /* Email.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Email.swift; sourceTree = "<group>"; };
+		F53D1E772B2E2C7E00051FD0 /* JmapResponseObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapResponseObject.swift; sourceTree = "<group>"; };
+		F53D1E7B2B2E35CC00051FD0 /* EmailAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailAddress.swift; sourceTree = "<group>"; };
+		F53D1E7E2B2E3C2600051FD0 /* JmapConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapConstants.swift; sourceTree = "<group>"; };
+		F53D1E822B2E3D4600051FD0 /* JmapRequestObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapRequestObject.swift; sourceTree = "<group>"; };
+		F53D1E852B2E401B00051FD0 /* JmapRequestGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapRequestGenerator.swift; sourceTree = "<group>"; };
+		F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationType.swift; sourceTree = "<group>"; };
+		F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOidc.swift; sourceTree = "<group>"; };
+		F5630C752B2CDFDA003CC0FD /* KeychainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainController.swift; sourceTree = "<group>"; };
+		F5630C772B2CE091003CC0FD /* KeyChainControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainControllerDelegate.swift; sourceTree = "<group>"; };
+		F5630C7A2B2CE148003CC0FD /* KeychainSharingSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSharingSession.swift; sourceTree = "<group>"; };
+		F5630C7D2B2CE359003CC0FD /* InfoPlistReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoPlistReader.swift; sourceTree = "<group>"; };
+		F5630C842B2CF50C003CC0FD /* TypeName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeName.swift; sourceTree = "<group>"; };
+		F5630C862B2D0387003CC0FD /* PayloadParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayloadParser.swift; sourceTree = "<group>"; };
+		F5BBBF502B2EEC37007930E1 /* NetworkExceptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkExceptions.swift; sourceTree = "<group>"; };
+		F5BBBF522B2EECAA007930E1 /* JmapExceptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapExceptions.swift; sourceTree = "<group>"; };
+		F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtension.swift; sourceTree = "<group>"; };
+		F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TwakeMailNSE.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5D4EA022B2ABF090090DDFC /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		F5D4EA042B2ABF090090DDFC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F5D4EA0C2B2ABF970090DDFC /* TwakeMailNSE.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwakeMailNSE.entitlements; sourceTree = "<group>"; };
+		F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwakeLogger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +151,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5D4E9FD2B2ABF090090DDFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5630C812B2CEBC0003CC0FD /* KeychainAccess in Frameworks */,
+				F53D1E632B2DE80200051FD0 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,9 +188,11 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
+				F5EFC0802B32965100829056 /* TwakeCore */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				F52F992E27FD6EB900346091 /* TeamMailShareExtension */,
+				F5D4EA012B2ABF090090DDFC /* TwakeMailNSE */,
 				97C146EF1CF9000F007C117D /* Products */,
 				F62B48DC0DFBD6D5D355E5FE /* Pods */,
 				601CDD7C97AAAE9C3FB007DB /* Frameworks */,
@@ -135,6 +204,7 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				F52F992D27FD6EB900346091 /* TeamMailShareExtension.appex */,
+				F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -165,6 +235,147 @@
 				F52F993427FD6EB900346091 /* Info.plist */,
 			);
 			path = TeamMailShareExtension;
+			sourceTree = "<group>";
+		};
+		F53D1E642B2DE84E00051FD0 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				F5E7D8762B385B430009BB8A /* Model */,
+				F53D1E652B2DE8B800051FD0 /* AlamofireService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		F53D1E692B2E1F5100051FD0 /* Jmap */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E842B2E3F5B00051FD0 /* Utils */,
+				F53D1E672B2E1CAE00051FD0 /* JmapClient.swift */,
+				F53D1E6A2B2E1F6700051FD0 /* Model */,
+			);
+			path = Jmap;
+			sourceTree = "<group>";
+		};
+		F53D1E6A2B2E1F6700051FD0 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E812B2E3D0300051FD0 /* Request */,
+				F53D1E802B2E3CF600051FD0 /* Response */,
+				F53D1E7D2B2E369300051FD0 /* Email */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F53D1E7D2B2E369300051FD0 /* Email */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E6B2B2E208C00051FD0 /* Email.swift */,
+				F53D1E7B2B2E35CC00051FD0 /* EmailAddress.swift */,
+			);
+			path = Email;
+			sourceTree = "<group>";
+		};
+		F53D1E802B2E3CF600051FD0 /* Response */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E772B2E2C7E00051FD0 /* JmapResponseObject.swift */,
+			);
+			path = Response;
+			sourceTree = "<group>";
+		};
+		F53D1E812B2E3D0300051FD0 /* Request */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E822B2E3D4600051FD0 /* JmapRequestObject.swift */,
+			);
+			path = Request;
+			sourceTree = "<group>";
+		};
+		F53D1E842B2E3F5B00051FD0 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E7E2B2E3C2600051FD0 /* JmapConstants.swift */,
+				F53D1E852B2E401B00051FD0 /* JmapRequestGenerator.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		F5630C742B2CDFC5003CC0FD /* Keychain */ = {
+			isa = PBXGroup;
+			children = (
+				F5630C752B2CDFDA003CC0FD /* KeychainController.swift */,
+				F5630C772B2CE091003CC0FD /* KeyChainControllerDelegate.swift */,
+			);
+			path = Keychain;
+			sourceTree = "<group>";
+		};
+		F5630C792B2CE133003CC0FD /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F5630C7A2B2CE148003CC0FD /* KeychainSharingSession.swift */,
+				F5630C842B2CF50C003CC0FD /* TypeName.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F5630C7C2B2CE33A003CC0FD /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				F5630C7D2B2CE359003CC0FD /* InfoPlistReader.swift */,
+				F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */,
+				F5630C862B2D0387003CC0FD /* PayloadParser.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		F5BBBF4F2B2EEC1B007930E1 /* Exceptions */ = {
+			isa = PBXGroup;
+			children = (
+				F5BBBF502B2EEC37007930E1 /* NetworkExceptions.swift */,
+				F5BBBF522B2EECAA007930E1 /* JmapExceptions.swift */,
+			);
+			path = Exceptions;
+			sourceTree = "<group>";
+		};
+		F5D4EA012B2ABF090090DDFC /* TwakeMailNSE */ = {
+			isa = PBXGroup;
+			children = (
+				F5630C7C2B2CE33A003CC0FD /* Utils */,
+				F5630C792B2CE133003CC0FD /* Model */,
+				F5630C742B2CDFC5003CC0FD /* Keychain */,
+				F5D4EA0C2B2ABF970090DDFC /* TwakeMailNSE.entitlements */,
+				F5D4EA022B2ABF090090DDFC /* NotificationService.swift */,
+				F5D4EA042B2ABF090090DDFC /* Info.plist */,
+			);
+			path = TwakeMailNSE;
+			sourceTree = "<group>";
+		};
+		F5E7D8762B385B430009BB8A /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */,
+				F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F5EFC07B2B328B8600829056 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
+		F5EFC0802B32965100829056 /* TwakeCore */ = {
+			isa = PBXGroup;
+			children = (
+				F5BBBF4F2B2EEC1B007930E1 /* Exceptions */,
+				F53D1E642B2DE84E00051FD0 /* Network */,
+				F5EFC07B2B328B8600829056 /* Logger */,
+				F53D1E692B2E1F5100051FD0 /* Jmap */,
+			);
+			path = TwakeCore;
 			sourceTree = "<group>";
 		};
 		F62B48DC0DFBD6D5D355E5FE /* Pods */ = {
@@ -198,6 +409,7 @@
 			);
 			dependencies = (
 				F52F993627FD6EB900346091 /* PBXTargetDependency */,
+				F5D4EA062B2ABF090090DDFC /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
@@ -221,13 +433,34 @@
 			productReference = F52F992D27FD6EB900346091 /* TeamMailShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		F5D4E9FF2B2ABF090090DDFC /* TwakeMailNSE */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5D4EA0B2B2ABF090090DDFC /* Build configuration list for PBXNativeTarget "TwakeMailNSE" */;
+			buildPhases = (
+				F5D4E9FC2B2ABF090090DDFC /* Sources */,
+				F5D4E9FD2B2ABF090090DDFC /* Frameworks */,
+				F5D4E9FE2B2ABF090090DDFC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TwakeMailNSE;
+			packageProductDependencies = (
+				F5630C802B2CEBC0003CC0FD /* KeychainAccess */,
+				F53D1E622B2DE80200051FD0 /* Alamofire */,
+			);
+			productName = TwakeMailNSE;
+			productReference = F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1320;
+				LastSwiftUpdateCheck = 1510;
 				LastUpgradeCheck = 1430;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
@@ -237,6 +470,9 @@
 					};
 					F52F992C27FD6EB900346091 = {
 						CreatedOnToolsVersion = 13.2.1;
+					};
+					F5D4E9FF2B2ABF090090DDFC = {
+						CreatedOnToolsVersion = 15.1;
 					};
 				};
 			};
@@ -249,12 +485,17 @@
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			packageReferences = (
+				F5630C7F2B2CEBC0003CC0FD /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				F53D1E612B2DE80200051FD0 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				F52F992C27FD6EB900346091 /* TeamMailShareExtension */,
+				F5D4E9FF2B2ABF090090DDFC /* TwakeMailNSE */,
 			);
 		};
 /* End PBXProject section */
@@ -276,6 +517,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F52F993327FD6EB900346091 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5D4E9FE2B2ABF090090DDFC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,6 +609,7 @@
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				F5EFC07D2B328B9F00829056 /* TwakeLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,7 +617,36 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5EFC07F2B3292FA00829056 /* TwakeLogger.swift in Sources */,
 				F52F993027FD6EB900346091 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5D4E9FC2B2ABF090090DDFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F5BBBF512B2EEC37007930E1 /* NetworkExceptions.swift in Sources */,
+				F53D1E7F2B2E3C2600051FD0 /* JmapConstants.swift in Sources */,
+				F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */,
+				F53D1E8A2B2E4BB700051FD0 /* TokenOidc.swift in Sources */,
+				F53D1E862B2E401B00051FD0 /* JmapRequestGenerator.swift in Sources */,
+				F5630C7E2B2CE359003CC0FD /* InfoPlistReader.swift in Sources */,
+				F53D1E662B2DE8B800051FD0 /* AlamofireService.swift in Sources */,
+				F5BBBF532B2EECAA007930E1 /* JmapExceptions.swift in Sources */,
+				F53D1E882B2E4B3B00051FD0 /* AuthenticationType.swift in Sources */,
+				F53D1E6C2B2E208C00051FD0 /* Email.swift in Sources */,
+				F5630C872B2D0387003CC0FD /* PayloadParser.swift in Sources */,
+				F53D1E782B2E2C7E00051FD0 /* JmapResponseObject.swift in Sources */,
+				F5630C852B2CF50C003CC0FD /* TypeName.swift in Sources */,
+				F5630C7B2B2CE148003CC0FD /* KeychainSharingSession.swift in Sources */,
+				F53D1E682B2E1CAE00051FD0 /* JmapClient.swift in Sources */,
+				F5BBBF552B2EEF3D007930E1 /* BundleExtension.swift in Sources */,
+				F53D1E7C2B2E35CC00051FD0 /* EmailAddress.swift in Sources */,
+				F5EFC07E2B328B9F00829056 /* TwakeLogger.swift in Sources */,
+				F5630C762B2CDFDA003CC0FD /* KeychainController.swift in Sources */,
+				F53D1E832B2E3D4600051FD0 /* JmapRequestObject.swift in Sources */,
+				F5630C782B2CE091003CC0FD /* KeyChainControllerDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +657,11 @@
 			isa = PBXTargetDependency;
 			target = F52F992C27FD6EB900346091 /* TeamMailShareExtension */;
 			targetProxy = F52F993527FD6EB900346091 /* PBXContainerItemProxy */;
+		};
+		F5D4EA062B2ABF090090DDFC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5D4E9FF2B2ABF090090DDFC /* TwakeMailNSE */;
+			targetProxy = F5D4EA052B2ABF090090DDFC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -469,10 +752,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerProfile.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = KUT463DS29;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -482,7 +765,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tmail.development.profile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -605,10 +888,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = KUT463DS29;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -618,7 +901,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tmail.development.profile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -635,12 +918,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = KUT463DS29;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -650,8 +931,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tmail.distribution.profile;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = tmail.distribution.profile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -668,11 +948,10 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = TeamMailShareExtension/TeamMailShareExtension.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = KUT463DS29;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
+				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TeamMailShareExtension/Info.plist;
@@ -689,8 +968,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TeamMailShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tmail.share.ext.development.profile;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = tmail.share.ext.development.profile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -710,12 +988,10 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = TeamMailShareExtension/TeamMailShareExtension.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = KUT463DS29;
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
+				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TeamMailShareExtension/Info.plist;
@@ -731,8 +1007,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TeamMailShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tmail.share.ext.distribution.profile;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = tmail.share.ext.distribution.profile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -750,10 +1025,10 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = TeamMailShareExtension/TeamMailShareExtension.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = KUT463DS29;
+				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TeamMailShareExtension/Info.plist;
@@ -769,7 +1044,130 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TeamMailShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = tmail.share.ext.development.profile;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
+		F5D4EA082B2ABF090090DDFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = TwakeMailNSE/TwakeMailNSE.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TwakeMailNSE/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TwakeMailNSE;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailNSE;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F5D4EA092B2ABF090090DDFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = TwakeMailNSE/TwakeMailNSE.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TwakeMailNSE/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TwakeMailNSE;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailNSE;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F5D4EA0A2B2ABF090090DDFC /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = TwakeMailNSE/TwakeMailNSE.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TwakeMailNSE/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TwakeMailNSE;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailNSE;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -810,7 +1208,49 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		F5D4EA0B2B2ABF090090DDFC /* Build configuration list for PBXNativeTarget "TwakeMailNSE" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5D4EA082B2ABF090090DDFC /* Debug */,
+				F5D4EA092B2ABF090090DDFC /* Release */,
+				F5D4EA0A2B2ABF090090DDFC /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F53D1E612B2DE80200051FD0 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.8.1;
+			};
+		};
+		F5630C7F2B2CEBC0003CC0FD /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F53D1E622B2DE80200051FD0 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F53D1E612B2DE80200051FD0 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		F5630C802B2CEBC0003CC0FD /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F5630C7F2B2CEBC0003CC0FD /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }
