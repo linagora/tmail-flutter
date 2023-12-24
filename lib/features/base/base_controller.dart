@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/bindings/f
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -262,7 +263,7 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void injectFCMBindings(Session? session, AccountId? accountId) async {
+  Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
       if (AppConfig.fcmAvailable) {
@@ -274,6 +275,9 @@ abstract class BaseController extends GetxController
         FcmMessageController.instance.initialize(accountId: accountId, session: session);
         FcmTokenController.instance.initialBindingInteractor();
         await FcmReceiver.instance.onInitialFcmListener();
+        if (PlatformInfo.isMobile) {
+          await LocalNotificationManager.instance.setUp();
+        }
       } else {
         throw NotSupportFCMException();
       }
