@@ -208,8 +208,6 @@ dependencies:
 
   extended_text: 12.0.0
 
-  flutter_app_badger: 1.5.0
-
   date_format: 2.0.7
 
   flutter_linkify: 6.0.0
@@ -225,6 +223,8 @@ dependencies:
   flutter_image_compress: 2.1.0
 
   back_button_interceptor: 7.0.0
+
+  flutter_secure_storage: 8.0.0
 
 dev_dependencies:
   flutter_test:
