@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/email/email_content.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -40,12 +42,16 @@ class HomeController extends ReloadableController {
   );
 
   PersonalAccount? currentAccount;
+  EmailId? _emailIdPreview;
 
   @override
   void onInit() {
     if (PlatformInfo.isMobile) {
       _initFlutterDownloader();
       _registerReceivingSharingIntent();
+    }
+    if (PlatformInfo.isIOS && Get.arguments is EmailId) {
+      _emailIdPreview = Get.arguments;
     }
     super.onInit();
   }
@@ -58,10 +64,20 @@ class HomeController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    popAndPush(
-      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: session
-    );
+    if (_emailIdPreview != null) {
+      popAndPush(
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+        arguments: PreviewEmailArguments(
+          session: session,
+          emailId: _emailIdPreview!
+        )
+      );
+    } else {
+      popAndPush(
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+        arguments: session
+      );
+    }
   }
 
   void _initFlutterDownloader() {

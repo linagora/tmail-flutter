@@ -2,6 +2,7 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -20,12 +21,24 @@ class FcmReceiver {
 
   static FcmReceiver get instance => _instance;
 
+  static const notificationInteractionChannel = MethodChannel('notification_interaction_channel');
+
   Future onInitialFcmListener() async {
     log('FcmReceiver::onInitialFcmListener:');
     await _onHandleFcmToken();
 
     _onForegroundMessage();
     _onBackgroundMessage();
+
+    if (PlatformInfo.isIOS) {
+      notificationInteractionChannel.setMethodCallHandler((call) async {
+        log('FcmReceiver::onInitialFcmListener:notificationInteractionChannel: $call');
+        if (call.method == 'openEmail') {
+          log('FcmReceiver::onInitialFcmListener:openEmail with id = ${call.arguments}');
+          FcmService.instance.handleOpenEmailFromNotification(call.arguments);
+        }
+      });
+    }
   }
 
   void _onForegroundMessage() {

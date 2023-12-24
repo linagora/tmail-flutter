@@ -7,11 +7,15 @@ import flutter_local_notifications
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
 
+    var notificationInteractionChannel: FlutterMethodChannel?
+    
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
+        
+        createNotificationInteractionChannel()
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
@@ -94,7 +98,13 @@ import flutter_local_notifications
     }
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::didReceive::response: \(response)")
         updateAppBadger(currentBadgeCount: UIApplication.shared.applicationIconBadgeNumber)
+        
+        if let emailId = response.notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String {
+            self.notificationInteractionChannel?.invokeMethod("openEmail", arguments: emailId)
+        }
+        
         completionHandler()
     }
 }
@@ -123,5 +133,14 @@ extension AppDelegate {
     
     private func isAppForegroundActive() -> Bool {
         return UIApplication.shared.applicationState == .active
+    }
+    
+    private func createNotificationInteractionChannel() {
+        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+        
+        self.notificationInteractionChannel = FlutterMethodChannel(
+            name: "notification_interaction_channel",
+            binaryMessenger: controller.binaryMessenger
+        )
     }
 }
