@@ -8,6 +8,7 @@ class AlamofireService {
         url: String,
         payloadData: Data?,
         headers: HTTPHeaders? = nil,
+        interceptor: RequestInterceptor? = nil,
         onSuccess: @escaping (T) -> Void,
         onFailure: @escaping (Error) -> Void
     ) {
@@ -18,7 +19,7 @@ class AlamofireService {
         
         request.httpBody = payloadData
         
-        AF.request(request).responseDecodable(of: T.self) { response in
+        AF.request(request, interceptor: interceptor).validate().responseDecodable(of: T.self) { response in
             switch(response.result) {
             case .success(let data):
                 onSuccess(data)

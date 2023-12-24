@@ -20,6 +20,8 @@ class KeychainSharingSession with EquatableMixin {
   String? emailState;
   TokenOIDC? tokenOIDC;
   String? basicAuth;
+  String? tokenEndpoint;
+  List<String>? oidcScopes;
 
   KeychainSharingSession({
     required this.accountId,
@@ -29,6 +31,8 @@ class KeychainSharingSession with EquatableMixin {
     this.emailState,
     this.tokenOIDC,
     this.basicAuth,
+    this.tokenEndpoint,
+    this.oidcScopes,
   });
 
   factory KeychainSharingSession.fromJson(Map<String, dynamic> json) => _$KeychainSharingSessionFromJson(json);
@@ -44,5 +48,7 @@ class KeychainSharingSession with EquatableMixin {
     emailState,
     tokenOIDC,
     basicAuth,
+    tokenEndpoint,
+    oidcScopes,
   ];
 }
