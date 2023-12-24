@@ -29,15 +29,20 @@ class GetTokenOIDCInteractor {
           config.redirectUrl,
           config.discoveryUrl,
           config.scopes);
+
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUrl),
-        _accountRepository.setCurrentAccount(PersonalAccount(
-          tokenOIDC.tokenIdHash,
-          AuthenticationType.oidc,
-          isSelected: true)),
         authenticationOIDCRepository.persistTokenOIDC(tokenOIDC),
         authenticationOIDCRepository.persistAuthorityOidc(config.authority),
       ]);
+
+      await _accountRepository.setCurrentAccount(
+        PersonalAccount(
+          tokenOIDC.tokenIdHash,
+          AuthenticationType.oidc,
+          isSelected: true
+        )
+      );
       yield Right<Failure, Success>(GetTokenOIDCSuccess(tokenOIDC, config));
     } catch (e) {
       logError('GetTokenOIDCInteractor::execute(): $e');

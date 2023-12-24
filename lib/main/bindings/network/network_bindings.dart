@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
@@ -21,17 +22,20 @@ import 'package:tmail_ui_user/features/login/data/network/config/time_out_interc
 import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/spam_report_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/forwarding_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/vacation_api.dart';
+import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/localizations/locale_interceptor.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class NetworkBindings extends Bindings {
@@ -39,7 +43,10 @@ class NetworkBindings extends Bindings {
   @override
   void dependencies() {
     _bindingConnection();
+    _bindingBaseOption();
     _bindingDio();
+    _bindingSharing();
+    _bindingInterceptors();
     _bindingApi();
     _bindingTransformer();
     _bindingServices();
@@ -55,14 +62,21 @@ class NetworkBindings extends Bindings {
   }
 
   void _bindingDio() {
-    _bindingBaseOption();
     Get.put(Dio(Get.find<BaseOptions>()));
     Get.put(DioClient(Get.find<Dio>()));
     Get.put(const FlutterAppAuth());
     Get.put(AppAuthWebPlugin());
     Get.put(OIDCHttpClient(Get.find<DioClient>()));
     Get.put(AuthenticationClientBase());
-    _bindingInterceptors();
+  }
+
+  void _bindingSharing() {
+    Get.put(IOSSharingManager(
+      Get.find<KeychainSharingManager>(),
+      Get.find<StateCacheManager>(),
+      Get.find<TokenOidcCacheManager>(),
+      Get.find<AuthenticationInfoCacheManager>(),
+    ));
   }
 
   void _bindingInterceptors() {
@@ -72,6 +86,7 @@ class NetworkBindings extends Bindings {
         Get.find<AuthenticationClientBase>(),
         Get.find<TokenOidcCacheManager>(),
         Get.find<AccountCacheManager>(),
+        Get.find<IOSSharingManager>(),
     ));
     Get.put(LocaleInterceptor());
     Get.put(TimeOutInterceptors());
