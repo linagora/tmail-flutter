@@ -1,7 +1,10 @@
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
-    
+
+    private let timeIntervalNotificationTrigger: Int = 2
+    private let newEmailDefaultMessage: String = "You have new emails"
+
     private var handler: ((UNNotificationContent) -> Void)?
     private var modifiedContent: UNMutableNotificationContent?
     
@@ -9,21 +12,21 @@ class NotificationService: UNNotificationServiceExtension {
                                                              accessGroup: InfoPlistReader.main.keychainAccessGroupIdentifier)
     
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-        guard let payloadData = request.content.userInfo as? [String: Any],
-              !keychainController.retrieveSharingSessions().isEmpty else {
-            return self.discard()
-        }
-        
         handler = contentHandler
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        
         self.modifiedContent?.title = InfoPlistReader(bundle: .app).bundleDisplayName
         
+        guard let payloadData = request.content.userInfo as? [String: Any],
+              !keychainController.retrieveSharingSessions().isEmpty else {
+            self.modifiedContent?.body = newEmailDefaultMessage
+            self.modifiedContent?.badge = NSNumber(value: 1)
+            return self.notify()
+        }
+
         Task {
             await handleGetNewEmails(payloadData: payloadData)
         }
     }
-    
     
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
@@ -35,7 +38,9 @@ class NotificationService: UNNotificationServiceExtension {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
         if (mapStateChanges.isEmpty) {
-            return self.discard()
+            self.modifiedContent?.body = newEmailDefaultMessage
+            self.modifiedContent?.badge = NSNumber(value: 1)
+            return self.notify()
         } else {
             guard let currentAccountId = mapStateChanges.keys.first,
                   let keychainSharingSession = keychainController.retrieveSharingSessionFromKeychain(accountId: currentAccountId),
@@ -44,7 +49,9 @@ class NotificationService: UNNotificationServiceExtension {
                   let oldEmailState = keychainSharingSession.emailState,
                   newEmailState != oldEmailState,
                   keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil else {
-                return self.discard()
+                self.modifiedContent?.body = newEmailDefaultMessage
+                self.modifiedContent?.badge = NSNumber(value: 1)
+                return self.notify()
             }
             
             JmapClient.shared.getNewEmails(
@@ -57,24 +64,65 @@ class NotificationService: UNNotificationServiceExtension {
                 onSuccess: { emails in
                     self.keychainController.updateEmailStateToKeychain(accountId: keychainSharingSession.accountId, newState: newEmailState)
                     
-                    self.modifiedContent?.subtitle = emails.first?.subject ?? ""
-                    self.modifiedContent?.body = emails.first?.preview ?? ""
-                    self.modifiedContent?.badge = NSNumber(value: emails.count)
-                    return self.notify()
-                },
-                onFailure: { error in
-                    if let errorJmap = error as? JmapExceptions, errorJmap == JmapExceptions.notFoundNewEmails {
-                        return self.discard()
+                    if (emails.count > 1) {
+                        for email in emails {
+                            if (email.id == emails.last?.id) {
+                                break
+                            }
+                            self.scheduleLocalNotification(email: email)
+                        }
+
+                        let delayTimeIntervalNotification: TimeInterval = TimeInterval(self.timeIntervalNotificationTrigger * (emails.count - 1))
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delayTimeIntervalNotification) {
+                            self.modifiedContent?.subtitle = emails.last?.subject ?? ""
+                            self.modifiedContent?.body = emails.last?.preview ?? ""
+                            self.modifiedContent?.badge = NSNumber(value: emails.count)
+                            self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.last?.id ?? ""
+                            return self.notify()
+                        }
                     } else {
-                        self.modifiedContent?.body = "You have new emails"
+                        self.modifiedContent?.subtitle = emails.first?.subject ?? ""
+                        self.modifiedContent?.body = emails.first?.preview ?? ""
                         self.modifiedContent?.badge = NSNumber(value: 1)
+                        self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.first?.id ?? ""
                         return self.notify()
                     }
+                },
+                onFailure: { error in
+                    self.modifiedContent?.body = newEmailDefaultMessage
+                    self.modifiedContent?.badge = NSNumber(value: 1)
+                    return self.notify()
                 }
             )
         }
     }
-    
+
+    func scheduleLocalNotification(email: Email) {
+        // Create a notification content
+        let content = UNMutableNotificationContent()
+        content.title = InfoPlistReader(bundle: .app).bundleDisplayName
+        content.subtitle = email.subject ?? ""
+        content.body = email.preview ?? ""
+        content.sound = .default
+        content.userInfo[JmapConstants.EMAIL_ID] = "\(email.id)"
+
+        // Create a notification trigger
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(timeIntervalNotificationTrigger), repeats: false)
+
+        // Create a notification request
+        let request = UNNotificationRequest(identifier: "\(email.id)", content: content, trigger: trigger)
+
+        // Schedule the notification
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                TwakeLogger.shared.log(message: "Error scheduling notification: \(error.localizedDescription)")
+            } else {
+                TwakeLogger.shared.log(message: "Notification scheduled successfully")
+            }
+        }
+    }
+
     private func notify() {
         guard let modifiedContent else {
             return discard()
