@@ -9,6 +9,11 @@ class JmapClient {
     private var authentication: Authentication?
     private var tokenRefreshManager: TokenRefreshManager?
     private var authenticationInterceptor: AuthenticationInterceptor?
+    
+    private var hasMoreChanges: Bool = true
+    private var currentSinceState: String?
+    private var totalListEmails = [Email]()
+    private var listErrors = [Error]()
 
     func getNewEmails(
         apiUrl: String,
@@ -19,8 +24,7 @@ class JmapClient {
         basicAuth: String?,
         tokenEndpointUrl: String?,
         oidcScopes: [String]?,
-        onSuccess: @escaping ([Email]) -> Void,
-        onFailure: @escaping (Error) -> Void
+        onComplete: @escaping ([Email], [Error]) -> Void
     ) {
         if (authenticationType == AuthenticationType.basic) {
             authentication = AuthenticationCredential(
@@ -47,7 +51,26 @@ class JmapClient {
             accountId: accountId,
             tokenRefreshManager: tokenRefreshManager
         )
-
+        
+        hasMoreChanges = true
+        currentSinceState = sinceState
+        totalListEmails = [Email]()
+        listErrors = [Error]()
+        
+        self.handleGetEmailChanges(
+            apiUrl: apiUrl,
+            accountId: accountId,
+            onComplete: onComplete
+        )
+    }
+    
+    private func handleGetEmailChanges(apiUrl: String, 
+                                       accountId: String,
+                                       onComplete: @escaping ([Email], [Error]) -> Void) {
+        guard hasMoreChanges, let sinceState = currentSinceState else {
+            return onComplete(self.totalListEmails, self.listErrors)
+        }
+        
         let jmapRequestObject = JmapRequestGenerator.shared.createEmailChangesRequest(
             accountId: accountId,
             sinceState: sinceState
@@ -59,13 +82,29 @@ class JmapClient {
             headers: HTTPHeaders([jmapHeader]),
             interceptor: authenticationInterceptor,
             onSuccess: { (data: JmapResponseObject<Email>) in
-                if let listEmail = data.parsing(methodName: JmapConstants.EMAIL_GET_METHOD_NAME, methodCallId: "c1"), !listEmail.isEmpty {
-                    onSuccess(listEmail)
+                if let response = data.parsing(methodName: JmapConstants.EMAIL_GET_METHOD_NAME, methodCallId: "c1") {
+                    if let listEmail = response.list, !listEmail.isEmpty {
+                        self.totalListEmails.append(contentsOf: listEmail)
+                    }
+                    self.hasMoreChanges = response.hasMoreChanges ?? false
+                    self.currentSinceState = response.newState
+                    
+                    self.handleGetEmailChanges(apiUrl: apiUrl, accountId: accountId, onComplete: onComplete)
                 } else {
-                    onFailure(JmapExceptions.notFoundNewEmails)
+                    self.listErrors.append(JmapExceptions.notFoundNewEmails)
+                    self.hasMoreChanges = false
+                    self.currentSinceState = nil
+                    
+                    onComplete(self.totalListEmails, self.listErrors)
                 }
             },
-            onFailure: onFailure
+            onFailure: { error in
+                self.listErrors.append(error)
+                self.hasMoreChanges = false
+                self.currentSinceState = nil
+                
+                onComplete(self.totalListEmails, self.listErrors)
+            }
         )
     }
 }
