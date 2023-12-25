@@ -33,7 +33,7 @@ class FcmReceiver {
     if (PlatformInfo.isIOS) {
       notificationInteractionChannel.setMethodCallHandler((call) async {
         log('FcmReceiver::onInitialFcmListener:notificationInteractionChannel: $call');
-        if (call.method == 'openEmail') {
+        if (call.method == 'openEmail' && call.arguments is String) {
           log('FcmReceiver::onInitialFcmListener:openEmail with id = ${call.arguments}');
           FcmService.instance.handleOpenEmailFromNotification(call.arguments);
         }
@@ -71,5 +71,19 @@ class FcmReceiver {
 
   Future deleteFcmToken() async {
     await FirebaseMessaging.instance.deleteToken();
+  }
+
+  Future<Map<String, dynamic>?> getIOSInitialNotificationInfo() async {
+    try {
+      final notificationInfo = await notificationInteractionChannel.invokeMethod('getInitialNotificationInfo');
+      log('FcmReceiver::getIOSInitialNotificationInfo:notificationInfo: $notificationInfo');
+      if (notificationInfo != null && notificationInfo is Map<String, dynamic>) {
+        return notificationInfo;
+      }
+      return null;
+    } catch (e) {
+      logError('FcmReceiver::getIOSInitialNotificationInfo: Exception: $e');
+      return null;
+    }
   }
 }

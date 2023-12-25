@@ -2,6 +2,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -21,6 +22,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_lo
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -50,8 +52,8 @@ class HomeController extends ReloadableController {
       _initFlutterDownloader();
       _registerReceivingSharingIntent();
     }
-    if (PlatformInfo.isIOS && Get.arguments is EmailId) {
-      _emailIdPreview = Get.arguments;
+    if (PlatformInfo.isIOS) {
+      _handleIOSDataMessage();
     }
     super.onInit();
   }
@@ -113,5 +115,19 @@ class HomeController extends ReloadableController {
     });
 
     _emailReceiveManager.receivingFileSharingStream.listen(_emailReceiveManager.setPendingFileInfo);
+  }
+
+  Future _handleIOSDataMessage() async {
+    if (Get.arguments is EmailId) {
+      _emailIdPreview = Get.arguments;
+    } else {
+      final notificationInfo = await FcmReceiver.instance.getIOSInitialNotificationInfo();
+      if (notificationInfo != null && notificationInfo.containsKey('email_id')) {
+        final emailId = notificationInfo['email_id'] as String?;
+        if (emailId?.isNotEmpty == true) {
+          _emailIdPreview = EmailId(Id(emailId!));
+        }
+      }
+    }
   }
 }
