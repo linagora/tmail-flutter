@@ -63,38 +63,41 @@ class NotificationService: UNNotificationServiceExtension {
                 basicAuth: keychainSharingSession.basicAuth,
                 tokenEndpointUrl: keychainSharingSession.tokenEndpoint,
                 oidcScopes: keychainSharingSession.oidcScopes,
-                onSuccess: { emails in
-                    self.keychainController.updateEmailStateToKeychain(accountId: keychainSharingSession.accountId, newState: newEmailState)
-                    
-                    if (emails.count > 1) {
-                        for email in emails {
-                            if (email.id == emails.last?.id) {
-                                break
+                onComplete: { (emails, errors) in
+                    if emails.isEmpty {
+                        self.modifiedContent?.body = self.newEmailDefaultMessage
+                        self.modifiedContent?.badge = NSNumber(value: 1)
+                        return self.notify()
+                    } else {
+                        self.keychainController.updateEmailStateToKeychain(accountId: keychainSharingSession.accountId, newState: newEmailState)
+
+                        if (emails.count > 1) {
+                            for email in emails {
+                                if (email.id == emails.last?.id) {
+                                    break
+                                }
+                                self.scheduleLocalNotification(email: email)
                             }
-                            self.scheduleLocalNotification(email: email)
-                        }
 
-                        let delayTimeIntervalNotification: TimeInterval = TimeInterval(self.timeIntervalNotificationTriggerInSecond * (emails.count - 1))
+                            let delayTimeIntervalNotification: TimeInterval = TimeInterval(self.timeIntervalNotificationTriggerInSecond * (emails.count - 1))
 
-                        DispatchQueue.main.asyncAfter(deadline: .now() + delayTimeIntervalNotification) {
-                            self.modifiedContent?.subtitle = emails.last?.subject ?? ""
-                            self.modifiedContent?.body = emails.last?.preview ?? ""
-                            self.modifiedContent?.badge = NSNumber(value: emails.count)
-                            self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.last?.id ?? ""
+                            DispatchQueue.main.asyncAfter(deadline: .now() + delayTimeIntervalNotification) {
+                                self.modifiedContent?.subtitle = emails.last?.subject ?? ""
+                                self.modifiedContent?.body = emails.last?.preview ?? ""
+                                self.modifiedContent?.badge = NSNumber(value: emails.count)
+                                self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.last?.id ?? ""
+                                return self.notify()
+                            }
+                        } else {
+                            self.modifiedContent?.subtitle = emails.first?.subject ?? ""
+                            self.modifiedContent?.body = emails.first?.preview ?? ""
+                            self.modifiedContent?.badge = NSNumber(value: 1)
+                            self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.first?.id ?? ""
                             return self.notify()
                         }
-                    } else {
-                        self.modifiedContent?.subtitle = emails.first?.subject ?? ""
-                        self.modifiedContent?.body = emails.first?.preview ?? ""
-                        self.modifiedContent?.badge = NSNumber(value: 1)
-                        self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.first?.id ?? ""
-                        return self.notify()
                     }
-                },
-                onFailure: { error in
-                    self.modifiedContent?.body = self.newEmailDefaultMessage
-                    self.modifiedContent?.badge = NSNumber(value: 1)
-                    return self.notify()
+
+
                 }
             )
         }
