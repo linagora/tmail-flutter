@@ -38,6 +38,13 @@ enum ResponseInvocation<T: Codable>: Codable {
             case .string(_): return nil
         }
     }
+    
+    var response: MethodResponse<T>? {
+        switch self {
+            case .methodResponse(let method): return method
+            case .string(_): return nil
+        }
+    }
 }
 
 struct MethodResponse<T: Codable>: Codable {
@@ -54,7 +61,7 @@ struct MethodResponse<T: Codable>: Codable {
 }
 
 extension JmapResponseObject {
-    func parsing(methodName: String, methodCallId: String) -> [T]? {
+    func parsing(methodName: String, methodCallId: String) -> MethodResponse<T>? {
         let invocations = methodResponses.first { (responseInvocations: [ResponseInvocation<T>]) in
             return responseInvocations.contains { (responseInvocation: ResponseInvocation<T>) in
                 return validateResponseInvocation(response: responseInvocation, methodName: methodName, methodCallId: methodCallId)
@@ -68,7 +75,7 @@ extension JmapResponseObject {
                 return validateMethodResponse(response: response)
             }
             
-            return invocation?.listObject
+            return invocation?.response
         }
     }
     

@@ -53,17 +53,18 @@ class TokenRefreshManager {
 
         request.httpBody = data
 
-        AF.request(request).responseDecodable(of: TokenResponse.self) { response in
-            if (response.response?.statusCode != 200) {
-                onFailure(NetworkExceptions(value: "Failed to get token: \(response.error?.localizedDescription ?? "Unknown Error")"))
-            } else {
-                switch(response.result) {
-                case .success(let data):
-                    onSuccess(data)
-                case .failure(let error):
-                    onFailure(NetworkExceptions(value: "Failed to get token \(error.localizedDescription)"))
+        AF.request(request)
+            .responseDecodable(of: TokenResponse.self, queue: .global(qos: .default)) { response in
+                if (response.response?.statusCode != 200) {
+                    onFailure(NetworkExceptions(value: "Failed to get token: \(response.error?.localizedDescription ?? "Unknown Error")"))
+                } else {
+                    switch(response.result) {
+                    case .success(let data):
+                        onSuccess(data)
+                    case .failure(let error):
+                        onFailure(NetworkExceptions(value: "Failed to get token \(error.localizedDescription)"))
+                    }
                 }
             }
-        }
     }
 }

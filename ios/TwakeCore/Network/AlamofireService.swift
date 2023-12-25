@@ -19,13 +19,15 @@ class AlamofireService {
         
         request.httpBody = payloadData
         
-        AF.request(request, interceptor: interceptor).validate().responseDecodable(of: T.self) { response in
-            switch(response.result) {
-            case .success(let data):
-                onSuccess(data)
-            case .failure(let error):
-                onFailure(NetworkExceptions(value: "\(error.localizedDescription)"))
+        AF.request(request, interceptor: interceptor)
+            .validate()
+            .responseDecodable(of: T.self, queue: .global(qos: .default)) { response in
+                switch(response.result) {
+                case .success(let data):
+                    onSuccess(data)
+                case .failure(let error):
+                    onFailure(NetworkExceptions(value: "\(error.localizedDescription)"))
+                }
             }
-        }
     }
 }
