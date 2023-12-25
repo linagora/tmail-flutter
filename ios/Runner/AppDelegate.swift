@@ -8,6 +8,7 @@ import flutter_local_notifications
 @objc class AppDelegate: FlutterAppDelegate {
 
     var notificationInteractionChannel: FlutterMethodChannel?
+    var initialNotificationInfo: Any?
     
     override func application(
         _ application: UIApplication,
@@ -16,6 +17,7 @@ import flutter_local_notifications
         GeneratedPluginRegistrant.register(with: self)
         
         createNotificationInteractionChannel()
+        initialNotificationInfo = launchOptions?[.remoteNotification]
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
@@ -142,5 +144,15 @@ extension AppDelegate {
             name: "notification_interaction_channel",
             binaryMessenger: controller.binaryMessenger
         )
+        
+        self.notificationInteractionChannel?.setMethodCallHandler { (call, result) in
+            switch call.method {
+                case "getInitialNotificationInfo":
+                    result(self.initialNotificationInfo)
+                    self.initialNotificationInfo = nil
+                default:
+                    break
+            }
+        }
     }
 }
