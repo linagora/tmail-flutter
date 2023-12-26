@@ -3545,5 +3545,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "archiveMessage": "Archive message",
+  "@archiveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
