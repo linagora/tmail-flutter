@@ -495,33 +495,33 @@ class ThreadView extends GetWidget<ThreadController>
       ),
       secondaryBackground: controller.isInArchiveMailbox(presentationEmail) == false
         ? Container(
-          color: AppColor.colorItemRecipientSelected,
-          padding: const EdgeInsetsDirectional.only(end: 16),
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: Row(
-              children: [
-                const Spacer(),
-                CircleAvatar(
-                  backgroundColor: AppColor.colorSpamReportBannerBackground,
-                  radius: 24,
-                  child: SvgPicture.asset(
-                    controller.imagePaths.icMailboxArchived,
-                    fit: BoxFit.fill,
-                  )
-                ),
-                const SizedBox(width: 11),
-                Text(
-                  AppLocalizations.of(context).archiveMessage,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: AppColor.primaryColor,
+            color: AppColor.colorItemRecipientSelected,
+            padding: const EdgeInsetsDirectional.only(end: 16),
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: Row(
+                children: [
+                  const Spacer(),
+                  CircleAvatar(
+                    backgroundColor: AppColor.colorSpamReportBannerBackground,
+                    radius: 24,
+                    child: SvgPicture.asset(
+                      controller.imagePaths.icMailboxArchived,
+                      fit: BoxFit.fill,
+                    )
                   ),
-                ),
-              ],
+                  const SizedBox(width: 11),
+                  Text(
+                    AppLocalizations.of(context).archiveMessage,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColor.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        )
+          )
         : null,
       confirmDismiss: (direction) => controller.swipeEmailAction(context, presentationEmail, direction),
       child: EmailTileBuilder(
@@ -730,13 +730,13 @@ class ThreadView extends GetWidget<ThreadController>
         AppLocalizations.of(context).archiveMessage,
         email,
         iconLeftPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsets.only(left: 12, right: 16)
-          : const EdgeInsets.only(right: 12),
+          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
+          : const EdgeInsetsDirectional.only(start: 12),
         iconRightPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsets.only(right: 12)
+          ? const EdgeInsetsDirectional.only(start: 12)
           : EdgeInsets.zero
       )
-      ..onActionClick((email) => controller.archiveMessage(email))
+      ..onActionClick((email) => controller.archiveMessage(context, email))
     ).build();
   }
 
@@ -821,7 +821,7 @@ class ThreadView extends GetWidget<ThreadController>
         ),
         onCallbackAction: () {
           popBack();
-          controller.archiveMessage(email);
+          controller.archiveMessage(context, email);
         }
       )
     );

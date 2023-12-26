@@ -1003,6 +1003,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EmailActionType.unsubscribe:
         _unsubscribeEmail(context, presentationEmail);
         break;
+      case EmailActionType.archiveMessage:
+        archiveMessage(context, presentationEmail);
+        break;
       default:
         break;
     }
@@ -1479,5 +1482,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         previousEmailId: emailId,
       )
     );
+  }
+
+  void archiveMessage(BuildContext context, PresentationEmail email) {
+    mailboxDashBoardController.archiveMessage(context, email);
   }
 }
