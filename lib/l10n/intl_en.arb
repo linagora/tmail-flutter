@@ -1529,8 +1529,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageAndRegionSubtitle": "Set the language, time zone, time format you use on Twake Mail.",
-  "@languageAndRegionSubtitle": {
+  "languageSubtitle": "Set the language you use on Twake Mail.",
+  "@languageSubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
