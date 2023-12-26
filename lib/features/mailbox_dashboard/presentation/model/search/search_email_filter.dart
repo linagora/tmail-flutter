@@ -28,7 +28,9 @@ class SearchEmailFilter with EquatableMixin {
   final Set<Comparator>? sortOrder;
   final int? position;
 
-  factory SearchEmailFilter.initial() => SearchEmailFilter();
+  factory SearchEmailFilter.initial() => SearchEmailFilter(
+    sortOrder: EmailSortOrderType.mostRecent.getSortOrder().toNullable()
+  );
 
   SearchEmailFilter({
     Set<String>? from,
