@@ -2393,6 +2393,28 @@ class MailboxDashBoardController extends ReloadableController {
     return false;
   }
 
+  void archiveMessage(BuildContext context, PresentationEmail email) {
+    final mailboxContain = email.findMailboxContain(mapMailboxById);
+    if (mailboxContain != null) {
+      final archiveMailboxId = getMailboxIdByRole(PresentationMailbox.roleArchive);
+      final archiveMailboxPath = mapMailboxById[archiveMailboxId]?.getDisplayName(context);
+      if (archiveMailboxId != null) {
+        final moveToArchiveMailboxRequest = MoveToMailboxRequest(
+          {mailboxContain.id: [email.id!]},
+          archiveMailboxId,
+          MoveAction.moving,
+          EmailActionType.moveToMailbox,
+          destinationPath: archiveMailboxPath
+        );
+        moveToMailbox(
+          sessionCurrent!,
+          accountId.value!,
+          moveToArchiveMailboxRequest
+        );
+      }
+    }
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();

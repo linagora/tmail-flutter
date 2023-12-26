@@ -23,7 +23,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -1345,27 +1344,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       mailboxDashBoardController.emptyTrashFolderAction(trashFolderId: presentationMailbox.id);
     } else if (presentationMailbox.isSpam) {
       mailboxDashBoardController.emptySpamFolderAction(spamFolderId: presentationMailbox.id);
-    }
-  }
-
-  void archiveMessage(PresentationEmail email) {
-    final mailboxContain = email.findMailboxContain(mailboxDashBoardController.mapMailboxById);
-    if (mailboxContain != null) {
-      final archiveMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleArchive);
-      if (archiveMailboxId != null) {
-        final moveToArchiveMailboxRequest = MoveToMailboxRequest(
-          {mailboxContain.id: [email.id!]},
-          archiveMailboxId,
-          MoveAction.moving,
-          EmailActionType.moveToMailbox,
-          destinationPath:findNodePath(archiveMailboxId)
-        );
-          mailboxDashBoardController.moveToMailbox(
-          mailboxDashBoardController.sessionCurrent!,
-          mailboxDashBoardController.accountId.value!,
-          moveToArchiveMailboxRequest
-        );
-      }
     }
   }
 }
