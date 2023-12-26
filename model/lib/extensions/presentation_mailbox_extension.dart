@@ -43,6 +43,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isOutbox => name?.name == PresentationMailbox.outboxRole || role == PresentationMailbox.roleOutbox;
 
+  bool get isArchive => role == PresentationMailbox.roleArchive;
+
   bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
 
   bool get allowedToDisplayCountOfUnreadEmails => !(isTrash || isSpam || isDrafts || isTemplates || isSent) && countUnreadEmails > 0;
