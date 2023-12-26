@@ -3681,4 +3681,11 @@ class AppLocalizations {
       name: 'byContinuingYouAreAgreeingToOur',
     );
   }
+
+  String get archiveMessage {
+    return Intl.message(
+      'Archive message',
+      name: 'archiveMessage',
+    );
+  }
 }
