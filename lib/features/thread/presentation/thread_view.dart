@@ -451,7 +451,11 @@ class ThreadView extends GetWidget<ThreadController>
 
     return Dismissible(
       key: ValueKey<EmailId?>(presentationEmail.id),
-      direction: controller.getSwipeDirection(controller.responsiveUtils.isWebDesktop(context), selectModeAll),
+      direction: controller.getSwipeDirection(
+        controller.responsiveUtils.isWebDesktop(context),
+        selectModeAll,
+        presentationEmail
+      ),
       background: Container(
         color: AppColor.colorItemRecipientSelected,
         child: Padding(
@@ -489,6 +493,36 @@ class ThreadView extends GetWidget<ThreadController>
           ),
         ),
       ),
+      secondaryBackground: controller.isInArchiveMailbox(presentationEmail) == false
+        ? Container(
+          color: AppColor.colorItemRecipientSelected,
+          padding: const EdgeInsetsDirectional.only(end: 16),
+          child: Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Row(
+              children: [
+                const Spacer(),
+                CircleAvatar(
+                  backgroundColor: AppColor.colorSpamReportBannerBackground,
+                  radius: 24,
+                  child: SvgPicture.asset(
+                    controller.imagePaths.icMailboxArchived,
+                    fit: BoxFit.fill,
+                  )
+                ),
+                const SizedBox(width: 11),
+                Text(
+                  AppLocalizations.of(context).archiveMessage,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColor.primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+        : null,
       confirmDismiss: (direction) => controller.swipeEmailAction(context, presentationEmail, direction),
       child: EmailTileBuilder(
         presentationEmail: presentationEmail,
@@ -621,6 +655,8 @@ class ThreadView extends GetWidget<ThreadController>
       _openInNewTabContextMenuItemAction(context, email),
       if (mailboxContain?.isDrafts == false)
         _markAsEmailSpamOrUnSpamContextMenuItemAction(context, email, mailboxContain),
+      if (mailboxContain?.isArchive == false)
+        _archiveMessageContextMenuItemAction(context, email),
     ];
   }
 
@@ -680,13 +716,39 @@ class ThreadView extends GetWidget<ThreadController>
     ).build();
   }
 
+  Widget _archiveMessageContextMenuItemAction(BuildContext context, PresentationEmail email) {
+    return (
+      EmailActionCupertinoActionSheetActionBuilder(
+        const Key('archive_message_action'),
+        SvgPicture.asset(
+          controller.imagePaths.icMailboxArchived,
+          width: 24,
+          height: 24,
+          fit: BoxFit.fill,
+          colorFilter: AppColor.colorTextButton.asFilter()
+        ),
+        AppLocalizations.of(context).archiveMessage,
+        email,
+        iconLeftPadding: controller.responsiveUtils.isMobile(context)
+          ? const EdgeInsets.only(left: 12, right: 16)
+          : const EdgeInsets.only(right: 12),
+        iconRightPadding: controller.responsiveUtils.isMobile(context)
+          ? const EdgeInsets.only(right: 12)
+          : EdgeInsets.zero
+      )
+      ..onActionClick((email) => controller.archiveMessage(email))
+    ).build();
+  }
+
   List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
     final mailboxContain = email.mailboxContain;
 
     return [
       _buildOpenInNewTabPopupMenuItem(context, email, mailboxContain),
       if (mailboxContain?.isDrafts == false)
-        _buildMarkAsSpamPopupMenuItem(context, email, mailboxContain)
+        _buildMarkAsSpamPopupMenuItem(context, email, mailboxContain),
+      if (mailboxContain?.isArchive == false)
+        _buildArchiveMessagePopupMenuItem(context, email),
     ];
   }
 
@@ -737,6 +799,29 @@ class ThreadView extends GetWidget<ThreadController>
         onCallbackAction: () {
           popBack();
           controller.openEmailInNewTabAction(context, email);
+        }
+      )
+    );
+  }
+
+  PopupMenuEntry _buildArchiveMessagePopupMenuItem(
+    BuildContext context,
+    PresentationEmail email
+  ) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: popupItem(
+        controller.imagePaths.icMailboxArchived,
+        AppLocalizations.of(context).archiveMessage,
+        colorIcon: AppColor.colorTextButton,
+        styleName: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: Colors.black
+        ),
+        onCallbackAction: () {
+          popBack();
+          controller.archiveMessage(email);
         }
       )
     );
