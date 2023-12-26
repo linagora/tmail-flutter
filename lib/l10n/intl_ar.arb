@@ -1907,12 +1907,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageAndRegionSubtitle": "قم بتعيين اللغة والمنطقة الزمنية وتنسيق الوقت الذي تستخدمه في Twake Mail.",
-  "@languageAndRegionSubtitle": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "insertImage": "إدراج صورة",
   "@insertImage": {
     "type": "text",
