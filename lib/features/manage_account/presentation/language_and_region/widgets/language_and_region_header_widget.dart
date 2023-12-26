@@ -12,13 +12,13 @@ class LanguageAndRegionHeaderWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(AppLocalizations.of(context).languageAndRegion,
+        Text(AppLocalizations.of(context).language,
           style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
               color: Colors.black)),
         const SizedBox(height: 4),
-        Text(AppLocalizations.of(context).languageAndRegionSubtitle,
+        Text(AppLocalizations.of(context).languageSubtitle,
             style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.normal,
