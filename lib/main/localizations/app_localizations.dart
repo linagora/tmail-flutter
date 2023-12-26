@@ -1561,10 +1561,10 @@ class AppLocalizations {
         name: 'languageAndRegion');
   }
 
-  String get languageAndRegionSubtitle {
+  String get languageSubtitle {
     return Intl.message(
-        'Set the language, time zone, time format you use on Twake Mail.',
-        name: 'languageAndRegionSubtitle');
+        'Set the language you use on Twake Mail.',
+        name: 'languageSubtitle');
   }
 
   String get language {
