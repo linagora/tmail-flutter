@@ -449,7 +449,9 @@ class EmailView extends GetWidget<SingleEmailController> {
       if (presentationEmail.from?.isNotEmpty == true)
         EmailActionType.createRule,
       if (!presentationEmail.isSubscribed && controller.emailUnsubscribe.value != null)
-        EmailActionType.unsubscribe
+        EmailActionType.unsubscribe,
+      if (mailboxContain?.isArchive == false)
+        EmailActionType.archiveMessage,
     ];
 
     if (position == null) {
