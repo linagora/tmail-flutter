@@ -26,6 +26,7 @@ class PresentationMailbox with EquatableMixin {
   static final roleOutbox = Role(outboxRole);
   static final roleDrafts = Role(draftsRole);
   static final roleSpam = Role(spamRole);
+  static final roleArchive = Role(archiveRole);
 
   final MailboxId id;
   final MailboxName? name;
