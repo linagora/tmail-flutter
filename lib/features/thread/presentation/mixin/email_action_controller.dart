@@ -287,4 +287,8 @@ mixin EmailActionController {
   void openEmailInNewTabAction(BuildContext context, PresentationEmail email) {
     AppUtils.launchLink(email.routeWebAsString);
   }
+
+  void archiveMessage(BuildContext context, PresentationEmail email) {
+    mailboxDashBoardController.archiveMessage(context, email);
+  }
 }

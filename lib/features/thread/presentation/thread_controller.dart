@@ -1183,11 +1183,13 @@ class ThreadController extends BaseController with EmailActionController {
     if (direction == DismissDirection.startToEnd) {
       ReadActions readActions = !email.hasRead ? ReadActions.markAsRead : ReadActions.markAsUnread;
       markAsEmailRead(email, readActions, MarkReadAction.swipeOnThread);
+    } else if (direction == DismissDirection.endToStart) {
+      archiveMessage(context, email);
     }
     return false;
   }
 
-  DismissDirection getSwipeDirection(bool isWebDesktop, SelectMode selectMode) {
+  DismissDirection getSwipeDirection(bool isWebDesktop, SelectMode selectMode, PresentationEmail email) {
     if (isWebDesktop) {
       return DismissDirection.none;
     } 
@@ -1196,8 +1198,12 @@ class ThreadController extends BaseController with EmailActionController {
       return DismissDirection.none;
     }
 
-    return DismissDirection.startToEnd;
+    return isInArchiveMailbox(email)
+      ? DismissDirection.startToEnd
+      : DismissDirection.horizontal;
   }
+
+  bool isInArchiveMailbox(PresentationEmail email) => email.mailboxContain?.isArchive == true;
 
   void scrollToTop() {
     if (listEmailController.hasClients) {
