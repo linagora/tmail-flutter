@@ -832,8 +832,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageAndRegionSubtitle": "Thay đổi ngôn ngữ.",
-  "@languageAndRegionSubtitle": {
+  "languageSubtitle": "Thay đổi ngôn ngữ.",
+  "@languageSubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
