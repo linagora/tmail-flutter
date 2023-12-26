@@ -36,7 +36,7 @@ enum AccountMenuItem {
       case AccountMenuItem.profiles:
         return AppLocalizations.of(context).profiles;
       case AccountMenuItem.languageAndRegion:
-        return AppLocalizations.of(context).languageAndRegion;
+        return AppLocalizations.of(context).language;
       case AccountMenuItem.emailRules:
         return AppLocalizations.of(context).emailRules;
       case AccountMenuItem.forward:
