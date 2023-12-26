@@ -131,6 +131,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icQuickCreatingRule;
       case EmailActionType.unsubscribe:
         return imagePaths.icUnsubscribe;
+      case EmailActionType.archiveMessage:
+        return imagePaths.icMailboxArchived;
       default:
         return '';
     }
@@ -148,6 +150,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).quickCreatingRule;
       case EmailActionType.unsubscribe:
         return AppLocalizations.of(context).unsubscribe;
+      case EmailActionType.archiveMessage:
+        return AppLocalizations.of(context).archiveMessage;
       default:
         return '';
     }
