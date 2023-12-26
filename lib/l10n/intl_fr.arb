@@ -1246,8 +1246,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageAndRegionSubtitle": "Définissez la langue, le fuseau horaire et le format d'heure que vous utilisez sur Twake Mail.",
-  "@languageAndRegionSubtitle": {
+  "languageSubtitle": "Définissez la langue que vous utilisez sur Twake Mail.",
+  "@languageSubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
