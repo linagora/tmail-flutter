@@ -2328,9 +2328,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t2, _null = null,
         t1 = type$.AppLocalizations;
       A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
-      t2 = A.Text$(A.Intl__message("Language & Region", _null, "languageAndRegion", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY1, _null, _null, _null, _null, _null);
+      t2 = A.Text$(A.Intl__message("Language", _null, "language", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY1, _null, _null, _null, _null, _null);
       A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
-      return A.Column$(A._setArrayType([t2, B.SizedBox_null_4_null_null, A.Text$(A.Intl__message("Set the language, time zone, time format you use on Twake Mail.", _null, "languageAndRegionSubtitle", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_omH, _null, _null, _null, _null, _null)], type$.JSArray_Widget), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
+      return A.Column$(A._setArrayType([t2, B.SizedBox_null_4_null_null, A.Text$(A.Intl__message("Set the language you use on Twake Mail.", _null, "languageSubtitle", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_omH, _null, _null, _null, _null, _null)], type$.JSArray_Widget), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     }
   };
   C.LanguageRegionOverlay.prototype = {
@@ -5558,4 +5558,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["GIomq5oTRm+MOkqCwdjUyk3F+vc="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["eP/r4xY9SZUWZtKEXrdPX511qf4="] = $__dart_deferred_initializers__.current
