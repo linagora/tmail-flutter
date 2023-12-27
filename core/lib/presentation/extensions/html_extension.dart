@@ -1,7 +1,7 @@
 
 extension HtmlExtension on String {
 
-  static const String editorStartTags = '<br><div><br></div>';
+  static const String editorStartTags = '<div><br><br></div>';
   static const String signaturePrefix = '--&nbsp;';
 
   String addBlockTag(String tag, {String? attribute}) =>
