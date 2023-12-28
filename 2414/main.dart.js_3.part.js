@@ -6507,7 +6507,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         headerEmailQuoted = B.EmailActionTypeExtension_getHeaderEmailQuoted(emailActionType, context, presentationEmail);
       A.log("EditorViewMixin::getEmailContentQuotedAsHtml:headerEmailQuoted: " + A.S(headerEmailQuoted), C.Level_3);
       headerEmailQuotedAsHtml = headerEmailQuoted != null ? A.HtmlExtension_addBlockTag(headerEmailQuoted, "cite", 'style="text-align: left;display: block;"') : "";
-      return "<br><div><br></div>" + headerEmailQuotedAsHtml + A.HtmlExtension_addBlockTag(emailContent, "blockquote", 'style="margin-left:8px;margin-right:8px;padding-left:12px;padding-right:12px;border-left:5px solid #eee;"');
+      return "<div><br><br></div>" + headerEmailQuotedAsHtml + A.HtmlExtension_addBlockTag(emailContent, "blockquote", 'style="margin-left:8px;margin-right:8px;padding-left:12px;padding-right:12px;border-left:5px solid #eee;"');
     }
   };
   B.DesktopResponsiveContainerView.prototype = {
@@ -6549,7 +6549,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.WebEditorView.prototype = {
     build$1(context) {
       var t2, _this = this,
-        _s19_ = "<br><div><br></div>",
+        _s19_ = "<div><br><br></div>",
         t1 = _this.$arguments;
       if (t1 == null)
         return C.SizedBox_0_0_null_null;
@@ -13082,7 +13082,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this,
         t2 = t1.currentWebContent;
       if (t2 == null)
-        t2 = "<br><div><br></div>";
+        t2 = "<div><br><br></div>";
       t3 = A.Directionality_maybeOf(this.context);
       if (t3 == null)
         t3 = C.TextDirection_1;
@@ -13093,7 +13093,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.WebEditorView_build_closure0.prototype = {
     call$1(success) {
       var newContent, t1, t2, t3,
-        _s19_ = "<br><div><br></div>";
+        _s19_ = "<div><br><br></div>";
       if (success instanceof A.GetEmailContentLoading)
         return D.CupertinoLoadingWidget_MQy;
       else {
@@ -20018,4 +20018,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["8z3uj+5Lk7h7WxeCpqyK+gY7r24="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["OLWcmZ0k2CN48FKZM2cRbEW4A+U="] = $__dart_deferred_initializers__.current
