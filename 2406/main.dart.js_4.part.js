@@ -3923,7 +3923,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 167
+    $signature: 153
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -4198,7 +4198,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._box_0.ancestorContext = $parent;
       return false;
     },
-    $signature: 65
+    $signature: 66
   };
   B.ListEmailAddressExtension_emailAddressToListString_closure.prototype = {
     call$1(emailAddress) {
@@ -4713,4 +4713,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["FlgGGtcMAYgO460/Cv0rQ1nZZZ8="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["YJDbNeldZm0FZK/+d/WfHpOwjtw="] = $__dart_deferred_initializers__.current
