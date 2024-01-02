@@ -4041,5 +4041,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "descriptionWelcomeTo": "End-to-end encryption, collaborative\n features for secure and efficient\n teamwork",
+  "@descriptionWelcomeTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeId": "Create Twake ID",
+  "@createTwakeId": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "useCompanyServer": "Use company server",
+  "@useCompanyServer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
