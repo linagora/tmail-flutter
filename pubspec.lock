@@ -397,8 +397,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "upgrade_v3.16.0"
-      resolved-ref: da81e3d9864ffe97472b54020f83bd1f1d4db2b8
+      ref: email_supported
+      resolved-ref: f13a35eb76fafb2ee1e686ca19c4c742d0efa78a
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -627,8 +627,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "upgrade_v3.16.0"
-      resolved-ref: "2b4b4613d8afa891f0f5cad9c9cbeea9be6b5637"
+      ref: master
+      resolved-ref: "2365600ed0ec3acb39705f9d1c86db157eba6688"
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
     version: "1.0.2"
@@ -1468,8 +1468,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "upgrade_v3.16.0"
-      resolved-ref: fd3032a78b4c2171929a978b1af9dcad6dc5e650
+      ref: master
+      resolved-ref: "867d22aaa2da242bb1c5929e2804e3cb1d4acaf6"
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"

@@ -49,7 +49,7 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: upgrade_v3.16.0
+      ref: master
 
   html_editor_enhanced:
     git:
@@ -79,7 +79,7 @@ dependencies:
   flutter_date_range_picker:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
-      ref: upgrade_v3.16.0
+      ref: master
 
   super_tag_editor:
     git:
