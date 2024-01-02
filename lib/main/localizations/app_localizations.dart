@@ -3779,4 +3779,25 @@ class AppLocalizations {
       name: 'restoreDeletedMessageCanceled',
     );
   }
+
+  String get welcomeTo {
+    return Intl.message(
+      'Welcome to',
+      name: 'welcomeTo',
+    );
+  }
+
+  String get descriptionWelcomeTo {
+    return Intl.message(
+      'an end-to-end encryption email\napplication with collaborative features\nfor secure, efficient teamwork.',
+      name: 'descriptionWelcomeTo',
+    );
+  }
+
+  String get getStarted {
+    return Intl.message(
+      'Get Started',
+      name: 'getStarted',
+    );
+  }
 }

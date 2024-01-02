@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeController extends ReloadableController {
@@ -60,7 +61,7 @@ class HomeController extends ReloadableController {
 
   @override
   void onReady() {
-    _cleanupCache();
+    _handleNavigateToScreen();
     super.onReady();
   }
 
@@ -89,6 +90,24 @@ class HomeController extends ReloadableController {
   }
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
+
+  void _handleNavigateToScreen() async {
+    if (PlatformInfo.isMobile) {
+      final firstTimeAppLaunch = await appStore.getItemBoolean(AppConfig.firstTimeAppLaunchKey);
+      if (firstTimeAppLaunch) {
+        _cleanupCache();
+      } else {
+        await appStore.setItemBoolean(AppConfig.firstTimeAppLaunchKey, true);
+        _navigateToTwakeWelcomePage();
+      }
+    } else {
+      _cleanupCache();
+    }
+  }
+
+  void _navigateToTwakeWelcomePage() {
+    popAndPush(AppRoutes.twakeWelcome);
+  }
 
   void _cleanupCache() async {
     await HiveCacheConfig().onUpgradeDatabase(cachingManager);

@@ -22,8 +22,17 @@ class ThemeUtils {
 
   static TextTheme get _textTheme {
     return const TextTheme(
+      bodyLarge: TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 17,
+        letterSpacing: -0.15,
+      ),
       bodyMedium: TextStyle(color: AppColor.baseTextColor),
       bodySmall: TextStyle(color: AppColor.baseTextColor),
+      headlineLarge: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 32,
+      ),
     );
   }
 

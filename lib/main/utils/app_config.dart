@@ -11,6 +11,7 @@ class AppConfig {
   static const String appFCMConfigurationPath = "configurations/env.fcm";
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
+  static const String firstTimeAppLaunchKey = "first_time_app_launch";
 
   static String get baseUrl => dotenv.get('SERVER_URL', fallback: '');
   static String get domainRedirectUrl => dotenv.get('DOMAIN_REDIRECT_URL', fallback: '');

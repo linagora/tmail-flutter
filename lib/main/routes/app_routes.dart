@@ -1,5 +1,6 @@
 abstract class AppRoutes {
   static const home = '/';
+  static const twakeWelcome = '/twake_welcome';
   static const login = '/login';
   static const dashboard = '/dashboard';
   static const dashboardWithParameter = '/dashboard/:id';

@@ -3629,5 +3629,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "welcomeTo": "Welcome to",
+  "@welcomeTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "descriptionWelcomeTo": "an end-to-end encryption email\napplication with collaborative features\nfor secure, efficient teamwork.",
+  "@descriptionWelcomeTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "getStarted": "Get Started",
+  "@getStarted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
