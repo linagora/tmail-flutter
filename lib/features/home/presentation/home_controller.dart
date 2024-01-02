@@ -97,7 +97,6 @@ class HomeController extends ReloadableController {
       if (firstTimeAppLaunch) {
         _cleanupCache();
       } else {
-        await appStore.setItemBoolean(AppConfig.firstTimeAppLaunchKey, true);
         _navigateToTwakeWelcomePage();
       }
     } else {

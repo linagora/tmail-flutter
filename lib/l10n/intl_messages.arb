@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-02T18:20:39.071405",
+  "@@last_modified": "2024-01-02T18:44:36.733828",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3566,6 +3566,24 @@
   },
   "getStarted": "Get Started",
   "@getStarted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeId": "Create Twake ID",
+  "@createTwakeId": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "useCompanyServer": "Use company server",
+  "@useCompanyServer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "descriptionTwakeId": "To start, please create a TwakeID \nthat will allow you to use \nchat, mail and drive",
+  "@descriptionTwakeId": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
