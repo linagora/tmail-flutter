@@ -82,6 +82,19 @@ class IOSSharingManager {
     }
   }
 
+  Future<KeychainSharingSession?> getKeychainSharingSession(AccountId accountId) async {
+    try {
+      if (await _keychainSharingManager.isSessionExist(accountId)) {
+        final keychainSharingStored = await _keychainSharingManager.getSharingSession(accountId);
+        return keychainSharingStored;
+      }
+      return null;
+    } catch (e) {
+      logError('IOSSharingManager::getKeychainSharingSession: Exception: $e');
+      return null;
+    }
+  }
+
   Future<TokenOIDC?> _getTokenOidc({required String tokeHashId}) async {
     try {
       final tokenOidc = await _tokenOidcCacheManager.getTokenOidc(tokeHashId);
