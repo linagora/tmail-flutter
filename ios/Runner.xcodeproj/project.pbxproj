@@ -52,7 +52,6 @@
 		F5E7D8842B3877050009BB8A /* AuthenticationSSO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8832B3877050009BB8A /* AuthenticationSSO.swift */; };
 		F5E7D8862B3877390009BB8A /* TokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8852B3877390009BB8A /* TokenResponse.swift */; };
 		F5E7D8882B38775C0009BB8A /* TokenRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8872B38775C0009BB8A /* TokenRefreshManager.swift */; };
-		F5E7D88A2B3877D30009BB8A /* NSEPusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D8892B3877D30009BB8A /* NSEPusher.swift */; };
 		F5E7D88D2B3878580009BB8A /* AuthenticationInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E7D88C2B3878580009BB8A /* AuthenticationInterceptor.swift */; };
 		F5EFC07D2B328B9F00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
 		F5EFC07E2B328B9F00829056 /* TwakeLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */; };
@@ -155,7 +154,6 @@
 		F5E7D8832B3877050009BB8A /* AuthenticationSSO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationSSO.swift; sourceTree = "<group>"; };
 		F5E7D8852B3877390009BB8A /* TokenResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenResponse.swift; sourceTree = "<group>"; };
 		F5E7D8872B38775C0009BB8A /* TokenRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenRefreshManager.swift; sourceTree = "<group>"; };
-		F5E7D8892B3877D30009BB8A /* NSEPusher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSEPusher.swift; sourceTree = "<group>"; };
 		F5E7D88C2B3878580009BB8A /* AuthenticationInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationInterceptor.swift; sourceTree = "<group>"; };
 		F5EFC07C2B328B9F00829056 /* TwakeLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwakeLogger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -349,7 +347,6 @@
 				F5630C7D2B2CE359003CC0FD /* InfoPlistReader.swift */,
 				F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */,
 				F5630C862B2D0387003CC0FD /* PayloadParser.swift */,
-				F5E7D8892B3877D30009BB8A /* NSEPusher.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -687,7 +684,6 @@
 				F53D1E862B2E401B00051FD0 /* JmapRequestGenerator.swift in Sources */,
 				F5E7D87A2B38763B0009BB8A /* DateExtensions.swift in Sources */,
 				F5E7D88D2B3878580009BB8A /* AuthenticationInterceptor.swift in Sources */,
-				F5E7D88A2B3877D30009BB8A /* NSEPusher.swift in Sources */,
 				F5630C7E2B2CE359003CC0FD /* InfoPlistReader.swift in Sources */,
 				F53D1E662B2DE8B800051FD0 /* AlamofireService.swift in Sources */,
 				F5BBBF532B2EECAA007930E1 /* JmapExceptions.swift in Sources */,
