@@ -4219,4 +4219,25 @@ class AppLocalizations {
       'Find emails',
       name: 'findEmails');
   }
+
+  String get descriptionWelcomeTo {
+    return Intl.message(
+      'End-to-end encryption, collaborative\n features for secure and efficient\n teamwork',
+      name: 'descriptionWelcomeTo',
+    );
+  }
+
+  String get createTwakeId {
+    return Intl.message(
+      'Create Twake ID',
+      name: 'createTwakeId',
+    );
+  }
+
+  String get useCompanyServer {
+    return Intl.message(
+      'Use company server',
+      name: 'useCompanyServer',
+    );
+  }
 }
