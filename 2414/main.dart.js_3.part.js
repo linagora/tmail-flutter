@@ -3781,8 +3781,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    ThreadView__archiveMessageContextMenuItemAction_closure: function ThreadView__archiveMessageContextMenuItemAction_closure(t0) {
+    ThreadView__archiveMessageContextMenuItemAction_closure: function ThreadView__archiveMessageContextMenuItemAction_closure(t0, t1) {
       this.$this = t0;
+      this.context = t1;
     },
     ThreadView__buildMarkAsSpamPopupMenuItem_closure: function ThreadView__buildMarkAsSpamPopupMenuItem_closure(t0, t1, t2, t3) {
       var _ = this;
@@ -3796,9 +3797,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.context = t1;
       this.email = t2;
     },
-    ThreadView__buildArchiveMessagePopupMenuItem_closure: function ThreadView__buildArchiveMessagePopupMenuItem_closure(t0, t1) {
+    ThreadView__buildArchiveMessagePopupMenuItem_closure: function ThreadView__buildArchiveMessagePopupMenuItem_closure(t0, t1, t2) {
       this.$this = t0;
-      this.email = t1;
+      this.context = t1;
+      this.email = t2;
     },
     ThreadView__buildMarkAsMailboxReadLoading_closure: function ThreadView__buildMarkAsMailboxReadLoading_closure(t0, t1) {
       this.$this = t0;
@@ -10324,12 +10326,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
       t5 = type$.MediaQuery;
-      t6 = A.InheritedModel_inheritFrom(context, _null, t5).data.size._dx < 600 ? C.EdgeInsets_12_0_16_0 : C.EdgeInsets_0_0_12_0;
+      t6 = A.InheritedModel_inheritFrom(context, _null, t5).data.size._dx < 600 ? C.EdgeInsetsDirectional_12_0_16_0 : C.EdgeInsetsDirectional_12_0_0_0;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
       A.InheritedModel_inheritFrom(context, _null, t5).toString;
       t1 = new B.EmailActionCupertinoActionSheetActionBuilder(email, t6, D.ValueKey_archive_message_action, t3, t4);
-      t1.onCupertinoActionSheetActionClick = new B.ThreadView__archiveMessageContextMenuItemAction_closure(_this);
+      t1.onCupertinoActionSheetActionClick = new B.ThreadView__archiveMessageContextMenuItemAction_closure(_this, context);
       return t1.build$0();
     },
     _buildMarkAsSpamPopupMenuItem$3(context, email, mailboxContain) {
@@ -10373,7 +10375,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).toString;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.PopupMenuItem$(_this.popupItem$5$colorIcon$onCallbackAction$styleName("assets/images/ic_mailbox_archived.svg", A.Intl__message("Archive message", _null, "archiveMessage", _null, _null), C.Color_4278221567, new B.ThreadView__buildArchiveMessagePopupMenuItem_closure(_this, email), C.TextStyle_oHY0), true, 48, _null, C.EdgeInsets_0_0_0_0, _null, type$.dynamic);
+      return A.PopupMenuItem$(_this.popupItem$5$colorIcon$onCallbackAction$styleName("assets/images/ic_mailbox_archived.svg", A.Intl__message("Archive message", _null, "archiveMessage", _null, _null), C.Color_4278221567, new B.ThreadView__buildArchiveMessagePopupMenuItem_closure(_this, context, email), C.TextStyle_oHY0), true, 48, _null, C.EdgeInsets_0_0_0_0, _null, type$.dynamic);
     },
     _thread_view$_buildMarkAsMailboxReadLoading$1(context) {
       return new A.Obx(new B.ThreadView__buildMarkAsMailboxReadLoading_closure(this, context), null);
@@ -18872,7 +18874,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$1(email);
+      A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$2(this.context, email);
       return null;
     },
     $signature: 150
@@ -18909,7 +18911,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.$this;
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$1(this.email);
+      A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$2(this.context, this.email);
     },
     $signature: 7
   };
@@ -20018,4 +20020,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["OLWcmZ0k2CN48FKZM2cRbEW4A+U="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["kaAE7Xv6OwQ8LDC6ErLFTkkB23k="] = $__dart_deferred_initializers__.current
