@@ -25,6 +25,7 @@ class TwakeIdView extends GetWidget<TwakeIdController> {
       createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
       useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
       description: AppLocalizations.of(context).descriptionTwakeId,
+      onUseCompanyServerOnTap: controller.handleUseCompanyServer,
     );
   }
 }

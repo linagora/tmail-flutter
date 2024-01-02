@@ -296,9 +296,17 @@ abstract class BaseController extends GetxController
     FirebaseCapability.fcmIdentifier.isSupported(session, accountId) && AppConfig.fcmAvailable;
 
   void goToLogin({LoginArguments? arguments}) {
-    if (Get.currentRoute != AppRoutes.login) {
-      pushAndPopAll(AppRoutes.login, arguments: arguments);
+    if (PlatformInfo.isMobile) {
+      navigateToTwakeIdPage();
+    } else {
+      if (Get.currentRoute != AppRoutes.login) {
+        pushAndPopAll(AppRoutes.login, arguments: arguments);
+      }
     }
+  }
+
+  void navigateToTwakeIdPage() {
+    pushAndPopAll(AppRoutes.twakeId);
   }
 
   void logout(Session? session, AccountId? accountId) async {
