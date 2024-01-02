@@ -57,6 +57,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:tmail_ui_user/main/utils/app_store.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:uuid/uuid.dart';
 
@@ -76,6 +77,7 @@ abstract class BaseController extends GetxController
   final ImagePaths imagePaths = Get.find<ImagePaths>();
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
+  final AppStore appStore = Get.find<AppStore>();
 
   final _fcmReceiver = FcmReceiver.instance;
   bool _isFcmEnabled = false;

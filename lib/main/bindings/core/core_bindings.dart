@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:tmail_ui_user/main/utils/app_store.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
 
@@ -75,5 +76,6 @@ class CoreBindings extends Bindings {
         accountName: AppConfig.iOSKeychainSharingService,
       )
     ));
+    Get.put(AppStore(Get.find<SharedPreferences>()));
   }
 }
