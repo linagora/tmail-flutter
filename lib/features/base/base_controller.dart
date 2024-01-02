@@ -306,7 +306,7 @@ abstract class BaseController extends GetxController
   }
 
   void navigateToTwakeIdPage() {
-    pushAndPopAll(AppRoutes.twakeId);
+    popAndPush(AppRoutes.twakeId);
   }
 
   void logout(Session? session, AccountId? accountId) async {
