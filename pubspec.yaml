@@ -111,6 +111,11 @@ dependencies:
       url: https://github.com/dab246/languagetool_textfield.git
       ref: twake-supported
 
+  linagora_design_flutter:
+    git:
+      url: https://github.com/linagora/linagora-design-flutter.git
+      ref: master
+
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 
