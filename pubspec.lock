@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  auto_size_text:
+    dependency: transitive
+    description:
+      name: auto_size_text
+      sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   back_button_interceptor:
     dependency: "direct main"
     description:
@@ -1143,6 +1151,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.6.1"
+  linagora_design_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: f3371287c4f66e2cff23a8c5d8aaf30aa3b7bf6b
+      url: "https://github.com/linagora/linagora-design-flutter.git"
+    source: git
+    version: "0.0.1"
   linkify:
     dependency: transitive
     description:
@@ -1390,6 +1407,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.0"
+  photo_manager:
+    dependency: transitive
+    description:
+      name: photo_manager
+      sha256: "8cf79918f6de9843b394a1670fe1aec54ebcac852b4b4c9ef88211894547dc61"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0-dev.5"
+  photo_manager_image_provider:
+    dependency: transitive
+    description:
+      name: photo_manager_image_provider
+      sha256: c187f60c3fdbe5630735d9a0bccbb071397ec03dcb1ba6085c29c8adece798a0
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   platform:
     dependency: transitive
     description:
