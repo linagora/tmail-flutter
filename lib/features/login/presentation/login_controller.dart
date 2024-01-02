@@ -242,6 +242,7 @@ class LoginController extends ReloadableController {
     clearState();
     switch(loginFormType.value) {
       case LoginFormType.dnsLookupForm:
+      case LoginFormType.baseUrlForm:
         navigateToTwakeIdPage();
         break;
       case LoginFormType.passwordForm:
