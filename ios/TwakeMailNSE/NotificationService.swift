@@ -2,7 +2,7 @@ import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
 
-    private let timeIntervalNotificationTrigger: Int = 2
+    private let timeIntervalNotificationTriggerInSecond: Int = 2
     private let newEmailDefaultMessage: String = "You have new emails"
 
     private var handler: ((UNNotificationContent) -> Void)?
@@ -74,7 +74,7 @@ class NotificationService: UNNotificationServiceExtension {
                             self.scheduleLocalNotification(email: email)
                         }
 
-                        let delayTimeIntervalNotification: TimeInterval = TimeInterval(self.timeIntervalNotificationTrigger * (emails.count - 1))
+                        let delayTimeIntervalNotification: TimeInterval = TimeInterval(self.timeIntervalNotificationTriggerInSecond * (emails.count - 1))
 
                         DispatchQueue.main.asyncAfter(deadline: .now() + delayTimeIntervalNotification) {
                             self.modifiedContent?.subtitle = emails.last?.subject ?? ""
@@ -110,7 +110,7 @@ class NotificationService: UNNotificationServiceExtension {
         content.userInfo[JmapConstants.EMAIL_ID] = "\(email.id)"
 
         // Create a notification trigger
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(timeIntervalNotificationTrigger), repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(timeIntervalNotificationTriggerInSecond), repeats: false)
 
         // Create a notification request
         let request = UNNotificationRequest(identifier: "\(email.id)", content: content, trigger: trigger)
