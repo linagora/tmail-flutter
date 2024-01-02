@@ -92,22 +92,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
       if (_validateToRefreshToken(err)) {
         log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
-        final newToken = await _authenticationClient.refreshingTokensOIDC(
-          _configOIDC!.clientId,
-          _configOIDC!.redirectUrl,
-          _configOIDC!.discoveryUrl,
-          _configOIDC!.scopes,
-          _token!.refreshToken
-        );
 
-        _updateNewToken(newToken);
-
-        await _updateCurrentAccount(tokenOIDC: newToken);
+        if (PlatformInfo.isIOS) {
+          _handleRefreshTokenOnIOSPlatform();
+        } else {
+          _handleRefreshTokenOnOtherPlatform();
+        }
 
         if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
-          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
           requestOptions.headers[HttpHeaders.contentTypeHeader] = uploadExtra[FileUploader.typeExtraKey];
           requestOptions.headers[HttpHeaders.contentLengthHeader] = uploadExtra[FileUploader.sizeExtraKey];
 
@@ -125,7 +120,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
           return handler.resolve(response);
         } else {
-          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(newToken.token);
+          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
 
           final response = await _dio.fetch(requestOptions);
           return handler.resolve(response);
@@ -202,7 +197,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     }
   }
 
-  Future _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
+  Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
 
     await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
@@ -219,9 +214,66 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
 
-    if (PlatformInfo.isIOS) {
-      await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+    return personalAccount;
+  }
+
+  Future<TokenOIDC?> _getTokenInKeychain(TokenOIDC currentTokenOidc) async {
+    final currentAccount = await _accountCacheManager.getCurrentAccount();
+    log('AuthorizationInterceptors::_getTokenInKeychain:currentAccount: $currentAccount');
+    if (currentAccount.accountId == null) {
+      return null;
     }
+
+    final keychainSharingSession = await _iosSharingManager.getKeychainSharingSession(currentAccount.accountId!);
+    log('AuthorizationInterceptors::_getTokenInKeychain:keychainSharingSession: $keychainSharingSession');
+    if (keychainSharingSession == null) {
+      return null;
+    }
+
+    if (keychainSharingSession.tokenOIDC != null &&
+        currentTokenOidc.token != keychainSharingSession.tokenOIDC!.token) {
+      return keychainSharingSession.tokenOIDC!;
+    }
+
+    return null;
+  }
+
+  Future<TokenOIDC> _invokeRefreshTokenFromServer() async {
+    final newToken = await _authenticationClient.refreshingTokensOIDC(
+      _configOIDC!.clientId,
+      _configOIDC!.redirectUrl,
+      _configOIDC!.discoveryUrl,
+      _configOIDC!.scopes,
+      _token!.refreshToken
+    );
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:newToken: $newToken');
+    return newToken;
+  }
+
+  Future _handleRefreshTokenOnIOSPlatform() async {
+    final keychainToken = await _getTokenInKeychain(_token!);
+
+    if (keychainToken == null) {
+      final newToken = await _invokeRefreshTokenFromServer();
+
+      _updateNewToken(newToken);
+
+      final newAccount = await _updateCurrentAccount(tokenOIDC: newToken);
+
+      await _iosSharingManager.saveKeyChainSharingSession(newAccount);
+    } else {
+      _updateNewToken(keychainToken);
+
+      await _updateCurrentAccount(tokenOIDC: keychainToken);
+    }
+  }
+
+  Future _handleRefreshTokenOnOtherPlatform() async {
+    final newToken = await _invokeRefreshTokenFromServer();
+
+    _updateNewToken(newToken);
+
+    await _updateCurrentAccount(tokenOIDC: newToken);
   }
 
   void clear() {
