@@ -30,6 +30,8 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_f
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart' deferred as rules_filter_creator;
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart' deferred as search_mailbox_view;
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_id/twake_id_bindings.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_id/twake_id_view.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_bindings.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view.dart';
 import 'package:tmail_ui_user/features/unknown_route_page/unknown_route_page_view.dart';
@@ -91,6 +93,10 @@ class AppPages {
           name: AppRoutes.twakeWelcome,
           page: () => const TwakeWelcomeView(),
           binding: TwakeWelcomeBindings()),
+        GetPage(
+          name: AppRoutes.twakeId,
+          page: () => const TwakeIdView(),
+          binding: TwakeIdBindings()),
         GetPage(
             name: AppRoutes.composer,
             opaque: false,

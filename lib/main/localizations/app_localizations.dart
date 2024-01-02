@@ -3800,4 +3800,25 @@ class AppLocalizations {
       name: 'getStarted',
     );
   }
+
+  String get createTwakeId {
+    return Intl.message(
+      'Create Twake ID',
+      name: 'createTwakeId',
+    );
+  }
+
+  String get useCompanyServer {
+    return Intl.message(
+      'Use company server',
+      name: 'useCompanyServer',
+    );
+  }
+
+  String get descriptionTwakeId {
+    return Intl.message(
+      'To start, please create a TwakeID \nthat will allow you to use \nchat, mail and drive',
+      name: 'descriptionTwakeId',
+    );
+  }
 }

@@ -26,6 +26,7 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
       descriptionWelcomeTo: AppLocalizations.of(context).descriptionWelcomeTo,
       titleStartMessaging: AppLocalizations.of(context).getStarted,
       titlePrivacy: '',
+      buttonOnTap: controller.navigateToTwakeIdPage,
     );
   }
 }
