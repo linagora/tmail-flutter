@@ -4666,7 +4666,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Duration_195000 = new A.Duration(195000);
     D.EdgeInsetsDirectional_0_10_0_0 = new A.EdgeInsetsDirectional(0, 10, 0, 0);
     D.EdgeInsetsDirectional_0_24_0_24 = new A.EdgeInsetsDirectional(0, 24, 0, 24);
-    D.EdgeInsetsDirectional_12_0_10_0 = new A.EdgeInsetsDirectional(12, 0, 10, 0);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
@@ -4711,4 +4710,4 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
 };
 
-$__dart_deferred_initializers__["XDhFpKiiWn8yGHhnm6kuHfS48oY="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["OYUKpJ9X7waMWtISufLtppuExAc="] = $__dart_deferred_initializers__.current
