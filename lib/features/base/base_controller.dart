@@ -299,14 +299,27 @@ abstract class BaseController extends GetxController
     if (PlatformInfo.isMobile) {
       navigateToTwakeIdPage();
     } else {
-      if (Get.currentRoute != AppRoutes.login) {
-        pushAndPopAll(AppRoutes.login, arguments: arguments);
-      }
+      navigateToLoginPage(arguments: arguments);
+    }
+  }
+
+  void removeAllPageAndGoToLogin({LoginArguments? arguments}) {
+    if (PlatformInfo.isMobile) {
+      pushAndPopAll(AppRoutes.twakeId);
+    } else {
+      navigateToLoginPage(arguments: arguments);
     }
   }
 
   void navigateToTwakeIdPage() {
     popAndPush(AppRoutes.twakeId);
+  }
+
+  void navigateToLoginPage({LoginArguments? arguments}) {
+    if (Get.currentRoute == AppRoutes.login) {
+      return;
+    }
+    pushAndPopAll(AppRoutes.login, arguments: arguments);
   }
 
   void logout(Session? session, AccountId? accountId) async {
@@ -347,7 +360,7 @@ abstract class BaseController extends GetxController
   Future<void> clearDataAndGoToLoginPage() async {
     log('BaseController::clearDataAndGoToLoginPage:');
     await clearAllData();
-    goToLogin(arguments: LoginArguments(
+    removeAllPageAndGoToLogin(arguments: LoginArguments(
       PlatformInfo.isWeb
         ? LoginFormType.none
         : LoginFormType.dnsLookupForm
@@ -363,36 +376,44 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> _clearBasicAuthData() async {
-    await Future.wait([
-      deleteCredentialInteractor.execute(),
-      cachingManager.clearAll(),
-      languageCacheManager.removeLanguage(),
-    ]);
-    if (PlatformInfo.isMobile) {
-      await cachingManager.clearAllFileInStorage();
+    try {
+      await Future.wait([
+        deleteCredentialInteractor.execute(),
+        cachingManager.clearAll(),
+        languageCacheManager.removeLanguage(),
+      ]);
+      if (PlatformInfo.isMobile) {
+        await cachingManager.clearAllFileInStorage();
+      }
+      authorizationInterceptors.clear();
+      authorizationIsolateInterceptors.clear();
+      await cachingManager.closeHive();
+      if (_isFcmEnabled) {
+        await _fcmReceiver.deleteFcmToken();
+      }
+    } catch (e, s) {
+      logError('BaseController::_clearBasicAuthData: Exception: $e | Stack: $s');
     }
-    authorizationInterceptors.clear();
-    authorizationIsolateInterceptors.clear();
-    if (_isFcmEnabled) {
-      await _fcmReceiver.deleteFcmToken();
-    }
-    await cachingManager.closeHive();
   }
 
   Future<void> _clearOidcAuthData() async {
-    await Future.wait([
-      deleteAuthorityOidcInteractor.execute(),
-      cachingManager.clearAll(),
-      languageCacheManager.removeLanguage(),
-    ]);
-    if (PlatformInfo.isMobile) {
-      await cachingManager.clearAllFileInStorage();
+    try {
+      await Future.wait([
+        deleteAuthorityOidcInteractor.execute(),
+        cachingManager.clearAll(),
+        languageCacheManager.removeLanguage(),
+      ]);
+      if (PlatformInfo.isMobile) {
+        await cachingManager.clearAllFileInStorage();
+      }
+      authorizationIsolateInterceptors.clear();
+      authorizationInterceptors.clear();
+      await cachingManager.closeHive();
+      if (_isFcmEnabled) {
+        await _fcmReceiver.deleteFcmToken();
+      }
+    } catch (e, s) {
+      logError('BaseController::_clearOidcAuthData: Exception: $e | Stack: $s');
     }
-    authorizationIsolateInterceptors.clear();
-    authorizationInterceptors.clear();
-    if (_isFcmEnabled) {
-      await _fcmReceiver.deleteFcmToken();
-    }
-    await cachingManager.closeHive();
   }
 }
