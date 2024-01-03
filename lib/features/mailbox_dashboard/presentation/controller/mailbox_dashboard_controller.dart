@@ -61,6 +61,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_i
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -2428,13 +2429,23 @@ class MailboxDashBoardController extends ReloadableController {
 
   void gotoEmailRecovery() async {
     closeMailboxMenuDrawer();
-    if (PlatformInfo.isWeb) {
-      await DialogRouter.pushGeneralDialog(
-        routeName: AppRoutes.emailRecovery,
-        arguments: {},
-      );
-    } else {
-      await push(AppRoutes.emailRecovery);
+
+    final currentAccountId = accountId.value;
+    final currentSession = sessionCurrent;
+    if (currentAccountId != null && currentSession != null) {
+      final arguments = EmailRecoveryArguments(currentAccountId, currentSession); 
+
+      if (PlatformInfo.isWeb) {
+        await DialogRouter.pushGeneralDialog(
+          routeName: AppRoutes.emailRecovery,
+          arguments: arguments,
+        );
+      } else {
+        await push(
+          AppRoutes.emailRecovery,
+          arguments: arguments
+        );
+      }
     }
   }
 
