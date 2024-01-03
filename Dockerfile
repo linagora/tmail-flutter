@@ -8,8 +8,12 @@ WORKDIR /app
 
 COPY . .
 
+RUN apt update && \
+    apt install openssh-client -y && \
+    mkdir ~/.ssh && \
+    ssh-keyscan github.com >> ~/.ssh/known_hosts
 # Precompile tmail flutter
-RUN bash prebuild.sh
+RUN --mount=type=ssh,required=true bash prebuild.sh
 # Build flutter for web
 RUN flutter build web --release
 
