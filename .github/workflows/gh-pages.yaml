@@ -8,6 +8,9 @@ name: Deploy PR on Github Pages
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
+env:
+  FLUTTER_VERSION: 3.16.0
+
 jobs:
   deploy:
     name: Build web version and deploy
@@ -23,11 +26,15 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.16.0"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
           cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
       - name: Run prebuild
         run: bash prebuild.sh

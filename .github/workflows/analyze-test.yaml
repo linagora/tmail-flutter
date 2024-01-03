@@ -8,6 +8,9 @@ on:
 
 name: Analyze and test
 
+env:
+  FLUTTER_VERSION: 3.16.0
+
 jobs:
   analyze-test:
     runs-on: ubuntu-latest
@@ -31,11 +34,15 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.16.0"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
           cache-key: "deps-${{ hashFiles('**/pubspec.lock') }}"
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
       - name: Setup Firebase env
         env:

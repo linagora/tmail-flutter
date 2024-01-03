@@ -5,6 +5,9 @@ on:
 
 name: Build dev binaries
 
+env:
+  FLUTTER_VERSION: 3.16.0
+
 jobs:
   build-app:
     name: Build app
@@ -25,7 +28,7 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.16.0"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
           cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
@@ -37,6 +40,10 @@ jobs:
           ruby-version: "ruby"
           bundler-cache: true
           working-directory: ${{ matrix.os }}
+
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
 
       - name: Setup Firebase env
         env:
