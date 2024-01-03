@@ -16,5 +16,4 @@ class EmailRecoveryArguments with EquatableMixin {
     accountId,
     session,
   ];
-  
 }
