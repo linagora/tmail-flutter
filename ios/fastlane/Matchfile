@@ -4,7 +4,7 @@ storage_mode("git")
 
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
 
-app_identifier(["com.linagora.ios.teammail", "com.linagora.ios.teammail.TeamMailShareExtension"])
+app_identifier(["com.linagora.ios.teammail", "com.linagora.ios.teammail.TeamMailShareExtension", "com.linagora.ios.teammail.TwakeMailNSE"])
 # username("user@fastlane.tools") # Your Apple Developer Portal username
 
 # For all available options run `fastlane match --help`
