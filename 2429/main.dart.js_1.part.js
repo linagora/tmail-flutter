@@ -56,10 +56,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.key = t2;
       _.$ti = t3;
     }, BaseLoginView: function BaseLoginView() {
+    }, BaseLoginView_buildLoginButton_closure: function BaseLoginView_buildLoginButton_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
     }, BaseLoginView_buildUserNameInput_closure: function BaseLoginView_buildUserNameInput_closure() {
     }, BaseLoginView_buildUserNameInput_closure0: function BaseLoginView_buildUserNameInput_closure0() {
-    }, BaseLoginView_buildPasswordInput_closure: function BaseLoginView_buildPasswordInput_closure(t0) {
+    }, BaseLoginView_buildPasswordInput_closure: function BaseLoginView_buildPasswordInput_closure(t0, t1) {
       this.$this = t0;
+      this.context = t1;
     },
     LoginView$() {
       return new C.LoginView(null);
@@ -243,18 +247,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.BaseLoginView.prototype = {
     buildLoginButton$1(context) {
-      var t2, t3, t4, _this = this, _null = null,
+      var t2, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
-      t1 = t1._jsWeakMap;
-      t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      t2._as(t1.get(_this)).toString;
-      t3 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
-      t4 = A.ElevatedButton_styleFrom(_null, _null, B.Color_4278221567, _null, _null, _null, _null, _null, _null, B.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), B.BorderSide_PLF), _null, _null, _null, _null);
-      A.Expando__checkType(_this);
-      t1 = t2._as(t1.get(_this)).get$handleLoginPressed();
+      A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).toString;
+      t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+      t2 = A.ElevatedButton_styleFrom(_null, _null, B.Color_4278221567, _null, _null, _null, _null, _null, _null, B.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), B.BorderSide_PLF), _null, _null, _null, _null);
       A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null, _null, _null), B.Clip_0, _null, D.ValueKey_loginSubmitForm, _null, _null, _null, t1, _null, t4), B.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t3.size._dx);
+      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null, _null, _null), B.Clip_0, _null, D.ValueKey_loginSubmitForm, _null, _null, _null, new C.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), B.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
     buildInputCredentialForm$1(context) {
       return new C.AutofillGroup(new A.Padding(B.EdgeInsetsDirectional_24_0_24_0, A.Column$(A._setArrayType([this.buildUserNameInput$1(context), B.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), null), null);
@@ -295,7 +295,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this)).passFocusNode;
       A.Expando__checkType(_this);
-      return new C.LoginTextInputBuilder(t4, B.TextInputAction_2, t3, t5, D.List_password, t2._as(t1.get(_this)).get$onPasswordChange(), new C.BaseLoginView_buildPasswordInput_closure(_this), D.ValueKey_login_password_input);
+      return new C.LoginTextInputBuilder(t4, B.TextInputAction_2, t3, t5, D.List_password, t2._as(t1.get(_this)).get$onPasswordChange(), new C.BaseLoginView_buildPasswordInput_closure(_this, context), D.ValueKey_login_password_input);
     }
   };
   C.LoginView.prototype = {
@@ -476,6 +476,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 1608
   };
+  C.BaseLoginView_buildLoginButton_closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$1(this.context);
+    },
+    $signature: 0
+  };
   C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
       var t1;
@@ -498,7 +507,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$0();
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$1(this.context);
     },
     $signature: 8
   };
@@ -703,7 +712,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(A.StatefulWidget, [C.AutofillGroup, C.LoginTextInputBuilder]);
     _inheritMany(A.State0, [C._AutofillGroupState_State_AutofillScopeMixin, C._LoginTextInputBuilderState]);
     _inherit(C.AutofillGroupState, C._AutofillGroupState_State_AutofillScopeMixin);
-    _inheritMany(A.Closure0Args, [C.AutofillGroupState_register_closure, C.LoginView__buildMobileForm_closure, C.LoginView__buildMobileForm_closure0, C.LoginView__buildWebForm_closure, C.LoginView__buildWebForm_closure0, C.LoginView__buildLoadingProgress_closure, C.PrivacyLinkWidget_build_closure, C._LoginTextInputBuilderState_build_closure, C._LoginTextInputBuilderState_build__closure]);
+    _inheritMany(A.Closure0Args, [C.AutofillGroupState_register_closure, C.BaseLoginView_buildLoginButton_closure, C.LoginView__buildMobileForm_closure, C.LoginView__buildMobileForm_closure0, C.LoginView__buildWebForm_closure, C.LoginView__buildWebForm_closure0, C.LoginView__buildLoadingProgress_closure, C.PrivacyLinkWidget_build_closure, C._LoginTextInputBuilderState_build_closure, C._LoginTextInputBuilderState_build__closure]);
     _inherit(C._AutofillScope, A.InheritedWidget);
     _inheritMany(A.StatelessWidget, [C.RecentItemTileWidget, C.PrivacyLinkWidget, C.LoginMessageWidget]);
     _inherit(C.BaseLoginView, A.GetWidget);
@@ -778,5 +787,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "GHsXL9lX2jyCq1b7Q3VQJVDvfYE=");
+})($__dart_deferred_initializers__, "tXwl4Cchi7Czes3ShG273ygRc1M=");
 ;
