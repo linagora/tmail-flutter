@@ -25,6 +25,8 @@ class BadGateway extends AuthenticationException {
 
 class NotFoundAuthenticatedAccountException implements Exception {}
 
+class NotFoundActiveAccountException implements Exception {}
+
 class InvalidBaseUrl extends AuthenticationException {
   InvalidBaseUrl() : super(AuthenticationException.invalidBaseUrl);
 

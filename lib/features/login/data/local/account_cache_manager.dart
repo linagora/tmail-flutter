@@ -20,7 +20,7 @@ class AccountCacheManager {
     if (accountCache != null) {
       return accountCache.toAccount();
     } else {
-      throw NotFoundAuthenticatedAccountException();
+      throw NotFoundActiveAccountException();
     }
   }
 
@@ -46,5 +46,15 @@ class AccountCacheManager {
   Future<void> deleteCurrentAccount(String hashId) {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
     return _accountCacheClient.deleteItem(hashId);
+  }
+
+  Future<List<PersonalAccount>> getAllAccount() async {
+    final allAccounts = await _accountCacheClient.getAll();
+    log('AccountCacheManager::getAllAccount::allAccounts(): $allAccounts');
+    if (allAccounts.isNotEmpty) {
+      return allAccounts.map((account) => account.toAccount()).toList();
+    } else {
+      throw NotFoundAuthenticatedAccountException();
+    }
   }
 }
