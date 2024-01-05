@@ -71,6 +71,7 @@ class ThreadView extends GetWidget<ThreadController>
                             return AppBarThreadWidget(
                               mailboxSelected: controller.currentMailbox,
                               listEmailSelected: controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
+                              userProfile: controller.mailboxDashBoardController.userProfile.value,
                               selectMode: controller.mailboxDashBoardController.currentSelectMode.value,
                               filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
                               openMailboxAction: controller.openMailboxLeftMenu,

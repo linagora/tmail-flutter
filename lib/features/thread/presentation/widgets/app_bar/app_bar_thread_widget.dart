@@ -5,6 +5,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/web_app_bar_thread_widget.dart';
@@ -27,6 +28,7 @@ class AppBarThreadWidget extends StatelessWidget {
   final List<PresentationEmail> listEmailSelected;
   final SelectMode selectMode;
   final FilterMessageOption filterOption;
+  final UserProfile? userProfile;
 
   const AppBarThreadWidget({
     Key? key,
@@ -38,6 +40,7 @@ class AppBarThreadWidget extends StatelessWidget {
     required this.editThreadAction,
     required this.cancelEditThreadAction,
     required this.emailSelectionAction,
+    required this.userProfile,
     this.onPopupMenuFilterEmailAction,
     this.onContextMenuFilterEmailAction,
   }) : super(key: key);
@@ -63,6 +66,7 @@ class AppBarThreadWidget extends StatelessWidget {
         key: const Key('mobile_app_bar_thread_widget'),
         listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
+        userProfile: userProfile,
         selectMode: selectMode,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,

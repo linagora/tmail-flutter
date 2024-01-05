@@ -84,15 +84,16 @@ class EmailAddressBottomSheetBuilder {
                               width: 24,
                               height: 24,
                               fit: BoxFit.fill))),
-                  (AvatarBuilder()
-                      ..text(_emailAddress.asString().firstLetterToUpperCase)
-                      ..size(64)
-                      ..addTextStyle(const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 23,
-                          color: Colors.white))
-                      ..avatarColor(_emailAddress.avatarColors))
-                    .build(),
+                  AvatarBuilder(
+                    text: _emailAddress.asString().firstLetterToUpperCase,
+                    size: 64,
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 23,
+                      color: Colors.white
+                    ),
+                    avatarColors: _emailAddress.avatarColors,
+                  ),
                   if (_emailAddress.displayName.isNotEmpty)
                     Padding(
                         padding: const EdgeInsets.only(

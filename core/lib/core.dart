@@ -75,7 +75,6 @@ export 'presentation/views/floating_button/scrolling_floating_button_animated.da
 export 'presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 export 'presentation/views/html_viewer/html_content_viewer_widget.dart';
 export 'presentation/views/image/avatar_builder.dart';
-export 'presentation/views/image/icon_builder.dart';
 export 'presentation/views/list/sliver_grid_delegate_fixed_height.dart';
 export 'presentation/views/list/tree_view.dart';
 export 'presentation/views/loading/cupertino_loading_widget.dart';

@@ -60,16 +60,21 @@ class EmailAddressDialogBuilder extends StatelessWidget {
                         width: 24,
                         height: 24,
                         fit: BoxFit.fill))),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Center(child: (AvatarBuilder()
-                  ..text(_emailAddress.asString().firstLetterToUpperCase)
-                  ..size(64)
-                  ..addTextStyle(const TextStyle(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: AvatarBuilder(
+                  text: _emailAddress.asString().firstLetterToUpperCase,
+                  size: 64,
+                  textStyle: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 23,
-                      color: Colors.white))
-                  ..avatarColor(_emailAddress.avatarColors))
-                .build())),
+                      color: Colors.white
+                  ),
+                  avatarColors: _emailAddress.avatarColors,
+                )
+              )
+            ),
             if (_emailAddress.displayName.isNotEmpty)
               Padding(
                   padding: const EdgeInsets.only(

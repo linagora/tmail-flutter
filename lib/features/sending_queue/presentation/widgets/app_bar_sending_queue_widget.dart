@@ -39,7 +39,7 @@ class AppBarSendingQueueWidget extends StatelessWidget {
           children: [
             if (selectMode == SelectMode.INACTIVE)
               TMailButtonWidget.fromIcon(
-                icon: _imagePaths.icMenuMailbox,
+                icon: _imagePaths.icMailboxMenu,
                 backgroundColor: Colors.transparent,
                 iconColor: AppBarSendingQueueWidgetStyle.iconColor,
                 tooltipMessage: AppLocalizations.of(context).openFolderMenu,

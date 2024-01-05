@@ -17,12 +17,14 @@ typedef OnDeleteRecipientCallbackAction = Function(RecipientForward recipientFor
 
 class EmailForwardItemWidget extends StatelessWidget {
 
+  final _imagePaths = Get.find<ImagePaths>();
+
   final RecipientForward recipientForward;
   final SelectMode selectionMode;
   final OnSelectRecipientCallbackAction? onSelectRecipientCallback;
   final OnDeleteRecipientCallbackAction? onDeleteRecipientCallback;
 
-  const EmailForwardItemWidget(this.recipientForward, {
+  EmailForwardItemWidget(this.recipientForward, {
     Key? key,
     this.selectionMode = SelectMode.INACTIVE,
     this.onSelectRecipientCallback,
@@ -31,8 +33,6 @@ class EmailForwardItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Material(
@@ -53,7 +53,7 @@ class EmailForwardItemWidget extends StatelessWidget {
                 recipientForward.selectMode == SelectMode.ACTIVE ? 12 : 0))
             ),
             child: Row(children: [
-              _buildAvatarIcon(imagePaths),
+              _buildAvatarIcon(context, _imagePaths),
               const SizedBox(width: 12),
               Expanded(child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -92,7 +92,7 @@ class EmailForwardItemWidget extends StatelessWidget {
                 buildIconWeb(
                   iconSize: 30,
                   splashRadius: 20,
-                  icon: SvgPicture.asset(imagePaths.icDeleteRecipient),
+                  icon: SvgPicture.asset(_imagePaths.icDeleteRecipient),
                   onTap: () => onDeleteRecipientCallback?.call(recipientForward)
                 )
             ]),
@@ -110,7 +110,7 @@ class EmailForwardItemWidget extends StatelessWidget {
     }
   }
 
-  Widget _buildAvatarIcon(ImagePaths imagePaths) {
+  Widget _buildAvatarIcon(BuildContext context, ImagePaths imagePaths) {
     if (recipientForward.selectMode == SelectMode.ACTIVE) {
       return InkWell(
         customBorder: const CircleBorder(),
@@ -129,16 +129,16 @@ class EmailForwardItemWidget extends StatelessWidget {
         ),
       );
     } else {
-      return (AvatarBuilder()
-        ..text(recipientForward.emailAddress.asString().firstLetterToUpperCase)
-        ..size(40)
-        ..addTextStyle(const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: Colors.white))
-        ..avatarColor(recipientForward.emailAddress.avatarColors)
-        ..addOnTapActionClick(() => onSelectRecipientCallback?.call(recipientForward))
-      ).build();
+      return AvatarBuilder(
+        text: recipientForward.emailAddress.asString().firstLetterToUpperCase,
+        size: 40,
+        textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          fontSize: 16,
+          color: Colors.white
+        ),
+        avatarColors: recipientForward.emailAddress.avatarColors,
+        onTapAction: () => onSelectRecipientCallback?.call(recipientForward),
+      );
     }
   }
 }

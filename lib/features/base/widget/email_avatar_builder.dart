@@ -16,15 +16,16 @@ class EmailAvatarBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (AvatarBuilder()
-      ..text(emailSelected.getAvatarText())
-      ..size(48)
-      ..addTextStyle(const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 21,
-          color: Colors.white))
-      ..backgroundColor(AppColor.colorAvatar)
-      ..avatarColor(emailSelected.avatarColors))
-    .build();
+    return AvatarBuilder(
+      text: emailSelected.getAvatarText(),
+      size: 48,
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 21,
+        color: Colors.white
+      ),
+      bgColor: AppColor.colorAvatar,
+      avatarColors: emailSelected.avatarColors,
+    );
   }
 }
