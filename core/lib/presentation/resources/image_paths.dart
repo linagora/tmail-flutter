@@ -211,6 +211,7 @@ class ImagePaths {
   String get icLogoTwakeWelcome => _getImagePath('ic_logo_twake_welcome.svg');
   String get icCheckboxOn => _getImagePath('ic_checkbox_on.svg');
   String get icCheckboxOff => _getImagePath('ic_checkbox_off.svg');
+  String get icLogoTwakeHorizontal => _getImagePath('ic_logo_twake_horizontal.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

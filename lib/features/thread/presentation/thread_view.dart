@@ -101,7 +101,10 @@ class ThreadView extends GetWidget<ThreadController>
                                       (option) => controller.filterMessagesAction(context, option)
                                     )
                                   )
-                                : null
+                                : null,
+                              onOpenAccountPickerAction: () async {
+                                await controller.authenticatedAccountManager.showAccountsBottomSheetModal(context);
+                              },
                             );
                           }),
                           if (PlatformInfo.isMobile)

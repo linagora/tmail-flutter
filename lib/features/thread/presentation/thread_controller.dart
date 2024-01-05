@@ -77,13 +77,15 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/authenticated_account_manager.dart';
 
 typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
 class ThreadController extends BaseController with EmailActionController {
 
-  final networkConnectionController = Get.find<NetworkConnectionController>();
+  final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final AuthenticatedAccountManager authenticatedAccountManager = Get.find<AuthenticatedAccountManager>();
 
   final GetEmailsInMailboxInteractor _getEmailsInMailboxInteractor;
   final RefreshChangesEmailsInMailboxInteractor _refreshChangesEmailsInMailboxInteractor;

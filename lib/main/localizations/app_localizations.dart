@@ -3821,4 +3821,11 @@ class AppLocalizations {
       name: 'descriptionTwakeId',
     );
   }
+
+  String get addAnotherAccount {
+    return Intl.message(
+      'Add another account',
+      name: 'addAnotherAccount',
+    );
+  }
 }
