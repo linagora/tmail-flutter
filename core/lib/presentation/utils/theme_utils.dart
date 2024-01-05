@@ -27,8 +27,17 @@ class ThemeUtils {
         fontSize: 17,
         letterSpacing: -0.15,
       ),
-      bodyMedium: TextStyle(color: AppColor.baseTextColor),
-      bodySmall: TextStyle(color: AppColor.baseTextColor),
+      titleLarge: TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 28
+      ),
+      bodyMedium: TextStyle(
+        fontWeight: FontWeight.w500,
+      ),
+      bodySmall: TextStyle(
+        fontWeight: FontWeight.w500
+      ),
       headlineLarge: TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 32,

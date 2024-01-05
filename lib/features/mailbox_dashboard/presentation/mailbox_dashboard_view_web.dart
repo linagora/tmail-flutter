@@ -337,36 +337,49 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             )
           )
           : const SizedBox.shrink(),
-        const SizedBox(width: 24),
-        Obx(() => (AvatarBuilder()
-          ..text(controller.userProfile.value?.getAvatarText() ?? '')
-          ..backgroundColor(Colors.white)
-          ..textColor(Colors.black)
-          ..context(context)
-          ..addOnTapAvatarActionWithPositionClick((position) =>
-              controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
-                  controller.userProfile.value,
-                  onLogoutAction: () {
-                    popBack();
-
-                    if (controller.sessionCurrent != null &&
-                        controller.accountId.value != null) {
-                      controller.logout(
-                        session: controller.sessionCurrent!,
-                        accountId: controller.accountId.value!
-                      );
+        Padding(
+          padding: const EdgeInsetsDirectional.only(start: 24, end: 16),
+          child: Obx(() {
+            return AvatarBuilder(
+              text: controller.userProfile.value?.getAvatarText() ?? '',
+              size: 48,
+              textColor: Colors.black,
+              bgColor: Colors.white,
+              boxShadows: const [
+                BoxShadow(
+                  color: AppColor.colorShadowBgContentEmail,
+                  spreadRadius: 1,
+                  blurRadius: 1,
+                  offset: Offset(0, 0.5)
+                )
+              ],
+              onTapWithPositionAction: (position) {
+                controller.openPopupMenuAction(
+                  context,
+                  position,
+                  popupMenuUserSettingActionTile(
+                    context,
+                    controller.userProfile.value,
+                    onLogoutAction: () {
+                      popBack();
+                      if (controller.sessionCurrent != null &&
+                          controller.accountId.value != null) {
+                        controller.logout(
+                          session: controller.sessionCurrent!,
+                          accountId: controller.accountId.value!
+                        );
+                      }
+                    },
+                    onSettingAction: () {
+                      popBack();
+                      controller.goToSettings();
                     }
-                  },
-                  onSettingAction: () {
-                    popBack();
-                    controller.goToSettings();
-                  })))
-          ..addBoxShadows([const BoxShadow(
-              color: AppColor.colorShadowBgContentEmail,
-              spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-          ..size(48))
-            .build()),
-        const SizedBox(width: 16)
+                  )
+                );
+              }
+            );
+          }),
+        ),
       ]);
     });
   }

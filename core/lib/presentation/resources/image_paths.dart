@@ -181,7 +181,7 @@ class ImagePaths {
   String get icAvatarPersonal => _getImagePath('ic_avatar_personal.svg');
   String get icAvatarPersonalDelivering => _getImagePath('ic_avatar_personal_delivering.svg');
   String get icDialogOfflineMode => _getImagePath('ic_dialog_offline_mode.svg');
-  String get icMenuMailbox => _getImagePath('ic_menu_mailbox.svg');
+  String get icMailboxMenu => _getImagePath('ic_mailbox_menu.svg');
   String get icDelivering => _getImagePath('ic_delivering.svg');
   String get icError => _getImagePath('ic_error.svg');
   String get icConnectedInternet => _getImagePath('ic_connected_internet.svg');

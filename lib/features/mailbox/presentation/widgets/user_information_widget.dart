@@ -39,15 +39,20 @@ class UserInformationWidget extends StatelessWidget {
       padding: padding ?? const EdgeInsetsDirectional.only(start: 16, end: 4, top: 16, bottom: 16),
       decoration: BoxDecoration(border: border),
       child: Row(children: [
-        (AvatarBuilder()
-            ..text(userProfile != null ? userProfile!.getAvatarText() : '')
-            ..backgroundColor(Colors.white)
-            ..textColor(Colors.black)
-            ..addBoxShadows([const BoxShadow(
-                color: AppColor.colorShadowBgContentEmail,
-                spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-            ..size(PlatformInfo.isWeb ? 48 : 56))
-          .build(),
+        AvatarBuilder(
+          text: userProfile?.getAvatarText() ?? '',
+          size: PlatformInfo.isWeb ? 48 : 56,
+          textColor: Colors.black,
+          bgColor: Colors.white,
+          boxShadows: const [
+            BoxShadow(
+              color: AppColor.colorShadowBgContentEmail,
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 0.5)
+            )
+          ]
+        ),
         const SizedBox(width: 16),
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
