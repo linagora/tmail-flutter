@@ -62,7 +62,9 @@ class AvatarBuilder extends StatelessWidget {
                   tileMode: TileMode.decal,
                   colors: avatarColors ?? [])
               : null,
-            color: bgColor ?? AppColor.avatarColor
+            color: avatarColors?.isNotEmpty == true
+              ? null
+              : bgColor ?? AppColor.avatarColor
           ),
           child: Text(
             text ?? '',

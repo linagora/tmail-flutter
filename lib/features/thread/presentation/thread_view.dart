@@ -113,54 +113,60 @@ class ThreadView extends GetWidget<ThreadController>
                               }
                             }),
                           if (PlatformInfo.isMobile)
-                            Padding(
-                              padding: _getBannerMargin(context, controller.responsiveUtils),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: SearchBarView(
-                                      key: const Key('email_search_bar_view'),
-                                      imagePaths: controller.imagePaths,
-                                      margin: const EdgeInsetsDirectional.only(end: 8),
-                                      hintTextSearch: AppLocalizations.of(context).search_emails,
-                                      onOpenSearchViewAction: controller.goToSearchView
-                                    ),
-                                  ),
-                                  Obx(() {
-                                    return TMailButtonWidget.fromIcon(
-                                      key: const Key('filter_email_button'),
-                                      icon: controller.imagePaths.icFilter,
-                                      iconColor: MobileAppBarThreadWidgetStyle.getFilterButtonColor(
-                                        controller.mailboxDashBoardController.filterMessageOption.value
+                            Obx(() {
+                              final selectionMode = controller.mailboxDashBoardController.currentSelectMode.value;
+                              if (selectionMode == SelectMode.INACTIVE) {
+                                return Padding(
+                                  padding: _getBannerMargin(context, controller.responsiveUtils),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: SearchBarView(
+                                          key: const Key('email_search_bar_view'),
+                                          imagePaths: controller.imagePaths,
+                                          margin: const EdgeInsetsDirectional.only(end: 8),
+                                          hintTextSearch: AppLocalizations.of(context).search_emails,
+                                          onOpenSearchViewAction: controller.goToSearchView
+                                        ),
                                       ),
-                                      padding: EdgeInsets.zero,
-                                      backgroundColor: Colors.transparent,
-                                      tooltipMessage: AppLocalizations.of(context).filter_messages,
-                                      onTapActionCallback: controller.responsiveUtils.isScreenWithShortestSide(context)
-                                        ? () => controller.openContextMenuAction(
-                                            context,
-                                            _filterMessagesCupertinoActionTile(
-                                              context,
-                                              controller.mailboxDashBoardController.filterMessageOption.value
-                                            )
-                                          )
-                                        : null,
-                                      onTapActionAtPositionCallback: !controller.responsiveUtils.isScreenWithShortestSide(context)
-                                        ? (position) => controller.openPopupMenuAction(
-                                            context,
-                                            position,
-                                            popupMenuFilterEmailActionTile(
-                                              context,
-                                              controller.mailboxDashBoardController.filterMessageOption.value,
-                                              (option) => controller.filterMessagesAction(context, option)
-                                            )
-                                          )
-                                        : null,
-                                    );
-                                  })
-                                ],
-                              ),
-                            )
+                                      Obx(() {
+                                        final filterOption = controller.mailboxDashBoardController.filterMessageOption.value;
+                                        return TMailButtonWidget.fromIcon(
+                                          key: const Key('filter_email_button'),
+                                          icon: controller.imagePaths.icFilter,
+                                          iconColor: MobileAppBarThreadWidgetStyle.getFilterButtonColor(filterOption),
+                                          padding: EdgeInsets.zero,
+                                          backgroundColor: Colors.transparent,
+                                          tooltipMessage: AppLocalizations.of(context).filter_messages,
+                                          onTapActionCallback: controller.responsiveUtils.isScreenWithShortestSide(context)
+                                            ? () => controller.openContextMenuAction(
+                                                context,
+                                                _filterMessagesCupertinoActionTile(
+                                                  context,
+                                                  filterOption
+                                                )
+                                              )
+                                            : null,
+                                          onTapActionAtPositionCallback: !controller.responsiveUtils.isScreenWithShortestSide(context)
+                                            ? (position) => controller.openPopupMenuAction(
+                                                context,
+                                                position,
+                                                popupMenuFilterEmailActionTile(
+                                                  context,
+                                                  filterOption,
+                                                  (option) => controller.filterMessagesAction(context, option)
+                                                )
+                                              )
+                                            : null,
+                                        );
+                                      })
+                                    ],
+                                  ),
+                                );
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            })
                           else
                             SearchBarView(
                               key: const Key('email_search_bar_view'),
@@ -419,15 +425,24 @@ class ThreadView extends GetWidget<ThreadController>
             controller: controller.listEmailController,
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: listPresentationEmail.length,
+            padding: controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
+              ? null
+              : const EdgeInsets.symmetric(horizontal: 8),
             itemBuilder: (context, index) => Obx(() => _buildEmailItemNotDraggable(context, listPresentationEmail[index])),
             separatorBuilder: (context, index) {
-              if (index < listPresentationEmail.length - 1) {
-                return Padding(
-                  padding: ItemEmailTileStyles.getMobilePaddingItemList(context, controller.responsiveUtils),
-                  child: const Divider());
-              } else {
-                return const SizedBox.shrink();
-              }
+              return Padding(
+                padding: ItemEmailTileStyles.getMobilePaddingDivider(
+                  context: context,
+                  responsiveUtils: controller.responsiveUtils,
+                  selectMode: controller.mailboxDashBoardController.currentSelectMode.value
+                ),
+                child: Divider(
+                  color: index < listPresentationEmail.length - 1 &&
+                    controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
+                      ? null
+                      : Colors.white,
+                )
+              );
             },
           )
         : Focus(

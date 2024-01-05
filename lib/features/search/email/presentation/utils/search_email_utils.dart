@@ -2,6 +2,7 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:model/mailbox/select_mode.dart';
 
 class SearchEmailUtils {
   static EdgeInsets getPaddingAppBar(BuildContext context, ResponsiveUtils responsiveUtils) {
@@ -64,11 +65,19 @@ class SearchEmailUtils {
     }
   }
 
-  static EdgeInsets getPaddingItemListMobile(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static EdgeInsets getPaddingItemListMobile(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+    SelectMode selectMode
+  ) {
     if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16);
+      return EdgeInsets.symmetric(
+        horizontal: selectMode == SelectMode.ACTIVE ? 8 : 16
+      );
     } else {
-      return const EdgeInsets.symmetric(horizontal: 32);
+      return EdgeInsets.symmetric(
+        horizontal: selectMode == SelectMode.ACTIVE ? 24 : 32
+      );
     }
   }
 
