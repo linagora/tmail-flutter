@@ -3980,7 +3980,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1587
+    $signature: 1589
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -4067,7 +4067,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return new A.Offset(x, (t1.content - boxSize._dy + t1.densityAdjustment._dy) / 2);
       }
     },
-    $signature: 1588
+    $signature: 1590
   };
   B._RenderChip__paintAvatar_paintWithOverlay.prototype = {
     call$2(context, offset) {
@@ -4125,7 +4125,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(explicitColor, selectedColor, enabledColor) {
       return this.call$4(explicitColor, selectedColor, enabledColor, null);
     },
-    $signature: 1589
+    $signature: 1591
   };
   B._RenderListTile_paint_doPaint.prototype = {
     call$1(child) {
@@ -4175,7 +4175,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1 == null ? null : t1.transition.key;
       return !J.$eq$(outgoing.key, t1);
     },
-    $signature: 1590
+    $signature: 1592
   };
   B._StreamBuilderBaseState__subscribe_closure.prototype = {
     call$1(data) {
@@ -4201,7 +4201,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new B._StreamBuilderBaseState__subscribe__closure(t1, error, stackTrace));
     },
-    $signature: 89
+    $signature: 85
   };
   B._StreamBuilderBaseState__subscribe__closure.prototype = {
     call$0() {
@@ -4438,7 +4438,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           break $label0$0;
         }
     },
-    $signature: 123
+    $signature: 124
   };
   B.TagsEditorState_build_closure.prototype = {
     call$1(value) {
@@ -4758,5 +4758,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "mOdCTP3Ry29OEFXDmiC7G2ZN8ng=");
+})($__dart_deferred_initializers__, "w+I/sRi6kXwJcvsHkU68nBl4wWg=");
 ;
