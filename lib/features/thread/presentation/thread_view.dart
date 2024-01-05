@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/app_bar/mobile_app_bar_thread_widget_style.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -111,13 +112,63 @@ class ThreadView extends GetWidget<ThreadController>
                                 return const SizedBox.shrink();
                               }
                             }),
-                          SearchBarView(
-                            key: const Key('email_search_bar_view'),
-                            imagePaths: controller.imagePaths,
-                            margin: _getBannerMargin(context, controller.responsiveUtils),
-                            hintTextSearch: AppLocalizations.of(context).search_emails,
-                            onOpenSearchViewAction: controller.goToSearchView
-                          ),
+                          if (PlatformInfo.isMobile)
+                            Padding(
+                              padding: _getBannerMargin(context, controller.responsiveUtils),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: SearchBarView(
+                                      key: const Key('email_search_bar_view'),
+                                      imagePaths: controller.imagePaths,
+                                      margin: const EdgeInsetsDirectional.only(end: 8),
+                                      hintTextSearch: AppLocalizations.of(context).search_emails,
+                                      onOpenSearchViewAction: controller.goToSearchView
+                                    ),
+                                  ),
+                                  Obx(() {
+                                    return TMailButtonWidget.fromIcon(
+                                      key: const Key('filter_email_button'),
+                                      icon: controller.imagePaths.icFilter,
+                                      iconColor: MobileAppBarThreadWidgetStyle.getFilterButtonColor(
+                                        controller.mailboxDashBoardController.filterMessageOption.value
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      backgroundColor: Colors.transparent,
+                                      tooltipMessage: AppLocalizations.of(context).filter_messages,
+                                      onTapActionCallback: controller.responsiveUtils.isScreenWithShortestSide(context)
+                                        ? () => controller.openContextMenuAction(
+                                            context,
+                                            _filterMessagesCupertinoActionTile(
+                                              context,
+                                              controller.mailboxDashBoardController.filterMessageOption.value
+                                            )
+                                          )
+                                        : null,
+                                      onTapActionAtPositionCallback: !controller.responsiveUtils.isScreenWithShortestSide(context)
+                                        ? (position) => controller.openPopupMenuAction(
+                                            context,
+                                            position,
+                                            popupMenuFilterEmailActionTile(
+                                              context,
+                                              controller.mailboxDashBoardController.filterMessageOption.value,
+                                              (option) => controller.filterMessagesAction(context, option)
+                                            )
+                                          )
+                                        : null,
+                                    );
+                                  })
+                                ],
+                              ),
+                            )
+                          else
+                            SearchBarView(
+                              key: const Key('email_search_bar_view'),
+                              imagePaths: controller.imagePaths,
+                              margin: _getBannerMargin(context, controller.responsiveUtils),
+                              hintTextSearch: AppLocalizations.of(context).search_emails,
+                              onOpenSearchViewAction: controller.goToSearchView
+                            ),
                           SpamReportBannerWidget(
                             spamReportController: controller.mailboxDashBoardController.spamReportController,
                             margin: _getBannerMargin(context, controller.responsiveUtils),

@@ -9,9 +9,9 @@ class MobileAppBarThreadWidgetStyle {
 
   static EdgeInsetsGeometry getPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+      return const EdgeInsetsDirectional.only(start: 8, end: 16, top: 8, bottom: 8);
     } else {
-      return const EdgeInsets.symmetric(horizontal: 32, vertical: 8);
+      return const EdgeInsetsDirectional.only(start: 24, end: 32, top: 8, bottom: 8);
     }
   }
 
