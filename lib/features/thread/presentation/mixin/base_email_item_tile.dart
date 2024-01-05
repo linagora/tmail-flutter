@@ -271,14 +271,9 @@ mixin BaseEmailItemTile {
             fit: BoxFit.fill),
       );
     } else {
-      return Container(
-          alignment: Alignment.center,
-          color: Colors.transparent,
-          child: SvgPicture.asset(
-              email.isSelected
-                  ? imagePaths.icSelected
-                  : imagePaths.icUnSelected,
-              width: 24, height: 24));
+      return SvgPicture.asset(
+        email.isSelected ? imagePaths.icCheckboxOn : imagePaths.icCheckboxOff
+      );
     }
   }
 

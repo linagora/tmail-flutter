@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
@@ -24,7 +23,6 @@ class EmailAvatarBuilder extends StatelessWidget {
         fontSize: 21,
         color: Colors.white
       ),
-      bgColor: AppColor.colorAvatar,
       avatarColors: emailSelected.avatarColors,
     );
   }

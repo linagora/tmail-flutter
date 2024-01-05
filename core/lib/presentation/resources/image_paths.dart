@@ -209,6 +209,8 @@ class ImagePaths {
   String get icUnsubscribe => _getImagePath('ic_unsubscribe.svg');
   String get icRecoverDeletedMessages => _getImagePath('ic_recover_deleted_messages.svg');
   String get icLogoTwakeWelcome => _getImagePath('ic_logo_twake_welcome.svg');
+  String get icCheckboxOn => _getImagePath('ic_checkbox_on.svg');
+  String get icCheckboxOff => _getImagePath('ic_checkbox_off.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

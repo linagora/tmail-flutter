@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:model/mailbox/select_mode.dart';
 
 class ItemEmailTileStyles {
 
@@ -17,11 +18,37 @@ class ItemEmailTileStyles {
     }
   }
 
-  static EdgeInsetsGeometry getMobilePaddingItemList(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static EdgeInsetsGeometry getMobilePaddingItemList({
+    required BuildContext context,
+    required ResponsiveUtils responsiveUtils,
+    SelectMode? selectMode
+  }) {
     if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16);
+      return EdgeInsets.symmetric(
+        horizontal: selectMode == SelectMode.ACTIVE ? 8 : 16
+      );
     } else {
-      return const EdgeInsets.symmetric(horizontal: 32);
+      return EdgeInsets.symmetric(
+        horizontal: selectMode == SelectMode.ACTIVE ? 24 : 32
+      );
+    }
+  }
+
+  static EdgeInsetsGeometry getMobilePaddingDivider({
+    required BuildContext context,
+    required ResponsiveUtils responsiveUtils,
+    SelectMode? selectMode
+  }) {
+    if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
+      return EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: selectMode == SelectMode.ACTIVE ? 2 : 0.0
+      );
+    } else {
+      return EdgeInsets.symmetric(
+        horizontal: 32,
+        vertical: selectMode == SelectMode.ACTIVE ? 2 : 0.0
+      );
     }
   }
 

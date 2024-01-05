@@ -489,6 +489,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               physics: const AlwaysScrollableScrollPhysics(),
               key: const PageStorageKey('list_presentation_email_in_search_view'),
               itemCount: listPresentationEmail.length,
+              padding: controller.selectionMode.value == SelectMode.INACTIVE
+                ? null
+                : const EdgeInsets.symmetric(horizontal: 8),
               itemBuilder: (context, index) {
                 final currentPresentationEmail = listPresentationEmail[index];
                 return Obx(() => EmailTileBuilder(
@@ -497,7 +500,11 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   searchQuery: controller.searchQuery,
                   isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
                   isSearchEmailRunning: true,
-                  padding: SearchEmailUtils.getPaddingItemListMobile(context, controller.responsiveUtils),
+                  padding: SearchEmailUtils.getPaddingItemListMobile(
+                    context,
+                    controller.responsiveUtils,
+                    controller.selectionMode.value
+                  ),
                   mailboxContain: currentPresentationEmail.mailboxContain,
                   emailActionClick: (action, email) {
                     controller.pressEmailAction(
@@ -524,13 +531,19 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 ));
               },
               separatorBuilder: (BuildContext context, int index) {
-                if (index < listPresentationEmail.length - 1) {
-                  return Padding(
-                    padding: SearchEmailUtils.getPaddingItemListMobile(context, controller.responsiveUtils),
-                    child: const Divider());
-                } else {
-                  return const SizedBox.shrink();
-                }
+                return Padding(
+                  padding: ItemEmailTileStyles.getMobilePaddingDivider(
+                    context: context,
+                    responsiveUtils: controller.responsiveUtils,
+                    selectMode: controller.selectionMode.value
+                  ),
+                  child: Divider(
+                    color: index < listPresentationEmail.length - 1 &&
+                      controller.selectionMode.value == SelectMode.INACTIVE
+                        ? null
+                        : Colors.white,
+                  )
+                );
               },
             )
           : ScrollbarListView(

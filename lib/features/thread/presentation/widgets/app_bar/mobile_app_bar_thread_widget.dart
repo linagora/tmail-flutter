@@ -102,7 +102,31 @@ class MobileAppBarThreadWidget extends StatelessWidget {
         ],
       );
     } else {
-      child = const SizedBox.shrink();
+      child = Row(
+        children: [
+          TMailButtonWidget.fromIcon(
+            key: const Key('cancel_selection_button'),
+            icon: _imagePaths.icArrowLeft,
+            backgroundColor: Colors.transparent,
+            iconColor: AppColor.primaryColor,
+            padding: const EdgeInsets.all(3),
+            tooltipMessage: AppLocalizations.of(context).cancel,
+            onTapActionCallback: cancelEditThreadAction,
+          ),
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).count_email_selected(listEmailSelected.length),
+              maxLines: 1,
+              overflow: CommonTextStyle.defaultTextOverFlow,
+              softWrap: CommonTextStyle.defaultSoftWrap,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 16,
+                color: AppColor.primaryColor
+              )
+            )
+          ),
+        ],
+      );
     }
     
     return Container(

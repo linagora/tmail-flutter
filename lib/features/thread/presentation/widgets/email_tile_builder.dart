@@ -42,7 +42,11 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
       type: MaterialType.transparency,
       child: ListTile(
         tileColor: isShowingEmailContent ? AppColor.colorItemEmailSelectedDesktop : null,
-        contentPadding: padding ?? ItemEmailTileStyles.getMobilePaddingItemList(context, responsiveUtils),
+        contentPadding: padding ?? ItemEmailTileStyles.getMobilePaddingItemList(
+          context: context,
+          responsiveUtils: responsiveUtils,
+          selectMode: selectAllMode
+        ),
         onTap: () => emailActionClick?.call(
             EmailActionType.preview,
             presentationEmail),
@@ -51,17 +55,25 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
             presentationEmail),
         minLeadingWidth: ItemEmailTileStyles.avatarIconSize,
         horizontalTitleGap: ItemEmailTileStyles.horizontalTitleGap,
-        leading: GestureDetector(
+        selected: presentationEmail.isSelected,
+        selectedTileColor: AppColor.colorItemEmailSelectedDesktop,
+        shape: presentationEmail.isSelected
+          ? const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))
+            )
+          : null,
+        leading: InkWell(
           onTap: () => emailActionClick?.call(
               selectAllMode == SelectMode.ACTIVE
                   ? EmailActionType.selection
                   : EmailActionType.preview,
               presentationEmail),
+          customBorder: const CircleBorder(),
           child: Container(
             width: ItemEmailTileStyles.avatarIconSize,
             height: ItemEmailTileStyles.avatarIconSize,
             alignment: Alignment.center,
-            child:  selectAllMode == SelectMode.ACTIVE
+            child: selectAllMode == SelectMode.ACTIVE
               ? buildIconAvatarSelection(context, presentationEmail)
               : buildIconAvatarText(presentationEmail)
           )
