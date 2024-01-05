@@ -28,8 +28,6 @@ class MobileAppBarThreadWidget extends StatelessWidget {
   final FilterMessageOption filterOption;
   final OnOpenMailboxMenuActionClick openMailboxAction;
   final OnEditThreadAction editThreadAction;
-  final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
-  final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
   final OnCancelEditThreadAction cancelEditThreadAction;
 
   MobileAppBarThreadWidget({
@@ -42,8 +40,6 @@ class MobileAppBarThreadWidget extends StatelessWidget {
     required this.openMailboxAction,
     required this.editThreadAction,
     required this.cancelEditThreadAction,
-    this.onPopupMenuFilterEmailAction,
-    this.onContextMenuFilterEmailAction,
   });
 
   @override
@@ -60,15 +56,32 @@ class MobileAppBarThreadWidget extends StatelessWidget {
             tooltipMessage: AppLocalizations.of(context).openFolderMenu,
             onTapActionCallback: openMailboxAction,
           ),
-          Expanded(
+          Flexible(
             child: Padding(
               padding: const EdgeInsetsDirectional.only(start: 8, end: 16),
-              child: Text(
-                mailboxSelected?.getDisplayName(context) ?? '',
-                maxLines: 1,
-                overflow: CommonTextStyle.defaultTextOverFlow,
-                softWrap: CommonTextStyle.defaultSoftWrap,
-                style: Theme.of(context).textTheme.titleLarge
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Flexible(
+                    child: Text(
+                      mailboxSelected?.getDisplayName(context) ?? '',
+                      maxLines: 1,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      style: Theme.of(context).textTheme.titleLarge
+                    )
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(start: 8, bottom: 4),
+                    child: Text(
+                      filterOption.getTitle(context),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontSize: 11,
+                        color: AppColor.colorContentEmail
+                      )
+                    ),
+                  )
+                ],
               ),
             ),
           ),

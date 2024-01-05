@@ -32,35 +32,36 @@ class SearchBarView extends StatelessWidget {
         splashColor: Colors.transparent,
         borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: Container(
-            alignment: Alignment.center,
-            height: 40,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
-              color: AppColor.colorBgSearchBar
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TMailButtonWidget.fromIcon(
-                  icon: imagePaths.icSearchBar,
-                  backgroundColor: Colors.transparent,
-                  onTapActionCallback: onOpenSearchViewAction
+          alignment: Alignment.center,
+          height: 44,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            color: AppColor.colorBgSearchBar
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TMailButtonWidget.fromIcon(
+                icon: imagePaths.icSearchBar,
+                iconColor: AppColor.colorAttachmentIcon,
+                backgroundColor: Colors.transparent,
+                onTapActionCallback: onOpenSearchViewAction
+              ),
+              Expanded(
+                child: Text(
+                  hintTextSearch ?? '',
+                  maxLines: 1,
+                  overflow: CommonTextStyle.defaultTextOverFlow,
+                  softWrap: CommonTextStyle.defaultSoftWrap,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontSize: 15,
+                    color: AppColor.colorHintSearchBar
+                  )
                 ),
-                Expanded(
-                  child: Text(
-                    hintTextSearch ?? '',
-                    maxLines: 1,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      color: AppColor.colorHintSearchBar
-                    )
-                  ),
-                )
-              ]
-            ),
+              )
+            ]
+          ),
         ),
       ),
     );

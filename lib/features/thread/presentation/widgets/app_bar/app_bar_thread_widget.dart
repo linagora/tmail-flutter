@@ -72,8 +72,6 @@ class AppBarThreadWidget extends StatelessWidget {
         openMailboxAction: openMailboxAction,
         editThreadAction: editThreadAction,
         cancelEditThreadAction: cancelEditThreadAction,
-        onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
-        onContextMenuFilterEmailAction: onContextMenuFilterEmailAction,
       );
     }
   }

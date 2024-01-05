@@ -42,6 +42,9 @@ class ThemeUtils {
         fontWeight: FontWeight.w600,
         fontSize: 32,
       ),
+      labelSmall: TextStyle(
+        fontWeight: FontWeight.normal
+      )
     );
   }
 
