@@ -29,6 +29,8 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -1242,5 +1244,15 @@ class ThreadController extends BaseController with EmailActionController {
     searchController.searchFocus.unfocus();
     _searchEmail();
     mailboxDashBoardController.clearDashBoardAction();
+  }
+
+  void addAnotherAccount(PersonalAccount? currentAccount) {
+    push(
+      AppRoutes.twakeId,
+      arguments: LoginNavigateArguments(
+        LoginNavigateType.addAnotherAccount,
+        currentAccount
+      )
+    );
   }
 }

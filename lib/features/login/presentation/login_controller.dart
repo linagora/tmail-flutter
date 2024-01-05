@@ -45,6 +45,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_m
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -77,6 +79,7 @@ class LoginController extends ReloadableController {
   UserName? _username;
   Password? _password;
   Uri? _baseUri;
+  LoginNavigateArguments? _navigateArguments;
 
   LoginController(
     this._authenticationInteractor,
@@ -113,6 +116,9 @@ class LoginController extends ReloadableController {
       if (PlatformInfo.isWeb) {
         _checkOIDCIsAvailable();
       }
+    } else if (PlatformInfo.isMobile && arguments is LoginNavigateArguments) {
+      loginFormType.value = LoginFormType.dnsLookupForm;
+      _navigateArguments = arguments;
     } else if (PlatformInfo.isWeb) {
       _handleAuthenticationSSOBrowserCallbackAction();
     }
@@ -190,11 +196,19 @@ class LoginController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    popAndPush(
-      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: session
-    );
+    if (PlatformInfo.isMobile && _isAddAnotherAccount) {
+      pushAndPopAll(
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+        arguments: session);
+    } else {
+      popAndPush(
+        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+        arguments: session);
+    }
   }
+
+  bool get _isAddAnotherAccount => _navigateArguments != null &&
+    _navigateArguments?.navigateType == LoginNavigateType.addAnotherAccount;
 
   void _handleAuthenticationSSOBrowserCallbackAction() {
     consumeState(_getAuthResponseUrlBrowserInteractor.execute());

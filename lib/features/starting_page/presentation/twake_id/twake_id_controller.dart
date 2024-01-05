@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -12,7 +13,7 @@ class TwakeIdController extends GetxController {
 
   final ImagePaths imagePaths = Get.find<ImagePaths>();
 
-  final loginNavigateArguments = Rxn<LoginNavigateArguments>();
+  final navigateArguments = Rxn<LoginNavigateArguments>();
 
   @override
   void onInit() {
@@ -23,12 +24,21 @@ class TwakeIdController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    loginNavigateArguments.value = Get.arguments;
+    navigateArguments.value = Get.arguments;
   }
 
   void handleUseCompanyServer() {
-    popAndPush(
-      AppRoutes.login,
-      arguments: LoginArguments(LoginFormType.dnsLookupForm));
+    if (isAddAnotherAccount) {
+      push(
+        AppRoutes.login,
+        arguments: navigateArguments.value);
+    } else {
+      popAndPush(
+        AppRoutes.login,
+        arguments: LoginArguments(LoginFormType.dnsLookupForm));
+    }
   }
+
+  bool get isAddAnotherAccount => navigateArguments.value != null &&
+    navigateArguments.value?.navigateType == LoginNavigateType.addAnotherAccount;
 }

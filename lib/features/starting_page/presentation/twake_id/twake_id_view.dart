@@ -23,7 +23,7 @@ class TwakeIdView extends GetWidget<TwakeIdController> {
         useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
         description: AppLocalizations.of(context).descriptionTwakeId,
         onUseCompanyServerOnTap: controller.handleUseCompanyServer,
-        backButton: controller.loginNavigateArguments.value != null
+        backButton: controller.isAddAnotherAccount
           ? TMailButtonWidget.fromIcon(
               icon: controller.imagePaths.icArrowLeft,
               backgroundColor: Colors.transparent,

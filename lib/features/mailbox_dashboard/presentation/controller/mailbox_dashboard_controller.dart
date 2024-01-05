@@ -523,12 +523,6 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_handleSession:');
     _setUpComponentsFromSession(session);
 
-    updateAuthenticationAccount(
-      sessionCurrent!,
-      accountId.value!,
-      sessionCurrent!.username
-    );
-
     if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
       _handleClickLocalNotificationOnTerminated();
     } else {
