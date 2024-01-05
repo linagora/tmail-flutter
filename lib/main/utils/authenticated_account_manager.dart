@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -15,6 +16,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_all_authenticat
 import 'package:tmail_ui_user/features/login/presentation/model/twake_mail_presentation_account.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
+typedef OnAddAnotherAccountAction = Function(PersonalAccount? currentAccount);
 
 class AuthenticatedAccountManager {
 
@@ -74,8 +77,11 @@ class AuthenticatedAccountManager {
   Future showAccountsBottomSheetModal({
     required BuildContext context,
     VoidCallback? onGoToManageAccount,
+    OnAddAnotherAccountAction? onAddAnotherAccountAction,
   }) async {
     final listPresentationAccount = await _getAllTwakeMailPresentationAccount();
+    final activeAccount = listPresentationAccount
+      .firstWhereOrNull((presentationAccount) => presentationAccount.isActive);
 
     if (context.mounted) {
       await MultipleAccountPicker.showMultipleAccountPicker(
@@ -113,7 +119,7 @@ class AuthenticatedAccountManager {
         titleAccountSettingsStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
           color: LinagoraSysColors.material().primary,
         ),
-        onAddAnotherAccount: () {},
+        onAddAnotherAccount: () => onAddAnotherAccountAction?.call(activeAccount?.personalAccount),
         onGoToAccountSettings: () => onGoToManageAccount?.call(),
         onSetAccountAsActive: (presentationAccount) {},
       );

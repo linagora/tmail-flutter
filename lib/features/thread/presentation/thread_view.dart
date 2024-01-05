@@ -11,6 +11,8 @@ import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart'
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
@@ -40,6 +42,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/s
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_bottom_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadView extends GetWidget<ThreadController>
@@ -105,7 +108,16 @@ class ThreadView extends GetWidget<ThreadController>
                               onOpenAccountPickerAction: () async {
                                 await controller.authenticatedAccountManager.showAccountsBottomSheetModal(
                                   context: context,
-                                  onGoToManageAccount: controller.mailboxDashBoardController.goToSettings
+                                  onGoToManageAccount: controller.mailboxDashBoardController.goToSettings,
+                                  onAddAnotherAccountAction: (currentAccount) {
+                                    push(
+                                      AppRoutes.twakeId,
+                                      arguments: LoginNavigateArguments(
+                                        LoginNavigateType.addAnotherAccount,
+                                        currentAccount
+                                      )
+                                    );
+                                  }
                                 );
                               },
                             );

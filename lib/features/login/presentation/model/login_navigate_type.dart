@@ -1,0 +1,5 @@
+
+enum LoginNavigateType {
+  signIn,
+  addAnotherAccount;
+}

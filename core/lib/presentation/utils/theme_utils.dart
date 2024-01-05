@@ -34,6 +34,7 @@ class ThemeUtils {
       ),
       bodyMedium: TextStyle(
         fontWeight: FontWeight.w500,
+        fontSize: 15
       ),
       bodySmall: TextStyle(
         fontWeight: FontWeight.w500
@@ -44,6 +45,10 @@ class ThemeUtils {
       ),
       labelSmall: TextStyle(
         fontWeight: FontWeight.normal
+      ),
+      labelLarge: TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 16
       )
     );
   }
