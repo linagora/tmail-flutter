@@ -103,7 +103,10 @@ class ThreadView extends GetWidget<ThreadController>
                                   )
                                 : null,
                               onOpenAccountPickerAction: () async {
-                                await controller.authenticatedAccountManager.showAccountsBottomSheetModal(context);
+                                await controller.authenticatedAccountManager.showAccountsBottomSheetModal(
+                                  context: context,
+                                  onGoToManageAccount: controller.mailboxDashBoardController.goToSettings
+                                );
                               },
                             );
                           }),

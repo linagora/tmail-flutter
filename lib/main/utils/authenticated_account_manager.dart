@@ -71,7 +71,10 @@ class AuthenticatedAccountManager {
     return listPresentationAccount;
   }
 
-  Future showAccountsBottomSheetModal(BuildContext context) async {
+  Future showAccountsBottomSheetModal({
+    required BuildContext context,
+    VoidCallback? onGoToManageAccount,
+  }) async {
     final listPresentationAccount = await _getAllTwakeMailPresentationAccount();
 
     if (context.mounted) {
@@ -111,7 +114,7 @@ class AuthenticatedAccountManager {
           color: LinagoraSysColors.material().primary,
         ),
         onAddAnotherAccount: () {},
-        onGoToAccountSettings: () {},
+        onGoToAccountSettings: () => onGoToManageAccount?.call(),
         onSetAccountAsActive: (presentationAccount) {},
       );
     }
