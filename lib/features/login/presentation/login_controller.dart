@@ -240,7 +240,11 @@ class LoginController extends ReloadableController {
     switch(loginFormType.value) {
       case LoginFormType.dnsLookupForm:
       case LoginFormType.baseUrlForm:
-        navigateToTwakeIdPage();
+        if (PlatformInfo.isMobile && _isAddAnotherAccount) {
+          popBack();
+        } else {
+          navigateToTwakeIdPage();
+        }
         break;
       case LoginFormType.passwordForm:
         _password = null;

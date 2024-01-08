@@ -8,4 +8,6 @@ abstract class AccountDatasource {
   Future<void> deleteCurrentAccount(String accountId);
 
   Future<List<PersonalAccount>> getAllAccount();
+
+  Future<void> setCurrentAccountActive(PersonalAccount activeAccount);
 }

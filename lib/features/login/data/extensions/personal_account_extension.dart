@@ -8,11 +8,11 @@ import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extensio
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 
 extension PersonalAccountExtension on PersonalAccount {
-  AccountCache toCache() {
+  AccountCache toCache({bool? isSelected}) {
     return AccountCache(
       id: id,
       authType: authType.name,
-      isSelected: isSelected,
+      isSelected: isSelected ?? this.isSelected,
       baseUrl: baseUrl,
       accountId: accountId?.id.value,
       apiUrl: apiUrl,
@@ -36,7 +36,7 @@ extension PersonalAccountExtension on PersonalAccount {
     );
   }
 
-  PersonalAccount updateAccountId({
+  PersonalAccount addAccountId({
     required AccountId accountId,
     required String apiUrl,
     required UserName userName,

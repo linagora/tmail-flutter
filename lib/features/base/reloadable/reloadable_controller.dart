@@ -5,17 +5,14 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/account/authentication_type.dart';
-import 'package:model/account/personal_account.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
-import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/add_account_id_to_active_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -23,9 +20,9 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/message_toast_utils.dart';
 
 abstract class ReloadableController extends BaseController {
-  final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
+  final GetSessionInteractor getSessionInteractor = Get.find<GetSessionInteractor>();
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
-  final UpdateAuthenticationAccountInteractor _updateAuthenticationAccountInteractor = Get.find<UpdateAuthenticationAccountInteractor>();
+  final AddAccountIdToActiveAccountInteractor _addAccountIdToActiveAccountInteractor = Get.find<AddAccountIdToActiveAccountInteractor>();
 
   @override
   void handleFailureViewState(Failure failure) {
@@ -68,38 +65,8 @@ abstract class ReloadableController extends BaseController {
     consumeState(_getAuthenticatedAccountInteractor.execute());
   }
 
-  void setUpInterceptors(PersonalAccount personalAccount) {
-    dynamicUrlInterceptors.setJmapUrl(personalAccount.baseUrl);
-    dynamicUrlInterceptors.changeBaseUrl(personalAccount.baseUrl);
-
-    switch(personalAccount.authType) {
-      case AuthenticationType.oidc:
-        authorizationInterceptors.setTokenAndAuthorityOidc(
-          newToken: personalAccount.tokenOidc,
-          newConfig: personalAccount.tokenOidc!.oidcConfiguration
-        );
-        authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-          newToken: personalAccount.tokenOidc,
-          newConfig: personalAccount.tokenOidc!.oidcConfiguration
-        );
-        break;
-      case AuthenticationType.basic:
-        authorizationInterceptors.setBasicAuthorization(
-          personalAccount.basicAuth!.userName,
-          personalAccount.basicAuth!.password,
-        );
-        authorizationIsolateInterceptors.setBasicAuthorization(
-          personalAccount.basicAuth!.userName,
-          personalAccount.basicAuth!.password,
-        );
-        break;
-      default:
-        break;
-    }
-  }
-
   void getSessionAction({AccountId? accountId, UserName? userName}) {
-    consumeState(_getSessionInteractor.execute(
+    consumeState(getSessionInteractor.execute(
       accountId: accountId,
       userName: userName
     ));
@@ -121,7 +88,11 @@ abstract class ReloadableController extends BaseController {
     final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
     if (apiUrl.isNotEmpty) {
       dynamicUrlInterceptors.changeBaseUrl(apiUrl);
-      updateAuthenticationAccount(session, personalAccount.accountId, session.username);
+      _addAccountIdToActiveAccount(
+        personalAccount.accountId,
+        session.username,
+        apiUrl
+      );
       handleReloaded(session);
     } else {
       clearDataAndGoToLoginPage();
@@ -130,10 +101,15 @@ abstract class ReloadableController extends BaseController {
 
   void handleReloaded(Session session) {}
 
-  void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
-    final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
-    if (apiUrl.isNotEmpty) {
-      consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));
-    }
+  void _addAccountIdToActiveAccount(
+    AccountId accountId,
+    UserName userName,
+    String apiUrl,
+  ) {
+    consumeState(_addAccountIdToActiveAccountInteractor.execute(
+      accountId,
+      apiUrl,
+      userName
+    ));
   }
 }

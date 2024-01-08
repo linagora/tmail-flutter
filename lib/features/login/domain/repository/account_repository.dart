@@ -9,4 +9,6 @@ abstract class AccountRepository {
   Future<void> deleteCurrentAccount(String hashId);
 
   Future<List<PersonalAccount>> getAllAccount();
+
+  Future<void> setCurrentAccountActive(PersonalAccount activeAccount);
 }

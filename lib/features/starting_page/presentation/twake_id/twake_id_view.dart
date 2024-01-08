@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_id/twake_id_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class TwakeIdView extends GetWidget<TwakeIdController> {
 
@@ -29,7 +28,7 @@ class TwakeIdView extends GetWidget<TwakeIdController> {
               backgroundColor: Colors.transparent,
               margin: const EdgeInsetsDirectional.only(start: 8),
               iconColor: Colors.black,
-              onTapActionCallback: popBack)
+              onTapActionCallback: controller.backToHomeView)
           : null,
       );
     });

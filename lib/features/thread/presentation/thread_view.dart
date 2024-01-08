@@ -106,7 +106,8 @@ class ThreadView extends GetWidget<ThreadController>
                                 await controller.authenticatedAccountManager.showAccountsBottomSheetModal(
                                   context: context,
                                   onGoToManageAccount: controller.mailboxDashBoardController.goToSettings,
-                                  onAddAnotherAccountAction: controller.addAnotherAccount
+                                  onAddAnotherAccountAction: controller.addAnotherAccount,
+                                  onSwitchActiveAccountAction: controller.switchActiveAccount
                                 );
                               },
                             );

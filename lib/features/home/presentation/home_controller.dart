@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -22,7 +25,12 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/restore_active_account_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/switch_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -45,8 +53,8 @@ class HomeController extends ReloadableController {
     this._cleanupRecentLoginUsernameCacheInteractor,
   );
 
-  PersonalAccount? currentAccount;
   EmailId? _emailIdPreview;
+  StreamSubscription? _sessionStreamSubscription;
 
   @override
   void onInit() {
@@ -69,6 +77,12 @@ class HomeController extends ReloadableController {
   }
 
   @override
+  void onClose() {
+    _sessionStreamSubscription?.cancel();
+    super.onClose();
+  }
+
+  @override
   void handleReloaded(Session session) {
     if (_emailIdPreview != null) {
       popAndPush(
@@ -87,20 +101,26 @@ class HomeController extends ReloadableController {
   }
 
   void _initFlutterDownloader() {
-    FlutterDownloader
-      .initialize(debug: kDebugMode)
-      .then((_) => FlutterDownloader.registerCallback(downloadCallback));
+    if (!FlutterDownloader.initialized) {
+      FlutterDownloader
+        .initialize(debug: kDebugMode)
+        .then((_) => FlutterDownloader.registerCallback(downloadCallback));
+    }
   }
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
   void _handleNavigateToScreen() async {
     if (PlatformInfo.isMobile) {
-      final firstTimeAppLaunch = await appStore.getItemBoolean(AppConfig.firstTimeAppLaunchKey);
-      if (firstTimeAppLaunch) {
-        await _cleanupCache();
+      if (Get.arguments is LoginNavigateArguments) {
+        _handleLoginNavigateArguments(Get.arguments);
       } else {
-        _navigateToTwakeWelcomePage();
+        final firstTimeAppLaunch = await appStore.getItemBoolean(AppConfig.firstTimeAppLaunchKey);
+        if (firstTimeAppLaunch) {
+          await _cleanupCache();
+        } else {
+          _navigateToTwakeWelcomePage();
+        }
       }
     } else {
       await _cleanupCache();
@@ -150,5 +170,77 @@ class HomeController extends ReloadableController {
         }
       }
     }
+  }
+
+  void _handleLoginNavigateArguments(LoginNavigateArguments navigateArguments) async {
+    if (navigateArguments.navigateType == LoginNavigateType.switchActiveAccount) {
+      _switchActiveAccount(
+        navigateArguments.currentAccount!,
+        navigateArguments.sessionCurrentAccount!,
+        navigateArguments.nextActiveAccount!);
+    } else {
+      await _cleanupCache();
+    }
+  }
+
+  void _switchActiveAccount(
+    PersonalAccount currentActiveAccount,
+    Session sessionCurrentAccount,
+    PersonalAccount nextActiveAccount
+  ) {
+    setUpInterceptors(nextActiveAccount);
+
+    _sessionStreamSubscription = getSessionInteractor.execute(
+      accountId: nextActiveAccount.accountId,
+      userName: nextActiveAccount.userName
+    ).listen(
+      (viewState) {
+        viewState.fold(
+          (failure) => _handleGetSessionFailureWhenSwitchActiveAccount(
+            currentActiveAccount: currentActiveAccount,
+            session: sessionCurrentAccount,
+            exception: failure),
+          (success) => success is GetSessionSuccess
+            ? _handleGetSessionSuccessWhenSwitchActiveAccount(nextActiveAccount, success.session)
+            : null,
+        );
+      },
+      onError: (error, stack) {
+        logError('HomeController::_switchActiveAccount:Exception: $error | Stack: $stack');
+        _handleGetSessionFailureWhenSwitchActiveAccount(
+          currentActiveAccount: currentActiveAccount,
+          session: sessionCurrentAccount,
+          exception: error);
+      }
+    );
+  }
+
+  void _handleGetSessionSuccessWhenSwitchActiveAccount(
+    PersonalAccount nextActiveAccount,
+    Session sessionActiveAccount
+  ) async {
+    log('HomeController::_handleGetSessionSuccessWhenSwitchActiveAccount:sessionActiveAccount: $sessionActiveAccount');
+    await popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+      arguments: SwitchActiveAccountArguments(
+        session: sessionActiveAccount,
+        nextActiveAccount: nextActiveAccount,
+      )
+    );
+  }
+
+  void _handleGetSessionFailureWhenSwitchActiveAccount({
+    required PersonalAccount currentActiveAccount,
+    required Session session,
+    dynamic exception
+  }) async {
+    logError('HomeController::_handleGetSessionFailureWhenSwitchActiveAccount:exception: $exception');
+    await popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+      arguments: RestoreActiveAccountArguments(
+        currentAccount: currentActiveAccount,
+        session: session
+      )
+    );
   }
 }

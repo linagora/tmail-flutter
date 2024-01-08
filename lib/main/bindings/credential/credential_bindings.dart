@@ -15,13 +15,14 @@ import 'package:tmail_ui_user/features/login/data/repository/authentication_repo
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/add_account_id_to_active_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_basic_auth_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/set_current_account_active_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -45,7 +46,8 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<AuthenticationRepository>(),
       Get.find<AccountRepository>()
     ));
-    Get.put(UpdateAuthenticationAccountInteractor(Get.find<AccountRepository>()));
+    Get.put(AddAccountIdToActiveAccountInteractor(Get.find<AccountRepository>()));
+    Get.put(SetCurrentAccountActiveInteractor(Get.find<AccountRepository>()));
   }
 
   @override

@@ -1246,12 +1246,28 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.clearDashBoardAction();
   }
 
-  void addAnotherAccount(PersonalAccount? currentAccount) {
-    push(
+  void addAnotherAccount(PersonalAccount? currentAccount) async {
+    final result = await popAndPush(
       AppRoutes.twakeId,
       arguments: LoginNavigateArguments(
-        LoginNavigateType.addAnotherAccount,
-        currentAccount
+        navigateType: LoginNavigateType.addAnotherAccount,
+        currentAccount: currentAccount
+      )
+    );
+    log('ThreadController::addAnotherAccount:result: $result');
+  }
+
+  void switchActiveAccount(
+    PersonalAccount currentActiveAccount,
+    PersonalAccount nextActiveAccount
+  ) async {
+    await popAndPush(
+      AppRoutes.home,
+      arguments: LoginNavigateArguments(
+        navigateType: LoginNavigateType.switchActiveAccount,
+        currentAccount: currentActiveAccount,
+        sessionCurrentAccount: mailboxDashBoardController.sessionCurrent,
+        nextActiveAccount: nextActiveAccount,
       )
     );
   }

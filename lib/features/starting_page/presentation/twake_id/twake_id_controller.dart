@@ -39,6 +39,10 @@ class TwakeIdController extends GetxController {
     }
   }
 
+  void backToHomeView() {
+    popAndPush(AppRoutes.home);
+  }
+
   bool get isAddAnotherAccount => navigateArguments.value != null &&
     navigateArguments.value?.navigateType == LoginNavigateType.addAnotherAccount;
 }

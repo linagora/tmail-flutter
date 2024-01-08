@@ -1,5 +1,6 @@
 
 enum LoginNavigateType {
   signIn,
-  addAnotherAccount;
+  addAnotherAccount,
+  switchActiveAccount;
 }

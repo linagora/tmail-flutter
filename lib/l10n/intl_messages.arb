@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-07T14:01:28.226469",
+  "@@last_modified": "2024-01-08T14:23:35.609263",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3668,6 +3668,12 @@
   },
   "addAnotherAccount": "Add another account",
   "@addAnotherAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageFailureWhenSwitchActiveAccount": "Switch active account failure",
+  "@toastMessageFailureWhenSwitchActiveAccount": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

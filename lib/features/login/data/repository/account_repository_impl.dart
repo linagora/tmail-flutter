@@ -27,4 +27,9 @@ class AccountRepositoryImpl extends AccountRepository {
   Future<List<PersonalAccount>> getAllAccount() {
     return _accountDatasource.getAllAccount();
   }
+
+  @override
+  Future<void> setCurrentAccountActive(PersonalAccount activeAccount) {
+    return _accountDatasource.setCurrentAccountActive(activeAccount);
+  }
 }

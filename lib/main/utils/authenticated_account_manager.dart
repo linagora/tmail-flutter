@@ -18,6 +18,9 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef OnAddAnotherAccountAction = Function(PersonalAccount? currentAccount);
+typedef OnSwitchActiveAccountAction = Function(
+  PersonalAccount currentActiveAccount,
+  PersonalAccount nextActiveAccount);
 
 class AuthenticatedAccountManager {
 
@@ -78,9 +81,10 @@ class AuthenticatedAccountManager {
     required BuildContext context,
     VoidCallback? onGoToManageAccount,
     OnAddAnotherAccountAction? onAddAnotherAccountAction,
+    OnSwitchActiveAccountAction? onSwitchActiveAccountAction,
   }) async {
     final listPresentationAccount = await _getAllTwakeMailPresentationAccount();
-    final activeAccount = listPresentationAccount
+    final currentActiveAccount = listPresentationAccount
       .firstWhereOrNull((presentationAccount) => presentationAccount.isActive);
 
     if (context.mounted) {
@@ -119,9 +123,15 @@ class AuthenticatedAccountManager {
         titleAccountSettingsStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
           color: LinagoraSysColors.material().primary,
         ),
-        onAddAnotherAccount: () => onAddAnotherAccountAction?.call(activeAccount?.personalAccount),
+        onAddAnotherAccount: () => onAddAnotherAccountAction?.call(currentActiveAccount?.personalAccount),
         onGoToAccountSettings: () => onGoToManageAccount?.call(),
-        onSetAccountAsActive: (presentationAccount) {},
+        onSetAccountAsActive: (presentationAccount) {
+          if (presentationAccount is TwakeMailPresentationAccount) {
+            onSwitchActiveAccountAction?.call(
+              currentActiveAccount!.personalAccount,
+              presentationAccount.personalAccount);
+          }
+        },
       );
     }
   }

@@ -57,4 +57,18 @@ class AccountCacheManager {
       throw NotFoundAuthenticatedAccountException();
     }
   }
+
+  Future<void> setCurrentAccountActive(PersonalAccount activeAccount) async {
+    log('AccountCacheManager::setCurrentAccountActive(): $activeAccount');
+    final newAccountCache = activeAccount.toCache(isSelected: true);
+    final allAccounts = await _accountCacheClient.getAll();
+    log('AccountCacheManager::setCurrentAccountActive::allAccounts(): $allAccounts');
+    if (allAccounts.isNotEmpty) {
+      final newAllAccounts = allAccounts.unselected().toList();
+      if (newAllAccounts.isNotEmpty) {
+        await _accountCacheClient.updateMultipleItem(newAllAccounts.toMap());
+      }
+    }
+    return _accountCacheClient.insertItem(newAccountCache.id, newAccountCache);
+  }
 }

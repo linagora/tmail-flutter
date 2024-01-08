@@ -25,11 +25,13 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.da
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_basic_auth_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/set_current_account_active_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
@@ -75,6 +77,7 @@ abstract class BaseController extends GetxController
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
   final AppStore appStore = Get.find<AppStore>();
+  final SetCurrentAccountActiveInteractor _setCurrentAccountActiveInteractor = Get.find<SetCurrentAccountActiveInteractor>();
 
   final _fcmReceiver = FcmReceiver.instance;
   bool _isFcmEnabled = false;
@@ -384,5 +387,39 @@ abstract class BaseController extends GetxController
     } else {
       await clearDataAndGoToLoginPage();
     }
+  }
+
+  void setUpInterceptors(PersonalAccount personalAccount) {
+    dynamicUrlInterceptors.setJmapUrl(personalAccount.baseUrl);
+    dynamicUrlInterceptors.changeBaseUrl(personalAccount.baseUrl);
+
+    switch(personalAccount.authType) {
+      case AuthenticationType.oidc:
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: personalAccount.tokenOidc,
+          newConfig: personalAccount.tokenOidc!.oidcConfiguration
+        );
+        authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
+          newToken: personalAccount.tokenOidc,
+          newConfig: personalAccount.tokenOidc!.oidcConfiguration
+        );
+        break;
+      case AuthenticationType.basic:
+        authorizationInterceptors.setBasicAuthorization(
+          personalAccount.basicAuth!.userName,
+          personalAccount.basicAuth!.password,
+        );
+        authorizationIsolateInterceptors.setBasicAuthorization(
+          personalAccount.basicAuth!.userName,
+          personalAccount.basicAuth!.password,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  void setCurrentAccountActive(PersonalAccount activeAccount) {
+    consumeState(_setCurrentAccountActiveInteractor.execute(activeAccount));
   }
 }

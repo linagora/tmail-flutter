@@ -3828,4 +3828,11 @@ class AppLocalizations {
       name: 'addAnotherAccount',
     );
   }
+
+  String get toastMessageFailureWhenSwitchActiveAccount {
+    return Intl.message(
+      'Switch active account failure',
+      name: 'toastMessageFailureWhenSwitchActiveAccount',
+    );
+  }
 }
