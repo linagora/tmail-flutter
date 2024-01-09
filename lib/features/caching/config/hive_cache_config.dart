@@ -6,13 +6,16 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps.dart';
+import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v10.dart';
+import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v7.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
-import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
+import 'package:tmail_ui_user/features/login/data/model/basic_auth_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/encryption_key_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/recent_login_url_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/recent_login_username_cache.dart';
@@ -54,9 +57,12 @@ class HiveCacheConfig {
     final oldVersion = await cachingManager.getLatestVersion() ?? 0;
     const newVersion = CacheVersion.hiveDBVersion;
     log('HiveCacheConfig::onUpgradeDatabase():oldVersion: $oldVersion | newVersion: $newVersion');
-    if (oldVersion != newVersion) {
-      await cachingManager.onUpgradeCache(oldVersion, newVersion);
-    }
+
+    await UpgradeHiveDatabaseSteps(cachingManager).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV7(cachingManager).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV10(cachingManager).onUpgrade(oldVersion, newVersion);
+
+    await cachingManager.storeCacheVersion(newVersion);
   }
 
   static Future<void> initializeEncryptionKey() async {
@@ -125,6 +131,10 @@ class HiveCacheConfig {
       TokenOidcCacheAdapter(),
       CachingConstants.TOKEN_OIDC_HIVE_CACHE_IDENTIFY
     );
+    registerCacheAdapter<BasicAuthCache>(
+      BasicAuthCacheAdapter(),
+      CachingConstants.BASIC_AUTH_HIVE_CACHE_IDENTIFY
+    );
     registerCacheAdapter<AccountCache>(
       AccountCacheAdapter(),
       CachingConstants.ACCOUNT_HIVE_CACHE_IDENTIFY
@@ -132,10 +142,6 @@ class HiveCacheConfig {
     registerCacheAdapter<EncryptionKeyCache>(
       EncryptionKeyCacheAdapter(),
       CachingConstants.ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY
-    );
-    registerCacheAdapter<AuthenticationInfoCache>(
-      AuthenticationInfoCacheAdapter(),
-      CachingConstants.AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY
     );
     registerCacheAdapter<RecentLoginUrlCache>(
       RecentLoginUrlCacheAdapter(),
