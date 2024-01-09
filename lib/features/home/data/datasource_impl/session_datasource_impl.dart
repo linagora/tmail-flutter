@@ -1,4 +1,6 @@
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/home/data/datasource/session_datasource.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -18,12 +20,12 @@ class SessionDataSourceImpl extends SessionDataSource {
   }
 
   @override
-  Future<void> storeSession(Session session) {
+  Future<void> storeSession(Session session, AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Session> getStoredSession() {
+  Future<Session> getStoredSession(AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
 }

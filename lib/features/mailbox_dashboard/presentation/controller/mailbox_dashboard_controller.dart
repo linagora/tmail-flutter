@@ -18,6 +18,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -550,7 +551,11 @@ class MailboxDashBoardController extends ReloadableController {
 
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
-      _storeSessionAction(sessionCurrent!);
+      _storeSessionAction(
+        sessionCurrent!,
+        accountId.value!,
+        sessionCurrent!.username
+      );
     }
   }
 
@@ -2057,8 +2062,8 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchMailboxUIAction(SelectMailboxDefaultAction());
   }
 
-  void _storeSessionAction(Session session) {
-    consumeState(_storeSessionInteractor.execute(session));
+  void _storeSessionAction(Session session, AccountId accountId, UserName userName) {
+    consumeState(_storeSessionInteractor.execute(session, accountId, userName));
   }
 
   void emptySpamFolderAction({Function? onCancelSelectionEmail, MailboxId? spamFolderId}) {
