@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_id/twake_id_controller.dart';
@@ -11,11 +10,6 @@ class TwakeIdView extends GetWidget<TwakeIdController> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown
-    ]);
-
     return TwakeIdScreen(
       focusColor: Colors.transparent,
       hoverColor: Colors.transparent,

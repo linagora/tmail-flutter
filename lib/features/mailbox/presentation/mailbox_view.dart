@@ -24,8 +24,6 @@ class MailboxView extends BaseMailboxView {
 
   @override
   Widget build(BuildContext context) {
-    ThemeUtils.setStatusBarTransparentColor();
-
     return SafeArea(bottom: false, left: false, right: false,
         top: controller.responsiveUtils.isMobile(context),
         child: ClipRRect(

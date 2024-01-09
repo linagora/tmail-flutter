@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/url_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -89,6 +90,15 @@ class LoginController extends ReloadableController {
     this._getAllRecentLoginUsernameOnMobileInteractor,
     this._dnsLookupToGetJmapUrlInteractor,
   );
+
+  @override
+  void onInit() {
+    if (PlatformInfo.isMobile) {
+      ThemeUtils.setSystemDarkUIStyle();
+      ThemeUtils.setPreferredFullOrientations();
+    }
+    super.onInit();
+  }
 
   @override
   void onReady() {
