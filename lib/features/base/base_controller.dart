@@ -34,6 +34,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_acco
 import 'package:tmail_ui_user/features/login/domain/usecases/set_current_account_active_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -42,7 +44,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindi
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_firebase_registration_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/remove_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
@@ -60,6 +61,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_store.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/authenticated_account_manager.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
@@ -78,6 +80,7 @@ abstract class BaseController extends GetxController
   final Uuid uuid = Get.find<Uuid>();
   final AppStore appStore = Get.find<AppStore>();
   final SetCurrentAccountActiveInteractor _setCurrentAccountActiveInteractor = Get.find<SetCurrentAccountActiveInteractor>();
+  final AuthenticatedAccountManager authenticatedAccountManager = Get.find<AuthenticatedAccountManager>();
 
   final _fcmReceiver = FcmReceiver.instance;
   bool _isFcmEnabled = false;
@@ -176,7 +179,7 @@ abstract class BaseController extends GetxController
       return;
     }
     if (exception is BadCredentialsException || exception is ConnectionError) {
-      clearDataAndGoToLoginPage();
+      _handleBadCredentials();
     }
   }
 
@@ -185,19 +188,18 @@ abstract class BaseController extends GetxController
     if (failure is LogoutCurrentAccountOidcFailure ||
         failure is LogoutCurrentAccountBasicAuthFailure ||
         failure is LogoutCurrentAccountFailure) {
-      await _handleLogoutCurrentAccountFailure(failure);
-    } else if (failure is GetStoredFirebaseRegistrationFailure ||
-        failure is DestroyFirebaseRegistrationFailure) {
-      await clearDataAndGoToLoginPage();
+      _handleLogoutCurrentAccountFailure(failure);
+    } else if (failure is DestroyFirebaseRegistrationFailure) {
+      _handleDestroyFirebaseRegistrationFailure(failure);
     }
   }
 
   void handleSuccessViewState(Success success) async {
     log('BaseController::handleSuccessViewState(): ${success.runtimeType}');
     if (success is LogoutCurrentAccountOidcSuccess || success is LogoutCurrentAccountBasicAuthSuccess) {
-      await _handleLogoutCurrentAccountSuccess(success);
+      _handleLogoutCurrentAccountSuccess(success);
     } else if (success is DestroyFirebaseRegistrationSuccess) {
-      await clearDataAndGoToLoginPage();
+      _handleDestroyFirebaseRegistrationSuccess(success);
     }
   }
 
@@ -277,20 +279,9 @@ abstract class BaseController extends GetxController
   bool _isFcmActivated(Session session, AccountId accountId) =>
     FirebaseCapability.fcmIdentifier.isSupported(session, accountId) && AppConfig.fcmAvailable;
 
-  void goToLogin({LoginArguments? arguments}) {
-    if (PlatformInfo.isMobile) {
-      navigateToTwakeIdPage();
-    } else {
-      navigateToLoginPage(arguments: arguments);
-    }
-  }
 
-  void removeAllPageAndGoToLogin({LoginArguments? arguments}) {
-    if (PlatformInfo.isMobile) {
-      pushAndPopAll(AppRoutes.twakeId);
-    } else {
-      navigateToLoginPage(arguments: arguments);
-    }
+  void removeAllRouteAndNavigateToTwakeIdPage() {
+    pushAndPopAll(AppRoutes.twakeId);
   }
 
   void navigateToTwakeIdPage() {
@@ -314,39 +305,45 @@ abstract class BaseController extends GetxController
 
   void _removeFirebaseRegistration(PersonalAccount deletedAccount) async {
     _removeFirebaseRegistrationInteractor = getBinding<RemoveFirebaseRegistrationInteractor>();
-    if (_removeFirebaseRegistrationInteractor != null &&
-        deletedAccount.accountId != null &&
-        deletedAccount.userName != null) {
-      consumeState(_removeFirebaseRegistrationInteractor!.execute(
-        deletedAccount.accountId!,
-        deletedAccount.userName!));
+    if (_removeFirebaseRegistrationInteractor != null) {
+      consumeState(_removeFirebaseRegistrationInteractor!.execute(deletedAccount));
     } else {
-      await clearDataAndGoToLoginPage();
+      if (PlatformInfo.isMobile) {
+        await clearDataByAccount(deletedAccount);
+        _handleNavigationRouteAfterLogoutCurrentAccountSuccess();
+      } else {
+        await clearAllDataAndBackToLogin();
+      }
     }
   }
 
-  Future<void> clearDataAndGoToLoginPage() async {
-    log('BaseController::clearDataAndGoToLoginPage:');
+  Future<void> clearAllDataAndBackToLogin() async {
+    log('BaseController::clearAllDataAndBackToLogin:');
     await clearAllData();
-    removeAllPageAndGoToLogin(arguments: LoginArguments(
-      PlatformInfo.isWeb
-        ? LoginFormType.none
-        : LoginFormType.dnsLookupForm
-    ));
+    if (PlatformInfo.isMobile) {
+      removeAllRouteAndNavigateToTwakeIdPage();
+    } else {
+      navigateToLoginPage(arguments: LoginArguments(LoginFormType.none));
+    }
   }
 
   Future<void> clearAllData() async {
+    log('BaseController::clearAllData:');
     try {
+      authorizationInterceptors.clear();
+      authorizationIsolateInterceptors.clear();
+
       await Future.wait([
         cachingManager.clearAll(),
         languageCacheManager.removeLanguage(),
       ]);
-      if (PlatformInfo.isMobile) {
-        await cachingManager.clearAllFileInStorage();
-      }
-      authorizationInterceptors.clear();
-      authorizationIsolateInterceptors.clear();
+
       await cachingManager.closeHive();
+
+      if (PlatformInfo.isMobile) {
+        await cachingManager.clearAllFolderInStorage();
+      }
+
       if (_isFcmEnabled) {
         await _fcmReceiver.deleteFcmToken();
       }
@@ -355,7 +352,22 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future _handleLogoutCurrentAccountSuccess(Success success) async {
+  Future<void> clearDataByAccount(PersonalAccount currentAccount) async {
+    log('BaseController::clearDataByAccount:currentAccount: $currentAccount');
+    try {
+      authorizationInterceptors.clear();
+      authorizationIsolateInterceptors.clear();
+
+      await cachingManager.clearCacheByAccount(currentAccount);
+      await cachingManager.closeHive();
+
+      await cachingManager.clearFolderStorageByAccount(currentAccount);
+    } catch (e, s) {
+      logError('BaseController::clearAllDataByAccount: Exception: $e | Stack: $s');
+    }
+  }
+
+  void _handleLogoutCurrentAccountSuccess(Success success) async {
     PersonalAccount? deletedAccount;
 
     if (success is LogoutCurrentAccountOidcSuccess) {
@@ -364,14 +376,24 @@ abstract class BaseController extends GetxController
       deletedAccount = success.deletedAccount;
     }
 
-    if (_isFcmEnabled && deletedAccount != null) {
+    if (deletedAccount == null) {
+      await clearAllDataAndBackToLogin();
+      return;
+    }
+
+    if (_isFcmEnabled) {
       _removeFirebaseRegistration(deletedAccount);
     } else {
-      await clearDataAndGoToLoginPage();
+      if (PlatformInfo.isMobile) {
+        await clearDataByAccount(deletedAccount);
+        _handleNavigationRouteAfterLogoutCurrentAccountSuccess();
+      } else {
+        await clearAllDataAndBackToLogin();
+      }
     }
   }
 
-  Future _handleLogoutCurrentAccountFailure(Failure failure) async {
+  void _handleLogoutCurrentAccountFailure(Failure failure) async {
     PersonalAccount? deletedAccount;
 
     if (failure is LogoutCurrentAccountOidcFailure) {
@@ -382,10 +404,20 @@ abstract class BaseController extends GetxController
       deletedAccount = failure.deletedAccount;
     }
 
-    if (_isFcmEnabled && deletedAccount != null) {
+    if (deletedAccount == null) {
+      await clearAllDataAndBackToLogin();
+      return;
+    }
+
+    if (_isFcmEnabled) {
       _removeFirebaseRegistration(deletedAccount);
     } else {
-      await clearDataAndGoToLoginPage();
+      if (PlatformInfo.isMobile) {
+        await clearDataByAccount(deletedAccount);
+        _handleNavigationRouteAfterLogoutCurrentAccountSuccess();
+      } else {
+        await clearAllDataAndBackToLogin();
+      }
     }
   }
 
@@ -421,5 +453,41 @@ abstract class BaseController extends GetxController
 
   void setCurrentAccountActive(PersonalAccount activeAccount) {
     consumeState(_setCurrentAccountActiveInteractor.execute(activeAccount));
+  }
+
+  void _handleBadCredentials() async {
+    await clearAllDataAndBackToLogin();
+  }
+
+  void _handleDestroyFirebaseRegistrationFailure(DestroyFirebaseRegistrationFailure failure) async {
+    if (PlatformInfo.isMobile) {
+      await clearDataByAccount(failure.currentAccount);
+      _handleNavigationRouteAfterLogoutCurrentAccountSuccess();
+    } else {
+      await clearAllDataAndBackToLogin();
+    }
+  }
+
+  void _handleDestroyFirebaseRegistrationSuccess(DestroyFirebaseRegistrationSuccess success) async {
+    if (PlatformInfo.isMobile) {
+      await clearDataByAccount(success.currentAccount);
+      _handleNavigationRouteAfterLogoutCurrentAccountSuccess();
+    } else {
+      await clearAllDataAndBackToLogin();
+    }
+  }
+
+  void _handleNavigationRouteAfterLogoutCurrentAccountSuccess() async {
+    log('BaseController::_handleNavigationRouteAfterLogoutCurrentAccountSuccess:');
+    final listAccounts = await authenticatedAccountManager.getAllPersonalAccount();
+    if (listAccounts.isEmpty) {
+      removeAllRouteAndNavigateToTwakeIdPage();
+    } else {
+      pushAndPopAll(
+        AppRoutes.home,
+        arguments: LoginNavigateArguments(
+          navigateType: LoginNavigateType.selectActiveAccount
+        ));
+    }
   }
 }

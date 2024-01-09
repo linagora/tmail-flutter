@@ -3,6 +3,8 @@ import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/personal_account.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
@@ -15,6 +17,7 @@ import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_clien
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
@@ -79,21 +82,24 @@ class CachingManager {
     ], eagerError: true);
   }
 
-  Future<void> clearData() async {
+  Future<void> clearCacheByAccount(PersonalAccount currentAccount) async {
+    final accountKey = TupleKey(
+      currentAccount.accountId!.asString,
+      currentAccount.userName!.value
+    ).encodeKey;
+
     await Future.wait([
-      _stateCacheClient.clearAllData(),
-      _mailboxCacheClient.clearAllData(),
-      _emailCacheClient.clearAllData(),
-      _fcmCacheClient.clearAllData(),
-      _firebaseRegistrationCacheClient.clearAllData(),
-      _recentSearchCacheClient.clearAllData(),
-      _localSpamReportManager.clear(),
-      if (PlatformInfo.isMobile)
-       ...[
-         _newEmailHiveCacheClient.clearAllData(),
-         _openedEmailHiveCacheClient.clearAllData(),
-         _clearSendingEmailCache(),
-       ]
+      _sessionHiveCacheClient.clearAllDataContainKey(accountKey),
+      _mailboxCacheClient.clearAllDataContainKey(accountKey),
+      _emailCacheClient.clearAllDataContainKey(accountKey),
+      _stateCacheClient.clearAllDataContainKey(accountKey),
+      _fcmCacheClient.clearAllDataContainKey(accountKey),
+      _firebaseRegistrationCacheClient.clearAllDataContainKey(accountKey),
+      _newEmailHiveCacheClient.clearAllDataContainKey(accountKey),
+      _openedEmailHiveCacheClient.clearAllDataContainKey(accountKey),
+      _clearSendingEmailCacheByAccount(currentAccount),
+      if (PlatformInfo.isIOS)
+        _keychainSharingManager.delete(accountId: currentAccount.accountId?.asString)
     ], eagerError: true);
   }
 
@@ -124,10 +130,26 @@ class CachingManager {
     return await HiveCacheConfig().closeHive();
   }
 
-  Future<void> clearAllFileInStorage() async {
+  Future<void> clearAllFolderInStorage() async {
     await Future.wait([
       _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
       _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
+    ]);
+  }
+
+  Future<void> clearFolderStorageByAccount(PersonalAccount currentAccount) async {
+    final folderKey = TupleKey(
+      currentAccount.accountId!.asString,
+      currentAccount.userName!.value
+    ).encodeKey;
+
+    await Future.wait([
+      _fileUtils.removeFolder(
+        '${CachingConstants.newEmailsContentFolderName}/$folderKey'
+      ),
+      _fileUtils.removeFolder(
+        '${CachingConstants.openedEmailContentFolderName}/$folderKey'
+      ),
     ]);
   }
 
@@ -140,6 +162,22 @@ class CachingManager {
         eagerError: true
       );
       await _sendingEmailCacheManager.clearAllSendingEmails();
+    }
+  }
+
+  Future<void> _clearSendingEmailCacheByAccount(PersonalAccount currentAccount) async {
+    final listSendingEmails = await _sendingEmailCacheManager.getAllSendingEmailsByAccount(
+      currentAccount.accountId!,
+      currentAccount.userName!);
+
+    final sendingIds = listSendingEmails.map((sendingEmail) => sendingEmail.sendingId).toSet().toList();
+    if (sendingIds.isNotEmpty) {
+      await Future.wait(
+        sendingIds.map(WorkManagerController().cancelByUniqueId),
+        eagerError: true
+      );
+
+      await _sendingEmailCacheManager.clearAllSendingEmailsByAccount(currentAccount);
     }
   }
 }

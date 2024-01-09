@@ -3835,4 +3835,12 @@ class AppLocalizations {
       name: 'toastMessageFailureWhenSwitchActiveAccount',
     );
   }
+
+  String unableToLogInToAccount(String userName) {
+    return Intl.message(
+      'Unable to log in to account $userName',
+      name: 'unableToLogInToAccount',
+      args: [userName]
+    );
+  }
 }

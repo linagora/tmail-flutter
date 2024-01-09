@@ -139,7 +139,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
           final fileSaved = await _fileUtils.saveToFile(
             nameFile: detailedEmail.emailId.asString,
             content: detailedEmail.htmlEmailContent ?? '',
-            folderPath: detailedEmail.newEmailFolderPath
+            folderPath: detailedEmail.getNewEmailFolderPath(accountId, session.username)
           );
 
           final detailedEmailSaved = detailedEmail.fromEmailContentPath(fileSaved.path);
@@ -182,7 +182,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
           final fileSaved = await _fileUtils.saveToFile(
             nameFile: detailedEmail.emailId.asString,
             content: detailedEmail.htmlEmailContent ?? '',
-            folderPath: detailedEmail.openedEmailFolderPath
+            folderPath: detailedEmail.getOpenedEmailFolderPath(accountId, session.username)
           );
 
           final detailedEmailSaved = detailedEmail.fromEmailContentPath(fileSaved.path);
@@ -247,7 +247,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   @override
   Future<List<SendingEmail>> getAllSendingEmails(AccountId accountId, UserName userName) {
     return Future.sync(() async {
-      final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmailsByTupleKey(accountId, userName);
+      final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmailsByAccount(accountId, userName);
       return sendingEmailsCache.toSendingEmails();
     }).catchError(_exceptionThrower.throwException);
   }

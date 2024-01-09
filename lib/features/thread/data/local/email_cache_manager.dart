@@ -31,7 +31,8 @@ class EmailCacheManager {
     UnsignedInt? limit,
     FilterMessageOption filterOption = FilterMessageOption.all
   }) async {
-    final emailCacheList = await _emailCacheClient.getListByTupleKey(accountId.asString, userName.value);
+    final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    final emailCacheList = await _emailCacheClient.getListByNestedKey(nestedKey);
     final emailList = emailCacheList
       .toEmailList()
       .where((email) => _filterEmailByMailbox(email, filterOption, inMailboxId))

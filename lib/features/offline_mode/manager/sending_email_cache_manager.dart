@@ -1,6 +1,7 @@
 
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
@@ -29,8 +30,9 @@ class SendingEmailCacheManager {
     }
   }
 
-  Future<List<SendingEmailHiveCache>> getAllSendingEmailsByTupleKey(AccountId accountId, UserName userName) async {
-     final sendingEmailsCache = await _hiveCacheClient.getListByTupleKey(accountId.asString, userName.value);
+  Future<List<SendingEmailHiveCache>> getAllSendingEmailsByAccount(AccountId accountId, UserName userName) async {
+     final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
+     final sendingEmailsCache = await _hiveCacheClient.getListByNestedKey(nestedKey);
      sendingEmailsCache.sortByLatestTime();
      return sendingEmailsCache;
   }
@@ -51,6 +53,15 @@ class SendingEmailCacheManager {
   }
 
   Future<void> clearAllSendingEmails() => _hiveCacheClient.clearAllData();
+
+  Future<void> clearAllSendingEmailsByAccount(PersonalAccount currentAccount) async {
+    final nestedKey = TupleKey(
+      currentAccount.accountId!.asString,
+      currentAccount.userName!.value
+    ).encodeKey;
+
+    await _hiveCacheClient.clearAllDataContainKey(nestedKey);
+  }
 
   Future<SendingEmailHiveCache> updateSendingEmail(
     AccountId accountId,

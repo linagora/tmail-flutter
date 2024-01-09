@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-08T14:23:35.609263",
+  "@@last_modified": "2024-01-09T19:07:13.451605",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3677,5 +3677,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "unableToLogInToAccount": "Unable to log in to account {userName}",
+  "@unableToLogInToAccount": {
+    "type": "text",
+    "placeholders_order": [
+      "userName"
+    ],
+    "placeholders": {
+      "userName": {}
+    }
   }
 }

@@ -21,6 +21,7 @@ typedef OnAddAnotherAccountAction = Function(PersonalAccount? currentAccount);
 typedef OnSwitchActiveAccountAction = Function(
   PersonalAccount currentActiveAccount,
   PersonalAccount nextActiveAccount);
+typedef OnSelectActiveAccountAction = Function(PersonalAccount activeAccount);
 
 class AuthenticatedAccountManager {
 
@@ -31,6 +32,18 @@ class AuthenticatedAccountManager {
     this._getAllAuthenticatedAccountInteractor,
     this._imagePaths,
   );
+
+  Future<List<PersonalAccount>> getAllPersonalAccount() {
+    return _getAllAuthenticatedAccountInteractor
+      .execute()
+      .then((result) => result.fold(
+        (failure) => <PersonalAccount>[],
+        (success) => success is GetAllAuthenticatedAccountSuccess
+          ? success.listAccount
+          : <PersonalAccount>[]
+      )
+    );
+  }
 
   Future<List<TwakeMailPresentationAccount>> _getAllTwakeMailPresentationAccount() {
     return _getAllAuthenticatedAccountInteractor
@@ -82,6 +95,7 @@ class AuthenticatedAccountManager {
     VoidCallback? onGoToManageAccount,
     OnAddAnotherAccountAction? onAddAnotherAccountAction,
     OnSwitchActiveAccountAction? onSwitchActiveAccountAction,
+    OnSelectActiveAccountAction? onSelectActiveAccountAction,
   }) async {
     final listPresentationAccount = await _getAllTwakeMailPresentationAccount();
     final currentActiveAccount = listPresentationAccount
@@ -127,9 +141,13 @@ class AuthenticatedAccountManager {
         onGoToAccountSettings: () => onGoToManageAccount?.call(),
         onSetAccountAsActive: (presentationAccount) {
           if (presentationAccount is TwakeMailPresentationAccount) {
-            onSwitchActiveAccountAction?.call(
-              currentActiveAccount!.personalAccount,
-              presentationAccount.personalAccount);
+            if (currentActiveAccount != null) {
+              onSwitchActiveAccountAction?.call(
+                currentActiveAccount.personalAccount,
+                presentationAccount.personalAccount);
+            } else {
+              onSelectActiveAccountAction?.call(presentationAccount.personalAccount);
+            }
           }
         },
       );

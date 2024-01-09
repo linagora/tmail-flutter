@@ -1,5 +1,9 @@
 
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_email_header_extension.dart';
@@ -21,9 +25,15 @@ extension DetailedEmailExtension on DetailedEmail {
     );
   }
 
-  String get newEmailFolderPath => CachingConstants.newEmailsContentFolderName;
+  String getNewEmailFolderPath(AccountId accountId, UserName userName) {
+    final folderKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    return '${CachingConstants.newEmailsContentFolderName}/$folderKey';
+  }
 
-  String get openedEmailFolderPath => CachingConstants.openedEmailContentFolderName;
+  String getOpenedEmailFolderPath(AccountId accountId, UserName userName) {
+    final folderKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    return '${CachingConstants.openedEmailContentFolderName}/$folderKey';
+  }
 
   DetailedEmail fromEmailContentPath(String path) {
     return DetailedEmail(

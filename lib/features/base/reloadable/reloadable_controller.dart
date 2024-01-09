@@ -30,13 +30,11 @@ abstract class ReloadableController extends BaseController {
     if (failure is GetSessionFailure) {
       _handleGetSessionFailure(failure.exception);
     } else if (failure is GetAuthenticatedAccountFailure) {
-      goToLogin(
-        arguments: LoginArguments(
-          PlatformInfo.isMobile
-            ? LoginFormType.dnsLookupForm
-            : LoginFormType.none
-        )
-      );
+      if (PlatformInfo.isMobile) {
+        navigateToTwakeIdPage();
+      } else {
+        navigateToLoginPage(arguments: LoginArguments(LoginFormType.none));
+      }
     }
   }
 
@@ -79,7 +77,7 @@ abstract class ReloadableController extends BaseController {
         MessageToastUtils.getMessageByException(currentContext!, exception) ?? AppLocalizations.of(currentContext!).unknownError
       );
     }
-    clearDataAndGoToLoginPage();
+    clearAllDataAndBackToLogin();
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
@@ -95,7 +93,7 @@ abstract class ReloadableController extends BaseController {
       );
       handleReloaded(session);
     } else {
-      clearDataAndGoToLoginPage();
+      clearAllDataAndBackToLogin();
     }
   }
 
