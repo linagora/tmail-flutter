@@ -15598,12 +15598,24 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1));
-      A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).sessionCurrent;
-      A.Expando__checkType(t1);
-      t1 = t3._as(t2.get(t1)).accountId;
-      t4.logout$2$accountId$session(t1.get$value(t1), t5);
+      if (t3._as(t2.get(t1)).sessionCurrent != null) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).accountId;
+        t4 = t4.get$value(t4) != null;
+      } else
+        t4 = false;
+      if (t4) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1));
+        A.Expando__checkType(t1);
+        t5 = t3._as(t2.get(t1)).sessionCurrent;
+        t5.toString;
+        A.Expando__checkType(t1);
+        t1 = t3._as(t2.get(t1)).accountId;
+        t1 = t1.get$value(t1);
+        t1.toString;
+        t4.logout$2$accountId$session(t1, t5);
+      }
     },
     $signature: 9
   };
@@ -20231,5 +20243,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "NiQG2i8ZQ+DhJ5YvUbAjNfIBkPI=");
+})($__dart_deferred_initializers__, "4dAaR1V/3C4Tj0V4KRPT+sYK0rE=");
 ;
