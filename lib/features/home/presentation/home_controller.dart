@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -50,6 +51,8 @@ class HomeController extends ReloadableController {
   @override
   void onInit() {
     if (PlatformInfo.isMobile) {
+      ThemeUtils.setSystemDarkUIStyle();
+      ThemeUtils.setPreferredFullOrientations();
       _initFlutterDownloader();
       _registerReceivingSharingIntent();
     }

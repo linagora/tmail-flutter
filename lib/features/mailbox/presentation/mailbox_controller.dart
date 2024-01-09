@@ -133,6 +133,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   @override
   void onInit() {
+    if (PlatformInfo.isMobile) {
+      ThemeUtils.setStatusBarTransparentColor();
+    }
     _registerObxStreamListener();
     super.onInit();
   }

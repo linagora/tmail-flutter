@@ -20,6 +20,7 @@ void main() async {
   initLogger(() async {
     WidgetsFlutterBinding.ensureInitialized();
     ThemeUtils.setSystemLightUIStyle();
+    ThemeUtils.setPreferredFullOrientations();
 
     await Future.wait([
        MainBindings().dependencies(),

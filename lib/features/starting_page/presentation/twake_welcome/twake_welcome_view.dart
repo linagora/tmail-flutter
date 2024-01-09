@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
@@ -12,11 +11,6 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown
-    ]);
-
     return TwakeWelcomeScreen(
       welcomeTo: AppLocalizations.of(context).welcomeTo,
       logo: Padding(

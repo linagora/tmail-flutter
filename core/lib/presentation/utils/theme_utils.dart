@@ -89,4 +89,20 @@ class ThemeUtils {
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
   }
+
+  static void setPreferredPortraitOrientations() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown
+    ]);
+  }
+
+  static void setPreferredFullOrientations() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
 }

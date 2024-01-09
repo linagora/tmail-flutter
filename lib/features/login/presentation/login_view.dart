@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -24,8 +23,6 @@ class LoginView extends BaseLoginView {
 
   @override
   Widget build(BuildContext context) {
-    ThemeUtils.setSystemDarkUIStyle();
-
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) => !didPop
