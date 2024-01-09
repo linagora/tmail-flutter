@@ -119,10 +119,13 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                            color: Colors.transparent,
                            child: InkWell(
                              onTap: () {
-                               controller.dashBoardController.logout(
-                                 controller.dashBoardController.sessionCurrent,
-                                 controller.dashBoardController.accountId.value
-                               );
+                               if (controller.dashBoardController.sessionCurrent != null &&
+                                   controller.dashBoardController.accountId.value != null) {
+                                 controller.dashBoardController.logout(
+                                   session: controller.dashBoardController.sessionCurrent!,
+                                   accountId: controller.dashBoardController.accountId.value!
+                                 );
+                               }
                              },
                              borderRadius: BorderRadius.circular(10),
                              child: Padding(

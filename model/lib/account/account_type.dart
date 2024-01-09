@@ -1,5 +1,0 @@
-
-enum AccountType {
-  oauth,
-  email
-}

@@ -1,14 +1,18 @@
 
 import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:model/model.dart';
+import 'package:model/oidc/token_id.dart';
+import 'package:model/oidc/token_oidc.dart';
 
 extension TokenResponseExtension on TokenResponse {
-
-  TokenOIDC toTokenOIDC({String? maybeAvailableRefreshToken}) {
+  TokenOIDC toTokenOIDC({
+    required String authority,
+    String? maybeAvailableRefreshToken
+  }) {
     return TokenOIDC(
-      accessToken ?? '',
-      TokenId(idToken ?? ''),
-      refreshToken ?? maybeAvailableRefreshToken ?? '',
+      token: accessToken ?? '',
+      tokenId: TokenId(idToken ?? ''),
+      refreshToken: refreshToken ?? maybeAvailableRefreshToken ?? '',
+      authority: authority,
       expiredTime: accessTokenExpirationDateTime ?? DateTime.now());
   }
 }

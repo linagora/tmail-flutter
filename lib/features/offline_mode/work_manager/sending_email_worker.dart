@@ -8,6 +8,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/account/authentication_type.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -20,10 +22,9 @@ import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_i
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
@@ -36,6 +37,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
+import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SendingEmailWorker extends Worker {
@@ -44,6 +46,7 @@ class SendingEmailWorker extends Worker {
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
+  AuthorizationInterceptors? _authorizationIsolateInterceptors;
   GetSessionInteractor? _getSessionInteractor;
   SendingQueueIsolateManager? _sendingQueueIsolateManager;
   SendingEmailCacheManager? _sendingEmailCacheManager;
@@ -98,9 +101,7 @@ class SendingEmailWorker extends Worker {
     if (failure is SendEmailFailure) {
       _handleSendEmailFailure(failure);
     } else if (failure is GetAuthenticatedAccountFailure ||
-        failure is GetSessionFailure ||
-        failure is GetStoredTokenOidcFailure ||
-        failure is GetCredentialFailure) {
+        failure is GetSessionFailure) {
       _handleWorkerTaskToRetry();
     } else if (failure is UnsubscribeEmailFailure) {
       _handleWorkerTaskSuccess();
@@ -110,12 +111,14 @@ class SendingEmailWorker extends Worker {
   @override
   void handleSuccessViewState(Success success) {
     log('SendingEmailObserver::handleSuccessViewState(): $success');
-    if (success is GetSessionSuccess) {
+    if (success is GetAuthenticatedAccountSuccess) {
+      _setUpInterceptor(success.account);
+      _getSessionAction(
+        accountId: success.account.accountId,
+        userName: success.account.userName
+      );
+    } else if (success is GetSessionSuccess) {
       _handleGetSessionSuccess(success);
-    } else if (success is GetStoredTokenOidcSuccess) {
-      _handleGetAccountByOidcSuccess(success);
-    } else if (success is GetCredentialViewState) {
-      _handleGetAccountByBasicAuthSuccess(success);
     } else if (success is SendEmailSuccess) {
       _handleSendEmailSuccess(success);
     } else if (success is UnsubscribeEmailSuccess) {
@@ -133,6 +136,7 @@ class SendingEmailWorker extends Worker {
     _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
     _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
     _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
+    _authorizationIsolateInterceptors = getBinding<AuthorizationInterceptors>(tag: BindingTag.isolateTag);
     _getSessionInteractor = getBinding<GetSessionInteractor>();
     _sendEmailInteractor = getBinding<SendEmailInteractor>();
     _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
@@ -155,8 +159,8 @@ class SendingEmailWorker extends Worker {
     consumeState(_getAuthenticatedAccountInteractor!.execute());
   }
 
-  void _getSessionAction() {
-    consumeState(_getSessionInteractor!.execute());
+  void _getSessionAction({AccountId? accountId, UserName? userName}) {
+    consumeState(_getSessionInteractor!.execute(accountId: accountId, userName: userName));
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) async {
@@ -169,16 +173,6 @@ class SendingEmailWorker extends Worker {
     } else {
       _handleWorkerTaskToRetry();
     }
-  }
-
-  void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
-    _dynamicUrlInterceptors?.setJmapUrl(credentialViewState.baseUrl.toString());
-    _authorizationInterceptors?.setBasicAuthorization(
-      credentialViewState.userName,
-      credentialViewState.password,
-    );
-    _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.toString());
-    _getSessionAction();
   }
 
   void _sendEmailAction(AccountId accountId, Session session) {
@@ -203,14 +197,34 @@ class SendingEmailWorker extends Worker {
     }
   }
 
-  void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
-    _dynamicUrlInterceptors?.setJmapUrl(storedTokenOidcSuccess.baseUrl.toString());
-    _authorizationInterceptors?.setTokenAndAuthorityOidc(
-      newToken: storedTokenOidcSuccess.tokenOidc,
-      newConfig: storedTokenOidcSuccess.oidcConfiguration
-    );
-    _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
-    _getSessionAction();
+  void _setUpInterceptor(PersonalAccount personalAccount) {
+    _dynamicUrlInterceptors?.setJmapUrl(personalAccount.baseUrl);
+    _dynamicUrlInterceptors?.changeBaseUrl(personalAccount.baseUrl);
+
+    switch(personalAccount.authType) {
+      case AuthenticationType.oidc:
+        _authorizationInterceptors?.setTokenAndAuthorityOidc(
+          newToken: personalAccount.tokenOidc,
+          newConfig: personalAccount.tokenOidc!.oidcConfiguration
+        );
+        _authorizationIsolateInterceptors?.setTokenAndAuthorityOidc(
+          newToken: personalAccount.tokenOidc,
+          newConfig: personalAccount.tokenOidc!.oidcConfiguration
+        );
+        break;
+      case AuthenticationType.basic:
+        _authorizationInterceptors?.setBasicAuthorization(
+          personalAccount.basicAuth!.userName,
+          personalAccount.basicAuth!.password,
+        );
+        _authorizationIsolateInterceptors?.setBasicAuthorization(
+          personalAccount.basicAuth!.userName,
+          personalAccount.basicAuth!.password,
+        );
+        break;
+      default:
+        break;
+    }
   }
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {

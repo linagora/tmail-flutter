@@ -8,11 +8,9 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/fps_manager.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
-import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:forward/forward/capability_forward.dart';
@@ -21,28 +19,29 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_basic_auth_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/log_out_oidc_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_firebase_registration_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/usecases/remove_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
@@ -70,9 +69,7 @@ abstract class BaseController extends GetxController
   final AuthorizationInterceptors authorizationInterceptors = Get.find<AuthorizationInterceptors>();
   final AuthorizationInterceptors authorizationIsolateInterceptors = Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag);
   final DynamicUrlInterceptors dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
-  final DeleteCredentialInteractor deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
-  final LogoutOidcInteractor logoutOidcInteractor = Get.find<LogoutOidcInteractor>();
-  final DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor = Get.find<DeleteAuthorityOidcInteractor>();
+  final LogoutCurrentAccountInteractor _logoutCurrentAccountInteractor = Get.find<LogoutCurrentAccountInteractor>();
   final AppToast appToast = Get.find<AppToast>();
   final ImagePaths imagePaths = Get.find<ImagePaths>();
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
@@ -82,11 +79,9 @@ abstract class BaseController extends GetxController
   final _fcmReceiver = FcmReceiver.instance;
   bool _isFcmEnabled = false;
 
-  GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
-  DestroyFirebaseRegistrationInteractor? _destroyFirebaseRegistrationInteractor;
+  RemoveFirebaseRegistrationInteractor? _removeFirebaseRegistrationInteractor;
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
-  FpsCallback? fpsCallback;
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
     newStateStream.listen(onData, onError: onError, onDone: onDone);
@@ -184,12 +179,10 @@ abstract class BaseController extends GetxController
 
   void handleFailureViewState(Failure failure) async {
     logError('BaseController::handleFailureViewState(): ${failure.runtimeType}');
-    if (failure is LogoutOidcFailure) {
-      if (_isFcmEnabled) {
-        _getStoredFirebaseRegistrationFromCache();
-      } else {
-        await clearDataAndGoToLoginPage();
-      }
+    if (failure is LogoutCurrentAccountOidcFailure ||
+        failure is LogoutCurrentAccountBasicAuthFailure ||
+        failure is LogoutCurrentAccountFailure) {
+      await _handleLogoutCurrentAccountFailure(failure);
     } else if (failure is GetStoredFirebaseRegistrationFailure ||
         failure is DestroyFirebaseRegistrationFailure) {
       await clearDataAndGoToLoginPage();
@@ -198,33 +191,10 @@ abstract class BaseController extends GetxController
 
   void handleSuccessViewState(Success success) async {
     log('BaseController::handleSuccessViewState(): ${success.runtimeType}');
-    if (success is LogoutOidcSuccess) {
-      if (_isFcmEnabled) {
-        _getStoredFirebaseRegistrationFromCache();
-      } else {
-        await clearDataAndGoToLoginPage();
-      }
-    } else if (success is GetStoredFirebaseRegistrationSuccess) {
-      _destroyFirebaseRegistration(success.firebaseRegistration.id!);
+    if (success is LogoutCurrentAccountOidcSuccess || success is LogoutCurrentAccountBasicAuthSuccess) {
+      await _handleLogoutCurrentAccountSuccess(success);
     } else if (success is DestroyFirebaseRegistrationSuccess) {
       await clearDataAndGoToLoginPage();
-    }
-  }
-
-  void startFpsMeter() {
-    FpsManager().start();
-    fpsCallback = (fpsInfo) {
-      log('BaseController::startFpsMeter(): $fpsInfo');
-    };
-    if (fpsCallback != null) {
-      FpsManager().addFpsCallback(fpsCallback!);
-    }
-  }
-
-  void stopFpsMeter() {
-    FpsManager().stop();
-    if (fpsCallback != null) {
-      FpsManager().removeFpsCallback(fpsCallback!);
     }
   }
 
@@ -262,6 +232,15 @@ abstract class BaseController extends GetxController
       EmailRulesInteractorBindings().dependencies();
     } catch(e) {
       logError('BaseController::injectRuleFilterBindings(): exception: $e');
+    }
+  }
+
+  void injectVacationBindings(Session? session, AccountId? accountId) {
+    try {
+      requireCapability(session!, accountId!, [CapabilityIdentifier.jmapVacationResponse]);
+      VacationInteractorsBindings().dependencies();
+    } catch(e) {
+      logError('BaseController::injectVacationBindings(): exception: $e');
     }
   }
 
@@ -322,36 +301,22 @@ abstract class BaseController extends GetxController
     pushAndPopAll(AppRoutes.login, arguments: arguments);
   }
 
-  void logout(Session? session, AccountId? accountId) async {
-    if (session == null || accountId == null) {
-      await clearDataAndGoToLoginPage();
-      return;
-    }
+  void logout({
+    required Session session,
+    required AccountId accountId
+  }) async {
     _isFcmEnabled = _isFcmActivated(session, accountId);
-    if (isAuthenticatedWithOidc) {
-      consumeState(logoutOidcInteractor.execute());
-    } else {
-      if (_isFcmEnabled) {
-        _getStoredFirebaseRegistrationFromCache();
-      } else {
-        await clearDataAndGoToLoginPage();
-      }
-    }
+    consumeState(_logoutCurrentAccountInteractor.execute());
   }
 
-  void _destroyFirebaseRegistration(FirebaseRegistrationId firebaseRegistrationId) async {
-    _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
-    if (_destroyFirebaseRegistrationInteractor != null) {
-      consumeState(_destroyFirebaseRegistrationInteractor!.execute(firebaseRegistrationId));
-    } else {
-      await clearDataAndGoToLoginPage();
-    }
-  }
-
-  void _getStoredFirebaseRegistrationFromCache() async {
-    _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
-    if (_getStoredFirebaseRegistrationInteractor != null) {
-      consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
+  void _removeFirebaseRegistration(PersonalAccount deletedAccount) async {
+    _removeFirebaseRegistrationInteractor = getBinding<RemoveFirebaseRegistrationInteractor>();
+    if (_removeFirebaseRegistrationInteractor != null &&
+        deletedAccount.accountId != null &&
+        deletedAccount.userName != null) {
+      consumeState(_removeFirebaseRegistrationInteractor!.execute(
+        deletedAccount.accountId!,
+        deletedAccount.userName!));
     } else {
       await clearDataAndGoToLoginPage();
     }
@@ -368,52 +333,56 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> clearAllData() async {
-    if (isAuthenticatedWithOidc) {
-      await _clearOidcAuthData();
+    try {
+      await Future.wait([
+        cachingManager.clearAll(),
+        languageCacheManager.removeLanguage(),
+      ]);
+      if (PlatformInfo.isMobile) {
+        await cachingManager.clearAllFileInStorage();
+      }
+      authorizationInterceptors.clear();
+      authorizationIsolateInterceptors.clear();
+      await cachingManager.closeHive();
+      if (_isFcmEnabled) {
+        await _fcmReceiver.deleteFcmToken();
+      }
+    } catch (e, s) {
+      logError('BaseController::clearAllData: Exception: $e | Stack: $s');
+    }
+  }
+
+  Future _handleLogoutCurrentAccountSuccess(Success success) async {
+    PersonalAccount? deletedAccount;
+
+    if (success is LogoutCurrentAccountOidcSuccess) {
+      deletedAccount = success.deletedAccount;
+    } else if (success is LogoutCurrentAccountBasicAuthSuccess) {
+      deletedAccount = success.deletedAccount;
+    }
+
+    if (_isFcmEnabled && deletedAccount != null) {
+      _removeFirebaseRegistration(deletedAccount);
     } else {
-      await _clearBasicAuthData();
+      await clearDataAndGoToLoginPage();
     }
   }
 
-  Future<void> _clearBasicAuthData() async {
-    try {
-      await Future.wait([
-        deleteCredentialInteractor.execute(),
-        cachingManager.clearAll(),
-        languageCacheManager.removeLanguage(),
-      ]);
-      if (PlatformInfo.isMobile) {
-        await cachingManager.clearAllFileInStorage();
-      }
-      authorizationInterceptors.clear();
-      authorizationIsolateInterceptors.clear();
-      await cachingManager.closeHive();
-      if (_isFcmEnabled) {
-        await _fcmReceiver.deleteFcmToken();
-      }
-    } catch (e, s) {
-      logError('BaseController::_clearBasicAuthData: Exception: $e | Stack: $s');
-    }
-  }
+  Future _handleLogoutCurrentAccountFailure(Failure failure) async {
+    PersonalAccount? deletedAccount;
 
-  Future<void> _clearOidcAuthData() async {
-    try {
-      await Future.wait([
-        deleteAuthorityOidcInteractor.execute(),
-        cachingManager.clearAll(),
-        languageCacheManager.removeLanguage(),
-      ]);
-      if (PlatformInfo.isMobile) {
-        await cachingManager.clearAllFileInStorage();
-      }
-      authorizationIsolateInterceptors.clear();
-      authorizationInterceptors.clear();
-      await cachingManager.closeHive();
-      if (_isFcmEnabled) {
-        await _fcmReceiver.deleteFcmToken();
-      }
-    } catch (e, s) {
-      logError('BaseController::_clearOidcAuthData: Exception: $e | Stack: $s');
+    if (failure is LogoutCurrentAccountOidcFailure) {
+      deletedAccount = failure.deletedAccount;
+    } else if (failure is LogoutCurrentAccountBasicAuthFailure) {
+      deletedAccount = failure.deletedAccount;
+    } else if (failure is LogoutCurrentAccountFailure) {
+      deletedAccount = failure.deletedAccount;
+    }
+
+    if (_isFcmEnabled && deletedAccount != null) {
+      _removeFirebaseRegistration(deletedAccount);
+    } else {
+      await clearDataAndGoToLoginPage();
     }
   }
 }
