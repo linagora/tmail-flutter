@@ -1,8 +1,7 @@
 library model;
 
-export 'account/account_request.dart';
-export 'account/account_type.dart';
 export 'account/authentication_type.dart';
+export 'account/basic_auth.dart';
 export 'account/jmap_account.dart';
 export 'account/password.dart';
 // Account
@@ -52,7 +51,6 @@ export 'extensions/mailbox_extension.dart';
 export 'extensions/mailbox_id_extension.dart';
 export 'extensions/mailbox_name_extension.dart';
 export 'extensions/media_type_nullable_extension.dart';
-export 'extensions/personal_account_extension.dart';
 export 'extensions/presentation_email_extension.dart';
 export 'extensions/presentation_mailbox_extension.dart';
 export 'extensions/properties_extension.dart';

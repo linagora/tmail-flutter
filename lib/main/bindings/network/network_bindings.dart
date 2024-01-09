@@ -14,8 +14,6 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/time_out_interceptors.dart';
@@ -74,8 +72,6 @@ class NetworkBindings extends Bindings {
     Get.put(IOSSharingManager(
       Get.find<KeychainSharingManager>(),
       Get.find<StateCacheManager>(),
-      Get.find<TokenOidcCacheManager>(),
-      Get.find<AuthenticationInfoCacheManager>(),
     ));
   }
 
@@ -84,7 +80,6 @@ class NetworkBindings extends Bindings {
     Get.put(AuthorizationInterceptors(
         Get.find<Dio>(),
         Get.find<AuthenticationClientBase>(),
-        Get.find<TokenOidcCacheManager>(),
         Get.find<AccountCacheManager>(),
         Get.find<IOSSharingManager>(),
     ));

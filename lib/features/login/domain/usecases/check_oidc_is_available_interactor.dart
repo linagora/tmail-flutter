@@ -13,8 +13,8 @@ class CheckOIDCIsAvailableInteractor {
   Stream<Either<Failure, Success>> execute(OIDCRequest oidcRequest) async* {
     try {
       yield Right<Failure, Success>(CheckOIDCIsAvailableLoading());
-      final result = await _oidcRepository.checkOIDCIsAvailable(oidcRequest);
-      yield Right<Failure, Success>(CheckOIDCIsAvailableSuccess(result));
+      final oidcResponse = await _oidcRepository.checkOIDCIsAvailable(oidcRequest);
+      yield Right<Failure, Success>(CheckOIDCIsAvailableSuccess(oidcResponse, oidcRequest.baseUrl));
     } catch (e) {
       yield Left<Failure, Success>(CheckOIDCIsAvailableFailure(e));
     }

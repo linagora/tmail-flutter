@@ -1,41 +1,23 @@
 
-import 'package:model/model.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/request/oidc_request.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
+import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_id.dart';
+import 'package:model/oidc/token_oidc.dart';
 
 abstract class AuthenticationOIDCDataSource {
   Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest);
 
-  Future<OIDCConfiguration> getOIDCConfiguration(OIDCResponse oidcResponse);
-
   Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration oidcConfiguration);
 
-  Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes);
+  Future<TokenOIDC> getTokenOIDC(OIDCConfiguration oidcConfiguration);
 
-  Future<void> persistTokenOIDC(TokenOIDC tokenOidc);
+  Future<TokenOIDC> refreshingTokensOIDC(OIDCConfiguration oidcConfiguration, String refreshToken);
 
-  Future<void> deleteTokenOIDC();
+  Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcDiscoveryResponse);
 
-  Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash);
+  Future<void> authenticateOidcOnBrowser(OIDCConfiguration oidcConfiguration);
 
-  Future<void> persistAuthorityOidc(String authority);
-
-  Future<void> deleteAuthorityOidc();
-
-  Future<OIDCConfiguration> getStoredOidcConfiguration();
-
-  Future<TokenOIDC> refreshingTokensOIDC(
-      String clientId,
-      String redirectUrl,
-      String discoveryUrl,
-      List<String> scopes,
-      String refreshToken);
-
-  Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery);
-
-  Future<void> authenticateOidcOnBrowser(
-      String clientId,
-      String redirectUrl,
-      String discoveryUrl,
-      List<String> scopes);
-
-  Future<String> getAuthenticationInfo();
+  Future<String> getAuthResponseUrlBrowser();
 }

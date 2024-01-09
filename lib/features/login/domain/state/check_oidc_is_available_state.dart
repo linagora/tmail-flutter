@@ -6,11 +6,12 @@ class CheckOIDCIsAvailableLoading extends LoadingState {}
 
 class CheckOIDCIsAvailableSuccess extends UIState {
   final OIDCResponse oidcResponse;
+  final String baseUrl;
 
-  CheckOIDCIsAvailableSuccess(this.oidcResponse);
+  CheckOIDCIsAvailableSuccess(this.oidcResponse, this.baseUrl);
 
   @override
-  List<Object> get props => [oidcResponse];
+  List<Object> get props => [oidcResponse, baseUrl];
 }
 
 class CheckOIDCIsAvailableFailure extends FeatureFailure {

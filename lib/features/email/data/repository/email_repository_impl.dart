@@ -16,7 +16,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/account/account_request.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
@@ -75,9 +75,13 @@ class EmailRepositoryImpl extends EmailRepository {
       List<Attachment> attachments,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest
+      PersonalAccount personalAccount,
   ) {
-    return emailDataSource[DataSourceType.network]!.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
+    return emailDataSource[DataSourceType.network]!.downloadAttachments(
+      attachments,
+      accountId,
+      baseDownloadUrl,
+      personalAccount);
   }
 
   @override
@@ -85,14 +89,14 @@ class EmailRepositoryImpl extends EmailRepository {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest,
+      PersonalAccount personalAccount,
       CancelToken cancelToken
   ) {
     return emailDataSource[DataSourceType.network]!.exportAttachment(
       attachment,
       accountId,
       baseDownloadUrl,
-      accountRequest,
+      personalAccount,
       cancelToken);
   }
 
@@ -149,7 +153,7 @@ class EmailRepositoryImpl extends EmailRepository {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest,
+      PersonalAccount personalAccount,
       StreamController<Either<Failure, Success>> onReceiveController
   ) {
     return emailDataSource[DataSourceType.network]!.downloadAttachmentForWeb(
@@ -157,7 +161,7 @@ class EmailRepositoryImpl extends EmailRepository {
         attachment,
         accountId,
         baseDownloadUrl,
-        accountRequest,
+        personalAccount,
         onReceiveController);
   }
 

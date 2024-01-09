@@ -67,10 +67,10 @@ class EmailDataSourceImpl extends EmailDataSource {
       List<Attachment> attachments,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest
+      PersonalAccount personalAccount
   ) {
     return Future.sync(() async {
-      return await emailAPI.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
+      return await emailAPI.downloadAttachments(attachments, accountId, baseDownloadUrl, personalAccount);
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -79,11 +79,11 @@ class EmailDataSourceImpl extends EmailDataSource {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest,
+      PersonalAccount personalAccount,
       CancelToken cancelToken
   ) {
     return Future.sync(() async {
-      return await emailAPI.exportAttachment(attachment, accountId, baseDownloadUrl, accountRequest, cancelToken);
+      return await emailAPI.exportAttachment(attachment, accountId, baseDownloadUrl, personalAccount, cancelToken);
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -128,7 +128,7 @@ class EmailDataSourceImpl extends EmailDataSource {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest,
+      PersonalAccount personalAccount,
       StreamController<Either<Failure, Success>> onReceiveController
   ) {
     return Future.sync(() async {
@@ -137,7 +137,7 @@ class EmailDataSourceImpl extends EmailDataSource {
           attachment,
           accountId,
           baseDownloadUrl,
-          accountRequest,
+          personalAccount,
           onReceiveController);
     }).catchError(_exceptionThrower.throwException);
   }

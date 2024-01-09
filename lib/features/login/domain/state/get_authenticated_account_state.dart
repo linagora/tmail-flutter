@@ -2,6 +2,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:model/account/personal_account.dart';
 
+class GetAuthenticatedAccountLoading extends LoadingState {}
+
 class GetAuthenticatedAccountSuccess extends UIState {
   final PersonalAccount account;
 

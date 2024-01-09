@@ -128,9 +128,15 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).sign_out,
           controller.imagePaths.icSignOut,
-          () => controller.manageAccountDashboardController.logout(
-              controller.manageAccountDashboardController.sessionCurrent,
-              controller.manageAccountDashboardController.accountId.value)
+          () {
+            if (controller.manageAccountDashboardController.sessionCurrent != null &&
+                controller.manageAccountDashboardController.accountId.value != null) {
+              controller.manageAccountDashboardController.logout(
+                session: controller.manageAccountDashboardController.sessionCurrent!,
+                accountId: controller.manageAccountDashboardController.accountId.value!
+              );
+            }
+          }
         ),
       ]),
     );

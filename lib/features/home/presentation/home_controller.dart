@@ -95,12 +95,12 @@ class HomeController extends ReloadableController {
     if (PlatformInfo.isMobile) {
       final firstTimeAppLaunch = await appStore.getItemBoolean(AppConfig.firstTimeAppLaunchKey);
       if (firstTimeAppLaunch) {
-        _cleanupCache();
+        await _cleanupCache();
       } else {
         _navigateToTwakeWelcomePage();
       }
     } else {
-      _cleanupCache();
+      await _cleanupCache();
     }
   }
 
@@ -108,7 +108,7 @@ class HomeController extends ReloadableController {
     popAndPush(AppRoutes.twakeWelcome);
   }
 
-  void _cleanupCache() async {
+  Future<void> _cleanupCache() async {
     await HiveCacheConfig().onUpgradeDatabase(cachingManager);
 
     await Future.wait([

@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/contact/presentation/contact_view.dart' d
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_bindings.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_view.dart' deferred as destination_picker;
 import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_bindings.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_view.dart' deferred as email_recovery;
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_view.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_bindings.dart';
@@ -37,9 +38,6 @@ import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/
 import 'package:tmail_ui_user/features/unknown_route_page/unknown_route_page_view.dart';
 import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart' deferred as search_mailbox_view;
-import 'package:tmail_ui_user/features/mailto/presentation/mailto_url_view.dart' deferred as mailto_url_view;
-import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_view.dart' deferred as email_recovery;
 
 class AppPages {
   static final pages = [
