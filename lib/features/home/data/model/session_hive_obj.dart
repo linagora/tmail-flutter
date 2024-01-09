@@ -7,8 +7,6 @@ part 'session_hive_obj.g.dart';
 @HiveType(typeId: CachingConstants.SESSION_HIVE_CACHE_ID)
 class SessionHiveObj extends HiveObject with EquatableMixin {
 
-  static const String keyValue = 'session';
-
   @HiveField(0)
   final String value;
 
