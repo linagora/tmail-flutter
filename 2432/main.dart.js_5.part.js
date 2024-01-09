@@ -20,7 +20,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A.MailtoUrlView.prototype = {
     build$1(context) {
       var _null = null;
-      B.SystemChrome_setSystemUIOverlayStyle(C.SystemUiOverlayStyle_ePs);
       return B.Container$(_null, C.SizedBox_Yes, C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
     }
   };
@@ -35,5 +34,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "CGLUVALV3gQaUPdoTzIkUI0rrwk=");
+})($__dart_deferred_initializers__, "SnuO2I/0dIy430h2AYwZaG3jjgY=");
 ;
