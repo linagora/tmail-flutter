@@ -16,15 +16,15 @@ abstract class FCMDatasource {
 
   Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName);
 
-  Future<void> storeFirebaseRegistration(FirebaseRegistration firebaseRegistration);
+  Future<void> storeFirebaseRegistration(AccountId accountId, UserName userName, FirebaseRegistration firebaseRegistration);
 
   Future<FirebaseRegistration> getFirebaseRegistrationByDeviceId(DeviceClientId deviceId);
 
   Future<FirebaseRegistration> registerNewFirebaseRegistrationToken(RegisterNewTokenRequest newTokenRequest);
 
-  Future<FirebaseRegistration> getStoredFirebaseRegistration();
+  Future<FirebaseRegistration> getStoredFirebaseRegistration(AccountId accountId, UserName userName);
 
-  Future<void> deleteFirebaseRegistrationCache();
+  Future<void> deleteFirebaseRegistrationCache(AccountId accountId, UserName userName);
 
   Future<void> destroyFirebaseRegistration(FirebaseRegistrationId registrationId);
 

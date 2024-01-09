@@ -43,15 +43,24 @@ class FCMCacheManager {
     return _fcmCacheClient.clearAllData();
   }
 
-  Future<void> storeFirebaseRegistration(FirebaseRegistrationCache firebaseRegistrationCache) {
+  Future<void> storeFirebaseRegistration(
+    AccountId accountId,
+    UserName userName,
+    FirebaseRegistrationCache registrationCache
+  ) {
+    final registrationCacheKey = TupleKey(accountId.asString, userName.value).encodeKey;
     return _firebaseRegistrationCacheClient.insertItem(
-      FirebaseRegistrationCache.keyCacheValue,
-      firebaseRegistrationCache
+      registrationCacheKey,
+      registrationCache
     );
   }
   
-  Future<FirebaseRegistrationCache> getStoredFirebaseRegistration() async {
-    final firebaseRegistration = await _firebaseRegistrationCacheClient.getItem(FirebaseRegistrationCache.keyCacheValue);
+  Future<FirebaseRegistrationCache> getStoredFirebaseRegistration(
+    AccountId accountId,
+    UserName userName
+  ) async {
+    final registrationCacheKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    final firebaseRegistration = await _firebaseRegistrationCacheClient.getItem(registrationCacheKey);
     if (firebaseRegistration == null) {
       throw NotFoundFirebaseRegistrationCacheException();
     } else {
@@ -59,8 +68,9 @@ class FCMCacheManager {
     }
   }
 
-  Future<void> deleteFirebaseRegistration() async {
-    await _firebaseRegistrationCacheClient.deleteItem(FirebaseRegistrationCache.keyCacheValue);
+  Future<void> deleteFirebaseRegistration(AccountId accountId, UserName userName) async {
+    final registrationCacheKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    await _firebaseRegistrationCacheClient.deleteItem(registrationCacheKey);
   }
 
   Future<void> closeCacheBox() async {

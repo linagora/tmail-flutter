@@ -13,6 +13,8 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
+import 'package:model/account/authentication_type.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -20,10 +22,9 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -221,59 +222,45 @@ class FcmMessageController extends FcmBaseController {
     }
   }
 
-  void _handleGetAuthenticatedAccountSuccess(GetAuthenticatedAccountSuccess success) {
-    _currentAccountId = success.account.accountId;
-    _userName = success.account.userName;
-    if (!PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(success.account.apiUrl);
-    }
-    log('FcmMessageController::_handleGetAuthenticatedAccountSuccess():_currentAccountId: $_currentAccountId | _userName: $_userName');
-  }
-
-  void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
-    log('FcmMessageController::_handleGetAccountByOidcSuccess():');
-    _dynamicUrlInterceptors?.setJmapUrl(storedTokenOidcSuccess.baseUrl.toString());
-    _authorizationInterceptors?.setTokenAndAuthorityOidc(
-      newToken: storedTokenOidcSuccess.tokenOidc,
-      newConfig: storedTokenOidcSuccess.oidcConfiguration
-    );
-
-    if (PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
-      _getSessionAction();
+  void _setUpInterceptors(PersonalAccount personalAccount) {
+    _dynamicUrlInterceptors?.setJmapUrl(personalAccount.baseUrl);
+    if (PlatformInfo.isIOS) {
+      _dynamicUrlInterceptors?.changeBaseUrl(personalAccount.apiUrl);
     } else {
-      _pushActionFromRemoteMessageBackground();
+      _dynamicUrlInterceptors?.changeBaseUrl(personalAccount.baseUrl);
+    }
+
+    switch(personalAccount.authType) {
+      case AuthenticationType.oidc:
+        _authorizationInterceptors?.setTokenAndAuthorityOidc(
+          newToken: personalAccount.tokenOidc,
+          newConfig: personalAccount.tokenOidc!.oidcConfiguration
+        );
+        break;
+      case AuthenticationType.basic:
+        _authorizationInterceptors?.setBasicAuthorization(
+          personalAccount.basicAuth!.userName,
+          personalAccount.basicAuth!.password,
+        );
+        break;
+      default:
+        break;
     }
   }
 
-  void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
-    log('FcmMessageController::_handleGetAccountByBasicAuthSuccess():');
-    _dynamicUrlInterceptors?.setJmapUrl(credentialViewState.baseUrl.toString());
-    _authorizationInterceptors?.setBasicAuthorization(
-      credentialViewState.userName,
-      credentialViewState.password,
-    );
-    if (PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.toString());
-      _getSessionAction();
-    } else {
-      _pushActionFromRemoteMessageBackground();
-    }
-  }
-
-  void _getSessionAction() {
+  void _getSessionAction({AccountId? accountId, UserName? userName}) {
     if (_getSessionInteractor != null) {
-      consumeState(_getSessionInteractor!.execute());
+      consumeState(_getSessionInteractor!.execute(accountId: accountId, userName: userName));
     } else {
       _clearPayloadData();
       logError('FcmMessageController::_getSessionAction():_getSessionInteractor is null');
     }
   }
 
-  void _handleGetSessionSuccess(GetSessionSuccess success) {
-    _currentSession = success.session;
-    _userName = success.session.username;
-    final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
+  void _handleGetSessionSuccess(Session session) {
+    _currentSession = session;
+    _userName = session.username;
+    final apiUrl = session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
     log('FcmMessageController::_pushActionFromRemoteMessageBackground():apiUrl: $apiUrl');
     if (apiUrl.isNotEmpty) {
       _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
@@ -308,13 +295,16 @@ class FcmMessageController extends FcmBaseController {
   void handleSuccessViewState(Success success) {
     log('FcmMessageController::_handleSuccessViewState(): $success');
     if (success is GetAuthenticatedAccountSuccess) {
-      _handleGetAuthenticatedAccountSuccess(success);
+      _currentAccountId = success.account.accountId;
+      _userName = success.account.userName;
+      _setUpInterceptors(success.account);
+      if (PlatformInfo.isIOS) {
+        _pushActionFromRemoteMessageBackground();
+      } else {
+        _getSessionAction(accountId: _currentAccountId, userName: _userName);
+      }
     } else if (success is GetSessionSuccess) {
-      _handleGetSessionSuccess(success);
-    } else if (success is GetStoredTokenOidcSuccess) {
-      _handleGetAccountByOidcSuccess(success);
-    } else if (success is GetCredentialViewState) {
-      _handleGetAccountByBasicAuthSuccess(success);
+      _handleGetSessionSuccess(success.session);
     }
   }
 }

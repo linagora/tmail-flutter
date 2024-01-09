@@ -8,8 +8,6 @@ part 'firebase_registration_cache.g.dart';
 @HiveType(typeId: CachingConstants.FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY)
 class FirebaseRegistrationCache extends HiveObject with EquatableMixin {
 
-  static const String keyCacheValue = 'firebaseRegistrationCache';
-  
   @HiveField(0)
   final String deviceClientId;
 
