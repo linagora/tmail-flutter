@@ -94,9 +94,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
 
         if (PlatformInfo.isIOS) {
-          _handleRefreshTokenOnIOSPlatform();
+          await _handleRefreshTokenOnIOSPlatform();
         } else {
-          _handleRefreshTokenOnOtherPlatform();
+          await _handleRefreshTokenOnOtherPlatform();
         }
 
         if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
