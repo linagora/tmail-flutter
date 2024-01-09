@@ -259,7 +259,8 @@ class HomeController extends ReloadableController {
 
     authenticatedAccountManager.showAccountsBottomSheetModal(
       context: currentContext!,
-      onSelectActiveAccountAction: _handleSelectActiveAccount
+      onSelectActiveAccountAction: _handleSelectActiveAccount,
+      onAddAnotherAccountAction: (_) => _handleAddOtherAccount()
     );
   }
 
@@ -314,5 +315,9 @@ class HomeController extends ReloadableController {
     }
 
     _showListAccountPicker();
+  }
+
+  void _handleAddOtherAccount() {
+    navigateToTwakeIdPage();
   }
 }
