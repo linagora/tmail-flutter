@@ -1,3 +1,31 @@
+## [0.11.0] - 2024-01-09
+### Added
+- Larger scrollbar in email list view on web
+- Archive messages
+- Email recovery
+
+### Changed
+- Upgrade flutter version 3.16.0
+- Schedule build to run on workday end (11:00 UTC)
+- App Icon, Splash Screen, App Name, Notification Icon
+
+### Fixed
+- Sorting in search
+- Attachments are not displayed
+- Read receipt includes weird attachments that are impossible to download
+- Jumping screen when clicking on Cc, Bcc
+- Missing body when read mail with ics attachment
+- User cannot see the suggestion when recipient is longer than 10 on mobile
+- Recipient list in field Cc is not in correct position
+- Large image in identity
+- Cannot upload svg image as signature
+- Native browser navigation
+- Filter in quick search result on browser
+- Duplicate searching result after load more
+- Notification on mobile (Android/iOS)
+- Change language setting subtitle
+- Cannot clickable signature button in composer if the body is longer than 1 line
+
 ## [0.10.5] - 2023-11-21
 ### Added
 - Support multiple condition/actions for Filter Rule
@@ -349,6 +377,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.11.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.0
 [0.10.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.5
 [0.10.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.4
 [0.10.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.3
