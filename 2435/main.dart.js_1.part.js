@@ -456,25 +456,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1607
+    $signature: 1642
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1608
+    $signature: 1643
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1609
+    $signature: 1644
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1610
+    $signature: 1645
   };
   C.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
@@ -500,7 +500,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 439
+    $signature: 454
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -509,7 +509,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$1(this.context);
     },
-    $signature: 8
+    $signature: 7
   };
   C.LoginView__buildMobileForm_closure.prototype = {
     call$0() {
@@ -598,7 +598,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 315
+    $signature: 299
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -618,7 +618,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 81
+    $signature: 78
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -650,7 +650,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1611
+    $signature: 1646
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -671,19 +671,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1612
+    $signature: 1647
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1613
+    $signature: 1648
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1614
+    $signature: 1649
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -757,9 +757,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_email = A._setArrayType(makeConstList(["email"]), type$.JSArray_String);
     D.List_password = A._setArrayType(makeConstList(["password"]), type$.JSArray_String);
     D.BorderSide_PLF1 = new A.BorderSide(B.Color_4278221567, 2, B.BorderStyle_1, -1);
-    D.OutlineInputBorder_EjN1 = new A.OutlineInputBorder(4, B.BorderRadius_tLn6, D.BorderSide_PLF1);
+    D.OutlineInputBorder_EjN1 = new A.OutlineInputBorder(4, B.BorderRadius_tLn2, D.BorderSide_PLF1);
     D.BorderSide_A4L = new A.BorderSide(B.Color_4294112245, 1, B.BorderStyle_1, -1);
-    D.OutlineInputBorder_LNn = new A.OutlineInputBorder(4, B.BorderRadius_tLn6, D.BorderSide_A4L);
+    D.OutlineInputBorder_LNn = new A.OutlineInputBorder(4, B.BorderRadius_tLn2, D.BorderSide_A4L);
     D.PrivacyLinkWidget_null = new C.PrivacyLinkWidget(null);
     D.Padding_sav = new A.Padding(B.EdgeInsets_0_16_0_0, D.PrivacyLinkWidget_null, null);
     D.Color_1035779260 = new A.Color(1035779260);
@@ -787,5 +787,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "OATtSxbLG/IW19CsoJvRXuRgmNA=");
+})($__dart_deferred_initializers__, "J2tlT4LygfBOjI9+TjUgwoYMYjA=");
 ;
