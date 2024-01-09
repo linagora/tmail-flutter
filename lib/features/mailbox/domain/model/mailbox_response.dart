@@ -12,11 +12,7 @@ class MailboxResponse with EquatableMixin {
     this.state
   });
 
-  bool hasData() {
-    return mailboxes != null
-      && mailboxes!.isNotEmpty
-      && state != null;
-  }
+  bool hasData() => mailboxes?.isNotEmpty == true;
 
   @override
   List<Object?> get props => [mailboxes, state];

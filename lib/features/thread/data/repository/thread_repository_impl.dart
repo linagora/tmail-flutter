@@ -87,8 +87,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
       yield localEmailResponse;
     }
 
-    if (networkEmailResponse != null) {
-      await _updateEmailCache(accountId, session.username, newCreated: networkEmailResponse.emailList);
+    if (networkEmailResponse?.hasEmails() == true) {
+      await _updateEmailCache(accountId, session.username, newCreated: networkEmailResponse!.emailList);
     }
 
     if (localEmailResponse.hasState()) {
@@ -101,11 +101,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
         propertiesUpdated: propertiesUpdated
       );
     } else {
-      if (networkEmailResponse != null) {
-        log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse.state}');
-        if (networkEmailResponse.state != null) {
-          await _updateState(accountId, session.username, networkEmailResponse.state!);
-        }
+      if (networkEmailResponse?.hasState() == true) {
+        log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse?.state}');
+        await _updateState(accountId, session.username, networkEmailResponse!.state!);
       }
     }
 
@@ -122,7 +120,11 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
-    yield newEmailResponse;
+    if (newEmailResponse.hasEmails() == true) {
+      yield newEmailResponse;
+    } else {
+      yield networkEmailResponse ?? newEmailResponse;
+    }
   }
 
   bool _isApproveFilterOption(FilterMessageOption? filterOption, List<Email>? listEmailResponse) {
