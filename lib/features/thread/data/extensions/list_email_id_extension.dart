@@ -8,5 +8,5 @@ import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 
 extension ListEmailIdExtension on List<EmailId> {
   List<String> toCacheKeyList(AccountId accountId, UserName userName) =>
-    map((id) => TupleKey(id.asString, accountId.asString, userName.value).encodeKey).toList();
+    map((id) => TupleKey(accountId.asString, userName.value, id.asString).encodeKey).toList();
 }

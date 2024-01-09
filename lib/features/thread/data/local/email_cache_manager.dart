@@ -1,9 +1,10 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/model.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
@@ -13,7 +14,6 @@ import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.da
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
@@ -94,12 +94,12 @@ class EmailCacheManager {
   }
 
   Future<void> storeEmail(AccountId accountId, UserName userName, EmailCache emailCache) {
-    final keyCache = TupleKey(emailCache.id, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailCache.id).encodeKey;
     return _emailCacheClient.insertItem(keyCache, emailCache);
   }
 
   Future<EmailCache> getStoredEmail(AccountId accountId, UserName userName, EmailId emailId) async {
-    final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailId.asString).encodeKey;
     final emailCache = await _emailCacheClient.getItem(keyCache, needToReopen: true);
     if (emailCache != null) {
       return emailCache;

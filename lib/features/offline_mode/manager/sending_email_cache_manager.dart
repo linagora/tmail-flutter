@@ -19,7 +19,7 @@ class SendingEmailCacheManager {
     UserName userName,
     SendingEmailHiveCache sendingEmailHiveCache
   ) async {
-    final keyCache = TupleKey(sendingEmailHiveCache.sendingId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, sendingEmailHiveCache.sendingId).encodeKey;
     await _hiveCacheClient.insertItem(keyCache, sendingEmailHiveCache);
     final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
     if (newSendingEmailHiveCache != null) {
@@ -36,7 +36,7 @@ class SendingEmailCacheManager {
   }
 
   Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) async {
-    final keyCache = TupleKey(sendingId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, sendingId).encodeKey;
     await _hiveCacheClient.deleteItem(keyCache);
     final storedSendingEmail = await _hiveCacheClient.getItem(keyCache);
     if (storedSendingEmail != null) {
@@ -57,7 +57,7 @@ class SendingEmailCacheManager {
     UserName userName,
     SendingEmailHiveCache sendingEmailHiveCache
   ) async {
-    final keyCache = TupleKey(sendingEmailHiveCache.sendingId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, sendingEmailHiveCache.sendingId).encodeKey;
     await _hiveCacheClient.updateItem(keyCache, sendingEmailHiveCache);
     final newSendingEmailHiveCache = await _hiveCacheClient.getItem(keyCache);
     if (newSendingEmailHiveCache != null) {
@@ -74,7 +74,7 @@ class SendingEmailCacheManager {
   ) async {
     final mapSendingEmailCache = {
       for (var sendingEmailCache in listSendingEmailHiveCache)
-        TupleKey(sendingEmailCache.sendingId, accountId.asString, userName.value).encodeKey: sendingEmailCache
+        TupleKey(accountId.asString, userName.value, sendingEmailCache.sendingId).encodeKey: sendingEmailCache
     };
     await _hiveCacheClient.updateMultipleItem(mapSendingEmailCache);
     final newListSendingEmailCache = await _hiveCacheClient.getValuesByListKey(mapSendingEmailCache.keys.toList());
@@ -82,7 +82,7 @@ class SendingEmailCacheManager {
   }
 
   Future<void> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds) async {
-    final listTupleKey = sendingIds.map((sendingId) => TupleKey(sendingId, accountId.asString, userName.value).encodeKey).toList();
+    final listTupleKey = sendingIds.map((sendingId) => TupleKey(accountId.asString, userName.value, sendingId).encodeKey).toList();
     await _hiveCacheClient.deleteMultipleItem(listTupleKey);
     final newListSendingEmailCache = await _hiveCacheClient.getValuesByListKey(listTupleKey);
     if (newListSendingEmailCache.isNotEmpty) {
@@ -91,7 +91,7 @@ class SendingEmailCacheManager {
   }
 
   Future<SendingEmailHiveCache> getStoredSendingEmail(AccountId accountId, UserName userName, String sendingId) async {
-    final keyCache = TupleKey(sendingId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, sendingId).encodeKey;
     final storedSendingEmail = await _hiveCacheClient.getItem(keyCache);
     if (storedSendingEmail != null) {
       return storedSendingEmail;

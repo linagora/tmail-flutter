@@ -46,7 +46,7 @@ class NewEmailCacheManager {
     UserName userName,
     DetailedEmailHiveCache detailedEmailCache
   ) {
-    final keyCache = TupleKey(detailedEmailCache.emailId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, detailedEmailCache.emailId).encodeKey;
     return _cacheClient.insertItem(keyCache, detailedEmailCache);
   }
 
@@ -55,7 +55,7 @@ class NewEmailCacheManager {
     UserName userName,
     String emailId
   ) {
-    final keyCache = TupleKey(emailId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailId).encodeKey;
     return _cacheClient.deleteItem(keyCache);
   }
 
@@ -74,7 +74,7 @@ class NewEmailCacheManager {
     UserName userName,
     EmailId emailId
   ) async {
-    final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailId.asString).encodeKey;
     final detailedEmailCache = await _cacheClient.getItem(keyCache, needToReopen: true);
     if (detailedEmailCache != null) {
       return detailedEmailCache;

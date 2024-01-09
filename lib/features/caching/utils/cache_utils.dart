@@ -12,14 +12,14 @@ class TupleKey {
 
   TupleKey(
     String key1,
+    String key2,
     [
-      String? key2,
       String? key3,
       String? key4,
     ]
   ) : parts = [
     key1,
-    if (key2 != null) key2,
+    key2,
     if (key3 != null) key3,
     if (key4 != null) key4,
   ];

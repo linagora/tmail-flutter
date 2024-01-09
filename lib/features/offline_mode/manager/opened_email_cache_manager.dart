@@ -24,7 +24,7 @@ class OpenedEmailCacheManager {
     UserName userName,
     DetailedEmailHiveCache detailedEmailCache
   ) {
-    final keyCache = TupleKey(detailedEmailCache.emailId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, detailedEmailCache.emailId).encodeKey;
     log('OpenedEmailCacheManager::insertDetailedEmail(): $keyCache');
     return _cacheClient.insertItem(keyCache, detailedEmailCache);
   }
@@ -34,7 +34,7 @@ class OpenedEmailCacheManager {
     UserName userName,
     String emailId
   ) {
-    final keyCache = TupleKey(emailId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailId).encodeKey;
     log('OpenedEmailCacheManager::removeDetailedEmail(): $keyCache');
     return _cacheClient.deleteItem(keyCache);
   }
@@ -72,7 +72,7 @@ class OpenedEmailCacheManager {
     UserName userName,
     EmailId emailId
   ) async {
-    final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailId.asString).encodeKey;
     final detailedEmailCache = await _cacheClient.getItem(keyCache, needToReopen: true);
     if (detailedEmailCache != null) {
       return detailedEmailCache;

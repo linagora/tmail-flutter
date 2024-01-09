@@ -18,6 +18,6 @@ enum StateType {
   email;
 
   String getTupleKeyStored(AccountId accountId, UserName userName) {
-    return TupleKey(name, accountId.asString, userName.value).encodeKey;
+    return TupleKey(accountId.asString, userName.value, name).encodeKey;
   }
 }
