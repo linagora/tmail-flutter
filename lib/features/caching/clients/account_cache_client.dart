@@ -1,8 +1,12 @@
 import 'package:tmail_ui_user/features/caching/config/hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 
 class AccountCacheClient extends HiveCacheClient<AccountCache> {
 
   @override
-  String get tableName => 'AccountCache';
+  String get tableName => CachingConstants.accountCacheBoxName;
+
+  @override
+  bool get encryption => true;
 }

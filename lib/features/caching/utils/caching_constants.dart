@@ -10,7 +10,7 @@ class CachingConstants {
   static const int TOKEN_OIDC_HIVE_CACHE_IDENTIFY = 8;
   static const int ACCOUNT_HIVE_CACHE_IDENTIFY = 9;
   static const int ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY = 10;
-  static const int AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY = 11;
+  static const int BASIC_AUTH_HIVE_CACHE_IDENTIFY = 11;
   static const int RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY = 12;
   static const int RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY = 13;
   static const int FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY = 14;
@@ -26,6 +26,13 @@ class CachingConstants {
   static const String sendingEmailCacheBoxName = 'sending_email_cache_box';
   static const String sessionCacheBoxName = 'session_cache_box';
   static const String firebaseRegistrationCacheBoxName = 'firebase_registration_cache_box';
+  static const String accountCacheBoxName = 'account_cache_box';
+  static const String emailCacheBoxName = 'email_cache_box';
+  static const String mailboxCacheBoxName = 'mailbox_cache_box';
+  static const String stateCacheBoxName = 'state_cache_box';
+  static const String recentSearchCacheBoxName = 'recent_search_cache_box';
+  static const String recentLoginUrlCacheBoxName = 'recent_login_url_cache_box';
+  static const String recentLoginUsernameCacheBoxName = 'recent_login_username_cache_box';
 
   static const String newEmailsContentFolderName = 'new_emails';
   static const String openedEmailContentFolderName = 'opened_email';
