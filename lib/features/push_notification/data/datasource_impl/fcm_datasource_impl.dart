@@ -54,12 +54,12 @@ class FcmDatasourceImpl extends FCMDatasource {
   }
   
   @override
-  Future<bool> storeFirebaseRegistration(FirebaseRegistration firebaseRegistration) {
+  Future<bool> storeFirebaseRegistration(AccountId accountId, UserName userName, FirebaseRegistration firebaseRegistration) {
     throw UnimplementedError();
   }
   
   @override
-  Future<FirebaseRegistration> getStoredFirebaseRegistration() {
+  Future<FirebaseRegistration> getStoredFirebaseRegistration(AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
 
@@ -78,7 +78,7 @@ class FcmDatasourceImpl extends FCMDatasource {
   }
 
   @override
-  Future<void> deleteFirebaseRegistrationCache() {
+  Future<void> deleteFirebaseRegistrationCache(AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
 }

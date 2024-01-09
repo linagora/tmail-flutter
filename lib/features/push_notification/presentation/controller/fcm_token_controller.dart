@@ -7,8 +7,12 @@ import 'package:fcm/model/device_client_id.dart';
 import 'package:fcm/model/fcm_token.dart';
 import 'package:fcm/model/firebase_registration.dart';
 import 'package:fcm/model/firebase_registration_expired_time.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_firebase_registration_by_device_id_state.dart';
@@ -42,6 +46,7 @@ class FcmTokenController extends FcmBaseController {
   GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
   UpdateFirebaseRegistrationTokenInteractor? _updateFirebaseRegistrationTokenInteractor;
   DeleteFirebaseRegistrationCacheInteractor? _deleteFirebaseRegistrationCacheInteractor;
+  GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
 
   void initialBindingInteractor() {
     _storeFirebaseRegistrationInteractor = getBinding<StoreFirebaseRegistrationInteractor>();
@@ -50,6 +55,7 @@ class FcmTokenController extends FcmBaseController {
     _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
     _updateFirebaseRegistrationTokenInteractor = getBinding<UpdateFirebaseRegistrationTokenInteractor>();
     _deleteFirebaseRegistrationCacheInteractor = getBinding<DeleteFirebaseRegistrationCacheInteractor>();
+    _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
   }
 
   void onFcmTokenChanged(String? newToken) {
@@ -60,7 +66,7 @@ class FcmTokenController extends FcmBaseController {
         deviceClientId: DeviceClientId(FcmUtils.instance.hashTokenToDeviceId(newToken))
       );
     } else {
-      _getStoredFirebaseRegistrationFromCache();
+      _getActiveAccount();
     }
   }
 
@@ -80,9 +86,15 @@ class FcmTokenController extends FcmBaseController {
     }
   }
 
-  void _getStoredFirebaseRegistrationFromCache() {
+  void _getActiveAccount() {
+    if (_getAuthenticatedAccountInteractor != null) {
+      consumeState(_getAuthenticatedAccountInteractor!.execute());
+    }
+  }
+
+  void _getStoredFirebaseRegistrationFromCache(AccountId accountId, UserName userName) {
     if (_getStoredFirebaseRegistrationInteractor != null) {
-      consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
+      consumeState(_getStoredFirebaseRegistrationInteractor!.execute(accountId, userName));
     }
   }
 
@@ -165,7 +177,14 @@ class FcmTokenController extends FcmBaseController {
   @override
   void handleSuccessViewState(Success success) {
     log('FcmTokenController::_handleSuccessViewState(): $success');
-    if (success is GetFirebaseRegistrationByDeviceIdSuccess &&
+    if (success is GetAuthenticatedAccountSuccess &&
+        success.account.accountId != null &&
+        success.account.userName != null) {
+      _getStoredFirebaseRegistrationFromCache(
+        success.account.accountId!,
+        success.account.userName!
+      );
+    } else if (success is GetFirebaseRegistrationByDeviceIdSuccess &&
         _isFirebaseRegistrationTokenExpired(success.firebaseRegistration)) {
       _updateNewExpiredTimeForFirebaseRegistration(success.firebaseRegistration);
     } else if (success is GetStoredFirebaseRegistrationSuccess) {

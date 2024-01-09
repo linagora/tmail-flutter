@@ -52,16 +52,24 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   }
   
   @override
-  Future<void> storeFirebaseRegistration(FirebaseRegistration firebaseRegistration) {
+  Future<void> storeFirebaseRegistration(
+    AccountId accountId,
+    UserName userName,
+    FirebaseRegistration firebaseRegistration
+  ) {
    return Future.sync(() async {
-      return await _firebaseCacheManager.storeFirebaseRegistration(firebaseRegistration.toFirebaseRegistrationCache());
+      return await _firebaseCacheManager.storeFirebaseRegistration(
+        accountId,
+        userName,
+        firebaseRegistration.toFirebaseRegistrationCache()
+      );
     }).catchError(_exceptionThrower.throwException);
   }
   
   @override
-  Future<FirebaseRegistration> getStoredFirebaseRegistration() {
+  Future<FirebaseRegistration> getStoredFirebaseRegistration(AccountId accountId, UserName userName) {
     return Future.sync(() async {
-      final firebaseRegistrationCache = await _firebaseCacheManager.getStoredFirebaseRegistration();
+      final firebaseRegistrationCache = await _firebaseCacheManager.getStoredFirebaseRegistration(accountId, userName);
       return firebaseRegistrationCache.toFirebaseRegistration();
     }).catchError(_exceptionThrower.throwException);
   }
@@ -77,9 +85,9 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   }
 
   @override
-  Future<void> deleteFirebaseRegistrationCache() {
+  Future<void> deleteFirebaseRegistrationCache(AccountId accountId, UserName userName) {
     return Future.sync(() async {
-      return await _firebaseCacheManager.deleteFirebaseRegistration();
+      return await _firebaseCacheManager.deleteFirebaseRegistration(accountId, userName);
     }).catchError(_exceptionThrower.throwException);
   }
 }

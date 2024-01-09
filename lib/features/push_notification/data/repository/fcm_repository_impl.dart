@@ -7,6 +7,7 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -24,7 +25,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_r
 import 'package:tmail_ui_user/features/push_notification/domain/utils/fcm_constants.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 class FCMRepositoryImpl extends FCMRepository {
@@ -105,13 +105,13 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<FirebaseRegistration> getStoredFirebaseRegistration()  {
-    return _fcmDatasource[DataSourceType.local]!.getStoredFirebaseRegistration();
+  Future<FirebaseRegistration> getStoredFirebaseRegistration(AccountId accountId, UserName userName)  {
+    return _fcmDatasource[DataSourceType.local]!.getStoredFirebaseRegistration(accountId, userName);
   }
   
   @override
-  Future<void> storeFirebaseRegistration(FirebaseRegistration firebaseRegistration) {
-    return _fcmDatasource[DataSourceType.local]!.storeFirebaseRegistration(firebaseRegistration);
+  Future<void> storeFirebaseRegistration(AccountId accountId, UserName userName, FirebaseRegistration firebaseRegistration) {
+    return _fcmDatasource[DataSourceType.local]!.storeFirebaseRegistration(accountId, userName, firebaseRegistration);
   }
   
   @override
@@ -224,7 +224,7 @@ class FCMRepositoryImpl extends FCMRepository {
   }
 
   @override
-  Future<void> deleteFirebaseRegistrationCache() {
-    return _fcmDatasource[DataSourceType.local]!.deleteFirebaseRegistrationCache();
+  Future<void> deleteFirebaseRegistrationCache(AccountId accountId, UserName userName) {
+    return _fcmDatasource[DataSourceType.local]!.deleteFirebaseRegistrationCache(accountId, userName);
   }
 }
