@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/prev
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/restore_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/switch_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -173,13 +174,19 @@ class HomeController extends ReloadableController {
   }
 
   void _handleLoginNavigateArguments(LoginNavigateArguments navigateArguments) async {
-    if (navigateArguments.navigateType == LoginNavigateType.switchActiveAccount) {
-      _switchActiveAccount(
-        navigateArguments.currentAccount!,
-        navigateArguments.sessionCurrentAccount!,
-        navigateArguments.nextActiveAccount!);
-    } else {
-      await _cleanupCache();
+    switch (navigateArguments.navigateType) {
+      case LoginNavigateType.switchActiveAccount:
+        _switchActiveAccount(
+          navigateArguments.currentAccount!,
+          navigateArguments.sessionCurrentAccount!,
+          navigateArguments.nextActiveAccount!);
+        break;
+      case LoginNavigateType.selectActiveAccount:
+        _showListAccountPicker();
+        break;
+      default:
+        await _cleanupCache();
+        break;
     }
   }
 
@@ -242,5 +249,70 @@ class HomeController extends ReloadableController {
         session: session
       )
     );
+  }
+
+  void _showListAccountPicker() {
+    if (currentContext == null) {
+      logError('HomeController::_showListAccountPicker: context is null');
+      return;
+    }
+
+    authenticatedAccountManager.showAccountsBottomSheetModal(
+      context: currentContext!,
+      onSelectActiveAccountAction: _handleSelectActiveAccount
+    );
+  }
+
+  void _handleSelectActiveAccount(PersonalAccount activeAccount) {
+    setUpInterceptors(activeAccount);
+
+    _sessionStreamSubscription = getSessionInteractor.execute(
+      accountId: activeAccount.accountId,
+      userName: activeAccount.userName
+    ).listen(
+      (viewState) {
+        viewState.fold(
+          (failure) => _handleGetSessionFailureWhenSelectActiveAccount(
+            activeAccount: activeAccount,
+            exception: failure),
+          (success) => success is GetSessionSuccess
+            ? _handleGetSessionSuccessWhenSelectActiveAccount(activeAccount, success.session)
+            : null,
+        );
+      },
+      onError: (error, stack) {
+        _handleGetSessionFailureWhenSelectActiveAccount(
+          activeAccount: activeAccount,
+          exception: error);
+      }
+    );
+  }
+
+  void _handleGetSessionSuccessWhenSelectActiveAccount(
+    PersonalAccount activeAccount,
+    Session sessionActiveAccount
+  ) async {
+    log('HomeController::_handleGetSessionSuccessWhenSelectActiveAccount:sessionActiveAccount: $sessionActiveAccount');
+    await popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+      arguments: SwitchActiveAccountArguments(
+        session: sessionActiveAccount,
+        nextActiveAccount: activeAccount,
+      )
+    );
+  }
+
+  void _handleGetSessionFailureWhenSelectActiveAccount({
+    required PersonalAccount activeAccount,
+    dynamic exception
+  }) async {
+    logError('HomeController::_handleGetSessionFailureWhenSelectActiveAccount:exception: $exception');
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).unableToLogInToAccount(activeAccount.userName?.value ?? ''));
+    }
+
+    _showListAccountPicker();
   }
 }
