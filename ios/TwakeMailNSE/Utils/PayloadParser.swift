@@ -9,7 +9,7 @@ class PayloadParser {
         return state.contains(prefixState) &&
         (state.contains(TypeName.mailbox.rawValue) ||
          state.contains(TypeName.email.rawValue) ||
-         state.contains(TypeName.EmailDelivery.rawValue))
+         state.contains(TypeName.emailDelivery.rawValue))
     }
     
     func parsingPayloadNotification(payloadData: [String: Any]) -> [String: [TypeName: String]]{
