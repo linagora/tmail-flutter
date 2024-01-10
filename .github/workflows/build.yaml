@@ -41,7 +41,7 @@ jobs:
       - name: Setup Firebase env
         env:
           FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
-        run: echo "$FIREBASE_ENV" > ./configurations/env.fcm
+        run: ./scripts/setup-firebase.sh
 
       - name: Setup Java
         if: matrix.os == 'android'
@@ -52,19 +52,17 @@ jobs:
 
       - name: Setup iOS environment
         if: matrix.os == 'ios'
-        run: |
-          flutter pub get
-          pod install && pod update
+        run: ../scripts/setup-ios.sh
         working-directory: ${{ matrix.os }}
 
       - name: Run prebuild
-        run: bash prebuild.sh
+        run: ./scripts/prebuild.sh
 
       - name: Build
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           APPLE_CERTIFICATES_SSH_KEY: ${{ secrets.APPLE_CERTIFICATES_SSH_KEY }}
-        run: bundle exec fastlane dev
+        run: ../scripts/build-dev.sh
         working-directory: ${{ matrix.os }}
 
       - name: Upload artifacts

@@ -30,21 +30,18 @@ jobs:
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
 
       - name: Run prebuild
-        run: bash prebuild.sh
+        run: ./scripts/prebuild.sh
 
       - name: Configure environments
         id: configure
         env:
           FOLDER: ${{ github.event.pull_request.number }}
-        run: |
-          sed -i "s|SERVER_URL=.*|SERVER_URL=https://apisix.upn.integration-open-paas.org/|g" env.file
-          sed -i "s|DOMAIN_REDIRECT_URL=.*|DOMAIN_REDIRECT_URL=https://$GITHUB_REPOSITORY_OWNER.github.io/${GITHUB_REPOSITORY##*/}/$FOLDER|g" env.file
-          echo "URL=https://$GITHUB_REPOSITORY_OWNER.github.io/${GITHUB_REPOSITORY##*/}/$FOLDER" >> $GITHUB_OUTPUT
+        run: ./scripts/configure-web-environment.sh
 
       - name: Build
         env:
           FOLDER: ${{ github.event.pull_request.number }}
-        run: flutter build web --profile --verbose --base-href "/${GITHUB_REPOSITORY##*/}/$FOLDER/"
+        run: ./scripts/build-web.sh
 
       - name: Deploy to Github Pages
         uses: peaceiris/actions-gh-pages@v3
