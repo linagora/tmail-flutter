@@ -111,7 +111,6 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
 import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
-import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/offline_mode/work_manager/one_time_work_request.dart';
 import 'package:tmail_ui_user/features/offline_mode/work_manager/worker_type.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
@@ -403,28 +402,8 @@ class MailboxDashBoardController extends ReloadableController {
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     super.handleExceptionAction(failure: failure, exception: exception);
     if (failure is SendEmailFailure && exception is NoNetworkError) {
-      if (PlatformInfo.isIOS) {
-        if (currentContext != null) {
-          _showToastSendMessageFailure(AppLocalizations.of(currentContext!).sendMessageFailure);
-        }
-        _updateSendingStateWhenSendEmailFailureOnIOS(failure);
-      } else if (PlatformInfo.isAndroid) {
-        if (failure.emailRequest.storedSendingId != null) {
-          _handleStoreSendingEmail(
-            failure.session,
-            failure.accountId,
-            failure.emailRequest,
-            failure.mailboxRequest
-          );
-        } else {
-          _handleUpdateSendingEmail(
-            failure.session,
-            failure.accountId,
-            failure.emailRequest,
-            failure.mailboxRequest
-          );
-        }
-      }
+      log('MailboxDashBoardController::handleExceptionAction(): $failure');
+      _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     }
   }
 
@@ -1839,7 +1818,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSendEmailFailure(SendEmailFailure failure) {
     logError('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
-    _updateSendingStateWhenSendEmailFailureOnIOS(failure);
+    _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     if (currentContext == null) {
       clearState();
       return;
@@ -1968,6 +1947,17 @@ class MailboxDashBoardController extends ReloadableController {
     ));
   }
 
+  void _storeSendingEmailInCaseOfSendingFailureInMobile(SendEmailFailure failure) {
+    if (PlatformInfo.isMobile) {
+      _handleUpdateSendingEmail(
+          failure.session,
+          failure.accountId,
+          failure.emailRequest,
+          failure.mailboxRequest
+      );
+    }
+  }
+
   void _handleUpdateSendingEmail(
     Session session,
     AccountId accountId,
@@ -1995,12 +1985,9 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleStoreSendingEmailSuccess(StoreSendingEmailSuccess success) {
-    if (PlatformInfo.isAndroid) {
-      addSendingEmailToSendingQueue(success.sendingEmail);
-    }
     getAllSendingEmails();
     if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastSuccessMessage(
+      appToast.showToastWarningMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).messageHasBeenSavedToTheSendingQueue,
         leadingSVGIconColor: Colors.white,
@@ -2009,11 +1996,14 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
-    if (PlatformInfo.isAndroid) {
-      await WorkManagerController().cancelByUniqueId(success.newSendingEmail.sendingId);
-      addSendingEmailToSendingQueue(success.newSendingEmail);
-    }
     getAllSendingEmails();
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastWarningMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).messageHasBeenSavedToTheSendingQueue,
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: imagePaths.icEmail);
+    }
   }
 
   void addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
@@ -2213,7 +2203,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {
-    if (PlatformInfo.isIOS &&
+    if (PlatformInfo.isMobile &&
         success.emailRequest.storedSendingId != null &&
         accountId.value != null &&
         sessionCurrent != null
@@ -2235,28 +2225,6 @@ class MailboxDashBoardController extends ReloadableController {
     if (success.emailRequest.emailActionType == EmailActionType.composeFromUnsubscribeMailtoLink &&
         success.emailRequest.previousEmailId != null) {
       unsubscribeMail(success.emailRequest.previousEmailId!);
-    }
-  }
-
-  void _updateSendingStateWhenSendEmailFailureOnIOS(SendEmailFailure failure) {
-    log('MailboxDashBoardController::_updateSendingStateWhenSendEmailFailureOnIOS:');
-    if (PlatformInfo.isIOS &&
-        failure.emailRequest.storedSendingId != null &&
-        accountId.value != null &&
-        sessionCurrent != null
-    ) {
-      final sendingEmailError = failure.emailRequest.toSendingEmail(
-        failure.emailRequest.storedSendingId!,
-        mailboxRequest: failure.mailboxRequest,
-        newState: SendingState.error
-      );
-      consumeState(
-        _updateSendingEmailInteractor.execute(
-          accountId.value!,
-          sessionCurrent!.username,
-          sendingEmailError
-        )
-      );
     }
   }
 
