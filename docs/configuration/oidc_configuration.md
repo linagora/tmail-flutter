@@ -9,7 +9,7 @@
 - Other configurations depend on the platform:
 
 #### Web:
-- `DOMAIN_REDIRECT_URL`:  URL of your TeamMail web application
+- `DOMAIN_REDIRECT_URL`:  URL of your TwakeMail web application
 - `WEB_OIDC_CLIENT_ID`: Client ID of your OIDC application
 
 #### Mobile:
