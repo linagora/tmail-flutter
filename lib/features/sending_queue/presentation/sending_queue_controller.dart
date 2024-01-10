@@ -19,7 +19,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
@@ -250,10 +249,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void _handleDeleteListSendingEmailSuccess(DeleteMultipleSendingEmailSuccess success) async {
-    if (PlatformInfo.isAndroid) {
-      await Future.wait(success.sendingIds.map(WorkManagerController().cancelByUniqueId));
-    }
-
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -277,7 +272,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
       return;
     }
 
-    if (PlatformInfo.isIOS && listSendingEmails.isNotEmpty) {
+    if (PlatformInfo.isMobile && listSendingEmails.isNotEmpty) {
       final sendingEmailRunning = listSendingEmails.first.updatingSendingState(SendingState.running);
       _updateSendingEmailAction(
         newSendingEmail: sendingEmailRunning,
@@ -290,14 +285,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
           accountId,
           sendingEmailRunning.toEmailRequest(),
           _getMailboxRequest(sendingEmailRunning),
-        )
-      );
-    } else {
-      consumeState(
-        _updateMultipleSendingEmailInteractor.execute(
-          accountId,
-          session.username,
-          listSendingEmails.toSendingStateWaiting()
         )
       );
     }
@@ -317,13 +304,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void _handleResendSendingEmailSuccess(List<SendingEmail> newListSendingEmails) async {
-    if (PlatformInfo.isAndroid) {
-      await Future.forEach<SendingEmail>(newListSendingEmails, (sendingEmail) async {
-        await WorkManagerController().cancelByUniqueId(sendingEmail.sendingId);
-        dashboardController.addSendingEmailToSendingQueue(sendingEmail);
-      });
-    }
-
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -345,9 +325,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   void _handleUpdateSendingEmailSuccess(UpdateSendingEmailSuccess success) async {
-    if (PlatformInfo.isAndroid) {
-      await WorkManagerController().cancelByUniqueId(success.newSendingEmail.sendingId);
-    }
     refreshSendingQueue();
   }
 
