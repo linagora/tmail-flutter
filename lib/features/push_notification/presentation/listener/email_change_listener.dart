@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/listener/c
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class EmailChangeListener extends ChangeListener {
 
@@ -62,6 +63,7 @@ class EmailChangeListener extends ChangeListener {
   GetListDetailedEmailByIdInteractor? _getListDetailedEmailByIdInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   StoreListNewEmailInteractor? _storeListNewEmailInteractor;
+  IOSSharingManager? _iosSharingManager;
 
   jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
@@ -83,6 +85,7 @@ class EmailChangeListener extends ChangeListener {
       _getListDetailedEmailByIdInteractor = getBinding<GetListDetailedEmailByIdInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _storeListNewEmailInteractor = getBinding<StoreListNewEmailInteractor>();
+      _iosSharingManager = getBinding<IOSSharingManager>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -133,8 +136,11 @@ class EmailChangeListener extends ChangeListener {
     _userName = userName;
     log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
-    if (PlatformInfo.isWeb || PlatformInfo.isIOS) {
+    if (PlatformInfo.isWeb) {
       _storeEmailDeliveryStateAction(accountId, userName, _newStateEmailDelivery!);
+    } else if (PlatformInfo.isIOS) {
+      _storeEmailDeliveryStateAction(accountId, userName, _newStateEmailDelivery!);
+      _updateKeychainSharingSession(accountId, _newStateEmailDelivery!.value);
     } else if (PlatformInfo.isAndroid) {
       _getStoredEmailDeliveryState(accountId, userName);
     }
@@ -320,6 +326,17 @@ class EmailChangeListener extends ChangeListener {
         accountId,
         mapDetailedEmails
       ));
+    }
+  }
+
+  void _updateKeychainSharingSession(AccountId accountId, String emailDeliveryState) async {
+    if (_iosSharingManager == null) {
+      return;
+    }
+
+    final emailDeliveryStateKeychain = await _iosSharingManager!.getEmailDeliveryStateFromKeychain(accountId);
+    if (emailDeliveryStateKeychain == null || emailDeliveryStateKeychain.isEmpty) {
+      await _iosSharingManager!.updateEmailDeliveryStateInKeyChain(accountId, emailDeliveryState);
     }
   }
 }

@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class MailboxVisibilityInteractorBindings extends InteractorsBindings {
 
@@ -38,6 +39,7 @@ class MailboxVisibilityInteractorBindings extends InteractorsBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
+      Get.find<IOSSharingManager>(),
       Get.find<CacheExceptionThrower>()
     ));
   }
