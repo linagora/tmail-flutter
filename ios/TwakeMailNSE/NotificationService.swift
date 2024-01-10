@@ -25,8 +25,12 @@ class NotificationService: UNNotificationServiceExtension {
             return self.notify()
         }
 
-        Task {
-            await handleGetNewEmails(payloadData: payloadData)
+        if #available(iOSApplicationExtension 13.0, *) {
+            Task {
+                await handleGetNewEmails(payloadData: payloadData)
+            }
+        } else {
+            return self.notify()
         }
     }
     
@@ -36,6 +40,7 @@ class NotificationService: UNNotificationServiceExtension {
         notify()
     }
     
+    @available(iOSApplicationExtension 13.0.0, *)
     private func handleGetNewEmails(payloadData: [String: Any]) async {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
