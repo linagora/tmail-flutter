@@ -42,7 +42,7 @@ void log(String? value, {Level level = Level.info}) {
     }
   }
   // ignore: avoid_print
-  print('[TeamMail] $logsStr');
+  print('[TwakeMail] $logsStr');
 }
 
 void logError(String? value) => log(value, level: Level.error);

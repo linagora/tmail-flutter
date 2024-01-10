@@ -25,7 +25,7 @@ class FcmUtils {
 
   static FcmUtils get instance => _instance;
 
-  static const String hashCodeKey = 'TeamMail';
+  static const String hashCodeKey = 'TwakeMail';
   static final List<TypeName> defaultFirebaseRegistrationTypes = [
     TypeName.emailType,
     TypeName.mailboxType,
