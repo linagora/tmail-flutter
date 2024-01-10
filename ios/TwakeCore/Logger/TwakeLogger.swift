@@ -4,6 +4,6 @@ class TwakeLogger {
     static let shared: TwakeLogger = TwakeLogger()
     
     func log(message: String) {
-        debugPrint(message)
+        debugPrint("[TwakeMail] \(message)")
     }
 }
