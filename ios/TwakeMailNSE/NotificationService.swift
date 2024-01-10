@@ -1,9 +1,10 @@
 import UserNotifications
+import SwiftUI
 
 class NotificationService: UNNotificationServiceExtension {
 
     private let timeIntervalNotificationTriggerInSecond: Int = 2
-    private let newEmailDefaultMessage: String = "You have new emails"
+    private let newEmailDefaultMessageKey: String = "newMessageInTwakeMail"
 
     private var handler: ((UNNotificationContent) -> Void)?
     private var modifiedContent: UNMutableNotificationContent?
@@ -14,12 +15,13 @@ class NotificationService: UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         handler = contentHandler
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        
         self.modifiedContent?.title = InfoPlistReader(bundle: .app).bundleDisplayName
+        self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
+        self.modifiedContent?.badge = NSNumber(value: 1)
         
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
-            self.modifiedContent?.body = newEmailDefaultMessage
-            self.modifiedContent?.badge = NSNumber(value: 1)
             return self.notify()
         }
 
@@ -38,8 +40,6 @@ class NotificationService: UNNotificationServiceExtension {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
         if (mapStateChanges.isEmpty) {
-            self.modifiedContent?.body = newEmailDefaultMessage
-            self.modifiedContent?.badge = NSNumber(value: 1)
             return self.notify()
         } else {
             guard let currentAccountId = mapStateChanges.keys.first,
@@ -49,8 +49,6 @@ class NotificationService: UNNotificationServiceExtension {
                   let oldEmailState = keychainSharingSession.emailState,
                   newEmailState != oldEmailState,
                   keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil else {
-                self.modifiedContent?.body = newEmailDefaultMessage
-                self.modifiedContent?.badge = NSNumber(value: 1)
                 return self.notify()
             }
             
@@ -65,8 +63,6 @@ class NotificationService: UNNotificationServiceExtension {
                 oidcScopes: keychainSharingSession.oidcScopes,
                 onComplete: { (emails, errors) in
                     if emails.isEmpty {
-                        self.modifiedContent?.body = self.newEmailDefaultMessage
-                        self.modifiedContent?.badge = NSNumber(value: 1)
                         return self.notify()
                     } else {
                         self.keychainController.updateEmailStateToKeychain(accountId: keychainSharingSession.accountId, newState: newEmailState)
@@ -136,7 +132,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func discard() {
-        handler?(UNMutableNotificationContent())
+        handler?(UNNotificationContent())
         cleanUp()
     }
     
