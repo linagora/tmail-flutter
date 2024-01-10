@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-07T14:01:28.226469",
+  "@@last_modified": "2024-01-11T00:19:44.628891",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2736,7 +2736,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "Message has been saved to the sending queue.",
+  "messageHasBeenSavedToTheSendingQueue": "Temporary network issue. Messages queued for retry when connected.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
@@ -2832,6 +2832,12 @@
   },
   "delivering": "Delivering",
   "@delivering": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pending": "Pending",
+  "@pending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -3264,7 +3270,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueViewOnIOS": "Messages in the Send Queue mailbox can be sent while online.",
+  "bannerMessageSendingQueueViewOnIOS": "Your messages were not sent due to network issues. They're safely stored. When you're back online, you can resend, edit, or delete them.",
   "@bannerMessageSendingQueueViewOnIOS": {
     "type": "text",
     "placeholders_order": [],
