@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.da
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
 import 'package:tmail_ui_user/main/localizations/locale_interceptor.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -129,6 +130,7 @@ class NetworkBindings extends Bindings {
 
   void _bindingException() {
     Get.put(RemoteExceptionThrower());
+    Get.put(SendEmailExceptionThrower());
   }
 
   void _bindingTransformer() {
