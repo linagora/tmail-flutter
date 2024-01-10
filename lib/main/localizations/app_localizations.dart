@@ -2817,7 +2817,7 @@ class AppLocalizations {
 
   String get messageHasBeenSavedToTheSendingQueue {
     return Intl.message(
-      'Message has been saved to the sending queue.',
+      'Temporary network issue. Messages queued for retry when connected.',
       name: 'messageHasBeenSavedToTheSendingQueue',
     );
   }
@@ -2924,6 +2924,13 @@ class AppLocalizations {
     return Intl.message(
       'Delivering',
       name: 'delivering',
+    );
+  }
+
+  String get pending {
+    return Intl.message(
+      'Pending',
+      name: 'pending',
     );
   }
 
@@ -3372,7 +3379,7 @@ class AppLocalizations {
 
   String get bannerMessageSendingQueueViewOnIOS {
     return Intl.message(
-      'Messages in the Send Queue mailbox can be sent while online.',
+      'Your messages were not sent due to network issues. They\'re safely stored. When you\'re back online, you can resend, edit, or delete them.',
       name: 'bannerMessageSendingQueueViewOnIOS'
     );
   }
