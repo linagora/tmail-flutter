@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/login/data/local/authentication_info_cach
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/push_notification/data/extensions/keychain_sharing_session_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_session.dart';
 
@@ -33,7 +34,7 @@ class IOSSharingManager {
       personalAccount.apiUrl != null;
   }
 
-  Future<String?> _getEmailDeliveryStateFromKeychain(AccountId accountId) async {
+  Future<String?> getEmailDeliveryStateFromKeychain(AccountId accountId) async {
     try {
       if (await _keychainSharingManager.isSessionExist(accountId)) {
         final keychainSharingStored = await _keychainSharingManager.getSharingSession(accountId);
@@ -122,7 +123,7 @@ class IOSSharingManager {
     required UserName userName
   }) async {
     try {
-      String? emailDeliveryState = await _getEmailDeliveryStateFromKeychain(accountId);
+      String? emailDeliveryState = await getEmailDeliveryStateFromKeychain(accountId);
       if (emailDeliveryState == null || emailDeliveryState.isEmpty) {
         final emailState = await _stateCacheManager.getState(
           accountId,
@@ -136,5 +137,15 @@ class IOSSharingManager {
       logError('IOSSharingManager::_getEmailDeliveryState:Exception: $e');
       return null;
     }
+  }
+
+  Future updateEmailDeliveryStateInKeyChain(AccountId accountId, String newEmailDeliveryState) async {
+    final keychainSharingSession = await getKeychainSharingSession(accountId);
+    log('IOSSharingManager::updateEmailDeliveryStateInKeyChain:keychainSharingSession: $keychainSharingSession');
+    if (keychainSharingSession == null) {
+      return;
+    }
+    final newKeychain = keychainSharingSession.updating(emailDeliveryState: newEmailDeliveryState);
+    await _keychainSharingManager.save(newKeychain);
   }
 }

@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class ThreadBindings extends BaseBindings {
 
@@ -52,6 +53,7 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>(), Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
+      Get.find<IOSSharingManager>(),
       Get.find<CacheExceptionThrower>()
     ));
   }

@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class SendEmailInteractorBindings extends InteractorsBindings {
 
@@ -59,6 +60,7 @@ class SendEmailInteractorBindings extends InteractorsBindings {
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
+      Get.find<IOSSharingManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<NewEmailCacheManager>(),
