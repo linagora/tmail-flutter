@@ -45,7 +45,7 @@ class NotificationService: UNNotificationServiceExtension {
             guard let currentAccountId = mapStateChanges.keys.first,
                   let keychainSharingSession = keychainController.retrieveSharingSessionFromKeychain(accountId: currentAccountId),
                   let listStateOfAccount = mapStateChanges[currentAccountId],
-                  let newEmailState = listStateOfAccount[TypeName.EmailDelivery],
+                  let newEmailState = listStateOfAccount[TypeName.emailDelivery],
                   let oldEmailState = keychainSharingSession.emailState,
                   newEmailState != oldEmailState,
                   keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil else {
@@ -96,8 +96,6 @@ class NotificationService: UNNotificationServiceExtension {
                             return self.notify()
                         }
                     }
-
-
                 }
             )
         }
