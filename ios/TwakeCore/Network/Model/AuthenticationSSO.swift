@@ -23,9 +23,16 @@ struct AuthenticationSSO: Authentication {
             return false
         }
 
-        guard let expireDate = expireTime.convertISO8601StringToDate(),
-              expireDate.isBefore(Date.now) else {
-            return true
+        if #available(iOSApplicationExtension 15, *) {
+            guard let expireDate = expireTime.convertISO8601StringToDate(),
+                  expireDate.isBefore(Date.now) else {
+                return true
+            }
+        } else {
+            guard let expireDate = expireTime.convertISO8601StringToDate(),
+                  expireDate.isBefore(Date()) else {
+                return true
+            }
         }
 
         return false
