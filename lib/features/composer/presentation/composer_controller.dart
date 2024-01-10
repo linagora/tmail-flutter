@@ -50,7 +50,6 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upload_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -77,7 +76,6 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
-import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
@@ -929,21 +927,8 @@ class ComposerController extends BaseController {
       return;
     }
 
-    if (networkConnectionController.isNetworkConnectionAvailable()) {
-      final sendingArgs = await _createSendingEmailArguments(context);
-      _closeComposerAction(result: sendingArgs);
-    } else {
-      if (composerArguments.value!.sendingEmailActionType == SendingEmailActionType.create) {
-        _showConfirmDialogStoreSendingEmail(context);
-      } else {
-        final sendingArgs = await _createSendingEmailArguments(context);
-        _closeComposerAction(
-          result: composerArguments.value!.sendingEmailActionType == SendingEmailActionType.edit
-            ? sendingArgs.copyWith(actionMode: ComposeActionMode.editQueue)
-            : sendingArgs
-        );
-      }
-    }
+    final sendingArgs = await _createSendingEmailArguments(context);
+    _closeComposerAction(result: sendingArgs);
   }
 
   Future<SendingEmailArguments> _createSendingEmailArguments(BuildContext context) async {
@@ -986,54 +971,6 @@ class ComposerController extends BaseController {
       emailRequest,
       mailboxRequest,
     );
-  }
-
-  void _showConfirmDialogStoreSendingEmail(BuildContext context) {
-    showConfirmDialogAction(
-      context,
-      PlatformInfo.isIOS
-        ? AppLocalizations.of(context).messageDialogOfflineModeOnIOS
-        : '',
-      AppLocalizations.of(context).proceed,
-      onConfirmAction: () async {
-        final sendingArgs = await _createSendingEmailArguments(context);
-        _closeComposerAction(
-          result: sendingArgs.copyWith(actionMode: ComposeActionMode.pushQueue)
-        );
-      },
-      onCancelAction: _closeComposerAction,
-      title: AppLocalizations.of(context).youAreInOfflineMode,
-      icon: SvgPicture.asset(imagePaths.icDialogOfflineMode),
-      alignCenter: true,
-      messageStyle: const TextStyle(
-        color: AppColor.colorTitleSendingItem,
-        fontSize: 15,
-        fontWeight: FontWeight.normal
-      ),
-      listTextSpan: PlatformInfo.isIOS
-        ? null
-        : [
-            TextSpan(text: AppLocalizations.of(context).messageDialogWhenStoreSendingEmailFirst),
-            TextSpan(
-              text: AppLocalizations.of(context).messageDialogWhenStoreSendingEmailSecond,
-              style: const TextStyle(
-                color: AppColor.colorTitleSendingItem,
-                fontSize: 15,
-                fontWeight: FontWeight.w600
-              ),
-            ),
-            TextSpan(text: AppLocalizations.of(context).messageDialogWhenStoreSendingEmailThird),
-            TextSpan(
-              text: AppLocalizations.of(context).sendingQueue,
-              style: const TextStyle(
-                color: AppColor.colorTitleSendingItem,
-                fontSize: 15,
-                fontWeight: FontWeight.w600
-              ),
-            ),
-            TextSpan(text: AppLocalizations.of(context).messageDialogWhenStoreSendingEmailTail)
-          ]
-    ).whenComplete(() => isSendEmailLoading.value = false);
   }
 
   void _checkContactPermission() async {
