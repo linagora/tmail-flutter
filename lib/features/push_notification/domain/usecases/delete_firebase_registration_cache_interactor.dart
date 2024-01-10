@@ -12,7 +12,7 @@ class DeleteFirebaseRegistrationCacheInteractor {
   Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right<Failure, Success>(DeleteFirebaseRegistrationCacheLoading());
-      await _fcmRepository.getStoredFirebaseRegistration();
+      await _fcmRepository.deleteFirebaseRegistrationCache();
       yield Right<Failure, Success>(DeleteFirebaseRegistrationCacheSuccess());
     } catch (e) {
       yield Left<Failure, Success>(DeleteFirebaseRegistrationCacheFailure(e));
