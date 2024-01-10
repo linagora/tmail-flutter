@@ -8,6 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -23,11 +24,13 @@ import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_messag
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 
   final EmailAPI emailAPI;
   final ExceptionThrower _exceptionThrower;
+  final ExceptionThrower _sendEmailExceptionThrower = Get.find<SendEmailExceptionThrower>();
 
   EmailDataSourceImpl(this.emailAPI, this._exceptionThrower);
 
@@ -44,10 +47,12 @@ class EmailDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     EmailRequest emailRequest,
     {CreateNewMailboxRequest? mailboxRequest}
-  ) {
-    return Future.sync(() async {
+  ) async {
+    try {
       return await emailAPI.sendEmail(session, accountId, emailRequest, mailboxRequest: mailboxRequest);
-    }).catchError(_exceptionThrower.throwException);
+    } catch (error, stackTrace) {
+      return await _sendEmailExceptionThrower.throwException(error, stackTrace);
+    }
   }
 
   @override
