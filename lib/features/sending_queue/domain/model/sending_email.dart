@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:equatable/equatable.dart';
@@ -115,10 +116,8 @@ class SendingEmail with EquatableMixin {
   bool get isRunning => sendingState == SendingState.running;
 
   bool get isEditableSupported {
-    if (PlatformInfo.isAndroid) {
-      return isWaiting || isRunning || isCanceled;
-    } else if (PlatformInfo.isIOS) {
-      return isWaiting || isCanceled;
+    if (PlatformInfo.isMobile) {
+      return isWaiting || isCanceled || isError;
     } else {
       return false;
     }
