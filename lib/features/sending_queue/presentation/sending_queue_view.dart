@@ -34,16 +34,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
               );
             }),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
-            if (PlatformInfo.isIOS)
-              const BannerMessageSendingQueueWidget()
-            else
-              Obx(() {
-                if (!controller.isConnectedNetwork) {
-                  return const BannerMessageSendingQueueWidget();
-                } else {
-                  return const SizedBox.shrink();
-                }
-              }),
+            const BannerMessageSendingQueueWidget(),
             Expanded(child: _buildListSendingEmails(context)),
             Obx(() {
               if (controller.isAllUnSelected) {
@@ -91,11 +82,7 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
               onLongPressAction: controller.handleOnLongPressAction,
               onSelectLeadingAction: controller.toggleSelectionSendingEmail,
               onTapAction: (actionType, sendingEmail) {
-                if (PlatformInfo.isAndroid &&
-                    !controller.isConnectedNetwork &&
-                    sendingEmail.isEditableSupported) {
-                  controller.handleSendingEmailActionType(context, actionType, [sendingEmail]);
-                } else if (PlatformInfo.isIOS && sendingEmail.isEditableSupported) {
+                if (PlatformInfo.isMobile && sendingEmail.isEditableSupported) {
                   controller.handleSendingEmailActionType(context, actionType, [sendingEmail]);
                 }
               });
