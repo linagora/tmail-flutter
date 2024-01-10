@@ -40,21 +40,18 @@ jobs:
       - name: Setup Firebase env
         env:
           FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
-        run: echo "$FIREBASE_ENV" > ./configurations/env.fcm
+        run: ./scripts/setup-firebase.sh
 
       - name: Run prebuild
-        run: bash prebuild.sh
+        run: ./scripts/prebuild.sh
 
       - name: Analyze
         uses: zgosalvez/github-actions-analyze-dart@v1
 
       - name: Test
-        run: |
-          if [[ "${{ matrix.modules }}" == "default" ]]; then
-            flutter test -r json > test-report-${{ matrix.modules }}.json
-          else
-            flutter test -r json ${{ matrix.modules }} > test-report-${{ matrix.modules }}.json
-          fi
+        env:
+          MODULES: ${{ matrix.modules }}
+        run: ./scripts/test.sh
 
       - name: Upload test reports
         if: success() || failure() # Always upload report

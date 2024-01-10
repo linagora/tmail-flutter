@@ -37,7 +37,7 @@ jobs:
       - name: Setup Firebase env
         env:
           FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
-        run: echo "$FIREBASE_ENV" > ./configurations/env.fcm
+        run: ./scripts/setup-firebase.sh
 
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
@@ -58,20 +58,16 @@ jobs:
         env:
           PLAY_STORE_UPLOAD_KEY_BASE64: ${{ secrets.PLAY_STORE_UPLOAD_KEY_BASE64 }}
           PLAY_STORE_KEY_INFO_BASE64: ${{ secrets.PLAY_STORE_KEY_INFO_BASE64 }}
-        run: |
-          echo "$PLAY_STORE_UPLOAD_KEY_BASE64" | base64 --decode > app/keystore.jks
-          echo "$PLAY_STORE_KEY_INFO_BASE64" | base64 --decode > key.properties
+        run: ../scripts/setup-android.sh
         working-directory: ${{ matrix.os }}
 
       - name: Setup iOS environment
         if: matrix.os == 'ios'
-        run: |
-          flutter pub get
-          pod install && pod update
+        run: ../scripts/setup-ios.sh
         working-directory: ${{ matrix.os }}
 
       - name: Run prebuild
-        run: bash prebuild.sh
+        run: ./scripts/prebuild.sh
 
       - name: Build and deploy
         env:
@@ -81,5 +77,5 @@ jobs:
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
           APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
-        run: bundle exec fastlane release
+        run: ../scripts/build-release.sh
         working-directory: ${{ matrix.os }}
