@@ -16,7 +16,7 @@ enum SendingState {
       case SendingState.waiting:
       case SendingState.running:
       case SendingState.success:
-        return AppLocalizations.of(context).delivering;
+        return AppLocalizations.of(context).pending;
       case SendingState.canceled:
         return AppLocalizations.of(context).canceled;
       case SendingState.error:

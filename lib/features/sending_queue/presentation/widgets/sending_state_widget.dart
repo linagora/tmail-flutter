@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -34,16 +33,8 @@ class SendingStateWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (PlatformInfo.isIOS)
-            if (sendingState == SendingState.running)
-              const CupertinoLoadingWidget(size: SendingStateWidgetStyle.iconSize)
-            else
-              SvgPicture.asset(
-                sendingState.getIcon(_imagePath),
-                fit: BoxFit.fill,
-                width: SendingStateWidgetStyle.iconSize,
-                height: SendingStateWidgetStyle.iconSize
-              )
+          if (sendingState == SendingState.running)
+            const CupertinoLoadingWidget(size: SendingStateWidgetStyle.iconSize)
           else
             SvgPicture.asset(
               sendingState.getIcon(_imagePath),
