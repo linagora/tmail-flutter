@@ -16,7 +16,6 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
 
   final List<SendingEmail> listSendingEmailSelected;
   final OnHandleSendingEmailActionType? onHandleSendingEmailActionType;
-  final bool isConnectedNetwork;
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -24,8 +23,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
   BottomBarSendingQueueWidget({
     super.key,
     required this.listSendingEmailSelected,
-    this.onHandleSendingEmailActionType,
-    this.isConnectedNetwork = true
+    this.onHandleSendingEmailActionType
   });
 
   @override
@@ -116,9 +114,10 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
 
   bool get _canResend {
     if (PlatformInfo.isMobile) {
-      return isConnectedNetwork &&
-        listSendingEmailSelected.length == 1 &&
-        (listSendingEmailSelected.first.isWaiting || listSendingEmailSelected.first.isError);
+      return listSendingEmailSelected.length == 1 &&
+        (listSendingEmailSelected.first.isWaiting ||
+          listSendingEmailSelected.first.isError ||
+          listSendingEmailSelected.first.isCanceled);
     } else {
       return false;
     }

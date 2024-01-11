@@ -93,8 +93,7 @@ class NetworkConnectionController extends GetxController {
   }
 
   bool isNetworkConnectionAvailable() {
-    return _connectivityResult.value != ConnectivityResult.none &&
-      _internetConnectionStatus.value == InternetConnectionStatus.connected;
+    return _internetConnectionStatus.value == InternetConnectionStatus.connected;
   }
 
   Future<bool> hasInternetConnection() {
