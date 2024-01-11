@@ -1914,7 +1914,7 @@ class MailboxDashBoardController extends ReloadableController {
         );
         break;
       case ComposeActionMode.editQueue:
-        _handleUpdateSendingEmail(
+        _tryToStoreSendingEmail(
           arguments.session,
           arguments.accountId,
           arguments.emailRequest,
@@ -1949,7 +1949,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _storeSendingEmailInCaseOfSendingFailureInMobile(SendEmailFailure failure) {
     if (PlatformInfo.isMobile) {
-      _handleUpdateSendingEmail(
+      _tryToStoreSendingEmail(
           failure.session,
           failure.accountId,
           failure.emailRequest,
@@ -1958,7 +1958,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _handleUpdateSendingEmail(
+  void _tryToStoreSendingEmail(
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,

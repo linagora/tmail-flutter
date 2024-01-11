@@ -30,7 +30,6 @@ import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_multiple_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_stored_sending_email_interactor.dart';
-import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_multiple_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
@@ -42,7 +41,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class SendingQueueController extends BaseController with MessageDialogActionMixin {
 
   final DeleteMultipleSendingEmailInteractor _deleteMultipleSendingEmailInteractor;
-  final UpdateMultipleSendingEmailInteractor _updateMultipleSendingEmailInteractor;
   final UpdateSendingEmailInteractor _updateSendingEmailInteractor;
   final DeleteSendingEmailInteractor _deleteSendingEmailInteractor;
   final GetStoredSendingEmailInteractor _getStoredSendingEmailInteractor;
@@ -57,7 +55,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   SendingQueueController(
     this._deleteMultipleSendingEmailInteractor,
-    this._updateMultipleSendingEmailInteractor,
     this._updateSendingEmailInteractor,
     this._deleteSendingEmailInteractor,
     this._getStoredSendingEmailInteractor,
