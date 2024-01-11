@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . .
 
 # Precompile tmail flutter
-RUN bash prebuild.sh
+RUN ./scripts/prebuild.sh
 # Build flutter for web
 RUN flutter build web --release
 
