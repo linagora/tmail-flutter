@@ -2735,7 +2735,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "Message has been saved to the sending queue.",
+  "messageHasBeenSavedToTheSendingQueue": "Temporary network issue. Messages queued for retry when connected.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
