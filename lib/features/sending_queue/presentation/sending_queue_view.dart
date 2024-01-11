@@ -42,7 +42,6 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
               } else {
                return BottomBarSendingQueueWidget(
                   listSendingEmailSelected: controller.dashboardController.listSendingEmails.listSelected(),
-                  isConnectedNetwork: controller.isConnectedNetwork,
                   onHandleSendingEmailActionType: (actionType, listSendingEmails) => controller.handleSendingEmailActionType(context, actionType, listSendingEmails),
                 );
               }

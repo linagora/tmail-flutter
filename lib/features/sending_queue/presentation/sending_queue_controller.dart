@@ -17,8 +17,6 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_s
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
-  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
@@ -46,7 +44,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   final GetStoredSendingEmailInteractor _getStoredSendingEmailInteractor;
 
   final dashboardController = Get.find<MailboxDashBoardController>();
-  final _networkConnectionController = Get.find<NetworkConnectionController>();
   final _sendingQueueIsolateManager = getBinding<SendingQueueIsolateManager>();
 
   final listSendingEmailController = ScrollController();
@@ -159,8 +156,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   bool get isAllUnSelected => dashboardController.listSendingEmails.isAllUnSelected();
-
-  bool get isConnectedNetwork => _networkConnectionController.isNetworkConnectionAvailable() == true;
 
   void refreshSendingQueue() {
     dashboardController.getAllSendingEmails();
