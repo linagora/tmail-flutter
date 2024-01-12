@@ -106,7 +106,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
         categories,
         controller,
         toggleMailboxCategories: controller.toggleMailboxCategories,
-        padding: EdgeInsetsDirectional.symmetric(vertical: 8)
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 8)
       ),
       AnimatedContainer(
         duration: const Duration(milliseconds: 400),
