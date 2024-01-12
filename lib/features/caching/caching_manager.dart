@@ -18,7 +18,6 @@ import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
-import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 
@@ -72,7 +71,7 @@ class CachingManager {
           _sessionHiveCacheClient.clearAllData(),
           _newEmailHiveCacheClient.clearAllData(),
           _openedEmailHiveCacheClient.clearAllData(),
-          _clearSendingEmailCache(),
+          _sendingEmailCacheManager.clearAllSendingEmails(),
         ],
       if (PlatformInfo.isIOS)
         _keychainSharingManager.delete()
@@ -92,7 +91,7 @@ class CachingManager {
        ...[
          _newEmailHiveCacheClient.clearAllData(),
          _openedEmailHiveCacheClient.clearAllData(),
-         _clearSendingEmailCache(),
+         _sendingEmailCacheManager.clearAllSendingEmails(),
        ]
     ], eagerError: true);
   }
@@ -138,13 +137,5 @@ class CachingManager {
       _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
       _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
     ]);
-  }
-
-  Future<void> _clearSendingEmailCache() async {
-    final listSendingEmails = await _sendingEmailCacheManager.getAllSendingEmails();
-    final sendingIds = listSendingEmails.map((sendingEmail) => sendingEmail.sendingId).toSet().toList();
-    if (sendingIds.isNotEmpty) {
-      await _sendingEmailCacheManager.clearAllSendingEmails();
-    }
   }
 }

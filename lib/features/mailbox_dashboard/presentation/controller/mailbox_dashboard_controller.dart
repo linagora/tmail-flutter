@@ -109,10 +109,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/offline_mode/config/work_manager_constants.dart';
-import 'package:tmail_ui_user/features/offline_mode/controller/work_manager_controller.dart';
-import 'package:tmail_ui_user/features/offline_mode/work_manager/one_time_work_request.dart';
-import 'package:tmail_ui_user/features/offline_mode/work_manager/worker_type.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
@@ -155,7 +151,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:workmanager/workmanager.dart' as work_manager;
 
 class MailboxDashBoardController extends ReloadableController {
 
