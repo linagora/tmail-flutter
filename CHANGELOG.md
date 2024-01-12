@@ -1,3 +1,7 @@
+## [0.11.2] - 2024-01-12
+### Changed
+- Disable Work Manager in sending email automatically
+
 ## [0.11.0] - 2024-01-09
 ### Added
 - Larger scrollbar in email list view on web
