@@ -1,3 +1,7 @@
+## [0.11.3] - 2024-01-12
+### Fixed
+- Get plain notification on iOS
+
 ## [0.11.2] - 2024-01-12
 ### Changed
 - Disable Work Manager in sending email automatically
@@ -381,6 +385,8 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.11.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.3
+[0.11.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.2
 [0.11.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.0
 [0.10.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.5
 [0.10.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.10.4
