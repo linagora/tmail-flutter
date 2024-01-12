@@ -8574,7 +8574,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(_this)).toString;
-      return A.Container$(C.Alignment_m1_0, A.TMailButtonWidget$(C.Color_4278221567, _null, 10, D.List_6Vn, false, "assets/images/ic_compose_web.svg", C.TextDirection_1, C.Color_4294967295, 24, 8, false, C.ValueKey_compose_email_button, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, new B.MailboxDashBoardView__buildComposerButton_closure(_this), D.EdgeInsetsDirectional_0_8_0_8, t1, _null, D.TextStyle_1Gf2, _null, _null, _null, _null, false, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, D.EdgeInsetsDirectional_16_16_16_8, _null, _null, 256);
+      return A.Container$(C.Alignment_m1_0, A.TMailButtonWidget$(C.Color_4278221567, _null, 10, D.List_6Vn, false, "assets/images/ic_compose_web.svg", C.TextDirection_1, C.Color_4294967295, 24, 8, false, C.ValueKey_compose_email_button, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, new B.MailboxDashBoardView__buildComposerButton_closure(_this), E.EdgeInsetsDirectional_0_8_0_8, t1, _null, D.TextStyle_1Gf2, _null, _null, _null, _null, false, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, D.EdgeInsetsDirectional_16_16_16_8, _null, _null, 256);
     },
     _getQuickSearchFilterFromTitle$1(context) {
       var t2, t3, searchEmailFilterFromFiled, _this = this, _null = null,
@@ -13778,7 +13778,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = t1.height;
         t3 = A.SvgPicture$asset("assets/images/ic_drop_zone_icon.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null);
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        return new A.Padding(D.EdgeInsetsDirectional_0_8_0_8, new B.DottedBorder(A.Container$(D.AlignmentDirectional_0_0, A.Column$(A._setArrayType([t3, C.SizedBox_null_20_null_null, A.Text$(A.Intl__message("Drop file here to attach them", _null, "dropFileHereToAttachThem", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY28, _null, _null, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_BZt, _null, t1, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, t2), 2, D.Color_4282819327, D.List_6_3, D.BorderType_1, C.Radius_16_16, _null), _null);
+        return new A.Padding(E.EdgeInsetsDirectional_0_8_0_8, new B.DottedBorder(A.Container$(D.AlignmentDirectional_0_0, A.Column$(A._setArrayType([t3, C.SizedBox_null_20_null_null, A.Text$(A.Intl__message("Drop file here to attach them", _null, "dropFileHereToAttachThem", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY28, _null, _null, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_BZt, _null, t1, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, t2), 2, D.Color_4282819327, D.List_6_3, D.BorderType_1, C.Radius_16_16, _null), _null);
       } else
         return new A.SizedBox(t1.width, t1.height, _null, _null);
     },
@@ -20005,7 +20005,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_0_4_0_4 = new A.EdgeInsetsDirectional(0, 4, 0, 4);
     D.EdgeInsetsDirectional_0_4_22_16 = new A.EdgeInsetsDirectional(0, 4, 22, 16);
     D.EdgeInsetsDirectional_0_8_0_0 = new A.EdgeInsetsDirectional(0, 8, 0, 0);
-    D.EdgeInsetsDirectional_0_8_0_8 = new A.EdgeInsetsDirectional(0, 8, 0, 8);
     D.EdgeInsetsDirectional_0_8_12_0 = new A.EdgeInsetsDirectional(0, 8, 12, 0);
     D.EdgeInsetsDirectional_0_8_16_0 = new A.EdgeInsetsDirectional(0, 8, 16, 0);
     D.EdgeInsetsDirectional_0_8_16_16 = new A.EdgeInsetsDirectional(0, 8, 16, 16);
@@ -20231,5 +20230,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "eJxnQ3g3rjY5o3IfGBJ0knh5Ryg=");
+})($__dart_deferred_initializers__, "TLK5dRlJUyCJ6O1qRJvkosM3SbE=");
 ;

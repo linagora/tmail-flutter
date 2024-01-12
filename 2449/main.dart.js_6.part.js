@@ -2435,7 +2435,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this));
       A.Expando__checkType(_this);
-      t5 = _this.buildHeaderMailboxCategory$7$padding$toggleMailboxCategories(context, t3, t4, categories, t5, new A.EdgeInsetsDirectional(0, 8, 0, 8), t2._as(t1.get(_this)).get$toggleMailboxCategories());
+      t5 = _this.buildHeaderMailboxCategory$7$padding$toggleMailboxCategories(context, t3, t4, categories, t5, E.EdgeInsetsDirectional_0_8_0_8, t2._as(t1.get(_this)).get$toggleMailboxCategories());
       A.Expando__checkType(_this);
       t1 = t2._as(t1.get(_this)).mailboxCategoriesExpandMode;
       return A.Column$(A._setArrayType([t5, A.AnimatedContainer$(A.MailboxCategoriessExtension_getExpandMode(categories, t1.get$value(t1)) === B.ExpandMode_1 ? _this._mailbox_visibility_view$_buildBodyMailboxCategory$3(context, categories, mailboxNode) : B.Offstage_true_null_null, _null, B.C__Linear, _null, B.Duration_400000, _null, _null, _null)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
@@ -5611,5 +5611,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "08O3kW1BKtMgmSPBAh4nurL8vSA=");
+})($__dart_deferred_initializers__, "a7Kw6KyRNPe2nHkJxe6VYfch1HU=");
 ;

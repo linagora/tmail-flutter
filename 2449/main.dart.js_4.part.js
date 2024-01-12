@@ -980,6 +980,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_4294964674 = new A.Color(4294964674);
     D.EdgeInsetsDirectional_0_10_0_0 = new A.EdgeInsetsDirectional(0, 10, 0, 0);
     D.EdgeInsetsDirectional_0_24_0_24 = new A.EdgeInsetsDirectional(0, 24, 0, 24);
+    D.EdgeInsetsDirectional_0_8_0_8 = new A.EdgeInsetsDirectional(0, 8, 0, 8);
     D.EdgeInsetsDirectional_12_0_16_0 = new A.EdgeInsetsDirectional(12, 0, 16, 0);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
@@ -1013,5 +1014,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "W9uu2jBU3fLwMvyOC4O+LjBPA3Y=");
+})($__dart_deferred_initializers__, "UsmJjZQfPMxjsYZcIrvm4yppdcs=");
 ;
