@@ -2006,25 +2006,6 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void addSendingEmailToSendingQueue(SendingEmail sendingEmail) async {
-    log('MailboxDashBoardController::addSendingEmailToSendingQueue():sendingEmail: $sendingEmail');
-    final work = OneTimeWorkRequest(
-      uniqueId: sendingEmail.sendingId,
-      taskId: sendingEmail.sendingId,
-      tag: WorkerType.sendingEmail.name,
-      inputData: sendingEmail.toJson()
-        ..addAll({
-          WorkManagerConstants.workerTypeKey: WorkerType.sendingEmail.name
-        }),
-      initialDelay: const Duration(milliseconds: WorkManagerConstants.delayTime),
-      backoffPolicy: work_manager.BackoffPolicy.linear,
-      backoffPolicyDelay: const Duration(milliseconds: WorkManagerConstants.delayTime),
-      constraints: work_manager.Constraints(networkType: work_manager.NetworkType.connected)
-    );
-
-    await WorkManagerController().enqueue(work);
-  }
-
   void getAllSendingEmails() {
     if (accountId.value != null && sessionCurrent != null) {
       consumeState(_getAllSendingEmailInteractor.execute(
