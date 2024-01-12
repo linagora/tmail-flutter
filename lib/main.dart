@@ -25,8 +25,6 @@ void main() async {
        MainBindings().dependencies(),
        HiveCacheConfig().setUp(),
        Executor().warmUp(),
-       if (PlatformInfo.isMobile)
-         WorkManagerConfig().initialize(),
        AppUtils.loadEnvFile()
     ]);
     await HiveCacheConfig.initializeEncryptionKey();

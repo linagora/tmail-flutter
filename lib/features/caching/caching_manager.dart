@@ -144,10 +144,6 @@ class CachingManager {
     final listSendingEmails = await _sendingEmailCacheManager.getAllSendingEmails();
     final sendingIds = listSendingEmails.map((sendingEmail) => sendingEmail.sendingId).toSet().toList();
     if (sendingIds.isNotEmpty) {
-      await Future.wait(
-        sendingIds.map(WorkManagerController().cancelByUniqueId),
-        eagerError: true
-      );
       await _sendingEmailCacheManager.clearAllSendingEmails();
     }
   }
