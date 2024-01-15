@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 extension CreateEmailRequestExtension on CreateEmailRequest {
 
@@ -124,9 +125,15 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       },
       bodyValues: {
         partId: EmailBodyValue(
-          newEmailContent,
-          false,
-          false
+          value: newEmailContent,
+          isEncodingProblem: false,
+          isTruncated: false,
+          acceptLanguageHeader: {
+            IndividualHeaderIdentifier.acceptLanguageHeader: LocalizationService.supportedLocalesToLanguageTags()
+          },
+          contentLanguageHeader: {
+            IndividualHeaderIdentifier.contentLanguageHeader: LocalizationService.getLocaleFromLanguage().toLanguageTag()
+          },
         )
       },
       headerUserAgent: {
