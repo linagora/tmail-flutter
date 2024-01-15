@@ -208,7 +208,7 @@ class HomeController extends ReloadableController {
             session: sessionCurrentAccount,
             exception: failure),
           (success) => success is GetSessionSuccess
-            ? _handleGetSessionSuccessWhenSwitchActiveAccount(nextActiveAccount, success.session)
+            ? _handleGetSessionSuccessWhenSwitchActiveAccount(currentActiveAccount, nextActiveAccount, success.session)
             : null,
         );
       },
@@ -223,6 +223,7 @@ class HomeController extends ReloadableController {
   }
 
   void _handleGetSessionSuccessWhenSwitchActiveAccount(
+    PersonalAccount currentActiveAccount,
     PersonalAccount nextActiveAccount,
     Session sessionActiveAccount
   ) async {
@@ -231,6 +232,7 @@ class HomeController extends ReloadableController {
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: SwitchActiveAccountArguments(
         session: sessionActiveAccount,
+        currentAccount: currentActiveAccount,
         nextActiveAccount: nextActiveAccount,
       )
     );

@@ -2559,6 +2559,29 @@ class MailboxDashBoardController extends ReloadableController {
     _setUpComponentsFromSession(arguments.session);
 
     dispatchRoute(DashboardRoutes.thread);
+
+    _showToastMessageSwitchActiveAccountSuccess(
+      previousActiveAccount: arguments.currentAccount!,
+      currentActiveAccount: arguments.nextActiveAccount!,
+    );
+  }
+
+  void _showToastMessageSwitchActiveAccountSuccess({
+    required PersonalAccount previousActiveAccount,
+    required PersonalAccount currentActiveAccount
+  }) {
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageSuccessWhenSwitchActiveAccount(currentActiveAccount.userName?.value ?? ''),
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () {},
+        leadingSVGIcon: imagePaths.icToastSuccessMessage,
+        leadingSVGIconColor: Colors.white,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(imagePaths.icUndo));
+    }
   }
 
   void _handleRestorePreviousActiveAccountAction(RestoreActiveAccountArguments arguments) {

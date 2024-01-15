@@ -3843,4 +3843,12 @@ class AppLocalizations {
       args: [userName]
     );
   }
+
+  String toastMessageSuccessWhenSwitchActiveAccount(String userName) {
+    return Intl.message(
+      'You’ve been switched to your $userName account.',
+      name: 'toastMessageSuccessWhenSwitchActiveAccount',
+      args: [userName]
+    );
+  }
 }
