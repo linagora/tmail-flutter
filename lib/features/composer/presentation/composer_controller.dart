@@ -83,6 +83,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_sta
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -752,7 +753,13 @@ class ComposerController extends BaseController {
           type: MediaType.parse('text/html')
         )},
       bodyValues: {
-        generatePartId: EmailBodyValue(emailBodyText, false, false)
+        generatePartId: EmailBodyValue(
+          value: emailBodyText,
+          isEncodingProblem: false,
+          isTruncated: false,
+          acceptLanguageHeader: {IndividualHeaderIdentifier.acceptLanguageHeader: LocalizationService.supportedLocalesToLanguageTags()},
+          contentLanguageHeader: {IndividualHeaderIdentifier.contentLanguageHeader: LocalizationService.getLocaleFromLanguage().toLanguageTag()},
+        )
       },
       headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
       attachments: attachments.isNotEmpty ? attachments : null,
