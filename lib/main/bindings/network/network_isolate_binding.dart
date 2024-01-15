@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_work
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
-import 'package:tmail_ui_user/main/localizations/locale_interceptor.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';
@@ -51,7 +50,6 @@ class NetworkIsolateBindings extends Bindings {
     if (kDebugMode) {
       dio.interceptors.add(LogInterceptor(requestBody: true));
     }
-    dio.interceptors.add(Get.find<LocaleInterceptor>());
     dio.interceptors.add(Get.find<TimeOutInterceptors>());
   }
 
