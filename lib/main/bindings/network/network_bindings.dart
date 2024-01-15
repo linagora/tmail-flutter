@@ -36,7 +36,6 @@ import 'package:tmail_ui_user/features/server_settings/data/network/server_setti
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
-import 'package:tmail_ui_user/main/localizations/locale_interceptor.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
 
@@ -90,13 +89,11 @@ class NetworkBindings extends Bindings {
         Get.find<AccountCacheManager>(),
         Get.find<IOSSharingManager>(),
     ));
-    Get.put(LocaleInterceptor());
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
     if (kDebugMode) {
       Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
     }
-    Get.find<Dio>().interceptors.add(Get.find<LocaleInterceptor>());
   }
 
   void _bindingApi() {
