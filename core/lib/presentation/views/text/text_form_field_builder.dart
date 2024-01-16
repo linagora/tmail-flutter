@@ -2,6 +2,8 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 
+typedef OnValidator = String? Function(String? value);
+
 class TextFormFieldBuilder extends StatefulWidget {
 
   final ValueChanged<String>? onTextChange;
@@ -25,6 +27,7 @@ class TextFormFieldBuilder extends StatefulWidget {
   final bool readOnly;
   final MouseCursor? mouseCursor;
   final List<String>? autofillHints;
+  final OnValidator? validator;
 
   const TextFormFieldBuilder({
     super.key,
@@ -49,6 +52,7 @@ class TextFormFieldBuilder extends StatefulWidget {
     this.onTap,
     this.onTextChange,
     this.onTextSubmitted,
+    this.validator,
   });
 
   @override
@@ -107,6 +111,7 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
       },
       onFieldSubmitted: widget.onTextSubmitted,
       onTap: widget.onTap,
+      validator: widget.validator,
     );
   }
 
