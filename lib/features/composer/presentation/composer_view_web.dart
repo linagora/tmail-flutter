@@ -183,6 +183,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
                           width: constraints.maxWidth,
                           height: constraints.maxHeight,
+                          onEditLink: (text, url, isOpenNewTab, linkTagId) => controller.onEditLinkAction(context, text, url, isOpenNewTab, linkTagId),
                         )),
                       ),
                       Align(
@@ -377,6 +378,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                       onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
                                       width: constraints.maxWidth,
                                       height: constraints.maxHeight,
+                                      onEditLink: (text, url, isOpenNewTab, linkTagId) => controller.onEditLinkAction(context, text, url, isOpenNewTab, linkTagId),
                                     ),
                                     if (controller.mailboxDashBoardController.isDraggableAppActive)
                                       PointerInterceptor(
@@ -604,6 +606,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
                                 width: constraints.maxWidth,
                                 height: constraints.maxHeight,
+                                onEditLink: (text, url, isOpenNewTab, linkTagId) => controller.onEditLinkAction(context, text, url, isOpenNewTab, linkTagId),
                               )),
                             ),
                           ),
