@@ -4043,4 +4043,32 @@ class AppLocalizations {
       'Show less',
       name: 'showLess');
   }
+
+  String get insertLink {
+    return Intl.message(
+      'Insert link',
+      name: 'insertLink',
+    );
+  }
+
+  String get textToDisplay {
+    return Intl.message(
+      'Text to display',
+      name: 'textToDisplay',
+    );
+  }
+
+  String get toWhatURLShouldThisLinkGo {
+    return Intl.message(
+      'To what URL should this link go?',
+      name: 'toWhatURLShouldThisLinkGo',
+    );
+  }
+
+  String get pleaseEnterURL {
+    return Intl.message(
+      'Please enter a URL',
+      name: 'pleaseEnterURL',
+    );
+  }
 }
