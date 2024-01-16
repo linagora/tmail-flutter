@@ -2775,7 +2775,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1 == null)
         t1 = "";
       t2 = A.Theme_of(context).textTheme.bodyLarge;
-      t1 = A.TextOverflowBuilder$(t1, t2 == null ? _null : t2.copyWith$1$color(B.Color_4278190080));
+      t1 = A.TextOverflowBuilder$(t1, t2 == null ? _null : t2.copyWith$2$color$fontWeight(B.Color_4278190080, B.FontWeight_6_700));
       A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t2 = A.Intl__message("Switch Accounts", _null, "switchAccounts", _null, _null);
       t4 = A.Theme_of(context).textTheme.bodyMedium;
@@ -4720,7 +4720,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(t5, B.Type_AppLocalizations_swi, t6).toString;
         t6 = A.Intl__message(_s8_, _null, _s8_0, _null, _null);
         t5 = A.Theme_of(t5).textTheme.bodyLarge;
-        return new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([t1, new A.Padding(D.EdgeInsets_50_0_50_0, A.Text$(t6, _null, _null, 1, B.TextOverflow_1, _null, _null, false, _null, t5 == null ? _null : t5.copyWith$2$color$fontSize(B.Color_4278190080, 20), _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget), _null);
+        return new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([t1, new A.Padding(D.EdgeInsets_50_0_50_0, A.Text$(t6, _null, _null, 1, B.TextOverflow_1, _null, _null, false, _null, t5 == null ? _null : t5.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 20, B.FontWeight_6_700), _null, _null, _null, _null, _null), _null)], type$.JSArray_Widget), _null);
       } else {
         A.Expando__checkType(t1);
         t4 = t3._as(t2.get(t1)).get$backToUniversalSettings();
@@ -5724,5 +5724,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "TDG3Bk4IZ/YvCnQqjJ5OyMMpnrk=");
+})($__dart_deferred_initializers__, "X4qQ9WDyWMvZjnzzWFfha2anJRg=");
 ;
