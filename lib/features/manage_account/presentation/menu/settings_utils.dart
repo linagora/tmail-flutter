@@ -13,11 +13,19 @@ class SettingsUtils {
     }
   }
 
+  static double getDividerHorizontalPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
+    if (responsiveUtils.isMobile(context)) {
+      return 50;
+    } else {
+      return 66;
+    }
+  }
+
   static EdgeInsets getPaddingInFirstLevel(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isMobile(context)) {
-      return const EdgeInsets.only(left: 16, top: 12, bottom: 12, right: 16);
+      return const EdgeInsets.only(left: 16, top: 16, bottom: 12, right: 16);
     } else {
-      return const EdgeInsets.only(left: 32, top: 12, bottom: 12, right: 32);
+      return const EdgeInsets.only(left: 32, top: 16, bottom: 12, right: 32);
     }
   }
 

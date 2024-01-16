@@ -3,9 +3,9 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/account_profile_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -18,16 +18,11 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
     final child = SingleChildScrollView(
       controller: PlatformInfo.isMobile ? null : controller.settingScrollController,
       child: Column(children: [
-        Obx(() => UserInformationWidget(
+        Obx(() => AccountProfileWidget(
+          imagePaths: controller.imagePaths,
           userProfile: controller.manageAccountDashboardController.userProfile.value,
-          padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
-          titlePadding: const EdgeInsetsDirectional.only(start: 16))),
-        Divider(
-          color: AppColor.colorDividerHorizontal,
-          height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-        ),
+          padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils))),
+        const Divider(),
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).profiles,
           AccountMenuItem.profiles.getIcon(controller.imagePaths),
@@ -37,8 +32,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Divider(
           color: AppColor.colorDividerHorizontal,
           height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+          indent: SettingsUtils.getDividerHorizontalPadding(context, controller.responsiveUtils)
         ),
         Obx(() {
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
@@ -52,8 +46,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
               Divider(
                 color: AppColor.colorDividerHorizontal,
                 height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+                indent: SettingsUtils.getDividerHorizontalPadding(context, controller.responsiveUtils)
               ),
             ]);
           } else {
@@ -72,8 +65,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
               Divider(
                 color: AppColor.colorDividerHorizontal,
                 height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+                indent: SettingsUtils.getDividerHorizontalPadding(context, controller.responsiveUtils)
               ),
             ]);
           } else {
@@ -92,8 +84,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
               Divider(
                 color: AppColor.colorDividerHorizontal,
                 height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+                indent: SettingsUtils.getDividerHorizontalPadding(context, controller.responsiveUtils)
               ),
             ]);
           } else {
@@ -110,8 +101,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           Divider(
             color: AppColor.colorDividerHorizontal,
             height: 1,
-            indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-            endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+            indent: SettingsUtils.getDividerHorizontalPadding(context, controller.responsiveUtils)
           ),
         ]),
         SettingFirstLevelTileBuilder(
@@ -122,8 +112,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Divider(
           color: AppColor.colorDividerHorizontal,
           height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+          indent: SettingsUtils.getDividerHorizontalPadding(context, controller.responsiveUtils)
         ),
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).sign_out,

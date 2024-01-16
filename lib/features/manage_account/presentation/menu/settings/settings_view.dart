@@ -1,8 +1,5 @@
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/core.dart';
 import 'package:core/utils/direction_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -41,7 +38,7 @@ class SettingsView extends GetWidget<SettingsController> {
               child: Padding(
                 padding: SettingsUtils.getPaddingAppBar(context, controller.responsiveUtils),
                 child: _buildAppbar(context))),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
+            const Divider(),
             Obx(() {
               if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
                 return VacationNotificationMessageWidget(
@@ -98,16 +95,17 @@ class SettingsView extends GetWidget<SettingsController> {
       children: [
         Positioned(left: 0,child: _buildCloseSettingButton(context)),
         Padding(
-          padding: const EdgeInsets.only(left: 50, right: 50),
+          padding: const EdgeInsets.symmetric(horizontal: 50),
           child: Text(
             AppLocalizations.of(context).settings,
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
-            style: const TextStyle(
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               fontSize: 20,
-              color: AppColor.colorNameEmail,
-              fontWeight: FontWeight.w700))
+              color: Colors.black
+            )
+          )
         )
       ]
     );

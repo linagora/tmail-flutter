@@ -3851,4 +3851,11 @@ class AppLocalizations {
       args: [userName]
     );
   }
+
+  String get switchAccounts {
+    return Intl.message(
+      'Switch Accounts',
+      name: 'switchAccounts',
+    );
+  }
 }

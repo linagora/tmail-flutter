@@ -22,22 +22,22 @@ class ThemeUtils {
 
   static TextTheme get _textTheme {
     return const TextTheme(
-      bodyLarge: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 17,
-        letterSpacing: -0.15,
-      ),
       titleLarge: TextStyle(
         color: Colors.black,
         fontWeight: FontWeight.bold,
         fontSize: 28
+      ),
+      bodyLarge: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 17
       ),
       bodyMedium: TextStyle(
         fontWeight: FontWeight.w500,
         fontSize: 15
       ),
       bodySmall: TextStyle(
-        fontWeight: FontWeight.w500
+        fontWeight: FontWeight.normal,
+        fontSize: 15
       ),
       headlineLarge: TextStyle(
         fontWeight: FontWeight.w600,
