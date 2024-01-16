@@ -1,3 +1,4 @@
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
@@ -10,16 +11,26 @@ class TwakeIdView extends GetWidget<TwakeIdController> {
 
   @override
   Widget build(BuildContext context) {
-    return TwakeIdScreen(
-      focusColor: Colors.transparent,
-      hoverColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      overlayColor: MaterialStateProperty.all(Colors.transparent),
-      signInTitle: AppLocalizations.of(context).signIn.capitalizeFirst ?? '',
-      createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
-      useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
-      description: AppLocalizations.of(context).descriptionTwakeId,
-      onUseCompanyServerOnTap: controller.handleUseCompanyServer,
-    );
+    return Obx(() {
+      return TwakeIdScreen(
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        overlayColor: MaterialStateProperty.all(Colors.transparent),
+        signInTitle: AppLocalizations.of(context).signIn.capitalizeFirst ?? '',
+        createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
+        useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
+        description: AppLocalizations.of(context).descriptionTwakeId,
+        onUseCompanyServerOnTap: controller.handleUseCompanyServer,
+        backButton: controller.isAddAnotherAccount
+          ? TMailButtonWidget.fromIcon(
+              icon: controller.imagePaths.icArrowLeft,
+              backgroundColor: Colors.transparent,
+              margin: const EdgeInsetsDirectional.only(start: 8),
+              iconColor: Colors.black,
+              onTapActionCallback: controller.backToHomeView)
+          : null,
+      );
+    });
   }
 }

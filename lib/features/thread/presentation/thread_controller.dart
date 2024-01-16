@@ -83,7 +83,7 @@ typedef EndRangeSelection = int;
 
 class ThreadController extends BaseController with EmailActionController {
 
-  final networkConnectionController = Get.find<NetworkConnectionController>();
+  final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
 
   final GetEmailsInMailboxInteractor _getEmailsInMailboxInteractor;
   final RefreshChangesEmailsInMailboxInteractor _refreshChangesEmailsInMailboxInteractor;
@@ -367,7 +367,7 @@ class ThreadController extends BaseController with EmailActionController {
     logError('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
       if (_accountId != null && _session != null) {
-        await cachingManager.clearEmailCacheAndStateCacheByTupleKey(_accountId!, _session!);
+        await cachingManager.clearEmailCacheAndStateCacheByTupleKey(_accountId!, _session!.username);
       } else {
         await cachingManager.clearEmailCacheAndAllStateCache();
       }

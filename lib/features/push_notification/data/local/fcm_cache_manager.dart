@@ -16,12 +16,12 @@ class FCMCacheManager {
   FCMCacheManager(this._fcmCacheClient,this._firebaseRegistrationCacheClient);
 
   Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState) {
-    final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
+    final stateKeyCache = TupleKey(accountId.asString, userName.value, typeName.value).encodeKey;
     return _fcmCacheClient.insertItem(stateKeyCache, newState.value);
   }
 
   Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
-    final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
+    final stateKeyCache = TupleKey(accountId.asString, userName.value, typeName.value).encodeKey;
     final stateValue = await _fcmCacheClient.getItem(stateKeyCache);
     if (stateValue != null) {
       return jmap.State(stateValue);
@@ -35,7 +35,7 @@ class FCMCacheManager {
   }
 
   Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
-    final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
+    final stateKeyCache = TupleKey(accountId.asString, userName.value, typeName.value).encodeKey;
     return _fcmCacheClient.deleteItem(stateKeyCache);
   }
 

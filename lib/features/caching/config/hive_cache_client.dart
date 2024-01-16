@@ -2,6 +2,7 @@
 import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/map_extensions.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:hive/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
@@ -80,13 +81,15 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<List<T>> getListByTupleKey(String accountId, String userName) {
+  Future<List<T>> getListByNestedKey(String nestedKey) {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
-      return boxItem.toMap()
-        .where((key, value) => _matchedKey(key, accountId, userName))
+      final listItem = boxItem.toMap()
+        .where((key, value) => _matchedNestedKey(key, nestedKey))
         .values
         .toList();
+      log('HiveCacheClient::getListByNestedKey:listItem: ${listItem.length}');
+      return listItem;
     }).catchError((error) {
       throw error;
     });
@@ -102,12 +105,6 @@ abstract class HiveCacheClient<T> {
     }).catchError((error) {
       throw error;
     });
-  }
-
-  bool _matchedKey(String key, String accountId, String userName) {
-    final keyDecoded = CacheUtils.decodeKey(key);
-    final tupleKey = TupleKey.fromString(keyDecoded);
-    return tupleKey.parts.length >= 3 && tupleKey.parts[1] == accountId && tupleKey.parts[2] == userName;
   }
 
   Future<void> updateItem(String key, T newObject) {
@@ -180,6 +177,25 @@ abstract class HiveCacheClient<T> {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  Future<void> clearAllDataContainKey(String nestedKey) {
+    return Future.sync(() async {
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
+
+      final mapItemNotContainNestedKey = boxItem.toMap()
+        .where((key, value) => !_matchedNestedKey(key, nestedKey));
+      log('HiveCacheClient::clearAllDataContainKey:mapItemNotContainNestedKey: ${mapItemNotContainNestedKey.length}');
+      return boxItem.putAll(mapItemNotContainNestedKey);
+    }).catchError((error) {
+      throw error;
+    });
+  }
+
+  bool _matchedNestedKey(String key, String nestedKey) {
+    final decodedKey = CacheUtils.decodeKey(key);
+    final decodedNestedKey = CacheUtils.decodeKey(nestedKey);
+    return decodedKey.contains(decodedNestedKey);
   }
 
   Future<void> closeBox() async {

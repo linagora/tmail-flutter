@@ -22,4 +22,14 @@ class AccountRepositoryImpl extends AccountRepository {
   Future<void> deleteCurrentAccount(String hashId) {
     return _accountDatasource.deleteCurrentAccount(hashId);
   }
+
+  @override
+  Future<List<PersonalAccount>> getAllAccount() {
+    return _accountDatasource.getAllAccount();
+  }
+
+  @override
+  Future<void> setCurrentActiveAccount(PersonalAccount activeAccount) {
+    return _accountDatasource.setCurrentActiveAccount(activeAccount);
+  }
 }

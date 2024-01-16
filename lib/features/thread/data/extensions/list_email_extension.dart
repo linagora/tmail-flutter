@@ -12,7 +12,7 @@ extension ListEmailExtension on List<Email> {
   Map<String, EmailCache> toMapCache(AccountId accountId, UserName userName) {
     return {
       for (var email in this)
-        TupleKey(email.id!.asString, accountId.asString, userName.value).encodeKey : email.toEmailCache()
+        TupleKey(accountId.asString, userName.value, email.id!.asString).encodeKey : email.toEmailCache()
     };
   }
 }

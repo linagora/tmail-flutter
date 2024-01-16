@@ -27,8 +27,8 @@ class MobileAppBarThreadWidget extends StatelessWidget {
   final SelectMode selectMode;
   final FilterMessageOption filterOption;
   final OnOpenMailboxMenuActionClick openMailboxAction;
-  final OnEditThreadAction editThreadAction;
   final OnCancelEditThreadAction cancelEditThreadAction;
+  final OnOpenAccountPickerAction? onOpenAccountPickerAction;
 
   MobileAppBarThreadWidget({
     super.key,
@@ -38,8 +38,8 @@ class MobileAppBarThreadWidget extends StatelessWidget {
     required this.selectMode,
     required this.filterOption,
     required this.openMailboxAction,
-    required this.editThreadAction,
     required this.cancelEditThreadAction,
+    required this.onOpenAccountPickerAction,
   });
 
   @override
@@ -97,7 +97,8 @@ class MobileAppBarThreadWidget extends StatelessWidget {
                 blurRadius: 1,
                 offset: Offset(0, 0.5)
               )
-            ]
+            ],
+            onTapAction: onOpenAccountPickerAction,
           ),
         ],
       );

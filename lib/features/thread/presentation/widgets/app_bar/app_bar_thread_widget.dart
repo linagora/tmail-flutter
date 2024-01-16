@@ -16,6 +16,7 @@ typedef OnEditThreadAction = void Function();
 typedef OnOpenMailboxMenuActionClick = void Function();
 typedef OnCancelEditThreadAction = void Function();
 typedef OnEmailSelectionAction = void Function(EmailActionType, List<PresentationEmail>);
+typedef OnOpenAccountPickerAction = void Function();
 
 class AppBarThreadWidget extends StatelessWidget {
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
@@ -29,6 +30,7 @@ class AppBarThreadWidget extends StatelessWidget {
   final SelectMode selectMode;
   final FilterMessageOption filterOption;
   final UserProfile? userProfile;
+  final OnOpenAccountPickerAction? onOpenAccountPickerAction;
 
   const AppBarThreadWidget({
     Key? key,
@@ -43,6 +45,7 @@ class AppBarThreadWidget extends StatelessWidget {
     required this.userProfile,
     this.onPopupMenuFilterEmailAction,
     this.onContextMenuFilterEmailAction,
+    this.onOpenAccountPickerAction,
   }) : super(key: key);
 
   @override
@@ -70,8 +73,8 @@ class AppBarThreadWidget extends StatelessWidget {
         selectMode: selectMode,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,
-        editThreadAction: editThreadAction,
         cancelEditThreadAction: cancelEditThreadAction,
+        onOpenAccountPickerAction: onOpenAccountPickerAction,
       );
     }
   }

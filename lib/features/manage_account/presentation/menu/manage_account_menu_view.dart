@@ -122,6 +122,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                                if (controller.dashBoardController.sessionCurrent != null &&
                                    controller.dashBoardController.accountId.value != null) {
                                  controller.dashBoardController.logout(
+                                   context: context,
                                    session: controller.dashBoardController.sessionCurrent!,
                                    accountId: controller.dashBoardController.accountId.value!
                                  );

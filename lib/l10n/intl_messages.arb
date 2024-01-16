@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-07T14:01:28.226469",
+  "@@last_modified": "2024-01-16T15:38:46.103746",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3662,6 +3662,68 @@
   },
   "descriptionTwakeId": "To start, please create a TwakeID \nthat will allow you to use \nchat, mail and drive",
   "@descriptionTwakeId": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAnotherAccount": "Add another account",
+  "@addAnotherAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageFailureWhenSwitchActiveAccount": "Switch active account failure",
+  "@toastMessageFailureWhenSwitchActiveAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unableToLogInToAccount": "Unable to log in to account {userName}",
+  "@unableToLogInToAccount": {
+    "type": "text",
+    "placeholders_order": [
+      "userName"
+    ],
+    "placeholders": {
+      "userName": {}
+    }
+  },
+  "toastMessageSuccessWhenSwitchActiveAccount": "You’ve been switched to your {userName} account.",
+  "@toastMessageSuccessWhenSwitchActiveAccount": {
+    "type": "text",
+    "placeholders_order": [
+      "userName"
+    ],
+    "placeholders": {
+      "userName": {}
+    }
+  },
+  "switchAccounts": "Switch Accounts",
+  "@switchAccounts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "accountSettings": "Account settings",
+  "@accountSettings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "logoutConfirmation": "Logout Confirmation",
+  "@logoutConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yesLogout": "Yes, Log out",
+  "@yesLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationLogout": "Do you want to log out of",
+  "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

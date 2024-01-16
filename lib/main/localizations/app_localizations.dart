@@ -3821,4 +3821,65 @@ class AppLocalizations {
       name: 'descriptionTwakeId',
     );
   }
+
+  String get addAnotherAccount {
+    return Intl.message(
+      'Add another account',
+      name: 'addAnotherAccount',
+    );
+  }
+
+  String get toastMessageFailureWhenSwitchActiveAccount {
+    return Intl.message(
+      'Switch active account failure',
+      name: 'toastMessageFailureWhenSwitchActiveAccount',
+    );
+  }
+
+  String unableToLogInToAccount(String userName) {
+    return Intl.message(
+      'Unable to log in to account $userName',
+      name: 'unableToLogInToAccount',
+      args: [userName]
+    );
+  }
+
+  String toastMessageSuccessWhenSwitchActiveAccount(String userName) {
+    return Intl.message(
+      'You’ve been switched to your $userName account.',
+      name: 'toastMessageSuccessWhenSwitchActiveAccount',
+      args: [userName]
+    );
+  }
+
+  String get switchAccounts {
+    return Intl.message(
+      'Switch Accounts',
+      name: 'switchAccounts',
+    );
+  }
+
+  String get accountSettings {
+    return Intl.message(
+      'Account settings',
+      name: 'accountSettings');
+  }
+
+  String get logoutConfirmation {
+    return Intl.message(
+      'Logout Confirmation',
+      name: 'logoutConfirmation');
+  }
+
+  String get yesLogout {
+    return Intl.message(
+      'Yes, Log out',
+      name: 'yesLogout');
+  }
+
+  String get messageConfirmationLogout {
+    return Intl.message(
+      'Do you want to log out of',
+      name: 'messageConfirmationLogout');
+  }
 }

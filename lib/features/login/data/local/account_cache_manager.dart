@@ -20,7 +20,7 @@ class AccountCacheManager {
     if (accountCache != null) {
       return accountCache.toAccount();
     } else {
-      throw NotFoundAuthenticatedAccountException();
+      throw NotFoundActiveAccountException();
     }
   }
 
@@ -46,5 +46,29 @@ class AccountCacheManager {
   Future<void> deleteCurrentAccount(String hashId) {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
     return _accountCacheClient.deleteItem(hashId);
+  }
+
+  Future<List<PersonalAccount>> getAllAccount() async {
+    final allAccounts = await _accountCacheClient.getAll();
+    log('AccountCacheManager::getAllAccount::allAccounts(): $allAccounts');
+    if (allAccounts.isNotEmpty) {
+      return allAccounts.map((account) => account.toAccount()).toList();
+    } else {
+      throw NotFoundAuthenticatedAccountException();
+    }
+  }
+
+  Future<void> setCurrentActiveAccount(PersonalAccount activeAccount) async {
+    log('AccountCacheManager::setCurrentActiveAccount(): $activeAccount');
+    final newAccountCache = activeAccount.toCache(isSelected: true);
+    final allAccounts = await _accountCacheClient.getAll();
+    log('AccountCacheManager::setCurrentActiveAccount::allAccounts(): $allAccounts');
+    if (allAccounts.isNotEmpty) {
+      final newAllAccounts = allAccounts.unselected().toList();
+      if (newAllAccounts.isNotEmpty) {
+        await _accountCacheClient.updateMultipleItem(newAllAccounts.toMap());
+      }
+    }
+    return _accountCacheClient.insertItem(newAccountCache.id, newAccountCache);
   }
 }

@@ -96,9 +96,12 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/down
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/restore_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/select_active_account_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/switch_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -484,13 +487,19 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleArguments() {
     final arguments = Get.arguments;
-    log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
+    log('MailboxDashBoardController::_handleArguments(): arguments = $arguments');
     if (arguments is Session) {
       _handleSession(arguments);
     } else if (arguments is MailtoArguments) {
       _handleMailtoURL(arguments);
     } else if (arguments is PreviewEmailArguments) {
       _handleOpenEmailAction(arguments);
+    } else if (arguments is SwitchActiveAccountArguments) {
+      _handleSwitchActiveAccountAction(arguments);
+    }  else if (arguments is SelectActiveAccountArguments) {
+      _handleSelectActiveAccountAction(arguments);
+    } else if (arguments is RestoreActiveAccountArguments) {
+      _handleRestorePreviousActiveAccountAction(arguments);
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -521,13 +530,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSession(Session session) {
     log('MailboxDashBoardController::_handleSession:');
-    _setUpComponentsFromSession(session);
-
-    updateAuthenticationAccount(
-      sessionCurrent!,
-      accountId.value!,
-      sessionCurrent!.username
-    );
+    _setUpComponentsFromSession(session, saveSession: true);
 
     if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
       _handleClickLocalNotificationOnTerminated();
@@ -536,7 +539,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _setUpComponentsFromSession(Session session) {
+  void _setUpComponentsFromSession(Session session, {bool saveSession = false}) {
     sessionCurrent = session;
     accountId.value = sessionCurrent!.personalAccount.accountId;
     userProfile.value = UserProfile(sessionCurrent!.username.value);
@@ -551,11 +554,14 @@ class MailboxDashBoardController extends ReloadableController {
 
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
-      _storeSessionAction(
-        sessionCurrent!,
-        accountId.value!,
-        sessionCurrent!.username
-      );
+
+      if (saveSession) {
+        _storeSessionAction(
+          sessionCurrent!,
+          accountId.value!,
+          sessionCurrent!.username
+        );
+      }
     }
   }
 
@@ -1317,7 +1323,7 @@ class MailboxDashBoardController extends ReloadableController {
   void handleReloaded(Session session) {
     log('MailboxDashBoardController::handleReloaded():');
     _getRouteParameters();
-    _setUpComponentsFromSession(session);
+    _setUpComponentsFromSession(session, saveSession: true);
     if (PlatformInfo.isWeb) {
       _handleComposerCache();
     }
@@ -2510,7 +2516,7 @@ class MailboxDashBoardController extends ReloadableController {
         leadingSVGIcon: imagePaths.icRecoverDeletedMessages,
         leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.primaryColor,
-        textColor: Colors.white,  
+        textColor: Colors.white,
       );
     }
   }
@@ -2522,7 +2528,7 @@ class MailboxDashBoardController extends ReloadableController {
     if (currentAccountId != null && currentSession != null) {
       final arguments = EmailRecoveryArguments(currentAccountId, currentSession);
 
-      final result = PlatformInfo.isWeb 
+      final result = PlatformInfo.isWeb
       ? await DialogRouter.pushGeneralDialog(
           routeName: AppRoutes.emailRecovery,
           arguments: arguments,
@@ -2543,6 +2549,95 @@ class MailboxDashBoardController extends ReloadableController {
 
     consumeState(_restoreDeletedMessageInteractor.execute(sessionCurrent!, accountId.value!, restoreDeletedMessageRequest));
     isRecoveringDeletedMessage.value = true;
+  }
+
+  void _loadActiveAccount({
+    required PersonalAccount activeAccount,
+    required Session sessionActiveAccount
+  }) {
+    dispatchRoute(DashboardRoutes.waiting);
+
+    setCurrentActiveAccount(activeAccount);
+
+    dynamicUrlInterceptors.changeBaseUrl(activeAccount.apiUrl);
+
+    _setUpComponentsFromSession(sessionActiveAccount);
+
+    dispatchRoute(DashboardRoutes.thread);
+  }
+
+  void _handleSwitchActiveAccountAction(SwitchActiveAccountArguments arguments) {
+    log('MailboxDashBoardController::_handleSwitchActiveAccountAction:arguments: $arguments');
+    _loadActiveAccount(
+      activeAccount: arguments.nextAccount,
+      sessionActiveAccount: arguments.sessionNextAccount
+    );
+
+    _showToastMessageSwitchActiveAccountSuccess(
+      previousAccount: arguments.currentAccount,
+      currentAccount: arguments.nextAccount,
+      sessionPreviousAccount: arguments.sessionCurrentAccount,
+    );
+  }
+
+  void _handleSelectActiveAccountAction(SelectActiveAccountArguments arguments) {
+    log('MailboxDashBoardController::_handleSelectActiveAccountAction:arguments: $arguments');
+    _loadActiveAccount(
+      activeAccount: arguments.activeAccount,
+      sessionActiveAccount: arguments.session
+    );
+  }
+
+  void _showToastMessageSwitchActiveAccountSuccess({
+    required PersonalAccount previousAccount,
+    required PersonalAccount currentAccount,
+    required Session sessionPreviousAccount,
+  }) {
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageSuccessWhenSwitchActiveAccount(currentAccount.userName?.value ?? ''),
+        actionName: AppLocalizations.of(currentContext!).undo,
+        onActionClick: () => _undoSwitchActiveAccountAction(previousAccount, sessionPreviousAccount),
+        leadingSVGIcon: imagePaths.icToastSuccessMessage,
+        leadingSVGIconColor: Colors.white,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(imagePaths.icUndo));
+    }
+  }
+
+  void _handleRestorePreviousActiveAccountAction(RestoreActiveAccountArguments arguments) {
+    log('MailboxDashBoardController::_handleRestorePreviousActiveAccountAction:arguments: $arguments');
+    if (arguments.exception != null &&
+        currentContext != null &&
+        currentOverlayContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageFailureWhenSwitchActiveAccount);
+    }
+
+    _loadActiveAccount(
+      activeAccount: arguments.currentAccount,
+      sessionActiveAccount: arguments.session
+    );
+  }
+
+  void _undoSwitchActiveAccountAction(
+    PersonalAccount previousAccount,
+    Session sessionPreviousAccount
+  ) {
+    setUpInterceptors(previousAccount);
+
+    dispatchRoute(DashboardRoutes.waiting);
+
+    setCurrentActiveAccount(previousAccount);
+
+    dynamicUrlInterceptors.changeBaseUrl(previousAccount.apiUrl);
+
+    _setUpComponentsFromSession(sessionPreviousAccount);
+
+    dispatchRoute(DashboardRoutes.thread);
   }
 
   @override

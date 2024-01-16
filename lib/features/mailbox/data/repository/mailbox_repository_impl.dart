@@ -52,7 +52,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
     if (localMailboxResponse.hasData()) {
       bool hasMoreChanges = true;
-      State? sinceState = localMailboxResponse.state!;
+      State? sinceState = localMailboxResponse.state;
 
       while(hasMoreChanges && sinceState != null) {
         final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState, properties: properties);
@@ -76,6 +76,15 @@ class MailboxRepositoryImpl extends MailboxRepository {
             stateDataSource.saveState(accountId, session.username, changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
         ]);
       }
+
+      final newMailboxResponse = await Future.wait([
+        mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username),
+        stateDataSource.getState(accountId, session.username, StateType.mailbox)
+      ]).then((List response) {
+        return MailboxResponse(mailboxes: response.first, state: response.last);
+      });
+
+      yield newMailboxResponse;
     } else {
       final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
 
@@ -84,16 +93,9 @@ class MailboxRepositoryImpl extends MailboxRepository {
         if (mailboxResponse.state != null)
           stateDataSource.saveState(accountId, session.username, mailboxResponse.state!.toStateCache(StateType.mailbox)),
       ]);
+
+      yield mailboxResponse;
     }
-
-    final newMailboxResponse = await Future.wait([
-      mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username),
-      stateDataSource.getState(accountId, session.username, StateType.mailbox)
-    ]).then((List response) {
-      return MailboxResponse(mailboxes: response.first, state: response.last);
-    });
-
-    yield newMailboxResponse;
   }
 
   Future<List<Mailbox>?> _combineMailboxCache({
@@ -159,7 +161,11 @@ class MailboxRepositoryImpl extends MailboxRepository {
       return MailboxResponse(mailboxes: response.first, state: response.last);
     });
 
-    yield newMailboxResponse;
+    if (newMailboxResponse.hasData() == true) {
+      yield newMailboxResponse;
+    } else {
+      yield* getAllMailbox(session, accountId);
+    }
   }
 
   @override

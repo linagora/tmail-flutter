@@ -202,9 +202,9 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   void _deleteListSendingEmailAction(BuildContext context, List<SendingEmail> listSendingEmails) {
     showConfirmDialogAction(
-      context,
-      AppLocalizations.of(context).messageDialogDeleteSendingEmail,
-      AppLocalizations.of(currentContext!).delete,
+      context: context,
+      message: AppLocalizations.of(context).messageDialogDeleteSendingEmail,
+      actionName: AppLocalizations.of(currentContext!).delete,
       title: AppLocalizations.of(currentContext!).deleteOfflineEmail,
       icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients),
       alignCenter: true,

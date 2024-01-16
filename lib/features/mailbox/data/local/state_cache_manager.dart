@@ -15,14 +15,14 @@ class StateCacheManager {
   StateCacheManager(this._stateCacheClient);
 
   Future<State?> getState(AccountId accountId, UserName userName, StateType stateType) async {
-    final stateKey = TupleKey(stateType.name, accountId.asString, userName.value).encodeKey;
+    final stateKey = TupleKey(accountId.asString, userName.value, stateType.name).encodeKey;
     final stateCache = await _stateCacheClient.getItem(stateKey);
     return stateCache?.toState();
   }
 
   Future<void> saveState(AccountId accountId, UserName userName, StateCache stateCache) async {
     final stateCacheExist = await _stateCacheClient.isExistTable();
-    final stateKey = TupleKey(stateCache.type.name, accountId.asString, userName.value).encodeKey;
+    final stateKey = TupleKey(accountId.asString, userName.value, stateCache.type.name).encodeKey;
     if (stateCacheExist) {
       return await _stateCacheClient.updateItem(stateKey, stateCache);
     } else {

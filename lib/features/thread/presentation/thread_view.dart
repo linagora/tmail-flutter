@@ -101,7 +101,20 @@ class ThreadView extends GetWidget<ThreadController>
                                       (option) => controller.filterMessagesAction(context, option)
                                     )
                                   )
-                                : null
+                                : null,
+                              onOpenAccountPickerAction: () async {
+                                await controller.mailboxDashBoardController.showAccountPicker(
+                                  context: context,
+                                  goToSettingAction: controller.mailboxDashBoardController.goToSettings,
+                                  onSwitchActiveAccountAction: (currentAccount, nextAccount) {
+                                    controller.mailboxDashBoardController.switchActiveAccount(
+                                      currentAccount: currentAccount,
+                                      nextAccount: nextAccount,
+                                      sessionCurrentAccount: controller.mailboxDashBoardController.sessionCurrent!
+                                    );
+                                  }
+                                );
+                              },
                             );
                           }),
                           if (PlatformInfo.isMobile)

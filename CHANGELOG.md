@@ -279,7 +279,7 @@
 - \#1792 Add option 'Empty Trash' in folder menu
 
 ### Changed
-- \#1755 Use TupleKey('ObjectId\|AccountId\|UserName') store data to cache
+- \#1755 Use TupleKey('AccountId\|UserName\|ObjectId') store data to cache
 
 ### Fixed
 - \#1385 Fix \[Email rule\] Icon edit and delete might be seen as disable

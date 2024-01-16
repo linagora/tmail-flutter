@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -16,7 +17,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipi
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_local_copy_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_forward_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/add_recipients_in_forwarding_interactor.dart';
@@ -110,10 +110,11 @@ class ForwardController extends BaseController {
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
-    showConfirmDialogAction(context,
+    showConfirmDialogAction(
+      context: context,
       title: AppLocalizations.of(context).deleteRecipient,
-      AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
-      AppLocalizations.of(context).remove,
+      message: AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
+      actionName: AppLocalizations.of(context).remove,
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
       icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
@@ -195,10 +196,11 @@ class ForwardController extends BaseController {
   }
 
   void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
-    showConfirmDialogAction(currentContext!,
+    showConfirmDialogAction(
+      context: currentContext!,
       title: AppLocalizations.of(context).deleteRecipient,
-      AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
-      AppLocalizations.of(currentContext!).remove,
+      message: AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
+      actionName: AppLocalizations.of(currentContext!).remove,
       onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
       icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),

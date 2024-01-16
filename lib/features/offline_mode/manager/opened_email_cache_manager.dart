@@ -24,7 +24,7 @@ class OpenedEmailCacheManager {
     UserName userName,
     DetailedEmailHiveCache detailedEmailCache
   ) {
-    final keyCache = TupleKey(detailedEmailCache.emailId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, detailedEmailCache.emailId).encodeKey;
     log('OpenedEmailCacheManager::insertDetailedEmail(): $keyCache');
     return _cacheClient.insertItem(keyCache, detailedEmailCache);
   }
@@ -34,13 +34,14 @@ class OpenedEmailCacheManager {
     UserName userName,
     String emailId
   ) {
-    final keyCache = TupleKey(emailId, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailId).encodeKey;
     log('OpenedEmailCacheManager::removeDetailedEmail(): $keyCache');
     return _cacheClient.deleteItem(keyCache);
   }
 
   Future<List<DetailedEmailHiveCache>> getAllDetailedEmails(AccountId accountId, UserName userName) async {
-    final detailedEmailCacheList = await _cacheClient.getListByTupleKey(accountId.asString, userName.value);
+    final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    final detailedEmailCacheList = await _cacheClient.getListByNestedKey(nestedKey);
     detailedEmailCacheList.sortByLatestTime();
     log('OpenedEmailCacheManager::getAllDetailedEmails():SIZE: ${detailedEmailCacheList.length}');
     return detailedEmailCacheList;
@@ -72,7 +73,7 @@ class OpenedEmailCacheManager {
     UserName userName,
     EmailId emailId
   ) async {
-    final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
+    final keyCache = TupleKey(accountId.asString, userName.value, emailId.asString).encodeKey;
     final detailedEmailCache = await _cacheClient.getItem(keyCache, needToReopen: true);
     if (detailedEmailCache != null) {
       return detailedEmailCache;
