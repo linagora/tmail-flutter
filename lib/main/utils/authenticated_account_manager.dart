@@ -106,7 +106,7 @@ class AuthenticatedAccountManager {
         accounts: listPresentationAccount,
         context: context,
         titleAddAnotherAccount: AppLocalizations.of(context).addAnotherAccount,
-        titleAccountSettings: AppLocalizations.of(context).manage_account,
+        titleAccountSettings: AppLocalizations.of(context).accountSettings,
         logoApp: Stack(
           children: [
             Center(child: Padding(

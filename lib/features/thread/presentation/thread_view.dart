@@ -103,10 +103,9 @@ class ThreadView extends GetWidget<ThreadController>
                                   )
                                 : null,
                               onOpenAccountPickerAction: () async {
-                                await controller.authenticatedAccountManager.showAccountsBottomSheetModal(
+                                await controller.mailboxDashBoardController.showAccountPicker(
                                   context: context,
-                                  onGoToManageAccount: controller.mailboxDashBoardController.goToSettings,
-                                  onAddAnotherAccountAction: controller.addAnotherAccount,
+                                  goToSettingAction: controller.mailboxDashBoardController.goToSettings,
                                   onSwitchActiveAccountAction: (currentAccount, nextAccount) {
                                     controller.mailboxDashBoardController.switchActiveAccount(
                                       currentAccount: currentAccount,

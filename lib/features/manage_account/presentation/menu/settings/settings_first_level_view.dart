@@ -21,7 +21,20 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Obx(() => AccountProfileWidget(
           imagePaths: controller.imagePaths,
           userProfile: controller.manageAccountDashboardController.userProfile.value,
-          padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils))),
+          padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
+          onOpenAccountPicker: () async {
+            await controller.manageAccountDashboardController.showAccountPicker(
+              context: context,
+              onSwitchActiveAccountAction: (currentAccount, nextAccount) {
+                controller.manageAccountDashboardController.switchActiveAccount(
+                  currentAccount: currentAccount,
+                  nextAccount: nextAccount,
+                  sessionCurrentAccount: controller.manageAccountDashboardController.sessionCurrent!
+                );
+              }
+            );
+          },
+        )),
         const Divider(),
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).profiles,

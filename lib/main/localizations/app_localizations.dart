@@ -3858,4 +3858,10 @@ class AppLocalizations {
       name: 'switchAccounts',
     );
   }
+
+  String get accountSettings {
+    return Intl.message(
+      'Account settings',
+      name: 'accountSettings');
+  }
 }

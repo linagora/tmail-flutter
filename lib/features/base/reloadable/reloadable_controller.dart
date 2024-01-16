@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -21,6 +22,7 @@ import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_t
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/authenticated_account_manager.dart';
 import 'package:tmail_ui_user/main/utils/message_toast_utils.dart';
 
 abstract class ReloadableController extends BaseController {
@@ -120,7 +122,7 @@ abstract class ReloadableController extends BaseController {
     required PersonalAccount nextAccount,
     required Session sessionCurrentAccount,
   }) async {
-    await popAndPush(
+    await pushAndPopAll(
       AppRoutes.home,
       arguments: LoginNavigateArguments(
         navigateType: LoginNavigateType.switchActiveAccount,
@@ -128,5 +130,27 @@ abstract class ReloadableController extends BaseController {
         sessionCurrentAccount: sessionCurrentAccount,
         nextActiveAccount: nextAccount,
       ));
+  }
+
+  void _addAnotherAccount(PersonalAccount? currentAccount) async {
+    await pushAndPopAll(
+      AppRoutes.twakeId,
+      arguments: LoginNavigateArguments(
+        navigateType: LoginNavigateType.addAnotherAccount,
+        currentAccount: currentAccount
+      ));
+  }
+
+  Future<void> showAccountPicker({
+    required BuildContext context,
+    VoidCallback? goToSettingAction,
+    OnSwitchActiveAccountAction? onSwitchActiveAccountAction
+  }) async {
+    await authenticatedAccountManager.showAccountsBottomSheetModal(
+      context: context,
+      onGoToManageAccount: goToSettingAction,
+      onAddAnotherAccountAction: _addAnotherAccount,
+      onSwitchActiveAccountAction: onSwitchActiveAccountAction
+    );
   }
 }

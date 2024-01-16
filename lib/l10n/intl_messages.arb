@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-16T11:41:03.655960",
+  "@@last_modified": "2024-01-16T12:04:11.990592",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3700,6 +3700,12 @@
   },
   "switchAccounts": "Switch Accounts",
   "@switchAccounts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "accountSettings": "Account settings",
+  "@accountSettings": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
