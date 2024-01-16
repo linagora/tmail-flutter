@@ -18,6 +18,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
@@ -296,11 +297,66 @@ abstract class BaseController extends GetxController
   }
 
   void logout({
+    required BuildContext context,
     required Session session,
     required AccountId accountId
   }) async {
     _isFcmEnabled = _isFcmActivated(session, accountId);
-    consumeState(_logoutCurrentAccountInteractor.execute());
+
+    if (PlatformInfo.isMobile) {
+      _showConfirmDialogLogout(
+        context: context,
+        userName: session.username
+      );
+    } else {
+      consumeState(_logoutCurrentAccountInteractor.execute());
+    }
+  }
+
+  void _showConfirmDialogLogout({
+    required BuildContext context,
+    required UserName userName
+  }) {
+    showConfirmDialogAction(
+      context: context,
+      actionName: AppLocalizations.of(currentContext!).yesLogout,
+      title: AppLocalizations.of(currentContext!).logoutConfirmation,
+      alignCenter: true,
+      titlePadding: const EdgeInsetsDirectional.only(top: 24),
+      messageStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: AppColor.colorTextBody,
+        fontSize: 15
+      ),
+      titleStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 20
+      ),
+      actionButtonColor: AppColor.primaryColor,
+      actionStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Colors.white,
+        fontSize: 16
+      ),
+      cancelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: AppColor.primaryColor,
+        fontSize: 16
+      ),
+      listTextSpan: [
+        TextSpan(text: AppLocalizations.of(context).messageConfirmationLogout),
+        TextSpan(
+          text: ' ${userName.value}',
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: AppColor.colorTextBody,
+            fontWeight: FontWeight.bold,
+            fontSize: 15
+          ),
+        ),
+        const TextSpan(text: '?'),
+      ],
+      onConfirmAction: () {
+        consumeState(_logoutCurrentAccountInteractor.execute());
+      },
+    );
   }
 
   void _removeFirebaseRegistration(PersonalAccount deletedAccount) async {

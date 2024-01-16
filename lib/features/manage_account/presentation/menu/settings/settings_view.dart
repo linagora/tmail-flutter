@@ -103,6 +103,7 @@ class SettingsView extends GetWidget<SettingsController> {
             overflow: CommonTextStyle.defaultTextOverFlow,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               fontSize: 20,
+              fontWeight: FontWeight.bold,
               color: Colors.black
             )
           )

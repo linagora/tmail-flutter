@@ -23,12 +23,12 @@ class ConfirmDialogBuilder {
   TextStyle? _styleContent;
   double? _radiusButton;
   double? heightButton;
-  EdgeInsets? _paddingTitle;
-  EdgeInsets? _paddingContent;
-  EdgeInsets? _paddingButton;
+  EdgeInsetsGeometry? _paddingTitle;
+  EdgeInsetsGeometry? _paddingContent;
+  EdgeInsetsGeometry? _paddingButton;
   EdgeInsets? _outsideDialogPadding;
-  EdgeInsets? _marginIcon;
-  EdgeInsets? _margin;
+  EdgeInsetsGeometry? _marginIcon;
+  EdgeInsetsGeometry? _margin;
   double? _widthDialog;
   double? _heightDialog;
   double maxWith;
@@ -95,23 +95,23 @@ class ConfirmDialogBuilder {
     _radiusButton = radius;
   }
 
-  void paddingTitle(EdgeInsets? value) {
+  void paddingTitle(EdgeInsetsGeometry? value) {
     _paddingTitle = value;
   }
 
-  void paddingContent(EdgeInsets? value) {
+  void paddingContent(EdgeInsetsGeometry? value) {
     _paddingContent = value;
   }
 
-  void paddingButton(EdgeInsets? value) {
+  void paddingButton(EdgeInsetsGeometry? value) {
     _paddingButton = value;
   }
 
-  void marginIcon(EdgeInsets? value) {
+  void marginIcon(EdgeInsetsGeometry? value) {
     _marginIcon = value;
   }
 
-  void margin(EdgeInsets? value) {
+  void margin(EdgeInsetsGeometry? value) {
     _margin = value;
   }
 

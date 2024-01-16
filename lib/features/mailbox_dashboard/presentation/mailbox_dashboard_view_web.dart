@@ -365,6 +365,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       if (controller.sessionCurrent != null &&
                           controller.accountId.value != null) {
                         controller.logout(
+                          context: context,
                           session: controller.sessionCurrent!,
                           accountId: controller.accountId.value!
                         );

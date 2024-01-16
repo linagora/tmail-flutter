@@ -50,7 +50,10 @@ class AccountProfileWidget extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.only(start: 16),
                 child: TextOverflowBuilder(
                   userProfile?.email ?? '',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.black)
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  )
                 ),
               ),
               TMailButtonWidget(

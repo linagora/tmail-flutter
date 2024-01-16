@@ -3864,4 +3864,22 @@ class AppLocalizations {
       'Account settings',
       name: 'accountSettings');
   }
+
+  String get logoutConfirmation {
+    return Intl.message(
+      'Logout Confirmation',
+      name: 'logoutConfirmation');
+  }
+
+  String get yesLogout {
+    return Intl.message(
+      'Yes, Log out',
+      name: 'yesLogout');
+  }
+
+  String get messageConfirmationLogout {
+    return Intl.message(
+      'Do you want to log out of',
+      name: 'messageConfirmationLogout');
+  }
 }

@@ -832,9 +832,10 @@ class ComposerController extends BaseController {
     }
 
     if (!isEnableEmailSendButton.value) {
-      showConfirmDialogAction(context,
-        AppLocalizations.of(context).message_dialog_send_email_without_recipient,
-        AppLocalizations.of(context).add_recipients,
+      showConfirmDialogAction(
+        context: context,
+        message: AppLocalizations.of(context).message_dialog_send_email_without_recipient,
+        actionName: AppLocalizations.of(context).add_recipients,
         onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
@@ -849,9 +850,10 @@ class ComposerController extends BaseController {
         .where((emailAddress) => !GetUtils.isEmail(emailAddress.emailAddress))
         .toList();
     if (listEmailAddressInvalid.isNotEmpty) {
-      showConfirmDialogAction(context,
-        AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
-        AppLocalizations.of(context).fix_email_addresses,
+      showConfirmDialogAction(
+        context: context,
+        message: AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
+        actionName: AppLocalizations.of(context).fix_email_addresses,
         onConfirmAction: () {
           toAddressExpandMode.value = ExpandMode.EXPAND;
           ccAddressExpandMode.value = ExpandMode.EXPAND;
@@ -867,9 +869,10 @@ class ComposerController extends BaseController {
     }
 
     if (subjectEmail.value == null || subjectEmail.isEmpty == true) {
-      showConfirmDialogAction(context,
-        AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
-        AppLocalizations.of(context).send_anyway,
+      showConfirmDialogAction(
+        context: context,
+        message: AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
+        actionName: AppLocalizations.of(context).send_anyway,
         onConfirmAction: () => _handleSendMessages(context),
         onCancelAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).empty_subject,
@@ -881,9 +884,9 @@ class ComposerController extends BaseController {
 
     if (!uploadController.allUploadAttachmentsCompleted) {
       showConfirmDialogAction(
-        context,
-        AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
-        AppLocalizations.of(context).got_it,
+        context: context,
+        message: AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
+        actionName: AppLocalizations.of(context).got_it,
         onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
         showAsBottomSheet: true,
@@ -895,10 +898,10 @@ class ComposerController extends BaseController {
 
     if (!uploadController.hasEnoughMaxAttachmentSize()) {
       showConfirmDialogAction(
-        context,
-        AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
+        context: context,
+        message: AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
             filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-        AppLocalizations.of(context).got_it,
+        actionName: AppLocalizations.of(context).got_it,
         onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
@@ -990,11 +993,11 @@ class ComposerController extends BaseController {
 
   void _showConfirmDialogStoreSendingEmail(BuildContext context) {
     showConfirmDialogAction(
-      context,
-      PlatformInfo.isIOS
+      context: context,
+      message: PlatformInfo.isIOS
         ? AppLocalizations.of(context).messageDialogOfflineModeOnIOS
         : '',
-      AppLocalizations.of(context).proceed,
+      actionName: AppLocalizations.of(context).proceed,
       onConfirmAction: () async {
         final sendingArgs = await _createSendingEmailArguments(context);
         _closeComposerAction(
@@ -1155,10 +1158,10 @@ class ComposerController extends BaseController {
     } else {
       if (currentContext != null) {
         showConfirmDialogAction(
-            currentContext!,
-            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+            context: currentContext!,
+            message: AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
                 filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-            AppLocalizations.of(currentContext!).got_it,
+            actionName: AppLocalizations.of(currentContext!).got_it,
             onConfirmAction: () => {isSendEmailLoading.value = false},
             title: AppLocalizations.of(currentContext!).maximum_files_size,
             hasCancelButton: false);
@@ -1401,10 +1404,10 @@ class ComposerController extends BaseController {
       } else {
         if (currentContext != null) {
           showConfirmDialogAction(
-            currentContext!,
-            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+            context: currentContext!,
+            message: AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
               filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-            AppLocalizations.of(currentContext!).got_it,
+            actionName: AppLocalizations.of(currentContext!).got_it,
             title: AppLocalizations.of(currentContext!).maximum_files_size,
             hasCancelButton: false,
           );
@@ -1888,10 +1891,10 @@ class ComposerController extends BaseController {
     } else {
       if (currentContext != null) {
         showConfirmDialogAction(
-            currentContext!,
-            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+            context: currentContext!,
+            message: AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
                 filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-            AppLocalizations.of(currentContext!).got_it,
+            actionName: AppLocalizations.of(currentContext!).got_it,
             onConfirmAction: () => {isSendEmailLoading.value = false},
             title: AppLocalizations.of(currentContext!).maximum_files_size,
             hasCancelButton: false);
@@ -2080,10 +2083,10 @@ class ComposerController extends BaseController {
     } else {
       if (currentContext != null) {
         showConfirmDialogAction(
-          currentContext!,
-          AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+          context: currentContext!,
+          message: AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
             filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-          AppLocalizations.of(currentContext!).got_it,
+          actionName: AppLocalizations.of(currentContext!).got_it,
           title: AppLocalizations.of(currentContext!).maximum_files_size,
           hasCancelButton: false,
         );
@@ -2189,10 +2192,10 @@ class ComposerController extends BaseController {
     } else {
       if (currentContext != null) {
         showConfirmDialogAction(
-          currentContext!,
-          AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
+          context: currentContext!,
+          message: AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
               filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-          AppLocalizations.of(currentContext!).got_it,
+          actionName: AppLocalizations.of(currentContext!).got_it,
           title: AppLocalizations.of(currentContext!).maximum_files_size,
           hasCancelButton: false,
         );

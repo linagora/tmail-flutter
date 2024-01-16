@@ -134,6 +134,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             if (controller.manageAccountDashboardController.sessionCurrent != null &&
                 controller.manageAccountDashboardController.accountId.value != null) {
               controller.manageAccountDashboardController.logout(
+                context: context,
                 session: controller.manageAccountDashboardController.sessionCurrent!,
                 accountId: controller.manageAccountDashboardController.accountId.value!
               );

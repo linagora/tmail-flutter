@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-16T12:04:11.990592",
+  "@@last_modified": "2024-01-16T15:38:46.103746",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3706,6 +3706,24 @@
   },
   "accountSettings": "Account settings",
   "@accountSettings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "logoutConfirmation": "Logout Confirmation",
+  "@logoutConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yesLogout": "Yes, Log out",
+  "@yesLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationLogout": "Do you want to log out of",
+  "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -28,7 +28,6 @@ class ThemeUtils {
         fontSize: 28
       ),
       bodyLarge: TextStyle(
-        fontWeight: FontWeight.bold,
         fontSize: 17
       ),
       bodyMedium: TextStyle(

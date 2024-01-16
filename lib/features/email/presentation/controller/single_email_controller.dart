@@ -531,9 +531,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _handleReadReceipt() {
     if (currentContext != null) {
-      showConfirmDialogAction(currentContext!,
-        AppLocalizations.of(currentContext!).subTitleReadReceiptRequestNotificationMessage,
-        AppLocalizations.of(currentContext!).yes,
+      showConfirmDialogAction(
+        context: currentContext!,
+        message: AppLocalizations.of(currentContext!).subTitleReadReceiptRequestNotificationMessage,
+        actionName: AppLocalizations.of(currentContext!).yes,
         onConfirmAction: () => _handleSendReceiptToSenderAction(currentContext!),
         showAsBottomSheet: true,
         title: AppLocalizations.of(currentContext!).titleReadReceiptRequestNotificationMessage,
@@ -1416,9 +1417,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _unsubscribeEmail(BuildContext context, PresentationEmail presentationEmail) {
     showConfirmDialogAction(
-      context,
-      '',
-      AppLocalizations.of(context).unsubscribe,
+      context: context,
+      actionName: AppLocalizations.of(context).unsubscribe,
       onConfirmAction: () {
         if (emailUnsubscribe.value?.httpLinks.isNotEmpty == true) {
           _handleUnsubscribeMailByHttpsLink(

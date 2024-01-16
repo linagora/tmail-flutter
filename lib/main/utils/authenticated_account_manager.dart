@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
@@ -125,8 +127,8 @@ class AuthenticatedAccountManager {
             )
           ]
         ),
-        accountNameStyle: Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: LinagoraSysColors.material().onSurface,
+        accountNameStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: LinagoraSysColors.material().onSurface
         ),
         accountIdStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
           color: LinagoraRefColors.material().tertiary[20],
