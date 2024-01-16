@@ -11,6 +11,7 @@ typedef OnEditorSettingsChange = Function(EditorSettings settings);
 typedef OnImageUploadSuccessAction = Function(FileUpload fileUpload);
 typedef OnImageUploadFailureAction = Function(FileUpload? fileUpload, String? base64Str, UploadError error);
 typedef OnEditorTextSizeChanged = Function(int? size);
+typedef OnEditLink = Function(String? text, String? url, bool? isOpenNewTab, String linkTagId)?;
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -28,6 +29,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
+  final OnEditLink? onEditLink;
 
   const WebEditorWidget({
     super.key,
@@ -45,6 +47,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onEditorTextSizeChanged,
     this.width,
     this.height,
+    this.onEditLink,
   });
 
   @override
@@ -115,6 +118,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         onImageUpload: widget.onImageUploadSuccessAction,
         onImageUploadError: widget.onImageUploadFailureAction,
         onTextFontSizeChanged: widget.onEditorTextSizeChanged,
+        onEditLink: widget.onEditLink
       ),
     );
   }

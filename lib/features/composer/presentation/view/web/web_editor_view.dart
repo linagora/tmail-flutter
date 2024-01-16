@@ -31,6 +31,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
+  final OnEditLink? onEditLink;
 
   const WebEditorView({
     super.key,
@@ -49,6 +50,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onEditorTextSizeChanged,
     this.width,
     this.height,
+    this.onEditLink,
   });
 
   @override
@@ -76,6 +78,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           width: width,
           height: height,
+          onEditLink: onEditLink,
         );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
@@ -102,6 +105,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onEditorTextSizeChanged: onEditorTextSizeChanged,
             width: width,
             height: height,
+            onEditLink: onEditLink,
           ),
           (success) {
             if (success is GetEmailContentLoading) {
@@ -128,6 +132,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 width: width,
                 height: height,
+                onEditLink: onEditLink,
               );
             }
           }
@@ -161,6 +166,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onEditorTextSizeChanged: onEditorTextSizeChanged,
               width: width,
               height: height,
+              onEditLink: onEditLink,
             );
           },
           (success) {
@@ -190,6 +196,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 width: width,
                 height: height,
+                onEditLink: onEditLink,
               );
             }
           }
@@ -210,6 +217,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           width: width,
           height: height,
+          onEditLink: onEditLink,
         );
     }
   }
