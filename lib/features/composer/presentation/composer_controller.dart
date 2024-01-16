@@ -29,6 +29,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rxdart/rxdart.dart';
@@ -59,6 +60,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/insert_link_dialog_widget.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
@@ -2185,5 +2187,26 @@ class ComposerController extends BaseController {
       })
       ..onTextSearchChangedAction((searchText) => _searchIdentities(searchText))
     ).build();
+  }
+
+  void onEditLinkAction(
+    BuildContext context,
+    String? text,
+    String? url,
+    bool? isOpenNewTab,
+    String linkTagId
+  ) async {
+    Get.dialog(
+      PointerInterceptor(
+        child: InsertLinkDialogWidget(
+          responsiveUtils: responsiveUtils,
+          editorController: richTextWebController.editorController,
+          linkTagId: linkTagId,
+          displayText: text ?? url ?? '',
+          link: url ?? '',
+          openNewTab: isOpenNewTab ?? true,
+        )
+      )
+    );
   }
 }
