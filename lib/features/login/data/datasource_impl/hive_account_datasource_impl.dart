@@ -50,9 +50,9 @@ class HiveAccountDatasourceImpl extends AccountDatasource {
   }
 
   @override
-  Future<void> setCurrentAccountActive(PersonalAccount activeAccount) {
+  Future<void> setCurrentActiveAccount(PersonalAccount activeAccount) {
     return Future.sync(() async {
-      return await _accountCacheManager.setCurrentAccountActive(activeAccount);
+      return await _accountCacheManager.setCurrentActiveAccount(activeAccount);
     }).catchError(_exceptionThrower.throwException);
   }
 }

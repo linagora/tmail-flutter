@@ -1,11 +1,11 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 
-class SetCurrentAccountActiveLoading extends LoadingState {}
+class SetCurrentActiveAccountLoading extends LoadingState {}
 
-class SetCurrentAccountActiveSuccess extends UIState {}
+class SetCurrentActiveAccountSuccess extends UIState {}
 
-class SetCurrentAccountActiveFailure extends FeatureFailure {
+class SetCurrentActiveAccountFailure extends FeatureFailure {
 
-  SetCurrentAccountActiveFailure(dynamic exception) : super(exception: exception);
+  SetCurrentActiveAccountFailure(dynamic exception) : super(exception: exception);
 }

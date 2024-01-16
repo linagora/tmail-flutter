@@ -9,5 +9,5 @@ abstract class AccountDatasource {
 
   Future<List<PersonalAccount>> getAllAccount();
 
-  Future<void> setCurrentAccountActive(PersonalAccount activeAccount);
+  Future<void> setCurrentActiveAccount(PersonalAccount activeAccount);
 }

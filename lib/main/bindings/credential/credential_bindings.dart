@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_basic_auth_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/set_current_account_active_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/set_current_active_account_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -47,7 +47,7 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<AccountRepository>()
     ));
     Get.put(AddAccountIdToActiveAccountInteractor(Get.find<AccountRepository>()));
-    Get.put(SetCurrentAccountActiveInteractor(Get.find<AccountRepository>()));
+    Get.put(SetCurrentActiveAccountInteractor(Get.find<AccountRepository>()));
   }
 
   @override

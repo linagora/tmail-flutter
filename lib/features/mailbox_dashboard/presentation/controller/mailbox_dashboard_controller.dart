@@ -2557,7 +2557,7 @@ class MailboxDashBoardController extends ReloadableController {
   }) {
     dispatchRoute(DashboardRoutes.waiting);
 
-    setCurrentAccountActive(activeAccount);
+    setCurrentActiveAccount(activeAccount);
 
     dynamicUrlInterceptors.changeBaseUrl(activeAccount.apiUrl);
 
@@ -2631,7 +2631,7 @@ class MailboxDashBoardController extends ReloadableController {
 
     dispatchRoute(DashboardRoutes.waiting);
 
-    setCurrentAccountActive(previousAccount);
+    setCurrentActiveAccount(previousAccount);
 
     dynamicUrlInterceptors.changeBaseUrl(previousAccount.apiUrl);
 

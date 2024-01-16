@@ -31,7 +31,7 @@ import 'package:tmail_ui_user/features/login/domain/state/logout_current_account
 import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/logout_current_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/set_current_account_active_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/set_current_active_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
@@ -79,7 +79,7 @@ abstract class BaseController extends GetxController
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
   final AppStore appStore = Get.find<AppStore>();
-  final SetCurrentAccountActiveInteractor _setCurrentAccountActiveInteractor = Get.find<SetCurrentAccountActiveInteractor>();
+  final SetCurrentActiveAccountInteractor _setCurrentActiveAccountInteractor = Get.find<SetCurrentActiveAccountInteractor>();
   final AuthenticatedAccountManager authenticatedAccountManager = Get.find<AuthenticatedAccountManager>();
 
   final _fcmReceiver = FcmReceiver.instance;
@@ -451,8 +451,8 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void setCurrentAccountActive(PersonalAccount activeAccount) {
-    consumeState(_setCurrentAccountActiveInteractor.execute(activeAccount));
+  void setCurrentActiveAccount(PersonalAccount activeAccount) {
+    consumeState(_setCurrentActiveAccountInteractor.execute(activeAccount));
   }
 
   void _handleBadCredentials() async {

@@ -58,11 +58,11 @@ class AccountCacheManager {
     }
   }
 
-  Future<void> setCurrentAccountActive(PersonalAccount activeAccount) async {
-    log('AccountCacheManager::setCurrentAccountActive(): $activeAccount');
+  Future<void> setCurrentActiveAccount(PersonalAccount activeAccount) async {
+    log('AccountCacheManager::setCurrentActiveAccount(): $activeAccount');
     final newAccountCache = activeAccount.toCache(isSelected: true);
     final allAccounts = await _accountCacheClient.getAll();
-    log('AccountCacheManager::setCurrentAccountActive::allAccounts(): $allAccounts');
+    log('AccountCacheManager::setCurrentActiveAccount::allAccounts(): $allAccounts');
     if (allAccounts.isNotEmpty) {
       final newAllAccounts = allAccounts.unselected().toList();
       if (newAllAccounts.isNotEmpty) {

@@ -29,7 +29,7 @@ class AccountRepositoryImpl extends AccountRepository {
   }
 
   @override
-  Future<void> setCurrentAccountActive(PersonalAccount activeAccount) {
-    return _accountDatasource.setCurrentAccountActive(activeAccount);
+  Future<void> setCurrentActiveAccount(PersonalAccount activeAccount) {
+    return _accountDatasource.setCurrentActiveAccount(activeAccount);
   }
 }
