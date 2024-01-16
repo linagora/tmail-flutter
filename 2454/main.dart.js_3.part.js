@@ -13518,7 +13518,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._RecipientComposerWidgetState_build____closure6.prototype = {
     call$1(_) {
     },
-    $signature: 103
+    $signature: 102
   };
   B._RecipientComposerWidgetState_build____closure8.prototype = {
     call$2(context, index) {
@@ -14150,7 +14150,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new B.EmailView_build____closure(this.$this, this.currentListEmail[index], context), null);
     },
-    $signature: 100
+    $signature: 99
   };
   B.EmailView_build____closure.prototype = {
     call$0() {
@@ -20276,5 +20276,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "NGgZvy97l8w9V/hz/kx67irnJ4s=");
+})($__dart_deferred_initializers__, "P90XgH8hSFsaGD3JSnJ5mwDZT5M=");
 ;
