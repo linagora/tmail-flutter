@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-11T00:19:44.628891",
+  "@@last_modified": "2024-01-15T01:17:31.262992",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3632,6 +3632,30 @@
   },
   "restoreDeletedMessageCanceled": "Restore deleted message canceled",
   "@restoreDeletedMessageCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertLink": "Insert link",
+  "@insertLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textToDisplay": "Text to display",
+  "@textToDisplay": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toWhatURLShouldThisLinkGo": "To what URL should this link go?",
+  "@toWhatURLShouldThisLinkGo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseEnterURL": "Please enter a URL",
+  "@pleaseEnterURL": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
