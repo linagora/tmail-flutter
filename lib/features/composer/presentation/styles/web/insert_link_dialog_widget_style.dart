@@ -1,7 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
-class InsertLinkDialogBuilderStyle {
+class InsertLinkDialogWidgetStyle {
   static const double actionOverFlowButtonSpacing = 8.0;
   static const double elevation = 10.0;
   static const double widthRatio = 0.3;
