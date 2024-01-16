@@ -30,6 +30,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final double? width;
   final double? height;
   final VoidCallback? onDragEnter;
+  final OnEditLink? onEditLink;
 
   const WebEditorView({
     super.key,
@@ -47,6 +48,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.width,
     this.height,
     this.onDragEnter,
+    this.onEditLink,
   });
 
   @override
@@ -73,6 +75,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           width: width,
           height: height,
           onDragEnter: onDragEnter,
+          onEditLink: onEditLink,
         );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
@@ -98,6 +101,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             width: width,
             height: height,
             onDragEnter: onDragEnter,
+            onEditLink: onEditLink,
           ),
           (success) {
             if (success is GetEmailContentLoading) {
@@ -123,6 +127,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 width: width,
                 height: height,
                 onDragEnter: onDragEnter,
+                onEditLink: onEditLink,
               );
             }
           }
@@ -155,6 +160,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               width: width,
               height: height,
               onDragEnter: onDragEnter,
+              onEditLink: onEditLink,
             );
           },
           (success) {
@@ -183,6 +189,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 width: width,
                 height: height,
                 onDragEnter: onDragEnter,
+                onEditLink: onEditLink,
               );
             }
           }
@@ -202,6 +209,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           width: width,
           height: height,
           onDragEnter: onDragEnter,
+          onEditLink: onEditLink,
         );
     }
   }

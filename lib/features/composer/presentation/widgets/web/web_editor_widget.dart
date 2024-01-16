@@ -12,6 +12,7 @@ typedef OnInitialContentEditorAction = Function(String text);
 typedef OnMouseDownEditorAction = Function(BuildContext context);
 typedef OnEditorSettingsChange = Function(EditorSettings settings);
 typedef OnEditorTextSizeChanged = Function(int? size);
+typedef OnEditLink = Function(String? text, String? url, bool? isOpenNewTab, String linkTagId)?;
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -28,6 +29,7 @@ class WebEditorWidget extends StatefulWidget {
   final double? width;
   final double? height;
   final VoidCallback? onDragEnter;
+  final OnEditLink? onEditLink;
 
   const WebEditorWidget({
     super.key,
@@ -44,6 +46,7 @@ class WebEditorWidget extends StatefulWidget {
     this.width,
     this.height,
     this.onDragEnter,
+    this.onEditLink,
   });
 
   @override
@@ -176,6 +179,7 @@ class _WebEditorState extends State<WebEditorWidget> {
             ),
             onDragEnter: widget.onDragEnter,
             onDragLeave: () {},
+            onEditLink: widget.onEditLink
           ),
         );
       }
