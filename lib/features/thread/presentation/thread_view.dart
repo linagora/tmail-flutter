@@ -107,7 +107,13 @@ class ThreadView extends GetWidget<ThreadController>
                                   context: context,
                                   onGoToManageAccount: controller.mailboxDashBoardController.goToSettings,
                                   onAddAnotherAccountAction: controller.addAnotherAccount,
-                                  onSwitchActiveAccountAction: controller.switchActiveAccount
+                                  onSwitchActiveAccountAction: (currentAccount, nextAccount) {
+                                    controller.mailboxDashBoardController.switchActiveAccount(
+                                      currentAccount: currentAccount,
+                                      nextAccount: nextAccount,
+                                      sessionCurrentAccount: controller.mailboxDashBoardController.sessionCurrent!
+                                    );
+                                  }
                                 );
                               },
                             );

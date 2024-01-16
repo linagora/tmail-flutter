@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_a
 import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/restore_active_account_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/select_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/switch_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -191,31 +192,35 @@ class HomeController extends ReloadableController {
   }
 
   void _switchActiveAccount(
-    PersonalAccount currentActiveAccount,
+    PersonalAccount currentAccount,
     Session sessionCurrentAccount,
-    PersonalAccount nextActiveAccount
+    PersonalAccount nextAccount
   ) {
-    setUpInterceptors(nextActiveAccount);
+    setUpInterceptors(nextAccount);
 
     _sessionStreamSubscription = getSessionInteractor.execute(
-      accountId: nextActiveAccount.accountId,
-      userName: nextActiveAccount.userName
+      accountId: nextAccount.accountId,
+      userName: nextAccount.userName
     ).listen(
       (viewState) {
         viewState.fold(
           (failure) => _handleGetSessionFailureWhenSwitchActiveAccount(
-            currentActiveAccount: currentActiveAccount,
+            currentActiveAccount: currentAccount,
             session: sessionCurrentAccount,
             exception: failure),
           (success) => success is GetSessionSuccess
-            ? _handleGetSessionSuccessWhenSwitchActiveAccount(currentActiveAccount, nextActiveAccount, success.session)
+            ? _handleGetSessionSuccessWhenSwitchActiveAccount(
+                currentAccount,
+                nextAccount,
+                sessionCurrentAccount,
+                success.session)
             : null,
         );
       },
       onError: (error, stack) {
         logError('HomeController::_switchActiveAccount:Exception: $error | Stack: $stack');
         _handleGetSessionFailureWhenSwitchActiveAccount(
-          currentActiveAccount: currentActiveAccount,
+          currentActiveAccount: currentAccount,
           session: sessionCurrentAccount,
           exception: error);
       }
@@ -223,17 +228,35 @@ class HomeController extends ReloadableController {
   }
 
   void _handleGetSessionSuccessWhenSwitchActiveAccount(
-    PersonalAccount currentActiveAccount,
-    PersonalAccount nextActiveAccount,
-    Session sessionActiveAccount
+    PersonalAccount currentAccount,
+    PersonalAccount nextAccount,
+    Session sessionCurrentAccount,
+    Session sessionNextAccount,
   ) async {
-    log('HomeController::_handleGetSessionSuccessWhenSwitchActiveAccount:sessionActiveAccount: $sessionActiveAccount');
+    log('HomeController::_handleGetSessionSuccessWhenSwitchActiveAccount:sessionNextAccount: $sessionNextAccount');
     await popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: SwitchActiveAccountArguments(
-        session: sessionActiveAccount,
+        sessionCurrentAccount: sessionCurrentAccount,
+        sessionNextAccount: sessionNextAccount,
+        currentAccount: currentAccount,
+        nextAccount: nextAccount,
+      )
+    );
+  }
+
+  void _restoreActiveAccount({
+    required PersonalAccount currentActiveAccount,
+    required Session session,
+    dynamic exception
+  }) async {
+    logError('HomeController::_restoreActiveAccount:currentActiveAccount: $currentActiveAccount');
+    await popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+      arguments: RestoreActiveAccountArguments(
         currentAccount: currentActiveAccount,
-        nextActiveAccount: nextActiveAccount,
+        session: session,
+        exception: exception
       )
     );
   }
@@ -244,12 +267,10 @@ class HomeController extends ReloadableController {
     dynamic exception
   }) async {
     logError('HomeController::_handleGetSessionFailureWhenSwitchActiveAccount:exception: $exception');
-    await popAndPush(
-      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: RestoreActiveAccountArguments(
-        currentAccount: currentActiveAccount,
-        session: session
-      )
+    _restoreActiveAccount(
+      currentActiveAccount: currentActiveAccount,
+      session: session,
+      exception: exception
     );
   }
 
@@ -298,9 +319,9 @@ class HomeController extends ReloadableController {
     log('HomeController::_handleGetSessionSuccessWhenSelectActiveAccount:sessionActiveAccount: $sessionActiveAccount');
     await popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: SwitchActiveAccountArguments(
+      arguments: SelectActiveAccountArguments(
         session: sessionActiveAccount,
-        nextActiveAccount: activeAccount,
+        activeAccount: activeAccount,
       )
     );
   }

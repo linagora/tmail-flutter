@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -15,7 +16,10 @@ import 'package:tmail_ui_user/features/login/domain/usecases/add_account_id_to_a
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/message_toast_utils.dart';
 
@@ -109,5 +113,20 @@ abstract class ReloadableController extends BaseController {
       apiUrl,
       userName
     ));
+  }
+
+  void switchActiveAccount({
+    required PersonalAccount currentAccount,
+    required PersonalAccount nextAccount,
+    required Session sessionCurrentAccount,
+  }) async {
+    await popAndPush(
+      AppRoutes.home,
+      arguments: LoginNavigateArguments(
+        navigateType: LoginNavigateType.switchActiveAccount,
+        currentAccount: currentAccount,
+        sessionCurrentAccount: sessionCurrentAccount,
+        nextActiveAccount: nextAccount,
+      ));
   }
 }

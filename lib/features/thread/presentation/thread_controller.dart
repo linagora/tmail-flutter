@@ -1254,19 +1254,4 @@ class ThreadController extends BaseController with EmailActionController {
     );
     log('ThreadController::addAnotherAccount:result: $result');
   }
-
-  void switchActiveAccount(
-    PersonalAccount currentActiveAccount,
-    PersonalAccount nextActiveAccount
-  ) async {
-    await popAndPush(
-      AppRoutes.home,
-      arguments: LoginNavigateArguments(
-        navigateType: LoginNavigateType.switchActiveAccount,
-        currentAccount: currentActiveAccount,
-        sessionCurrentAccount: mailboxDashBoardController.sessionCurrent,
-        nextActiveAccount: nextActiveAccount,
-      )
-    );
-  }
 }

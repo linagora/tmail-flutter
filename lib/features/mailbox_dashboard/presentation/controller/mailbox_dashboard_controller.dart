@@ -100,6 +100,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/rest
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/select_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/switch_active_account_arguments.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
@@ -486,7 +487,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleArguments() {
     final arguments = Get.arguments;
-    log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
+    log('MailboxDashBoardController::_handleArguments(): arguments = $arguments');
     if (arguments is Session) {
       _handleSession(arguments);
     } else if (arguments is MailtoArguments) {
@@ -495,6 +496,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleOpenEmailAction(arguments);
     } else if (arguments is SwitchActiveAccountArguments) {
       _handleSwitchActiveAccountAction(arguments);
+    }  else if (arguments is SelectActiveAccountArguments) {
+      _handleSelectActiveAccountAction(arguments);
     } else if (arguments is RestoreActiveAccountArguments) {
       _handleRestorePreviousActiveAccountAction(arguments);
     } else {
@@ -2548,34 +2551,54 @@ class MailboxDashBoardController extends ReloadableController {
     isRecoveringDeletedMessage.value = true;
   }
 
-  void _handleSwitchActiveAccountAction(SwitchActiveAccountArguments arguments) {
-    log('MailboxDashBoardController::_handleSwitchActiveAccountAction:arguments: $arguments');
+  void _loadActiveAccount({
+    required PersonalAccount activeAccount,
+    required Session sessionActiveAccount
+  }) {
     dispatchRoute(DashboardRoutes.waiting);
 
-    setCurrentAccountActive(arguments.nextActiveAccount!);
+    setCurrentAccountActive(activeAccount);
 
-    dynamicUrlInterceptors.changeBaseUrl(arguments.nextActiveAccount!.apiUrl);
+    dynamicUrlInterceptors.changeBaseUrl(activeAccount.apiUrl);
 
-    _setUpComponentsFromSession(arguments.session);
+    _setUpComponentsFromSession(sessionActiveAccount);
 
     dispatchRoute(DashboardRoutes.thread);
+  }
+
+  void _handleSwitchActiveAccountAction(SwitchActiveAccountArguments arguments) {
+    log('MailboxDashBoardController::_handleSwitchActiveAccountAction:arguments: $arguments');
+    _loadActiveAccount(
+      activeAccount: arguments.nextAccount,
+      sessionActiveAccount: arguments.sessionNextAccount
+    );
 
     _showToastMessageSwitchActiveAccountSuccess(
-      previousActiveAccount: arguments.currentAccount!,
-      currentActiveAccount: arguments.nextActiveAccount!,
+      previousAccount: arguments.currentAccount,
+      currentAccount: arguments.nextAccount,
+      sessionPreviousAccount: arguments.sessionCurrentAccount,
+    );
+  }
+
+  void _handleSelectActiveAccountAction(SelectActiveAccountArguments arguments) {
+    log('MailboxDashBoardController::_handleSelectActiveAccountAction:arguments: $arguments');
+    _loadActiveAccount(
+      activeAccount: arguments.activeAccount,
+      sessionActiveAccount: arguments.session
     );
   }
 
   void _showToastMessageSwitchActiveAccountSuccess({
-    required PersonalAccount previousActiveAccount,
-    required PersonalAccount currentActiveAccount
+    required PersonalAccount previousAccount,
+    required PersonalAccount currentAccount,
+    required Session sessionPreviousAccount,
   }) {
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageSuccessWhenSwitchActiveAccount(currentActiveAccount.userName?.value ?? ''),
+        AppLocalizations.of(currentContext!).toastMessageSuccessWhenSwitchActiveAccount(currentAccount.userName?.value ?? ''),
         actionName: AppLocalizations.of(currentContext!).undo,
-        onActionClick: () {},
+        onActionClick: () => _undoSwitchActiveAccountAction(previousAccount, sessionPreviousAccount),
         leadingSVGIcon: imagePaths.icToastSuccessMessage,
         leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -2586,23 +2609,35 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleRestorePreviousActiveAccountAction(RestoreActiveAccountArguments arguments) {
     log('MailboxDashBoardController::_handleRestorePreviousActiveAccountAction:arguments: $arguments');
-
-    if (currentContext != null && currentOverlayContext != null) {
+    if (arguments.exception != null &&
+        currentContext != null &&
+        currentOverlayContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMessageFailureWhenSwitchActiveAccount);
     }
 
+    _loadActiveAccount(
+      activeAccount: arguments.currentAccount,
+      sessionActiveAccount: arguments.session
+    );
+  }
+
+  void _undoSwitchActiveAccountAction(
+    PersonalAccount previousAccount,
+    Session sessionPreviousAccount
+  ) {
+    setUpInterceptors(previousAccount);
+
     dispatchRoute(DashboardRoutes.waiting);
 
-    setCurrentAccountActive(arguments.currentAccount);
+    setCurrentAccountActive(previousAccount);
 
-    dynamicUrlInterceptors.changeBaseUrl(arguments.currentAccount.apiUrl);
+    dynamicUrlInterceptors.changeBaseUrl(previousAccount.apiUrl);
 
-    _setUpComponentsFromSession(arguments.session);
+    _setUpComponentsFromSession(sessionPreviousAccount);
 
     dispatchRoute(DashboardRoutes.thread);
-
   }
 
   @override

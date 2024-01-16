@@ -5,20 +5,23 @@ import 'package:tmail_ui_user/main/routes/router_arguments.dart';
 
 class SwitchActiveAccountArguments extends RouterArguments {
 
-  final Session session;
-  final PersonalAccount? currentAccount;
-  final PersonalAccount? nextActiveAccount;
+  final Session sessionCurrentAccount;
+  final Session sessionNextAccount;
+  final PersonalAccount currentAccount;
+  final PersonalAccount nextAccount;
 
   SwitchActiveAccountArguments({
-    required this.session,
-    this.currentAccount,
-    this.nextActiveAccount,
+    required this.sessionCurrentAccount,
+    required this.sessionNextAccount,
+    required this.currentAccount,
+    required this.nextAccount,
   });
 
   @override
-  List<Object?> get props => [
-    session,
+  List<Object> get props => [
+    sessionCurrentAccount,
+    sessionNextAccount,
     currentAccount,
-    nextActiveAccount,
+    nextAccount,
   ];
 }
