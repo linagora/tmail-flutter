@@ -13,6 +13,11 @@ dependencies:
 
   equatable: 2.0.5
 
+  crypto: 3.0.3
+
+  core:
+    path: ../core
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

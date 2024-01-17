@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:saas/domain/utils/code_verifier_generator.dart';
 
@@ -8,7 +9,7 @@ import 'generate_random_from_defined_number.dart';
 void main() {
   group('[Verify Code length]', () {
     test('generateCodeVerifier will throw when not have the good length', () {
-      final generator = CodeVerifierGenerator();
+      final generator = CodeVerifierGenerator(CryptoUtils());
 
       expect(() => generator.generateCodeVerifier(Random.secure(), 31), throwsArgumentError);
 
@@ -16,7 +17,7 @@ void main() {
     });
 
     test('generateCodeVerifier produces value unpadding', () {
-      final generator = CodeVerifierGenerator();
+      final generator = CodeVerifierGenerator(CryptoUtils());
 
       final verifier = generator.generateCodeVerifier(Random.secure(), 43);
 
@@ -26,7 +27,7 @@ void main() {
     });
 
     test('generateCodeVerifier produces value no wrapping', () {
-      final generator = CodeVerifierGenerator();
+      final generator = CodeVerifierGenerator(CryptoUtils());
 
       final verifier = generator.generateCodeVerifier(Random.secure(), 43);
 
@@ -39,7 +40,7 @@ void main() {
 
   group('[Verify code generator logic]', () {
     test('generateCodeVerifier produces value good value in the case remove padding', () {
-      final generator = CodeVerifierGenerator();
+      final generator = CodeVerifierGenerator(CryptoUtils());
 
       final definedNumbers = [
         104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104, 117, 104
@@ -52,7 +53,7 @@ void main() {
     });
 
     test('generateCodeVerifier produces value good value in the case remove /', () {
-      final generator = CodeVerifierGenerator();
+      final generator = CodeVerifierGenerator(CryptoUtils());
 
       final definedNumbers = [104, 117, 104, 106, 105, 106, 105, 106, 105, 106,
         113, 105, 106, 105, 119, 106, 105, 113, 117, 104, 117, 104, 117, 104, 117,

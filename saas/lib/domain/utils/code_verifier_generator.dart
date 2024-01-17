@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:core/utils/crypto/crypto_utils.dart';
 import 'package:saas/domain/model/verifier_code.dart';
 
 
@@ -11,6 +12,9 @@ class CodeVerifierGenerator {
   static const _maxCodeLength = 128;
   static const _minCodeLength = 43;
 
+  final CryptoUtils _cryptoUtils;
+
+  CodeVerifierGenerator(this._cryptoUtils);
 
   VerifierCode generateCodeVerifier(Random source, int length) {
     if (length < _minCodeEntropyLength || length > _maxCodeEntropyLength) {
@@ -31,10 +35,7 @@ class CodeVerifierGenerator {
       list.setAll(0, Iterable.generate(list.length, (i) => rng.nextInt(256)));
 
       // encode settings: no padding + url safe + no wrapping
-      encodeResult = base64UrlEncode(list)
-        .replaceAll('\n', '')
-        .replaceAll('\r', '')
-        .replaceAll('=', '');
+      encodeResult = _cryptoUtils.encodeBase64(base64UrlEncode(list));
 
       retryCount++;
     }
