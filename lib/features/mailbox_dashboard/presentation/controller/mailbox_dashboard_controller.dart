@@ -494,13 +494,13 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSession(Session session) {
     log('MailboxDashBoardController::_handleSession:');
-    _setUpComponentsFromSession(session);
-
     updateAuthenticationAccount(
-      sessionCurrent!,
-      accountId.value!,
-      sessionCurrent!.username
+      session,
+      session.personalAccount.accountId,
+      session.username
     );
+
+    _setUpComponentsFromSession(session);
 
     if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
       _handleClickLocalNotificationOnTerminated();
@@ -510,21 +510,22 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _setUpComponentsFromSession(Session session) {
+    final currentAccountId = session.personalAccount.accountId;
     sessionCurrent = session;
-    accountId.value = sessionCurrent!.personalAccount.accountId;
-    userProfile.value = UserProfile(sessionCurrent!.username.value);
+    accountId.value = currentAccountId;
+    userProfile.value = UserProfile(session.username.value);
 
-    injectAutoCompleteBindings(sessionCurrent, accountId.value);
-    injectRuleFilterBindings(sessionCurrent, accountId.value);
-    injectVacationBindings(sessionCurrent, accountId.value);
-    injectFCMBindings(sessionCurrent, accountId.value);
+    injectAutoCompleteBindings(session, currentAccountId);
+    injectRuleFilterBindings(session, currentAccountId);
+    injectVacationBindings(session, currentAccountId);
+    injectFCMBindings(session, currentAccountId);
 
     _getVacationResponse();
     spamReportController.getSpamReportStateAction();
 
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
-      _storeSessionAction(sessionCurrent!);
+      _storeSessionAction(session);
     }
   }
 
