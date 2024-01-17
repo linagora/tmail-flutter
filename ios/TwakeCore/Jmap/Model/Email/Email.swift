@@ -5,4 +5,5 @@ struct Email: Codable {
     let subject: String?
     let preview: String?
     let from: [EmailAddress]?
+    let receivedAt: String?
 }
