@@ -36,7 +36,7 @@ class StateDataSourceImpl extends StateDataSource {
       if (PlatformInfo.isIOS && stateCache.type == StateType.email) {
         final emailDeliveryStateKeychain = await _iosSharingManager.getEmailDeliveryStateFromKeychain(accountId);
         if (emailDeliveryStateKeychain == null || emailDeliveryStateKeychain.isEmpty) {
-          await _iosSharingManager.updateEmailDeliveryStateInKeyChain(accountId, stateCache.state);
+          await _iosSharingManager.updateEmailStateInKeyChain(accountId, stateCache.state);
         }
       }
       return Future.value(null);
