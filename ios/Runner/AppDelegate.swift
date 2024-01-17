@@ -88,7 +88,7 @@ import flutter_local_notifications
         if let notificationBadgeCount = notification.request.content.badge?.intValue, notificationBadgeCount > 0 {
             let newBadgeCount = UIApplication.shared.applicationIconBadgeNumber + notificationBadgeCount
             TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent:newBadgeCount: \(newBadgeCount)")
-            updateAppBadger(currentBadgeCount: newBadgeCount)
+            updateAppBadger(newBadgeCount: newBadgeCount)
         }
         if let emailId = notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String,
            !emailId.isEmpty,
@@ -101,7 +101,9 @@ import flutter_local_notifications
     
     override func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::didReceive::response: \(response)")
-        updateAppBadger(currentBadgeCount: UIApplication.shared.applicationIconBadgeNumber)
+        let currentBadgeCount = UIApplication.shared.applicationIconBadgeNumber
+        let newBadgeCount = currentBadgeCount > 0 ? currentBadgeCount - 1 : 0
+        updateAppBadger(newBadgeCount: newBadgeCount)
         
         if let emailId = response.notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String {
             self.notificationInteractionChannel?.invokeMethod("openEmail", arguments: emailId)
@@ -112,8 +114,7 @@ import flutter_local_notifications
 }
 
 extension AppDelegate {
-    private func updateAppBadger(currentBadgeCount: Int) {
-        let newBadgeCount = currentBadgeCount > 0 ? currentBadgeCount - 1 : 0
+    private func updateAppBadger(newBadgeCount: Int) {
         TwakeLogger.shared.log(message: "AppDelegate::updateAppBadger::newBadgeCount: \(newBadgeCount)")
         if #available(iOS 16.0, *) {
             UNUserNotificationCenter.current().setBadgeCount(newBadgeCount)
