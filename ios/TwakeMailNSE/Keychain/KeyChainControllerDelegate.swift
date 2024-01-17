@@ -8,5 +8,5 @@ struct KeychainCredentials {
 protocol KeychainControllerDelegate: AnyObject {
     func retrieveSharingSessionFromKeychain(accountId: String) -> KeychainSharingSession?
     func retrieveSharingSessions() -> [KeychainCredentials]
-    func updateEmailStateToKeychain(accountId: String, newState: String)
+    func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String)
 }

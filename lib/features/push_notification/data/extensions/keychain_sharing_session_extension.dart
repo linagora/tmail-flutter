@@ -3,13 +3,14 @@ import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_
 
 extension KeychainSharingSessionExtension on KeychainSharingSession {
 
-  KeychainSharingSession updating({String? emailDeliveryState}) {
+  KeychainSharingSession updating({String? emailState, String? emailDeliveryState}) {
     return KeychainSharingSession(
       accountId: accountId,
       userName: userName,
       authenticationType: authenticationType,
       apiUrl: apiUrl,
-      emailState: emailDeliveryState ?? emailDeliveryState,
+      emailState: emailState ?? emailState,
+      emailDeliveryState: emailDeliveryState ?? emailDeliveryState,
       tokenOIDC: tokenOIDC,
       basicAuth: basicAuth,
       tokenEndpoint: tokenEndpoint,
