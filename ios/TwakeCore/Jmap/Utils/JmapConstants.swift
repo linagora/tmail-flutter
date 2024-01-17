@@ -13,7 +13,8 @@ class JmapConstants {
         "id",
         "subject",
         "preview",
-        "from"
+        "from",
+        "receivedAt"
     ]
     
     static let EMAIL_ID = "email_id"
