@@ -83,8 +83,10 @@ class JmapClient {
             interceptor: authenticationInterceptor,
             onSuccess: { (data: JmapResponseObject<Email>) in
                 if let response = data.parsing(methodName: JmapConstants.EMAIL_GET_METHOD_NAME, methodCallId: "c1") {
-                    if let listEmail = response.list, !listEmail.isEmpty {
-                        self.totalListEmails.append(contentsOf: listEmail)
+                    if let listEmail = response.list, 
+                       !listEmail.isEmpty {
+                        let sortedListEmails = self.sortListEmails(currentListEmails: listEmail)
+                        self.totalListEmails.append(contentsOf: sortedListEmails)
                     }
                     self.hasMoreChanges = response.hasMoreChanges ?? false
                     self.currentSinceState = response.newState
@@ -106,5 +108,16 @@ class JmapClient {
                 onComplete(self.totalListEmails, self.listErrors)
             }
         )
+    }
+    
+    private func sortListEmails(currentListEmails: [Email]) -> [Email] {
+        let sortedListEmails = currentListEmails.sorted(by: { (email1, email2) -> Bool in
+            if let date1 = email1.receivedAt?.convertUTCDateToLocalDate(),
+               let date2 = email2.receivedAt?.convertUTCDateToLocalDate() {
+                return date1 < date2
+            }
+            return false
+        })
+        return sortedListEmails
     }
 }
