@@ -77,7 +77,6 @@ abstract class BaseController extends GetxController
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
 
-  final _fcmReceiver = FcmReceiver.instance;
   bool _isFcmEnabled = false;
 
   GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
@@ -363,9 +362,6 @@ abstract class BaseController extends GetxController
     }
     authorizationInterceptors.clear();
     authorizationIsolateInterceptors.clear();
-    if (_isFcmEnabled) {
-      await _fcmReceiver.deleteFcmToken();
-    }
     await cachingManager.closeHive();
   }
 
@@ -380,9 +376,6 @@ abstract class BaseController extends GetxController
     }
     authorizationIsolateInterceptors.clear();
     authorizationInterceptors.clear();
-    if (_isFcmEnabled) {
-      await _fcmReceiver.deleteFcmToken();
-    }
     await cachingManager.closeHive();
   }
 }
