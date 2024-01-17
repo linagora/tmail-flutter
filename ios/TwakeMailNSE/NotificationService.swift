@@ -21,7 +21,7 @@ class NotificationService: UNNotificationServiceExtension {
         
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
-            self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
+            self.modifiedContent?.body = NSLocalizedString(newNotificationDefaultMessageKey, comment: "Localizable")
             return self.notify()
         }
 
@@ -46,24 +46,28 @@ class NotificationService: UNNotificationServiceExtension {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
         if (mapStateChanges.isEmpty) {
-            self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
+            self.modifiedContent?.body = NSLocalizedString(newNotificationDefaultMessageKey, comment: "Localizable")
             return self.notify()
         } else {
             guard let currentAccountId = mapStateChanges.keys.first,
                   let keychainSharingSession = keychainController.retrieveSharingSessionFromKeychain(accountId: currentAccountId),
+                  keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil,
                   let listStateOfAccount = mapStateChanges[currentAccountId],
-                  let newEmailState = listStateOfAccount[TypeName.emailDelivery],
-                  let oldEmailState = keychainSharingSession.emailState,
-                  newEmailState != oldEmailState,
-                  keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil else {
+                  let newEmailDeliveryState = listStateOfAccount[TypeName.emailDelivery] else {
                 self.modifiedContent?.body = NSLocalizedString(newNotificationDefaultMessageKey, comment: "Localizable")
+                return self.notify()
+            }
+            
+            guard let oldEmailDeliveryState = keychainSharingSession.emailDeliveryState ?? keychainSharingSession.emailState,
+                  newEmailDeliveryState != oldEmailDeliveryState else {
+                self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
                 return self.notify()
             }
             
             JmapClient.shared.getNewEmails(
                 apiUrl: keychainSharingSession.apiUrl,
                 accountId: keychainSharingSession.accountId,
-                sinceState: oldEmailState,
+                sinceState: oldEmailDeliveryState,
                 authenticationType: keychainSharingSession.authenticationType,
                 tokenOidc: keychainSharingSession.tokenOIDC,
                 basicAuth: keychainSharingSession.basicAuth,
@@ -74,7 +78,10 @@ class NotificationService: UNNotificationServiceExtension {
                         self.modifiedContent?.body = NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable")
                         return self.notify()
                     } else {
-                        self.keychainController.updateEmailStateToKeychain(accountId: keychainSharingSession.accountId, newState: newEmailState)
+                        self.keychainController.updateEmailDeliveryStateToKeychain(
+                            accountId: keychainSharingSession.accountId,
+                            newEmailDeliveryState: newEmailDeliveryState
+                        )
 
                         if (emails.count > 1) {
                             for email in emails {
