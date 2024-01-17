@@ -3,7 +3,6 @@ import SwiftUI
 
 class NotificationService: UNNotificationServiceExtension {
 
-    private let timeIntervalNotificationTriggerInSecond: Int = 2
     private let newEmailDefaultMessageKey: String = "newMessageInTwakeMail"
 
     private var handler: ((UNNotificationContent) -> Void)?
@@ -75,24 +74,20 @@ class NotificationService: UNNotificationServiceExtension {
                         if (emails.count > 1) {
                             for email in emails {
                                 if (email.id == emails.last?.id) {
-                                    break
+                                    self.modifiedContent?.subtitle = email.subject ?? ""
+                                    self.modifiedContent?.body = email.preview ?? ""
+                                    self.modifiedContent?.sound = .default
+                                    self.modifiedContent?.badge = NSNumber(value: emails.count)
+                                    self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = email.id
+                                    return self.notify()
                                 }
                                 self.scheduleLocalNotification(email: email)
-                            }
-
-                            let delayTimeIntervalNotification: TimeInterval = TimeInterval(self.timeIntervalNotificationTriggerInSecond * (emails.count - 1))
-
-                            DispatchQueue.main.asyncAfter(deadline: .now() + delayTimeIntervalNotification) {
-                                self.modifiedContent?.subtitle = emails.last?.subject ?? ""
-                                self.modifiedContent?.body = emails.last?.preview ?? ""
-                                self.modifiedContent?.badge = NSNumber(value: emails.count)
-                                self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.last?.id ?? ""
-                                return self.notify()
                             }
                         } else {
                             self.modifiedContent?.subtitle = emails.first?.subject ?? ""
                             self.modifiedContent?.body = emails.first?.preview ?? ""
                             self.modifiedContent?.badge = NSNumber(value: 1)
+                            self.modifiedContent?.sound = .default
                             self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.first?.id ?? ""
                             return self.notify()
                         }
@@ -102,18 +97,19 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
-    func scheduleLocalNotification(email: Email) {
+    private func scheduleLocalNotification(email: Email) {
         // Create a notification content
         let content = UNMutableNotificationContent()
         content.title = InfoPlistReader(bundle: .app).bundleDisplayName
         content.subtitle = email.subject ?? ""
         content.body = email.preview ?? ""
         content.sound = .default
+        content.badge = 1
         content.userInfo[JmapConstants.EMAIL_ID] = "\(email.id)"
 
         // Create a notification trigger
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(timeIntervalNotificationTriggerInSecond), repeats: false)
-
+        let triggerDateTime = Calendar.current.dateComponents([.hour, .minute, .second], from: Date())
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateTime, repeats: false)
         // Create a notification request
         let request = UNNotificationRequest(identifier: "\(email.id)", content: content, trigger: trigger)
 
