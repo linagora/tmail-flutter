@@ -4,6 +4,7 @@ import SwiftUI
 class NotificationService: UNNotificationServiceExtension {
 
     private let newEmailDefaultMessageKey: String = "newMessageInTwakeMail"
+    private let newNotificationDefaultMessageKey: String = "newNotificationInTwakeMail"
 
     private var handler: ((UNNotificationContent) -> Void)?
     private var modifiedContent: UNMutableNotificationContent?
@@ -16,11 +17,11 @@ class NotificationService: UNNotificationServiceExtension {
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
         self.modifiedContent?.title = InfoPlistReader(bundle: .app).bundleDisplayName
-        self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
         self.modifiedContent?.badge = NSNumber(value: 1)
         
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
+            self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
             return self.notify()
         }
 
@@ -29,6 +30,7 @@ class NotificationService: UNNotificationServiceExtension {
                 await handleGetNewEmails(payloadData: payloadData)
             }
         } else {
+            self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
             return self.notify()
         }
     }
@@ -44,6 +46,7 @@ class NotificationService: UNNotificationServiceExtension {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
         if (mapStateChanges.isEmpty) {
+            self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
             return self.notify()
         } else {
             guard let currentAccountId = mapStateChanges.keys.first,
@@ -53,6 +56,7 @@ class NotificationService: UNNotificationServiceExtension {
                   let oldEmailState = keychainSharingSession.emailState,
                   newEmailState != oldEmailState,
                   keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil else {
+                self.modifiedContent?.body = NSLocalizedString(newNotificationDefaultMessageKey, comment: "Localizable")
                 return self.notify()
             }
             
@@ -67,6 +71,7 @@ class NotificationService: UNNotificationServiceExtension {
                 oidcScopes: keychainSharingSession.oidcScopes,
                 onComplete: { (emails, errors) in
                     if emails.isEmpty {
+                        self.modifiedContent?.body = NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable")
                         return self.notify()
                     } else {
                         self.keychainController.updateEmailStateToKeychain(accountId: keychainSharingSession.accountId, newState: newEmailState)
