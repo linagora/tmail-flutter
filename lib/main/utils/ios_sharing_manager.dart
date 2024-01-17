@@ -36,11 +36,8 @@ class IOSSharingManager {
 
   Future<String?> getEmailDeliveryStateFromKeychain(AccountId accountId) async {
     try {
-      if (await _keychainSharingManager.isSessionExist(accountId)) {
-        final keychainSharingStored = await _keychainSharingManager.getSharingSession(accountId);
-        return keychainSharingStored?.emailState;
-      }
-      return null;
+      final keychainSharingStored = await getKeychainSharingSession(accountId);
+      return keychainSharingStored?.emailDeliveryState;
     } catch (e) {
       logError('IOSSharingManager::_getEmailDeliveryStateFromKeychain: Exception: $e');
       return null;
@@ -67,12 +64,18 @@ class IOSSharingManager {
         userName: personalAccount.userName!
       );
 
+      final emailState = await _getEmailState(
+        accountId: personalAccount.accountId!,
+        userName: personalAccount.userName!
+      );
+
       final keychainSharingSession = KeychainSharingSession(
         accountId: personalAccount.accountId!,
         userName: personalAccount.userName!,
         authenticationType: personalAccount.authenticationType,
         apiUrl: personalAccount.apiUrl!,
-        emailState: emailDeliveryState,
+        emailState: emailState,
+        emailDeliveryState: emailDeliveryState,
         tokenOIDC: authenticationInfo.value1,
         basicAuth: authenticationInfo.value2
       );
@@ -123,15 +126,8 @@ class IOSSharingManager {
     required UserName userName
   }) async {
     try {
-      String? emailDeliveryState = await getEmailDeliveryStateFromKeychain(accountId);
-      if (emailDeliveryState == null || emailDeliveryState.isEmpty) {
-        final emailState = await _stateCacheManager.getState(
-          accountId,
-          userName,
-          StateType.email
-        );
-        emailDeliveryState = emailState?.value;
-      }
+      final emailDeliveryState = await getEmailDeliveryStateFromKeychain(accountId);
+      log('IOSSharingManager::_getEmailState:emailDeliveryState: $emailDeliveryState');
       return emailDeliveryState;
     } catch (e) {
       logError('IOSSharingManager::_getEmailDeliveryState:Exception: $e');
@@ -139,13 +135,41 @@ class IOSSharingManager {
     }
   }
 
+  Future<String?> _getEmailState({
+    required AccountId accountId,
+    required UserName userName
+  }) async {
+    try {
+      final emailState = await _stateCacheManager.getState(
+        accountId,
+        userName,
+        StateType.email
+      );
+      log('IOSSharingManager::_getEmailState:emailState: $emailState');
+      return emailState?.value;
+    } catch (e) {
+      logError('IOSSharingManager::_getEmailState:Exception: $e');
+      return null;
+    }
+  }
+
   Future updateEmailDeliveryStateInKeyChain(AccountId accountId, String newEmailDeliveryState) async {
-    final keychainSharingSession = await getKeychainSharingSession(accountId);
-    log('IOSSharingManager::updateEmailDeliveryStateInKeyChain:keychainSharingSession: $keychainSharingSession');
-    if (keychainSharingSession == null) {
+    final keychainSharingStored = await getKeychainSharingSession(accountId);
+    log('IOSSharingManager::updateEmailDeliveryStateInKeyChain:keychainSharingStored: $keychainSharingStored | newEmailDeliveryState: $newEmailDeliveryState');
+    if (keychainSharingStored == null) {
       return;
     }
-    final newKeychain = keychainSharingSession.updating(emailDeliveryState: newEmailDeliveryState);
+    final newKeychain = keychainSharingStored.updating(emailDeliveryState: newEmailDeliveryState);
+    await _keychainSharingManager.save(newKeychain);
+  }
+
+  Future updateEmailStateInKeyChain(AccountId accountId, String newEmailState) async {
+    final keychainSharingStored = await getKeychainSharingSession(accountId);
+    log('IOSSharingManager::updateEmailStateInKeyChain:keychainSharingStored: $keychainSharingStored | newEmailState: $newEmailState');
+    if (keychainSharingStored == null) {
+      return;
+    }
+    final newKeychain = keychainSharingStored.updating(emailState: newEmailState);
     await _keychainSharingManager.save(newKeychain);
   }
 }
