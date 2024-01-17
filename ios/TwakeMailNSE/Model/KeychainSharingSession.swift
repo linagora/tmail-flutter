@@ -6,6 +6,7 @@ struct KeychainSharingSession: Codable {
     let authenticationType: AuthenticationType
     let apiUrl: String
     let emailState: String?
+    let emailDeliveryState: String?
     let tokenOIDC: TokenOidc?
     let basicAuth: String?
     let tokenEndpoint: String?
@@ -13,13 +14,14 @@ struct KeychainSharingSession: Codable {
 }
 
 extension KeychainSharingSession {
-    func updateEmailState(newState: String) -> KeychainSharingSession {
+    func updateEmailDeliveryState(newEmailDeliveryState: String) -> KeychainSharingSession {
         return KeychainSharingSession(
             accountId: self.accountId,
             userName: self.userName,
             authenticationType: self.authenticationType,
             apiUrl: self.apiUrl,
-            emailState: newState,
+            emailState: emailState,
+            emailDeliveryState: newEmailDeliveryState,
             tokenOIDC: self.tokenOIDC,
             basicAuth: self.basicAuth,
             tokenEndpoint: self.tokenEndpoint,
@@ -34,6 +36,7 @@ extension KeychainSharingSession {
             authenticationType: self.authenticationType,
             apiUrl: self.apiUrl,
             emailState: self.emailState,
+            emailDeliveryState: self.emailDeliveryState,
             tokenOIDC: TokenOidc(
                 token: newTokenOidc.token,
                 tokenId: newTokenOidc.tokenId,

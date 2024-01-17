@@ -40,10 +40,10 @@ class KeychainController: KeychainControllerDelegate {
         }
     }
     
-    func updateEmailStateToKeychain(accountId: String, newState: String) {
+    func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String) {
         do {
             if let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId) {
-                let newSharingSession = sharingSession.updateEmailState(newState: newState)
+                let newSharingSession = sharingSession.updateEmailDeliveryState(newEmailDeliveryState: newEmailDeliveryState)
                 try keychain.set(newSharingSession.toJson() ?? "", key: accountId)
             }
         } catch {}

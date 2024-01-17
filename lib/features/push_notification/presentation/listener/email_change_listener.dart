@@ -333,10 +333,6 @@ class EmailChangeListener extends ChangeListener {
     if (_iosSharingManager == null) {
       return;
     }
-
-    final emailDeliveryStateKeychain = await _iosSharingManager!.getEmailDeliveryStateFromKeychain(accountId);
-    if (emailDeliveryStateKeychain == null || emailDeliveryStateKeychain.isEmpty) {
-      await _iosSharingManager!.updateEmailDeliveryStateInKeyChain(accountId, emailDeliveryState);
-    }
+    await _iosSharingManager!.updateEmailDeliveryStateInKeyChain(accountId, emailDeliveryState);
   }
 }

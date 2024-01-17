@@ -18,6 +18,7 @@ class KeychainSharingSession with EquatableMixin {
   AuthenticationType authenticationType;
   String apiUrl;
   String? emailState;
+  String? emailDeliveryState;
   TokenOIDC? tokenOIDC;
   String? basicAuth;
   String? tokenEndpoint;
@@ -29,6 +30,7 @@ class KeychainSharingSession with EquatableMixin {
     required this.authenticationType,
     required this.apiUrl,
     this.emailState,
+    this.emailDeliveryState,
     this.tokenOIDC,
     this.basicAuth,
     this.tokenEndpoint,
@@ -46,6 +48,7 @@ class KeychainSharingSession with EquatableMixin {
     authenticationType,
     apiUrl,
     emailState,
+    emailDeliveryState,
     tokenOIDC,
     basicAuth,
     tokenEndpoint,
