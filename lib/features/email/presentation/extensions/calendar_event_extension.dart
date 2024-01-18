@@ -220,7 +220,7 @@ extension CalendarEventExtension on CalendarEvent {
     }
   }
 
-  String formatDateTime(DateTime dateTime) {
+  String formatDateTime(date_format.DateLocale locale, DateTime dateTime) {
     return date_format.formatDate(
       dateTime,
       [
@@ -234,39 +234,39 @@ extension CalendarEventExtension on CalendarEvent {
         ' ',
         date_format.hh,
         ':',
-        date_format.ss,
+        date_format.nn,
         ' ',
         date_format.am
       ],
-      locale: AppUtils.getCurrentDateLocale()
+      locale: locale
     );
   }
 
-  String formatTime(DateTime dateTime) {
+  String formatTime(date_format.DateLocale locale, DateTime dateTime) {
     return date_format.formatDate(
       dateTime,
       [
         date_format.hh,
         ':',
-        date_format.ss,
+        date_format.nn,
         ' ',
         date_format.am
       ],
-      locale: AppUtils.getCurrentDateLocale()
+      locale: locale
     );
   }
 
   String get dateTimeEventAsString {
     if (localStartDate != null && localEndDate != null) {
-      final timeStart = formatDateTime(localStartDate!);
+      final timeStart = formatDateTime(AppUtils.getCurrentDateLocale(), localStartDate!);
       final timeEnd = DateUtils.isSameDay(localStartDate, localEndDate)
-        ? formatTime(localEndDate!)
-        : formatDateTime(localEndDate!);
+        ? formatTime(AppUtils.getCurrentDateLocale(), localEndDate!)
+        : formatDateTime(AppUtils.getCurrentDateLocale(), localEndDate!);
       return '$timeStart - $timeEnd';
     } else if (localStartDate != null) {
-      return formatDateTime(localStartDate!);
+      return formatDateTime(AppUtils.getCurrentDateLocale(), localStartDate!);
     } else if (localEndDate != null) {
-      return formatDateTime(localEndDate!);
+      return formatDateTime(AppUtils.getCurrentDateLocale(), localEndDate!);
     } else {
       return '';
     }
