@@ -25,7 +25,6 @@ class LocalNotificationManager {
 
   final _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  bool _notificationsEnabled = false;
   bool _isNotificationClickedOnTerminate = false;
 
   Stream<NotificationResponse> get localNotificationStream => localNotificationsController.stream;
@@ -34,7 +33,8 @@ class LocalNotificationManager {
 
   Future<void> setUp() async {
     try {
-      await _initLocalNotification();
+      final isInitialNotification = await _initLocalNotification();
+      log('LocalNotificationManager::setUp:isInitialNotification: $isInitialNotification');
       await _checkLocalNotificationPermission();
       if (PlatformInfo.isAndroid) {
         await _createAndroidNotificationChannelGroup();
@@ -79,19 +79,13 @@ class LocalNotificationManager {
   }
 
   Future<void> _checkLocalNotificationPermission() async {
-    if (_notificationsEnabled) {
-      return Future.value(null);
-    }
-
     if (PlatformInfo.isAndroid) {
       final granted = await _isAndroidPermissionGranted();
       if (!granted) {
-        _notificationsEnabled = await _requestPermissions();
-      } else {
-        _notificationsEnabled = granted;
+        await _requestPermissions();
       }
     } else if (PlatformInfo.isIOS) {
-      _notificationsEnabled = await _requestPermissions();
+      await _requestPermissions();
     }
   }
 
