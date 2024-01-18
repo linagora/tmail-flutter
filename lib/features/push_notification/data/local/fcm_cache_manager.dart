@@ -39,10 +39,6 @@ class FCMCacheManager {
     return _fcmCacheClient.deleteItem(stateKeyCache);
   }
 
-  Future<void> clearAllStateToRefresh() async {
-    return _fcmCacheClient.clearAllData();
-  }
-
   Future<void> storeFirebaseRegistration(FirebaseRegistrationCache firebaseRegistrationCache) {
     return _firebaseRegistrationCacheClient.insertItem(
       FirebaseRegistrationCache.keyCacheValue,
