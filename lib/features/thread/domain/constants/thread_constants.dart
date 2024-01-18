@@ -4,7 +4,8 @@ import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.da
 import 'package:model/email/email_property.dart';
 
 class ThreadConstants {
-  static final defaultLimit = UnsignedInt(20);
+  static const maxCountEmails = 20;
+  static final defaultLimit = UnsignedInt(maxCountEmails);
   static final propertiesDefault = Properties({
     EmailProperty.id,
     EmailProperty.subject,
