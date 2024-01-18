@@ -37,7 +37,6 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_bottom_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -190,7 +189,6 @@ class ThreadView extends GetWidget<ThreadController>
                           })
                         )
                       ),
-                      Obx(() => ThreadViewBottomLoadingBarWidget(viewState: controller.viewState.value)),
                       _buildListButtonSelectionForMobile(context),
                     ]
                 )
@@ -355,12 +353,15 @@ class ThreadView extends GetWidget<ThreadController>
             key: const PageStorageKey('list_presentation_email_in_threads'),
             controller: controller.listEmailController,
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: listPresentationEmail.length + 1,
+            itemCount: listPresentationEmail.length + 2,
             itemBuilder: (context, index) => Obx(() {
               if (index == listPresentationEmail.length) {
                 return _buildLoadMoreButton(
                   context,
                   controller.loadingMoreStatus.value);
+              }
+              if (index == listPresentationEmail.length + 1) {
+                return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
               }
               return _buildEmailItemNotDraggable(
                 context,
@@ -386,12 +387,15 @@ class ThreadView extends GetWidget<ThreadController>
                 key: const PageStorageKey('list_presentation_email_in_threads'),
                 controller: controller.listEmailController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: listPresentationEmail.length + 1,
+                itemCount: listPresentationEmail.length + 2,
                 itemBuilder: (context, index) => Obx(() {
                   if (index == listPresentationEmail.length) {
                     return _buildLoadMoreButton(
                       context,
                       controller.loadingMoreStatus.value);
+                  }
+                  if (index == listPresentationEmail.length + 1) {
+                    return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
                   }
                   return  _buildEmailItem(
                     context,
@@ -450,6 +454,13 @@ class ThreadView extends GetWidget<ThreadController>
           ),
         ),
       );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildLoadMoreProgressBar(LoadingMoreStatus loadingMoreStatus) {
+    if (loadingMoreStatus.isRunning) {
+      return const CupertinoLoadingWidget();
     }
     return const SizedBox.shrink();
   }
