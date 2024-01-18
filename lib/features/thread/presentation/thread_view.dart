@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -251,7 +252,7 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
     return Obx(() {
       if ((PlatformInfo.isMobile || (PlatformInfo.isWeb && controller.isSelectionEnabled()
-            && controller.isSearchActive() && !controller.responsiveUtils.isDesktop(context)))
+            && controller.isSearchActive && !controller.responsiveUtils.isDesktop(context)))
           && controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected.isNotEmpty) {
         return BottomBarThreadSelectionWidget(
           controller.imagePaths,
@@ -348,26 +349,23 @@ class ThreadView extends GetWidget<ThreadController>
 
   Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
     return NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification scrollInfo) {
-        if (scrollInfo is ScrollEndNotification
-            && !controller.loadingMoreStatus.isRunning
-            && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent
-        ) {
-          if (controller.isSearchActive() || controller.searchController.advancedSearchIsActivated.isTrue) {
-            controller.searchMoreEmails();
-          } else {
-            controller.loadMoreEmails();
-          }
-        }
-        return false;
-      },
+      onNotification: _handleScrollNotificationListener,
       child: PlatformInfo.isMobile
         ? ListView.separated(
             key: const PageStorageKey('list_presentation_email_in_threads'),
             controller: controller.listEmailController,
             physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: listPresentationEmail.length,
-            itemBuilder: (context, index) => Obx(() => _buildEmailItemNotDraggable(context, listPresentationEmail[index])),
+            itemCount: listPresentationEmail.length + 1,
+            itemBuilder: (context, index) => Obx(() {
+              if (index == listPresentationEmail.length) {
+                return _buildLoadMoreButton(
+                  context,
+                  controller.loadingMoreStatus.value);
+              }
+              return _buildEmailItemNotDraggable(
+                context,
+                listPresentationEmail[index]);
+            }),
             separatorBuilder: (context, index) {
               if (index < listPresentationEmail.length - 1) {
                 return Padding(
@@ -388,8 +386,17 @@ class ThreadView extends GetWidget<ThreadController>
                 key: const PageStorageKey('list_presentation_email_in_threads'),
                 controller: controller.listEmailController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: listPresentationEmail.length,
-                itemBuilder: (context, index) => Obx(() => _buildEmailItem(context, listPresentationEmail[index])),
+                itemCount: listPresentationEmail.length + 1,
+                itemBuilder: (context, index) => Obx(() {
+                  if (index == listPresentationEmail.length) {
+                    return _buildLoadMoreButton(
+                      context,
+                      controller.loadingMoreStatus.value);
+                  }
+                  return  _buildEmailItem(
+                    context,
+                    listPresentationEmail[index]);
+                }),
                 separatorBuilder: (context, index) {
                   return Padding(
                     padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
@@ -405,6 +412,46 @@ class ThreadView extends GetWidget<ThreadController>
             ),
           )
     );
+  }
+
+  bool _handleScrollNotificationListener(ScrollNotification scrollInfo) {
+    if (scrollInfo is ScrollEndNotification &&
+        scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+        !controller.loadingMoreStatus.value.isRunning
+    ) {
+      _handleLoadMoreEmailsRequest();
+    }
+    return false;
+  }
+
+  void _handleLoadMoreEmailsRequest() {
+    if (controller.isSearchActive) {
+      controller.searchMoreEmails();
+    } else  {
+      controller.loadMoreEmails();
+    }
+  }
+
+  Widget _buildLoadMoreButton(BuildContext context, LoadingMoreStatus loadingMoreStatus) {
+    if (((controller.canLoadMore && !controller.isSearchActive) ||
+        (controller.canSearchMore && controller.isSearchActive)) &&
+        !loadingMoreStatus.isRunning) {
+      return Center(
+        child: OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          ),
+          onPressed: _handleLoadMoreEmailsRequest,
+          child: Text(
+            AppLocalizations.of(context).loadMore,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.black
+            )
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 
   Widget _buildEmailItem(BuildContext context, PresentationEmail presentationEmail) {
@@ -630,7 +677,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   String _getMessageEmptyEmail(BuildContext context) {
-    if (controller.isSearchActive()) {
+    if (controller.isSearchActive) {
       return AppLocalizations.of(context).no_emails_matching_your_search;
     } else {
       if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all &&
@@ -643,7 +690,7 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   String? _getSubMessageEmptyEmail(BuildContext context) {
-    if (!controller.isSearchActive()
+    if (!controller.isSearchActive
       && controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all) {
       return AppLocalizations.of(context).reduceSomeFiltersAndTryAgain;
     } else if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all &&
