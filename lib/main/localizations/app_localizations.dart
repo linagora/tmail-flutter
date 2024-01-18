@@ -3814,4 +3814,11 @@ class AppLocalizations {
       name: 'pleaseEnterURL',
     );
   }
+
+  String get loadMore {
+    return Intl.message(
+      'Load more',
+      name: 'loadMore',
+    );
+  }
 }
