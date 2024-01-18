@@ -28,7 +28,7 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   }
 
   @override
-  Future<jmap.State> getStateToRefresh(AccountId accountId,UserName userName, TypeName typeName) {
+  Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
     return Future.sync(() async {
       return await _firebaseCacheManager.getStateToRefresh(accountId, userName, typeName);
     }).catchError(_exceptionThrower.throwException);
