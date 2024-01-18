@@ -33,13 +33,11 @@ abstract class ReloadableController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
-    if (failure is GetCredentialFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.dnsLookupForm));
-    } else if (failure is GetSessionFailure) {
+    if (failure is GetSessionFailure) {
       _handleGetSessionFailure(failure.exception);
-    } else if (failure is GetStoredTokenOidcFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.none));
-    } else if (failure is GetAuthenticatedAccountFailure) {
+    } else if (failure is GetAuthenticatedAccountFailure ||
+        failure is GetCredentialFailure ||
+        failure is GetStoredTokenOidcFailure) {
       goToLogin(
         arguments: LoginArguments(
           PlatformInfo.isMobile
