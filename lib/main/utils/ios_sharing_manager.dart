@@ -153,16 +153,6 @@ class IOSSharingManager {
     }
   }
 
-  Future updateEmailDeliveryStateInKeyChain(AccountId accountId, String newEmailDeliveryState) async {
-    final keychainSharingStored = await getKeychainSharingSession(accountId);
-    log('IOSSharingManager::updateEmailDeliveryStateInKeyChain:keychainSharingStored: $keychainSharingStored | newEmailDeliveryState: $newEmailDeliveryState');
-    if (keychainSharingStored == null) {
-      return;
-    }
-    final newKeychain = keychainSharingStored.updating(emailDeliveryState: newEmailDeliveryState);
-    await _keychainSharingManager.save(newKeychain);
-  }
-
   Future updateEmailStateInKeyChain(AccountId accountId, String newEmailState) async {
     final keychainSharingStored = await getKeychainSharingSession(accountId);
     log('IOSSharingManager::updateEmailStateInKeyChain:keychainSharingStored: $keychainSharingStored | newEmailState: $newEmailState');
