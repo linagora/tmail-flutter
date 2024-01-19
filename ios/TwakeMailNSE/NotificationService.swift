@@ -16,37 +16,38 @@ class NotificationService: UNNotificationServiceExtension {
         handler = contentHandler
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        self.modifiedContent?.title = InfoPlistReader(bundle: .app).bundleDisplayName
-        self.modifiedContent?.badge = NSNumber(value: 1)
-        
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
-            self.modifiedContent?.body = NSLocalizedString(newNotificationDefaultMessageKey, comment: "Localizable")
+            self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
             return self.notify()
         }
 
         if #available(iOSApplicationExtension 13.0, *) {
             Task {
-                await handleGetNewEmails(payloadData: payloadData)
+                await handlePushNotificationForNewEmail(payloadData: payloadData)
             }
         } else {
-            self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
-            return self.notify()
+            self.handleGetNewEmails(payloadData: payloadData)
         }
     }
     
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        notify()
+        self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
+        self.notify()
     }
     
     @available(iOSApplicationExtension 13.0.0, *)
-    private func handleGetNewEmails(payloadData: [String: Any]) async {
+    private func handlePushNotificationForNewEmail(payloadData: [String: Any]) async {
+        self.handleGetNewEmails(payloadData: payloadData)
+    }
+        
+    private func handleGetNewEmails(payloadData: [String: Any]) {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
         if (mapStateChanges.isEmpty) {
-            self.modifiedContent?.body = NSLocalizedString(newNotificationDefaultMessageKey, comment: "Localizable")
+            self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
             return self.notify()
         } else {
             guard let currentAccountId = mapStateChanges.keys.first,
@@ -54,13 +55,13 @@ class NotificationService: UNNotificationServiceExtension {
                   keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil,
                   let listStateOfAccount = mapStateChanges[currentAccountId],
                   let newEmailDeliveryState = listStateOfAccount[TypeName.emailDelivery] else {
-                self.modifiedContent?.body = NSLocalizedString(newNotificationDefaultMessageKey, comment: "Localizable")
+                self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
             }
             
             guard let oldEmailDeliveryState = keychainSharingSession.emailDeliveryState ?? keychainSharingSession.emailState,
                   newEmailDeliveryState != oldEmailDeliveryState else {
-                self.modifiedContent?.body = NSLocalizedString(newEmailDefaultMessageKey, comment: "Localizable")
+                self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
             }
             
@@ -74,56 +75,92 @@ class NotificationService: UNNotificationServiceExtension {
                 tokenEndpointUrl: keychainSharingSession.tokenEndpoint,
                 oidcScopes: keychainSharingSession.oidcScopes,
                 onComplete: { (emails, errors) in
-                    if emails.isEmpty {
-                        self.modifiedContent?.body = NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable")
-                        return self.notify()
-                    } else {
-                        self.keychainController.updateEmailDeliveryStateToKeychain(
-                            accountId: keychainSharingSession.accountId,
-                            newEmailDeliveryState: newEmailDeliveryState
-                        )
-
-                        if (emails.count > 1) {
-                            for email in emails {
-                                if (email.id == emails.last?.id) {
-                                    self.modifiedContent?.subtitle = email.subject ?? ""
-                                    self.modifiedContent?.body = email.preview ?? ""
-                                    self.modifiedContent?.sound = .default
-                                    self.modifiedContent?.badge = NSNumber(value: emails.count)
-                                    self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = email.id
-                                    return self.notify()
-                                }
-                                self.scheduleLocalNotification(email: email)
-                            }
-                        } else {
-                            self.modifiedContent?.subtitle = emails.first?.subject ?? ""
-                            self.modifiedContent?.body = emails.first?.preview ?? ""
-                            self.modifiedContent?.badge = NSNumber(value: 1)
-                            self.modifiedContent?.sound = .default
-                            self.modifiedContent?.userInfo[JmapConstants.EMAIL_ID] = emails.first?.id ?? ""
+                    do {
+                        if emails.isEmpty {
+                            self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                             return self.notify()
+                        } else {
+                            self.keychainController.updateEmailDeliveryStateToKeychain(
+                                accountId: keychainSharingSession.accountId,
+                                newEmailDeliveryState: newEmailDeliveryState
+                            )
+
+                            if (emails.count > 1) {
+                                for email in emails {
+                                    if (email.id == emails.last?.id) {
+                                        self.showModifiedNotification(title: email.getSenderName(),
+                                                                      subtitle: email.subject,
+                                                                      body: email.preview,
+                                                                      badgeCount: emails.count,
+                                                                      userInfo: [JmapConstants.EMAIL_ID : email.id])
+                                        return self.notify()
+                                    }
+                                    self.showNewNotification(title: email.getSenderName(),
+                                                             subtitle: email.subject,
+                                                             body: email.preview,
+                                                             badgeCount: emails.count,
+                                                             notificationId: email.id,
+                                                             userInfo: [JmapConstants.EMAIL_ID : email.id])
+                                }
+                            } else {
+                                self.showModifiedNotification(title: emails.first!.getSenderName(),
+                                                              subtitle: emails.first!.subject,
+                                                              body: emails.first!.preview,
+                                                              badgeCount: 1,
+                                                              userInfo: [JmapConstants.EMAIL_ID : emails.first!.id])
+                                return self.notify()
+                            }
                         }
+                    } catch {
+                        TwakeLogger.shared.log(message: "JmapClient.shared.getNewEmails: \(error)")
+                        self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
+                        return self.notify()
                     }
                 }
             )
         }
     }
 
-    private func scheduleLocalNotification(email: Email) {
+    private func showDefaultNotification(message: String) {
+        self.modifiedContent?.title = InfoPlistReader(bundle: .app).bundleDisplayName
+        self.modifiedContent?.body = message
+        self.modifiedContent?.badge = NSNumber(value: 1)
+        self.modifiedContent?.sound = .default
+    }
+    
+    private func showModifiedNotification(title: String?,
+                                          subtitle: String?,
+                                          body: String?,
+                                          badgeCount: Int,
+                                          userInfo: [String: Any]) {
+        self.modifiedContent?.title = title ?? InfoPlistReader(bundle: .app).bundleDisplayName
+        self.modifiedContent?.subtitle = subtitle ?? ""
+        self.modifiedContent?.body = body ?? ""
+        self.modifiedContent?.badge = NSNumber(value: badgeCount)
+        self.modifiedContent?.sound = .default
+        self.modifiedContent?.userInfo = userInfo
+    }
+    
+    private func showNewNotification(title: String?,
+                                     subtitle: String?,
+                                     body: String?,
+                                     badgeCount: Int,
+                                     notificationId: String,
+                                     userInfo: [String: Any]) {
         // Create a notification content
         let content = UNMutableNotificationContent()
-        content.title = InfoPlistReader(bundle: .app).bundleDisplayName
-        content.subtitle = email.subject ?? ""
-        content.body = email.preview ?? ""
+        content.title = title ?? InfoPlistReader(bundle: .app).bundleDisplayName
+        content.subtitle = subtitle ?? ""
+        content.body = body ?? ""
         content.sound = .default
-        content.badge = 1
-        content.userInfo[JmapConstants.EMAIL_ID] = "\(email.id)"
+        content.badge = NSNumber(value: badgeCount)
+        content.userInfo = userInfo
 
         // Create a notification trigger
         let triggerDateTime = Calendar.current.dateComponents([.hour, .minute, .second], from: Date())
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateTime, repeats: false)
         // Create a notification request
-        let request = UNNotificationRequest(identifier: "\(email.id)", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
 
         // Schedule the notification
         UNUserNotificationCenter.current().add(request) { error in
