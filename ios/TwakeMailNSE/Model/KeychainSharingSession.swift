@@ -55,11 +55,4 @@ extension KeychainSharingSession {
         }
         return nil
     }
-    
-    func toJson() -> String? {
-        if let data = toData(), let jsonString = String(data: data, encoding: .utf8) {
-            return jsonString
-        }
-        return nil
-    }
 }

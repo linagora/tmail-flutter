@@ -42,18 +42,18 @@ class KeychainController: KeychainControllerDelegate {
     
     func updateEmailDeliveryStateToKeychain(accountId: String, newEmailDeliveryState: String) {
         do {
-            if let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId) {
-                let newSharingSession = sharingSession.updateEmailDeliveryState(newEmailDeliveryState: newEmailDeliveryState)
-                try keychain.set(newSharingSession.toJson() ?? "", key: accountId)
+            if let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId),
+               let newSharingSessionData = sharingSession.updateEmailDeliveryState(newEmailDeliveryState: newEmailDeliveryState).toData() {
+                try keychain.set(newSharingSessionData, key: accountId)
             }
         } catch {}
     }
     
     func updateTokenOidc(accountId: String, newTokenOidc: TokenOidc) {
         do {
-            if let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId) {
-                let newSharingSession = sharingSession.updateTokenOidc(newTokenOidc: newTokenOidc)
-                try keychain.set(newSharingSession.toJson() ?? "", key: accountId)
+            if let sharingSession = retrieveSharingSessionFromKeychain(accountId: accountId),
+               let newSharingSessionData = sharingSession.updateTokenOidc(newTokenOidc: newTokenOidc).toData() {
+                try keychain.set(newSharingSessionData, key: accountId)
             }
         } catch {}
     }
