@@ -13,7 +13,7 @@ extension SessionExtension on Session {
 
   String getDownloadUrl({String? jmapUrl}) {
     final downloadUrlValid = jmapUrl != null
-      ? downloadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl))
+      ? downloadUrl.toQualifiedUrl(jmapUrl)
       : downloadUrl;
     var baseUrl = '${downloadUrlValid.origin}${downloadUrlValid.path}?${downloadUrlValid.query}';
     if (baseUrl.endsWith('/')) {
@@ -25,7 +25,7 @@ extension SessionExtension on Session {
 
   Uri getUploadUri(AccountId accountId, {String? jmapUrl}) {
     final uploadUrlValid = jmapUrl != null
-      ? uploadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl))
+      ? uploadUrl.toQualifiedUrl(jmapUrl)
       : uploadUrl;
     final baseUrl = '${uploadUrlValid.origin}${uploadUrlValid.path}';
     final uploadUriTemplate = UriTemplate(Uri.decodeFull(baseUrl));
