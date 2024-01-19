@@ -423,17 +423,9 @@ class ThreadView extends GetWidget<ThreadController>
         scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
         !controller.loadingMoreStatus.value.isRunning
     ) {
-      _handleLoadMoreEmailsRequest();
+      controller.handleLoadMoreEmailsRequest();
     }
     return false;
-  }
-
-  void _handleLoadMoreEmailsRequest() {
-    if (controller.isSearchActive) {
-      controller.searchMoreEmails();
-    } else  {
-      controller.loadMoreEmails();
-    }
   }
 
   Widget _buildLoadMoreButton(BuildContext context, LoadingMoreStatus loadingMoreStatus) {
@@ -445,7 +437,7 @@ class ThreadView extends GetWidget<ThreadController>
           style: OutlinedButton.styleFrom(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
-          onPressed: _handleLoadMoreEmailsRequest,
+          onPressed: controller.handleLoadMoreEmailsRequest,
           child: Text(
             AppLocalizations.of(context).loadMore,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
