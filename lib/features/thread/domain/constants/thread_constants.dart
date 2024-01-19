@@ -89,4 +89,7 @@ class ThreadConstants {
     EmailProperty.mailboxIds,
     IndividualHeaderIdentifier.headerCalendarEvent.value,
   });
+
+  static const int defaultMaxHeightEmailItemOnBrowser = 40;
+  static const int defaultMaxHeightBrowser = 1200;
 }
