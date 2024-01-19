@@ -2016,33 +2016,38 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    CalendarEventExtension_formatDateTime(_this, dateTime) {
-      return B.formatDate(dateTime, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy", " ", "hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
+    CalendarEventExtension_formatDateTime(_this, locale, dateTime) {
+      return B.formatDate(dateTime, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy", " ", "hh", ":", "nn", " ", "am"], type$.JSArray_String), locale);
     },
     CalendarEventExtension_get_dateTimeEventAsString(_this) {
-      var t1, timeStart, timeEnd;
+      var t1, t2, timeStart, timeEnd;
       if (B.CalendarEventExtension_get_localStartDate(_this) != null && B.CalendarEventExtension_get_localEndDate(_this) != null) {
-        t1 = B.CalendarEventExtension_get_localStartDate(_this);
-        t1.toString;
-        timeStart = B.CalendarEventExtension_formatDateTime(_this, t1);
+        t1 = B.AppUtils_getCurrentDateLocale();
+        t2 = B.CalendarEventExtension_get_localStartDate(_this);
+        t2.toString;
+        timeStart = B.CalendarEventExtension_formatDateTime(_this, t1, t2);
         if (A.DateUtils_isSameDay(B.CalendarEventExtension_get_localStartDate(_this), B.CalendarEventExtension_get_localEndDate(_this))) {
-          t1 = B.CalendarEventExtension_get_localEndDate(_this);
-          t1.toString;
-          timeEnd = B.formatDate(t1, A._setArrayType(["hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
+          t1 = B.AppUtils_getCurrentDateLocale();
+          t2 = B.CalendarEventExtension_get_localEndDate(_this);
+          t2.toString;
+          timeEnd = B.formatDate(t2, A._setArrayType(["hh", ":", "nn", " ", "am"], type$.JSArray_String), t1);
         } else {
-          t1 = B.CalendarEventExtension_get_localEndDate(_this);
-          t1.toString;
-          timeEnd = B.CalendarEventExtension_formatDateTime(_this, t1);
+          t1 = B.AppUtils_getCurrentDateLocale();
+          t2 = B.CalendarEventExtension_get_localEndDate(_this);
+          t2.toString;
+          timeEnd = B.CalendarEventExtension_formatDateTime(_this, t1, t2);
         }
         return timeStart + " - " + timeEnd;
       } else if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
-        t1 = B.CalendarEventExtension_get_localStartDate(_this);
-        t1.toString;
-        return B.CalendarEventExtension_formatDateTime(_this, t1);
+        t1 = B.AppUtils_getCurrentDateLocale();
+        t2 = B.CalendarEventExtension_get_localStartDate(_this);
+        t2.toString;
+        return B.CalendarEventExtension_formatDateTime(_this, t1, t2);
       } else if (B.CalendarEventExtension_get_localEndDate(_this) != null) {
-        t1 = B.CalendarEventExtension_get_localEndDate(_this);
-        t1.toString;
-        return B.CalendarEventExtension_formatDateTime(_this, t1);
+        t1 = B.AppUtils_getCurrentDateLocale();
+        t2 = B.CalendarEventExtension_get_localEndDate(_this);
+        t2.toString;
+        return B.CalendarEventExtension_formatDateTime(_this, t1, t2);
       } else
         return "";
     },
@@ -10213,113 +10218,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1 = false;
       } else
         t1 = false;
-      if (t1)
-        _this._handleLoadMoreEmailsRequest$0();
-      return false;
-    },
-    _handleLoadMoreEmailsRequest$0() {
-      var t2, t3, t4, lastEmail, t5, nextPosition, t6, t7, t8, t9, t10, t11, oldestEmail, _this = this, _null = null,
+      if (t1) {
         t1 = $.$get$GetWidget__cache();
-      A.Expando__checkType(_this);
-      t1 = t1._jsWeakMap;
-      t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      t3 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController;
-      t4 = t3.simpleSearchIsActivated;
-      if (!t4.get$value(t4)) {
-        t3 = t3.advancedSearchIsActivated;
-        t3 = t3.get$value(t3);
-      } else
-        t3 = true;
-      if (t3) {
         A.Expando__checkType(_this);
-        t1 = t2._as(t1.get(_this));
-        A.log("ThreadController::searchMoreEmails:", C.Level_3);
-        if (t1.canSearchMore) {
-          t2 = t1.EmailActionController_mailboxDashBoardController;
-          if (t2.sessionCurrent != null) {
-            t2 = t2.accountId;
-            t2 = t2.get$value(t2) != null;
-          } else
-            t2 = false;
-        } else
-          t2 = false;
-        if (t2) {
-          t2 = t1.EmailActionController_mailboxDashBoardController;
-          t3 = t2.emailsInCurrentMailbox;
-          lastEmail = !t3.get$isEmpty(t3) ? t3.get$last(t3) : _null;
-          t4 = t2.searchController;
-          t5 = t4.sortOrderFiltered;
-          if (t5.get$value(t5).isScrollByPosition$0()) {
-            nextPosition = J.get$length$asx(t3.get$value(t3));
-            A.log("ThreadController::searchMoreEmails:nextPosition: " + nextPosition, C.Level_3);
-            t4.updateFilterEmail$2$beforeOption$positionOption(C.C_None, new A.Some(nextPosition, type$.Some_int));
-          } else if (t5.get$value(t5) === C.EmailSortOrderType_1) {
-            t3 = lastEmail == null ? _null : lastEmail.receivedAt;
-            t4.updateFilterEmail$1$startDateOption(A.optionOf(t3, type$.UTCDate));
-          } else {
-            t3 = lastEmail == null ? _null : lastEmail.receivedAt;
-            t4.updateFilterEmail$1$beforeOption(A.optionOf(t3, type$.UTCDate));
-          }
-          t3 = t1._searchMoreEmailInteractor;
-          t6 = t2.sessionCurrent;
-          t6.toString;
-          t7 = t2.accountId;
-          t8 = t7.get$value(t7);
-          t8.toString;
-          t9 = $.$get$ThreadConstants_defaultLimit();
-          t10 = t5.get$value(t5).getSortOrder$0().toNullable$0();
-          t4 = t4.searchEmailFilter;
-          t11 = t4.get$value(t4).position;
-          t4 = t4.get$value(t4);
-          t5 = t5.get$value(t5);
-          t5 = t4.mappingToEmailFilterCondition$2$moreFilterCondition$sortOrderType(t1._getFilterCondition$0(), t5);
-          t2 = t2.sessionCurrent;
-          t2.toString;
-          t7 = t7.get$value(t7);
-          t7.toString;
-          t7 = A.EmailUtils_getPropertiesForEmailGetMethod(t2, t7);
-          t1.consumeState$1(t3.execute$8$filter$lastEmailId$limit$position$properties$sort(t6, t8, t5, lastEmail == null ? _null : lastEmail.id, t9, t11, t7, t10));
-        }
-      } else {
-        A.Expando__checkType(_this);
-        t1 = t2._as(t1.get(_this));
-        A.log("ThreadController::loadMoreEmails()", C.Level_3);
-        if (t1.canLoadMore) {
-          t2 = t1.EmailActionController_mailboxDashBoardController;
-          if (t2.sessionCurrent != null) {
-            t2 = t2.accountId;
-            t2 = t2.get$value(t2) != null;
-          } else
-            t2 = false;
-        } else
-          t2 = false;
-        if (t2) {
-          t2 = t1.EmailActionController_mailboxDashBoardController;
-          t3 = t2.emailsInCurrentMailbox;
-          oldestEmail = !t3.get$isEmpty(t3) ? t3.get$last(t3) : _null;
-          t3 = t1._loadMoreEmailsInMailboxInteractor;
-          t4 = t2.sessionCurrent;
-          t4.toString;
-          t5 = t2.accountId;
-          t6 = t5.get$value(t5);
-          t6.toString;
-          t7 = $.$get$ThreadConstants_defaultLimit();
-          t8 = t2.searchController;
-          t9 = t8.searchEmailFilter;
-          t9 = t9.get$value(t9).position;
-          t8 = t8.sortOrderFiltered;
-          t8 = t8.get$value(t8).getSortOrder$0().toNullable$0();
-          t10 = t2.filterMessageOption;
-          t10 = t10.get$value(t10);
-          t11 = t1._getFilterCondition$2$mailboxIdSelected$oldestEmail(t1._currentMailboxId, oldestEmail);
-          t2 = t2.sessionCurrent;
-          t2.toString;
-          t5 = t5.get$value(t5);
-          t5.toString;
-          t5 = A.EmailUtils_getPropertiesForEmailGetMethod(t2, t5);
-          t1.consumeState$1(t3.execute$1(new A.GetEmailRequest(t4, t6, t7, t9, t8, t11, t10, t5, oldestEmail == null ? _null : oldestEmail.id)));
-        }
+        A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).handleLoadMoreEmailsRequest$0();
       }
+      return false;
     },
     _buildLoadMoreButton$2(context, loadingMoreStatus) {
       var t2, t3, t4, _this = this, _null = null,
@@ -10343,23 +10247,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(_this);
         if (t2._as(t1.get(_this)).canSearchMore) {
           A.Expando__checkType(_this);
-          t1 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController;
-          t2 = t1.simpleSearchIsActivated;
-          if (!t2.get$value(t2)) {
-            t1 = t1.advancedSearchIsActivated;
-            t1 = t1.get$value(t1);
+          t3 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController;
+          t4 = t3.simpleSearchIsActivated;
+          if (!t4.get$value(t4)) {
+            t3 = t3.advancedSearchIsActivated;
+            t3 = t3.get$value(t3);
           } else
-            t1 = true;
+            t3 = true;
         } else
-          t1 = false;
+          t3 = false;
       } else
-        t1 = true;
-      if (t1 && loadingMoreStatus !== C.LoadingMoreStatus_1) {
-        t1 = A.OutlinedButton_styleFrom(_null, _null, A.Theme_of(context).scaffoldBackgroundColor, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+        t3 = true;
+      if (t3 && loadingMoreStatus !== C.LoadingMoreStatus_1) {
+        t3 = A.OutlinedButton_styleFrom(_null, _null, A.Theme_of(context).scaffoldBackgroundColor, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+        A.Expando__checkType(_this);
+        t1 = t2._as(t1.get(_this)).get$handleLoadMoreEmailsRequest();
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t2 = A.Intl__message("Load more", _null, "loadMore", _null, _null);
-        t3 = A.Theme_of(context).textTheme.bodyMedium;
-        return A.Center$(A.OutlinedButton$(A.Text$(t2, _null, _null, _null, _null, _null, _null, _null, _null, t3 == null ? _null : t3.copyWith$1$color(C.Color_4278190080), _null, _null, _null, _null, _null), _this.get$_handleLoadMoreEmailsRequest(), t1), _null, _null);
+        t4 = A.Theme_of(context).textTheme.bodyMedium;
+        return A.Center$(A.OutlinedButton$(A.Text$(t2, _null, _null, _null, _null, _null, _null, _null, _null, t4 == null ? _null : t4.copyWith$1$color(C.Color_4278190080), _null, _null, _null, _null, _null), t1, t3), _null, _null);
       }
       return C.SizedBox_0_0_null_null;
     },
@@ -13612,7 +13518,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.KeyEventResult_1;
     },
-    $signature: 72
+    $signature: 73
   };
   B._RecipientComposerWidgetState_build__closure.prototype = {
     call$2(context, stateSetter) {
@@ -19785,8 +19691,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _instance_2_u(_, "get$_handleSubmitTagAction", "_handleSubmitTagAction$2", 1);
     _instance_2_u(_, "get$_handleOnTagChangeAction", "_handleOnTagChangeAction$2", 1);
     _instance_0_u(B._MailboxSearchedItemBuilderState.prototype, "get$_mailbox_searched_item_builder$_onTapMailboxAction", "_mailbox_searched_item_builder$_onTapMailboxAction$0", 0);
-    _instance_1_u(_ = B.ThreadView.prototype, "get$_handleScrollNotificationListener", "_handleScrollNotificationListener$1", 48);
-    _instance_0_u(_, "get$_handleLoadMoreEmailsRequest", "_handleLoadMoreEmailsRequest$0", 0);
+    _instance_1_u(B.ThreadView.prototype, "get$_handleScrollNotificationListener", "_handleScrollNotificationListener$1", 48);
     _instance_0_u(B._ScrollToTopButtonWidgetState.prototype, "get$_scroll_to_top_button_widget$_handleScroll", "_scroll_to_top_button_widget$_handleScroll$0", 0);
     _static_1(B, "link_DefaultLinkDelegate_create$closure", "DefaultLinkDelegate_create", 36);
   })();
@@ -20287,5 +20192,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Cz1JBaCX3wlzLPMKk1W2YvG5JOc=");
+})($__dart_deferred_initializers__, "1c+I9hWK5VFsBuPW5MQ6uXEK0r0=");
 ;
