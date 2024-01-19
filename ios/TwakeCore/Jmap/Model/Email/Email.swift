@@ -6,4 +6,11 @@ struct Email: Codable {
     let preview: String?
     let from: [EmailAddress]?
     let receivedAt: String?
+    
+    func getSenderName() -> String? {
+        if (from == nil || from?.isEmpty == true) {
+            return nil
+        }
+        return from?.first?.name ?? from?.first?.email
+    }
 }
