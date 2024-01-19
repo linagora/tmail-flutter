@@ -38,7 +38,7 @@ extension SessionExtensions on Session {
 
   String getQualifiedApiUrl({String? baseUrl}) {
     if (baseUrl != null) {
-      return apiUrl.toQualifiedUrl(baseUrl: Uri.parse(baseUrl)).toString();
+      return apiUrl.toQualifiedUrl(baseUrl).toString();
     } else {
       return apiUrl.toString();
     }
