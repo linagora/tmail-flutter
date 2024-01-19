@@ -1,7 +1,6 @@
 name: saas
-description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+description: SaaS module to interact with Linagora SaaS platform
+publish_to: 'none'
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -36,7 +35,7 @@ dev_dependencies:
 
   json_serializable: 6.6.1
 
-  mockito: 5.4.2
+  mockito: 5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

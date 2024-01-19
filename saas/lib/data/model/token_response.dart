@@ -33,10 +33,10 @@ class TokenResponse with EquatableMixin {
   List<Object?> get props => [accessToken, refreshToken, expiredTime, idToken];
 
   TokenOIDC toTokenOidc({required String authority}) => TokenOIDC(
-    token: accessToken!,
-    refreshToken: refreshToken!,
+    accessToken!,
+    TokenId(idToken!),
+    refreshToken!,
     expiredTime: expiredTime,
     authority: authority,
-    tokenId: TokenId(idToken!)
   );
 }

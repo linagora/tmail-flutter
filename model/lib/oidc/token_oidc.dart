@@ -15,12 +15,16 @@ class TokenOIDC with EquatableMixin {
   final TokenId tokenId;
   final DateTime? expiredTime;
   final String refreshToken;
+  final String? authority;
 
   TokenOIDC(
     this.token,
     this.tokenId,
     this.refreshToken,
-    {this.expiredTime}
+    {
+      this.expiredTime,
+      this.authority
+    }
   );
 
   factory TokenOIDC.fromJson(Map<String, dynamic> json) => _$TokenOIDCFromJson(json);

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:core/core.dart';
+import 'package:core/utils/crypto/crypto_utils.dart';
 import 'package:crypto/crypto.dart';
 import 'package:saas/domain/model/code_challenge_method.dart';
 import 'package:saas/domain/model/verifier_code.dart';

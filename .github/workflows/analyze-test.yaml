@@ -23,6 +23,7 @@ jobs:
           - fcm
           - email_recovery
           - server_settings
+          - saas
       fail-fast: false
 
     steps:

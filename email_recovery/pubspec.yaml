@@ -1,5 +1,5 @@
 name: email_recovery
-description: TMail email_recovery extension
+description: Twake Mail email_recovery extension
 publish_to: 'none'
 
 version: 1.0.0+1
