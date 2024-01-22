@@ -123,7 +123,7 @@ extension PresentationEmailExtension on PresentationEmail {
         if (mailboxRole == PresentationMailbox.roleSent) {
           return Tuple3(to.asList(), [], []);
         } else {
-          final replyToAddress = replyTo.asList().isNotEmpty ? to.asList() + replyTo.asList() : from.asList();
+          final replyToAddress = replyTo.asList().isNotEmpty ? replyTo.asList() : from.asList();
           return Tuple3(replyToAddress, [], []);
         }
       case EmailActionType.replyAll:
