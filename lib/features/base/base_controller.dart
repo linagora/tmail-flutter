@@ -292,9 +292,14 @@ abstract class BaseController extends GetxController
   bool _isFcmActivated(Session session, AccountId accountId) =>
     FirebaseCapability.fcmIdentifier.isSupported(session, accountId) && AppConfig.fcmAvailable;
 
-  void goToLogin({LoginArguments? arguments}) {
+  void goToLogin() {
     if (Get.currentRoute != AppRoutes.login) {
-      pushAndPopAll(AppRoutes.login, arguments: arguments);
+      pushAndPopAll(
+        AppRoutes.login,
+        arguments: LoginArguments(
+          PlatformInfo.isMobile ? LoginFormType.dnsLookupForm : LoginFormType.none
+        )
+      );
     }
   }
 
@@ -336,11 +341,7 @@ abstract class BaseController extends GetxController
   Future<void> clearDataAndGoToLoginPage() async {
     log('BaseController::clearDataAndGoToLoginPage:');
     await clearAllData();
-    goToLogin(arguments: LoginArguments(
-      PlatformInfo.isWeb
-        ? LoginFormType.none
-        : LoginFormType.dnsLookupForm
-    ));
+    goToLogin();
   }
 
   Future<void> clearAllData() async {
