@@ -1012,7 +1012,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_as_not_spam": "Marqué comme indésirable",
+  "marked_as_not_spam": "Marqué comme non indésirable",
   "@marked_as_not_spam": {
     "type": "text",
     "placeholders_order": [],
