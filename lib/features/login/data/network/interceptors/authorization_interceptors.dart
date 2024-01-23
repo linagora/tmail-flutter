@@ -86,7 +86,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
 
-      if (_validateToRefreshToken(err)) {
+      if (validateToRefreshToken(err)) {
         log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
 
         if (PlatformInfo.isIOS) {
@@ -147,7 +147,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   bool _isRefreshTokenNotEmpty() => _token?.refreshToken.isNotEmpty == true;
 
-  bool _validateToRefreshToken(DioError dioError) {
+  bool validateToRefreshToken(DioError dioError) {
     if (dioError.response?.statusCode == 401 &&
         _isAuthenticationOidcValid() &&
         _isTokenNotEmpty() &&
@@ -215,7 +215,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return null;
   }
 
-  Future<TokenOIDC> _invokeRefreshTokenFromServer() async {
+  Future<TokenOIDC> invokeRefreshTokenFromServer() async {
     final newToken = await _authenticationClient.refreshingTokensOIDC(
       _configOIDC!.clientId,
       _configOIDC!.redirectUrl,
@@ -231,7 +231,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final keychainToken = await _getTokenInKeychain(_token!);
 
     if (keychainToken == null) {
-      final newToken = await _invokeRefreshTokenFromServer();
+      final newToken = await invokeRefreshTokenFromServer();
 
       _updateNewToken(newToken);
 
@@ -246,7 +246,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future _handleRefreshTokenOnOtherPlatform() async {
-    final newToken = await _invokeRefreshTokenFromServer();
+    final newToken = await invokeRefreshTokenFromServer();
 
     _updateNewToken(newToken);
 
