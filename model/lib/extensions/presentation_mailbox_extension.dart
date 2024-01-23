@@ -51,7 +51,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get allowedToDisplayCountOfUnreadEmails => !(isTrash || isSpam || isDrafts || isTemplates || isSent) && countUnreadEmails > 0;
 
-  bool get allowedToDisplayCountOfTotalEmails => (isTrash || isSpam) && countTotalEmails > 0;
+  bool get allowedToDisplayCountOfTotalEmails => (isTrash || isSpam || isDrafts) && countTotalEmails > 0;
 
   bool get allowedHasEmptyAction => (isTrash || isSpam) && countTotalEmails > 0;
 
