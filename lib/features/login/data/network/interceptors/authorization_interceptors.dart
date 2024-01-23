@@ -21,9 +21,6 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
-  static const int _maxRetryCount = 3;
-  static const String _retryKey = 'Retry';
-
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
@@ -88,7 +85,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
-      var retries = extraInRequest[_retryKey] ?? 0;
 
       if (_validateToRefreshToken(err)) {
         log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
@@ -125,15 +121,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           final response = await _dio.fetch(requestOptions);
           return handler.resolve(response);
         }
-      } else if (_validateToRetry(err, retries)) {
-        log('AuthorizationInterceptors::onError:>> _validateToRetry | retries: $retries');
-        retries++;
-
-        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
-        requestOptions.extra = {_retryKey: retries};
-
-        final response = await _dio.fetch(requestOptions);
-        return handler.resolve(response);
       } else {
         super.onError(err, handler);
       }
@@ -163,19 +150,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   bool _validateToRefreshToken(DioError dioError) {
     if (dioError.response?.statusCode == 401 &&
         _isAuthenticationOidcValid() &&
+        _isTokenNotEmpty() &&
         _isRefreshTokenNotEmpty() &&
         _isTokenExpired()
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  bool _validateToRetry(DioError dioError, int retryCount) {
-    if (dioError.type == DioErrorType.badResponse &&
-        dioError.response?.statusCode == 401 &&
-        _isTokenNotEmpty() &&
-        retryCount < _maxRetryCount
     ) {
       return true;
     }
