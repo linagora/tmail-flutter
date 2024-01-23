@@ -130,7 +130,8 @@ extension PresentationEmailExtension on PresentationEmail {
         if (mailboxRole == PresentationMailbox.roleSent) {
           return Tuple3(to.asList(), cc.asList(), bcc.asList());
         } else {
-          return Tuple3(to.asList() + from.asList(), cc.asList(), bcc.asList());
+          final senderReplyToAddress = replyTo.asList().isNotEmpty ? replyTo.asList() : from.asList();
+          return Tuple3(to.asList() + senderReplyToAddress, cc.asList(), bcc.asList());
         }
       default:
         return Tuple3(to.asList(), cc.asList(), bcc.asList());
