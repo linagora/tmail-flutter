@@ -2692,7 +2692,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "Le message a été enregistré dans la file d'attente.",
+  "messageHasBeenSavedToTheSendingQueue": "",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
@@ -3168,7 +3168,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueViewOnIOS": "Les messages du dossier de la file d'attente d'envoi peuvent être envoyés lorsque vous êtes en ligne.",
+  "bannerMessageSendingQueueViewOnIOS": "",
   "@bannerMessageSendingQueueViewOnIOS": {
     "type": "text",
     "placeholders_order": [],
@@ -3328,7 +3328,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clean": "Nettoyage",
+  "clean": "Nettoyer",
   "@clean": {
     "type": "text",
     "placeholders_order": [],
@@ -3466,7 +3466,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearFolder": "Vider le dossier",
+  "clearFolder": "Nettoyer le dossier",
   "@clearFolder": {
     "type": "text",
     "placeholders_order": [],
