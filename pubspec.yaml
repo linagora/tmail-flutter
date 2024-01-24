@@ -55,12 +55,12 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: cnb_supported
+      ref: cherry-pick-fix-rich-text-format-style
 
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: cnb_supported
+      ref: cherry-pick-fix-rich-text-format-style
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/linagora/jmap-dart-client/pull/87
@@ -154,7 +154,7 @@ dependencies:
 
   hive: 2.2.3
 
-  pointer_interceptor: 0.9.1
+  pointer_interceptor: 0.10.1
 
   rxdart: 0.27.7
 
@@ -212,9 +212,9 @@ dependencies:
 
   workmanager: 0.5.1
 
-  flutter_typeahead: 4.6.0
+  flutter_typeahead: 5.0.2
 
-  flutter_keyboard_visibility: 5.4.1
+  flutter_keyboard_visibility: 6.0.0
 
   extended_text: 12.0.0
 
@@ -269,7 +269,6 @@ dev_dependencies:
   http_mock_adapter: 0.4.2
 
 dependency_overrides:
-  pointer_interceptor: 0.9.1
 
   firebase_core_platform_interface: 4.6.0
 
