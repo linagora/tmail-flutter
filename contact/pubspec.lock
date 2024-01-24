@@ -377,10 +377,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview
-      sha256: "6d6c741ddba1dba5229d63ba75767064791a7ce845196b45e31105e93d67c949"
+      sha256: "3e9a443a18ecef966fb930c3a76ca5ab6a7aafc0c7b5e14a4a850cf107b09959"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0-beta.22"
+    version: "6.0.0"
+  flutter_inappwebview_android:
+    dependency: transitive
+    description:
+      name: flutter_inappwebview_android
+      sha256: d247f6ed417f1f8c364612fa05a2ecba7f775c8d0c044c1d3b9ee33a6515c421
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.13"
   flutter_inappwebview_internal_annotations:
     dependency: transitive
     description:
@@ -389,14 +397,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  flutter_inappwebview_ios:
+    dependency: transitive
+    description:
+      name: flutter_inappwebview_ios
+      sha256: f363577208b97b10b319cd0c428555cd8493e88b468019a8c5635a0e4312bd0f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.13"
+  flutter_inappwebview_macos:
+    dependency: transitive
+    description:
+      name: flutter_inappwebview_macos
+      sha256: b55b9e506c549ce88e26580351d2c71d54f4825901666bd6cfa4be9415bb2636
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.11"
+  flutter_inappwebview_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_inappwebview_platform_interface
+      sha256: "545fd4c25a07d2775f7d5af05a979b2cac4fbf79393b0a7f5d33ba39ba4f6187"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.10"
+  flutter_inappwebview_web:
+    dependency: transitive
+    description:
+      name: flutter_inappwebview_web
+      sha256: d8c680abfb6fec71609a700199635d38a744df0febd5544c5a020bd73de8ee07
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
       name: flutter_keyboard_visibility
-      sha256: "4983655c26ab5b959252ee204c2fffa4afeb4413cd030455194ec0caa3b8e7cb"
+      sha256: "98664be7be0e3ffca00de50f7f6a287ab62c763fc8c762e0a21584584a3ff4f8"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.1"
+    version: "6.0.0"
   flutter_keyboard_visibility_linux:
     dependency: transitive
     description:
@@ -462,10 +502,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_typeahead
-      sha256: f31211a8536f87908c3dcbdb88666e2f4d77f5f06c2b3a48eaad5599969ff32d
+      sha256: ef2dd5a505d2d95a5b4c571c81ad2d6e7955f583dddec49064fec57acffd7a96
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.0"
+    version: "5.0.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -803,10 +843,34 @@ packages:
     dependency: transitive
     description:
       name: pointer_interceptor
-      sha256: "49e6b86ba931d801ce852990d4a8913726ea3964266559e0b058baa3b4408435"
+      sha256: bd18321519718678d5fa98ad3a3359cbc7a31f018554eab80b73d08a7f0c165a
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.1"
+    version: "0.10.1"
+  pointer_interceptor_ios:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_ios
+      sha256: "4282ebfe21b54e21e26ab982c6086f0a67dc63423026bfba8db39a2e22045f26"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
+  pointer_interceptor_platform_interface:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_platform_interface
+      sha256: "59a446ead3be360bde72c3725f5ecacbba203c8a760e3061024c20f7da53f825"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
+  pointer_interceptor_web:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_web
+      sha256: dfd32b9c6e01a18f80535e7791e9d3add009a3395645d6db2f1e22b2642bfab4
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.1"
   pool:
     dependency: transitive
     description:
@@ -1142,4 +1206,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.2.0 <4.0.0"
-  flutter: ">=3.13.0"
+  flutter: ">=3.16.0"

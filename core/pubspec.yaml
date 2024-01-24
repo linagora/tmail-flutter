@@ -45,7 +45,7 @@ dependencies:
 
   device_info_plus: 8.1.0
 
-  flutter_inappwebview: 6.0.0-beta.22
+  flutter_inappwebview: 6.0.0
 
   url_launcher: 6.1.10
 
@@ -53,9 +53,9 @@ dependencies:
 
   http: ^1.1.0
 
-  pointer_interceptor: 0.9.1
+  pointer_interceptor: 0.10.1
 
-  flutter_keyboard_visibility: 5.4.1
+  flutter_keyboard_visibility: 6.0.0
 
   flex_color_picker: 3.2.0
 
@@ -69,7 +69,7 @@ dependencies:
 
   intl: 0.18.1
 
-  flutter_typeahead: 4.6.0
+  flutter_typeahead: 5.0.2
 
   linkify: 5.0.0
 
