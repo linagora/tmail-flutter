@@ -14,7 +14,7 @@ import 'package:saas/domain/utils/code_verifier_generator.dart';
 
 class SaasAuthenticationRepositoryImpl extends SaasAuthenticationRepository {
   final _saasRedirectScheme = 'twake.mail';
-  final _sessionStateUrlPath = 'session_state';
+  final _sessionStateUrlPath = 'loginToken';
   final _openIdDiscoveryEndpoint = '/.well-known/openid-configuration';
   final _postRegisteredRedirectUrlPath = 'post_registered_redirect_url';
   final _postLoginRedirectUrlPath = 'post_login_redirect_url';
@@ -70,6 +70,8 @@ class SaasAuthenticationRepositoryImpl extends SaasAuthenticationRepository {
       ),
     );
 
+    log('SaasAuthenticationRepositoryImpl::_saasAuthenticate(): uri: $uri');
+
     final authenticationCode = Uri.parse(uri).queryParameters[_sessionStateUrlPath];
     if (authenticationCode == null || authenticationCode.isEmpty) {
       throw CanNotGetAuthenticationCodeException();
@@ -106,6 +108,7 @@ class SaasAuthenticationRepositoryImpl extends SaasAuthenticationRepository {
     final authenticationUrl = '${_appendRedirectParam(registrationSiteUrl, redirectParameter, authenticationType)}'
         '&client_id=$clientId'
         '&challenge_code=$codeChallenge';
+    log('SaasAuthenticationRepositoryImpl::_generateAuthenticationUrl(): AuthenticationUrl - $authenticationUrl');
 
     return authenticationUrl;
   }
