@@ -13353,7 +13353,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onEditLink, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onImageUploadFailureAction, t1.onImageUploadSuccessAction, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
       }
     },
-    $signature: 80
+    $signature: 81
   };
   B.WebEditorView_build_closure1.prototype = {
     call$1(failure) {
@@ -13397,7 +13397,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onEditLink, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onImageUploadFailureAction, t1.onImageUploadSuccessAction, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
       }
     },
-    $signature: 80
+    $signature: 81
   };
   B.AttachmentHeaderComposerWidget_build_closure0.prototype = {
     call$0() {
@@ -13441,7 +13441,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 80
+    $signature: 81
   };
   B.InsertImageLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
@@ -13451,7 +13451,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return t1.viewState.fold$2(0, new B.InsertImageLoadingBarWidget_build__closure(), new B.InsertImageLoadingBarWidget_build__closure0(t1));
     },
-    $signature: 80
+    $signature: 81
   };
   B.InsertImageLoadingBarWidget_build__closure.prototype = {
     call$1(failure) {
@@ -13466,7 +13466,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 80
+    $signature: 81
   };
   B._RecipientComposerWidgetState_build_closure.prototype = {
     call$2(context, constraints) {
@@ -13518,7 +13518,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.KeyEventResult_1;
     },
-    $signature: 73
+    $signature: 69
   };
   B._RecipientComposerWidgetState_build__closure.prototype = {
     call$2(context, stateSetter) {
@@ -14640,7 +14640,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.InheritedModel_inheritFrom(this.context, null, type$.MediaQuery).data.size._dx >= 1200 ? J.get$length$asx(t1.get$value(t1)) : 2;
       return A.InheritedModel_inheritFrom(this.context, null, type$.MediaQuery).data.size._dx >= 1200 ? 4 : 2;
     },
-    $signature: 76
+    $signature: 79
   };
   B.EmailAttachmentsWidget_build_closure.prototype = {
     call$2(context, index) {
@@ -14698,7 +14698,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this._widget.openEmailAddressDetailAction.call$2(this.context, this.emailAddress);
       return t1;
     },
-    $signature: 81
+    $signature: 82
   };
   B._EmailReceiverWidgetState__buildListEmailAddressWidget__closure.prototype = {
     call$0() {
@@ -14715,7 +14715,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.openEmailAddressDetailAction.call$2(this.context, t1.emailAddress);
       return t1;
     },
-    $signature: 81
+    $signature: 82
   };
   B.EmailSenderBuilder_build_closure.prototype = {
     call$0() {
@@ -14732,7 +14732,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.openEmailAddressDetailAction.call$2(this.context, t1.emailAddress);
       return t1;
     },
-    $signature: 81
+    $signature: 82
   };
   B.EmailSenderBuilder_build_closure1.prototype = {
     call$0() {
@@ -14884,7 +14884,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 80
+    $signature: 81
   };
   B.InformationSenderAndReceiverBuilder_build_closure.prototype = {
     call$2(context, constraints) {
@@ -17776,7 +17776,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = C.SizedBox_0_0_null_null;
       return t1;
     },
-    $signature: 80
+    $signature: 81
   };
   B.SearchEmailView__buildListEmailBody_closure.prototype = {
     call$1(scrollInfo) {
@@ -17851,7 +17851,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return false;
     },
-    $signature: 103
+    $signature: 101
   };
   B.SearchEmailView__buildListEmailBody_closure0.prototype = {
     call$2(context, index) {
@@ -19037,7 +19037,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = C.SizedBox_0_0_null_null;
       return t1;
     },
-    $signature: 80
+    $signature: 81
   };
   B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20192,5 +20192,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "OXjhK2ByR9cEdotg0oAUVENlDPk=");
+})($__dart_deferred_initializers__, "zmVdkIwR3u9NJhdROmTm5sO66VM=");
 ;
