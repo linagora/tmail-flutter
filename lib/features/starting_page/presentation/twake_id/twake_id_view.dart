@@ -17,6 +17,8 @@ class TwakeIdView extends GetWidget<TwakeIdController> {
       overlayColor: MaterialStateProperty.all(Colors.transparent),
       signInTitle: AppLocalizations.of(context).signIn.capitalizeFirst ?? '',
       createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
+      onCreateTwakeIdOnTap: controller.createSaasAccount,
+      onSignInOnTap: controller.signInToSaas,
       useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
       description: AppLocalizations.of(context).descriptionTwakeId,
       onUseCompanyServerOnTap: controller.handleUseCompanyServer,
