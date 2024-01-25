@@ -1,0 +1,4 @@
+enum SaasAuthenticationType {
+  SignUp,
+  SignIn,
+}
