@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
@@ -16,6 +17,10 @@ class AppConfig {
   static String get baseUrl => dotenv.get('SERVER_URL', fallback: '');
   static String get domainRedirectUrl => dotenv.get('DOMAIN_REDIRECT_URL', fallback: '');
   static String get webOidcClientId => dotenv.get('WEB_OIDC_CLIENT_ID', fallback: '');
+  static String get webSaasOidcClientId => dotenv.get('WEB_SAAS_OIDC_CLIENT_ID', fallback: '');
+  static String get supportSaas => dotenv.get('SAAS_AVAILABLE', fallback: 'unsupported');
+  static String get registrationUrl => dotenv.get('REGISTRATION_URL', fallback: '');
+
   static bool get appGridDashboardAvailable {
     final supported = dotenv.get('APP_GRID_AVAILABLE', fallback: 'unsupported');
     if (supported == 'supported') {
@@ -23,8 +28,10 @@ class AppConfig {
     }
     return false;
   }
+
   static bool get fcmAvailable {
-    final supportedOtherPlatform = dotenv.get('FCM_AVAILABLE', fallback: 'unsupported');
+    final supportedOtherPlatform =
+        dotenv.get('FCM_AVAILABLE', fallback: 'unsupported');
     final supportedIOSPlatform = dotenv.get('IOS_FCM', fallback: 'unsupported');
     if (kIsWeb) return supportedOtherPlatform == 'supported';
     if (Platform.isIOS) {
@@ -33,7 +40,10 @@ class AppConfig {
       return supportedOtherPlatform == 'supported';
     }
   }
-  static String get fcmVapidPublicKeyWeb => dotenv.get('FIREBASE_WEB_VAPID_PUBLIC_KEY', fallback: '');
+
+  static String get fcmVapidPublicKeyWeb =>
+      dotenv.get('FIREBASE_WEB_VAPID_PUBLIC_KEY', fallback: '');
+
   static List<String> get oidcScopes {
     try {
       final envScopes = dotenv.get('OIDC_SCOPES', fallback: '');
@@ -45,6 +55,18 @@ class AppConfig {
       return OIDCConstant.oidcScope;
     } catch (e) {
       return OIDCConstant.oidcScope;
+    }
+  }
+
+  static String? get oidcClientId {
+    if (supportSaas == 'supported') {
+      if (kIsWeb) return webSaasOidcClientId;
+      if (PlatformInfo.isMobile) return 'twakemail-mobile';
+      return null;
+    } else {
+      if (kIsWeb) return webOidcClientId;
+      if (PlatformInfo.isMobile) return 'teammail.mobile';
+      return null;
     }
   }
 }
