@@ -18,6 +18,8 @@ dependencies:
 
   json_annotation: 4.8.0
 
+  dartz: 0.10.1
+
   core:
     path: ../core
 
