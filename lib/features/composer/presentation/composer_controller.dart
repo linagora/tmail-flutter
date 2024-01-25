@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -715,6 +716,10 @@ class ComposerController extends BaseController {
           .toSet();
       attachments.addAll(listInlineEmailBodyPart);
     }
+
+    emailBodyText = PlatformInfo.isMobile
+      ? await compute(HtmlUtils.removeCollapsedSignatureEffect, emailBodyText)
+      : await HtmlUtils.removeCollapsedSignatureEffect(emailBodyText);
 
     final userAgent = await userAgentPlatform;
     log('ComposerController::_generateEmail(): userAgent: $userAgent');

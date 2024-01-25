@@ -4,6 +4,8 @@ import 'package:core/presentation/utils/html_transformer/html_event_action.dart'
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:html/dom.dart';
+import 'package:html/parser.dart';
 
 class HtmlUtils {
 
@@ -144,5 +146,23 @@ class HtmlUtils {
     final imageResource = 'data:$mimeType;base64,$base64Data';
     log('HtmlUtils::convertBase64ToImageResourceData:imageResource: $imageResource');
     return imageResource;
+  }
+
+  static Future<String> removeCollapsedSignatureEffect(String content) async {
+    log('HtmlUtils::removeCollapsedSignatureEffect: CONTENT_BEFORE = {$content}');
+    final document = parse(content);
+    await _performDocumentQueryAction(document);
+    final newContent = document.body?.innerHtml ?? content;
+    log('HtmlUtils::removeCollapsedSignatureEffect: CONTENT_AFTER = {$newContent}');
+    return newContent;
+  }
+
+  static Future<void> _performDocumentQueryAction(Document document) async {
+    final listSignatureButtonTag = document.querySelectorAll('.tmail-signature-button');
+    log('HtmlUtils::_performDocumentAction: COUNT_SIGNATURE = ${listSignatureButtonTag.length}');
+    await Future.wait(listSignatureButtonTag.map((signatureButton) async {
+      final nodeRemoved = signatureButton.remove();
+      log('HtmlUtils::_performDocumentAction: nodeRemoved = ${nodeRemoved.toString()}');
+    }));
   }
 }
