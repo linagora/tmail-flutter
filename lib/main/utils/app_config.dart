@@ -74,11 +74,11 @@ class AppConfig {
 
   static String? get oidcClientId {
     if (supportSaas == 'supported') {
-      if (kIsWeb) return webSaasOidcClientId;
+      if (PlatformInfo.isWeb) return webSaasOidcClientId;
       if (PlatformInfo.isMobile) return 'twakemail-mobile';
       return null;
     } else {
-      if (kIsWeb) return webOidcClientId;
+      if (PlatformInfo.isWeb) return webOidcClientId;
       if (PlatformInfo.isMobile) return 'teammail.mobile';
       return null;
     }

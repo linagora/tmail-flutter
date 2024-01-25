@@ -1,5 +1,7 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:get/get.dart';
+import 'package:saas/domain/usecase/sign_in_saas_interactor.dart';
+import 'package:saas/domain/usecase/sign_up_saas_interactor.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
@@ -26,13 +28,23 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_inte
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_id/twake_id_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+
+import '../../starting_page/presentation/twake_id/twake_id_bindings/twake_id_bindings.dart';
 
 class LoginBindings extends BaseBindings {
 
   @override
   void bindingsController() {
+    TwakeIdBindings().dependencies();
+
+    Get.lazyPut<TwakeIdController>(() => TwakeIdController(
+      Get.find<SignInSaasInteractor>(),
+      Get.find<SignUpSaasInteractor>(),
+    ));
+
     Get.create(() => LoginController(
       Get.find<AuthenticationInteractor>(),
       Get.find<CheckOIDCIsAvailableInteractor>(),
@@ -47,6 +59,7 @@ class LoginBindings extends BaseBindings {
       Get.find<SaveLoginUsernameOnMobileInteractor>(),
       Get.find<GetAllRecentLoginUsernameOnMobileInteractor>(),
       Get.find<DNSLookupToGetJmapUrlInteractor>(),
+      Get.find<TwakeIdController>(),
     ));
   }
 

@@ -112,6 +112,8 @@ class LoginView extends BaseLoginView {
               }
             }),
             _buildLoadingProgress(context),
+            TextButton(onPressed: controller.onClickSignIn, child: const Text('SignIn')),
+            TextButton(onPressed: controller.onClickCreateTwakeId, child: const Text('Create Twake ID')),
             const Padding(
               padding: EdgeInsets.only(top: 16),
               child: PrivacyLinkWidget(),

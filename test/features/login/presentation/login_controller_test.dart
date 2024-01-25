@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/login/presentation/login_controller.dart'
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_id/twake_id_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -62,6 +63,7 @@ import 'login_controller_test.mocks.dart';
   MockSpec<SaveLoginUsernameOnMobileInteractor>(),
   MockSpec<GetAllRecentLoginUsernameOnMobileInteractor>(),
   MockSpec<DNSLookupToGetJmapUrlInteractor>(),
+  MockSpec<TwakeIdController>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
   MockSpec<UpdateAccountCacheInteractor>(),
@@ -84,6 +86,7 @@ void main() {
   late MockSaveLoginUsernameOnMobileInteractor mockSaveLoginUsernameOnMobileInteractor;
   late MockGetAllRecentLoginUsernameOnMobileInteractor mockGetAllRecentLoginUsernameOnMobileInteractor;
   late MockDNSLookupToGetJmapUrlInteractor mockDNSLookupToGetJmapUrlInteractor;
+  late MockTwakeIdController mockTwakeIdController;
   late MockGetSessionInteractor mockGetSessionInteractor;
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
   late MockUpdateAccountCacheInteractor mockUpdateAccountCacheInteractor;
@@ -118,6 +121,7 @@ void main() {
       mockSaveLoginUsernameOnMobileInteractor = MockSaveLoginUsernameOnMobileInteractor();
       mockGetAllRecentLoginUsernameOnMobileInteractor = MockGetAllRecentLoginUsernameOnMobileInteractor();
       mockDNSLookupToGetJmapUrlInteractor = MockDNSLookupToGetJmapUrlInteractor();
+      mockTwakeIdController = MockTwakeIdController();
 
       // mock reloadable controller
       mockGetSessionInteractor = MockGetSessionInteractor();
@@ -175,9 +179,8 @@ void main() {
         mockSaveLoginUsernameOnMobileInteractor,
         mockGetAllRecentLoginUsernameOnMobileInteractor,
         mockDNSLookupToGetJmapUrlInteractor,
+        mockTwakeIdController,
       );
-
-
     });
 
     test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'

@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_m
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_id/twake_id_controller.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -69,6 +70,7 @@ class LoginController extends ReloadableController {
   final SaveLoginUsernameOnMobileInteractor _saveLoginUsernameOnMobileInteractor;
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
   final DNSLookupToGetJmapUrlInteractor _dnsLookupToGetJmapUrlInteractor;
+  final TwakeIdController _twakeIdController;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -98,6 +100,7 @@ class LoginController extends ReloadableController {
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
     this._dnsLookupToGetJmapUrlInteractor,
+    this._twakeIdController,
   );
 
   @override
@@ -306,6 +309,14 @@ class LoginController extends ReloadableController {
     } else {
       dispatchState(Left(GetTokenOIDCFailure(CanNotFoundBaseUrl())));
     }
+  }
+
+  void onClickCreateTwakeId() {
+    _twakeIdController.createSaasAccount();
+  }
+
+  void onClickSignIn() {
+    _twakeIdController.signInToSaas();
   }
 
   void _authenticateOidcOnBrowserAction(OIDCConfiguration config) async {
