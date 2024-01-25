@@ -98,5 +98,6 @@ export 'utils/build_utils.dart';
 export 'utils/config/app_config_loader.dart';
 export 'utils/config/app_config_parser.dart';
 export 'utils/config/errors.dart';
+export 'utils/crypto/crypto_utils.dart';
 export 'utils/platform_info.dart';
 export 'utils/string_convert.dart';

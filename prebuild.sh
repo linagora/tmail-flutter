@@ -29,6 +29,9 @@ flutter pub get && dart run build_runner build --delete-conflicting-outputs
 cd ../email_recovery
 flutter pub get && dart run build_runner build --delete-conflicting-outputs
 
+cd ../saas
+flutter pub get && dart run build_runner build --delete-conflicting-outputs
+
 cd ..
 flutter pub get \
     && dart run build_runner build --delete-conflicting-outputs \

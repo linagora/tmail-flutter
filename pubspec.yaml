@@ -45,6 +45,9 @@ dependencies:
   fcm:
     path: fcm
 
+  saas:
+    path: saas
+
   email_recovery:
     path: email_recovery
 

@@ -25,6 +25,7 @@ jobs:
           - rule_filter
           - fcm
           - email_recovery
+          - saas
       fail-fast: false
 
     steps:

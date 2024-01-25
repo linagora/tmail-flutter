@@ -1,12 +1,18 @@
-
-import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/core.dart';
 import 'package:get/get.dart';
+import 'package:saas/domain/usecase/sign_in_saas_interactor.dart';
+import 'package:saas/domain/usecase/sign_up_saas_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class TwakeIdController extends GetxController {
+  final SignInSaasInteractor _signInSaasInteractor;
+  final SignUpSaasInteractor _signUpSaasInteractor;
+
+  TwakeIdController(this._signInSaasInteractor, this._signUpSaasInteractor);
 
   @override
   void onInit() {
@@ -14,9 +20,34 @@ class TwakeIdController extends GetxController {
     super.onInit();
   }
 
+  Future<void> createSaasAccount() async {
+    final oidcClientId = AppConfig.oidcClientId;
+    if (oidcClientId == null) {}
+    _signInSaasInteractor.execute(
+      registrationSiteUrl: Uri.parse(AppConfig.registrationUrl),
+      clientId: oidcClientId!,
+      redirectQueryParameter: 'twake.mail://oauthredirect',
+    ).listen((state) {
+      log('TwakeIdController::createSaasAccount(): event: $state');
+    });
+  }
+
+  Future<void> signInToSaas() async {
+    final oidcClientId = AppConfig.oidcClientId;
+    if (oidcClientId == null) {}
+    _signUpSaasInteractor.execute(
+      registrationSiteUrl: Uri.parse(AppConfig.registrationUrl),
+      clientId: oidcClientId!,
+      redirectQueryParameter: 'twake.mail://oauthredirect',
+    ).listen((event) {
+      log('TwakeIdController::signInToSaas(): event: $event');
+    });
+  }
+
   void handleUseCompanyServer() {
     popAndPush(
       AppRoutes.login,
-      arguments: LoginArguments(LoginFormType.dnsLookupForm));
+      arguments: LoginArguments(LoginFormType.dnsLookupForm),
+    );
   }
 }

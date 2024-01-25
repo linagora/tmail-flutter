@@ -75,6 +75,7 @@ export 'oidc/response/oidc_link_dto.dart';
 export 'oidc/response/oidc_response.dart';
 export 'oidc/token_id.dart';
 export 'oidc/token_oidc.dart';
+export 'oidc/openid_configuration.dart';
 // Upload
 export 'upload/file_info.dart';
 export 'upload/upload_response.dart';
