@@ -18,7 +18,6 @@ import 'package:tmail_ui_user/features/login/data/local/authentication_info_cach
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/time_out_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
@@ -88,13 +87,11 @@ class NetworkBindings extends Bindings {
         Get.find<AccountCacheManager>(),
         Get.find<IOSSharingManager>(),
     ));
-    Get.put(TimeOutInterceptors());
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
     if (kDebugMode) {
       Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
     }
-    Get.find<Dio>().interceptors.add(Get.find<TimeOutInterceptors>());
   }
 
   void _bindingApi() {
