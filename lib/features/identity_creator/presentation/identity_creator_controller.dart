@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:math' as math;
-import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'dart:typed_data';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
@@ -21,6 +22,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/identity_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/user/user_profile.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
@@ -45,7 +47,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/iden
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:model/extensions/session_extension.dart';
 
 class IdentityCreatorController extends BaseController {
 
@@ -528,10 +529,11 @@ class IdentityCreatorController extends BaseController {
     } catch (e) {
       logError("IdentityCreatorController::_insertInlineImage: compress image error: $e");
       isCompressingInlineImage.value = false;
-      appToast.showToastErrorMessage(
-        context,
-        AppLocalizations.of(context).cannotCompressInlineImage
-      );
+      if (context.mounted) {
+        appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).cannotCompressInlineImage);
+      }
       return;
     }
     if (_isExceedMaxSizeInlineImage(file.size) || _isExceedMaxUploadSize(file.size)) {
