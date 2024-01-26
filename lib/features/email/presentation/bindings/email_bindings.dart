@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
