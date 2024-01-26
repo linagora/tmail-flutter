@@ -21,9 +21,6 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
-  static const int _maxRetryCount = 3;
-  static const String _retryKey = 'Retry';
-
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
@@ -52,9 +49,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
+    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: TOKEN_INITIAL = $newToken');
   }
 
   void _updateNewToken(TokenOIDC newToken) {
+    log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = $newToken');
     _token = newToken;
   }
 
@@ -64,7 +63,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    log('AuthorizationInterceptors::onRequest():url: ${options.uri} | data: ${options.data} | header: ${options.headers}');
     switch(_authenticationType) {
       case AuthenticationType.basic:
         if (_authorization != null) {
@@ -79,27 +77,38 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       case AuthenticationType.none:
         break;
     }
+    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | HEADER = ${options.headers} | DATA = ${options.data}');
     super.onRequest(options, handler);
   }
 
   @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    log('AuthorizationInterceptors::response(): STATUS_CODE = ${response.statusCode} | DATA = ${response.data}');
+    super.onResponse(response, handler);
+  }
+
+  @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): $err');
+    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
     try {
-      final requestOptions = err.requestOptions;
-      final extraInRequest = requestOptions.extra;
-      var retries = extraInRequest[_retryKey] ?? 0;
+      if (validateToRefreshToken(responseStatusCode: err.response?.statusCode)) {
+        log('AuthorizationInterceptors::onError:_validateToRefreshToken');
+        final requestOptions = err.requestOptions;
+        final extraInRequest = requestOptions.extra;
 
-      if (_validateToRefreshToken(err)) {
-        log('AuthorizationInterceptors::onError:>> _validateToRefreshToken');
+        final newTokenOidc = PlatformInfo.isIOS
+          ? await _handleRefreshTokenOnIOSPlatform()
+          : await _handleRefreshTokenOnOtherPlatform();
 
-        if (PlatformInfo.isIOS) {
-          await _handleRefreshTokenOnIOSPlatform();
-        } else {
-          await _handleRefreshTokenOnOtherPlatform();
+        if (newTokenOidc.token == _token?.token) {
+          log('AuthorizationInterceptors::onError: TokenOIDC duplicated');
+          return super.onError(err, handler);
         }
 
+        _updateNewToken(newTokenOidc);
+
         if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
+          log('AuthorizationInterceptors::onError: Perform upload attachment request');
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
@@ -120,26 +129,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
           return handler.resolve(response);
         } else {
+          log('AuthorizationInterceptors::onError: Perform normal request');
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
 
           final response = await _dio.fetch(requestOptions);
           return handler.resolve(response);
         }
-      } else if (_validateToRetry(err, retries)) {
-        log('AuthorizationInterceptors::onError:>> _validateToRetry | retries: $retries');
-        retries++;
-
-        requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
-        requestOptions.extra = {_retryKey: retries};
-
-        final response = await _dio.fetch(requestOptions);
-        return handler.resolve(response);
       } else {
-        super.onError(err, handler);
+        return super.onError(err, handler);
       }
     } catch (e) {
       logError('AuthorizationInterceptors::onError:Exception: $e');
-      super.onError(err.copyWith(error: e), handler);
+      return super.onError(err.copyWith(error: e), handler);
     }
   }
 
@@ -160,22 +161,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   bool _isRefreshTokenNotEmpty() => _token?.refreshToken.isNotEmpty == true;
 
-  bool _validateToRefreshToken(DioError dioError) {
-    if (dioError.response?.statusCode == 401 &&
+  bool validateToRefreshToken({int? responseStatusCode}) {
+    if (responseStatusCode == 401 &&
         _isAuthenticationOidcValid() &&
+        _isTokenNotEmpty() &&
         _isRefreshTokenNotEmpty() &&
         _isTokenExpired()
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  bool _validateToRetry(DioError dioError, int retryCount) {
-    if (dioError.type == DioErrorType.badResponse &&
-        dioError.response?.statusCode == 401 &&
-        _isTokenNotEmpty() &&
-        retryCount < _maxRetryCount
     ) {
       return true;
     }
@@ -250,30 +241,24 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return newToken;
   }
 
-  Future _handleRefreshTokenOnIOSPlatform() async {
+  Future<TokenOIDC> _handleRefreshTokenOnIOSPlatform() async {
     final keychainToken = await _getTokenInKeychain(_token!);
 
     if (keychainToken == null) {
       final newToken = await _invokeRefreshTokenFromServer();
-
-      _updateNewToken(newToken);
-
       final newAccount = await _updateCurrentAccount(tokenOIDC: newToken);
-
       await _iosSharingManager.saveKeyChainSharingSession(newAccount);
+      return newToken;
     } else {
-      _updateNewToken(keychainToken);
-
       await _updateCurrentAccount(tokenOIDC: keychainToken);
+      return keychainToken;
     }
   }
 
-  Future _handleRefreshTokenOnOtherPlatform() async {
+  Future<TokenOIDC> _handleRefreshTokenOnOtherPlatform() async {
     final newToken = await _invokeRefreshTokenFromServer();
-
-    _updateNewToken(newToken);
-
     await _updateCurrentAccount(tokenOIDC: newToken);
+    return newToken;
   }
 
   void clear() {
