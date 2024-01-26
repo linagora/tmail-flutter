@@ -26,7 +26,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.da
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
@@ -292,9 +292,14 @@ abstract class BaseController extends GetxController
   bool _isFcmActivated(Session session, AccountId accountId) =>
     FirebaseCapability.fcmIdentifier.isSupported(session, accountId) && AppConfig.fcmAvailable;
 
-  void goToLogin({LoginArguments? arguments}) {
+  void goToLogin() {
     if (Get.currentRoute != AppRoutes.login) {
-      pushAndPopAll(AppRoutes.login, arguments: arguments);
+      pushAndPopAll(
+        AppRoutes.login,
+        arguments: LoginArguments(
+          PlatformInfo.isMobile ? LoginFormType.dnsLookupForm : LoginFormType.none
+        )
+      );
     }
   }
 
@@ -336,11 +341,7 @@ abstract class BaseController extends GetxController
   Future<void> clearDataAndGoToLoginPage() async {
     log('BaseController::clearDataAndGoToLoginPage:');
     await clearAllData();
-    goToLogin(arguments: LoginArguments(
-      PlatformInfo.isWeb
-        ? LoginFormType.none
-        : LoginFormType.dnsLookupForm
-    ));
+    goToLogin();
   }
 
   Future<void> clearAllData() async {
