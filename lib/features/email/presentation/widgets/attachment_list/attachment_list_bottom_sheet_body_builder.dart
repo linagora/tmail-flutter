@@ -1,6 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/attachment.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_list_styles.dart';
@@ -64,14 +64,13 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
                   ),
                   centerTitle: true,
                   actions: [
-                    GestureDetector(
-                      child: Padding(
-                        padding: AttachmentListStyles.closeButtonPadding,
-                        child: SvgPicture.asset(imagePaths.icCircleClose),
-                      ),
-                      onTapDown: (_) {
-                        onCloseButtonAction?.call();
-                      },
+                    TMailButtonWidget.fromIcon(
+                      icon: imagePaths.icCircleClose,
+                      backgroundColor: Colors.transparent,
+                      iconSize: 28,
+                      margin: const EdgeInsetsDirectional.only(end: 12),
+                      padding: const EdgeInsets.all(5),
+                      onTapActionCallback: onCloseButtonAction,
                     )
                   ],
                 ),
@@ -80,44 +79,34 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: AttachmentListStyles.listAreaPaddingMobile,
-                          child: RawScrollbar(
-                            trackColor: AttachmentListStyles.scrollbarTrackColor,
-                            thumbColor: AttachmentListStyles.scrollbarThumbColor,
-                            radius: AttachmentListStyles.scrollbarThumbRadius,
-                            trackRadius: AttachmentListStyles.scrollbarTrackRadius,
-                            thickness: AttachmentListStyles.scrollbarThickness,
-                            thumbVisibility: true,
-                            trackVisibility: true,
-                            controller: scrollController,
-                            trackBorderColor: AttachmentListStyles.scrollbarTrackBorderColor,
-                            child: Padding(
-                              padding: AttachmentListStyles.listItemPadding,
-                              child: ScrollConfiguration(
-                                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                                child: ListView.separated(
-                                  controller: scrollController,
-                                  shrinkWrap: true,
-                                  physics: const ScrollPhysics(),
-                                  itemCount: attachments.length,
-                                  itemBuilder: (context, index) {
-                                    return AttachmentListItemWidget(
-                                      attachment: attachments[index],
-                                      downloadAttachmentAction: onDownloadAttachmentFileAction,
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return const Padding(
-                                      padding: AttachmentListStyles.separatorPadding,
-                                      child: Divider(
-                                        height: AttachmentListStyles.separatorHeight,
-                                        color: AttachmentListStyles.separatorColor,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
+                        child: RawScrollbar(
+                          trackColor: AttachmentListStyles.scrollbarTrackColor,
+                          thumbColor: AttachmentListStyles.scrollbarThumbColor,
+                          radius: AttachmentListStyles.scrollbarThumbRadius,
+                          trackRadius: AttachmentListStyles.scrollbarTrackRadius,
+                          thickness: AttachmentListStyles.scrollbarThickness,
+                          thumbVisibility: true,
+                          trackVisibility: true,
+                          controller: scrollController,
+                          trackBorderColor: AttachmentListStyles.scrollbarTrackBorderColor,
+                          child: ScrollConfiguration(
+                            behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                            child: ListView.separated(
+                              controller: scrollController,
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              itemCount: attachments.length,
+                              itemBuilder: (context, index) {
+                                return AttachmentListItemWidget(
+                                  attachment: attachments[index],
+                                  downloadAttachmentAction: onDownloadAttachmentFileAction,
+                                );
+                              },
+                              separatorBuilder: (context, index) {
+                                return const Divider(
+                                  color: AttachmentListStyles.separatorColor,
+                                );
+                              },
                             ),
                           ),
                         ),
