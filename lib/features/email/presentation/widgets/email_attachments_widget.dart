@@ -37,16 +37,8 @@ class EmailAttachmentsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int getItemCount() {
-      if (attachments.length <= 2) {
-        return attachments.length;
-      }
-      if (attachments.length == 3) {
-        return responsiveUtils.isDesktop(context) ? attachments.length : 2;
-      } 
-      return responsiveUtils.isDesktop(context) ? 4 : 2;
-    }
-    int hideItemsCount = attachments.length - getItemCount();
+    final attachmentDisplayed = _getAttachmentDisplayed(context);
+    int hideItemsCount = attachments.length - attachmentDisplayed.length;
     return Padding(
       padding: EmailAttachmentsStyles.padding,
       child: Column(
@@ -99,63 +91,78 @@ class EmailAttachmentsWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: EmailAttachmentsStyles.marginHeader),
-          SizedBox(
-            height: responsiveUtils.isMobile(context) ? EmailAttachmentsStyles.mobileListHeight : EmailAttachmentsStyles.listHeight,
-            child: Row(
-              children: [
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    scrollDirection: responsiveUtils.isMobile(context) ? Axis.vertical : Axis.horizontal,
-                    itemCount: getItemCount(),
-                    itemBuilder: (context, index) {
-                      if (PlatformInfo.isWeb) {
-                        return DraggableAttachmentItemWidget(
-                          attachment: attachments[index],
+          Row(
+            crossAxisAlignment: responsiveUtils.isMobile(context)
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Wrap(
+                  spacing: EmailAttachmentsStyles.listSpace,
+                  runSpacing: EmailAttachmentsStyles.listSpace,
+                  children: attachmentDisplayed.map((attachment) {
+                    if (PlatformInfo.isWeb) {
+                      return DraggableAttachmentItemWidget(
+                          attachment: attachment,
                           onDragStarted: onDragStarted,
                           onDragEnd: onDragEnd,
                           downloadAttachmentAction: downloadAttachmentAction
-                        );
-                      } else {
-                        return AttachmentItemWidget(
-                          attachment: attachments[index],
+                      );
+                    } else {
+                      return AttachmentItemWidget(
+                          attachment: attachment,
                           downloadAttachmentAction: downloadAttachmentAction
-                        );
-                      }
-                    },
-                    separatorBuilder: (context, index) {
-                      if (responsiveUtils.isMobile(context)) {
-                        return const SizedBox(height: EmailAttachmentsStyles.listSpace);
-                      } else {
-                        return const SizedBox(width: EmailAttachmentsStyles.listSpace);
-                      }
-                    },
-                  ),
+                      );
+                    }
+                  }).toList(),
                 ),
-                if (hideItemsCount != 0)
-                  Container(
-                    padding: EdgeInsets.only(bottom: responsiveUtils.isMobile(context) ? EmailAttachmentsStyles.moreAttachmentsButtonPadding : 0),
-                    alignment: responsiveUtils.isMobile(context)
-                      ? Alignment.bottomRight
-                      : Alignment.centerRight,
-                    child: TMailButtonWidget(
-                      text: AppLocalizations.of(context).moreAttachments(hideItemsCount),
-                      backgroundColor: Colors.transparent,
-                      borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
-                      padding: EmailAttachmentsStyles.buttonPadding,
-                      textStyle: const TextStyle(
-                        fontSize: EmailAttachmentsStyles.buttonMoreAttachmentsTextSize,
-                        color: EmailAttachmentsStyles.ButtonMoreAttachmentsTextColor,
-                        fontWeight: EmailAttachmentsStyles.buttonMoreAttachmentsFontWeight,
-                      ),
-                      onTapActionCallback: onTapShowAllAttachmentFile,
-                    ),
+              ),
+              if (hideItemsCount > 0)
+                TMailButtonWidget(
+                  text: AppLocalizations.of(context).moreAttachments(hideItemsCount),
+                  backgroundColor: Colors.transparent,
+                  borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
+                  padding: EmailAttachmentsStyles.buttonPadding,
+                  margin: EmailAttachmentsStyles.moreButtonMargin,
+                  textStyle: const TextStyle(
+                    fontSize: EmailAttachmentsStyles.buttonMoreAttachmentsTextSize,
+                    color: EmailAttachmentsStyles.buttonMoreAttachmentsTextColor,
+                    fontWeight: EmailAttachmentsStyles.buttonMoreAttachmentsFontWeight,
                   ),
-              ]
-            )
+                  onTapActionCallback: onTapShowAllAttachmentFile,
+                ),
+            ]
           ),
         ],
       ),
     );
+  }
+
+  List<Attachment> _getAttachmentDisplayed(BuildContext context) {
+    if (attachments.length <= 2) {
+      return attachments;
+    }
+
+    if (attachments.length == 3) {
+      if (PlatformInfo.isWeb) {
+        return responsiveUtils.isDesktop(context)
+          ? attachments
+          : attachments.sublist(0, 2);
+      } else {
+        return responsiveUtils.isMobile(context)
+          ? attachments
+          : attachments.sublist(0, 2);
+      }
+    }
+
+    if (PlatformInfo.isWeb) {
+      return responsiveUtils.isDesktop(context) || responsiveUtils.isMobile(context)
+        ? attachments.sublist(0, 4)
+        : attachments.sublist(0, 2);
+    } else {
+      return responsiveUtils.isMobile(context)
+        ? attachments.sublist(0, 4)
+        : attachments.sublist(0, 2);
+    }
   }
 }
