@@ -249,6 +249,8 @@ dev_dependencies:
 
   json_serializable: 6.6.1
 
+  http_mock_adapter: 0.4.2
+
 dependency_overrides:
 
   firebase_core_platform_interface: 4.6.0
