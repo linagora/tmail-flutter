@@ -64,7 +64,7 @@ class AvatarBuilder {
 
   Widget build() {
     return InkWell(
-      onTap: () => _onTapAvatarActionClick != null ? _onTapAvatarActionClick!.call() : null,
+      onTap: _onTapAvatarActionClick,
       onTapDown: (detail) {
         if (_onTapAvatarActionWithPositionClick != null && _context != null) {
           final screenSize = MediaQuery.of(_context!).size;
