@@ -249,6 +249,8 @@ dev_dependencies:
 
   json_serializable: 6.6.1
 
+  http_mock_adapter: 0.4.2
+
 dependency_overrides:
 
   pointer_interceptor: 0.9.1

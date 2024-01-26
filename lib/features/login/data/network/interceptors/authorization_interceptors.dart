@@ -77,7 +77,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       case AuthenticationType.none:
         break;
     }
-    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | HEADER = ${options.headers} | DATA = ${options.data}');
+    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | HEADER = ${options.headers} | DATA = ${options.data} | METHOD = ${options.method}');
     super.onRequest(options, handler);
   }
 
@@ -89,7 +89,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
+    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
     try {
       if (validateToRefreshToken(responseStatusCode: err.response?.statusCode)) {
         log('AuthorizationInterceptors::onError:_validateToRefreshToken');
