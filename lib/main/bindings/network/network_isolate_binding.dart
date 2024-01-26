@@ -8,8 +8,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/time_out_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -52,7 +51,6 @@ class NetworkIsolateBindings extends Bindings {
       dio.interceptors.add(LogInterceptor(requestBody: true));
     }
     dio.interceptors.add(Get.find<LocaleInterceptor>());
-    dio.interceptors.add(Get.find<TimeOutInterceptors>());
   }
 
   void _bindingApi() {
