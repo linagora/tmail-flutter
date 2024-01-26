@@ -7,6 +7,10 @@ extension AttachmentExtension on Attachment {
   String getIcon(ImagePaths imagePaths) {
     final mediaType = type;
     log('AttachmentExtension::getIcon(): mediaType: $mediaType');
+    if (isDisplayedPDFIcon) {
+      return imagePaths.icFilePdf;
+    }
+
     if (mediaType == null) {
       return imagePaths.icFileEPup;
     }
@@ -25,4 +29,7 @@ extension AttachmentExtension on Attachment {
     }
     return imagePaths.icFileEPup;
   }
+
+  bool get isDisplayedPDFIcon => type?.mimeType == 'application/pdf' ||
+    (type?.mimeType == 'application/octet-stream' && name?.endsWith('.pdf') == true);
 }
