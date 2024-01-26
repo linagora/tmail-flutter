@@ -1,7 +1,6 @@
 
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
@@ -51,15 +50,15 @@ class EmailAddressDialogBuilder extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                    padding: const EdgeInsets.only(top: 16, right: 16),
-                    onPressed: () => onCloseDialogAction?.call(),
-                    icon: SvgPicture.asset(
-                        imagePaths.icCircleClose,
-                        width: 24,
-                        height: 24,
-                        fit: BoxFit.fill))),
+              alignment: Alignment.centerRight,
+              child: TMailButtonWidget.fromIcon(
+                onTapActionCallback: onCloseDialogAction,
+                icon: imagePaths.icCircleClose,
+                backgroundColor: Colors.transparent,
+                margin: const EdgeInsetsDirectional.only(top: 8, end: 8),
+                iconSize: 24,
+              )
+            ),
             Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Center(child: (AvatarBuilder()
                   ..text(_emailAddress.asString().firstLetterToUpperCase)
