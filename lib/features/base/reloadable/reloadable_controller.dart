@@ -1,7 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -17,8 +16,6 @@ import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.d
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
-import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -32,33 +29,27 @@ abstract class ReloadableController extends BaseController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
-    if (failure is GetCredentialFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.dnsLookupForm));
+    if (failure is GetCredentialFailure ||
+        failure is GetStoredTokenOidcFailure ||
+        failure is GetAuthenticatedAccountFailure) {
+      goToLogin();
     } else if (failure is GetSessionFailure) {
       _handleGetSessionFailure(failure.exception);
-    } else if (failure is GetStoredTokenOidcFailure) {
-      goToLogin(arguments: LoginArguments(LoginFormType.none));
-    } else if (failure is GetAuthenticatedAccountFailure) {
-      goToLogin(
-        arguments: LoginArguments(
-          PlatformInfo.isMobile
-            ? LoginFormType.dnsLookupForm
-            : LoginFormType.none
-        )
-      );
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetCredentialViewState) {
       _handleGetCredentialSuccess(success);
     } else if (success is GetSessionSuccess) {
       _handleGetSessionSuccess(success);
     } else if (success is GetStoredTokenOidcSuccess) {
       _handleGetStoredTokenOIDCSuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
