@@ -96,6 +96,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         darkMode: false,
         initialText: widget.content,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
+        spellCheck: true,
       ),
       htmlToolbarOptions: const HtmlToolbarOptions(
         toolbarType: ToolbarType.hide,
