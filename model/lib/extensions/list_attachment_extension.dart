@@ -2,6 +2,7 @@
 import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/email/attachment.dart';
+import 'package:model/extensions/attachment_extension.dart';
 
 extension ListAttachmentExtension on List<Attachment> {
 
@@ -14,21 +15,18 @@ extension ListAttachmentExtension on List<Attachment> {
     return 0;
   }
 
-  List<Attachment> getListAttachmentsDisplayedOutside(List<Attachment>? htmlBodyAttachments) {
-    return where((attachment) => _validateOutsideAttachment(attachment, htmlBodyAttachments)).toList();
+  List<Attachment> getListAttachmentsDisplayedOutside(List<Attachment> htmlBodyAttachments) {
+    return where((attachment) => attachment.isOutsideAttachment(htmlBodyAttachments)).toList();
   }
 
-  bool _validateOutsideAttachment(Attachment attachment, List<Attachment>? htmlBodyAttachments) {
-    final result = (attachment.noCid() || !attachment.isInlined()) && (htmlBodyAttachments == null || !htmlBodyAttachments._include(attachment));
-    return result;
-  }
-
-  bool _include(Attachment newAttachment) {
+  bool include(Attachment newAttachment) {
     final matchedAttachment = firstWhereOrNull((attachment) => attachment.blobId == newAttachment.blobId);
     return matchedAttachment != null;
   }
 
-  List<Attachment> get listAttachmentsDisplayedInContent => where((attachment) => attachment.hasCid()).toList();
+  List<Attachment> get listAttachmentsDisplayedInContent =>
+    where((attachment) => attachment.hasCid() && attachment.isDispositionInlined())
+    .toList();
 
   Map<String, String> toMapCidImageDownloadUrl({
     required AccountId accountId,
