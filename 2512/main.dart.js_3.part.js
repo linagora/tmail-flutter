@@ -6775,11 +6775,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.AttachmentItemComposerWidget.prototype = {
     build$1(context) {
-      var _null = null,
+      var t5, _null = null,
         t1 = A.Border_Border$all(C.Color_4293258483, 1),
         t2 = this.fileState,
-        t3 = type$.JSArray_Widget;
-      return A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Column$(A._setArrayType([A.Row$(A._setArrayType([A.SvgPicture$asset(t2.getIcon$1(this._attachment_item_composer_widget$_imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, 20), C.SizedBox_8_null_null_null, A.Expanded$(A.ExtendedText$(t2.get$fileName(), 1, _null, D.TextOverflowWidget_s4B, _null, D.TextStyle_oHY30), 1), C.SizedBox_8_null_null_null, A.Text$(A.filesize(t2.get$fileSize(), 2), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY31, _null, _null, _null, _null, _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), new B.AttachmentProgressLoadingComposerWidget(t2, D.EdgeInsetsDirectional_0_8_0_0, _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), 1), C.SizedBox_8_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(_null, 10, "assets/images/ic_cancel.svg", D.Color_4289638080, 18, _null, _null, 1 / 0, _null, new B.AttachmentItemComposerWidget_build_closure(this), D.EdgeInsetsDirectional_3_3_3_3, _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294967295, _null, t1, C.BorderRadius_tLn4, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsetsDirectional_8_8_8_8, _null, _null, 260);
+        t3 = t2.attachment,
+        t4 = t3 == null,
+        mediaType = t4 ? _null : t3.type;
+      if (mediaType == null && t2.file != null) {
+        t5 = t2.file.fileName;
+        t5 = $.$get$_globalResolver().lookup$2$headerBytes(t5, _null);
+        mediaType = A.MediaType_MediaType$parse(t5 == null ? "application/octet-stream" : t5);
+      }
+      t3 = t4 ? _null : A.AttachmentExtension_getIcon(t3, this._attachment_item_composer_widget$_imagePaths, mediaType);
+      t4 = type$.JSArray_Widget;
+      return A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Column$(A._setArrayType([A.Row$(A._setArrayType([A.SvgPicture$asset(t3 == null ? "assets/images/ic_file_epup.svg" : t3, C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, 20), C.SizedBox_8_null_null_null, A.Expanded$(A.ExtendedText$(t2.get$fileName(), 1, _null, D.TextOverflowWidget_s4B, _null, D.TextStyle_oHY30), 1), C.SizedBox_8_null_null_null, A.Text$(A.filesize(t2.get$fileSize(), 2), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY31, _null, _null, _null, _null, _null)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), new B.AttachmentProgressLoadingComposerWidget(t2, D.EdgeInsetsDirectional_0_8_0_0, _null)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), 1), C.SizedBox_8_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(_null, 10, "assets/images/ic_cancel.svg", D.Color_4289638080, 18, _null, _null, 1 / 0, _null, new B.AttachmentItemComposerWidget_build_closure(this), D.EdgeInsetsDirectional_3_3_3_3, _null)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294967295, _null, t1, C.BorderRadius_tLn4, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsetsDirectional_8_8_8_8, _null, _null, 260);
     }
   };
   B._AttachmentItemComposerWidget_StatelessWidget_AppLoaderMixin.prototype = {};
@@ -7491,7 +7500,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t5, _this = this, _null = null,
         t1 = A.Border_Border$all(C.Color_520093696, 1),
         t2 = _this.attachment,
-        t3 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t2, _this._attachment_item_widget$_imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, 20),
+        t3 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t2, _this._attachment_item_widget$_imagePaths, _null), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, 20),
         t4 = t2.name;
       if (t4 == null)
         t4 = "";
@@ -8177,7 +8186,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var _null = null,
         t1 = this.attachment,
-        t2 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t1, this._feedback_draggable_attachment_item_widget$_imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 24, _null, 24);
+        t2 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t1, this._feedback_draggable_attachment_item_widget$_imagePaths, _null), C.Alignment_0_0, _null, C.BoxFit_0, 24, _null, 24);
       t1 = t1.name;
       return A.Container$(_null, A.Row$(A._setArrayType([t2, C.SizedBox_12_null_null_null, new A.Flexible(1, C.FlexFit_1, A.DefaultTextStyle$(A.ExtendedText$(t1 == null ? "" : t1, 1, _null, D.TextOverflowWidget_s4B, _null, _null), _null, _null, C.TextOverflow_0, true, C.TextStyle_oHY0, _null, _null, C.TextWidthBasis_0), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, _null), C.Clip_0, _null, D.BoxConstraints_EcO2, D.ShapeDecoration_5me2, _null, _null, _null, _null, E.EdgeInsets_16_12_16_12, _null, _null, _null);
     }
@@ -9218,7 +9227,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
       t2 = this.taskState;
       t3 = t2.attachment;
-      t1 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t3, t1.find$1$1$tag(0, _null, type$.ImagePaths)), C.Alignment_0_0, _null, C.BoxFit_0, 16, _null, 16);
+      t1 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t3, t1.find$1$1$tag(0, _null, type$.ImagePaths), _null), C.Alignment_0_0, _null, C.BoxFit_0, 16, _null, 16);
       if (t2.get$percentDownloading() === 0)
         t4 = D.CircularProgressIndicator_EKW0;
       else {
@@ -20230,5 +20239,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "wPJkNVJ8JhzMgfbA59HruhTc+Lo=");
+})($__dart_deferred_initializers__, "7DWf52xGLnrIURI1gURWpAJ0MfY=");
 ;
