@@ -5,7 +5,6 @@ class AttachmentListStyles {
   static const double headerBorderWidth = 1.0;
   static const double titleSpace = 8.0;
   static const double scrollbarThickness = 8.0;
-  static const double separatorHeight = 1.0;
   static const double buttonsSpaceBetween = 12.0;
   static const double dialogBottomSpace = 20.0;
   static const double buttonBorderWidth = 1.0;
@@ -28,8 +27,6 @@ class AttachmentListStyles {
   );
   static const EdgeInsetsGeometry listAreaPadding = EdgeInsets.all(12.0);
   static const EdgeInsetsGeometry listAreaPaddingMobile = EdgeInsets.symmetric(vertical: 12);
-  static const EdgeInsetsGeometry listItemPadding = EdgeInsets.only(right: 8.0);
-  static const EdgeInsetsGeometry separatorPadding = EdgeInsets.only(right: 8.0);
   static const EdgeInsetsGeometry buttonsPadding = EdgeInsets.symmetric(
     horizontal: 24.0,
     vertical: 12.0

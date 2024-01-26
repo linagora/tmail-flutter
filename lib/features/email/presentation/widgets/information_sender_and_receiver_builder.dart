@@ -37,7 +37,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16),
       child: Row(
         crossAxisAlignment: emailSelected.numberOfAllEmailAddress() > 0
           ? CrossAxisAlignment.start
