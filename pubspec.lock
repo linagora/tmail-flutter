@@ -1079,7 +1079,7 @@ packages:
     source: hosted
     version: "1.1.0"
   http_mock_adapter:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: http_mock_adapter
       sha256: "0e7eaa5d77a273af1c2b5ec5066578faaa73039b63ccda5263c200756f24441a"
