@@ -55,17 +55,21 @@ class _WebEditorState extends State<WebEditorWidget> {
 
   static const double _offsetHeight = 50;
   static const double _offsetWidth = 90;
+  static const double _defaultHtmlEditorHeight = 550;
 
   late HtmlEditorController _editorController;
   double? dropZoneWidth;
   double? dropZoneHeight;
+  final ValueNotifier<double> _htmlEditorHeight = ValueNotifier(_defaultHtmlEditorHeight);
 
   @override
   void initState() {
     super.initState();
     _editorController = widget.editorController;
+    log('_WebEditorState::initState:height: ${widget.height} | width: ${widget.width}');
     if (widget.height != null) {
       dropZoneHeight = widget.height! - _offsetHeight;
+      _htmlEditorHeight.value = widget.height ?? _defaultHtmlEditorHeight;
     }
     if (widget.width != null) {
       dropZoneWidth = widget.width! - _offsetWidth;
@@ -79,44 +83,61 @@ class _WebEditorState extends State<WebEditorWidget> {
     if (oldWidget.direction != widget.direction) {
       _editorController.updateBodyDirection(widget.direction.name);
     }
+
+    log('_EmailEditorState::didUpdateWidget():Old: ${oldWidget.height} | current: ${widget.height}');
+
+    if (oldWidget.height != widget.height) {
+      _htmlEditorHeight.value = widget.height ?? _defaultHtmlEditorHeight;
+    }
     super.didUpdateWidget(oldWidget);
   }
 
   @override
+  void dispose() {
+    _htmlEditorHeight.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return HtmlEditor(
-      key: const Key('web_editor'),
-      controller: _editorController,
-      htmlEditorOptions: HtmlEditorOptions(
-        shouldEnsureVisible: true,
-        hint: '',
-        darkMode: false,
-        initialText: widget.content,
-        customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
-        spellCheck: true,
-      ),
-      htmlToolbarOptions: const HtmlToolbarOptions(
-        toolbarType: ToolbarType.hide,
-        defaultToolbarButtons: [],
-      ),
-      otherOptions: OtherOptions(
-        height: 550,
-        dropZoneWidth: dropZoneWidth,
-        dropZoneHeight: dropZoneHeight,
-      ),
-      callbacks: Callbacks(
-        onBeforeCommand: widget.onChangeContent,
-        onChangeContent: widget.onChangeContent,
-        onInit: () => widget.onInitial?.call(widget.content),
-        onFocus: widget.onFocus,
-        onBlur: widget.onUnFocus,
-        onMouseDown: () => widget.onMouseDown?.call(context),
-        onChangeSelection: widget.onEditorSettings,
-        onChangeCodeview: widget.onChangeContent,
-        onImageUpload: widget.onImageUploadSuccessAction,
-        onImageUploadError: widget.onImageUploadFailureAction,
-        onTextFontSizeChanged: widget.onEditorTextSizeChanged,
-      ),
+    return ValueListenableBuilder(
+      valueListenable: _htmlEditorHeight,
+      builder: (context, height, _) {
+        return HtmlEditor(
+          key: Key('web_editor_$height'),
+          controller: _editorController,
+          htmlEditorOptions: HtmlEditorOptions(
+            shouldEnsureVisible: true,
+            hint: '',
+            darkMode: false,
+            initialText: widget.content,
+            customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
+            spellCheck: true,
+          ),
+          htmlToolbarOptions: const HtmlToolbarOptions(
+            toolbarType: ToolbarType.hide,
+            defaultToolbarButtons: [],
+          ),
+          otherOptions: OtherOptions(
+            height: height,
+            dropZoneWidth: dropZoneWidth,
+            dropZoneHeight: dropZoneHeight,
+          ),
+          callbacks: Callbacks(
+            onBeforeCommand: widget.onChangeContent,
+            onChangeContent: widget.onChangeContent,
+            onInit: () => widget.onInitial?.call(widget.content),
+            onFocus: widget.onFocus,
+            onBlur: widget.onUnFocus,
+            onMouseDown: () => widget.onMouseDown?.call(context),
+            onChangeSelection: widget.onEditorSettings,
+            onChangeCodeview: widget.onChangeContent,
+            onImageUpload: widget.onImageUploadSuccessAction,
+            onImageUploadError: widget.onImageUploadFailureAction,
+            onTextFontSizeChanged: widget.onEditorTextSizeChanged,
+          ),
+        );
+      }
     );
   }
 }
