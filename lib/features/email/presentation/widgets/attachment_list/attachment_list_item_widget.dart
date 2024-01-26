@@ -1,7 +1,6 @@
-
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
@@ -29,84 +28,55 @@ class AttachmentListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      type: MaterialType.transparency,
       child: InkWell(
         onTap: () => downloadAttachmentAction?.call(attachment),
-        child: Container(
+        child: Padding(
           padding: AttachmentListItemWidgetStyle.contentPadding,
-          height: AttachmentListItemWidgetStyle.height,
-          child: Stack(
+          child: Row(
             children: [
-              Positioned.fill(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              SvgPicture.asset(
+                attachment.getIcon(_imagePaths),
+                width: AttachmentListItemWidgetStyle.iconSize,
+                height: AttachmentListItemWidgetStyle.iconSize,
+                fit: BoxFit.fill
+              ),
+              const SizedBox(width: AttachmentListItemWidgetStyle.space),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(
-                      attachment.getIcon(_imagePaths),
-                      width: AttachmentListItemWidgetStyle.iconSize,
-                      height: AttachmentListItemWidgetStyle.iconSize,
-                      fit: BoxFit.fill
-                    ),
-                    const SizedBox(width: AttachmentListItemWidgetStyle.space),
-                    Expanded(
-                      child: Padding(
-                        padding: AttachmentListItemWidgetStyle.fileTitlePadding,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ExtendedText(
-                              (attachment.name ?? ''),
-                              maxLines: 1,
-                              overflow: CommonTextStyle.defaultTextOverFlow,
-                              softWrap: CommonTextStyle.defaultSoftWrap,
-                              overflowWidget: TextOverflowWidget(
-                                position: Directionality.maybeOf(context) == TextDirection.rtl
-                                  ? TextOverflowPosition.start
-                                  : TextOverflowPosition.end,
-                                child: const Text(
-                                  "...",
-                                  style: AttachmentListItemWidgetStyle.dotsLabelTextStyle,
-                                ),
-                              ),
-                              style: AttachmentListItemWidgetStyle.labelTextStyle,
-                            ),
-                            const SizedBox(height: AttachmentListItemWidgetStyle.fileTitleBottomSpace),
-                            Text(
-                              filesize(attachment.size?.value),
-                              maxLines: 1,
-                              overflow: CommonTextStyle.defaultTextOverFlow,
-                              softWrap: CommonTextStyle.defaultSoftWrap,
-                              style: AttachmentListItemWidgetStyle.sizeLabelTextStyle,
-                            )
-                          ]
+                    ExtendedText(
+                      (attachment.name ?? ''),
+                      maxLines: 1,
+                      overflowWidget: const TextOverflowWidget(
+                        position: TextOverflowPosition.middle,
+                        child: Text(
+                          "...",
+                          style: AttachmentListItemWidgetStyle.dotsLabelTextStyle,
                         ),
-                      )
+                      ),
+                      style: AttachmentListItemWidgetStyle.labelTextStyle,
+                    ),
+                    const SizedBox(height: AttachmentListItemWidgetStyle.fileTitleBottomSpace),
+                    Text(
+                      filesize(attachment.size?.value),
+                      maxLines: 1,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      style: AttachmentListItemWidgetStyle.sizeLabelTextStyle,
                     )
                   ]
-                ),
+                )
               ),
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: Padding(
-                  padding: AttachmentListItemWidgetStyle.downloadIconPadding,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      child: SvgPicture.asset(
-                        _imagePaths.icDownloadAttachment,
-                        width: AttachmentListItemWidgetStyle.downloadIconSize,
-                        height: AttachmentListItemWidgetStyle.downloadIconSize,
-                        colorFilter: AttachmentListItemWidgetStyle.downloadIconColor.asFilter(),
-                        fit: BoxFit.fill
-                      ),
-                      onTap: () => downloadAttachmentAction?.call(attachment)
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(width: AttachmentListItemWidgetStyle.space),
+              TMailButtonWidget.fromIcon(
+                icon: _imagePaths.icDownloadAttachment,
+                backgroundColor: Colors.transparent,
+                onTapActionCallback: () => downloadAttachmentAction?.call(attachment)
+              )
             ]
-          )
+          ),
         ),
       ),
     );
