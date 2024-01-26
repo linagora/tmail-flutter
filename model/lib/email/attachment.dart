@@ -11,6 +11,7 @@ class Attachment with EquatableMixin {
 
   static const String eventICSSubtype = 'ics';
   static const String eventCalendarSubtype = 'calendar';
+  static const String applicationRTFType = 'application/rtf';
 
   final PartId? partId;
   final Id? blobId;
@@ -34,7 +35,13 @@ class Attachment with EquatableMixin {
 
   bool hasCid() => cid != null && cid?.isNotEmpty == true;
 
-  bool isInlined() => disposition == ContentDisposition.inline;
+  bool isDispositionInlined() => disposition == ContentDisposition.inline;
+
+  bool isDispositionAttachment() => disposition == ContentDisposition.attachment;
+
+  bool isDispositionAttachmentNoCID() => isDispositionAttachment() && noCid();
+
+  bool isApplicationRTFInlined() => type?.mimeType == applicationRTFType && isDispositionInlined();
 
   String getDownloadUrl(String baseDownloadUrl, AccountId accountId) {
     final downloadUriTemplate = UriTemplate(baseDownloadUrl);

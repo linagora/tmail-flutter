@@ -27,4 +27,10 @@ extension AttachmentExtension on Attachment {
         disposition: disposition ?? this.disposition
     );
   }
+
+  bool isOutsideAttachment(List<Attachment> htmlBodyAttachments) {
+    return (isDispositionAttachmentNoCID() || !isDispositionInlined()) &&
+      !isApplicationRTFInlined() &&
+      !htmlBodyAttachments.include(this);
+  }
 }
