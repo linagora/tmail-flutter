@@ -39,11 +39,12 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           backgroundKeyboardToolBarColor: PlatformInfo.isIOS
             ? AppColor.colorBackgroundKeyboard
             : AppColor.colorBackgroundKeyboardAndroid,
-          titleFormatBottomSheet: AppLocalizations.of(context).format,
           richTextController: controller.richTextControllerForMobile,
-          titleQuickStyleBottomSheet: AppLocalizations.of(context).quickStyles,
-          titleBackgroundBottomSheet: AppLocalizations.of(context).background,
-          titleForegroundBottomSheet: AppLocalizations.of(context).foreground,
+          quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
+          backgroundLabel: AppLocalizations.of(context).titleBackground,
+          foregroundLabel: AppLocalizations.of(context).titleForeground,
+          formatLabel: AppLocalizations.of(context).titleFormat,
+          rootContext: context,
         ),
         child: _buildVacationFormView(context)
       );
@@ -448,7 +449,6 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               htmlApi,
               onFocus: controller.onFocusHTMLEditor,
               onEnterKeyDown: controller.onEnterKeyDown,
-              context: context,
             );
           }
       );
