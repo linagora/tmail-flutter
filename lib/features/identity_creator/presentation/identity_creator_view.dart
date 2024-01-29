@@ -146,16 +146,15 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           backgroundKeyboardToolBarColor: PlatformInfo.isIOS
             ? AppColor.colorBackgroundKeyboard
             : AppColor.colorBackgroundKeyboardAndroid,
-          isLandScapeMode: controller.responsiveUtils.isLandscapeMobile(context),
           richTextController: controller.richTextMobileTabletController!.richTextController,
-          titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-          titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-          titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-          titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+          quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
+          backgroundLabel: AppLocalizations.of(context).titleBackground,
+          foregroundLabel: AppLocalizations.of(context).titleForeground,
+          formatLabel: AppLocalizations.of(context).titleFormat,
           insertImage: () => controller.pickImage(context),
+          rootContext: context,
         ),
         richTextController: controller.richTextMobileTabletController!.richTextController,
-        paddingChild: EdgeInsets.zero,
         child: responsiveWidget
       );
     }

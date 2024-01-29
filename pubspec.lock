@@ -437,7 +437,7 @@ packages:
     description:
       path: "."
       ref: cherry-pick-fix-rich-text-format-style
-      resolved-ref: "8eb30137b11b1008ccd4330191b4ee5e6ac2e879"
+      resolved-ref: "7041e5822707ab57fcf36964c38556e2d27b06e2"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"

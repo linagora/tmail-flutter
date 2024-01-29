@@ -61,12 +61,12 @@ class RichTextMobileTabletController extends BaseRichTextController {
     }
 
     if (context.mounted) {
-      richTextController?.showRichTextBottomSheet(
+      richTextController?.showFormatOptionBottomSheet(
         context: context,
-        titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-        titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-        titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-        titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+        formatLabel: AppLocalizations.of(context).titleFormat,
+        quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
+        foregroundLabel: AppLocalizations.of(context).titleForeground,
+        backgroundLabel: AppLocalizations.of(context).titleBackground,
       );
     }
   }
