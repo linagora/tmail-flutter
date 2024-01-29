@@ -1,6 +1,6 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
@@ -34,49 +34,48 @@ class TabletContainerView extends StatelessWidget {
     return PopScope(
       onPopInvoked: (didPop) => !didPop ? onCloseViewAction : null,
       canPop: false,
-      child: GestureDetector(
-        onTap: onClearFocusAction,
-        child: Scaffold(
-          backgroundColor: TabletContainerViewStyle.outSideBackgroundColor,
-          body: LayoutBuilder(builder: (context, constraints) {
-            return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
-              return KeyboardRichText(
-                richTextController: keyboardRichTextController,
-                keyBroadToolbar: RichTextKeyboardToolBar(
-                  backgroundKeyboardToolBarColor: TabletContainerViewStyle.keyboardToolbarBackgroundColor,
-                  isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
-                  insertAttachment: onAttachFileAction,
-                  insertImage: () => onInsertImageAction != null
-                    ? onInsertImageAction!(constraints)
-                    : null,
+      child: Portal(
+        child: GestureDetector(
+          onTap: onClearFocusAction,
+          child: Scaffold(
+            backgroundColor: TabletContainerViewStyle.outSideBackgroundColor,
+            body: SafeArea(
+              child: LayoutBuilder(builder: (context, constraints) {
+                return KeyboardRichText(
                   richTextController: keyboardRichTextController,
-                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                  titleBack: AppLocalizations.of(context).format,
-                ),
-                paddingChild: isKeyboardVisible
-                  ? TabletContainerViewStyle.keyboardToolbarPadding
-                  : EdgeInsets.zero,
-                child: Center(
-                  child: Card(
-                    elevation: TabletContainerViewStyle.elevation,
-                    margin: TabletContainerViewStyle.getMargin(context, _responsiveUtils),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(TabletContainerViewStyle.radius))
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Container(
-                      color: TabletContainerViewStyle.backgroundColor,
-                      width: TabletContainerViewStyle.getWidth(context, _responsiveUtils),
-                      child: childBuilder.call(context, constraints)
+                  keyBroadToolbar: RichTextKeyboardToolBar(
+                    rootContext: context,
+                    backgroundKeyboardToolBarColor: TabletContainerViewStyle.keyboardToolbarBackgroundColor,
+                    insertAttachment: onAttachFileAction,
+                    insertImage: () => onInsertImageAction != null
+                      ? onInsertImageAction!(constraints)
+                      : null,
+                    richTextController: keyboardRichTextController,
+                    quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
+                    backgroundLabel: AppLocalizations.of(context).titleBackground,
+                    foregroundLabel: AppLocalizations.of(context).titleForeground,
+                    formatLabel: AppLocalizations.of(context).titleFormat,
+                    titleBack: AppLocalizations.of(context).format,
+                  ),
+                  child: Center(
+                    child: Card(
+                      elevation: TabletContainerViewStyle.elevation,
+                      margin: TabletContainerViewStyle.getMargin(context, _responsiveUtils),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(TabletContainerViewStyle.radius))
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Container(
+                        color: TabletContainerViewStyle.backgroundColor,
+                        width: TabletContainerViewStyle.getWidth(context, _responsiveUtils),
+                        child: childBuilder.call(context, constraints)
+                      ),
                     ),
                   ),
-                ),
-              );
-            });
-          })
+                );
+              }),
+            )
+          ),
         ),
       )
     );

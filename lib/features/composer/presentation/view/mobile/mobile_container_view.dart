@@ -1,6 +1,5 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart' as rich_composer;
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
@@ -42,31 +41,30 @@ class MobileContainerView extends StatelessWidget {
         child: Scaffold(
           backgroundColor: backgroundColor ?? MobileContainerViewStyle.outSideBackgroundColor,
           resizeToAvoidBottomInset: false,
-          body: LayoutBuilder(builder: (context, constraints) {
-            return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+          body: SafeArea(
+            left: _responsiveUtils.isPortraitMobile(context),
+            right: _responsiveUtils.isPortraitMobile(context),
+            child: LayoutBuilder(builder: (context, constraints) {
               return rich_composer.KeyboardRichText(
                 richTextController: keyboardRichTextController,
                 keyBroadToolbar: RichTextKeyboardToolBar(
+                  rootContext: context,
                   backgroundKeyboardToolBarColor: MobileContainerViewStyle.keyboardToolbarBackgroundColor,
-                  isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
                   insertAttachment: onAttachFileAction,
                   insertImage: () => onInsertImageAction != null
                     ? onInsertImageAction!(constraints)
                     : null,
                   richTextController: keyboardRichTextController,
-                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+                  quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
+                  backgroundLabel: AppLocalizations.of(context).titleBackground,
+                  foregroundLabel: AppLocalizations.of(context).titleForeground,
+                  formatLabel: AppLocalizations.of(context).titleFormat,
                   titleBack: AppLocalizations.of(context).format,
                 ),
-                paddingChild: isKeyboardVisible
-                  ? MobileContainerViewStyle.keyboardToolbarPadding
-                  : EdgeInsets.zero,
                 child: childBuilder(context),
               );
-            });
-          })
+            }),
+          )
         ),
       )
     );
