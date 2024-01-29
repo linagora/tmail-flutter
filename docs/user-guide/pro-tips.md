@@ -139,3 +139,25 @@ Choose the actions you want the rule to perform.
 (3) Compose email: This will open the composer with the recipient is prefiied with this email address 
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/b321b753-611b-418a-948f-27f29cca0727)
+
+## Spell check 
+
+Spell check features is designed to help you identify and correct spelling and grammar errors in yout messages. 
+
+1. Compose a New Email:
+Open your Tmail account and start composing a new email.
+2. Text Input Area:
+Type your message in the text input area. The spell check is automatically enabled. 
+4. Automatic Underlining:
+As you type, the spell check feature will automatically underline words that it identifies as potentially misspelled.
+5. Right-Click Correction:
+To correct a misspelled word, right-click on the underlined word. A context menu will appear with suggested corrections.
+7. Correcting Suggestions:
+Review the suggested corrections and choose the correct one by clicking on it. Alternatively, you can manually correct the word by typing the correct spelling.
+
+
+![image](https://github.com/linagora/tmail-flutter/assets/68209176/7e4e9154-c0fc-416b-ae7f-1866d8d28c99)
+
+![image](https://github.com/linagora/tmail-flutter/assets/68209176/04880647-a006-4511-9fa1-85df468a8cce)
+
+
