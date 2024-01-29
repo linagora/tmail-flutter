@@ -1,7 +1,7 @@
 
+import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_input_decoration_builder.dart';
@@ -44,9 +44,6 @@ class DNSLookupInputForm extends StatelessWidget {
         suggestionsCallback: suggestionsCallback,
         itemBuilder: (_, loginUsername) => RecentItemTileWidget(loginUsername),
         onSuggestionSelected: onSuggestionSelected,
-        suggestionsBoxDecoration: const SuggestionsBoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(14))
-        ),
         noItemsFoundBuilder: (context) => const SizedBox(),
         hideOnEmpty: true,
         hideOnError: true,
