@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
@@ -71,7 +70,6 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
       suggestionsCallback: controller.getAllRecentLoginUsernameAction,
       itemBuilder: (_, loginUsername) => RecentItemTileWidget(loginUsername),
       onSuggestionSelected: controller.selectUsernameFromSuggestion,
-      suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
       noItemsFoundBuilder: (context) => const SizedBox(),
       hideOnEmpty: true,
       hideOnError: true,

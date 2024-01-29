@@ -3,7 +3,6 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
@@ -141,7 +140,6 @@ class LoginView extends BaseLoginView {
         suggestionsCallback: controller.getAllRecentLoginUrlAction,
         itemBuilder: (_, loginUrl) => RecentItemTileWidget(loginUrl),
         onSuggestionSelected: (loginUrl) => controller.selectBaseUrlFromSuggestion(loginUrl.url),
-        suggestionsBoxDecoration: const SuggestionsBoxDecoration(borderRadius: BorderRadius.all(Radius.circular(14))),
         noItemsFoundBuilder: (context) => const SizedBox(),
         hideOnEmpty: true,
         hideOnError: true,

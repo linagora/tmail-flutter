@@ -12,8 +12,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-typedef SuggestionsCallback<T> = FutureOr<Iterable<T>> Function(String pattern);
-typedef FetchRecentActionCallback<R> = FutureOr<Iterable<R>> Function(String pattern);
+typedef SuggestionsCallback<T> = FutureOr<List<T>> Function(String pattern);
+typedef FetchRecentActionCallback<R> = FutureOr<List<R>> Function(String pattern);
 typedef ItemBuilder<T> = Widget Function(BuildContext context, T itemData);
 typedef SuggestionSelectionCallback<T> = void Function(T suggestion);
 typedef RecentSelectionCallback<R> = void Function(R recent);
