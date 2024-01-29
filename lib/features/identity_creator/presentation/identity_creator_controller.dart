@@ -25,6 +25,7 @@ import 'package:model/extensions/identity_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -449,7 +450,6 @@ class IdentityCreatorController extends BaseController {
       editorApi,
       onEnterKeyDown: _onEnterKeyDownOnMobile,
       onFocus: _onFocusHTMLEditorOnMobile,
-      context: context
     );
     richTextMobileTabletController?.htmlEditorApi?.onFocusOut = () {
       richTextMobileTabletController?.richTextController.hideRichTextView();
