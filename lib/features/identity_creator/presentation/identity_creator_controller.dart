@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:math' as math;
-import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'dart:typed_data';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
@@ -21,9 +22,11 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/identity_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/user/user_profile.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -45,7 +48,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/iden
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:model/extensions/session_extension.dart';
 
 class IdentityCreatorController extends BaseController {
 
@@ -64,7 +66,6 @@ class IdentityCreatorController extends BaseController {
   final actionType = IdentityActionType.create.obs;
   final isDefaultIdentity = RxBool(false);
   final isDefaultIdentitySupported = RxBool(false);
-  final isMobileEditorFocus = RxBool(false);
   final isCompressingInlineImage = RxBool(false);
 
   final RichTextController keyboardRichTextController = RichTextController();
@@ -287,11 +288,21 @@ class IdentityCreatorController extends BaseController {
     return defaultIdentityIds?.length != allIdentities?.length;
   }
 
-  void updateEmailOfIdentity(EmailAddress? newEmailAddress) {
+  void updateEmailOfIdentity(BuildContext context, EmailAddress? newEmailAddress) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController.htmlEditorApi?.unfocus();
+    }
+    FocusScope.of(context).unfocus();
+
     emailOfIdentity.value = newEmailAddress;
   }
 
-  void updaterReplyToOfIdentity(EmailAddress? newEmailAddress) {
+  void updaterReplyToOfIdentity(BuildContext context, EmailAddress? newEmailAddress) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController.htmlEditorApi?.unfocus();
+    }
+    FocusScope.of(context).unfocus();
+
     replyToOfIdentity.value = newEmailAddress;
   }
 
@@ -424,7 +435,6 @@ class IdentityCreatorController extends BaseController {
   void clearFocusEditor(BuildContext context) {
     if (PlatformInfo.isMobile) {
       keyboardRichTextController.htmlEditorApi?.unfocus();
-      KeyboardUtils.hideSystemKeyboardMobile();
     }
     KeyboardUtils.hideKeyboard(context);
   }
@@ -440,19 +450,20 @@ class IdentityCreatorController extends BaseController {
     keyboardRichTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDownOnMobile,
-      onFocus: _onFocusHTMLEditorOnMobile,
-      context: context
+      onFocus: () => _onFocusHTMLEditorOnMobile(context)
     );
-    keyboardRichTextController.htmlEditorApi?.onFocusOut = () {
-      keyboardRichTextController.hideRichTextView();
-      isMobileEditorFocus.value = false;
-    };
   }
 
-  void _onFocusHTMLEditorOnMobile() async {
+  void _onFocusHTMLEditorOnMobile(BuildContext context) async {
+    if (PlatformInfo.isAndroid) {
+      FocusScope.of(context).unfocus();
+      await Future.delayed(
+        const Duration(milliseconds: 300),
+        keyboardRichTextController.showDeviceKeyboard);
+    }
+
     inputBccIdentityFocusNode.unfocus();
     inputNameIdentityFocusNode.unfocus();
-    isMobileEditorFocus.value = true;
     if (htmlKey.currentContext != null) {
       await Scrollable.ensureVisible(htmlKey.currentContext!);
     }
@@ -528,10 +539,11 @@ class IdentityCreatorController extends BaseController {
     } catch (e) {
       logError("IdentityCreatorController::_insertInlineImage: compress image error: $e");
       isCompressingInlineImage.value = false;
-      appToast.showToastErrorMessage(
-        context,
-        AppLocalizations.of(context).cannotCompressInlineImage
-      );
+      if (context.mounted) {
+        appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).cannotCompressInlineImage);
+      }
       return;
     }
     if (_isExceedMaxSizeInlineImage(file.size) || _isExceedMaxUploadSize(file.size)) {
