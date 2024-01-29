@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -10,7 +11,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
   final SuggestionsCallback<T> suggestionsCallback;
   final ItemBuilder<T> itemBuilder;
   final SuggestionSelectionCallback<T> onSuggestionSelected;
-  final SuggestionsBoxDecoration suggestionsBoxDecoration;
+  final Widget? suggestionsBoxDecoration;
   final WidgetBuilder? noItemsFoundBuilder;
   final bool hideOnEmpty;
   final bool hideOnError;
@@ -31,7 +32,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
     required this.suggestionsCallback,
     required this.itemBuilder,
     required this.onSuggestionSelected,
-    this.suggestionsBoxDecoration = const SuggestionsBoxDecoration(),
+    this.suggestionsBoxDecoration,
     this.textDirection = TextDirection.ltr,
     this.debounceDuration = const Duration(milliseconds: 300),
     this.decoration = const InputDecoration(),
@@ -68,37 +69,48 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadFormField<T>(
+    return TypeAheadField<T>(
       key: widget.key,
-      textFieldConfiguration: TextFieldConfiguration(
-        controller: widget.controller,
-        textInputAction: widget.textInputAction,
-        autocorrect: widget.autocorrect,
-        autofillHints: widget.autofillHints,
-        keyboardType: widget.keyboardType,
-        decoration: widget.decoration,
-        focusNode: widget.focusNode,
-        textDirection: _textDirection,
-        cursorColor: widget.cursorColor,
-        onChanged: (value) {
-          widget.onTextChange?.call(value);
-          if (value.isNotEmpty) {
-            final directionByText = DirectionUtils.getDirectionByEndsText(value);
-            if (directionByText != _textDirection) {
-              setState(() {
-                _textDirection = directionByText;
-              });
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      builder: (context, controller, focusNode) {
+        return TextField(
+          controller: controller,
+          focusNode: focusNode,
+          textInputAction: widget.textInputAction,
+          autocorrect: widget.autocorrect,
+          autofillHints: widget.autofillHints,
+          keyboardType: widget.keyboardType,
+          decoration: widget.decoration,
+          textDirection: _textDirection,
+          cursorColor: widget.cursorColor,
+          onChanged: (value) {
+            widget.onTextChange?.call(value);
+            if (value.isNotEmpty) {
+              final directionByText = DirectionUtils.getDirectionByEndsText(value);
+              if (directionByText != _textDirection) {
+                setState(() {
+                  _textDirection = directionByText;
+                });
+              }
             }
-          }
-        },
-        onSubmitted: widget.onTextSubmitted
-      ),
+          },
+          onSubmitted: widget.onTextSubmitted
+        );
+      },
       debounceDuration: widget.debounceDuration,
       suggestionsCallback: widget.suggestionsCallback,
       itemBuilder: widget.itemBuilder,
-      onSuggestionSelected: widget.onSuggestionSelected,
-      suggestionsBoxDecoration: widget.suggestionsBoxDecoration,
-      noItemsFoundBuilder: widget.noItemsFoundBuilder,
+      onSelected: widget.onSuggestionSelected,
+      decorationBuilder: (context, child) {
+        return widget.suggestionsBoxDecoration ?? Material(
+          type: MaterialType.card,
+          elevation: 4,
+          borderRadius: BorderRadius.circular(14),
+          child: child,
+        );
+      },
+      emptyBuilder: widget.noItemsFoundBuilder,
       hideOnEmpty: widget.hideOnEmpty,
       hideOnError: widget.hideOnError,
       hideOnLoading: widget.hideOnLoading,
