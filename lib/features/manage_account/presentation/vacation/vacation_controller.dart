@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:rich_text_composer/rich_text_controller.dart';
+import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -64,6 +64,7 @@ class VacationController extends BaseController {
   @override
   void onInit() {
     _initWorker();
+    _initFocusListener();
     super.onInit();
   }
 
@@ -89,6 +90,16 @@ class VacationController extends BaseController {
         currentVacation = vacation;
         final newVacationPresentation = currentVacation?.toVacationPresentation();
         _initializeValueForVacation(newVacationPresentation ?? VacationPresentation.initialize());
+      }
+    });
+  }
+
+  void _initFocusListener() {
+    subjectTextFocusNode.addListener(() {
+      if (subjectTextFocusNode.hasFocus == true) {
+        if (PlatformInfo.isMobile) {
+          richTextControllerForMobile.hideRichTextView();
+        }
       }
     });
   }
@@ -156,6 +167,11 @@ class VacationController extends BaseController {
   }
 
   void selectDate(BuildContext context, DateType dateType, DateTime? currentDate) async {
+    if (PlatformInfo.isMobile) {
+      richTextControllerForMobile.htmlEditorApi?.unfocus();
+    }
+    FocusScope.of(context).unfocus();
+
     _accountDashBoardController.isVacationDateDialogDisplayed = true;
     final datePicked = await showDatePicker(
         context: context,
@@ -197,6 +213,11 @@ class VacationController extends BaseController {
   }
 
   void selectTime(BuildContext context, DateType dateType, TimeOfDay? currentTime) async {
+    if (PlatformInfo.isMobile) {
+      richTextControllerForMobile.htmlEditorApi?.unfocus();
+    }
+    FocusScope.of(context).unfocus();
+
     _accountDashBoardController.isVacationDateDialogDisplayed = true;
     final timePicked = await showTimePicker(
       context: context,
@@ -340,7 +361,6 @@ class VacationController extends BaseController {
   void clearFocusEditor(BuildContext context) {
     if (PlatformInfo.isMobile) {
       richTextControllerForMobile.htmlEditorApi?.unfocus();
-      KeyboardUtils.hideSystemKeyboardMobile();
     }
     KeyboardUtils.hideKeyboard(context);
   }
@@ -350,7 +370,22 @@ class VacationController extends BaseController {
     _settingController.backToUniversalSettings();
   }
 
-  void onFocusHTMLEditor() async {
+  void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
+    richTextControllerForMobile.onCreateHTMLEditor(
+      editorApi,
+      onFocus: () => onFocusHTMLEditor(context),
+      onEnterKeyDown: onEnterKeyDown,
+    );
+  }
+
+  void onFocusHTMLEditor(BuildContext context) async {
+    if (PlatformInfo.isAndroid) {
+      FocusScope.of(context).unfocus();
+      await Future.delayed(
+        const Duration(milliseconds: 300),
+        richTextControllerForMobile.showDeviceKeyboard);
+    }
+
     subjectTextFocusNode.unfocus();
 
     await Scrollable.ensureVisible(htmlKey.currentContext!);
