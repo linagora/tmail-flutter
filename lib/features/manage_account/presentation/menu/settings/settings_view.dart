@@ -37,43 +37,60 @@ class SettingsView extends GetWidget<SettingsController> {
     return Container(
       color: Colors.white,
       child: SafeArea(
+        top: controller.manageAccountDashboardController.isVacationCapabilitySupported,
+        bottom: controller.manageAccountDashboardController.isVacationCapabilitySupported,
+        left: controller.manageAccountDashboardController.isVacationCapabilitySupported &&
+          controller.responsiveUtils.isPortraitMobile(context),
+        right: controller.manageAccountDashboardController.isVacationCapabilitySupported &&
+          controller.responsiveUtils.isPortraitMobile(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox.fromSize(
-              size: const Size.fromHeight(52),
-              child: Padding(
-                padding: SettingsUtils.getPaddingAppBar(context, controller.responsiveUtils),
-                child: _buildAppbar(context))),
+            SafeArea(
+              bottom: false,
+              child: SizedBox.fromSize(
+                size: const Size.fromHeight(52),
+                child: Padding(
+                  padding: SettingsUtils.getPaddingAppBar(context, controller.responsiveUtils),
+                  child: _buildAppbar(context))),
+            ),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
             Obx(() {
               if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
-                return VacationNotificationMessageWidget(
-                    margin: const EdgeInsetsDirectional.only(
-                        start: PlatformInfo.isWeb ? 24 : 16,
-                        end: PlatformInfo.isWeb ? 24 : 16,
-                        top: 16),
-                    fromAccountDashBoard: true,
-                    vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                    actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
-                      ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
-                      : null,
-                    actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder());
+                return SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: VacationNotificationMessageWidget(
+                      margin: const EdgeInsetsDirectional.only(
+                          start: PlatformInfo.isWeb ? 24 : 16,
+                          end: PlatformInfo.isWeb ? 24 : 16,
+                          top: 16),
+                      fromAccountDashBoard: true,
+                      vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                      actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
+                        ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
+                        : null,
+                      actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder()),
+                );
               } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
                   || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
                   && controller.manageAccountDashboardController.inVacationSettings()) {
-                return VacationNotificationMessageWidget(
-                  margin: const EdgeInsetsDirectional.only(
-                    start: PlatformInfo.isWeb ? 24 : 16,
-                    end: PlatformInfo.isWeb ? 24 : 16,
-                    top: 16),
-                  fromAccountDashBoard: true,
-                  vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  leadingIcon: const Padding(
-                    padding: EdgeInsetsDirectional.only(end: 16),
-                    child: Icon(Icons.timer, size: 20),
-                  )
+                return SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: VacationNotificationMessageWidget(
+                    margin: const EdgeInsetsDirectional.only(
+                      start: PlatformInfo.isWeb ? 24 : 16,
+                      end: PlatformInfo.isWeb ? 24 : 16,
+                      top: 16),
+                    fromAccountDashBoard: true,
+                    vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                    leadingIcon: const Padding(
+                      padding: EdgeInsetsDirectional.only(end: 16),
+                      child: Icon(Icons.timer, size: 20),
+                    )
+                  ),
                 );
               } else {
                 return const SizedBox.shrink();
@@ -189,7 +206,9 @@ class SettingsView extends GetWidget<SettingsController> {
     return Obx(() {
       switch (controller.manageAccountDashboardController.settingsPageLevel.value) {
         case SettingsPageLevel.universal:
-          return const SettingsFirstLevelView();
+          return const SafeArea(
+            top: false,
+            child: SettingsFirstLevelView());
         case SettingsPageLevel.level1:
           return _viewDisplayedOfAccountMenuItem();
       }
@@ -200,12 +219,18 @@ class SettingsView extends GetWidget<SettingsController> {
     return Obx(() {
       switch(controller.manageAccountDashboardController.accountMenuItemSelected.value) {
         case AccountMenuItem.profiles:
-          return ProfilesView();
+          return SafeArea(
+            top: false,
+            child: ProfilesView());
         case AccountMenuItem.languageAndRegion:
-          return const LanguageAndRegionView();
+          return const SafeArea(
+            top: false,
+            child: LanguageAndRegionView());
         case AccountMenuItem.emailRules:
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
-            return EmailRulesView();
+            return SafeArea(
+              top: false,
+              child: EmailRulesView());
           } else {
             return const SizedBox.shrink();
           }
@@ -217,7 +242,9 @@ class SettingsView extends GetWidget<SettingsController> {
           }
         case AccountMenuItem.forward:
           if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
-            return ForwardView();
+            return SafeArea(
+              top: false,
+              child: ForwardView());
           } else {
             return const SizedBox.shrink();
           }
@@ -228,7 +255,9 @@ class SettingsView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.mailboxVisibility:
-          return MailboxVisibilityView();
+          return SafeArea(
+            top: false,
+            child: MailboxVisibilityView());
         case AccountMenuItem.notification:
           return const NotificationView();
         default:
