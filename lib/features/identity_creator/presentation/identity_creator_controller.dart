@@ -65,7 +65,6 @@ class IdentityCreatorController extends BaseController {
   final actionType = IdentityActionType.create.obs;
   final isDefaultIdentity = RxBool(false);
   final isDefaultIdentitySupported = RxBool(false);
-  final isMobileEditorFocus = RxBool(false);
   final isCompressingInlineImage = RxBool(false);
 
   final TextEditingController inputNameIdentityController = TextEditingController();
@@ -296,11 +295,21 @@ class IdentityCreatorController extends BaseController {
     return defaultIdentityIds?.length != allIdentities?.length;
   }
 
-  void updateEmailOfIdentity(EmailAddress? newEmailAddress) {
+  void updateEmailOfIdentity(BuildContext context, EmailAddress? newEmailAddress) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController?.richTextController.htmlEditorApi?.unfocus();
+    }
+    FocusScope.of(context).unfocus();
+
     emailOfIdentity.value = newEmailAddress;
   }
 
-  void updaterReplyToOfIdentity(EmailAddress? newEmailAddress) {
+  void updaterReplyToOfIdentity(BuildContext context, EmailAddress? newEmailAddress) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController?.richTextController.htmlEditorApi?.unfocus();
+    }
+    FocusScope.of(context).unfocus();
+
     replyToOfIdentity.value = newEmailAddress;
   }
 
@@ -432,8 +441,7 @@ class IdentityCreatorController extends BaseController {
 
   void clearFocusEditor(BuildContext context) {
     if (PlatformInfo.isMobile) {
-      richTextMobileTabletController?.htmlEditorApi?.unfocus();
-      KeyboardUtils.hideSystemKeyboardMobile();
+      richTextMobileTabletController?.richTextController.htmlEditorApi?.unfocus();
     }
     KeyboardUtils.hideKeyboard(context);
   }
@@ -449,18 +457,20 @@ class IdentityCreatorController extends BaseController {
     richTextMobileTabletController?.richTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDownOnMobile,
-      onFocus: _onFocusHTMLEditorOnMobile,
+      onFocus: () => _onFocusHTMLEditorOnMobile(context)
     );
-    richTextMobileTabletController?.htmlEditorApi?.onFocusOut = () {
-      richTextMobileTabletController?.richTextController.hideRichTextView();
-      isMobileEditorFocus.value = false;
-    };
   }
 
-  void _onFocusHTMLEditorOnMobile() async {
+  void _onFocusHTMLEditorOnMobile(BuildContext context) async {
+    if (PlatformInfo.isAndroid) {
+      FocusScope.of(context).unfocus();
+      await Future.delayed(
+        const Duration(milliseconds: 300),
+        richTextMobileTabletController?.richTextController.showDeviceKeyboard);
+    }
+
     inputBccIdentityFocusNode.unfocus();
     inputNameIdentityFocusNode.unfocus();
-    isMobileEditorFocus.value = true;
     if (htmlKey.currentContext != null) {
       await Scrollable.ensureVisible(htmlKey.currentContext!);
     }
