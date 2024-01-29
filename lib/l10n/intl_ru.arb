@@ -1714,7 +1714,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTitleRulesFilter": "Выполнить следующее действие:",
+  "actionTitleRulesFilter": "Выполнить следующие действия:",
   "@actionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],
@@ -2674,7 +2674,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "Сообщение сохранено в очереди отправки.",
+  "messageHasBeenSavedToTheSendingQueue": "Временные проблемы с сетью. Сообщения будут отправлены, когда соединение восстановится.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
@@ -3238,7 +3238,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueViewOnIOS": "Сообщения из очереди можно отправить, находясь в сети.",
+  "bannerMessageSendingQueueViewOnIOS": "Ваши сообщения не были отправлены из-за проблем с сетью. Они сохранены. Когда соединение восстановится, вы сможете отправить, изменить или удалить их.",
   "@bannerMessageSendingQueueViewOnIOS": {
     "type": "text",
     "placeholders_order": [],
@@ -3486,6 +3486,350 @@
   },
   "downloadAll": "Загрузить все",
   "@downloadAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageSubtitle": "Выберите язык Twake Mail.",
+  "@languageSubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pending": "Ожидание",
+  "@pending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sending": "Отправляется",
+  "@sending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "me": "Я",
+  "@me": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsReadFolderAllFailure": "Папку \"{folderName}\" не удалось пометить как прочитанную",
+  "@toastMessageMarkAsReadFolderAllFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "toastMessageMarkAsReadFolderFailureWithReason": "Папку \"{folderName}\" не удалось пометить как прочитанную. Причина: \"{reason}\"",
+  "@toastMessageMarkAsReadFolderFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName",
+      "reason"
+    ],
+    "placeholders": {
+      "folderName": {},
+      "reason": {}
+    }
+  },
+  "all": "Все",
+  "@all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "any": "Любые",
+  "@any": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilterBeforeCombiner": "Если",
+  "@conditionTitleRulesFilterBeforeCombiner": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maskAsSeen": "Пометить как прочитанное",
+  "@maskAsSeen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilterAfterCombiner": "из этих условий выполнены:",
+  "@conditionTitleRulesFilterAfterCombiner": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardTo": "Переслать",
+  "@forwardTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "starIt": "Добавить в избранное",
+  "@starIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rejectIt": "Отклонить",
+  "@rejectIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpam": "Пометить как спам",
+  "@markAsSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectAction": "Выбрать действие",
+  "@selectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardEmailHintText": "Добавить адрес для переадресации",
+  "@forwardEmailHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAction": "Добавить действие",
+  "@addAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "duplicatedActionError": "Это действие уже добавлено",
+  "@duplicatedActionError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelectedMailboxToMoveMessage": "Выберите папку, в которую хотите переместить это сообщение",
+  "@notSelectedMailboxToMoveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "confirmAllEmailHereAreSpam": "Подтвердить, что все эти письма – спам",
+  "@confirmAllEmailHereAreSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourIdentities": "Ваши профили",
+  "@yourIdentities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterYourPasswordToSignIn": "Для входа введите свой пароль",
+  "@enterYourPasswordToSignIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "searchForIdentities": "Поиск по профилям",
+  "@searchForIdentities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sortBy": "Сортировать по",
+  "@sortBy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mostRecent": "Самые новые",
+  "@mostRecent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oldest": "Самые старые",
+  "@oldest": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "relevance": "Соответствие",
+  "@relevance": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderAscending": "Имя отправителя: А - Я",
+  "@senderAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dnsLookupLoginMessage": "Чтобы войти и получить доступ к сообщениям, введите свой email",
+  "@dnsLookupLoginMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderDescending": "Имя отправителя: Я - А",
+  "@senderDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectAscending": "Тема: А - Я",
+  "@subjectAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectDescending": "Тема: Я - А",
+  "@subjectDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notFoundSession": "Сессия не найдена",
+  "@notFoundSession": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribe": "Отписаться",
+  "@unsubscribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribeMailDialogMessage": "Вы уверены, что больше не хотите получать схожие письма от",
+  "@unsubscribeMailDialogMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribeMail": "Отписаться от почты",
+  "@unsubscribeMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribedFromThisMailingList": "Вы отписались от этой рассылки",
+  "@unsubscribedFromThisMailingList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailUnsubscribedMessage": "Вы отписались от {senderName}",
+  "@mailUnsubscribedMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
+  },
+  "cannotCompressInlineImage": "Не удалось сжать изображение",
+  "@cannotCompressInlineImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "byContinuingYouAreAgreeingToOur": "Продолжая, вы соглашаетесь с нашими",
+  "@byContinuingYouAreAgreeingToOur": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last1Year": "За последний год",
+  "@last1Year": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveMessage": "Заархивировать сообщение",
+  "@archiveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deletionDate": "Дата удаления",
+  "@deletionDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "receptionDate": "Дата получения",
+  "@receptionDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sender": "Отправитель",
+  "@sender": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recoveredMailboxDisplayName": "Восстановлены",
+  "@recoveredMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recoverDeletedMessages": "Восстановить удаленные сообщения",
+  "@recoverDeletedMessages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addSender": "Добавить отправителя",
+  "@addSender": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restore": "Восстановить",
+  "@restore": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreDeletedMessageFailed": "Ошибка восстановления сообщений",
+  "@restoreDeletedMessageFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreDeletedMessageSuccess": "Сообщения успешно восстановлены",
+  "@restoreDeletedMessageSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "open": "Открыть",
+  "@open": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerProgressingRecoveryMessage": "Мы уже занимаемся восстановлением. Вы можете продолжать использовать Twake Mail",
+  "@bannerProgressingRecoveryMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreDeletedMessageCanceled": "Восстановление сообщений отменено",
+  "@restoreDeletedMessageCanceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
