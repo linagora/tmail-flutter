@@ -7386,6 +7386,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         _this._htmlEditorHeight.set$value(0, t2);
       _this.super$State$didUpdateWidget(oldWidget);
     },
+    dispose$0() {
+      var t1 = this._htmlEditorHeight;
+      t1.ChangeNotifier__listeners = $.$get$ChangeNotifier__emptyListeners();
+      t1.ChangeNotifier__count = 0;
+      this.super$State$dispose();
+    },
     build$1(context) {
       return A.ValueListenableBuilder$(new B._WebEditorState_build_closure(this), this._htmlEditorHeight, type$.double);
     }
@@ -20250,5 +20256,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "3hX3zrdGCeoYJn61HEYAhWlFC/s=");
+})($__dart_deferred_initializers__, "5UNlnu+RTArGEOSetpR4q6Nj2Yw=");
 ;
