@@ -159,6 +159,7 @@ class ImagePaths {
   String get icQuotasOutOfStorage => _getImagePath('ic_quotas_out_of_storage.svg');
   String get icQuickCreatingRule => _getImagePath('ic_quick_creating_rule.svg');
   String get icPageNotFound => _getImagePath('ic_page_not_found.svg');
+  String get icPageNotFoundMobile => _getImagePath('ic_page_not_found_mobile.svg');
   String get icOpenInNewTab => _getImagePath('ic_open_in_new_tab.svg');
   String get icInfoCircleOutline => _getImagePath('ic_info_circle_outline.svg');
   String get icSpamReportDisable => _getImagePath('ic_spam_report_disable.svg');

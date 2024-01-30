@@ -23,8 +23,14 @@ class UnknownRoutePageView extends StatelessWidget {
       body: Center(
         child: SingleChildScrollView(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            SvgPicture.asset(_imagePath.icPageNotFound),
-            const SizedBox(height: 48),
+            if (_responsiveUtils.isPortraitMobile(context))
+              Padding(
+                padding: const EdgeInsets.only(top: 48, bottom: 32),
+                child: SvgPicture.asset(_imagePath.icPageNotFoundMobile))
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 48),
+                child: SvgPicture.asset(_imagePath.icPageNotFound)),
             Container(
               color: Colors.white,
               padding: _getPaddingTitle(context),
