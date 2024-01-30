@@ -2852,7 +2852,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les éléments de la corbeille . Voulez-vous continuer ?",
+  "emptyTrashMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les éléments de la corbeille. Voulez-vous continuer ?",
   "@emptyTrashMessageDialog": {
     "type": "text",
     "placeholders_order": [],
