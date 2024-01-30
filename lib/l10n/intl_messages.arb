@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-18T20:05:33.385413",
+  "@@last_modified": "2024-01-30T15:37:19.009501",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -968,7 +968,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_dialog_message": "You are about to permanently delete all items in Trash . Do you want to continue?",
+  "empty_trash_dialog_message": "You are about to permanently delete all items in Trash. Do you want to continue?",
   "@empty_trash_dialog_message": {
     "type": "text",
     "placeholders_order": [],
@@ -1014,7 +1014,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_multiple_messages_dialog": "You are about to permanently delete {count} items in {mailboxName} . Do you want to continue?",
+  "delete_multiple_messages_dialog": "You are about to permanently delete {count} items in {mailboxName}. Do you want to continue?",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
@@ -2724,7 +2724,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "You are about to permanently delete all items in Trash . Do you want to continue?",
+  "emptyTrashMessageDialog": "You are about to permanently delete all items in Trash. Do you want to continue?",
   "@emptyTrashMessageDialog": {
     "type": "text",
     "placeholders_order": [],
@@ -3074,7 +3074,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamMessageDialog": "You are about to permanently delete all items in Spam . Do you want to continue?",
+  "emptySpamMessageDialog": "You are about to permanently delete all items in Spam. Do you want to continue?",
   "@emptySpamMessageDialog": {
     "type": "text",
     "placeholders_order": [],
