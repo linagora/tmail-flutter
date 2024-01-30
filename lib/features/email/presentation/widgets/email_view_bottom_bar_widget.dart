@@ -52,7 +52,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
                   text: AppLocalizations.of(context).reply_all,
                   icon: _imagePaths.icReplyAll,
                   borderRadius: EmailViewBottomBarWidgetStyles.buttonRadius,
-                  iconSize: EmailViewBottomBarWidgetStyles.replyAllButtonIconSize,
+                  iconSize: EmailViewBottomBarWidgetStyles.buttonIconSize,
                   textAlign: TextAlign.center,
                   flexibleText: true,
                   padding: EmailViewBottomBarWidgetStyles.buttonPadding,
