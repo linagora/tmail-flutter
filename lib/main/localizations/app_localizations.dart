@@ -1004,7 +1004,7 @@ class AppLocalizations {
 
   String get empty_trash_dialog_message {
     return Intl.message(
-        'You are about to permanently delete all items in Trash . Do you want to continue?',
+        'You are about to permanently delete all items in Trash. Do you want to continue?',
         name: 'empty_trash_dialog_message');
   }
 
@@ -1047,7 +1047,7 @@ class AppLocalizations {
 
   String delete_multiple_messages_dialog(int count, String mailboxName) {
     return Intl.message(
-        'You are about to permanently delete $count items in $mailboxName . Do you want to continue?',
+        'You are about to permanently delete $count items in $mailboxName. Do you want to continue?',
         name: 'delete_multiple_messages_dialog',
         args: [count, mailboxName]);
   }
@@ -2805,7 +2805,7 @@ class AppLocalizations {
 
   String get emptyTrashMessageDialog {
     return Intl.message(
-      'You are about to permanently delete all items in Trash . Do you want to continue?',
+      'You are about to permanently delete all items in Trash. Do you want to continue?',
       name: 'emptyTrashMessageDialog');
   }
 
@@ -3177,7 +3177,7 @@ class AppLocalizations {
 
   String get emptySpamMessageDialog {
     return Intl.message(
-      'You are about to permanently delete all items in Spam . Do you want to continue?',
+      'You are about to permanently delete all items in Spam. Do you want to continue?',
       name: 'emptySpamMessageDialog');
   }
 
