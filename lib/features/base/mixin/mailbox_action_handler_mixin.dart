@@ -59,7 +59,7 @@ mixin MailboxActionHandlerMixin {
 
     if (responsiveUtils.isScreenWithShortestSide(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context).emptyTrashMessageDialog)
+        ..messageText(AppLocalizations.of(context).empty_trash_dialog_message)
         ..onCancelAction(AppLocalizations.of(context).cancel, popBack)
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
             popBack();
@@ -78,7 +78,7 @@ mixin MailboxActionHandlerMixin {
         PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
             ..key(const Key('confirm_dialog_empty_trash'))
             ..title(AppLocalizations.of(context).emptyTrash)
-            ..content(AppLocalizations.of(context).emptyTrashMessageDialog)
+            ..content(AppLocalizations.of(context).empty_trash_dialog_message)
             ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
             ..colorConfirmButton(AppColor.colorConfirmActionDialog)
             ..styleTextConfirmButton(const TextStyle(
