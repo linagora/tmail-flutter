@@ -1,5 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class CommonTextStyle {
@@ -10,9 +9,7 @@ class CommonTextStyle {
     fontWeight: FontWeight.normal,
   );
 
-  static const defaultTextOverFlow = PlatformInfo.isWeb
-      ? TextOverflow.fade
-      : TextOverflow.ellipsis;
+  static const defaultTextOverFlow = TextOverflow.ellipsis;
 
-  static const defaultSoftWrap = PlatformInfo.isWeb ? false : true;
+  static const defaultSoftWrap = true;
 }
