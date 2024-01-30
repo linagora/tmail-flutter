@@ -3030,12 +3030,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "Bạn đang xóa vĩnh viễn tất cả các tin nhắn trong thư mục Rác. Bạn có muốn tiếp tục không?",
-  "@emptyTrashMessageDialog": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "messageHasBeenSavedToTheSendingQueue": "Tin nhắn đã được lưu vào hàng đợi để gửi.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
