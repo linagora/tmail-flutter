@@ -967,7 +967,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_dialog_message": "You are about to permanently delete all items in Trash . Do you want to continue?",
+  "empty_trash_dialog_message": "You are about to permanently delete all items in Trash. Do you want to continue?",
   "@empty_trash_dialog_message": {
     "type": "text",
     "placeholders_order": [],
@@ -1013,7 +1013,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_multiple_messages_dialog": "You are about to permanently delete {count} items in {mailboxName} . Do you want to continue?",
+  "delete_multiple_messages_dialog": "You are about to permanently delete {count} items in {mailboxName}. Do you want to continue?",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
@@ -2723,7 +2723,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "You are about to permanently delete all items in Trash . Do you want to continue?",
+  "emptyTrashMessageDialog": "You are about to permanently delete all items in Trash. Do you want to continue?",
   "@emptyTrashMessageDialog": {
     "type": "text",
     "placeholders_order": [],
@@ -3067,7 +3067,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamMessageDialog": "You are about to permanently delete all items in Spam . Do you want to continue?",
+  "emptySpamMessageDialog": "You are about to permanently delete all items in Spam. Do you want to continue?",
   "@emptySpamMessageDialog": {
     "type": "text",
     "placeholders_order": [],
