@@ -2852,12 +2852,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les éléments de la corbeille. Voulez-vous continuer ?",
-  "@emptyTrashMessageDialog": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "bannerDeleteAllSpamEmailsMessage": "Tous les messages dans le dossier Spam seront supprimés si vous atteignez votre limite de stockage.",
   "@bannerDeleteAllSpamEmailsMessage": {
     "type": "text",
