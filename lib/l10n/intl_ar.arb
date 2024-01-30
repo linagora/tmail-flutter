@@ -2967,12 +2967,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "أنت على وشك حذف جميع العناصر الموجودة في سلة المهملات نهائيًا. هل تريد الاستمرار؟",
-  "@emptyTrashMessageDialog": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "messageHasBeenSavedToTheSendingQueue": "تم حفظ الرسالة في قائمة انتظار الإرسال.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
