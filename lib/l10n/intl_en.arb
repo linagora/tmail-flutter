@@ -2723,12 +2723,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "You are about to permanently delete all items in Trash. Do you want to continue?",
-  "@emptyTrashMessageDialog": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "cannotSelectThisImage": "Cannot select this image.",
   "@cannotSelectThisImage": {
     "type": "text",

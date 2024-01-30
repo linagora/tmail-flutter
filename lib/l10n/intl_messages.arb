@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-30T15:37:19.009501",
+  "@@last_modified": "2024-01-30T21:47:03.306097",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2720,12 +2720,6 @@
   },
   "emptyTrash": "Empty Trash",
   "@emptyTrash": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "emptyTrashMessageDialog": "You are about to permanently delete all items in Trash. Do you want to continue?",
-  "@emptyTrashMessageDialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
