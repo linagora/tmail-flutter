@@ -2656,12 +2656,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashMessageDialog": "Вы собираетесь безвозвратно удалить все элементы из корзины. Продолжить?",
-  "@emptyTrashMessageDialog": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "repliedMessage": "Сообщение с ответом",
   "@repliedMessage": {
     "type": "text",
