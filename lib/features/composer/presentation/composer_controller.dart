@@ -752,7 +752,10 @@ class ComposerController extends BaseController {
           type: MediaType.parse('text/html')
         )},
       bodyValues: {
-        generatePartId: EmailBodyValue(emailBodyText, false, false)
+        generatePartId: EmailBodyValue(
+          value: emailBodyText,
+          isEncodingProblem: false,
+          isTruncated: false)
       },
       headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
       attachments: attachments.isNotEmpty ? attachments : null,
