@@ -5669,7 +5669,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$0() {
       var _this = this, _null = null,
         t1 = _this._rich_text_builder$_key;
-      return A.RichText$(t1, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextSpan$(_this._rich_text_builder$_getSpans$3(_this._textOrigin, _this._wordToStyle, _this._styleWord), _null, _null, _null, _null, _null, _null, _null, _this._styleOrigin, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0);
+      return A.RichText$(t1, _null, 1, C.TextOverflow_2, _null, _null, true, _null, A.TextSpan$(_this._rich_text_builder$_getSpans$3(_this._textOrigin, _this._wordToStyle, _this._styleWord), _null, _null, _null, _null, _null, _null, _null, _this._styleOrigin, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0);
     },
     _rich_text_builder$_getSpans$3(text, matchWord, style) {
       var startIndex, endIndex, _null = null,
@@ -6560,7 +6560,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.getBinding(_null, type$.ImagePaths).toString;
       t1 = A.SvgPicture$asset("assets/images/ic_compose_web.svg", C.Alignment_0_0, _null, C.BoxFit_0, 28, _null, 28);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return new A.Align(D.AlignmentDirectional_1_1, _null, _null, new B.ScrollingFloatingButtonAnimated(this.onTap, 154, 60, t1, new A.Padding(C.EdgeInsetsDirectional_0_0_16_0, A.Text$(A.Intl__message("Compose", _null, "compose", _null, _null), _null, _null, _null, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_1Gf0, _null, _null, _null, _null, _null), _null), this.scrollController, C.Color_4278221567, false, _null), _null);
+      return new A.Align(D.AlignmentDirectional_1_1, _null, _null, new B.ScrollingFloatingButtonAnimated(this.onTap, 154, 60, t1, new A.Padding(C.EdgeInsetsDirectional_0_0_16_0, A.Text$(A.Intl__message("Compose", _null, "compose", _null, _null), _null, _null, _null, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_1Gf0, _null, _null, _null, _null, _null), _null), this.scrollController, C.Color_4278221567, false, _null), _null);
     }
   };
   B.EmailAvatarBuilder.prototype = {
@@ -6843,7 +6843,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t4.email;
         t6 = t7 ? D.TextStyle_56S : D.TextStyle_a9q;
         t5.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, t6, "(" + A.S(t4) + ")"));
-        t3.push(new A.Flexible(1, C.FlexFit_1, A.RichText$(_null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextSpan$(t5, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), _null));
+        t3.push(new A.Flexible(1, C.FlexFit_1, A.RichText$(_null, _null, 1, C.TextOverflow_2, _null, _null, false, _null, A.TextSpan$(t5, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), _null));
       } else
         t3.push(C.SizedBox_0_0_null_null);
       t3.push(A.SvgPicture$asset("assets/images/ic_dropdown.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null));
@@ -7105,7 +7105,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5 = A.EmailAddressExtension_asString(t2),
         t6 = A.RegExp_RegExp(string$.x5b_u059, true, false, false);
       t5 = t6._nativeRegExp.test(t5) ? 0 : 2;
-      t6 = A.Text$(A.EmailAddressExtension_asString(t2), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, _null, _null, _null, _null, _null, _null);
+      t6 = A.Text$(A.EmailAddressExtension_asString(t2), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null);
       t7 = A.SvgPicture$asset("assets/images/ic_close.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null);
       t8 = _this._recipient_tag_item_widget$_getTagBackgroundColor$0();
       t9 = _this._recipient_tag_item_widget$_getTagBorderSide$0();
@@ -7172,7 +7172,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t1 = F.CapitalizeExtension_get_capitalizeFirstEach(A.Intl__message("New message", _null, "new_message", _null, _null));
       }
-      return A.Text$(t1, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, E.TextStyle_oHY7, C.TextAlign_2, _null, _null, _null, _null);
+      return A.Text$(t1, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, E.TextStyle_oHY7, C.TextAlign_2, _null, _null, _null, _null);
     }
   };
   B.AttachmentComposerWidget.prototype = {
@@ -7306,7 +7306,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t12 = t2.email;
         t13 = t13 ? D.TextStyle_oHY13 : D.TextStyle_6xB;
         t8.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, t13, "(" + A.S(t12) + ")"));
-        t11.push(A.Expanded$(A.RichText$(_null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextSpan$(t8, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), 1));
+        t11.push(A.Expanded$(A.RichText$(_null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, A.TextSpan$(t8, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), 1));
       } else
         t11.push(C.SizedBox_0_0_null_null);
       t11.push(A.SvgPicture$asset(_s29_, C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null));
@@ -7843,13 +7843,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t3.get$orientation(t3) === C.Orientation_0;
       } else
         t3 = false;
-      t3 = t3 ? _null : C.TextOverflow_1;
+      t3 = t3 ? _null : C.TextOverflow_2;
       if (A.InheritedModel_inheritFrom(context, _null, t2).data.size.get$shortestSide() < 600) {
         t4 = A.InheritedModel_inheritFrom(context, _null, t2).data;
         t4 = t4.get$orientation(t4) === C.Orientation_0;
       } else
         t4 = false;
-      t4 = t4 && _null;
+      t4 = !t4 || _null;
       if (A.InheritedModel_inheritFrom(context, _null, t2).data.size.get$shortestSide() < 600) {
         t2 = A.InheritedModel_inheritFrom(context, _null, t2).data;
         t2 = t2.get$orientation(t2) === C.Orientation_0;
@@ -8069,10 +8069,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if ((t4 ? "" : t3).length !== 0) {
         if (t4)
           t3 = "";
-        t1.push(F.MaterialTextButton$(8, _null, t3, C.Color_4278190080, 20, C.FontWeight_6_700, new B.EmailSenderBuilder_build_closure(_this, context), new B.EmailSenderBuilder_build_closure0(_this, context), C.TextOverflow_1, C.EdgeInsets_3_3_3_3, false));
+        t1.push(F.MaterialTextButton$(8, _null, t3, C.Color_4278190080, 20, C.FontWeight_6_700, new B.EmailSenderBuilder_build_closure(_this, context), new B.EmailSenderBuilder_build_closure0(_this, context), C.TextOverflow_2, C.EdgeInsets_3_3_3_3, true));
       }
       t2 = t2.email;
-      t1.push(new A.Padding(C.EdgeInsets_0_2_0_0, F.MaterialTextButton$(8, _null, "<" + (t2 == null ? "" : t2) + ">", C.Color_4286680217, 16, C.FontWeight_4_500, new B.EmailSenderBuilder_build_closure1(_this, context), new B.EmailSenderBuilder_build_closure2(_this, context), C.TextOverflow_1, C.EdgeInsets_3_3_3_3, false), _null));
+      t1.push(new A.Padding(C.EdgeInsets_0_2_0_0, F.MaterialTextButton$(8, _null, "<" + (t2 == null ? "" : t2) + ">", C.Color_4286680217, 16, C.FontWeight_4_500, new B.EmailSenderBuilder_build_closure1(_this, context), new B.EmailSenderBuilder_build_closure2(_this, context), C.TextOverflow_2, C.EdgeInsets_3_3_3_3, true), _null));
       return A.SingleChildScrollView$(A.Row$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, _null), _null, _null, _null, C.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
     }
   };
@@ -8241,7 +8241,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.emailSelected,
         t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"),
         t3 = t1.receivedAt;
-      return A.Container$(_null, A.Text$(B.PresentationEmailExtension_getReceivedAt(t1, t2, t3 == null ? _null : B.DateTimeNullableExtension_toPatternForEmailView(t3.value.toLocal$0())), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_chs, _null, _null, _null, _null, _null), C.Clip_0, _null, D.BoxConstraints_EcO3, _null, _null, _null, _null, this.margin, _null, _null, _null, _null);
+      return A.Container$(_null, A.Text$(B.PresentationEmailExtension_getReceivedAt(t1, t2, t3 == null ? _null : B.DateTimeNullableExtension_toPatternForEmailView(t3.value.toLocal$0())), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_chs, _null, _null, _null, _null, _null), C.Clip_0, _null, D.BoxConstraints_EcO3, _null, _null, _null, _null, this.margin, _null, _null, _null, _null);
     }
   };
   B.BaseMailboxView.prototype = {};
@@ -8916,7 +8916,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = A.EmailAddressExtension_asString(t3),
         t5 = A.RegExp_RegExp(string$.x5b_u059, true, false, false);
       t4 = t5._nativeRegExp.test(t4) ? 0 : 2;
-      t5 = A.Text$(A.EmailAddressExtension_asString(t3), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, _null, _null, _null, _null, _null, _null);
+      t5 = A.Text$(A.EmailAddressExtension_asString(t3), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null);
       t6 = A.SvgPicture$asset("assets/images/ic_close.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null);
       t7 = _this._getTagBackgroundColor$0();
       t8 = _this._getTagBorderSide$0();
@@ -8980,7 +8980,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.BorderRadius$circular(10);
       t4 = A.Border_Border$all(C.Color_520093696, 0.5);
       t5 = t2.getTitle$3$endDate$startDate(context, _this.endDate, _this.startDate);
-      t3 = A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Text$(t5, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_oHY3, _null, _null, _null, _null, _null), 1), A.SvgPicture$asset(_s29_, C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294112245, _null, t4, t3, _null, _null, _null, C.BoxShape_0), _null, 44, _null, _null, C.EdgeInsets_12_0_10_0, _null, _null, _null);
+      t3 = A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Text$(t5, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_oHY3, _null, _null, _null, _null, _null), 1), A.SvgPicture$asset(_s29_, C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294112245, _null, t4, t3, _null, _null, _null, C.BoxShape_0), _null, 44, _null, _null, C.EdgeInsets_12_0_10_0, _null, _null, _null);
       t4 = A.BorderRadius$circular(10);
       return new A.DropdownButtonHideUnderline(A.PointerInterceptor$(A.DropdownButton2$(new A.ButtonStyleData(44, _null, C.EdgeInsets_12_0_12_0, new A.BoxDecoration(C.Color_4294112245, _null, A.Border_Border$all(C.Color_520093696, 1), t4, _null, _null, _null, C.BoxShape_0)), t3, _null, A.DropdownStyleData$(new A.BoxDecoration(C.Color_4294967295, _null, _null, A.BorderRadius$circular(10), _null, _null, _null, C.BoxShape_0), 4, 200, C.Offset_0_m8, new A.ScrollbarThemeData(new A.MaterialStatePropertyAll(true, type$.MaterialStatePropertyAll_bool), new A.MaterialStatePropertyAll(6, type$.MaterialStatePropertyAll_double), _null, _null, _null, C.Radius_40_40, _null, _null, _null, _null, _null, _null), _null), _null, new A.IconStyleData(A.SvgPicture$asset(_s29_, C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null), 24), true, t1, _null, C.MenuItemStyleData_djF, new B.DateDropDownButton_build_closure0(_this), _null, t2, type$.EmailReceiveTimeType)), _null);
     },
@@ -9006,7 +9006,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Border_Border$all(C.Color_520093696, 0.5);
       t4 = t2.getTitle$1(context);
       t5 = A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
-      t3 = A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Text$(t4, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, t5, _null, _null, _null, _null, _null), 1), A.SvgPicture$asset(_s29_, C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294112245, _null, t3, C.BorderRadius_tLn2, _null, _null, _null, C.BoxShape_0), _null, 44, _null, _null, C.EdgeInsetsDirectional_12_0_10_0, _null, _null, _null);
+      t3 = A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Text$(t4, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, t5, _null, _null, _null, _null, _null), 1), A.SvgPicture$asset(_s29_, C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294112245, _null, t3, C.BorderRadius_tLn2, _null, _null, _null, C.BoxShape_0), _null, 44, _null, _null, C.EdgeInsetsDirectional_12_0_10_0, _null, _null, _null);
       return new A.DropdownButtonHideUnderline(A.PointerInterceptor$(A.DropdownButton2$(new A.ButtonStyleData(44, _null, C.EdgeInsetsDirectional_12_0_10_0, new A.BoxDecoration(C.Color_4294112245, _null, A.Border_Border$all(C.Color_520093696, 0.5), C.BorderRadius_tLn2, _null, _null, _null, C.BoxShape_0)), t3, _null, A.DropdownStyleData$(C.BoxDecoration_G3F2, 4, 332, C.Offset_0_m8, new A.ScrollbarThemeData(new A.MaterialStatePropertyAll(true, type$.MaterialStatePropertyAll_bool), new A.MaterialStatePropertyAll(6, type$.MaterialStatePropertyAll_double), _null, _null, _null, C.Radius_40_40, _null, _null, _null, _null, _null, _null), _null), _null, new A.IconStyleData(A.SvgPicture$asset(_s29_, C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null), 24), true, t1, _null, C.MenuItemStyleData_djF, this.onSortOrderSelected, _null, t2, type$.EmailSortOrderType)), _null);
     }
   };
@@ -9215,7 +9215,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A.SvgPicture$asset(t3, C.Alignment_0_0, _null, C.BoxFit_0, 56, _null, 56);
       else
         t2 = new A.Image(B.ResizeImage_resizeIfNeeded(_null, _null, new A.AssetImage(t3, _null, _null)), 56, 56, C.BoxFit_0, C.Alignment_0_0, _null);
-      return new B.LinkBrowserWidget(t1.appUri, A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, C.BorderRadius_tLn0, true, A.Container$(_null, A.Column$(A._setArrayType([t2, new A.Padding(C.EdgeInsets_0_8_0_0, A.Text$(t1.appName, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_cMb0, C.TextAlign_2, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_8_0_8, _null, _null, 98), _null, true, _null, _null, _null, C.Color_2581915884, _null, _null, _null, _null, _null, _null, _null, new B.AppGridDashboardItem_build_closure(this), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0), _null);
+      return new B.LinkBrowserWidget(t1.appUri, A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, C.BorderRadius_tLn0, true, A.Container$(_null, A.Column$(A._setArrayType([t2, new A.Padding(C.EdgeInsets_0_8_0_0, A.Text$(t1.appName, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_cMb0, C.TextAlign_2, _null, _null, _null, _null), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_8_0_8, _null, _null, 98), _null, true, _null, _null, _null, C.Color_2581915884, _null, _null, _null, _null, _null, _null, _null, new B.AppGridDashboardItem_build_closure(this), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0), _null);
     }
   };
   B.AppDashboardOverlay.prototype = {
@@ -9261,7 +9261,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t5 = type$.JSArray_Widget;
       t4 = A.Container$(_null, new A.Stack(C.Alignment_0_0, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t1, A.Center$(t4, _null, _null)], t5), _null), C.Clip_0, C.Color_0, _null, _null, _null, 30, _null, _null, _null, _null, _null, 30);
-      t3 = A.Text$(t3.generateFileName$0(), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, D.TextStyle_etK, _null, _null, _null, _null, _null);
+      t3 = A.Text$(t3.generateFileName$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, D.TextStyle_etK, _null, _null, _null, _null, _null);
       t1 = t2.downloaded;
       t6 = new B.ByteConverter(t1);
       t6._bits = C.JSInt_methods.ceil$0(t1 * 8);
@@ -9269,7 +9269,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.total;
       t1 = new B.ByteConverter(t2);
       t1._bits = C.JSInt_methods.ceil$0(t2 * 8);
-      return A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([C.SizedBox_12_null_null_null, t4, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t3, C.SizedBox_null_4_null_null, A.Text$(t6 + "/" + t1.toHumanReadable$1(D.SizeUnit_2), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, D.TextStyle_etK0, _null, _null, _null, _null, _null)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_0, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_0_0_0, _null, _null, 240);
+      return A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([C.SizedBox_12_null_null_null, t4, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t3, C.SizedBox_null_4_null_null, A.Text$(t6 + "/" + t1.toHumanReadable$1(D.SizeUnit_2), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, D.TextStyle_etK0, _null, _null, _null, _null, _null)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_0, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_0_0_0, _null, _null, 240);
     }
   };
   B.ContactQuickSearchItem.prototype = {
@@ -9277,11 +9277,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = this.emailAddress,
         t2 = type$.JSArray_Widget,
-        t3 = A._setArrayType([A.Text$(A.EmailAddressExtension_asString(t1), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_oHY3, _null, _null, _null, _null, _null)], t2),
+        t3 = A._setArrayType([A.Text$(A.EmailAddressExtension_asString(t1), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_oHY3, _null, _null, _null, _null, _null)], t2),
         t4 = t1.name;
       if ((t4 == null ? "" : t4).length !== 0) {
         t4 = t1.email;
-        t3.push(A.Text$(t4 == null ? "" : t4, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_chs1, _null, _null, _null, _null, _null));
+        t3.push(A.Text$(t4 == null ? "" : t4, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_chs1, _null, _null, _null, _null, _null));
       }
       return new A.Padding(C.EdgeInsets_12_8_12_8, A.Row$(A._setArrayType([new B.AvatarSuggestionItemWidget(t1, _null), C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
     }
@@ -10029,7 +10029,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else {
         t1 = _this.informationSender$2(email, mailbox);
         t2 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
-        return A.TextOverflowBuilder$(t1, A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, C.TextOverflow_1, _null, _null, _null, _null));
+        return A.TextOverflowBuilder$(t1, A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, C.TextOverflow_2, _null, _null, _null, _null));
       }
     },
     buildEmailTitle$4(context, email, isSearchEmailRunning, query) {
@@ -10064,7 +10064,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = B.PresentationEmailExtension_getReceivedAt(email, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _null),
         t2 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
-      return A.Text$(t1, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null);
+      return A.Text$(t1, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null);
     },
     buildIconAnsweredOrForwarded$3$height$presentationEmail$width(height, presentationEmail, width) {
       if (presentationEmail.get$isAnswered() && presentationEmail.get$isForwarded())
@@ -10563,7 +10563,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t2).toString;
       t4 = _this.listEmailSelected;
       t5 = t4.length;
-      t5 = A._setArrayType([t3, A.Expanded$(A.Text$(A.Intl__message("" + t5 + " selected", _null, "count_email_selected", A._setArrayType([t5], type$.JSArray_Object), _null), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_yzp0, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
+      t5 = A._setArrayType([t3, A.Expanded$(A.Text$(A.Intl__message("" + t5 + " selected", _null, "count_email_selected", A._setArrayType([t5], type$.JSArray_Object), _null), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_yzp0, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
       t3 = _this.mailboxSelected;
       t6 = t3 == null;
       if ((t6 ? _null : J.$eq$(t3.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
@@ -11102,7 +11102,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if (t4)
           t3.push(new A.Padding(C.EdgeInsetsDirectional_0_0_4_0, A.SvgPicture$asset(t2, C.Alignment_0_0, A.ColorNullableExtension_asFilter(_this.labelColor), C.BoxFit_1, 20, _null, 20), _null));
         t5 = _this.labelColor;
-        t3.push(A.Text$(_this.label, _null, _null, _null, C.TextOverflow_1, _null, _null, false, _null, A.TextStyle$(_null, _null, t5, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null));
+        t3.push(A.Text$(_this.label, _null, _null, _null, C.TextOverflow_2, _null, _null, true, _null, A.TextStyle$(_null, _null, t5, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null));
         if (!t4)
           t3.push(new A.Padding(C.EdgeInsetsDirectional_4_0_0_0, A.SvgPicture$asset(t2, C.Alignment_0_0, A.ColorNullableExtension_asFilter(t5), C.BoxFit_1, 20, _null, 20), _null));
         t2 = A.Row$(t3, C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_0, _null);
@@ -13859,10 +13859,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = type$.JSArray_Widget;
       t5 = A._setArrayType([], t4);
       if (t3)
-        t5.push(A.Text$(t2, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, D.TextStyle_oJ4, _null, _null, _null, _null, _null));
+        t5.push(A.Text$(t2, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, D.TextStyle_oJ4, _null, _null, _null, _null, _null));
       t2 = item.email;
       if (t2.length !== 0)
-        t5.push(A.Text$(t2, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_chs1, _null, _null, _null, _null, _null));
+        t5.push(A.Text$(t2, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_chs1, _null, _null, _null, _null, _null));
       return A.DropdownMenuItem$(A.PointerInterceptor$(A.Container$(_null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(t5, C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_0, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_12_0_12, _null, _null, _null)), item, type$.Identity);
     },
     $signature: 1581
@@ -14612,7 +14612,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       var t1 = this.lastEmailAddress.$eq(0, emailAddress) ? A.EmailAddressExtension_asString(emailAddress) : A.EmailAddressExtension_asString(emailAddress) + ",",
         t2 = this.context;
-      return F.MaterialTextButton$(8, null, t1, C.Color_4278190080, 16, null, new B._EmailReceiverWidgetState__buildListEmailAddressWidget__closure(t2, emailAddress), new B._EmailReceiverWidgetState__buildListEmailAddressWidget__closure0(this.$this, t2, emailAddress), C.TextOverflow_1, null, false);
+      return F.MaterialTextButton$(8, null, t1, C.Color_4278190080, 16, null, new B._EmailReceiverWidgetState__buildListEmailAddressWidget__closure(t2, emailAddress), new B._EmailReceiverWidgetState__buildListEmailAddressWidget__closure0(this.$this, t2, emailAddress), C.TextOverflow_2, null, true);
     },
     $signature: typesOffset + 28
   };
@@ -16556,7 +16556,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.DateDropDownButton_build_closure.prototype = {
     call$1(item) {
       var _null = null,
-        t1 = A._setArrayType([A.Expanded$(A.Text$(item.getTitle$1(this.context), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_oHY3, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
+        t1 = A._setArrayType([A.Expanded$(A.Text$(item.getTitle$1(this.context), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_oHY3, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
       if (item === this.$this.receiveTimeSelected)
         t1.push(A.SvgPicture$asset("assets/images/ic_checked.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, 20));
       return A.DropdownMenuItem$(A.PointerInterceptor$(A.Container$(_null, A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_0, _null, _null, _null, 44, _null, _null, _null, _null, _null, _null)), item, type$.EmailReceiveTimeType);
@@ -16646,7 +16646,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(sortType) {
       var _null = null,
         t1 = sortType.getTitle$1(this.context);
-      t1 = A._setArrayType([A.Expanded$(A.Text$(t1, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
+      t1 = A._setArrayType([A.Expanded$(A.Text$(t1, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
       if (sortType === this.$this.sortOrderSelected)
         t1.push(A.SvgPicture$asset("assets/images/ic_checked.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, 20));
       return A.DropdownMenuItem$(A.PointerInterceptor$(A.Container$(_null, A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_0, _null, _null, _null, 44, _null, _null, _null, _null, _null, _null)), sortType, type$.EmailSortOrderType);
@@ -16885,11 +16885,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t1._presentationEmail;
       t4 = A.SvgPicture$asset(t3.get$hasStarred() ? "assets/images/ic_star.svg" : "assets/images/ic_unstar.svg", C.Alignment_0_0, _null, C.BoxFit_0, 18, _null, 18);
       t5 = type$.JSArray_Widget;
-      t1 = A._setArrayType([A.Container$(_null, A.Text$(t1._getInformationSender$0(), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, D.TextStyle_oHY21, _null, _null, _null, _null, _null), C.Clip_0, _null, new A.BoxConstraints(0, maxWidthItem / 3, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null), C.SizedBox_16_null_null_null, A.Expanded$(A.Text$(t3.getEmailTitle$0(), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_oHY22, _null, _null, _null, _null, _null), 1)], t5);
+      t1 = A._setArrayType([A.Container$(_null, A.Text$(t1._getInformationSender$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, D.TextStyle_oHY21, _null, _null, _null, _null, _null), C.Clip_0, _null, new A.BoxConstraints(0, maxWidthItem / 3, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null), C.SizedBox_16_null_null_null, A.Expanded$(A.Text$(t3.getEmailTitle$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_oHY22, _null, _null, _null, _null, _null), 1)], t5);
       if (t3.hasAttachment === true)
         t1.push(new A.Padding(C.EdgeInsets_8_0_8_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", C.Alignment_0_0, _null, C.BoxFit_0, 14, _null, 14), _null));
-      t1.push(A.Text$(B.PresentationEmailExtension_getReceivedAt(t3, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _null), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, C.TextStyle_oHY22, C.TextAlign_1, _null, _null, _null, _null));
-      return new A.Padding(t2, A.Row$(A._setArrayType([new A.Padding(C.EdgeInsets_0_2_0_0, t4, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Column$(A._setArrayType([A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), D.SizedBox_null_3_null_null, A.Text$(t3.getPartialContent$0(), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, E.TextStyle_jjv0, _null, _null, _null, _null, _null)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
+      t1.push(A.Text$(B.PresentationEmailExtension_getReceivedAt(t3, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _null), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_oHY22, C.TextAlign_1, _null, _null, _null, _null));
+      return new A.Padding(t2, A.Row$(A._setArrayType([new A.Padding(C.EdgeInsets_0_2_0_0, t4, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Column$(A._setArrayType([A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), D.SizedBox_null_3_null_null, A.Text$(t3.getPartialContent$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, E.TextStyle_jjv0, _null, _null, _null, _null, _null)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
     },
     $signature: 1616
   };
@@ -17051,7 +17051,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.$this,
         t3 = t2._searchController.listFilterOnSuggestionForm,
         isFilterSelected = t3.contains$1(t3, t1);
-      t3 = A.Text$(t1.getName$1(this.context), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, t1.getTextStyle$1$isFilterSelected(isFilterSelected), _null, _null, _null, _null, _null);
+      t3 = A.Text$(t1.getName$1(this.context), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, t1.getTextStyle$1$isFilterSelected(isFilterSelected), _null, _null, _null, _null, _null);
       t2 = A.SvgPicture$asset(t1.getIcon$2$isFilterSelected(t2._search_input_form_widget$_imagePaths, isFilterSelected), C.Alignment_0_0, _null, C.BoxFit_0, 16, _null, 16);
       t4 = t1.getTextStyle$1$isFilterSelected(isFilterSelected);
       return A.Chip$(t2, t1.getBackgroundColor$1$isFilterSelected(isFilterSelected), _null, t3, D.EdgeInsetsDirectional_0_2_10_2, t4, _null, _null, _null, new A.RoundedRectangleBorder(C.BorderRadius_tLn2, new A.BorderSide(t1.getBackgroundColor$1$isFilterSelected(isFilterSelected), 1, C.BorderStyle_1, -1)));
@@ -17399,7 +17399,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t12 = t3._as(t2.get(t1)).emailSortOrderType;
       t13 = type$.JSArray_Widget;
-      t10 = A._setArrayType([t8, C.SizedBox_4_null_null_null, A.Text$(t4.getTitle$5$endDate$receiveTimeType$sortOrderType$startDate(t5, t11, t9, t12.get$value(t12), t10), _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, t4.getTextStyle$1$isFilterSelected(filterSelected), _null, _null, _null, _null, _null)], t13);
+      t10 = A._setArrayType([t8, C.SizedBox_4_null_null_null, A.Text$(t4.getTitle$5$endDate$receiveTimeType$sortOrderType$startDate(t5, t11, t9, t12.get$value(t12), t10), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, t4.getTextStyle$1$isFilterSelected(filterSelected), _null, _null, _null, _null, _null)], t13);
       if (t4 === C.QuickSearchFilter_1 || t4 === C.QuickSearchFilter_3) {
         A.Expando__checkType(t1);
         t3._as(t2.get(t1)).toString;
@@ -17948,7 +17948,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(t4, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t8 = A.Intl__message("Folder", _null, "folder", _null, _null);
       }
-      t8 = A.Text$(t8, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, filterSelected ? C.TextStyle_yzp4 : C.TextStyle_omH3, _null, _null, _null, _null, _null);
+      t8 = A.Text$(t8, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, filterSelected ? C.TextStyle_yzp4 : C.TextStyle_omH3, _null, _null, _null, _null, _null);
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).toString;
       return new A.Padding(C.EdgeInsets_0_0_8_0, A.InkWell$(false, C.BorderRadius_tLn2, true, A.Container$(_null, A.Row$(A._setArrayType([t7, C.SizedBox_4_null_null_null, t8, C.SizedBox_4_null_null_null, A.SvgPicture$asset(string$.assets, C.Alignment_0_0, filterSelected ? A.ColorNullableExtension_asFilter(C.Color_4278221567) : A.ColorNullableExtension_asFilter(C.Color_4288258733), C.BoxFit_0, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t6, _null, _null, t5, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsets_12_8_12_8, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildSearchFilterByMailboxButton__closure(t1, t4), _null, _null, _null, _null, _null, _null, _null), _null);
@@ -18003,7 +18003,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t9 = t3._as(t2.get(t1)).simpleSearchFilter;
         t9 = B.SearchEmailFilterExtension_getNameContactDefault(t9.get$value(t9), t4, t5);
       }
-      t9 = A.Text$(t9, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, filterSelected ? C.TextStyle_yzp4 : C.TextStyle_omH3, _null, _null, _null, _null, _null);
+      t9 = A.Text$(t9, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, filterSelected ? C.TextStyle_yzp4 : C.TextStyle_omH3, _null, _null, _null, _null, _null);
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).toString;
       return new A.Padding(C.EdgeInsets_0_0_8_0, A.InkWell$(false, C.BorderRadius_tLn2, true, A.Container$(_null, A.Row$(A._setArrayType([t8, C.SizedBox_4_null_null_null, t9, C.SizedBox_4_null_null_null, A.SvgPicture$asset(string$.assets, C.Alignment_0_0, filterSelected ? A.ColorNullableExtension_asFilter(C.Color_4278221567) : A.ColorNullableExtension_asFilter(C.Color_4288258733), C.BoxFit_0, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t7, _null, _null, t6, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsets_12_8_12_8, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildSearchFilterByContactButton__closure(t1, t4, t5), _null, _null, _null, _null, _null, _null, _null), _null);
@@ -19220,7 +19220,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_menu_drawer.svg", _null, _null, D.ValueKey_mailbox_menu_button, _null, 80, _null, t1.openMailboxAction, C.EdgeInsets_5_5_5_5, A.Intl__message("Open Folder menu", _null, "openFolderMenu", _null, _null));
       t5 = t1.mailboxSelected;
       t5 = t5 == null ? _null : A.PresentationMailboxExtension_getDisplayName(t5, context);
-      t5 = A.Expanded$(new A.Padding(C.EdgeInsets_16_0_16_0, A.Text$(t5 == null ? "" : t5, _null, _null, 1, C.TextOverflow_1, _null, _null, false, _null, D.TextStyle_oHY20, _null, _null, _null, _null, _null), _null), 1);
+      t5 = A.Expanded$(new A.Padding(C.EdgeInsets_16_0_16_0, A.Text$(t5 == null ? "" : t5, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, D.TextStyle_oHY20, _null, _null, _null, _null, _null), _null), 1);
       t6 = t1.filterOption === C.FilterMessageOption_0 ? C.Color_4288258733 : C.Color_4278221567;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t3).toString;
       return A.Container$(_null, A.Row$(A._setArrayType([t4, t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_filter.svg", t6, _null, D.ValueKey_filter_message_button, _null, 80, new B.DefaultWebAppBarThreadWidget_build__closure(t1), new B.DefaultWebAppBarThreadWidget_build__closure0(t1), _null, A.Intl__message("Filter messages", _null, "filter_messages", _null, _null))], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, C.BoxConstraints_mlX0, _null, _null, _null, _null, _null, t2, _null, _null, _null);
@@ -20256,5 +20256,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ls76w5rLRsnMNoyuowT3proVBjk=");
+})($__dart_deferred_initializers__, "Wcjmoftu1W0Dxlqn4Ri5BLLk6/4=");
 ;
