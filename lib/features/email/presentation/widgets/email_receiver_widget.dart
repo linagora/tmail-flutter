@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -14,6 +15,7 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -23,12 +25,14 @@ class EmailReceiverWidget extends StatefulWidget {
 
   final PresentationEmail emailSelected;
   final double maxWidth;
+  final double? maxHeight;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
 
   const EmailReceiverWidget({
     Key? key,
     required this.emailSelected,
     this.maxWidth = 200,
+    this.maxHeight,
     this.openEmailAddressDetailAction,
   }) : super(key: key);
 
@@ -39,9 +43,11 @@ class EmailReceiverWidget extends StatefulWidget {
 class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
 
   static const double _maxSizeFullDisplayEmailAddressArrowDownButton = 50.0;
+  static const double _offsetTop = 100.0;
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _scrollController = ScrollController();
 
   bool _isDisplayAll = false;
 
@@ -54,12 +60,32 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
           padding: EdgeInsets.only(top: _isDisplayAll
             ? DirectionUtils.isDirectionRTLByLanguage(context) ? 3 : 5.5
             : 0),
-          child: _buildEmailAddressOfReceiver(
-            context,
-            widget.emailSelected,
-            _isDisplayAll,
-            widget.maxWidth
-          ),
+          child: PlatformInfo.isWeb
+            ? Container(
+                constraints: BoxConstraints(
+                  maxHeight: _isDisplayAll && widget.maxHeight != null
+                    ? widget.maxHeight! / 2 - _offsetTop
+                    : double.infinity
+                ),
+                child: ScrollbarListView(
+                  scrollController: _scrollController,
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: _buildEmailAddressOfReceiver(
+                      context,
+                      widget.emailSelected,
+                      _isDisplayAll,
+                      widget.maxWidth
+                    ),
+                  ),
+                ),
+              )
+            : _buildEmailAddressOfReceiver(
+                context,
+                widget.emailSelected,
+                _isDisplayAll,
+                widget.maxWidth
+              ),
         )),
         if (_isDisplayAll)
           Padding(
@@ -243,5 +269,11 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     } else {
       return maxWidth * 3/4;
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
