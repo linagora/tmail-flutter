@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -123,115 +124,123 @@ class EmailView extends GetWidget<SingleEmailController> {
                   }
                 }),
                 Expanded(
-                  child: Obx(() {
-                    if (controller.emailSupervisorController.supportedPageView.isTrue) {
-                      final currentListEmail = controller.emailSupervisorController.currentListEmail;
-                      return PageView.builder(
-                        physics: controller.emailSupervisorController.scrollPhysicsPageView.value,
-                        itemCount: currentListEmail.length,
-                        allowImplicitScrolling: true,
-                        controller: controller.emailSupervisorController.pageController,
-                        onPageChanged: controller.emailSupervisorController.onPageChanged,
-                        itemBuilder: (context, index) {
-                          final currentEmail = currentListEmail[index];
-                          if (PlatformInfo.isMobile) {
-                            return SingleChildScrollView(
-                              physics : const ClampingScrollPhysics(),
-                              child: Container(
-                                width: double.infinity,
-                                alignment: Alignment.center,
-                                color: Colors.white,
-                                child: Obx(() => _buildEmailMessage(
-                                  context: context,
-                                  presentationEmail: currentEmail,
-                                  calendarEvent: controller.calendarEvent.value,
-                                ))
-                              )
-                            );
-                          } else {
-                            return Obx(() {
-                              final calendarEvent = controller.calendarEvent.value;
-                              if (currentEmail.hasCalendarEvent && calendarEvent != null) {
-                                return Padding(
-                                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
-                                  child: ScrollbarListView(
-                                    scrollController: controller.emailContentScrollController,
-                                    child: SingleChildScrollView(
-                                      physics : const ClampingScrollPhysics(),
-                                      controller: controller.emailContentScrollController,
-                                      child: Container(
-                                        width: double.infinity,
-                                        alignment: Alignment.center,
-                                        color: Colors.white,
-                                        child: _buildEmailMessage(
-                                          context: context,
-                                          presentationEmail: currentEmail,
-                                          calendarEvent: calendarEvent,
-                                          emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    log('EmailView::build: EMAIL_BODY_MAX_HEIGHT = ${constraints.maxHeight}');
+                    return Obx(() {
+                      if (controller.emailSupervisorController.supportedPageView.isTrue) {
+                        final currentListEmail = controller.emailSupervisorController.currentListEmail;
+                        return PageView.builder(
+                          physics: controller.emailSupervisorController.scrollPhysicsPageView.value,
+                          itemCount: currentListEmail.length,
+                          allowImplicitScrolling: true,
+                          controller: controller.emailSupervisorController.pageController,
+                          onPageChanged: controller.emailSupervisorController.onPageChanged,
+                          itemBuilder: (context, index) {
+                            final currentEmail = currentListEmail[index];
+                            if (PlatformInfo.isMobile) {
+                              return SingleChildScrollView(
+                                physics : const ClampingScrollPhysics(),
+                                child: Container(
+                                  width: double.infinity,
+                                  alignment: Alignment.center,
+                                  color: Colors.white,
+                                  child: Obx(() => _buildEmailMessage(
+                                    context: context,
+                                    presentationEmail: currentEmail,
+                                    calendarEvent: controller.calendarEvent.value,
+                                    maxBodyHeight: constraints.maxHeight
+                                  ))
+                                )
+                              );
+                            } else {
+                              return Obx(() {
+                                final calendarEvent = controller.calendarEvent.value;
+                                if (currentEmail.hasCalendarEvent && calendarEvent != null) {
+                                  return Padding(
+                                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
+                                    child: ScrollbarListView(
+                                      scrollController: controller.emailContentScrollController,
+                                      child: SingleChildScrollView(
+                                        physics : const ClampingScrollPhysics(),
+                                        controller: controller.emailContentScrollController,
+                                        child: Container(
+                                          width: double.infinity,
+                                          alignment: Alignment.center,
+                                          color: Colors.white,
+                                          child: _buildEmailMessage(
+                                            context: context,
+                                            presentationEmail: currentEmail,
+                                            calendarEvent: calendarEvent,
+                                            emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                                          )
                                         )
-                                      )
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else {
-                                return _buildEmailMessage(
-                                  context: context,
-                                  presentationEmail: currentEmail,
-                                );
-                              }
-                            });
+                                  );
+                                } else {
+                                  return _buildEmailMessage(
+                                    context: context,
+                                    presentationEmail: currentEmail,
+                                    maxBodyHeight: constraints.maxHeight
+                                  );
+                                }
+                              });
+                            }
                           }
-                        }
-                      );
-                    } else {
-                      if (PlatformInfo.isMobile) {
-                        return SingleChildScrollView(
-                          physics : const ClampingScrollPhysics(),
-                          child: Container(
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            color: Colors.white,
-                            child: Obx(() => _buildEmailMessage(
-                              context: context,
-                              presentationEmail: currentEmail,
-                              calendarEvent: controller.calendarEvent.value,
-                            ))
-                          )
                         );
                       } else {
-                        return Obx(() {
-                          final calendarEvent = controller.calendarEvent.value;
-                          if (currentEmail.hasCalendarEvent && calendarEvent != null) {
-                            return Padding(
-                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
-                              child: ScrollbarListView(
-                                scrollController: controller.emailContentScrollController,
-                                child: SingleChildScrollView(
-                                  physics : const ClampingScrollPhysics(),
-                                  controller: controller.emailContentScrollController,
-                                  child: Container(
-                                    width: double.infinity,
-                                    alignment: Alignment.center,
-                                    color: Colors.white,
-                                    child: _buildEmailMessage(
-                                      context: context,
-                                      presentationEmail: currentEmail,
-                                      calendarEvent: calendarEvent,
-                                      emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                        if (PlatformInfo.isMobile) {
+                          return SingleChildScrollView(
+                            physics : const ClampingScrollPhysics(),
+                            child: Container(
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                              color: Colors.white,
+                              child: Obx(() => _buildEmailMessage(
+                                context: context,
+                                presentationEmail: currentEmail,
+                                calendarEvent: controller.calendarEvent.value,
+                                maxBodyHeight: constraints.maxHeight
+                              ))
+                            )
+                          );
+                        } else {
+                          return Obx(() {
+                            final calendarEvent = controller.calendarEvent.value;
+                            if (currentEmail.hasCalendarEvent && calendarEvent != null) {
+                              return Padding(
+                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
+                                child: ScrollbarListView(
+                                  scrollController: controller.emailContentScrollController,
+                                  child: SingleChildScrollView(
+                                    physics : const ClampingScrollPhysics(),
+                                    controller: controller.emailContentScrollController,
+                                    child: Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      color: Colors.white,
+                                      child: _buildEmailMessage(
+                                        context: context,
+                                        presentationEmail: currentEmail,
+                                        calendarEvent: calendarEvent,
+                                        emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                                        maxBodyHeight: constraints.maxHeight
+                                      )
                                     )
-                                  )
+                                  ),
                                 ),
-                              ),
-                            );
-                          } else {
-                            return _buildEmailMessage(
-                              context: context,
-                              presentationEmail: currentEmail,
-                            );
-                          }
-                        });
+                              );
+                            } else {
+                              return _buildEmailMessage(
+                                context: context,
+                                presentationEmail: currentEmail,
+                                maxBodyHeight: constraints.maxHeight
+                              );
+                            }
+                          });
+                        }
                       }
-                    }
+                    });
                   }),
                 ),
                 EmailViewBottomBarWidget(
@@ -305,6 +314,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     required PresentationEmail presentationEmail,
     CalendarEvent? calendarEvent,
     List<String>? emailAddressSender,
+    double? maxBodyHeight,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,6 +325,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           imagePaths: controller.imagePaths,
           responsiveUtils: controller.responsiveUtils,
           emailUnsubscribe: controller.emailUnsubscribe.value,
+          maxBodyHeight: maxBodyHeight,
           openEmailAddressDetailAction: controller.openEmailAddressDialog,
           onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
         )),
