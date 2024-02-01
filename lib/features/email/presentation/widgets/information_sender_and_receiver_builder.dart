@@ -22,6 +22,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final EmailUnsubscribe? emailUnsubscribe;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
   final OnEmailActionClick? onEmailActionClick;
+  final double? maxBodyHeight;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
@@ -29,6 +30,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     required this.responsiveUtils,
     required this.imagePaths,
     required this.emailUnsubscribe,
+    this.maxBodyHeight,
     this.openEmailAddressDetailAction,
     this.onEmailActionClick,
   }) : super(key: key);
@@ -88,6 +90,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                     EmailReceiverWidget(
                       emailSelected: emailSelected,
                       maxWidth: constraints.maxWidth,
+                      maxHeight: maxBodyHeight,
                       openEmailAddressDetailAction: openEmailAddressDetailAction,
                     )
                 ]
