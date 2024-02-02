@@ -155,9 +155,6 @@ class UploadController extends BaseController {
             cid: uuid.v1()
           );
 
-          final uploadFileState = _uploadingStateInlineFiles.getUploadFileStateById(success.uploadId);
-          log('UploadController::_handleProgressUploadInlineImageStateStream:uploadId: ${uploadFileState?.uploadTaskId} | fromFileShared: ${uploadFileState?.fromFileShared}');
-
           _uploadingStateInlineFiles.updateElementByUploadTaskId(
             success.uploadId,
             (currentState) {
@@ -173,7 +170,6 @@ class UploadController extends BaseController {
             success.uploadId,
             inlineAttachment,
             success.fileInfo,
-            fromFileShared: uploadFileState?.fromFileShared ?? false
           );
           _handleUploadInlineAttachmentsSuccess(newUploadSuccess);
         }
@@ -378,7 +374,7 @@ class UploadController extends BaseController {
     super.handleSuccessViewState(success);
     if (success is UploadAttachmentSuccess) {
       if (success.isInline) {
-        _uploadingStateInlineFiles.add(success.uploadAttachment.toUploadFileState(fromFileShared: success.fromFileShared));
+        _uploadingStateInlineFiles.add(success.uploadAttachment.toUploadFileState());
         await _progressUploadInlineImageStateStreamGroup.add(success.uploadAttachment.progressState);
       } else {
         _uploadingStateFiles.add(success.uploadAttachment.toUploadFileState());
