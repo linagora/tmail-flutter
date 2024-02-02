@@ -404,8 +404,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "bugfix/build-failed-on-android"
-      resolved-ref: "33991d46432a22a79b5d3593262033ae49da77f6"
+      ref: email_supported
+      resolved-ref: "562ef89121d2ea8b12340cdf0998104b3fc25857"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -1540,7 +1540,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "9c0eb7e3627af6ba6860e986ec6ac1f6f170c71d"
+      resolved-ref: "91809cfa3095b71f3cce04e8f29f38c238d2e770"
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"

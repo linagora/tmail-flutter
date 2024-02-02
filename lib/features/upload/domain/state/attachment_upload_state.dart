@@ -31,15 +31,11 @@ class SuccessAttachmentUploadState extends Success {
   final UploadTaskId uploadId;
   final Attachment attachment;
   final FileInfo fileInfo;
-  final bool fromFileShared;
 
   SuccessAttachmentUploadState(
     this.uploadId,
     this.attachment,
-    this.fileInfo,
-    {
-      this.fromFileShared = false
-    }
+    this.fileInfo
   );
 
   @override
@@ -47,7 +43,6 @@ class SuccessAttachmentUploadState extends Success {
     uploadId,
     attachment,
     fileInfo,
-    fromFileShared,
   ];
 }
 

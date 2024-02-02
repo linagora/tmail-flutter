@@ -12,21 +12,16 @@ import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.
 class RichTextMobileTabletController extends BaseRichTextController {
   HtmlEditorApi? htmlEditorApi;
 
-  void insertImage(
-    InlineImage image,
-    {
-      double? maxWithEditor,
-      bool fromFileShare = false
-    }
-  ) async {
-    log('RichTextMobileTabletController::insertImage(): $image | maxWithEditor: $maxWithEditor | $fromFileShare');
-    if (image.source == ImageSource.network) {
-      htmlEditorApi?.insertImageLink(image.link!);
+  void insertImage(InlineImage inlineImage) async {
+    if (inlineImage.source == ImageSource.network) {
+      htmlEditorApi?.insertImageLink(inlineImage.link!);
     } else {
-      if (fromFileShare) {
-        await htmlEditorApi?.moveCursorAtLastNode();
+      bool isEditorFocused = await htmlEditorApi?.hasFocus() ?? false;
+      log('RichTextMobileTabletController::insertImage: isEditorFocused = $isEditorFocused');
+      if (!isEditorFocused) {
+        await htmlEditorApi?.requestFocusLastChild();
       }
-      await htmlEditorApi?.insertHtml(image.base64Uri ?? '');
+      await htmlEditorApi?.insertHtml('${inlineImage.base64Uri ?? ''}<br/><br/>');
     }
   }
 
