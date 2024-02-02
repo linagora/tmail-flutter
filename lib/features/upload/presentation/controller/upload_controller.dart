@@ -170,9 +170,6 @@ class UploadController extends BaseController {
             cid: uuid.v1()
           );
 
-          final uploadFileState = _uploadingStateInlineFiles.getUploadFileStateById(success.uploadId);
-          log('UploadController::_handleProgressUploadInlineImageStateStream:uploadId: ${uploadFileState?.uploadTaskId} | fromFileShared: ${uploadFileState?.file?.isShared}');
-
           _uploadingStateInlineFiles.updateElementByUploadTaskId(
             success.uploadId,
             (currentState) {

@@ -14,11 +14,13 @@ class RichTextMobileTabletController extends BaseRichTextController {
   final RichTextController richTextController = RichTextController();
 
   void insertImage(InlineImage inlineImage) async {
-    if (inlineImage.fileInfo.isShared == true) {
-      await htmlEditorApi?.moveCursorAtLastNode();
+    bool isEditorFocused = await htmlEditorApi?.hasFocus() ?? false;
+    log('RichTextMobileTabletController::insertImage: isEditorFocused = $isEditorFocused');
+    if (!isEditorFocused) {
+      await htmlEditorApi?.requestFocusLastChild();
     }
     if (inlineImage.base64Uri?.isNotEmpty == true) {
-      await htmlEditorApi?.insertHtml(inlineImage.base64Uri!);
+      await htmlEditorApi?.insertHtml('${inlineImage.base64Uri ?? ''}<br/><br/>');
     }
   }
 
