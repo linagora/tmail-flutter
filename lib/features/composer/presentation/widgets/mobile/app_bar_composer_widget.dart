@@ -9,8 +9,11 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class AppBarComposerWidget extends StatelessWidget {
 
   final bool isSendButtonEnabled;
+  final bool isNetworkConnectionAvailable;
   final VoidCallback onCloseViewAction;
   final VoidCallback sendMessageAction;
+  final VoidCallback attachFileAction;
+  final VoidCallback insertImageAction;
   final OnOpenContextMenuAction openContextMenuAction;
 
   final _imagePaths = Get.find<ImagePaths>();
@@ -21,6 +24,9 @@ class AppBarComposerWidget extends StatelessWidget {
     required this.onCloseViewAction,
     required this.sendMessageAction,
     required this.openContextMenuAction,
+    required this.attachFileAction,
+    required this.insertImageAction,
+    this.isNetworkConnectionAvailable = false,
   });
 
   @override
@@ -41,6 +47,27 @@ class AppBarComposerWidget extends StatelessWidget {
             onTapActionCallback: onCloseViewAction
           ),
           const Spacer(),
+          if (isNetworkConnectionAvailable)
+            ...[
+              TMailButtonWidget.fromIcon(
+                icon: _imagePaths.icAttachFile,
+                iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+                backgroundColor: Colors.transparent,
+                iconSize: MobileAppBarComposerWidgetStyle.iconSize,
+                tooltipMessage: AppLocalizations.of(context).attach_file,
+                onTapActionCallback: attachFileAction,
+              ),
+              const SizedBox(width: 8),
+              TMailButtonWidget.fromIcon(
+                icon: _imagePaths.icInsertImage,
+                iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+                backgroundColor: Colors.transparent,
+                iconSize: MobileAppBarComposerWidgetStyle.iconSize,
+                tooltipMessage: AppLocalizations.of(context).insertImage,
+                onTapActionCallback: insertImageAction,
+              ),
+              const SizedBox(width: 8),
+            ],
           TMailButtonWidget.fromIcon(
             icon: isSendButtonEnabled
               ? _imagePaths.icSendMobile
