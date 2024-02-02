@@ -13,6 +13,7 @@ abstract class PlatformInfo {
   static bool get isAndroid => !kIsWeb && Platform.isAndroid;
   static bool get isMobile => isAndroid || isIOS;
   static bool get isDesktop => isLinux || isWindows || isMacOS;
+  static bool get isWebMobile => kIsWeb && (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android);
 
   static String get platformNameOS {
     var platformName = '';
