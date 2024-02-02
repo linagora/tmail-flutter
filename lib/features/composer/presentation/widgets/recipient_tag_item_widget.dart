@@ -56,7 +56,9 @@ class RecipientTagItemWidget extends StatelessWidget {
           if (PlatformInfo.isWeb)
             Flexible(
               child: Padding(
-                padding: const EdgeInsetsDirectional.only(top: 8),
+                padding: EdgeInsetsDirectional.only(
+                  top: PlatformInfo.isWebMobile ? 0 : 8
+                ),
                 child: InkWell(
                   onTap: () => isCollapsed
                     ? onShowFullAction?.call(prefix)
@@ -140,7 +142,7 @@ class RecipientTagItemWidget extends StatelessWidget {
             ),
           if (isCollapsed)
             TMailButtonWidget.fromText(
-              margin: RecipientTagItemWidgetStyle.counterMargin,
+              margin: _counterMargin,
               text: '+$countRecipients',
               onTapActionCallback: () => onShowFullAction?.call(prefix),
               borderRadius: RecipientTagItemWidgetStyle.radius,
@@ -153,6 +155,16 @@ class RecipientTagItemWidget extends StatelessWidget {
         ]
       ),
     );
+  }
+
+  EdgeInsetsGeometry? get _counterMargin {
+    if (PlatformInfo.isWebMobile) {
+      return RecipientTagItemWidgetStyle.webMobileCounterMargin;
+    } else if (PlatformInfo.isWeb) {
+      return RecipientTagItemWidgetStyle.webCounterMargin;
+    } else {
+      return RecipientTagItemWidgetStyle.counterMargin;
+    }
   }
 
   int get countRecipients => currentListEmailAddress.length - collapsedListEmailAddress.length;
