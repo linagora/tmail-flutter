@@ -29,16 +29,16 @@ class EmailReceiveManager {
   }
 
   void setPendingEmailAddress(EmailAddress emailAddress) async {
-    clearPendingEmailAddress();
+    _clearPendingEmailAddress();
     _pendingEmailAddressInfo.add(emailAddress);
   }
 
   void setPendingEmailContent(EmailContent emailContent) async {
-    clearPendingEmailAddress();
+    _clearPendingEmailContent();
     _pendingEmailContentInfo.add(emailContent);
   }
 
-  void clearPendingEmailContent() {
+  void _clearPendingEmailContent() {
     if (_pendingEmailContentInfo.isClosed) {
       _pendingEmailContentInfo = BehaviorSubject.seeded(null);
     } else {
@@ -46,7 +46,7 @@ class EmailReceiveManager {
     }
   }
 
-  void clearPendingEmailAddress() {
+  void _clearPendingEmailAddress() {
     if(_pendingEmailAddressInfo.isClosed) {
       _pendingEmailAddressInfo = BehaviorSubject.seeded(null);
     } else {
@@ -56,22 +56,20 @@ class EmailReceiveManager {
 
   void closeEmailReceiveManagerStream() {
     _pendingEmailAddressInfo.close();
+    _pendingEmailContentInfo.close();
+    _pendingFileInfo.close();
   }
 
   void setPendingFileInfo(List<SharedMediaFile> list) async {
-    clearPendingFileInfo();
+    _clearPendingFileInfo();
     _pendingFileInfo.add(list);
   }
 
-  void clearPendingFileInfo() {
+  void _clearPendingFileInfo() {
     if(_pendingFileInfo.isClosed) {
       _pendingFileInfo = BehaviorSubject.seeded(List.empty(growable: true));
     } else {
       _pendingFileInfo.add(List.empty(growable: true));
     }
-  }
-
-  void closeFileSharingStream() {
-    _pendingFileInfo.close();
   }
 }
