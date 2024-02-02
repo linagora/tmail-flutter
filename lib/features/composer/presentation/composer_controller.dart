@@ -283,7 +283,6 @@ class ComposerController extends BaseController {
             cid: success.cid,
             base64Uri: success.base64Uri
           ),
-          fromFileShare: success.fromFileShared
         );
       }
       maxWithEditor = null;
@@ -1863,7 +1862,6 @@ class ComposerController extends BaseController {
         uploadState.attachment.cid!,
         uploadState.fileInfo,
         maxWidth: maxWithEditor,
-        fromFileShared: uploadState.fromFileShared,
       ));
     }
   }
