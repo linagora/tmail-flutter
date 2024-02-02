@@ -43,7 +43,8 @@ class AutoCompleteSuggestionItemWidgetWeb extends StatelessWidget {
             leading: AvatarSuggestionItemWidget(emailAddress: emailAddress),
             title: RichTextWidget(
               textOrigin: emailAddress.asString(),
-              wordSearched: suggestionValid ?? ''
+              wordSearched: suggestionValid ?? '',
+              overflow: TextOverflow.ellipsis,
             ),
             subtitle: emailAddress.displayName.isNotEmpty
               ? RichTextWidget(
@@ -51,6 +52,7 @@ class AutoCompleteSuggestionItemWidgetWeb extends StatelessWidget {
                   wordSearched: suggestionValid ?? '',
                   styleTextOrigin: AutoCompleteSuggestionItemWebStyle.subTitleTextOriginStyle,
                   styleWordSearched: AutoCompleteSuggestionItemWebStyle.subTitleWordSearchStyle,
+                  overflow: TextOverflow.ellipsis,
                 )
               : null,
             trailing: SvgPicture.asset(
@@ -72,7 +74,8 @@ class AutoCompleteSuggestionItemWidgetWeb extends StatelessWidget {
             leading: AvatarSuggestionItemWidget(emailAddress: emailAddress),
             title: RichTextWidget(
               textOrigin: emailAddress.asString(),
-              wordSearched: suggestionValid ?? ''
+              wordSearched: suggestionValid ?? '',
+              overflow: TextOverflow.ellipsis,
             ),
             subtitle: emailAddress.displayName.isNotEmpty
               ? RichTextWidget(
@@ -80,6 +83,7 @@ class AutoCompleteSuggestionItemWidgetWeb extends StatelessWidget {
                   wordSearched: suggestionValid ?? '',
                   styleTextOrigin: AutoCompleteSuggestionItemWebStyle.subTitleTextOriginStyle,
                   styleWordSearched: AutoCompleteSuggestionItemWebStyle.subTitleWordSearchStyle,
+                  overflow: TextOverflow.ellipsis,
                 )
               : null,
             onTap: () => onSelectedAction?.call(emailAddress),
