@@ -433,11 +433,11 @@ packages:
     source: path
     version: "1.0.0+1"
   enough_html_editor:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "."
-      ref: cnb_supported
-      resolved-ref: "6409f47b01c5992906971f2d8fdb8be3278bf787"
+      ref: cherry-pick-add-attachment-app-bar
+      resolved-ref: "195c74a0d65fc95226dbd257a40bc8c0c55f9a3e"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
