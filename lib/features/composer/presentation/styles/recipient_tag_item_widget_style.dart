@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class RecipientTagItemWidgetStyle {
@@ -9,7 +8,9 @@ class RecipientTagItemWidgetStyle {
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.only(start: 4);
   static const EdgeInsetsGeometry counterPadding = EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8);
   static const EdgeInsetsGeometry mobileCounterPadding = EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8);
-  static const EdgeInsetsGeometry counterMargin = EdgeInsetsDirectional.only(top: PlatformInfo.isWeb ? 8 : 0, start: 8);
+  static const EdgeInsetsGeometry counterMargin = EdgeInsetsDirectional.only(start: 8);
+  static const EdgeInsetsGeometry webMobileCounterMargin = EdgeInsetsDirectional.only(start: 8);
+  static const EdgeInsetsGeometry webCounterMargin = EdgeInsetsDirectional.only(top: 8, start: 8);
 
   static const TextStyle labelTextStyle = TextStyle(
     color: Colors.black,
