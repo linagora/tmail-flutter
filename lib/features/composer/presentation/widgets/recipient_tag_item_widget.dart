@@ -82,9 +82,9 @@ class RecipientTagItemWidget extends StatelessWidget {
                         deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
                         labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
                         backgroundColor: _getTagBackgroundColor(),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: const BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
-                          side: _getTagBorderSide(),
+                        side: _getTagBorderSide(),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
                         ),
                         avatar: currentEmailAddress.displayName.isNotEmpty
                           ? GradientCircleAvatarIcon(
@@ -122,9 +122,9 @@ class RecipientTagItemWidget extends StatelessWidget {
                   deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
                   labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
                   backgroundColor: _getTagBackgroundColor(),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: const BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
-                    side: _getTagBorderSide(),
+                  side: _getTagBorderSide(),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
                   ),
                   avatar: currentEmailAddress.displayName.isNotEmpty
                     ? GradientCircleAvatarIcon(
@@ -171,7 +171,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     if (isLatestTagFocused && isLatestEmail) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
     } else if (GetUtils.isEmail(currentEmailAddress.emailAddress)) {
-      return const BorderSide(width: 0, color: AppColor.colorEmailAddressTag);
+      return const BorderSide(width: 1, color: AppColor.colorEmailAddressTag);
     } else {
       return const BorderSide(
         width: 1,
