@@ -48,12 +48,14 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
             leading: AvatarSuggestionItemWidget(emailAddress: emailAddress),
             title: RichTextWidget(
               textOrigin: emailAddress.asString(),
-              wordSearched: suggestionValid ?? ''
+              wordSearched: suggestionValid ?? '',
+              overflow: TextOverflow.ellipsis,
             ),
             subtitle: emailAddress.displayName.isNotEmpty
               ? RichTextWidget(
                   textOrigin: emailAddress.emailAddress,
                   wordSearched: suggestionValid ?? '',
+                  overflow: TextOverflow.ellipsis,
                   styleTextOrigin: RecipientSuggestionItemWidgetStyle.labelTextStyle,
                   styleWordSearched: RecipientSuggestionItemWidgetStyle.labelHighlightTextStyle
                 )
@@ -77,12 +79,14 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
             leading: AvatarSuggestionItemWidget(emailAddress: emailAddress),
             title: RichTextWidget(
               textOrigin: emailAddress.asString(),
-              wordSearched: suggestionValid ?? ''
+              wordSearched: suggestionValid ?? '',
+              overflow: TextOverflow.ellipsis,
             ),
             subtitle: emailAddress.displayName.isNotEmpty
               ? RichTextWidget(
                   textOrigin: emailAddress.emailAddress,
                   wordSearched: suggestionValid ?? '',
+                  overflow: TextOverflow.ellipsis,
                   styleTextOrigin: RecipientSuggestionItemWidgetStyle.labelTextStyle,
                   styleWordSearched: RecipientSuggestionItemWidgetStyle.labelHighlightTextStyle
                 )
