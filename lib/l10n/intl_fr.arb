@@ -3471,5 +3471,47 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "any": "Au moins une",
+  "@any": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "all": "Toutes",
+  "@all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilterBeforeCombiner": "Si",
+  "@conditionTitleRulesFilterBeforeCombiner": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilterAfterCombiner": "des conditions suivantes sont remplies:",
+  "@conditionTitleRulesFilterAfterCombiner": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maskAsSeen": "Marquer comme lu",
+  "@maskAsSeen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "starIt": "Favori",
+  "@starIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rejectIt": "Rejet",
+  "@rejectIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
