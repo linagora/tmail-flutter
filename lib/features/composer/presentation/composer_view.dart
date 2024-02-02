@@ -19,10 +19,10 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/landscape_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/mobile_attachment_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/tablet_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/tablet_bottom_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -49,7 +49,7 @@ class ComposerView extends GetWidget<ComposerController> {
           ? controller.insertImage(context, constraints.maxWidth)
           : null,
         backgroundColor: MobileAppBarComposerWidgetStyle.backgroundColor,
-        childBuilder: (context) => Container(
+        childBuilder: (context, constraints) => Container(
           color: ComposerStyle.mobileBackgroundColor,
           child: Column(
             children: [
@@ -66,6 +66,12 @@ class ComposerView extends GetWidget<ComposerController> {
                       radius: ComposerStyle.popupMenuRadius
                     );
                   },
+                  isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
+                  attachFileAction: () => controller.openPickAttachmentMenu(
+                    context,
+                    _pickAttachmentsActionTiles(context)
+                  ),
+                  insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                 ))
               else
                 Obx(() => AppBarComposerWidget(
@@ -80,6 +86,12 @@ class ComposerView extends GetWidget<ComposerController> {
                       radius: ComposerStyle.popupMenuRadius
                     );
                   },
+                  isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
+                  attachFileAction: () => controller.openPickAttachmentMenu(
+                    context,
+                    _pickAttachmentsActionTiles(context)
+                  ),
+                  insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                 )),
               Expanded(
                 child: SafeArea(
@@ -233,10 +245,16 @@ class ComposerView extends GetWidget<ComposerController> {
           color: ComposerStyle.mobileBackgroundColor,
           child: Column(
             children: [
-              Obx(() => DesktopAppBarComposerWidget(
+              Obx(() => TabletAppBarComposerWidget(
                 emailSubject: controller.subjectEmail.value ?? '',
                 onCloseViewAction: () => controller.saveToDraftAndClose(context),
                 constraints: constraints,
+                isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
+                attachFileAction: () => controller.openPickAttachmentMenu(
+                  context,
+                  _pickAttachmentsActionTiles(context)
+                ),
+                insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
               )),
               Expanded(
                 child: SingleChildScrollView(
