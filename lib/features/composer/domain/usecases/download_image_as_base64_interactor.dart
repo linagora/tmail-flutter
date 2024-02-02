@@ -16,7 +16,6 @@ class DownloadImageAsBase64Interactor {
     {
       double? maxWidth,
       bool? compress,
-      bool fromFileShared = false,
     }
   ) async* {
     try {
@@ -33,7 +32,6 @@ class DownloadImageAsBase64Interactor {
           result!,
           cid,
           fileInfo,
-          fromFileShared: fromFileShared
         ));
       } else {
         yield Left<Failure, Success>(DownloadImageAsBase64Failure(null));
