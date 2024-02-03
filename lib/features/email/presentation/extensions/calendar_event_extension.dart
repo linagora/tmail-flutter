@@ -256,7 +256,37 @@ extension CalendarEventExtension on CalendarEvent {
     );
   }
 
+  String formatDate(date_format.DateLocale locale, DateTime dateTime) {
+    return date_format.formatDate(
+      dateTime,
+      [
+        date_format.DD,
+        ', ',
+        date_format.MM,
+        ' ',
+        date_format.dd,
+        ', ',
+        date_format.yyyy
+      ],
+      locale: locale
+    );
+  }
+
   String get dateTimeEventAsString {
+    if (startUtcDate != null && endUtcDate != null) {
+      final startHour = startUtcDate!.value.hour;
+      final startMinute = startUtcDate!.value.minute;
+      final endHour = endUtcDate!.value.hour;
+      final endMinute = endUtcDate!.value.minute;
+      log('CalendarEventExtension::endDate: $endUtcDate');
+      if (startHour == 0 && startMinute == 0 && endHour == 0 && endMinute == 0 && !DateUtils.isSameDay(localStartDate, localEndDate)) {
+        final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
+        final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
+        final timeStart = formatDate(AppUtils.getCurrentDateLocale(), startUtcDate!.value);
+        final timeEnd = formatDate(AppUtils.getCurrentDateLocale(), endUtcDate!.value);
+        return '$timeStart - $timeEnd (GMT$timeZoneOffsetAsString)';
+      }
+    }
     if (localStartDate != null && localEndDate != null) {
       final timeStart = formatDateTime(localStartDate!);
       final timeEnd = DateUtils.isSameDay(localStartDate, localEndDate)
