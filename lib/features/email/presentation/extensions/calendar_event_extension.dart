@@ -272,21 +272,53 @@ extension CalendarEventExtension on CalendarEvent {
     );
   }
 
-  String get dateTimeEventAsString {
+  bool get isAllDayEvent {
     if (startUtcDate != null && endUtcDate != null) {
-      final startHour = startUtcDate!.value.hour;
-      final startMinute = startUtcDate!.value.minute;
-      final endHour = endUtcDate!.value.hour;
-      final endMinute = endUtcDate!.value.minute;
-      log('CalendarEventExtension::endDate: $endUtcDate');
-      if (startHour == 0 && startMinute == 0 && endHour == 0 && endMinute == 0 && !DateUtils.isSameDay(localStartDate, localEndDate)) {
-        final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
-        final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
-        final timeStart = formatDate(AppUtils.getCurrentDateLocale(), startUtcDate!.value);
-        final timeEnd = formatDate(AppUtils.getCurrentDateLocale(), endUtcDate!.value);
-        return '$timeStart - $timeEnd (GMT$timeZoneOffsetAsString)';
-      }
+      final startDateValue = startUtcDate!.value;
+      final endDateValue = endUtcDate!.value;
+
+      final eventDurationInHours = startDateValue.difference(endDateValue).inHours;
+
+      final startHour = startDateValue.hour;
+      final startMinute = startDateValue.minute;
+      final startSecond = startDateValue.second;
+      
+      final endHour = endDateValue.hour;
+      final endMinute = endDateValue.minute;
+      final endSecond = endDateValue.second;
+
+      return startHour == 0 
+        && startMinute == 0
+        && startSecond == 0
+        && endHour == 0
+        && endMinute == 0
+        && endSecond == 0
+        && eventDurationInHours % 24 == 0;
     }
+    return false;
+  }
+
+  String dateTimeStringForAllDayEvent(DateTime startDate, DateTime endDate) {
+    final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
+    final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
+
+    final dateStart = formatDate(AppUtils.getCurrentDateLocale(), startDate);
+
+    final endDateToDisplay = endDate.subtract(const Duration(days: 1));
+    final dateEnd = formatDate(AppUtils.getCurrentDateLocale(), endDateToDisplay);
+
+    if (DateUtils.isSameDay(startDate, endDateToDisplay)) {
+      return '$dateStart (GMT$timeZoneOffsetAsString)';
+    } else {
+      return '$dateStart - $dateEnd (GMT$timeZoneOffsetAsString)';
+    }
+  }
+
+  String get dateTimeEventAsString {
+    if (isAllDayEvent) {
+      return dateTimeStringForAllDayEvent(startUtcDate!.value, endUtcDate!.value);
+    }
+
     if (localStartDate != null && localEndDate != null) {
       final timeStart = formatDateTime(localStartDate!);
       final timeEnd = DateUtils.isSameDay(localStartDate, localEndDate)
