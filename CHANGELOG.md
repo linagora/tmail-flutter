@@ -1,3 +1,25 @@
+## [0.11.4] - 2024-02-03
+### Added
+- Add content-Language & Accept-Languagle to body
+- Translate: Arabixc, Vietnamese, Russian, French, Korean
+
+### Fixed
+- Fix edit dialog for insert link
+- Dont remove firebase token anymore
+- \#2465 Fix wrong format date time in Blue Bar
+- \#2497 support http in server url configuration
+- \#2464 fix plain notification in iOS
+- \#2492 Try to delete signature button in sending email
+- \#2475 Fix Rich text toolbox in mobile app
+- \#2459 fix error for reply to fiels when reply email
+- \#2461 Fix side effect of QueueInterceptor when 401
+- \#2510 avoid  in attachment list
+- \#2510 avoid rtf inline in attachment list
+- \#2513 fade text &  some svg not work
+- \#2357 some icon and text have not good in view
+- \#2528 sort thread get email base on the /Query response
+- \#2538 web mail in mobile browser have some white line in border
+
 ## [0.11.3] - 2024-01-12
 ### Fixed
 - Get plain notification on iOS
@@ -385,6 +407,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.11.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4
 [0.11.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.3
 [0.11.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.2
 [0.11.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.0
