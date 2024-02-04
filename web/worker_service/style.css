@@ -21,44 +21,34 @@
 
 .sheet-content { 
 	padding: 20px; 
-} 
-
-.sheet-content h2 { 
-	font-size: 24px; 
-	margin-bottom: 10px; 
-} 
-
-.sheet-content p { 
-	font-size: 16px; 
-	line-height: 1.5; 
 }
 
 .open_on_mobile_title {
-      height: 48px;
-      line-height: 48px;
-      display: inline-block;
-      font-weight: bold;
-      font-size: 16px;
-      border-bottom: 1px solid #eee;
-      text-align: center;
-      width: 100%;
-      margin-bottom: 16px;
-      color: #000;
-    }
+  height: 48px;
+  line-height: 48px;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 16px;
+  color: #000;
+}
 
 .open_on_mobile_actions {
-      width: 100%;
-      display: block;
-      height: 48px;
-      display: flex;
-      justify-content: left;
-      align-items: center;
+  width: 100%;
+  display: block;
+  height: 48px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
 
-      & > span {
-        margin-left: 8px;
-        font-weight: bold;
-      }
-    }
+  & > span {
+    margin-left: 8px;
+    font-weight: bold;
+  }
+}
 
 .button {
   border: none;
