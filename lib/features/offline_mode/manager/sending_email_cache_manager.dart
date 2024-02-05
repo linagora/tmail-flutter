@@ -30,7 +30,8 @@ class SendingEmailCacheManager {
   }
 
   Future<List<SendingEmailHiveCache>> getAllSendingEmailsByTupleKey(AccountId accountId, UserName userName) async {
-     final sendingEmailsCache = await _hiveCacheClient.getListByTupleKey(accountId.asString, userName.value);
+    final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    final sendingEmailsCache = await _hiveCacheClient.getListByNestedKey(nestedKey);
      sendingEmailsCache.sortByLatestTime();
      return sendingEmailsCache;
   }

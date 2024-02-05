@@ -1,0 +1,1 @@
+class NotFoundGetMailboxResponseException implements Exception {}
