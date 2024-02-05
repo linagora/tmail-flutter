@@ -60,7 +60,8 @@ class NewEmailCacheManager {
   }
 
   Future<List<DetailedEmailHiveCache>> getAllDetailedEmails(AccountId accountId, UserName userName) async {
-    final detailedEmailCacheList = await _cacheClient.getListByTupleKey(accountId.asString, userName.value);
+    final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    final detailedEmailCacheList = await _cacheClient.getListByNestedKey(nestedKey);
     detailedEmailCacheList.sortByLatestTime();
     return detailedEmailCacheList;
   }

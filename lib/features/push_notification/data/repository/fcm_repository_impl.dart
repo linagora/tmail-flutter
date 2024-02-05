@@ -7,6 +7,7 @@ import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -24,7 +25,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_r
 import 'package:tmail_ui_user/features/push_notification/domain/utils/fcm_constants.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 class FCMRepositoryImpl extends FCMRepository {
@@ -131,7 +131,7 @@ class FCMRepositoryImpl extends FCMRepository {
       return mailboxesCacheNotPutNotifications;
     } else {
       final mailboxResponse = await _mapMailboxDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
-      final mailboxes = mailboxResponse.mailboxes ?? [];
+      final mailboxes = mailboxResponse.list;
       final mailboxesNotPutNotifications = mailboxes
         .map((mailbox) => mailbox.toPresentationMailbox())
         .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)
