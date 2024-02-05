@@ -6,14 +6,14 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/extensions/list_presentation_mailbox_extension.dart';
 import 'package:model/extensions/mailbox_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 
 class DeleteMultipleMailboxInteractor {
   final MailboxRepository _mailboxRepository;
@@ -23,31 +23,31 @@ class DeleteMultipleMailboxInteractor {
   Stream<Either<Failure, Success>> execute(
       Session session,
       AccountId accountId,
-      Map<MailboxId, List<MailboxId>> mapMailboxIdToDelete,
-      List<MailboxId> listMailboxIdToDelete
+      List<PresentationMailbox> listMailboxToDelete
   ) async* {
     try {
       yield Right<Failure, Success>(LoadingDeleteMultipleMailboxAll());
 
       final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
 
-      final mailboxResponses = await _mailboxRepository.getAllMailbox(session, accountId).toList();
+      final mailboxResponse = await _mailboxRepository.getAllMailbox(session, accountId).last;
 
-      final listUnsubscribedMailbox = mailboxResponses.expand((mailboxResponse) {
-        final presentationMailboxes = mailboxResponse.mailboxes
-          ?.map((mailbox) => mailbox.toPresentationMailbox()).toList()
-          ?? List<PresentationMailbox>.empty();
-        return presentationMailboxes.listUnsubscribedMailboxes;
-      }).toSet();
+      final listAllMailbox = mailboxResponse.mailboxes
+        .map((mailbox) => mailbox.toPresentationMailbox())
+        .toList();
 
-      if (listUnsubscribedMailbox.isNotEmpty) {
-        final unsubscribedTree = buildUnsubscribedMailboxTree(listUnsubscribedMailbox);
-        mapMailboxIdToDelete = addUnsubscribedSubFolderToDelete(
-          mapMailboxIdToDelete,
-          listMailboxIdToDelete,
-          unsubscribedTree
-        );
-      }
+      final mailboxTree = buildMailboxTree(listAllMailbox);
+      final defaultMailboxTree = mailboxTree.value1;
+      final personalMailboxTree = mailboxTree.value2;
+
+      final mapDescendant = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
+        listMailboxToDelete,
+        defaultMailboxTree,
+        personalMailboxTree
+      );
+
+      final mapMailboxIdToDelete = mapDescendant.value1;
+      final listMailboxIdToDelete = mapDescendant.value2;
 
       final listResult = await Future.wait(
           mapMailboxIdToDelete.keys.map((mailboxId) {
@@ -79,70 +79,40 @@ class DeleteMultipleMailboxInteractor {
     }
   }
 
-  MailboxTree buildUnsubscribedMailboxTree(
-    Set<PresentationMailbox> listUnsubscribedMailbox,
+  Tuple2<MailboxTree, MailboxTree> buildMailboxTree(
+    List<PresentationMailbox> mailboxList,
   ) {
     Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
-    final unsubscribedTree = MailboxTree(MailboxNode.root());
+    final defaultTree = MailboxTree(MailboxNode.root());
+    final personalTree = MailboxTree(MailboxNode.root());
+    final teamMailboxes = MailboxTree(MailboxNode.root());
 
-    for (var mailbox in listUnsubscribedMailbox) {
-      if (mailbox.parentId != null) {
-        mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
-      }
+    for (var mailbox in mailboxList) {
+      mailboxDictionary[mailbox.id] = MailboxNode(mailbox);
     }
 
-    for (var mailbox in listUnsubscribedMailbox) {
+    for (var mailbox in mailboxList) {
       final parentId = mailbox.parentId;
-      if (parentId != null) {
-        final parentNode = mailboxDictionary[parentId];
-        final node = mailboxDictionary[mailbox.id];
-        if (node != null) {
-          if (parentNode != null) {
-            parentNode.addChildNode(node);
+      final parentNode = mailboxDictionary[parentId];
+      final node = mailboxDictionary[mailbox.id];
+      if (node != null) {
+        if (parentNode != null) {
+          parentNode.addChildNode(node);
+        } else if (parentId == null) {
+          MailboxTree tree;
+          if (mailbox.hasRole()) {
+            tree = defaultTree;
+          } else if (mailbox.isPersonal) {
+            tree = personalTree;
           } else {
-            mailboxDictionary[parentId] = MailboxNode(PresentationMailbox(parentId));
-            unsubscribedTree.root.addChildNode(mailboxDictionary[parentId]!);
-            mailboxDictionary[parentId]!.addChildNode(node);
+            tree = teamMailboxes;
           }
+
+          tree.root.addChildNode(node);
         }
       }
     }
 
-    return unsubscribedTree;
-  }
-
-  Map<MailboxId, List<MailboxId>> addUnsubscribedSubFolderToDelete(
-    Map<MailboxId, List<MailboxId>> mapMailboxIdToDelete,
-    List<MailboxId> listMailboxIdToDelete,
-    MailboxTree unsubscribedTree,
-  ) {
-    List<MailboxId> visitedUnsubscribedMailboxIds = [];
-
-    for (var mailboxId in listMailboxIdToDelete) {
-      if (visitedUnsubscribedMailboxIds.contains(mailboxId)) {
-        continue;
-      } else {
-        final matchedNode = unsubscribedTree.findNode((node) => node.item.id == mailboxId);
-
-        if (matchedNode != null) {
-          final descendantIds = matchedNode.descendantsAsList().mailboxIds;
-          final descendantIdsReversed = descendantIds.reversed.toList();
-          descendantIdsReversed.removeLast();
-
-          if (mapMailboxIdToDelete.containsKey(mailboxId)) {
-            mapMailboxIdToDelete[mailboxId]!.insertAll(mapMailboxIdToDelete[mailboxId]!.length - 1, descendantIdsReversed);
-          } else {
-            for (var listIdToDelete in mapMailboxIdToDelete.values) {
-              if (listIdToDelete.contains(mailboxId)) {
-                listIdToDelete.insertAll(listIdToDelete.indexOf(mailboxId), descendantIdsReversed);
-              }
-            }
-          }
-          visitedUnsubscribedMailboxIds.addAll(descendantIdsReversed);
-        }
-      }
-    }
-
-    return mapMailboxIdToDelete;
+    return Tuple2(defaultTree, personalTree);
   }
 }
