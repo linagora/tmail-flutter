@@ -5,6 +5,10 @@ on:
 
 name: Build dev binaries
 
+env:
+  FLUTTER_VERSION: 3.16.0
+  XCODE_VERSION: ^15.0.1
+
 jobs:
   build-app:
     name: Build app
@@ -15,7 +19,7 @@ jobs:
           - os: android
             runner: ubuntu-latest
           - os: ios
-            runner: macos-latest
+            runner: macos-13
     environment: dev
 
     steps:
@@ -25,7 +29,7 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.16.0"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
           cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
@@ -49,6 +53,12 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
+
+      - name: Select Xcode version
+        if: matrix.os == 'ios'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
 
       - name: Setup iOS environment
         if: matrix.os == 'ios'
