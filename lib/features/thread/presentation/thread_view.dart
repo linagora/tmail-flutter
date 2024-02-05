@@ -659,7 +659,7 @@ class ThreadView extends GetWidget<ThreadController>
 
     return <Widget>[
       _openInNewTabContextMenuItemAction(context, email),
-      if (mailboxContain?.isDrafts == false)
+      if (mailboxContain?.isDrafts == false && mailboxContain?.isChildOfTeamMailboxes == false)
         _markAsEmailSpamOrUnSpamContextMenuItemAction(context, email, mailboxContain),
       if (mailboxContain?.isArchive == false)
         _archiveMessageContextMenuItemAction(context, email),
@@ -751,7 +751,7 @@ class ThreadView extends GetWidget<ThreadController>
 
     return [
       _buildOpenInNewTabPopupMenuItem(context, email, mailboxContain),
-      if (mailboxContain?.isDrafts == false)
+      if (mailboxContain?.isDrafts == false && mailboxContain?.isChildOfTeamMailboxes == false)
         _buildMarkAsSpamPopupMenuItem(context, email, mailboxContain),
       if (mailboxContain?.isArchive == false)
         _buildArchiveMessagePopupMenuItem(context, email),
