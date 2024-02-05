@@ -12,13 +12,13 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
@@ -33,7 +33,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   MailboxCacheDataSourceImpl(this._mailboxCacheManager, this._exceptionThrower);
 
   @override
-  Future<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) {
+  Future<GetMailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) {
     throw UnimplementedError();
   }
 
@@ -110,5 +110,12 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   @override
   Future<GetMailboxByRoleResponse> getMailboxByRole(Session session, AccountId accountId, Role role, {UnsignedInt? limit}) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> clearAllMailboxCache(AccountId accountId, UserName userName) {
+    return Future.sync(() async {
+      return await _mailboxCacheManager.clearAll(accountId, userName);
+    }).catchError(_exceptionThrower.throwException);
   }
 }
