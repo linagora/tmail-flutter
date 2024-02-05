@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/list_mailbox_extension.dart';
@@ -20,10 +21,13 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasourc
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/cache_mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/full_mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/partial_mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
@@ -41,59 +45,151 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
   @override
   Stream<MailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async* {
-    final localMailboxResponse = await Future.wait([
-      mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username),
-      stateDataSource.getState(accountId, session.username, StateType.mailbox)
-    ]).then((List response) {
-      return MailboxResponse(mailboxes: response.first, state: response.last);
-    });
-
-    yield localMailboxResponse;
-
-    if (localMailboxResponse.hasData()) {
-      bool hasMoreChanges = true;
-      State? sinceState = localMailboxResponse.state!;
-
-      while(hasMoreChanges && sinceState != null) {
-        final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(session, accountId, sinceState, properties: properties);
-
-        hasMoreChanges = changesResponse.hasMoreChanges;
-        sinceState = changesResponse.newStateChanges;
-
-        final newMailboxUpdated = await _combineMailboxCache(
-            mailboxUpdatedList: changesResponse.updated,
-            updatedProperties: changesResponse.updatedProperties,
-            mailboxCacheList: localMailboxResponse.mailboxes!);
-
-        await Future.wait([
-          mapDataSource[DataSourceType.local]!.update(
-              accountId,
-              session.username,
-              updated: newMailboxUpdated,
-              created: changesResponse.created,
-              destroyed: changesResponse.destroyed),
-          if (changesResponse.newStateMailbox != null)
-            stateDataSource.saveState(accountId, session.username, changesResponse.newStateMailbox!.toStateCache(StateType.mailbox)),
-        ]);
-      }
-    } else {
-      final mailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
-
-      await Future.wait([
-        mapDataSource[DataSourceType.local]!.update(accountId, session.username, created: mailboxResponse.mailboxes),
-        if (mailboxResponse.state != null)
-          stateDataSource.saveState(accountId, session.username, mailboxResponse.state!.toStateCache(StateType.mailbox)),
-      ]);
+    CacheMailboxResponse? cacheMailboxResponse = await _getAllMailboxFromCache(accountId, session.username);
+    if (cacheMailboxResponse != null) {
+      yield cacheMailboxResponse;
     }
 
-    final newMailboxResponse = await Future.wait([
-      mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username),
-      stateDataSource.getState(accountId, session.username, StateType.mailbox)
-    ]).then((List response) {
-      return MailboxResponse(mailboxes: response.first, state: response.last);
-    });
+    final newMailboxResponse = await _getAllMailboxFromJMAP(accountId, session);
+    if (newMailboxResponse == null) {
+      return;
+    }
 
-    yield newMailboxResponse;
+    if (newMailboxResponse is FullMailboxResponse) {
+      await _syncNewInCache(
+        accountId,
+        session.username,
+        newMailboxResponse.mailboxes,
+        newMailboxResponse.state!);
+
+      yield newMailboxResponse;
+    } else if (newMailboxResponse is PartialMailboxResponse) {
+      await _syncUpdateInCache(
+        accountId,
+        session.username,
+        newMailboxResponse.mailboxes,
+        newMailboxResponse.state!);
+
+      cacheMailboxResponse = await _getAllMailboxFromCache(accountId, session.username);
+      if (cacheMailboxResponse != null) {
+        yield cacheMailboxResponse;
+      } else {
+        yield newMailboxResponse;
+      }
+    }
+  }
+
+  Future<CacheMailboxResponse?> _getAllMailboxFromCache(AccountId accountId, UserName userName) async {
+    try {
+      final cacheMailboxResponse = await Future.wait([
+        mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, userName),
+        stateDataSource.getState(accountId, userName, StateType.mailbox)
+      ], eagerError: true).then((List response) => CacheMailboxResponse(mailboxes: response.first, state: response.last));
+      log('MailboxRepositoryImpl::_getAllMailboxFromCache: MAILBOX_CACHED = ${cacheMailboxResponse.mailboxes.length} | STATE_CACHED = ${cacheMailboxResponse.state?.value}');
+      return cacheMailboxResponse;
+    } catch (e) {
+      logError('MailboxRepositoryImpl::_getAllMailboxFromCache: Exception: $e');
+      return null;
+    }
+  }
+
+  Future<MailboxResponse?> _getAllMailboxFromJMAP(
+    AccountId accountId,
+    Session session,
+    {Properties? properties}
+  ) async {
+    try {
+      final getMailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(
+        session,
+        accountId,
+        properties: properties);
+      log('MailboxRepositoryImpl::_getAllMailboxFromJMAP: MAILBOX_NETWORK = ${getMailboxResponse.list.length} | STATE_NETWORK = ${getMailboxResponse.state.value}');
+      if (getMailboxResponse.notFound?.isNotEmpty == true) {
+        return PartialMailboxResponse(
+          mailboxNotFound: getMailboxResponse.notFound!,
+          mailboxes: getMailboxResponse.list,
+          state: getMailboxResponse.state);
+      } else {
+        return FullMailboxResponse(
+          mailboxes: getMailboxResponse.list,
+          state: getMailboxResponse.state);
+      }
+    } catch (e) {
+      logError('MailboxRepositoryImpl::_getAllMailboxFromJMAP: Exception: $e');
+      return null;
+    }
+  }
+
+  Future<void> _syncNewInCache(
+    AccountId accountId,
+    UserName userName,
+    List<Mailbox> newMailboxes,
+    State newState,
+  ) async {
+    await Future.wait([
+      _syncNewMailboxesInCache(accountId, userName, newMailboxes),
+      _syncNewMailboxStateInCache(accountId, userName, newState)
+    ]);
+  }
+
+  Future<void> _syncNewMailboxesInCache(
+    AccountId accountId,
+    UserName userName,
+    List<Mailbox> newMailboxes
+  ) async {
+    try {
+      await mapDataSource[DataSourceType.local]!.clearAllMailboxCache(
+        accountId,
+        userName);
+      await mapDataSource[DataSourceType.local]!.update(
+        accountId,
+        userName,
+        created: newMailboxes);
+    } catch (e) {
+      logError('MailboxRepositoryImpl::_syncNewMailboxesInCache: Exception = $e');
+    }
+  }
+
+  Future<void> _syncNewMailboxStateInCache(
+    AccountId accountId,
+    UserName userName,
+    State newState
+  ) async {
+    try {
+      await stateDataSource.saveState(
+        accountId,
+        userName,
+        newState.toStateCache(StateType.mailbox));
+    } catch (e) {
+      logError('MailboxRepositoryImpl::_syncNewMailboxStateInCache: Exception = $e');
+    }
+  }
+
+  Future<void> _syncUpdateInCache(
+    AccountId accountId,
+    UserName userName,
+    List<Mailbox> newMailboxes,
+    State newState,
+  ) async {
+    await Future.wait([
+      _syncUpdateMailboxesInCache(accountId, userName, newMailboxes),
+      _syncNewMailboxStateInCache(accountId, userName, newState)
+    ]);
+  }
+
+  Future<void> _syncUpdateMailboxesInCache(
+    AccountId accountId,
+    UserName userName,
+    List<Mailbox> newMailboxes
+  ) async {
+    try {
+      await mapDataSource[DataSourceType.local]!.update(
+        accountId,
+        userName,
+        updated: newMailboxes);
+    } catch (e) {
+      logError('MailboxRepositoryImpl::_syncUpdateMailboxesInCache: Exception = $e');
+    }
   }
 
   Future<List<Mailbox>?> _combineMailboxCache({
@@ -156,7 +252,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       mapDataSource[DataSourceType.local]!.getAllMailboxCache(accountId, session.username),
       stateDataSource.getState(accountId, session.username, StateType.mailbox)
     ]).then((List response) {
-      return MailboxResponse(mailboxes: response.first, state: response.last);
+      return CacheMailboxResponse(mailboxes: response.first, state: response.last);
     });
 
     yield newMailboxResponse;
