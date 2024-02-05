@@ -1,26 +1,26 @@
-.bottom-sheet { 
-	display: none; 
-	position: fixed; 
-	bottom: 0; 
-	left: 0; 
-	width: 100%; 
-	background-color: #fff; 
-	border-top-left-radius: 20px; 
-	border-top-right-radius: 20px; 
-	box-shadow: 0px -3px 10px rgba(0, 0, 0, 0.2); 
-	overflow: hidden; 
+.bottom-sheet {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0px -3px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 } 
 
 .sheet-header { 
-	display: flex; 
-	justify-content: space-between; 
-	align-items: center; 
-	padding: 10px 20px; 
-	color: #fff; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: #fff;
 } 
 
 .sheet-content { 
-	padding: 20px; 
+  padding: 20px;
 }
 
 .open_on_mobile_title {
