@@ -1,53 +1,24 @@
-.bottom-sheet {
+.smart-banner {
   display: none;
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: #fff;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 0px -3px 10px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-} 
-
-.sheet-header { 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  color: #fff;
-} 
-
-.sheet-content { 
-  padding: 20px;
+  left: 14px;
+  right: 14px;
+  border-radius: 10px;
+  background: linear-gradient(0deg, #FFFBFE 0%, #FFFBFE 100%), linear-gradient(0deg, rgba(122.19, 184.06, 255, 0.09) 0%, rgba(122.19, 184.06, 255, 0.09) 100%);
+  box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.16);
 }
 
-.open_on_mobile_title {
-  height: 48px;
-  line-height: 48px;
-  display: inline-block;
-  font-weight: bold;
-  font-size: 16px;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-  width: 100%;
-  margin-bottom: 16px;
-  color: #000;
-}
-
-.open_on_mobile_actions {
-  width: 100%;
+.banner-content {
+  padding-bottom: 18px;
   display: block;
-  height: 48px;
   display: flex;
   justify-content: left;
   align-items: center;
+}
 
-  & > span {
-    margin-left: 8px;
-    font-weight: bold;
-  }
+.twake-mail-icon {
+  margin-left: 12px;
+  margin-right: 16px;
 }
 
 .button {
@@ -55,21 +26,43 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
-  border-radius: 5px;
-  font-weight: bold;
+  background-color: transparent;
 }
 
-.openApp {
-  color: white;
-  background-color: #002DDF;
-  padding: 10px 20px; 
+.close-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
 
-.continueWeb {
-  color: #002DDF;
-  background-color: white;
-  padding: 10px 8px;
+.open-button {
+  color: #007AFF;
+  font-size: 17px;
+  font-family: Inter;
+  font-weight: 500;
+  line-height: 24px;
+  word-wrap: break-word;
+  margin-right: 24px;
+  margin-left: 16px;
+}
+
+.banner-title {
+  font-family: Inter;
+  word-wrap: break-word;
+  color: black;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+.banner-description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 16px;
+  font-family: Inter;
+  word-wrap: break-word;
+  color: black;
 }
