@@ -1,3 +1,10 @@
+## [0.11.5] - 2024-02-06
+### Added
+- \#2532 add attachment + inline button in app bar of composer
+
+### Fixed
+- Build iOS failed because of inappWebview
+
 ## [0.11.4] - 2024-02-03
 ### Added
 - Add content-Language & Accept-Languagle to body
@@ -407,6 +414,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.11.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.5
 [0.11.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4
 [0.11.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.3
 [0.11.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.2
