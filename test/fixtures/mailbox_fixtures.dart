@@ -95,4 +95,9 @@ class MailboxFixtures {
           true),
       isSubscribed: IsSubscribed(true)
   );
+
+  static final mailboxA = Mailbox(id: MailboxId(Id('A')));
+  static final mailboxB = Mailbox(id: MailboxId(Id('B')));
+  static final mailboxC = Mailbox(id: MailboxId(Id('C')));
+  static final mailboxD = Mailbox(id: MailboxId(Id('D')));
 }
