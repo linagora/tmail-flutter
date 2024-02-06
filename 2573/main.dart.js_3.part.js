@@ -2023,26 +2023,37 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     CalendarEventExtension_formatDateTime(_this, dateTime) {
       return B.formatDate(dateTime, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy", " ", "hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
     },
-    CalendarEventExtension_get_dateTimeEventAsString(_this) {
-      var t2, t3, timeZoneOffset, timeZoneOffsetAsString, t4, timeStart, timeEnd,
+    CalendarEventExtension_get_isAllDayEvent(_this) {
+      var t2,
         t1 = _this.startUtcDate;
       if (t1 != null && _this.endUtcDate != null) {
         t1 = t1.value;
-        t2 = _this.endUtcDate;
-        t3 = t2.value;
-        A.log("CalendarEventExtension::endDate: " + t2.toString$0(0), C.Level_3);
-        if (A.Primitives_getHours(t1) === 0 && A.Primitives_getMinutes(t1) === 0 && A.Primitives_getHours(t3) === 0 && A.Primitives_getMinutes(t3) === 0 && !A.DateUtils_isSameDay(B.CalendarEventExtension_get_localStartDate(_this), B.CalendarEventExtension_get_localEndDate(_this))) {
-          timeZoneOffset = C.JSInt_methods._tdivFast$1(new A.DateTime(Date.now(), false).get$timeZoneOffset()._duration, 3600000000);
-          timeZoneOffsetAsString = "" + timeZoneOffset;
-          if (timeZoneOffset >= 0)
-            timeZoneOffsetAsString = "+" + timeZoneOffsetAsString;
-          t2 = B.AppUtils_getCurrentDateLocale();
-          t4 = type$.JSArray_String;
-          timeStart = B.formatDate(t1, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t4), t2);
-          t2 = B.AppUtils_getCurrentDateLocale();
-          return timeStart + " - " + B.formatDate(t3, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t4), t2) + " (GMT" + timeZoneOffsetAsString + ")";
-        }
+        t2 = _this.endUtcDate.value;
+        return A.Primitives_getHours(t1) === 0 && A.Primitives_getMinutes(t1) === 0 && A.Primitives_getHours(t2) === 0 && A.Primitives_getMinutes(t2) === 0;
       }
+      return false;
+    },
+    CalendarEventExtension_dateTimeStringForAllDayEvent(_this, startDate, endDate) {
+      var t1, t2, dateStart, endDateToDisplay, dateEnd,
+        timeZoneOffset = C.JSInt_methods._tdivFast$1(new A.DateTime(Date.now(), false).get$timeZoneOffset()._duration, 3600000000),
+        timeZoneOffsetAsString = "" + timeZoneOffset;
+      if (timeZoneOffset >= 0)
+        timeZoneOffsetAsString = "+" + timeZoneOffsetAsString;
+      t1 = B.AppUtils_getCurrentDateLocale();
+      t2 = type$.JSArray_String;
+      dateStart = B.formatDate(startDate, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t2), t1);
+      endDateToDisplay = endDate.subtract$1(D.Duration_86400000000);
+      t1 = B.AppUtils_getCurrentDateLocale();
+      dateEnd = B.formatDate(endDateToDisplay, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t2), t1);
+      if (A.DateUtils_isSameDay(startDate, endDateToDisplay))
+        return dateStart + " (GMT" + timeZoneOffsetAsString + ")";
+      else
+        return dateStart + "  - " + dateEnd + " (GMT" + timeZoneOffsetAsString + ")";
+    },
+    CalendarEventExtension_get_dateTimeEventAsString(_this) {
+      var t1, timeStart, timeEnd;
+      if (B.CalendarEventExtension_get_isAllDayEvent(_this))
+        return B.CalendarEventExtension_dateTimeStringForAllDayEvent(_this, _this.startUtcDate.value, _this.endUtcDate.value);
       if (B.CalendarEventExtension_get_localStartDate(_this) != null && B.CalendarEventExtension_get_localEndDate(_this) != null) {
         t1 = B.CalendarEventExtension_get_localStartDate(_this);
         t1.toString;
@@ -14107,10 +14118,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       mailboxContain = t4._as(t3.get(t1)).getMailboxContain$1(presentationEmail);
       t5 = A._setArrayType([C.EmailActionType_5], type$.JSArray_EmailActionType);
       t6 = mailboxContain == null;
-      if ((t6 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam())) === true)
-        t5.push(C.EmailActionType_21);
-      else
-        t5.push(C.EmailActionType_20);
+      if (t6)
+        t7 = _null;
+      else {
+        t7 = mailboxContain.namespace;
+        t7 = !(t7 == null || t7.$eq(0, new A.Namespace("Personal"))) && A.PresentationMailboxExtension_hasParentId(mailboxContain);
+      }
+      if (t7 === false)
+        if ((t6 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam())) === true)
+          t5.push(C.EmailActionType_21);
+        else
+          t5.push(C.EmailActionType_20);
       t7 = presentationEmail.from;
       if ((t7 == null ? _null : t7._collection$_length !== 0) === true)
         t5.push(C.EmailActionType_23);
@@ -19066,7 +19084,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildEmailItemNotDraggable_closure0.prototype = {
     call$2(email, position) {
-      var t4, mailboxContain, t5, _null = null,
+      var t4, mailboxContain, t5, t6, _null = null,
+        _s8_ = "Personal",
         t1 = this.$this,
         t2 = this.context,
         t3 = $.$get$GetWidget__cache();
@@ -19080,7 +19099,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t4._as(t3.get(t1));
         t4 = A._setArrayType([t1._openInNewTabContextMenuItemAction$2(t2, email)], type$.JSArray_Widget);
         t5 = mailboxContain == null;
-        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false)
+        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
+          if (t5)
+            t6 = _null;
+          else {
+            t6 = mailboxContain.namespace;
+            t6 = !(t6 == null || t6.$eq(0, new A.Namespace(_s8_))) && A.PresentationMailboxExtension_hasParentId(mailboxContain);
+          }
+          t6 = t6 === false;
+        } else
+          t6 = false;
+        if (t6)
           t4.push(t1._markAsEmailSpamOrUnSpamContextMenuItemAction$3(t2, email, mailboxContain));
         if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleArchive())) === false)
           t4.push(t1._archiveMessageContextMenuItemAction$2(t2, email));
@@ -19090,7 +19119,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t4._as(t3.get(t1));
         t4 = A._setArrayType([t1._buildOpenInNewTabPopupMenuItem$3(t2, email, mailboxContain)], type$.JSArray_PopupMenuEntry_dynamic);
         t5 = mailboxContain == null;
-        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false)
+        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
+          if (t5)
+            t6 = _null;
+          else {
+            t6 = mailboxContain.namespace;
+            t6 = !(t6 == null || t6.$eq(0, new A.Namespace(_s8_))) && A.PresentationMailboxExtension_hasParentId(mailboxContain);
+          }
+          t6 = t6 === false;
+        } else
+          t6 = false;
+        if (t6)
           t4.push(t1._buildMarkAsSpamPopupMenuItem$3(t2, email, mailboxContain));
         if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleArchive())) === false)
           t4.push(t1._buildArchiveMessagePopupMenuItem$2(t2, email));
@@ -20323,5 +20362,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "DDTlgRqGUUZzduVPXRueNXaAFDs=");
+})($__dart_deferred_initializers__, "OJ5biTyCmglaywY5cHGplm6lMfs=");
 ;
