@@ -33,10 +33,9 @@ class ThreadIsolateWorker {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
-    Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   ) async {
     if (PlatformInfo.isWeb) {
-      return _emptyMailboxFolderOnWeb(session, accountId, mailboxId, updateDestroyedEmailCache);
+      return _emptyMailboxFolderOnWeb(session, accountId, mailboxId);
     } else {
       final rootIsolateToken = RootIsolateToken.instance;
       if (rootIsolateToken == null) {
@@ -52,13 +51,7 @@ class ThreadIsolateWorker {
           mailboxId,
           rootIsolateToken
         ),
-        fun1: _emptyMailboxFolderAction,
-        notification: (value) {
-          if (value is List<EmailId>) {
-            updateDestroyedEmailCache.call(value);
-            log('ThreadIsolateWorker::emptyMailboxFolder(): onUpdateProgress: PERCENT ${value.length}');
-          }
-        }
+        fun1: _emptyMailboxFolderAction
       );
 
       if (result.isEmpty) {
@@ -102,14 +95,11 @@ class ThreadIsolateWorker {
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
-          final listEmailIdDeleted = await args.emailAPI.deleteMultipleEmailsPermanently(args.session, args.accountId, newEmailList.listEmailIds);
-
-          if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == newEmailList.listEmailIds.length) {
-            sendPort.send(listEmailIdDeleted);
-          }
+          final listEmailIdDeleted = await args.emailAPI.deleteMultipleEmailsPermanently(
+            args.session,
+            args.accountId,
+            newEmailList.listEmailIds);
           emailListCompleted.addAll(listEmailIdDeleted);
-
-          sendPort.send(emailListCompleted);
         } else {
           hasEmails = false;
         }
@@ -125,7 +115,6 @@ class ThreadIsolateWorker {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
-    Future<void> Function(List<EmailId> newDestroyed) updateDestroyedEmailCache,
   ) async {
     List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
@@ -152,13 +141,11 @@ class ThreadIsolateWorker {
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
-          final listEmailIdDeleted = await _emailAPI.deleteMultipleEmailsPermanently(session, accountId, newEmailList.listEmailIds);
-
-          if (listEmailIdDeleted.isNotEmpty && listEmailIdDeleted.length == newEmailList.listEmailIds.length) {
-            await updateDestroyedEmailCache(listEmailIdDeleted);
-          }
+          final listEmailIdDeleted = await _emailAPI.deleteMultipleEmailsPermanently(
+            session,
+            accountId,
+            newEmailList.listEmailIds);
           emailListCompleted.addAll(listEmailIdDeleted);
-
         } else {
           hasEmails = false;
         }

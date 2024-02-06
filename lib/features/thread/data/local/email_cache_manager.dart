@@ -65,20 +65,20 @@ class EmailCacheManager {
     List<Email>? created,
     List<EmailId>? destroyed
   }) async {
-    final emailCacheExist = await _emailCacheClient.isExistTable();
-    if (emailCacheExist) {
-      final updatedCacheEmails = updated?.toMapCache(accountId, userName) ?? {};
-      final createdCacheEmails = created?.toMapCache(accountId, userName) ?? {};
-      final destroyedCacheEmails = destroyed?.toCacheKeyList(accountId, userName) ?? [];
-
-      await Future.wait([
-        _emailCacheClient.updateMultipleItem(updatedCacheEmails),
-        _emailCacheClient.insertMultipleItem(createdCacheEmails),
-        _emailCacheClient.deleteMultipleItem(destroyedCacheEmails)
-      ]);
-    } else {
-      final createdCacheEmails = created?.toMapCache(accountId, userName) ?? {};
+    if (created?.isNotEmpty == true) {
+      final createdCacheEmails = created!.toMapCache(accountId, userName);
       await _emailCacheClient.insertMultipleItem(createdCacheEmails);
+    }
+
+    if (updated?.isNotEmpty == true) {
+      final updatedCacheEmails = updated!.toMapCache(accountId, userName);
+      await _emailCacheClient.updateMultipleItem(updatedCacheEmails);
+    }
+
+    final emailCacheExist = await _emailCacheClient.isExistTable();
+    if (destroyed?.isNotEmpty == true && emailCacheExist) {
+      final destroyedCacheEmails = destroyed!.toCacheKeyList(accountId, userName);
+      await _emailCacheClient.deleteMultipleItem(destroyedCacheEmails);
     }
   }
 

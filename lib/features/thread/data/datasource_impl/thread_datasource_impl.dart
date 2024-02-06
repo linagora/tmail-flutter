@@ -90,15 +90,13 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   Future<List<EmailId>> emptyMailboxFolder(
     Session session,
     AccountId accountId,
-    MailboxId mailboxId,
-    Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache
+    MailboxId mailboxId
   ) {
     return Future.sync(() async {
       return await _threadIsolateWorker.emptyMailboxFolder(
         session,
         accountId,
-        mailboxId,
-        updateDestroyedEmailCache,
+        mailboxId
       );
     }).catchError(_exceptionThrower.throwException);
   }

@@ -55,7 +55,6 @@ abstract class ThreadDataSource {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
-    Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache,
   );
 
   Future<PresentationEmail> getEmailById(Session session, AccountId accountId, EmailId emailId, {Properties? properties});
