@@ -1,7 +1,23 @@
 const i18n = {};
+const languageDefault = 'en';
+
+/**
+ * 
+ * @param {String} language 
+ * @returns {boolean}
+ */
+function isValidUserLanguage(language) {
+  if (language == null || language == undefined) {
+    return false;
+  }
+  return true;
+}
 
 function getUserLanguage() {
   console.info(`[Twake Mail] Current Language: `, navigator.language);
+  if (isValidUserLanguage(navigator.language)) {
+    return languageDefault;
+  }
   return navigator.language.split('-')[0];
 }
 

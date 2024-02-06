@@ -77,7 +77,7 @@ function fetchServiceWorker() {
 
 function handleContinueTwakeMailOnWeb() {
   console.info('[TwakeMail] handleContinueTwakeMailOnWeb(): Continue on web.');
-  closeBottomSheet();
+  closeSmartBanner();
   fetchServiceWorker();
 }
 
@@ -118,22 +118,22 @@ function initialWorkerService() {
     console.info('[TwakeMail] initialWorkerService(): Login callback');
     handleContinueTwakeMailOnWeb();
   } else {
-    openBottomSheet();
+    openSmartBanner();
   }
 }
 
-function openBottomSheet() {
-  console.info('[TwakeMail] openBottomSheet(): Open the bottom sheet.');
-  const bottomSheet = document.querySelector(".bottom-sheet");
-  bottomSheet.style.display = "block";
+function openSmartBanner() {
+  console.info('[TwakeMail] openSmartBanner(): Open the smart banner.');
+  const smartBanner = document.querySelector(".smart-banner");
+  smartBanner.style.display = "block";
   document.body.style.overflow = "hidden";
-  bottomSheet.style.bottom = "0";
+  smartBanner.style.top = "16px";
 }
 
-function closeBottomSheet() {
-  console.info('[TwakeMail] closeBottomSheet(): Closing the bottom sheet.');
-  const bottomSheet = document.querySelector(".bottom-sheet");
-  bottomSheet.style.display = "none";
+function closeSmartBanner() {
+  console.info('[TwakeMail] closeSmartBanner(): Closing the smart banner.');
+  const smartBanner = document.querySelector(".smart-banner");
+  smartBanner.style.display = "none";
   document.body.style.overflow = "auto";
-  bottomSheet.style.bottom = "-100%";
+  smartBanner.style.top = 0;
 }
