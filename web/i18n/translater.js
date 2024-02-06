@@ -16,9 +16,9 @@ function isValidUserLanguage(language) {
 function getUserLanguage() {
   console.info(`[Twake Mail] Current Language: `, navigator.language);
   if (isValidUserLanguage(navigator.language)) {
-    return languageDefault;
+    return navigator.language.split('-')[0];
   }
-  return navigator.language.split('-')[0];
+  return languageDefault;
 }
 
 async function loadLanguageResources() {
