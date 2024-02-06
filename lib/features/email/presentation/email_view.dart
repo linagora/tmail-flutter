@@ -453,10 +453,11 @@ class EmailView extends GetWidget<SingleEmailController> {
     final mailboxContain = controller.getMailboxContain(presentationEmail);
     final moreActions = [
       EmailActionType.markAsUnread,
-      if (mailboxContain?.isSpam == true)
-        EmailActionType.unSpam
-      else
-        EmailActionType.moveToSpam,
+      if (mailboxContain?.isChildOfTeamMailboxes == false)
+        if (mailboxContain?.isSpam == true)
+          EmailActionType.unSpam
+        else
+          EmailActionType.moveToSpam,
       if (presentationEmail.from?.isNotEmpty == true)
         EmailActionType.createRule,
       if (!presentationEmail.isSubscribed && controller.emailUnsubscribe.value != null)
