@@ -188,9 +188,9 @@ abstract class HiveCacheClient<T> {
   Future<void> clearAllDataContainKey(String nestedKey) {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
-      final mapItemNotContainNestedKey = boxItem.toMap().where((key, value) => !_matchedNestedKey(key, nestedKey));
-      log('HiveCacheClient::clearAllDataContainKey:mapItemNotContainNestedKey: ${mapItemNotContainNestedKey.length}');
-      return boxItem.putAll(mapItemNotContainNestedKey);
+      final listKeys = boxItem.toMap().where((key, value) => _matchedNestedKey(key, nestedKey)).keys;
+      log('HiveCacheClient::clearAllDataContainKey:listKeys: ${listKeys.length}');
+      return boxItem.deleteAll(listKeys);
     }).catchError((error) {
       throw error;
     });

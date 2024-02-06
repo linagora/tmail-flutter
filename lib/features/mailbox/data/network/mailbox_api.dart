@@ -30,12 +30,12 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/jmap_mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
@@ -51,7 +51,7 @@ class MailboxAPI with HandleSetErrorMixin {
 
   MailboxAPI(this.httpClient, this._uuid);
 
-  Future<GetMailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async {
+  Future<JmapMailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) async {
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
@@ -74,10 +74,12 @@ class MailboxAPI with HandleSetErrorMixin {
       queryInvocation.methodCallId,
       GetMailboxResponse.deserialize);
 
-    if (getMailboxResponse == null) {
-      throw NotFoundGetMailboxResponseException();
+    if (getMailboxResponse != null && getMailboxResponse.list.isNotEmpty) {
+      return JmapMailboxResponse(
+        mailboxes: getMailboxResponse.list,
+        state: getMailboxResponse.state);
     } else {
-      return getMailboxResponse;
+      throw NotFoundMailboxException();
     }
   }
 

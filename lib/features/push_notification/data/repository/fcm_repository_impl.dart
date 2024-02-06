@@ -131,8 +131,7 @@ class FCMRepositoryImpl extends FCMRepository {
       return mailboxesCacheNotPutNotifications;
     } else {
       final mailboxResponse = await _mapMailboxDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);
-      final mailboxes = mailboxResponse.list;
-      final mailboxesNotPutNotifications = mailboxes
+      final mailboxesNotPutNotifications = mailboxResponse.mailboxes
         .map((mailbox) => mailbox.toPresentationMailbox())
         .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)
         .toList();
