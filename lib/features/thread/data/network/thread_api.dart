@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -17,9 +16,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
-import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -75,30 +71,16 @@ class ThreadAPI {
       .build()
       .execute();
 
-    final responseOfGetEmailMethod = result.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+    final resultList = result.parse<GetEmailResponse>(
+        getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
 
-    final responseOfQueryEmailMethod = result.parse<QueryEmailResponse>(
-      queryEmailInvocation.methodCallId,
-      QueryEmailResponse.deserialize);
-
-    List<Email>? emailList;
-
-    if (responseOfGetEmailMethod?.list.isNotEmpty == true &&
-        responseOfQueryEmailMethod?.ids.isNotEmpty == true) {
-      log('ThreadAPI::getAllEmail: QUERY_EMAIL_IDS = ${responseOfQueryEmailMethod?.ids}');
-      final listSortedEmail = responseOfGetEmailMethod!.list
-        .sortingByOrderOfIdList(responseOfQueryEmailMethod!.ids.toList());
-      emailList = listSortedEmail;
-    } else {
-      emailList = responseOfGetEmailMethod?.list;
+    if (sort != null && resultList != null) {
+      for (var comparator in sort) {
+        resultList.sortEmails(comparator);
+      }
     }
-    log('ThreadAPI::getAllEmail: EMAIL_DISPLAYED_IDS = ${emailList?.listEmailIds}');
-    return EmailsResponse(
-      emailList: emailList,
-      state: responseOfGetEmailMethod?.state
-    );
+
+    return EmailsResponse(emailList: resultList?.list, state: resultList?.state);
   }
 
   Future<EmailChangeResponse> getChanges(
