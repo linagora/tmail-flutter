@@ -14089,10 +14089,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       mailboxContain = t4._as(t3.get(t1)).getMailboxContain$1(presentationEmail);
       t5 = A._setArrayType([C.EmailActionType_5], type$.JSArray_EmailActionType);
       t6 = mailboxContain == null;
-      if ((t6 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam())) === true)
-        t5.push(C.EmailActionType_21);
-      else
-        t5.push(C.EmailActionType_20);
+      if (t6)
+        t7 = _null;
+      else {
+        t7 = mailboxContain.namespace;
+        t7 = !(t7 == null || t7.$eq(0, new A.Namespace("Personal"))) && A.PresentationMailboxExtension_hasParentId(mailboxContain);
+      }
+      if (t7 === false)
+        if ((t6 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam())) === true)
+          t5.push(C.EmailActionType_21);
+        else
+          t5.push(C.EmailActionType_20);
       t7 = presentationEmail.from;
       if ((t7 == null ? _null : t7._collection$_length !== 0) === true)
         t5.push(C.EmailActionType_23);
@@ -20326,5 +20333,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "/9UMeQtpFWWjfM28LH6gsoU4ObE=");
+})($__dart_deferred_initializers__, "nGxKQLSHV9wdXVa4gYTOT3R4k1Y=");
 ;
