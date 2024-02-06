@@ -309,14 +309,17 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Future<List<EmailId>> emptyTrashFolder(Session session, AccountId accountId, MailboxId trashMailboxId) async {
-    return mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
+    final listEmailIdDeleted = await mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
       session,
       accountId,
-      trashMailboxId,
-      (listEmailIdDeleted) async {
-        await _updateEmailCache(accountId, session.username, newDestroyed: listEmailIdDeleted);
-      },
-    );
+      trashMailboxId);
+
+    await _updateEmailCache(
+      accountId,
+      session.username,
+      newDestroyed: listEmailIdDeleted);
+
+    return listEmailIdDeleted;
   }
 
   Future<void> _synchronizeCacheWithChanges(
@@ -388,18 +391,17 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<List<EmailId>> emptySpamFolder(Session session, AccountId accountId, MailboxId spamMailboxId) {
-    return mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
+  Future<List<EmailId>> emptySpamFolder(Session session, AccountId accountId, MailboxId spamMailboxId) async {
+    final listEmailIdDeleted = await mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
       session,
       accountId,
-      spamMailboxId,
-      (listEmailIdDeleted) async {
-        await _updateEmailCache(
-          accountId,
-          session.username,
-          newDestroyed: listEmailIdDeleted
-        );
-      },
-    );
+      spamMailboxId);
+
+    await _updateEmailCache(
+      accountId,
+      session.username,
+      newDestroyed: listEmailIdDeleted);
+
+    return listEmailIdDeleted;
   }
 }

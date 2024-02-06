@@ -96,7 +96,6 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
-    Future<void> Function(List<EmailId>? newDestroyed) updateDestroyedEmailCache
   ) {
     throw UnimplementedError();
   }
