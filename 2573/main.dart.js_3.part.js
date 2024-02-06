@@ -2048,7 +2048,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (A.DateUtils_isSameDay(startDate, endDateToDisplay))
         return dateStart + " (GMT" + timeZoneOffsetAsString + ")";
       else
-        return dateStart + "  - " + dateEnd + " (GMT" + timeZoneOffsetAsString + ")";
+        return dateStart + " - " + dateEnd + " (GMT" + timeZoneOffsetAsString + ")";
     },
     CalendarEventExtension_get_dateTimeEventAsString(_this) {
       var t1, timeStart, timeEnd;
@@ -20362,5 +20362,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "OJ5biTyCmglaywY5cHGplm6lMfs=");
+})($__dart_deferred_initializers__, "woONaAhNjOgpfkdu6zV5KVCdMto=");
 ;
