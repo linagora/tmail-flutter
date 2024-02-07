@@ -20,7 +20,7 @@ jobs:
           - os: android
             runner: ubuntu-latest
           - os: ios
-            runner: macos-latest
+            runner: macos-13
       fail-fast: false
 
     environment: prod
