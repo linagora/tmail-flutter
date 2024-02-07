@@ -1,3 +1,7 @@
+## [0.11.6] - 2024-02-07
+### Fixed
+- Build release iOS failed because of macOS version
+
 ## [0.11.5] - 2024-02-06
 ### Added
 - \#2532 add attachment + inline button in app bar of composer
@@ -414,6 +418,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.11.6]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.6
 [0.11.5]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.5
 [0.11.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4
 [0.11.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.3
