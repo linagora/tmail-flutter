@@ -1952,7 +1952,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingSaved": "Paramètres de vacances enregistrés",
+  "vacationSettingSaved": "Paramètres de réponse automatique enregistrés",
   "@vacationSettingSaved": {
     "type": "text",
     "placeholders_order": [],
@@ -2186,7 +2186,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSetting": "Paramètres des vacances",
+  "vacationSetting": "Paramètres de réponse automatique",
   "@vacationSetting": {
     "type": "text",
     "placeholders_order": [],
@@ -2368,7 +2368,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacation": "Vacances",
+  "vacation": "Réponse automatique",
   "@vacation": {
     "type": "text",
     "placeholders_order": [],
@@ -2386,7 +2386,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationStopsAt": "Les vacances s'arrêtent le",
+  "vacationStopsAt": "Les réponses automatiques s'arrêtent le",
   "@vacationStopsAt": {
     "type": "text",
     "placeholders_order": [],
@@ -2398,19 +2398,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsEnabled": "Votre répondeur de vacances est activé.",
+  "yourVacationResponderIsEnabled": "Votre répondeur automatique est activé.",
   "@yourVacationResponderIsEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsDisabledSuccessfully": "Votre répondeur de vacances a été désactivé avec succès",
+  "yourVacationResponderIsDisabledSuccessfully": "Votre répondeur automatique a été désactivé avec succès",
   "@yourVacationResponderIsDisabledSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEnableVacationResponderAutomatically": "Votre répondeur de vacances sera activé le {startDate}",
+  "messageEnableVacationResponderAutomatically": "Votre répondeur automatique sera activé le {startDate}",
   "@messageEnableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
