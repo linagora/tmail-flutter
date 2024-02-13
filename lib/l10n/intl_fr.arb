@@ -3513,5 +3513,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "forwardTo": "Transférer à",
+  "@forwardTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
