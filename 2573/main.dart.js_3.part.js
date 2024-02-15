@@ -2024,12 +2024,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return B.formatDate(dateTime, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy", " ", "hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
     },
     CalendarEventExtension_get_isAllDayEvent(_this) {
-      var t2,
+      var startDateValue, endDateValue, eventDurationInHours,
         t1 = _this.startUtcDate;
       if (t1 != null && _this.endUtcDate != null) {
-        t1 = t1.value;
-        t2 = _this.endUtcDate.value;
-        return A.Primitives_getHours(t1) === 0 && A.Primitives_getMinutes(t1) === 0 && A.Primitives_getHours(t2) === 0 && A.Primitives_getMinutes(t2) === 0;
+        startDateValue = t1.value;
+        endDateValue = _this.endUtcDate.value;
+        eventDurationInHours = C.JSInt_methods._tdivFast$1(A.Duration$(0, 0, 0, startDateValue._value - endDateValue._value, 0, 0)._duration, 3600000000);
+        return A.Primitives_getHours(startDateValue) === 0 && A.Primitives_getMinutes(startDateValue) === 0 && A.Primitives_getHours(endDateValue) === 0 && A.Primitives_getMinutes(endDateValue) === 0 && C.JSInt_methods.$mod(eventDurationInHours, 24) === 0;
       }
       return false;
     },
@@ -20362,5 +20363,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "woONaAhNjOgpfkdu6zV5KVCdMto=");
+})($__dart_deferred_initializers__, "1vISUGXIkfmLZAOZEqmLvOO9Hbo=");
 ;
