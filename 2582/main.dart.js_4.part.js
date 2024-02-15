@@ -673,7 +673,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(str) {
       return A.CapitalizeExtension_get_inCaps(str);
     },
-    $signature: 34
+    $signature: 35
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1($event) {
@@ -712,7 +712,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 329
+    $signature: 256
   };
   B._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -794,7 +794,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 198
+    $signature: 216
   };
   B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -820,7 +820,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 566
+    $signature: 418
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -843,7 +843,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 190
+    $signature: 179
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -857,11 +857,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t1._htmlData;
         t1 = t1.___HtmlContentViewerOnWebState__createdViewId_A;
         t1 === $ && A.throwUnnamedLateFieldNI();
-        return new A.SizedBox(t3, t2, new A.HtmlElementView(t1, null, null, new A.ValueKey(t4, type$.ValueKey_nullable_String)), null);
+        return new A.SizedBox(t3, t2, A.HtmlElementView$(new A.ValueKey(t4, type$.ValueKey_nullable_String), t1), null);
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1652
+    $signature: 1634
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -886,14 +886,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 75
+    $signature: 80
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 75
+    $signature: 80
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -955,7 +955,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       MessageEvent: findType("MessageEvent"),
       Object: findType("Object"),
       PortalLinkOverlay: findType("PortalLinkOverlay"),
-      ResponsiveUtils: findType("ResponsiveUtils"),
+      ResponsiveUtils: findType("ResponsiveUtils0"),
       String: findType("String"),
       ValueKey_nullable_String: findType("ValueKey<String?>"),
       _ElementEventStreamImpl_Event: findType("_ElementEventStreamImpl<Event>"),
@@ -1014,5 +1014,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "hROo6M3OFx+WGmv/QZ6NRvvx+K0=");
+})($__dart_deferred_initializers__, "/44iYHlnhPK6EWtDD5KSQZ9LMtU=");
 ;
