@@ -155,14 +155,7 @@ abstract class BaseController extends GetxController
 
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     logError('BaseController::handleExceptionAction():failure: $failure | exception: $exception');
-    if (exception is BadCredentialsException) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).badCredentials
-        );
-      }
-    } else if (exception is ConnectionError) {
+    if (exception is ConnectionError) {
       if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastErrorMessage(
           currentOverlayContext!,

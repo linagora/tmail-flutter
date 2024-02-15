@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/message_toast_utils.dart';
@@ -87,7 +88,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetSessionFailure(dynamic exception) {
-    if (currentContext != null || currentOverlayContext != null) {
+    if (currentContext != null && currentOverlayContext != null && exception !is BadCredentialsException) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         MessageToastUtils.getMessageByException(currentContext!, exception) ?? AppLocalizations.of(currentContext!).unknownError
