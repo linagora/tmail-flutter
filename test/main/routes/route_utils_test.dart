@@ -65,5 +65,23 @@ void main() {
       expect(result[RouteUtils.paramMailtoAddress], isNull);
       expect(result[RouteUtils.paramSubject], isNull);
     });
+
+    test('should parse a valid mailto URI encoded contains multiple recipients', () {
+      const mailtoUri = 'mailto:test%40example.com%2Ctest2%40example.com%2Ctest3%40example.com%3Fsubject=Hello';
+      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+
+      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
+      expect(result[RouteUtils.paramMailtoAddress], containsAll(['test@example.com', 'test2@example.com', 'test3@example.com']));
+      expect(result[RouteUtils.paramSubject], equals('Hello'));
+    });
+
+    test('should parse a valid mailto URI contains multiple recipients', () {
+      const mailtoUri = 'mailto:test@example.com,test2@example.com,test3@example.com?subject=Hello';
+      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+
+      expect(result[RouteUtils.paramRouteName], equals(AppRoutes.mailtoURL));
+      expect(result[RouteUtils.paramMailtoAddress], containsAll(['test@example.com', 'test2@example.com', 'test3@example.com']));
+      expect(result[RouteUtils.paramSubject], equals('Hello'));
+    });
   });
 }
