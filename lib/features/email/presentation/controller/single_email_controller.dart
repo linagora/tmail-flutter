@@ -1476,7 +1476,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(mailtoLinks.first);
     mailboxDashBoardController.goToComposer(
       ComposerArguments.fromUnsubscribeMailtoLink(
-        emailAddress: navigationRouter.emailAddress,
+        listEmailAddress: navigationRouter.listEmailAddress,
         subject: navigationRouter.subject,
         body: navigationRouter.body,
         previousEmailId: emailId,
