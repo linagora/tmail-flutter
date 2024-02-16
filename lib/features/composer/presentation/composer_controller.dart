@@ -403,22 +403,6 @@ class ComposerController extends BaseController {
     subjectEmailInputFocusNode?.unfocus();
   }
 
-  void onTapOutsideRecipients(PrefixEmailAddress prefix) {
-    switch(prefix) {
-      case PrefixEmailAddress.to:
-        toAddressFocusNode?.unfocus();
-        break;
-      case PrefixEmailAddress.cc:
-        ccAddressFocusNode?.unfocus();
-        break;
-      case PrefixEmailAddress.bcc:
-        bccAddressFocusNode?.unfocus();
-        break;
-      default:
-        break;
-    }
-  }
-
   void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) {
     if (identitySelected.value == null) {
       _getAllIdentities();
@@ -654,25 +638,6 @@ class ComposerController extends BaseController {
     } else {
       isEnableEmailSendButton.value = false;
     }
-  }
-
-  String getEmailContentQuotedAsHtml({
-    required BuildContext context,
-    required String emailContent,
-    required EmailActionType emailActionType,
-    required PresentationEmail presentationEmail,
-  }) {
-    final headerEmailQuoted = emailActionType.getHeaderEmailQuoted(
-      context: context,
-      presentationEmail: presentationEmail
-    );
-    log('ComposerController::getEmailContentQuotedAsHtml(): headerEmailQuoted: $headerEmailQuoted');
-    final headerEmailQuotedAsHtml = headerEmailQuoted != null
-      ? headerEmailQuoted.addCiteTag()
-      : '';
-    final emailQuotedHtml = '${HtmlExtension.editorStartTags}$headerEmailQuotedAsHtml${emailContent.addBlockQuoteTag()}';
-
-    return emailQuotedHtml;
   }
 
   Future<Email> _generateEmail(
