@@ -27,7 +27,7 @@ abstract class RouteUtils {
   static const String paramBody = 'body';
 
   static const String mailtoPrefix = 'mailto:';
-
+  static const String ADDRESS_SEPARATOR = ',';
   static const String INVALID_VALUE = 'invalid';
 
   static String get baseOriginUrl => Uri.base.origin;
@@ -100,7 +100,7 @@ abstract class RouteUtils {
     }
   }
 
-  static NavigationRouter parsingRouteParametersToNavigationRouter(Map<String, String?> parameters) {
+  static NavigationRouter parsingRouteParametersToNavigationRouter(Map<String, dynamic> parameters) {
     final idParam = parameters[paramID];
     final typeParam = parameters[paramType];
     final contextPram = parameters[paramContext];
@@ -115,17 +115,27 @@ abstract class RouteUtils {
     final searchQuery = queryParam != null ? SearchQuery(queryParam) : null;
     final dashboardType = DashboardType.values.firstWhereOrNull((type) => type.name == typeParam) ?? DashboardType.normal;
     final settingType = AccountMenuItem.values.firstWhereOrNull((type) => type.getAliasBrowser() == typeParam) ?? AccountMenuItem.none;
-    final emailAddress = mailtoAddress != null && GetUtils.isEmail(mailtoAddress)
-      ? EmailAddress(null, mailtoAddress)
-      : EmailAddress(null, INVALID_VALUE);
-
+    List<EmailAddress>? listEmailAddress;
+    if (mailtoAddress is List<String>) {
+      listEmailAddress = mailtoAddress
+        .map((address) => EmailAddress(
+          null,
+          GetUtils.isEmail(address) ? address : INVALID_VALUE
+        ))
+        .toList();
+    } else if (mailtoAddress is String) {
+      listEmailAddress = [
+        EmailAddress(null, GetUtils.isEmail(mailtoAddress) ? mailtoAddress : INVALID_VALUE)
+      ];
+    }
+    log('RouteUtils::parsingRouteParametersToNavigationRouter:listEmailAddress = $listEmailAddress');
     return NavigationRouter(
       emailId: emailId,
       mailboxId: mailboxId,
       searchQuery: searchQuery,
       dashboardType: dashboardType,
       routeName: routeName,
-      emailAddress: emailAddress,
+      listEmailAddress: listEmailAddress,
       subject: subject,
       body: body,
       accountMenuItem: settingType,
@@ -137,20 +147,28 @@ abstract class RouteUtils {
     html.window.history.replaceState(null, title, url.toString());
   }
 
-  static Map<String, String?> parseMapMailtoFromUri(String? mailtoUri) {
+  static Map<String, dynamic> parseMapMailtoFromUri(String? mailtoUri) {
     log('RouteUtils::parseMapMailtoFromUri:mailtoUri: $mailtoUri');
-    final mapMailto = <String, String?>{
+    final mapMailto = <String, dynamic>{
       RouteUtils.paramRouteName: AppRoutes.mailtoURL,
     };
     if (mailtoUri?.startsWith(mailtoPrefix) == true) {
       final mailtoUrlDecoded = Uri.decodeFull(mailtoUri!);
+      log('RouteUtils::parseMapMailtoFromUri:mailtoUrlDecoded = $mailtoUrlDecoded');
       final uri = Uri.tryParse(mailtoUrlDecoded);
       if (uri == null) return mapMailto;
 
       final mailtoAddress = uri.path;
       final mapQueryParam = uri.queryParameters;
 
-      mapMailto[paramMailtoAddress] = mailtoAddress;
+      if (mailtoAddress.contains(ADDRESS_SEPARATOR)) {
+        final listAddress = mailtoAddress.split(ADDRESS_SEPARATOR);
+        log('RouteUtils::parseMapMailtoFromUri:listAddress = $listAddress');
+        mapMailto[paramMailtoAddress] = listAddress;
+      } else {
+        log('RouteUtils::parseMapMailtoFromUri:mailtoAddress = $mailtoAddress');
+        mapMailto[paramMailtoAddress] = mailtoAddress;
+      }
       if (mapQueryParam.containsKey(paramSubject)) {
         mapMailto[paramSubject] = mapQueryParam[paramSubject];
       }
@@ -159,6 +177,7 @@ abstract class RouteUtils {
       }
     } else if (mailtoUri != null) {
       final mailtoUrlDecoded = Uri.decodeFull(mailtoUri);
+      log('RouteUtils::parseMapMailtoFromUri:mailtoUrlDecoded = $mailtoUrlDecoded');
       mapMailto[paramMailtoAddress] = mailtoUrlDecoded;
     } else {
       mapMailto[paramMailtoAddress] = mailtoUri;

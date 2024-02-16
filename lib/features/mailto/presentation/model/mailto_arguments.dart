@@ -10,7 +10,7 @@ class MailtoArguments extends RouterArguments {
 
   MailtoArguments({required this.session, this.mailtoUri});
 
-  Map<String, String?> toMapRouter() => RouteUtils.parseMapMailtoFromUri(mailtoUri);
+  Map<String, dynamic> toMapRouter() => RouteUtils.parseMapMailtoFromUri(mailtoUri);
 
   @override
   List<Object?> get props => [session, mailtoUri];
