@@ -211,7 +211,7 @@ class MailboxDashBoardController extends ReloadableController {
   final composerOverlayState = ComposerOverlayState.inActive.obs;
   final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
-  final routerParameters = Rxn<Map<String, String?>>();
+  final routerParameters = Rxn<Map<String, dynamic>>();
   final _isDraggingMailbox = RxBool(false);
   final searchMailboxActivated = RxBool(false);
   final listSendingEmails = RxList<SendingEmail>();

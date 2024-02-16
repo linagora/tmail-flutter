@@ -17,7 +17,7 @@ class NavigationRouter with EquatableMixin {
   final DashboardType dashboardType;
   final SearchQuery? searchQuery;
   final String? routeName;
-  final EmailAddress? emailAddress;
+  final List<EmailAddress>? listEmailAddress;
   final String? subject;
   final String? body;
   final AccountMenuItem accountMenuItem;
@@ -28,7 +28,7 @@ class NavigationRouter with EquatableMixin {
     this.searchQuery,
     this.dashboardType = DashboardType.normal,
     this.routeName,
-    this.emailAddress,
+    this.listEmailAddress,
     this.subject,
     this.body,
     this.accountMenuItem = AccountMenuItem.none,
@@ -43,7 +43,7 @@ class NavigationRouter with EquatableMixin {
     searchQuery,
     dashboardType,
     routeName,
-    emailAddress,
+    listEmailAddress,
     subject,
     body,
     accountMenuItem,

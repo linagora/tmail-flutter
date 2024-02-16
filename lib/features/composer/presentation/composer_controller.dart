@@ -456,7 +456,7 @@ class ComposerController extends BaseController {
           _addAttachmentFromFileShare(arguments.listSharedMediaFile!);
           break;
         case EmailActionType.composeFromEmailAddress:
-          listToEmailAddress.add(arguments.emailAddress!);
+          listToEmailAddress.addAll(arguments.listEmailAddress ?? []);
           isInitialRecipient.value = true;
           toAddressExpandMode.value = ExpandMode.COLLAPSE;
           _updateStatusEmailSendButton();
@@ -466,8 +466,8 @@ class ComposerController extends BaseController {
             setSubjectEmail(arguments.subject!);
             subjectEmailInputController.text = arguments.subject!;
           }
-          if (arguments.emailAddress != null) {
-            listToEmailAddress.add(arguments.emailAddress!);
+          if (arguments.listEmailAddress?.isNotEmpty == true) {
+            listToEmailAddress.addAll(arguments.listEmailAddress!);
             isInitialRecipient.value = true;
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }
@@ -512,8 +512,8 @@ class ComposerController extends BaseController {
             setSubjectEmail(arguments.subject!);
             subjectEmailInputController.text = arguments.subject!;
           }
-          if (arguments.emailAddress != null) {
-            listToEmailAddress.add(arguments.emailAddress!);
+          if (arguments.listEmailAddress?.isNotEmpty == true) {
+            listToEmailAddress.addAll(arguments.listEmailAddress!);
             isInitialRecipient.value = true;
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }

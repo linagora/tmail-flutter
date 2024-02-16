@@ -13,7 +13,7 @@ class ComposerArguments extends RouterArguments {
   final PresentationEmail? presentationEmail;
   final String? emailContents;
   final List<SharedMediaFile>? listSharedMediaFile;
-  final EmailAddress? emailAddress;
+  final List<EmailAddress>? listEmailAddress;
   final List<Attachment>? attachments;
   final Role? mailboxRole;
   final SendingEmail? sendingEmail;
@@ -29,7 +29,7 @@ class ComposerArguments extends RouterArguments {
     this.emailContents,
     this.attachments,
     this.mailboxRole,
-    this.emailAddress,
+    this.listEmailAddress,
     this.listSharedMediaFile,
     this.sendingEmail,
     this.subject,
@@ -60,13 +60,13 @@ class ComposerArguments extends RouterArguments {
   factory ComposerArguments.fromEmailAddress(EmailAddress emailAddress) =>
     ComposerArguments(
       emailActionType: EmailActionType.composeFromEmailAddress,
-      emailAddress: emailAddress
+      listEmailAddress: [emailAddress]
     );
 
-  factory ComposerArguments.fromMailtoUri({EmailAddress? emailAddress, String? subject, String? body}) =>
+  factory ComposerArguments.fromMailtoUri({List<EmailAddress>? listEmailAddress, String? subject, String? body}) =>
     ComposerArguments(
       emailActionType: EmailActionType.composeFromMailtoUri,
-      emailAddress: emailAddress,
+      listEmailAddress: listEmailAddress,
       subject: subject,
       body: body,
     );
@@ -142,14 +142,14 @@ class ComposerArguments extends RouterArguments {
     : SendingEmailActionType.create;
 
   factory ComposerArguments.fromUnsubscribeMailtoLink({
-    EmailAddress? emailAddress,
+    List<EmailAddress>? listEmailAddress,
     String? subject,
     String? body,
     EmailId? previousEmailId
   }) =>
     ComposerArguments(
       emailActionType: EmailActionType.composeFromUnsubscribeMailtoLink,
-      emailAddress: emailAddress,
+      listEmailAddress: listEmailAddress,
       subject: subject,
       body: body,
       previousEmailId: previousEmailId,
@@ -163,7 +163,7 @@ class ComposerArguments extends RouterArguments {
     emailContents,
     attachments,
     mailboxRole,
-    emailAddress,
+    listEmailAddress,
     listSharedMediaFile,
     sendingEmail,
     subject,

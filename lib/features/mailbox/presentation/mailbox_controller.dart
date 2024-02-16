@@ -225,7 +225,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       }
     });
 
-    ever<Map<String, String?>?>(
+    ever<Map<String, dynamic>?>(
       mailboxDashBoardController.routerParameters,
       _handleNavigationRouteParameters
     );
@@ -436,7 +436,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (_navigationRouter?.routeName == AppRoutes.mailtoURL) {
       mailboxDashBoardController.goToComposer(
         ComposerArguments.fromMailtoUri(
-          emailAddress: _navigationRouter?.emailAddress,
+          listEmailAddress: _navigationRouter?.listEmailAddress,
           subject: _navigationRouter?.subject,
           body: _navigationRouter?.body
         )
@@ -967,7 +967,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       curve: Curves.easeInToLinear);
   }
 
-  void _handleNavigationRouteParameters(Map<String, String?>? parameters) {
+  void _handleNavigationRouteParameters(Map<String, dynamic>? parameters) {
     log('MailboxController::_handleNavigationRouteParameters(): parameters: $parameters');
     if (parameters != null) {
       final navigationRouter = RouteUtils.parsingRouteParametersToNavigationRouter(parameters);
