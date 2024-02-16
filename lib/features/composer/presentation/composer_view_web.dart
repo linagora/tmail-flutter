@@ -157,47 +157,45 @@ class ComposerView extends GetWidget<ComposerController> {
                   margin: ComposerStyle.mobileSubjectMargin,
                 ),
                 Expanded(
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return Stack(
-                      children: [
-                        Padding(
-                          padding: ComposerStyle.mobileEditorPadding,
-                          child: Obx(() => WebEditorView(
-                            editorController: controller.richTextWebController.editorController,
-                            arguments: controller.composerArguments.value,
-                            contentViewState: controller.emailContentsViewState.value,
-                            currentWebContent: controller.textEditorWeb,
-                            onInitial: controller.handleInitHtmlEditorWeb,
-                            onChangeContent: controller.onChangeTextEditorWeb,
-                            onFocus: controller.handleOnFocusHtmlEditorWeb,
-                            onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
-                            onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                            onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                            onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
-                            onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
-                              return controller.handleImageUploadFailure(
-                                context: context,
-                                uploadError: uploadError,
-                                fileUpload: fileUpload,
-                                base64Str: base64Str,
-                              );
-                            },
-                            onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
-                            width: constraints.maxWidth,
-                            height: constraints.maxHeight,
-                          )),
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional.topCenter,
-                          child: Obx(() => InsertImageLoadingBarWidget(
-                            uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
-                            viewState: controller.viewState.value,
-                            padding: ComposerStyle.insertImageLoadingBarPadding,
-                          )),
-                        ),
-                      ],
-                    );
-                  }),
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: ComposerStyle.mobileEditorPadding,
+                        child: Obx(() => WebEditorView(
+                          editorController: controller.richTextWebController.editorController,
+                          arguments: controller.composerArguments.value,
+                          contentViewState: controller.emailContentsViewState.value,
+                          currentWebContent: controller.textEditorWeb,
+                          onInitial: controller.handleInitHtmlEditorWeb,
+                          onChangeContent: controller.onChangeTextEditorWeb,
+                          onFocus: controller.handleOnFocusHtmlEditorWeb,
+                          onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
+                          onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                          onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                          onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
+                          onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
+                            return controller.handleImageUploadFailure(
+                              context: context,
+                              uploadError: uploadError,
+                              fileUpload: fileUpload,
+                              base64Str: base64Str,
+                            );
+                          },
+                          onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
+                        )),
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.topCenter,
+                        child: Obx(() => InsertImageLoadingBarWidget(
+                          uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
+                          viewState: controller.viewState.value,
+                          padding: ComposerStyle.insertImageLoadingBarPadding,
+                        )),
+                      ),
+                    ],
+                  ),
                 ),
                 Obx(() {
                   if (controller.uploadController.listUploadAttachments.isNotEmpty) {
@@ -217,8 +215,8 @@ class ComposerView extends GetWidget<ComposerController> {
                       richTextWebController: controller.richTextWebController,
                       padding: ComposerStyle.richToolbarPadding,
                       decoration: const BoxDecoration(
-                          color: ComposerStyle.richToolbarColor,
-                          boxShadow: ComposerStyle.richToolbarShadow
+                        color: ComposerStyle.richToolbarColor,
+                        boxShadow: ComposerStyle.richToolbarShadow
                       ),
                     );
                   } else {
@@ -351,93 +349,91 @@ class ComposerView extends GetWidget<ComposerController> {
                     ),
                     color: ComposerStyle.backgroundEditorColor
                   ),
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: ComposerStyle.desktopEditorPadding,
-                                child: Obx(() {
-                                  return Stack(
-                                    children: [
-                                      WebEditorView(
-                                        editorController: controller.richTextWebController.editorController,
-                                        arguments: controller.composerArguments.value,
-                                        contentViewState: controller.emailContentsViewState.value,
-                                        currentWebContent: controller.textEditorWeb,
-                                        onInitial: controller.handleInitHtmlEditorWeb,
-                                        onChangeContent: controller.onChangeTextEditorWeb,
-                                        onFocus: controller.handleOnFocusHtmlEditorWeb,
-                                        onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
-                                        onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                        onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                                        onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
-                                        onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
-                                          return controller.handleImageUploadFailure(
-                                            context: context,
-                                            uploadError: uploadError,
-                                            fileUpload: fileUpload,
-                                            base64Str: base64Str,
-                                          );
-                                        },
-                                        onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
-                                        width: constraints.maxWidth,
-                                        height: constraints.maxHeight,
-                                      ),
-                                      if (controller.mailboxDashBoardController.isDraggableAppActive)
-                                        PointerInterceptor(
-                                          child: DropZoneWidget(
-                                            width: constraints.maxWidth,
-                                            height: constraints.maxHeight,
-                                            addAttachmentFromDropZone: controller.addAttachmentFromDropZone,
-                                          )
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: ComposerStyle.desktopEditorPadding,
+                              child: Obx(() {
+                                return Stack(
+                                  children: [
+                                    WebEditorView(
+                                      editorController: controller.richTextWebController.editorController,
+                                      arguments: controller.composerArguments.value,
+                                      contentViewState: controller.emailContentsViewState.value,
+                                      currentWebContent: controller.textEditorWeb,
+                                      onInitial: controller.handleInitHtmlEditorWeb,
+                                      onChangeContent: controller.onChangeTextEditorWeb,
+                                      onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                      onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
+                                      onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                                      onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                                      onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
+                                      onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
+                                        return controller.handleImageUploadFailure(
+                                          context: context,
+                                          uploadError: uploadError,
+                                          fileUpload: fileUpload,
+                                          base64Str: base64Str,
+                                        );
+                                      },
+                                      onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
+                                      width: constraints.maxWidth,
+                                      height: constraints.maxHeight,
+                                    ),
+                                    if (controller.mailboxDashBoardController.isDraggableAppActive)
+                                      PointerInterceptor(
+                                        child: DropZoneWidget(
+                                          width: constraints.maxWidth,
+                                          height: constraints.maxHeight,
+                                          addAttachmentFromDropZone: controller.addAttachmentFromDropZone,
                                         )
-                                    ],
-                                  );
-                                }),
-                              ),
+                                      )
+                                  ],
+                                );
+                              }),
                             ),
-                            Obx(() {
-                              if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                                return AttachmentComposerWidget(
-                                  listFileUploaded: controller.uploadController.listUploadAttachments,
-                                  isCollapsed: controller.isAttachmentCollapsed,
-                                  onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                                  onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
-                                );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
-                            Obx(() {
-                              if (controller.richTextWebController.isFormattingOptionsEnabled) {
-                                return ToolbarRichTextWebBuilder(
-                                  richTextWebController: controller.richTextWebController,
-                                  padding: ComposerStyle.richToolbarPadding,
-                                  decoration: const BoxDecoration(
-                                    color: ComposerStyle.richToolbarColor,
-                                    boxShadow: ComposerStyle.richToolbarShadow
-                                  ),
-                                );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            })
-                          ],
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional.topCenter,
-                          child: Obx(() => InsertImageLoadingBarWidget(
-                            uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
-                            viewState: controller.viewState.value,
-                            padding: ComposerStyle.insertImageLoadingBarPadding,
-                          )),
-                        ),
-                      ],
-                    );
-                  }),
+                          ),
+                          Obx(() {
+                            if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                              return AttachmentComposerWidget(
+                                listFileUploaded: controller.uploadController.listUploadAttachments,
+                                isCollapsed: controller.isAttachmentCollapsed,
+                                onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                          Obx(() {
+                            if (controller.richTextWebController.isFormattingOptionsEnabled) {
+                              return ToolbarRichTextWebBuilder(
+                                richTextWebController: controller.richTextWebController,
+                                padding: ComposerStyle.richToolbarPadding,
+                                decoration: const BoxDecoration(
+                                  color: ComposerStyle.richToolbarColor,
+                                  boxShadow: ComposerStyle.richToolbarShadow
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          })
+                        ],
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.topCenter,
+                        child: Obx(() => InsertImageLoadingBarWidget(
+                          uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
+                          viewState: controller.viewState.value,
+                          padding: ComposerStyle.insertImageLoadingBarPadding,
+                        )),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Obx(() => BottomBarComposerWidget(
@@ -584,79 +580,77 @@ class ComposerView extends GetWidget<ComposerController> {
                     ),
                     color: ComposerStyle.backgroundEditorColor
                   ),
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: ComposerStyle.tabletEditorPadding,
-                                child: Obx(() => WebEditorView(
-                                  editorController: controller.richTextWebController.editorController,
-                                  arguments: controller.composerArguments.value,
-                                  contentViewState: controller.emailContentsViewState.value,
-                                  currentWebContent: controller.textEditorWeb,
-                                  onInitial: controller.handleInitHtmlEditorWeb,
-                                  onChangeContent: controller.onChangeTextEditorWeb,
-                                  onFocus: controller.handleOnFocusHtmlEditorWeb,
-                                  onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
-                                  onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                  onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                                  onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
-                                  onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
-                                    return controller.handleImageUploadFailure(
-                                      context: context,
-                                      uploadError: uploadError,
-                                      fileUpload: fileUpload,
-                                      base64Str: base64Str,
-                                    );
-                                  },
-                                  onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
-                                  width: constraints.maxWidth,
-                                  height: constraints.maxHeight,
-                                )),
-                              ),
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: ComposerStyle.tabletEditorPadding,
+                              child: Obx(() => WebEditorView(
+                                editorController: controller.richTextWebController.editorController,
+                                arguments: controller.composerArguments.value,
+                                contentViewState: controller.emailContentsViewState.value,
+                                currentWebContent: controller.textEditorWeb,
+                                onInitial: controller.handleInitHtmlEditorWeb,
+                                onChangeContent: controller.onChangeTextEditorWeb,
+                                onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
+                                onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                                onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
+                                onImageUploadSuccessAction: (fileUpload) => controller.handleImageUploadSuccess(context, fileUpload),
+                                onImageUploadFailureAction: (fileUpload, base64Str, uploadError) {
+                                  return controller.handleImageUploadFailure(
+                                    context: context,
+                                    uploadError: uploadError,
+                                    fileUpload: fileUpload,
+                                    base64Str: base64Str,
+                                  );
+                                },
+                                onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
+                                width: constraints.maxWidth,
+                                height: constraints.maxHeight,
+                              )),
                             ),
-                            Obx(() {
-                              if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                                return AttachmentComposerWidget(
-                                  listFileUploaded: controller.uploadController.listUploadAttachments,
-                                  isCollapsed: controller.isAttachmentCollapsed,
-                                  onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                                  onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
-                                );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
-                            Obx(() {
-                              if (controller.richTextWebController.isFormattingOptionsEnabled) {
-                                return ToolbarRichTextWebBuilder(
-                                  richTextWebController: controller.richTextWebController,
-                                  padding: ComposerStyle.richToolbarPadding,
-                                  decoration: const BoxDecoration(
+                          ),
+                          Obx(() {
+                            if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                              return AttachmentComposerWidget(
+                                listFileUploaded: controller.uploadController.listUploadAttachments,
+                                isCollapsed: controller.isAttachmentCollapsed,
+                                onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                          Obx(() {
+                            if (controller.richTextWebController.isFormattingOptionsEnabled) {
+                              return ToolbarRichTextWebBuilder(
+                                richTextWebController: controller.richTextWebController,
+                                padding: ComposerStyle.richToolbarPadding,
+                                decoration: const BoxDecoration(
                                     color: ComposerStyle.richToolbarColor,
                                     boxShadow: ComposerStyle.richToolbarShadow
-                                  ),
-                                );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            })
-                          ],
-                        ),
-                        Align(
-                          alignment: AlignmentDirectional.topCenter,
-                          child: Obx(() => InsertImageLoadingBarWidget(
-                            uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
-                            viewState: controller.viewState.value,
-                            padding: ComposerStyle.insertImageLoadingBarPadding,
-                          )),
-                        ),
-                      ],
-                    );
-                  }),
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          })
+                        ],
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.topCenter,
+                        child: Obx(() => InsertImageLoadingBarWidget(
+                          uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
+                          viewState: controller.viewState.value,
+                          padding: ComposerStyle.insertImageLoadingBarPadding,
+                        )),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Obx(() => BottomBarComposerWidget(
