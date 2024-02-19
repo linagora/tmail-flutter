@@ -1,4 +1,4 @@
-# 34. Error handling on no longer valid OIDC token (Issue #2592)
+# 35. Error handling on no longer valid OIDC token (Issue #2592)
 
 Date: 2024-02-15
 
