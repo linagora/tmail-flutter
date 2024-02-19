@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -31,8 +32,8 @@ class GetNewReceiveEmailFromNotificationInteractor {
           session,
           accountId,
           currentState);
-
-        yield Right<Failure, Success>(GetNewReceiveEmailFromNotificationSuccess(accountId, session, listEmailIds.toSet()));
+        log('GetNewReceiveEmailFromNotificationInteractor::execute: listEmailIds = $listEmailIds');
+        yield Right<Failure, Success>(GetNewReceiveEmailFromNotificationSuccess(accountId, session, listEmailIds));
       } else {
         yield Left<Failure, Success>(GetNewReceiveEmailFromNotificationFailure(EmailStateNoChangeException()));
       }
