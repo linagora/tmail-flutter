@@ -9,7 +9,7 @@ class GetNewReceiveEmailFromNotificationLoading extends UIState {}
 
 class GetNewReceiveEmailFromNotificationSuccess extends UIState {
 
-  final Set<EmailId> emailIds;
+  final List<EmailId> emailIds;
   final AccountId accountId;
   final Session? session;
 

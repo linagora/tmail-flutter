@@ -5,9 +5,12 @@ import 'dart:typed_data';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:email_recovery/email_recovery/get/get_email_recovery_action_method.dart';
 import 'package:email_recovery/email_recovery/get/get_email_recovery_action_response.dart';
+import 'package:email_recovery/email_recovery/set/set_email_recovery_action_method.dart';
+import 'package:email_recovery/email_recovery/set/set_email_recovery_action_response.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -21,7 +24,6 @@ import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/core/reference_prefix.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
@@ -37,9 +39,6 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submis
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
-import 'package:email_recovery/email_recovery/email_recovery_action.dart';
-import 'package:email_recovery/email_recovery/set/set_email_recovery_action_method.dart';
-import 'package:email_recovery/email_recovery/set/set_email_recovery_action_response.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
@@ -626,16 +625,15 @@ class EmailAPI with HandleSetErrorMixin {
     return setEmailResponse?.destroyed?.contains(emailId.id) == true;
   }
 
-  Future<List<Email>> getListDetailedEmailById(
+  Future<Email> getDetailedEmailById(
     Session session,
     AccountId accountId,
-    Set<EmailId> emailIds,
-    {Set<Comparator>? sort}
+    EmailId emailId
   ) async {
     final jmapRequestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds(emailIds.map((emailId) => emailId.id).toSet())
+      ..addIds({emailId.id})
       ..addProperties(ThreadConstants.propertiesGetDetailedEmail)
       ..addFetchHTMLBodyValues(true);
 
@@ -652,14 +650,8 @@ class EmailAPI with HandleSetErrorMixin {
       getEmailInvocation.methodCallId,
       GetEmailResponse.deserialize);
 
-    if (sort != null && resultList != null) {
-      for (var comparator in sort) {
-        resultList.sortEmails(comparator);
-      }
-    }
-
     if (resultList?.list.isNotEmpty == true) {
-      return resultList!.list;
+      return resultList!.list.first;
     } else {
       throw NotFoundEmailException();
     }

@@ -11,9 +11,8 @@ import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
@@ -91,7 +90,7 @@ abstract class EmailRepository {
 
   Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
-  Future<List<Email>> getListDetailedEmailById(Session session, AccountId accountId, Set<EmailId> emailIds, {Set<Comparator>? sort});
+  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId);
 
   Future<void> storeEmail(Session session, AccountId accountId, Email email);
 

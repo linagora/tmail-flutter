@@ -11,7 +11,6 @@ import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
@@ -167,9 +166,9 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<Email>> getListDetailedEmailById(Session session, AccountId accountId, Set<EmailId> emailIds, {Set<Comparator>? sort}) {
+  Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
-      return await emailAPI.getListDetailedEmailById(session, accountId, emailIds, sort: sort);
+      return await emailAPI.getDetailedEmailById(session, accountId, emailId);
     }).catchError(_exceptionThrower.throwException);
   }
 
