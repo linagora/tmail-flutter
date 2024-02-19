@@ -1,12 +1,11 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/extensions/utc_date_extension.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
@@ -24,28 +23,21 @@ class GetListDetailedEmailByIdInteractor {
   Stream<Either<Failure, Success>> execute(
     Session session,
     AccountId accountId,
-    Set<EmailId> emailIds,
-    String baseDownloadUrl,
-    {Set<Comparator>? sort}
+    List<EmailId> emailIds,
+    String baseDownloadUrl
   ) async* {
     try {
       yield Right<Failure, Success>(GetDetailedEmailByIdLoading());
 
-      final listEmails = await _emailRepository.getListDetailedEmailById(session, accountId, emailIds, sort: sort);
+      final ascendingEmailIds = emailIds.reversed.toList();
+      Map<Email, DetailedEmail> mapDetailedEmails = {};
 
-      final listTuple2Email = await Future.wait(
-        listEmails.map((email) => _parsingEmailToDetailedEmail(accountId, email, baseDownloadUrl)),
-        eagerError: true);
-
-      listTuple2Email.sort((detailedEmail1, detailedEmail2) {
-        return detailedEmail1.value1.receivedAt.compareToSort(detailedEmail1.value1.receivedAt, true);
-      });
-
-      final mapDetailedEmails = {
-        for (var tuple2 in listTuple2Email)
-          tuple2.value1 : tuple2.value2
-      };
-
+      for (var emailId in ascendingEmailIds) {
+        final email = await _emailRepository.getDetailedEmailById(session, accountId, emailId);
+        final tupleEmail = await _convertEmailToDetailedEmail(accountId, email, baseDownloadUrl);
+        mapDetailedEmails[tupleEmail.value1] = tupleEmail.value2;
+      }
+      log('GetListDetailedEmailByIdInteractor::execute: mapDetailedEmails = ${mapDetailedEmails.length}');
       yield Right<Failure, Success>(GetDetailedEmailByIdSuccess(
         mapDetailedEmails,
         accountId,
@@ -56,7 +48,7 @@ class GetListDetailedEmailByIdInteractor {
     }
   }
 
-  Future<Tuple2<Email, DetailedEmail>> _parsingEmailToDetailedEmail(
+  Future<Tuple2<Email, DetailedEmail>> _convertEmailToDetailedEmail(
     AccountId accountId,
     Email email,
     String baseDownloadUrl

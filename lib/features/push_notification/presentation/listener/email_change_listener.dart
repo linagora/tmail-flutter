@@ -7,12 +7,9 @@ import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
@@ -292,7 +289,7 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _getListDetailedEmailByIdAction(Session? session, AccountId accountId, Set<EmailId> emailIds) {
+  void _getListDetailedEmailByIdAction(Session? session, AccountId accountId, List<EmailId> emailIds) {
     log('EmailChangeListener::_getListDetailedEmailByIdAction():emailIds: $emailIds');
     if (_getListDetailedEmailByIdInteractor != null &&
         _dynamicUrlInterceptors != null &&
@@ -302,10 +299,7 @@ class EmailChangeListener extends ChangeListener {
         session,
         accountId,
         emailIds,
-        baseDownloadUrl,
-        sort: <Comparator>{}
-          ..add(EmailComparator(EmailComparatorProperty.receivedAt)
-          ..setIsAscending(true))
+        baseDownloadUrl
       ));
     }
   }
