@@ -54,7 +54,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_ac
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
@@ -419,19 +418,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     final session = dashboardController.sessionCurrent;
 
     if (session != null && accountId != null) {
-      final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
-        [presentationMailbox],
-        defaultMailboxTree.value,
-        personalMailboxTree.value
-      );
-      final mapDescendantIds = tupleMap.value1;
-      final listMailboxId = tupleMap.value2;
-
       consumeState(_deleteMultipleMailboxInteractor.execute(
         session,
         accountId,
-        mapDescendantIds,
-        listMailboxId
+        [presentationMailbox]
       ));
     } else {
       _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
