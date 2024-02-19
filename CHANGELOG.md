@@ -1,3 +1,19 @@
+## [0.11.3-patch4] - 2024-02-19
+### Fixed
+- #2564 Change logic empty folder (Spam/Trash) to avoid cache still has data
+- #2464 Fix wrong iOS notification when Email changes
+- #2596 mailto with multiple recipients
+- #2560 Fix wrong focus in composer make it can not close
+- #2536 Change the logic to get all mailbox
+- #2592 Hide toast message when get error token expired
+- #2565 Redirect banner on mobile web app
+- #2479 Hide marAsSpam action in `Email_view` & team-mailbox
+- #2540 Fix selected Email address at `to/cc/bcc` fields are moving too close to the bottom of input field
+- #2460 Cancel deleting firebase token after logout
+- #2539 Fix selected email address at `to/cc/bcc` fields are having weird border
+- #2538 Fix email suggestion list is having weird white overlapping
+- #2531 Fix cannot see all recipients list if email have a lot of recipients
+
 ## [0.11.3] - 2024-01-12
 ### Fixed
 - Get plain notification on iOS
