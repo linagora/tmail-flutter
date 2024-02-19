@@ -10,6 +10,8 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
@@ -189,31 +191,30 @@ class FCMRepositoryImpl extends FCMRepository {
 
   @override
   Future<List<EmailId>> getNewReceiveEmailFromNotification(Session session, AccountId accountId, jmap.State currentState) async {
-    EmailChangeResponse? emailChangeResponse;
-    bool hasMoreChanges = true;
-    jmap.State? sinceState = currentState;
+    final changesResponse = await _threadDataSource.getChanges(
+      session,
+      accountId,
+      currentState,
+      propertiesCreated: Properties({
+        EmailProperty.id,
+        EmailProperty.receivedAt
+      })
+    );
 
-    while (hasMoreChanges && sinceState != null) {
-      final changesResponse = await _threadDataSource.getChanges(
-        session,
-        accountId,
-        sinceState,
-        propertiesCreated: Properties({EmailProperty.id}));
-
-      hasMoreChanges = changesResponse.hasMoreChanges;
-      sinceState = changesResponse.newStateChanges;
-
-      if (emailChangeResponse != null) {
-        emailChangeResponse.union(changesResponse);
-      } else {
-        emailChangeResponse = changesResponse;
-      }
-    }
-
-    if (emailChangeResponse?.created?.isNotEmpty == true) {
-      return emailChangeResponse!.created!.listEmailIds;
+    if (changesResponse.created?.isNotEmpty == true) {
+      return _validateMaximumNewEmailsRetrieved(changesResponse.created!);
     } else {
       throw NotFoundNewReceiveEmailException();
+    }
+  }
+
+  List<EmailId> _validateMaximumNewEmailsRetrieved(List<Email> listEmails) {
+    listEmails.sortBy(EmailComparator(EmailComparatorProperty.receivedAt));
+    if (listEmails.length > FcmConstants.MAX_NUMBER_NEW_EMAILS_RETRIEVED) {
+      final newListEmails = listEmails.sublist(0, FcmConstants.MAX_NUMBER_NEW_EMAILS_RETRIEVED);
+      return newListEmails.listEmailIds;
+    } else {
+      return listEmails.listEmailIds;
     }
   }
 
