@@ -3168,7 +3168,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueViewOnIOS": "Vos messages n'ont pas été envoyés en raison de problèmes de réseau. Ils sont enregistrés en toute sécurité. Lorsque vous êtes de nouveau en ligne, vous pouvez les renvoyer, les modifier ou les supprimer.",
+  "bannerMessageSendingQueueViewOnIOS": "Les messages n'ont pas été envoyés en raison de problèmes de réseau. Ils sont enregistrés en toute sécurité. Lorsque vous êtes de nouveau en ligne, vous pourrez les renvoyer, les modifier ou les supprimer.",
   "@bannerMessageSendingQueueViewOnIOS": {
     "type": "text",
     "placeholders_order": [],
@@ -3530,13 +3530,13 @@
       "folderName": {}
     }
   },
-  "sending": "Envoi en cours",
+  "sending": "Envoi",
   "@sending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageMarkAsReadFolderFailureWithReason": "Le dossier \"{folderName}\" n'a pas pu être marqué comme lu, pour la raison suivante \"{reason}\"",
+  "toastMessageMarkAsReadFolderFailureWithReason": "Le dossier \"{folderName}\" n'a pas pu être marqué comme lu : \"{reason}\"",
   "@toastMessageMarkAsReadFolderFailureWithReason": {
     "type": "text",
     "placeholders_order": [
@@ -3554,13 +3554,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectAction": "Sélectionnez une action",
+  "selectAction": "Sélectionner une action",
   "@selectAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardEmailHintText": "Ajouter une adresse de réexpédition",
+  "forwardEmailHintText": "Ajouter une adresse de transfert",
   "@forwardEmailHintText": {
     "type": "text",
     "placeholders_order": [],
