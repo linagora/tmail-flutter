@@ -1874,7 +1874,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTitleRulesFilter": "Effectuez l'action suivante :",
+  "actionTitleRulesFilter": "Effectuer l'action suivante :",
   "@actionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],
@@ -2656,7 +2656,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogDeleteSendingEmail": "La suppression d'un message hors ligne effacera définitivement son contenu. Vous ne pourrez pas annuler cette action ni récupérer le message de la corbeille.",
+  "messageDialogDeleteSendingEmail": "La suppression d'un message hors ligne effacera définitivement son contenu. Il ne sera pas possible d'annuler cette action ni de récupérer le message de la corbeille.",
   "@messageDialogDeleteSendingEmail": {
     "type": "text",
     "placeholders_order": [],
@@ -2692,7 +2692,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "",
+  "messageHasBeenSavedToTheSendingQueue": "Problème de réseau temporaire. Les messages ont été mis en file d'attente pour une nouvelle tentative une fois connecté.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
@@ -3568,6 +3568,12 @@
   },
   "addAction": "Ajouter une action",
   "@addAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pending": "En attente",
+  "@pending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
