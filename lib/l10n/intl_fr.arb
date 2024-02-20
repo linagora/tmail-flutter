@@ -18,7 +18,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email": "courriel",
+  "email": "e-mail",
   "@email": {
     "type": "text",
     "placeholders_order": [],
@@ -96,7 +96,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "Aucun courriel sélectionné",
+  "no_mail_selected": "Aucun message sélectionné",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
@@ -108,7 +108,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "to_email_address_prefix": "À",
+  "to_email_address_prefix": "Pour",
   "@to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
@@ -120,31 +120,31 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_email_address_prefix": "Cci",
+  "bcc_email_address_prefix": "Copie cachée à",
   "@bcc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cc_email_address_prefix": "Cc",
+  "cc_email_address_prefix": "Copie à",
   "@cc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_text_email_address": "Nom ou adresse électronique",
+  "hint_text_email_address": "Nom ou adresse e-mail",
   "@hint_text_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subject_email": "Objet",
+  "subject_email": "Sujet",
   "@subject_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "Commencez à rédiger votre courriel ici",
+  "hint_content_email_composer": "Commencez à rédiger votre message ici",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
@@ -162,19 +162,19 @@
       "emailAddress": {}
     }
   },
-  "prefix_reply_email": "Re :",
+  "prefix_reply_email": "Re :",
   "@prefix_reply_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_forward_email": "Tr :",
+  "prefix_forward_email": "Tr :",
   "@prefix_forward_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "Votre courriel est en cours d'envoi…",
+  "your_email_being_sent": "Votre message est en cours d'envoi…",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
@@ -232,7 +232,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_spam": "Déplacer vers les spams",
+  "move_to_spam": "Déplacer dans Indésirables",
   "@move_to_spam": {
     "type": "text",
     "placeholders_order": [],
@@ -394,7 +394,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "Aucun courriel ne correspond à votre recherche",
+  "no_emails_matching_your_search": "Aucun message ne correspond à votre recherche",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
@@ -406,7 +406,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_recipient": "Votre courriel devrait avoir au moins un destinataire",
+  "message_dialog_send_email_without_recipient": "Votre message devrait avoir au moins un destinataire",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
@@ -418,7 +418,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_emails": "Chercher des courriels et des fichiers",
+  "hint_search_emails": "Rechercher des messages et des fichiers",
   "@hint_search_emails": {
     "type": "text",
     "placeholders_order": [],
@@ -576,13 +576,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_is_not_in_the_correct_format": "L’adresse électronique n’est pas dans le bon format",
+  "email_address_is_not_in_the_correct_format": "L’adresse e-mail n’est pas dans le bon format",
   "@email_address_is_not_in_the_correct_format": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose_email": "Rédiger un courriel",
+  "compose_email": "Rédiger un message",
   "@compose_email": {
     "type": "text",
     "placeholders_order": [],
@@ -612,13 +612,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy_email_address": "Copier l’adresse électronique",
+  "copy_email_address": "Copier l’adresse e-mail",
   "@copy_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_copied_to_clipboard": "Adresse électronique copiée dans le presse-papiers",
+  "email_address_copied_to_clipboard": "Adresse e-mail copiée dans le presse-papiers",
   "@email_address_copied_to_clipboard": {
     "type": "text",
     "placeholders_order": [],
@@ -660,7 +660,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_a_subject": "Voulez-vous vraiment envoyer des messages sans objet ?",
+  "message_dialog_send_email_without_a_subject": "Voulez-vous vraiment envoyer des messages sans sujet ?",
   "@message_dialog_send_email_without_a_subject": {
     "type": "text",
     "placeholders_order": [],
@@ -672,7 +672,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_emails": "Chercher des courriels",
+  "search_emails": "Rechercher des messages",
   "@search_emails": {
     "type": "text",
     "placeholders_order": [],
@@ -732,7 +732,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_compose_email": "Commencez à rédiger une lettre…",
+  "hint_compose_email": "Commencez à rédiger un message…",
   "@hint_compose_email": {
     "type": "text",
     "placeholders_order": [],
@@ -768,13 +768,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_with_email_address_invalid": "Vérifiez les adresses électroniques et réessayez",
+  "message_dialog_send_email_with_email_address_invalid": "Vérifiez les adresses e-mails et réessayez",
   "@message_dialog_send_email_with_email_address_invalid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fix_email_addresses": "Corriger les adresses électroniques",
+  "fix_email_addresses": "Corriger les adresses e-mails",
   "@fix_email_addresses": {
     "type": "text",
     "placeholders_order": [],
@@ -786,7 +786,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_subject": "Objet vide",
+  "empty_subject": "Sujet vide",
   "@empty_subject": {
     "type": "text",
     "placeholders_order": [],
@@ -914,7 +914,7 @@
       "count": {}
     }
   },
-  "toast_message_delete_a_email_permanently_success": "Le message a été supprimé pour définitivement",
+  "toast_message_delete_a_email_permanently_success": "Le message a été supprimé définitivement",
   "@toast_message_delete_a_email_permanently_success": {
     "type": "text",
     "placeholders_order": [],
@@ -1012,7 +1012,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_as_not_spam": "Marqué comme non indésirable",
+  "marked_as_not_spam": "Marqué comme indésirable",
   "@marked_as_not_spam": {
     "type": "text",
     "placeholders_order": [],
@@ -1072,7 +1072,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "Le courriel est requis",
+  "requiredEmail": "L'adresse e-mail est requise",
   "@requiredEmail": {
     "type": "text",
     "placeholders_order": [],
@@ -1096,7 +1096,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageEmailAsATeam": "Gérer les courriels en équipe",
+  "manageEmailAsATeam": "Gérer les messages en équipe",
   "@manageEmailAsATeam": {
     "type": "text",
     "placeholders_order": [],
@@ -1246,7 +1246,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageSubtitle": "Définissez la langue que vous utilisez sur Twake Mail.",
+  "languageSubtitle": "Définissez la langue de Twake Mail.",
   "@languageSubtitle": {
     "type": "text",
     "placeholders_order": [],
@@ -1282,7 +1282,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogSendEmailUploadingAttachment": "Votre message n'a pas pu être envoyé car il téléverse une pièce jointe",
+  "messageDialogSendEmailUploadingAttachment": "Votre message n'a pas pu être envoyé car une pièce jointe est en cours de téléversement",
   "@messageDialogSendEmailUploadingAttachment": {
     "type": "text",
     "placeholders_order": [],
@@ -1630,7 +1630,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailRules": "Règles des courriels",
+  "emailRules": "Règles des messages",
   "@emailRules": {
     "type": "text",
     "placeholders_order": [],
@@ -1738,7 +1738,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "Informations vous concernant et options pour les gérer.",
+  "profilesSettingExplanation": "Gérez vos identités et vos options d'expédition.",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -1750,7 +1750,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identitiesSettingExplanation": "Sélectionnez l'identité ou l'adresse e-mail que vous souhaitez utiliser pour envoyer un e-mail",
+  "identitiesSettingExplanation": "Sélectionnez l'identité ou l'adresse e-mail que vous souhaitez utiliser pour envoyer les messages",
   "@identitiesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -1786,7 +1786,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteEmailRule": "Voulez-vous supprimer la règle \"{ruleName}\" ?",
+  "messageConfirmationDialogDeleteEmailRule": "Voulez-vous supprimer la règle \"{ruleName}\" ?",
   "@messageConfirmationDialogDeleteEmailRule": {
     "type": "text",
     "placeholders_order": [
@@ -1862,7 +1862,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "Nous sommes désolés, aucun e-mail ne correspond à votre filtre actuel.",
+  "noEmailMatchYourCurrentFilter": "Nous sommes désolés, aucun message ne correspond à votre filtre actuel.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
@@ -1892,7 +1892,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwarding": "Adresse de réexpédition",
+  "forwarding": "Adresse de transfert",
   "@forwarding": {
     "type": "text",
     "placeholders_order": [],
@@ -1952,7 +1952,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingSaved": "Paramètres de réponse automatique enregistrés",
+  "vacationSettingSaved": "Paramètres de vacances enregistrés",
   "@vacationSettingSaved": {
     "type": "text",
     "placeholders_order": [],
@@ -1964,13 +1964,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingExplanation": "Envoie une réponse automatique aux messages entrants.",
+  "vacationSettingExplanation": "Envoie une réponse automatique aux messages reçus.",
   "@vacationSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingToggleButtonAutoReply": "Répondez automatiquement aux messages lorsqu'ils sont reçus.",
+  "vacationSettingToggleButtonAutoReply": "Renvoie automatiquement une réponse aux messages reçus.",
   "@vacationSettingToggleButtonAutoReply": {
     "type": "text",
     "placeholders_order": [],
@@ -2030,7 +2030,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageCannotFoundEmailIdWhenSendReceipt": "L'identifiant e-mail indiquée est introuvable",
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "L'identifiant du message indiqué est introuvable",
   "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
@@ -2064,7 +2064,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "totalEmailSelected": "Tout désélectionner ({count})",
+  "totalEmailSelected": "Désélectionner ({count})",
   "@totalEmailSelected": {
     "type": "text",
     "placeholders_order": [
@@ -2114,7 +2114,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quickCreatingRule": "Créer une règle à partir de cet e-mail",
+  "quickCreatingRule": "Créer une règle à partir de ce message",
   "@quickCreatingRule": {
     "type": "text",
     "placeholders_order": [],
@@ -2186,7 +2186,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSetting": "Paramètres de réponse automatique",
+  "vacationSetting": "Paramètres des vacances",
   "@vacationSetting": {
     "type": "text",
     "placeholders_order": [],
@@ -2216,7 +2216,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subTitleReadReceiptRequestNotificationMessage": "L'expéditeur a demandé l'envoi d'un accusé de réception pour cet e-mail. Envoyer un accusé de réception ?",
+  "subTitleReadReceiptRequestNotificationMessage": "L'expéditeur a demandé l'envoi d'un accusé de réception pour ce message. Envoyer un accusé de réception ?",
   "@subTitleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -2252,7 +2252,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enableSpamReport": "Activer le rapport de spam",
+  "enableSpamReport": "Activer le rapport des indésirables",
   "@enableSpamReport": {
     "type": "text",
     "placeholders_order": [],
@@ -2288,7 +2288,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "totalNewMessagePushNotification": "{count} nouveaux e-mails",
+  "totalNewMessagePushNotification": "{count} nouveaux messages",
   "@totalNewMessagePushNotification": {
     "type": "text",
     "placeholders_order": [
@@ -2298,7 +2298,7 @@
       "count": {}
     }
   },
-  "countNewSpamEmails": "Vous avez {count} nouveaux spams !",
+  "countNewSpamEmails": "Vous avez {count} nouveaux indésirables !",
   "@countNewSpamEmails": {
     "type": "text",
     "placeholders_order": [
@@ -2314,7 +2314,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disableSpamReport": "Désactiver le rapport de spam",
+  "disableSpamReport": "Désactiver le rapport des indésirables",
   "@disableSpamReport": {
     "type": "text",
     "placeholders_order": [],
@@ -2338,13 +2338,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailure": "Échec de l'enregistrement de votre message en tant que brouillons.",
+  "saveEmailAsDraftFailure": "Échec de l'enregistrement de votre message en tant que brouillon.",
   "@saveEmailAsDraftFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Échec de l'enregistrement de votre message en tant que brouillons, car il est trop volumineux.",
+  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Échec de l'enregistrement de votre message en tant que brouillon, car il est trop volumineux.",
   "@saveEmailAsDraftFailureWithSetErrorTypeTooLarge": {
     "type": "text",
     "placeholders_order": [],
@@ -2356,7 +2356,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Échec de l'enregistrement de votre message en tant que brouillons, car vous dépassez votre quota.",
+  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Échec de l'enregistrement de votre message en tant que brouillon, car votre quota est dépassé.",
   "@saveEmailAsDraftFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
@@ -2368,7 +2368,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacation": "Réponse automatique",
+  "vacation": "Vacances",
   "@vacation": {
     "type": "text",
     "placeholders_order": [],
@@ -2386,7 +2386,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationStopsAt": "Les réponses automatiques s'arrêtent le",
+  "vacationStopsAt": "Fin des vacances le",
   "@vacationStopsAt": {
     "type": "text",
     "placeholders_order": [],
@@ -2398,19 +2398,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsEnabled": "Votre répondeur automatique est activé.",
+  "yourVacationResponderIsEnabled": "Votre répondeur de vacances est activé.",
   "@yourVacationResponderIsEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsDisabledSuccessfully": "Votre répondeur automatique a été désactivé avec succès",
+  "yourVacationResponderIsDisabledSuccessfully": "Votre répondeur de vacances a été désactivé avec succès",
   "@yourVacationResponderIsDisabledSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEnableVacationResponderAutomatically": "Votre répondeur automatique sera activé le {startDate}",
+  "messageEnableVacationResponderAutomatically": "Votre répondeur de vacances sera activé le {startDate}",
   "@messageEnableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
@@ -2430,7 +2430,7 @@
       "endDate": {}
     }
   },
-  "messageConfirmationDialogDeleteRecipientForward": "Voulez-vous supprimer l'e-mail {emailAddress} ?",
+  "messageConfirmationDialogDeleteRecipientForward": "Voulez-vous supprimer l'adresse e-mail {emailAddress} ?",
   "@messageConfirmationDialogDeleteRecipientForward": {
     "type": "text",
     "placeholders_order": [
@@ -2446,13 +2446,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDeleteRecipientSuccessfully": "L'e-mail a été supprimé de la liste des destinataires.",
+  "toastMessageDeleteRecipientSuccessfully": "L'adresse e-mail a été supprimée de la liste des destinataires.",
   "@toastMessageDeleteRecipientSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteAllRecipientForward": "Voulez-vous vraiment supprimer ces destinataires ? Cela les supprimera de la chaîne de messagerie.",
+  "messageConfirmationDialogDeleteAllRecipientForward": "Voulez-vous vraiment supprimer ces destinataires ? Cela les retirera de la discussion.",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
     "type": "text",
     "placeholders_order": [],
@@ -2464,7 +2464,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAddRecipientsSuccessfully": "Les e-mails ont été ajoutés à partir de la liste des destinataires.",
+  "toastMessageAddRecipientsSuccessfully": "Les adresses e-mails ont été ajoutées à partir de la liste des destinataires.",
   "@toastMessageAddRecipientsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
@@ -2482,19 +2482,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Conservez une copie de l'e-mail dans la boîte de réception",
+  "keepLocalCopyForwardLabel": "Conserver une copie du message dans la boîte de réception",
   "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailRuleSettingExplanation": "Création de règles pour gérer les messages entrants. Vous choisissez à la fois la condition qui déclenche une règle et les actions que la règle appliquera.",
+  "emailRuleSettingExplanation": "Création de règles pour gérer les messages entrants. Vous choisissez la condition qui déclenche une règle et les actions que la règle appliquera.",
   "@emailRuleSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchInputContact": "Entrez le nom ou l'e-mail",
+  "hintSearchInputContact": "Entrez le nom ou l'adresse e-mail",
   "@hintSearchInputContact": {
     "type": "text",
     "placeholders_order": [],
@@ -2632,7 +2632,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyListEmailForward": "Français",
+  "emptyListEmailForward": "Veuillez saisir au moins un destinataire",
   "@emptyListEmailForward": {
     "type": "text",
     "placeholders_order": [],
@@ -2656,7 +2656,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogDeleteSendingEmail": "La suppression d'un message hors ligne effacera définitivement son contenu. Il ne sera pas possible d'annuler cette action ni de récupérer le message de la corbeille.",
+  "messageDialogDeleteSendingEmail": "La suppression d'un message hors-ligne effacera définitivement son contenu. Il ne sera pas possible d'annuler cette action ni de récupérer le message depuis la corbeille.",
   "@messageDialogDeleteSendingEmail": {
     "type": "text",
     "placeholders_order": [],
@@ -2734,7 +2734,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleRecipientSendingEmail": "À : {recipients}",
+  "titleRecipientSendingEmail": "Pour : {recipients}",
   "@titleRecipientSendingEmail": {
     "type": "text",
     "placeholders_order": [
@@ -2798,7 +2798,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamMailboxDisplayName": "Spam",
+  "spamMailboxDisplayName": "Indésirables",
   "@spamMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
@@ -2852,7 +2852,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerDeleteAllSpamEmailsMessage": "Tous les messages dans le dossier Spam seront supprimés si vous atteignez votre limite de stockage.",
+  "emptyTrashMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les éléments de la corbeille . Voulez-vous continuer ?",
+  "@emptyTrashMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerDeleteAllSpamEmailsMessage": "Tous les messages dans le dossier Indésirables seront supprimés si vous atteignez votre limite de stockage.",
   "@bannerDeleteAllSpamEmailsMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -2900,13 +2906,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaWarningBannerMessage": "Bientôt, vous ne pourrez plus envoyer d'e-mails dans Tmail. Veuillez nettoyer votre stockage ou mettre à niveau votre stockage pour bénéficier de toutes les fonctionnalités de Tmail.",
+  "quotaWarningBannerMessage": "Bientôt, vous ne pourrez plus envoyer de messages dans Twake Mail. Veuillez nettoyer ou mettre à niveau votre stockage pour bénéficier de toutes les fonctionnalités de Twake Mail.",
   "@quotaWarningBannerMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamFolder": "Vider le dossier Spam",
+  "emptySpamFolder": "Vider le dossier Indésirables",
   "@emptySpamFolder": {
     "type": "text",
     "placeholders_order": [],
@@ -2918,7 +2924,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteAllSpamEmails": "Supprimer tous les spams",
+  "deleteAllSpamEmails": "Supprimer tous les indésirables",
   "@deleteAllSpamEmails": {
     "type": "text",
     "placeholders_order": [],
@@ -2936,7 +2942,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les emails du dossier spam. Voulez-vous continuer ?",
+  "emptySpamMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les messages du dossier Indésirables. Voulez-vous continuer ?",
   "@emptySpamMessageDialog": {
     "type": "text",
     "placeholders_order": [],
@@ -2978,7 +2984,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteAllSpamEmailsNow": "Supprimez tous les spams maintenant",
+  "deleteAllSpamEmailsNow": "Supprimez tous les indésirables maintenant",
   "@deleteAllSpamEmailsNow": {
     "type": "text",
     "placeholders_order": [],
@@ -3000,7 +3006,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaErrorBannerMessage": "Bientôt, vous ne pourrez plus envoyer d'e-mails dans Tmail. Veuillez nettoyer votre stockage ou mettre à niveau votre stockage pour bénéficier de toutes les fonctionnalités de Tmail.",
+  "quotaErrorBannerMessage": "Bientôt, vous ne pourrez plus envoyer de messages dans Twake Mail. Veuillez nettoyer ou mettre à niveau votre stockage pour bénéficier de toutes les fonctionnalités de Twake Mail.",
   "@quotaErrorBannerMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -3150,7 +3156,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderVisibility": "Visibilité des dossiers",
+  "folderVisibility": "Affichage des dossiers",
   "@folderVisibility": {
     "type": "text",
     "placeholders_order": [],
@@ -3362,7 +3368,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_folder": "Le dossier \"{nameMailbox}\" et tous les sous-dossiers et messages qu'il contiennent seront supprimés et ne pourront pas être récupérés. Voulez-vous continuer la suppression ?",
+  "message_confirmation_dialog_delete_folder": "Le dossier \"{nameMailbox}\" et tous les sous-dossiers et messages qu'il contient seront supprimés et ne pourront pas être récupérés. Voulez-vous poursuivre la suppression ?",
   "@message_confirmation_dialog_delete_folder": {
     "type": "text",
     "placeholders_order": [
@@ -3396,13 +3402,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "Nous sommes désolés, il n'y a aucun e-mail dans votre dossier actuel",
+  "noEmailInYourCurrentFolder": "Nous sommes désolés, il n'y a aucun message dans ce dossier",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "Les adresses e-mail répertoriées ci-dessous recevront vos e-mails.",
+  "forwardingSettingExplanation": "Les adresses e-mails ci-dessous recevront vos messages.",
   "@forwardingSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -3548,7 +3554,7 @@
       "reason": {}
     }
   },
-  "markAsSpam": "Marquer comme spam",
+  "markAsSpam": "Marquer comme indésirable",
   "@markAsSpam": {
     "type": "text",
     "placeholders_order": [],
@@ -3590,7 +3596,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "confirmAllEmailHereAreSpam": "Confirmez que tous ces e-mails sont des spams",
+  "confirmAllEmailHereAreSpam": "Confirmer que tous ces messages sont des indésirables",
   "@confirmAllEmailHereAreSpam": {
     "type": "text",
     "placeholders_order": [],
@@ -3680,7 +3686,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMail": "Désabonnement du courriel",
+  "unsubscribeMail": "Désabonnement de l'adresse e-mail",
   "@unsubscribeMail": {
     "type": "text",
     "placeholders_order": [],
@@ -3698,7 +3704,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerProgressingRecoveryMessage": "La reprise est en cours. Vous pouvez continuer à utiliser Twake Mail",
+  "bannerProgressingRecoveryMessage": "La récupération est en cours. Vous pouvez continuer à utiliser Twake Mail",
   "@bannerProgressingRecoveryMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -3710,19 +3716,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "Etes-vous sûr de vouloir ne plus recevoir de messages similaires en provenance de",
+  "unsubscribeMailDialogMessage": "Confirmez-vous ne plus vouloir recevoir de message similaire en provenance de",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribedFromThisMailingList": "Désabonné de cette liste de diffusion",
+  "unsubscribedFromThisMailingList": "Désabonnement de cette liste de diffusion réussi",
   "@unsubscribedFromThisMailingList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailUnsubscribedMessage": "Vous vous désabonnez de {senderName}",
+  "mailUnsubscribedMessage": "Désabonnement de {senderName}",
   "@mailUnsubscribedMessage": {
     "type": "text",
     "placeholders_order": [
@@ -3792,7 +3798,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "restoreDeletedMessageSuccess": "Récupérer avec succès les messages supprimés",
+  "restoreDeletedMessageSuccess": "Récupération des messages supprimés réussie",
   "@restoreDeletedMessageSuccess": {
     "type": "text",
     "placeholders_order": [],
@@ -3804,7 +3810,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "restoreDeletedMessageCanceled": "Annulation de la restauration du message supprimé",
+  "restoreDeletedMessageCanceled": "Restauration du message supprimé annulée",
   "@restoreDeletedMessageCanceled": {
     "type": "text",
     "placeholders_order": [],
