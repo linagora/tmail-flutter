@@ -23,11 +23,19 @@ function isValidUserLanguage(language) {
  * @returns {String}
  */
 function getUserLanguage() {
-  console.info(`[Twake Mail] Current Language: `, navigator.language);
-  if (isValidUserLanguage(navigator.language)) {
-    return navigator.language.split('-')[0];
+  let userLanguage = languageDefault;
+
+  try {
+    const language = navigator.language;
+    if (isValidUserLanguage(language)) {
+      userLanguage = language.split('-')[0];
+    }
+  } catch (error) {
+    console.error(`[Twake Mail] Error getting user language:`, error);
   }
-  return languageDefault;
+
+  console.info(`[Twake Mail] Current Language: `, userLanguage);
+  return userLanguage;
 }
 
 /**
