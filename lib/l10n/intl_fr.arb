@@ -898,7 +898,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "not_starred": "Non favori",
+  "not_starred": "Ne plus marquer comme favori",
   "@not_starred": {
     "type": "text",
     "placeholders_order": [],
@@ -1426,7 +1426,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hasAttachment": "A une pièce jointe",
+  "hasAttachment": "Avec pièce jointe",
   "@hasAttachment": {
     "type": "text",
     "placeholders_order": [],
@@ -3276,7 +3276,7 @@
       "count": {}
     }
   },
-  "enterSomeSuggestions": "Entrez quelques suggestions",
+  "enterSomeSuggestions": "Entrez quelques mots",
   "@enterSomeSuggestions": {
     "type": "text",
     "placeholders_order": [],
@@ -3460,7 +3460,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterASubject": "Entrez un sujet",
+  "enterASubject": "Entrer un sujet",
   "@enterASubject": {
     "type": "text",
     "placeholders_order": [],
@@ -3590,7 +3590,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "confirmAllEmailHereAreSpam": "Confirmez que tous les e-mails sont des spams",
+  "confirmAllEmailHereAreSpam": "Confirmez que tous ces e-mails sont des spams",
   "@confirmAllEmailHereAreSpam": {
     "type": "text",
     "placeholders_order": [],
@@ -3602,7 +3602,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "searchForIdentities": "Recherche d'identités",
+  "searchForIdentities": "Rechercher des identités",
   "@searchForIdentities": {
     "type": "text",
     "placeholders_order": [],
@@ -3620,25 +3620,25 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "oldest": "Le plus âgé",
+  "oldest": "Le plus ancien",
   "@oldest": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "relevance": "Pertinence",
+  "relevance": "Par pertinence",
   "@relevance": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "senderAscending": "Nom de l'expéditeur : A - Z",
+  "senderAscending": "Nom d'expéditeur : A - Z",
   "@senderAscending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "senderDescending": "Nom de l'expéditeur : Z - A",
+  "senderDescending": "Nom d'expéditeur : Z - A",
   "@senderDescending": {
     "type": "text",
     "placeholders_order": [],
@@ -3662,7 +3662,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dnsLookupLoginMessage": "Pour vous connecter et accéder à votre message, veuillez saisir votre email",
+  "dnsLookupLoginMessage": "Pour vous connecter et accéder au message, veuillez saisir votre adresse e-mail",
   "@dnsLookupLoginMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -3680,7 +3680,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMail": "Désabonnement du courrier",
+  "unsubscribeMail": "Désabonnement du courriel",
   "@unsubscribeMail": {
     "type": "text",
     "placeholders_order": [],
