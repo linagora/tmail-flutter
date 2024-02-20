@@ -3168,7 +3168,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueViewOnIOS": "",
+  "bannerMessageSendingQueueViewOnIOS": "Vos messages n'ont pas été envoyés en raison de problèmes de réseau. Ils sont enregistrés en toute sécurité. Lorsque vous êtes de nouveau en ligne, vous pouvez les renvoyer, les modifier ou les supprimer.",
   "@bannerMessageSendingQueueViewOnIOS": {
     "type": "text",
     "placeholders_order": [],
@@ -3516,6 +3516,58 @@
   },
   "forwardTo": "Transférer à",
   "@forwardTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsReadFolderAllFailure": "Le dossier \"{folderName}\" n'a pas pu être marqué comme lu",
+  "@toastMessageMarkAsReadFolderAllFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "sending": "Envoi en cours",
+  "@sending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsReadFolderFailureWithReason": "Le dossier \"{folderName}\" n'a pas pu être marqué comme lu, pour la raison suivante \"{reason}\"",
+  "@toastMessageMarkAsReadFolderFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName",
+      "reason"
+    ],
+    "placeholders": {
+      "folderName": {},
+      "reason": {}
+    }
+  },
+  "markAsSpam": "Marquer comme spam",
+  "@markAsSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectAction": "Sélectionnez une action",
+  "@selectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardEmailHintText": "Ajouter une adresse de réexpédition",
+  "@forwardEmailHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAction": "Ajouter une action",
+  "@addAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
