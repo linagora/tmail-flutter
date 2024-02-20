@@ -29,7 +29,7 @@ extension AttachmentExtension on Attachment {
   }
 
   bool isOutsideAttachment(List<Attachment> htmlBodyAttachments) {
-    return (isDispositionAttachmentNoCID() || !isDispositionInlined()) &&
+    return (noCid() || !isDispositionInlined()) &&
       !isApplicationRTFInlined() &&
       !htmlBodyAttachments.include(this);
   }
