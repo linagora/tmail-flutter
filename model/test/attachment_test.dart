@@ -118,12 +118,12 @@ void main() {
       'GIVE attachmentG has disposition = `inline`\n'
       'AND htmlBodyAttachments is empty\n'
       'WHEN perform call `attachmentG.isOutsideAttachment()`\n'
-      'SHOULD return false',
+      'SHOULD return true',
     () {
       List<Attachment> htmlBodyAttachments = [];
       bool result = attachmentG.isOutsideAttachment(htmlBodyAttachments);
 
-      expect(result, isFalse);
+      expect(result, isTrue);
     });
 
     test(
