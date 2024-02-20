@@ -3577,5 +3577,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "duplicatedActionError": "Cette action est déjà ajoutée",
+  "@duplicatedActionError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelectedMailboxToMoveMessage": "Veuillez sélectionner une boîte aux lettres pour déplacer le message",
+  "@notSelectedMailboxToMoveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
