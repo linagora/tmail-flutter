@@ -7147,36 +7147,34 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.RecipientTagItemWidget.prototype = {
     build$1(context) {
-      var t8, t9, t10, t11, t12, t13, _this = this, _null = null,
+      var t9, t10, t11, t12, t13, t14, _this = this, _null = null,
+        _s16_ = "flutterCanvasKit",
         t1 = A._setArrayType([], type$.JSArray_Widget),
-        t2 = $.$get$_context().$index(0, "flutterCanvasKit") != null ? 0 : 8,
-        t3 = _this.currentEmailAddress,
-        t4 = B.DraggableRecipientTagWidget$(t3),
-        t5 = B.DraggableRecipientTagWidget$(t3),
-        t6 = A.EmailAddressExtension_asString(t3),
-        t7 = A.RegExp_RegExp(string$.x5b_u059, true, false, false);
-      t6 = t7._nativeRegExp.test(t6) ? 0 : 2;
-      t7 = A.Text$(A.EmailAddressExtension_asString(t3), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null);
-      t8 = A.SvgPicture$asset("assets/images/ic_close.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null);
-      t9 = _this._recipient_tag_item_widget$_getTagBackgroundColor$0();
-      t10 = _this._recipient_tag_item_widget$_getTagBorderSide$0();
-      t11 = t3.name;
-      t12 = t11 == null;
-      if ((t12 ? "" : t11).length !== 0) {
-        t13 = C.List_ebS[A.EmailAddressExtension__generateIndex(t3)];
-        t11 = A.GradientCircleAvatarIcon$(t13, 24, A.StringExtension_get_firstLetterToUpperCase(t12 ? "" : t11), 12);
+        t2 = $.$get$_context(),
+        t3 = t2.$index(0, _s16_) == null ? 0 : 8,
+        t4 = _this.currentEmailAddress,
+        t5 = B.DraggableRecipientTagWidget$(t4),
+        t6 = B.DraggableRecipientTagWidget$(t4),
+        t7 = A.EmailAddressExtension_asString(t4),
+        t8 = A.RegExp_RegExp(string$.x5b_u059, true, false, false);
+      t7 = t8._nativeRegExp.test(t7) ? 0 : 2;
+      t8 = A.Text$(A.EmailAddressExtension_asString(t4), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null);
+      t9 = A.SvgPicture$asset("assets/images/ic_close.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null);
+      t10 = _this._recipient_tag_item_widget$_getTagBackgroundColor$0();
+      t11 = _this._recipient_tag_item_widget$_getTagBorderSide$0();
+      t12 = t4.name;
+      t13 = t12 == null;
+      if ((t13 ? "" : t12).length !== 0) {
+        t14 = C.List_ebS[A.EmailAddressExtension__generateIndex(t4)];
+        t12 = A.GradientCircleAvatarIcon$(t14, 24, A.StringExtension_get_firstLetterToUpperCase(t13 ? "" : t12), 12);
       } else
-        t11 = _null;
-      t1.push(new A.Flexible(1, C.FlexFit_1, new A.Padding(new A.EdgeInsetsDirectional(0, t2, 0, 0), A.InkWell$(false, _null, true, B.Draggable$(A.MouseRegion$(A.Chip$(t11, t9, t8, t7, new A.EdgeInsetsDirectional(4, t6, 4, t6), C.TextStyle_oHY8, _null, new B.RecipientTagItemWidget_build_closure(_this), C.EdgeInsets_0_0_0_0, D.RoundedRectangleBorder_27D12, t10), C.SystemMouseCursor_grab, _null, _null, _null, _null), t5, new B.DraggableEmailAddress(t3, _this.prefix), B.drag_target__childDragAnchorStrategy$closure(), t4, _null, _null, _null, type$.DraggableEmailAddress), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.RecipientTagItemWidget_build_closure0(_this), _null, _null, _null, _null, _null, _null, _null), _null), _null));
-      if (_this.isCollapsed)
-        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_4294243572, 10, _this.get$_counterMargin(), new B.RecipientTagItemWidget_build_closure1(_this), C.EdgeInsetsDirectional_8_5_8_5, "+" + (_this.currentListEmailAddress.length - _this.collapsedListEmailAddress.length), _null, C.TextStyle_oHY8, _null));
+        t12 = _null;
+      t1.push(new A.Flexible(1, C.FlexFit_1, new A.Padding(new A.EdgeInsetsDirectional(0, t3, 0, 0), A.InkWell$(false, _null, true, B.Draggable$(A.MouseRegion$(A.Chip$(t12, t10, t9, t8, new A.EdgeInsetsDirectional(4, t7, 4, t7), C.TextStyle_oHY8, _null, new B.RecipientTagItemWidget_build_closure(_this), C.EdgeInsets_0_0_0_0, D.RoundedRectangleBorder_27D12, t11), C.SystemMouseCursor_grab, _null, _null, _null, _null), t6, new B.DraggableEmailAddress(t4, _this.prefix), B.drag_target__childDragAnchorStrategy$closure(), t5, _null, _null, _null, type$.DraggableEmailAddress), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.RecipientTagItemWidget_build_closure0(_this), _null, _null, _null, _null, _null, _null, _null), _null), _null));
+      if (_this.isCollapsed) {
+        t2 = t2.$index(0, _s16_) != null ? D.EdgeInsetsDirectional_8_8_0_0 : C.EdgeInsetsDirectional_8_0_0_0;
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_4294243572, 10, t2, new B.RecipientTagItemWidget_build_closure1(_this), C.EdgeInsetsDirectional_8_5_8_5, "+" + (_this.currentListEmailAddress.length - _this.collapsedListEmailAddress.length), _null, C.TextStyle_oHY8, _null));
+      }
       return A.Container$(_null, A.Row$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, _null), C.Clip_0, _null, new A.BoxConstraints(0, _this.maxWidth, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null);
-    },
-    get$_counterMargin() {
-      if ($.$get$_context().$index(0, "flutterCanvasKit") != null)
-        return C.EdgeInsetsDirectional_8_0_0_0;
-      else
-        return D.EdgeInsetsDirectional_8_8_0_0;
     },
     _recipient_tag_item_widget$_getTagBackgroundColor$0() {
       var t1, t2;
@@ -20390,5 +20388,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "N33sY/T2tUF4+ctCOS6i1avDmd8=");
+})($__dart_deferred_initializers__, "/2XpRd2rZ1QR0V9f/5m5/hLgLTM=");
 ;
