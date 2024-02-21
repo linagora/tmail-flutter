@@ -1,4 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -43,20 +44,27 @@ class FeedbackDraggableAttachmentItemWidget extends StatelessWidget {
           ),
           const SizedBox(width: FeedbackDraggableAttachmentItemWidgetStyle.space),
           Flexible(
-            child: DefaultTextStyle(
-              style: FeedbackDraggableAttachmentItemWidgetStyle.labelTextStyle,
-              child: ExtendedText(
-                attachment.name ?? '',
-                maxLines: 1,
-                overflowWidget: const TextOverflowWidget(
-                  position: TextOverflowPosition.middle,
-                  child: Text(
-                    '...',
-                    style: FeedbackDraggableAttachmentItemWidgetStyle.dotsLabelTextStyle,
+            child: PlatformInfo.isCanvasKit
+              ? DefaultTextStyle(
+                  style: FeedbackDraggableAttachmentItemWidgetStyle.labelTextStyle,
+                  child: ExtendedText(
+                    attachment.name ?? '',
+                    maxLines: 1,
+                    overflowWidget: const TextOverflowWidget(
+                      position: TextOverflowPosition.middle,
+                      child: Text(
+                        '...',
+                        style: FeedbackDraggableAttachmentItemWidgetStyle.dotsLabelTextStyle,
+                      ),
+                    ),
                   ),
+                )
+              : Text(
+                  attachment.name ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: FeedbackDraggableAttachmentItemWidgetStyle.labelTextStyle,
                 ),
-              ),
-            ),
           )
         ],
       ),

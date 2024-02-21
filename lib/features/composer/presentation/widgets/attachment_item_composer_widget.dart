@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
@@ -58,18 +59,25 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                     ),
                     const SizedBox(width: AttachmentItemComposerWidgetStyle.space),
                     Expanded(
-                      child: ExtendedText(
-                        fileState.fileName,
-                        maxLines: 1,
-                        overflowWidget: const TextOverflowWidget(
-                          position: TextOverflowPosition.middle,
-                          child: Text(
-                            '...',
-                            style: AttachmentItemComposerWidgetStyle.dotsLabelTextStyle,
-                          ),
-                        ),
-                        style: AttachmentItemComposerWidgetStyle.labelTextStyle,
-                      ),
+                      child: PlatformInfo.isCanvasKit
+                        ? ExtendedText(
+                            fileState.fileName,
+                            maxLines: 1,
+                            overflowWidget: const TextOverflowWidget(
+                              position: TextOverflowPosition.middle,
+                              child: Text(
+                                '...',
+                                style: AttachmentItemComposerWidgetStyle.dotsLabelTextStyle,
+                              ),
+                            ),
+                            style: AttachmentItemComposerWidgetStyle.labelTextStyle,
+                          )
+                        : Text(
+                            fileState.fileName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AttachmentItemComposerWidgetStyle.labelTextStyle,
+                          )
                     ),
                     const SizedBox(width: AttachmentItemComposerWidgetStyle.space),
                     Text(
