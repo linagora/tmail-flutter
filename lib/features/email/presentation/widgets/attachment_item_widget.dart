@@ -53,18 +53,25 @@ class AttachmentItemWidget extends StatelessWidget {
               ),
               const SizedBox(width: AttachmentItemWidgetStyle.space),
               Expanded(
-                child: ExtendedText(
-                  (attachment.name ?? ''),
-                  maxLines: 1,
-                  overflowWidget: const TextOverflowWidget(
-                    position: TextOverflowPosition.middle,
-                    child: Text(
-                      "...",
-                      style: AttachmentItemWidgetStyle.dotsLabelTextStyle,
-                    ),
-                  ),
-                  style: AttachmentItemWidgetStyle.labelTextStyle,
-                ),
+                child: PlatformInfo.isCanvasKit
+                  ? ExtendedText(
+                      (attachment.name ?? ''),
+                      maxLines: 1,
+                      overflowWidget: const TextOverflowWidget(
+                        position: TextOverflowPosition.middle,
+                        child: Text(
+                          "...",
+                          style: AttachmentItemWidgetStyle.dotsLabelTextStyle,
+                        ),
+                      ),
+                      style: AttachmentItemWidgetStyle.labelTextStyle,
+                    )
+                  : Text(
+                      (attachment.name ?? ''),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AttachmentItemWidgetStyle.labelTextStyle,
+                    )
               ),
               const SizedBox(width: AttachmentItemWidgetStyle.space),
               Text(

@@ -57,7 +57,7 @@ class RecipientTagItemWidget extends StatelessWidget {
             Flexible(
               child: Padding(
                 padding: EdgeInsetsDirectional.only(
-                  top: PlatformInfo.isWebMobile ? 0 : 8
+                  top: !PlatformInfo.isCanvasKit ? 0 : 8
                 ),
                 child: InkWell(
                   onTap: () => isCollapsed
@@ -158,10 +158,10 @@ class RecipientTagItemWidget extends StatelessWidget {
   }
 
   EdgeInsetsGeometry? get _counterMargin {
-    if (PlatformInfo.isWebMobile) {
-      return RecipientTagItemWidgetStyle.webMobileCounterMargin;
-    } else if (PlatformInfo.isWeb) {
-      return RecipientTagItemWidgetStyle.webCounterMargin;
+    if (PlatformInfo.isWeb) {
+      return PlatformInfo.isCanvasKit
+        ? RecipientTagItemWidgetStyle.webCounterMargin
+        : RecipientTagItemWidgetStyle.webMobileCounterMargin;
     } else {
       return RecipientTagItemWidgetStyle.counterMargin;
     }
