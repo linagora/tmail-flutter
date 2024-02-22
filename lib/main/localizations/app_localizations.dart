@@ -3780,4 +3780,11 @@ class AppLocalizations {
       name: 'restoreDeletedMessageCanceled',
     );
   }
+
+  String get loadMore {
+    return Intl.message(
+      'Load more',
+      name: 'loadMore',
+    );
+  }
 }
