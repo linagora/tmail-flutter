@@ -269,7 +269,7 @@ abstract class BaseController extends GetxController
         FcmTokenController.instance.initialBindingInteractor();
         await FcmReceiver.instance.onInitialFcmListener();
         if (PlatformInfo.isMobile) {
-          await LocalNotificationManager.instance.setUp();
+          await LocalNotificationManager.instance.setUp(groupId: session.username.value);
         }
       } else {
         throw NotSupportFCMException();
