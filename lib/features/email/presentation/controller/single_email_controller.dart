@@ -19,6 +19,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
+import 'package:mime/mime.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -748,9 +749,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     log('SingleEmailController::_downloadAttachmentForWebSuccessAction():');
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
-    _downloadManager.createAnchorElementDownloadFileWeb(
-        success.bytes,
-        success.attachment.generateFileName());
+    final mimeType = success.attachment.type?.mimeType ??
+        lookupMimeType('', headerBytes: success.bytes);
+    if (mimeType == Constant.pdfMimeType) {
+      _downloadManager.openDownloadedFileWeb(
+          success.bytes, success.attachment.type?.mimeType);
+    } else {
+      _downloadManager.createAnchorElementDownloadFileWeb(
+          success.bytes, success.attachment.generateFileName());
+    }
   }
 
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {

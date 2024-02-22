@@ -229,6 +229,8 @@ dependencies:
 
   flutter_secure_storage: 8.0.0
 
+  mime: 1.0.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
