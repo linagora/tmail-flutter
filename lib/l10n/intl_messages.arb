@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-01-30T21:47:03.306097",
+  "@@last_modified": "2024-02-22T09:16:33.644962",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3626,6 +3626,12 @@
   },
   "restoreDeletedMessageCanceled": "Restore deleted message canceled",
   "@restoreDeletedMessageCanceled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loadMore": "Load more",
+  "@loadMore": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
