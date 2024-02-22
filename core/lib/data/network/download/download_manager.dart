@@ -115,7 +115,7 @@ class DownloadManager {
 
       html.Url.revokeObjectUrl(url);
     } catch (exception) {
-      log('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
+      logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
       rethrow;
     }
   }
