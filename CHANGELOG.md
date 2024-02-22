@@ -1,3 +1,15 @@
+## [0.11.3-patch4-5] - 2024-02-21
+### Fixed
+- #2611 Get only one by one in FULL level when receive changes in notification
+- #2502 Fix all day event in Blue bar
+- Fix text disappear in redirect banner
+- #2610 Standardize the way to display attachment
+- Translate Vietnamese
+- Translate French
+- Translate Russian
+- Translate Arabic
+- #2537 Fix app crash when trying attach file in mobile-browser
+
 ## [0.11.3-patch4] - 2024-02-19
 ### Fixed
 - #2564 Change logic empty folder (Spam/Trash) to avoid cache still has data
