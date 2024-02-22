@@ -258,6 +258,7 @@ abstract class BaseController extends GetxController
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
+      log('BaseController::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
       if (AppConfig.fcmAvailable) {
         final mapEnvData = Map<String, String>.from(dotenv.env);
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
