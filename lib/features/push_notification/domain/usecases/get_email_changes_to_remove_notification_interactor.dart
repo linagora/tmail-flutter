@@ -38,7 +38,7 @@ class GetEmailChangesToRemoveNotificationInteractor {
           currentState,
           propertiesCreated: propertiesCreated,
           propertiesUpdated: propertiesUpdated);
-        yield Right<Failure, Success>(GetEmailChangesToRemoveNotificationSuccess(emailIds));
+        yield Right<Failure, Success>(GetEmailChangesToRemoveNotificationSuccess(session.username, emailIds));
       } else {
         yield Left<Failure, Success>(GetEmailChangesToRemoveNotificationFailure(NotFoundEmailStateException()));
       }

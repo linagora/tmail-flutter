@@ -1,35 +1,11 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotificationConfig {
-  static const _groupId = 'team_mail_notification_group_id';
-  static const _groupName = 'team_mail_notification_group_name';
-  static const _groupDescription = 'Twake Mail group notifications';
-  static const _channelId = 'team_mail_notification_channel_id';
-  static const _channelName = 'Twake Mail notifications';
-  static const _channelDescription = 'Twake Mail notifications';
-  static const notificationTitle = 'Twake Mail';
-  static const notificationMessage = 'You have new messages';
-  static const messageHasBeenSentSuccessfully = 'Message has been sent successfully.';
-  static const int groupNotificationId = 1995;
+  static const String NOTIFICATION_CHANNEL = 'New Email';
+  static const int MIN_EMAILS_TO_GROUP  = 3;
 
   static const iosInitializationSettings = DarwinInitializationSettings();
-
   static const androidInitializationSettings = AndroidInitializationSettings('notification_icon');
-
-  static const androidNotificationChannel = AndroidNotificationChannel(
-    _channelId,
-    _channelName,
-    description: _channelDescription,
-    groupId: _groupId,
-    importance: Importance.max,
-    showBadge: true
-  );
-
-  static const androidNotificationChannelGroup = AndroidNotificationChannelGroup(
-    _groupId,
-    _groupName,
-    description: _groupDescription
-  );
 
   LocalNotificationConfig._internal();
 
@@ -37,18 +13,24 @@ class LocalNotificationConfig {
 
   static LocalNotificationConfig get instance => _instance;
 
-  NotificationDetails generateNotificationDetails({StyleInformation? styleInformation, bool setAsGroup = false}) {
+  NotificationDetails generateNotificationDetails({
+    StyleInformation? styleInformation,
+    bool setAsGroup = false,
+    String? groupId,
+  }) {
     return NotificationDetails(
       android: AndroidNotificationDetails(
-        androidNotificationChannel.id,
-        androidNotificationChannel.name,
-        channelDescription: androidNotificationChannel.description,
-        groupKey: androidNotificationChannel.groupId,
+        NOTIFICATION_CHANNEL,
+        NOTIFICATION_CHANNEL,
+        groupKey: groupId,
         visibility: NotificationVisibility.public,
         importance: Importance.max,
         priority: Priority.high,
         setAsGroupSummary: setAsGroup,
         styleInformation: styleInformation,
+        groupAlertBehavior: setAsGroup
+          ? GroupAlertBehavior.summary
+          : GroupAlertBehavior.all,
         channelShowBadge: true,
         showWhen: true,
         largeIcon: const DrawableResourceAndroidBitmap('ic_large_notification')
@@ -57,7 +39,7 @@ class LocalNotificationConfig {
         presentSound: true,
         presentAlert: true,
         presentBadge: true,
-        threadIdentifier: _channelId
+        threadIdentifier: NOTIFICATION_CHANNEL
       ),
     );
   }

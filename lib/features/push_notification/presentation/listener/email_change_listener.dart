@@ -173,15 +173,17 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _showLocalNotification(PresentationEmail presentationEmail) {
-    final notificationPayload = NotificationPayload(emailId: presentationEmail.id);
-    log('EmailChangeListener::_showLocalNotification():notificationPayload: $notificationPayload');
-    LocalNotificationManager.instance.showPushNotification(
+  Future<void> _showLocalNotification(
+    UserName userName,
+    PresentationEmail presentationEmail
+  ) async {
+    await LocalNotificationManager.instance.showPushNotification(
       id: presentationEmail.id?.id.value ?? '',
       title: presentationEmail.subject ?? '',
       message: presentationEmail.preview,
       emailAddress: presentationEmail.firstFromAddress,
-      payload: notificationPayload.encodeToString,
+      payload: NotificationPayload(emailId: presentationEmail.id).encodeToString,
+      groupId: userName.value
     );
   }
 
@@ -193,7 +195,10 @@ class EmailChangeListener extends ChangeListener {
       _getStoredEmailState();
     } else if (failure is GetMailboxesNotPutNotificationsFailure) {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification();
-      _handleLocalPushNotification(listEmails);
+      _handleLocalPushNotification(
+        userName: failure.userName,
+        emailList: listEmails
+      );
     }
   }
 
@@ -208,14 +213,23 @@ class EmailChangeListener extends ChangeListener {
       _storeEmailDeliveryStateAction(success.accountId, success.userName, _newStateEmailDelivery!);
 
       if (PlatformInfo.isAndroid) {
-        _handleListEmailToPushNotification(success.emailList);
+        _handleListEmailToPushNotification(
+          userName: success.userName,
+          emailList: success.emailList
+        );
       }
     } else if (success is GetMailboxesNotPutNotificationsSuccess) {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification(
         mailboxIdsNotPutNotifications: success.mailboxes.mailboxIds);
-      _handleLocalPushNotification(listEmails);
+      _handleLocalPushNotification(
+        userName: success.userName,
+        emailList: listEmails
+      );
     } else if (success is GetEmailChangesToRemoveNotificationSuccess) {
-      _handleRemoveLocalNotification(success.emailIds);
+      _handleRemoveLocalNotification(
+        userName: success.userName,
+        emailIds: success.emailIds
+      );
     } else if (success is GetNewReceiveEmailFromNotificationSuccess) {
       _getListDetailedEmailByIdAction(success.session, success.accountId, success.emailIds);
     } else if (success is GetDetailedEmailByIdSuccess) {
@@ -226,27 +240,39 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleListEmailToPushNotification(List<PresentationEmail> emailList) {
+  void _handleListEmailToPushNotification({
+    required UserName userName,
+    required List<PresentationEmail> emailList
+  }) {
     _emailsAvailablePushNotification = emailList;
     if (_getMailboxesNotPutNotificationsInteractor != null && _accountId != null && _session != null) {
       consumeState(_getMailboxesNotPutNotificationsInteractor!.execute(_session!, _accountId!));
     } else {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification();
-      _handleLocalPushNotification(listEmails);
+      _handleLocalPushNotification(
+        userName: userName,
+        emailList: listEmails
+      );
     }
   }
 
-  void _handleLocalPushNotification(List<PresentationEmail> emailList) {
-    log('EmailChangeListener::_handleLocalPushNotification():emailList: $emailList');
+  void _handleLocalPushNotification({
+    required UserName userName,
+    required List<PresentationEmail> emailList
+  }) async {
+    log('EmailChangeListener::_handleLocalPushNotification(): EMAIL_LENGTH = ${emailList.length}');
     if (emailList.isEmpty) {
+      _emailsAvailablePushNotification.clear();
       return;
     }
 
     for (var presentationEmail in emailList) {
-      _showLocalNotification(presentationEmail);
+      await _showLocalNotification(userName, presentationEmail);
     }
 
-    LocalNotificationManager.instance.groupPushNotification();
+    if (PlatformInfo.isAndroid) {
+      await LocalNotificationManager.instance.groupPushNotification(groupId: userName.value);
+    }
 
     _emailsAvailablePushNotification.clear();
   }
@@ -272,10 +298,13 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleRemoveLocalNotification(List<EmailId> emailIds) async {
+  void _handleRemoveLocalNotification({
+    required UserName userName,
+    required List<EmailId> emailIds
+  }) async {
     log('EmailChangeListener::_handleRemoveLocalNotification():emailIds: $emailIds');
     await Future.wait(emailIds.map((emailId) => LocalNotificationManager.instance.removeNotification(emailId.id.value)));
-    LocalNotificationManager.instance.removeGroupPushNotification();
+    await LocalNotificationManager.instance.removeGroupPushNotification(userName.value);
   }
 
   void _getNewReceiveEmailFromNotificationAction(Session? session, AccountId accountId, jmap.State newState) {
