@@ -5,12 +5,12 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
-import 'package:dio/dio.dart';
 
 class UploadAttachment with EquatableMixin {
 
@@ -48,17 +48,15 @@ class UploadAttachment with EquatableMixin {
         cancelToken: cancelToken
       );
 
+      log('UploadAttachment::upload: ATTACHMENT_UPLOADED = $attachment');
+
       if (cancelToken?.isCancelled == true) {
         _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
         await _progressStateController.close();
         return;
       }
 
-      if (attachment != null) {
-        _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
-      } else {
-        _updateEvent(Left(ErrorAttachmentUploadState(uploadId: uploadTaskId)));
-      }
+      _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
     } catch (e) {
       logError('UploadAttachment::upload():ERROR: $e');
       if (e is DioError && e.type == DioErrorType.cancel) {
