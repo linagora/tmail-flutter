@@ -655,6 +655,38 @@ packages:
       url: "https://github.com/CarlosPacheco/flutter_appauth_web.git"
     source: git
     version: "0.0.3"
+  flutter_charset_detector:
+    dependency: transitive
+    description:
+      name: flutter_charset_detector
+      sha256: "45de8a4b4255c1ea850a30955e7456091899ed4ff8b75593e14ec59f629b4b56"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
+  flutter_charset_detector_android:
+    dependency: transitive
+    description:
+      name: flutter_charset_detector_android
+      sha256: "43d0c0063242d036b873ade737ebae38716af5cd8b2a4df1754adfd186d58e2c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
+  flutter_charset_detector_ios:
+    dependency: transitive
+    description:
+      name: flutter_charset_detector_ios
+      sha256: e0e2c7b819cd1f7c9a50da94bf7f0e6d7a095eb64e81196ec758e77793903d43
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
+  flutter_charset_detector_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_charset_detector_platform_interface
+      sha256: fcb61de27285031164c945aca4b42e4d36f9a9e359212f21ab652275c9c723ec
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   flutter_colorpicker:
     dependency: transitive
     description:
