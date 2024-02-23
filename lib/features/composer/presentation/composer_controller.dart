@@ -297,6 +297,10 @@ class ComposerController extends BaseController {
       if (isSendEmailLoading.isTrue) {
         isSendEmailLoading.value = false;
       }
+    } else if (failure is GetAllIdentitiesFailure) {
+      if (identitySelected.value == null) {
+        _autoFocusFieldWhenLauncher();
+      }
     }
   }
 
@@ -524,8 +528,6 @@ class ComposerController extends BaseController {
           break;
       }
     }
-
-    _autoFocusFieldWhenLauncher();
   }
 
   void _initSubjectEmail({
@@ -557,12 +559,12 @@ class ComposerController extends BaseController {
     final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
     if (listIdentitiesMayDeleted.isNotEmpty) {
       listFromIdentities.value = listIdentitiesMayDeleted;
-      await _selectIdentity(listIdentitiesMayDeleted.first);
-    }
 
-    if (fromRecipientState.value == PrefixRecipientState.disabled) {
-      _autoFocusFieldWhenLauncher();
+      if (identitySelected.value == null) {
+        await _selectIdentity(listIdentitiesMayDeleted.first);
+      }
     }
+    _autoFocusFieldWhenLauncher();
   }
 
   void _initEmailAddress({
@@ -1435,12 +1437,14 @@ class ComposerController extends BaseController {
     mailboxDashBoardController.closeComposerOverlay(result: result);
   }
 
-  void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) {
-    FocusManager.instance.primaryFocus?.unfocus();
+  void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
     createFocusNodeInput();
     _updateTextForEditor();
     screenDisplayMode.value = displayMode;
-    _autoFocusFieldWhenLauncher();
+
+    await Future.delayed(
+      const Duration(milliseconds: 300),
+      _autoFocusFieldWhenLauncher);
   }
 
   void _updateTextForEditor() async {
@@ -1886,19 +1890,29 @@ class ComposerController extends BaseController {
   }
 
   void _autoFocusFieldWhenLauncher() {
-    FocusManager.instance.primaryFocus?.unfocus();
+    if (_hasInputFieldFocused) {
+      log('ComposerController::_autoFocusFieldWhenLauncher: INPUT_FIELD_FOCUS = true');
+      return;
+    }
+
+    if (FocusManager.instance.primaryFocus?.hasFocus == true) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
 
     if (listToEmailAddress.isEmpty) {
       toAddressFocusNode?.requestFocus();
     } else if (subjectEmailInputController.text.isEmpty) {
       subjectEmailInputFocusNode?.requestFocus();
     } else if (PlatformInfo.isWeb) {
-      Future.delayed(
-        const Duration(milliseconds: 500),
-        richTextWebController.editorController.setFocus
-      );
+      richTextWebController.editorController.setFocus();
     }
   }
+
+  bool get _hasInputFieldFocused =>
+    toAddressFocusNode?.hasFocus == true ||
+    ccAddressFocusNode?.hasFocus == true ||
+    bccAddressFocusNode?.hasFocus == true ||
+    subjectEmailInputFocusNode?.hasFocus == true;
 
   void handleInitHtmlEditorWeb(String initContent) {
     richTextWebController.editorController.setFullScreen();
@@ -1911,9 +1925,7 @@ class ComposerController extends BaseController {
 
   void handleOnFocusHtmlEditorWeb() {
     FocusManager.instance.primaryFocus?.unfocus();
-    Future.delayed(const Duration(milliseconds: 500), () {
-      richTextWebController.editorController.setFocus();
-    });
+    richTextWebController.editorController.setFocus();
     richTextWebController.closeAllMenuPopup();
   }
 
