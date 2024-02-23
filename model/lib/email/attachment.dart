@@ -20,7 +20,6 @@ class Attachment with EquatableMixin {
   final MediaType? type;
   final String? cid;
   final ContentDisposition? disposition;
-  final AttachmentAction attachmentAction;
 
   Attachment({
     this.partId,
@@ -30,7 +29,6 @@ class Attachment with EquatableMixin {
     this.type,
     this.cid,
     this.disposition,
-    this.attachmentAction = AttachmentAction.download,
   });
 
   bool noCid() => cid == null || cid?.isEmpty == true;
@@ -60,30 +58,9 @@ class Attachment with EquatableMixin {
     }
   }
 
-  Attachment copyWith({
-    PartId? partId,
-    Id? blobId,
-    UnsignedInt? size,
-    String? name,
-    MediaType? type,
-    String? cid,
-    ContentDisposition? disposition,
-    AttachmentAction? attachmentAction,
-  }) {
-    return Attachment(
-        partId: partId ?? this.partId,
-        blobId: blobId ?? this.blobId,
-        size: size ?? this.size,
-        name: name ?? this.name,
-        type: type ?? this.type,
-        cid: cid ?? this.cid,
-        disposition: disposition ?? this.disposition,
-        attachmentAction: attachmentAction ?? this.attachmentAction);
-  }
-
   @override
   List<Object?> get props =>
-      [partId, blobId, size, name, type, cid, disposition, attachmentAction];
+      [partId, blobId, size, name, type, cid, disposition];
 }
 
 enum ContentDisposition {
@@ -120,5 +97,3 @@ extension DispositionStringExtension on String? {
     return null;
   }
 }
-
-enum AttachmentAction { download, view }

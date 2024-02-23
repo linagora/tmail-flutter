@@ -11,7 +11,8 @@ import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_item_widget_style.dart';
 
-typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
+typedef OnDownloadAttachmentFileActionClick = void Function(
+    Attachment attachment, bool viewOnly);
 
 class AttachmentItemWidget extends StatelessWidget {
 
@@ -32,9 +33,7 @@ class AttachmentItemWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => downloadAttachmentAction?.call(attachment.copyWith(
-          attachmentAction: AttachmentAction.view,
-        )),
+        onTap: () => downloadAttachmentAction?.call(attachment, true),
         customBorder: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
         ),
@@ -87,9 +86,8 @@ class AttachmentItemWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(5),
                 iconSize: AttachmentItemWidgetStyle.downloadIconSize,
                 onTapActionCallback: () => downloadAttachmentAction?.call(
-                  attachment.copyWith(
-                    attachmentAction: AttachmentAction.download,
-                  ),
+                  attachment,
+                  false,
                 ),
               )
             ]
