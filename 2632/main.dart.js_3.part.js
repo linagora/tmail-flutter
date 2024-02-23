@@ -14619,7 +14619,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.AttachmentItemWidget_build_closure0.prototype = {
     call$0() {
       var t1 = this.$this;
-      t1 = t1.downloadAttachmentAction.call$1(t1.attachment);
+      t1 = t1.downloadAttachmentAction.call$1(t1.attachment.copyWith$1$attachmentAction(D.AttachmentAction_1));
       return t1;
     },
     $signature: 0
@@ -14627,7 +14627,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.AttachmentItemWidget_build_closure.prototype = {
     call$0() {
       var t1 = this.$this;
-      t1 = t1.downloadAttachmentAction.call$1(t1.attachment);
+      t1 = t1.downloadAttachmentAction.call$1(t1.attachment.copyWith$1$attachmentAction(C.AttachmentAction_0));
       return t1;
     },
     $signature: 0
@@ -19985,6 +19985,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.AdvancedSearchFilterOverlay_null = new B.AdvancedSearchFilterOverlay(null);
     D.AlignmentDirectional_0_0 = new A.AlignmentDirectional(0, 0);
     D.AlignmentDirectional_1_1 = new A.AlignmentDirectional(1, 1);
+    D.AttachmentAction_1 = new A.AttachmentAction(1, "view");
     D.BorderRadiusDirectional_DpJ = new B.BorderRadiusDirectional(C.Radius_16_16, C.Radius_0_0, C.Radius_16_16, C.Radius_0_0);
     D.BorderRadiusDirectional_DpJ0 = new B.BorderRadiusDirectional(C.Radius_0_0, C.Radius_16_16, C.Radius_0_0, C.Radius_16_16);
     D.BorderRadius_tLn16 = new A.BorderRadius(C.Radius_0_0, C.Radius_0_0, C.Radius_16_16, C.Radius_16_16);
@@ -20299,5 +20300,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "xIvLsyax5di+RzhzGa8aezc8l7E=");
+})($__dart_deferred_initializers__, "1ZZhJiTsdOMM0tzzDd6uLF1S7nU=");
 ;
