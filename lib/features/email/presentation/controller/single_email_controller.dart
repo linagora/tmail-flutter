@@ -751,13 +751,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     final mimeType = success.attachment.type?.mimeType ??
         lookupMimeType('', headerBytes: success.bytes);
-    if (mimeType == Constant.pdfMimeType) {
-      _downloadManager.openDownloadedFileWeb(
-          success.bytes, success.attachment.type?.mimeType);
-    } else {
+    if (mimeType != Constant.pdfMimeType) {
       _downloadManager.createAnchorElementDownloadFileWeb(
           success.bytes, success.attachment.generateFileName());
+      return;
     }
+
+    if (success.attachment.attachmentAction == AttachmentAction.download) {
+      _downloadManager.createAnchorElementDownloadFileWeb(
+          success.bytes, success.attachment.generateFileName());
+      return;
+    }
+
+    _downloadManager.openDownloadedFileWeb(
+        success.bytes, success.attachment.type?.mimeType);
   }
 
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {

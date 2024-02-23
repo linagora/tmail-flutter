@@ -32,7 +32,9 @@ class AttachmentItemWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => downloadAttachmentAction?.call(attachment),
+        onTap: () => downloadAttachmentAction?.call(attachment.copyWith(
+          attachmentAction: AttachmentAction.view,
+        )),
         customBorder: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
         ),
@@ -84,7 +86,11 @@ class AttachmentItemWidget extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 padding: const EdgeInsets.all(5),
                 iconSize: AttachmentItemWidgetStyle.downloadIconSize,
-                onTapActionCallback: () => downloadAttachmentAction?.call(attachment)
+                onTapActionCallback: () => downloadAttachmentAction?.call(
+                  attachment.copyWith(
+                    attachmentAction: AttachmentAction.download,
+                  ),
+                ),
               )
             ]
           )

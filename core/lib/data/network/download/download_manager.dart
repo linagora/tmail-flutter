@@ -8,7 +8,6 @@ import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:mime/mime.dart';
 import 'package:universal_html/html.dart' as html;
 
 class DownloadManager {
@@ -107,8 +106,7 @@ class DownloadManager {
 
   void openDownloadedFileWeb(Uint8List bytes, String? mimeType) {
     try {
-      final mime = mimeType ?? lookupMimeType('', headerBytes: bytes);
-      final blob = html.Blob([bytes], mime);
+      final blob = html.Blob([bytes], mimeType);
       final url = html.Url.createObjectUrlFromBlob(blob);
 
       html.window.open(url, '_blank');
