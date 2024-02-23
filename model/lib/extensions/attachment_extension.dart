@@ -10,7 +10,7 @@ extension AttachmentExtension on Attachment {
     name: name,
     type: type,
     cid: cid,
-    charset: charset,
+    charset: charset ?? this.charset,
     disposition: disposition ?? this.disposition?.value);
 
   Attachment toAttachmentWithDisposition({
@@ -24,7 +24,8 @@ extension AttachmentExtension on Attachment {
         name: name,
         type: type,
         cid: cid ?? this.cid,
-        disposition: disposition ?? this.disposition
+        disposition: disposition ?? this.disposition,
+        charset: charset
     );
   }
 
