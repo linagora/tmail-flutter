@@ -7,6 +7,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -32,10 +33,15 @@ class FileUploader {
 
   final DioClient _dioClient;
   final worker.Executor _isolateExecutor;
+  final FileUtils _fileUtils;
 
-  FileUploader(this._dioClient, this._isolateExecutor);
+  FileUploader(
+    this._dioClient,
+    this._isolateExecutor,
+    this._fileUtils,
+  );
 
-  Future<Attachment?> uploadAttachment(
+  Future<Attachment> uploadAttachment(
       UploadTaskId uploadId,
       StreamController<Either<Failure, Success>> onSendController,
       FileInfo fileInfo,
@@ -59,6 +65,7 @@ class FileUploader {
       return await _isolateExecutor.execute(
         arg1: UploadFileArguments(
           _dioClient,
+          _fileUtils,
           uploadId,
           mobileFileUpload,
           uploadUri,
@@ -77,7 +84,7 @@ class FileUploader {
     }
   }
 
-  static Future<Attachment?> _handleUploadAttachmentAction(
+  static Future<Attachment> _handleUploadAttachmentAction(
       UploadFileArguments argsUpload,
       worker.TypeSendPort sendPort
   ) async {
@@ -104,7 +111,7 @@ class FileUploader {
         ),
         data: File(argsUpload.mobileFileUpload.filePath).openRead(),
         onSendProgress: (count, total) {
-          log('FileUploader::_handleUploadAttachmentAction():onSendProgress: [${argsUpload.uploadId.id}] = $count');
+          log('FileUploader::_handleUploadAttachmentAction():onSendProgress: FILE[${argsUpload.uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
           sendPort.send(
             UploadingAttachmentUploadState(
               argsUpload.uploadId,
@@ -114,11 +121,18 @@ class FileUploader {
           );
         }
       );
-      log('FileUploader::_handleUploadAttachmentAction():resultJson: $resultJson');
-      return _parsingResponse(
-        resultJson: resultJson,
-        fileName: argsUpload.mobileFileUpload.fileName
-      );
+      log('FileUploader::_handleUploadAttachmentAction(): RESULT_JSON = $resultJson');
+      if (argsUpload.mobileFileUpload.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
+        final fileCharset = await argsUpload.fileUtils.getFileCharset(argsUpload.mobileFileUpload.filePath);
+        return _parsingResponse(
+          resultJson: resultJson,
+          fileName: argsUpload.mobileFileUpload.fileName,
+          fileCharset: fileCharset);
+      } else {
+        return _parsingResponse(
+          resultJson: resultJson,
+          fileName: argsUpload.mobileFileUpload.fileName);
+      }
     } on DioError catch (exception) {
       logError('FileUploader::_handleUploadAttachmentAction():DioError: $exception');
 
@@ -131,7 +145,7 @@ class FileUploader {
     }
   }
 
-  Future<Attachment?> _handleUploadAttachmentActionOnWeb(
+  Future<Attachment> _handleUploadAttachmentActionOnWeb(
     UploadTaskId uploadId,
     StreamController<Either<Failure, Success>> onSendController,
     FileInfo fileInfo,
@@ -171,13 +185,18 @@ class FileUploader {
     return _parsingResponse(resultJson: resultJson, fileName: fileInfo.fileName);
   }
 
-  static Attachment? _parsingResponse({dynamic resultJson, required String fileName}) {
-    log('FileUploader::_parsingResponse():resultJson: $resultJson');
+  static Attachment _parsingResponse({
+    dynamic resultJson,
+    required String fileName,
+    String? fileCharset
+  }) {
     if (resultJson != null) {
       final decodeJson = resultJson is Map ? resultJson : jsonDecode(resultJson);
       final uploadResponse = UploadResponse.fromJson(decodeJson);
-      log('FileUploader::_parsingResponse():uploadResponse: ${uploadResponse.toString()}');
-      return uploadResponse.toAttachment(fileName);
+      log('FileUploader::_parsingResponse(): UploadResponse = $uploadResponse');
+      return uploadResponse.toAttachment(
+        nameFile: fileName,
+        charset: fileCharset);
     } else {
       logError('FileUploader::_parsingResponse(): DataResponseIsNullException');
       throw DataResponseIsNullException();
