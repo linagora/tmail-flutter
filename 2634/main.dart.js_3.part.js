@@ -2023,8 +2023,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    CalendarEventExtension_formatDateTime(_this, dateTime) {
-      return B.formatDate(dateTime, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy", " ", "hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
+    CalendarEventExtension_formatDateTime(_this, locale, dateTime) {
+      return B.formatDate(dateTime, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy", " ", "hh", ":", "nn", " ", "am"], type$.JSArray_String), locale);
     },
     CalendarEventExtension_get_isAllDayEvent(_this) {
       var startDateValue, endDateValue, eventDurationInHours,
@@ -2055,31 +2055,36 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return dateStart + " - " + dateEnd + " (GMT" + timeZoneOffsetAsString + ")";
     },
     CalendarEventExtension_get_dateTimeEventAsString(_this) {
-      var t1, timeStart, timeEnd;
+      var t1, t2, timeStart, timeEnd;
       if (B.CalendarEventExtension_get_isAllDayEvent(_this))
         return B.CalendarEventExtension_dateTimeStringForAllDayEvent(_this, _this.startUtcDate.value, _this.endUtcDate.value);
       if (B.CalendarEventExtension_get_localStartDate(_this) != null && B.CalendarEventExtension_get_localEndDate(_this) != null) {
-        t1 = B.CalendarEventExtension_get_localStartDate(_this);
-        t1.toString;
-        timeStart = B.CalendarEventExtension_formatDateTime(_this, t1);
+        t1 = B.AppUtils_getCurrentDateLocale();
+        t2 = B.CalendarEventExtension_get_localStartDate(_this);
+        t2.toString;
+        timeStart = B.CalendarEventExtension_formatDateTime(_this, t1, t2);
         if (A.DateUtils_isSameDay(B.CalendarEventExtension_get_localStartDate(_this), B.CalendarEventExtension_get_localEndDate(_this))) {
-          t1 = B.CalendarEventExtension_get_localEndDate(_this);
-          t1.toString;
-          timeEnd = B.formatDate(t1, A._setArrayType(["hh", ":", "ss", " ", "am"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
+          t1 = B.AppUtils_getCurrentDateLocale();
+          t2 = B.CalendarEventExtension_get_localEndDate(_this);
+          t2.toString;
+          timeEnd = B.formatDate(t2, A._setArrayType(["hh", ":", "nn", " ", "am"], type$.JSArray_String), t1);
         } else {
-          t1 = B.CalendarEventExtension_get_localEndDate(_this);
-          t1.toString;
-          timeEnd = B.CalendarEventExtension_formatDateTime(_this, t1);
+          t1 = B.AppUtils_getCurrentDateLocale();
+          t2 = B.CalendarEventExtension_get_localEndDate(_this);
+          t2.toString;
+          timeEnd = B.CalendarEventExtension_formatDateTime(_this, t1, t2);
         }
         return timeStart + " - " + timeEnd;
       } else if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
-        t1 = B.CalendarEventExtension_get_localStartDate(_this);
-        t1.toString;
-        return B.CalendarEventExtension_formatDateTime(_this, t1);
+        t1 = B.AppUtils_getCurrentDateLocale();
+        t2 = B.CalendarEventExtension_get_localStartDate(_this);
+        t2.toString;
+        return B.CalendarEventExtension_formatDateTime(_this, t1, t2);
       } else if (B.CalendarEventExtension_get_localEndDate(_this) != null) {
-        t1 = B.CalendarEventExtension_get_localEndDate(_this);
-        t1.toString;
-        return B.CalendarEventExtension_formatDateTime(_this, t1);
+        t1 = B.AppUtils_getCurrentDateLocale();
+        t2 = B.CalendarEventExtension_get_localEndDate(_this);
+        t2.toString;
+        return B.CalendarEventExtension_formatDateTime(_this, t1, t2);
       } else
         return "";
     },
@@ -11972,7 +11977,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$0() {
       return null;
     },
-    $signature: 10
+    $signature: 11
   };
   B.buildTextSpanChildren_closure.prototype = {
     call$0() {
@@ -13367,7 +13372,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(states) {
       return C.Color_4294967295;
     },
-    $signature: 11
+    $signature: 10
   };
   B.DesktopResponsiveContainerView_build_closure.prototype = {
     call$2(context, constraints) {
@@ -14794,7 +14799,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       A.AppUtils_copyEmailAddressToClipboard(this.context, t1);
     },
-    $signature: 10
+    $signature: 11
   };
   B.EmailSenderBuilder_build_closure0.prototype = {
     call$0() {
@@ -14811,7 +14816,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       A.AppUtils_copyEmailAddressToClipboard(this.context, t1);
     },
-    $signature: 10
+    $signature: 11
   };
   B.EmailSenderBuilder_build_closure2.prototype = {
     call$0() {
@@ -14828,7 +14833,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       A.AppUtils_copyEmailAddressToClipboard(this.context, t1);
     },
-    $signature: 10
+    $signature: 11
   };
   B.EmailViewAppBarWidget_build_closure.prototype = {
     call$2(context, constraints) {
@@ -15796,7 +15801,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t3._as(t2.get(t1)).accountId;
       t4.logout$2(t5, t1.get$value(t1));
     },
-    $signature: 10
+    $signature: 11
   };
   B.MailboxDashBoardView__buildRightHeader____closure0.prototype = {
     call$0() {
@@ -15807,7 +15812,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToSettings$0();
     },
-    $signature: 10
+    $signature: 11
   };
   B.MailboxDashBoardView__buildListButtonTopBar_closure.prototype = {
     call$0() {
@@ -19205,7 +19210,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       A.AppUtils_launchLink(J.toString$0$(this.email.routeWeb));
     },
-    $signature: 10
+    $signature: 11
   };
   B.ThreadView__buildArchiveMessagePopupMenuItem_closure.prototype = {
     call$0() {
@@ -19216,7 +19221,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$2(this.context, this.email);
     },
-    $signature: 10
+    $signature: 11
   };
   B.ThreadView__buildMarkAsMailboxReadLoading_closure.prototype = {
     call$0() {
@@ -20299,5 +20304,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "xIvLsyax5di+RzhzGa8aezc8l7E=");
+})($__dart_deferred_initializers__, "mruapTlBSoRuYKTNyfpmIVoxpJI=");
 ;
