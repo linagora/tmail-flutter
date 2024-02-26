@@ -88,8 +88,9 @@ PODS:
   - flutter_appauth (0.0.1):
     - AppAuth (= 1.6.2)
     - Flutter
-  - flutter_charset_detector_ios (0.0.1):
+  - flutter_charset_detector_darwin (0.0.1):
     - Flutter
+    - FlutterMacOS
     - UniversalDetector2 (= 2.0.1)
   - flutter_downloader (0.0.1):
     - Flutter
@@ -196,7 +197,7 @@ DEPENDENCIES:
   - fk_user_agent (from `.symlinks/plugins/fk_user_agent/ios`)
   - Flutter (from `Flutter`)
   - flutter_appauth (from `.symlinks/plugins/flutter_appauth/ios`)
-  - flutter_charset_detector_ios (from `.symlinks/plugins/flutter_charset_detector_ios/ios`)
+  - flutter_charset_detector_darwin (from `.symlinks/plugins/flutter_charset_detector_darwin/darwin`)
   - flutter_downloader (from `.symlinks/plugins/flutter_downloader/ios`)
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
@@ -259,8 +260,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_appauth:
     :path: ".symlinks/plugins/flutter_appauth/ios"
-  flutter_charset_detector_ios:
-    :path: ".symlinks/plugins/flutter_charset_detector_ios/ios"
+  flutter_charset_detector_darwin:
+    :path: ".symlinks/plugins/flutter_charset_detector_darwin/darwin"
   flutter_downloader:
     :path: ".symlinks/plugins/flutter_downloader/ios"
   flutter_image_compress_common:
@@ -312,7 +313,7 @@ SPEC CHECKSUMS:
   fk_user_agent: 1f47ec39291e8372b1d692b50084b0d54103c545
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_appauth: cf9b928962105b2a64a9802585d1c8adaf3e0f46
-  flutter_charset_detector_ios: 5157d0104855b9deb78e1395515a287197bc2d55
+  flutter_charset_detector_darwin: fb3692d6d72cb6afcce7b0dd1a9516be6e78556e
   flutter_downloader: b7301ae057deadd4b1650dc7c05375f10ff12c39
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inappwebview: db0387fb3c2298997710505e7128eda00d15fc54
