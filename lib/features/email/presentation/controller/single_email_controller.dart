@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -55,6 +56,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -90,9 +92,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-enum AttachmentAction { download, view }
-
 class SingleEmailController extends BaseController with AppLoaderMixin {
+
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final emailSupervisorController = Get.find<EmailSupervisorController>();
   final _downloadManager = Get.find<DownloadManager>();
@@ -109,6 +110,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
+  final ViewAttachmentForWebInteractor _viewAttachmentForWebInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -120,8 +122,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final eventActions = <EventAction>[].obs;
   final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final emailUnsubscribe = Rxn<EmailUnsubscribe>();
-  final _attachmentsToHandleDownloadOrView =
-      <DownloadTaskId, AttachmentAction>{};
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -145,7 +145,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._markAsStarEmailInteractor,
     this._downloadAttachmentForWebInteractor,
     this._getAllIdentitiesInteractor,
-    this._storeOpenedEmailInteractor
+    this._storeOpenedEmailInteractor,
+    this._viewAttachmentForWebInteractor,
   );
 
   @override
@@ -178,13 +179,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _moveToMailboxSuccess(success);
     } else if (success is MarkAsStarEmailSuccess) {
       _markAsEmailStarSuccess(success);
+    } else if (success is ViewAttachmentForWebSuccess) {
+      _viewAttachmentForWebSuccessAction(success);
     } else if (success is DownloadAttachmentForWebSuccess) {
-      final action = _attachmentsToHandleDownloadOrView[success.taskId];
-      if (action == null) return;
-      if (action == AttachmentAction.view) {
-        _viewAttachmentForWebSuccessAction(success);
-        return;
-      }
       _downloadAttachmentForWebSuccessAction(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _getAllIdentitiesSuccess(success);
@@ -208,6 +205,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _downloadAttachmentsFailure(failure);
     } else if (failure is ExportAttachmentFailure) {
       _exportAttachmentFailureAction(failure);
+    } else if (failure is ViewAttachmentForWebFailure) {
+      _downloadAttachmentForWebFailureAction(failure);
     } else if (failure is DownloadAttachmentForWebFailure) {
       _downloadAttachmentForWebFailureAction(failure);
     } else if (failure is ParseCalendarEventFailure) {
@@ -731,23 +730,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void downloadAttachmentForWeb(
-    BuildContext context,
-    Attachment attachment, {
-    bool viewOnly = false,
-  }) {
-    _downloadAttachmentForWebAction(context, attachment, viewOnly);
+  void downloadAttachmentForWeb(BuildContext context, Attachment attachment) {
+    _downloadAttachmentForWebAction(context, attachment);
   }
 
-  void _downloadAttachmentForWebAction(
-      BuildContext context, Attachment attachment, bool viewOnly) async {
+  void _downloadAttachmentForWebAction(BuildContext context, Attachment attachment) async {
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       final baseDownloadUrl = session.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
       final generateTaskId = DownloadTaskId(uuid.v4());
-      _attachmentsToHandleDownloadOrView[generateTaskId] =
-          viewOnly ? AttachmentAction.view : AttachmentAction.download;
       consumeState(_downloadAttachmentForWebInteractor.execute(
           generateTaskId,
           attachment,
@@ -761,24 +753,46 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
+  void viewAttachmentForWeb(BuildContext context, Attachment attachment) {
+    _viewAttachmentForWebAction(context, attachment);
+  }
+
+  void _viewAttachmentForWebAction(
+      BuildContext context, Attachment attachment) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      final baseDownloadUrl = session.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+      final generateTaskId = DownloadTaskId(uuid.v4());
+      consumeState(_viewAttachmentForWebInteractor.execute(
+          generateTaskId,
+          attachment,
+          accountId,
+          baseDownloadUrl,
+          _downloadProgressStateController));
+    } else {
+      consumeState(Stream.value(
+        Left(ViewAttachmentForWebFailure(exception: NotFoundSessionException()))
+      ));
+    }
+  }
+
   void _downloadAttachmentForWebSuccessAction(DownloadAttachmentForWebSuccess success) {
     log('SingleEmailController::_downloadAttachmentForWebSuccessAction():');
-    _attachmentsToHandleDownloadOrView.remove(success.taskId);
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
     _downloadManager.createAnchorElementDownloadFileWeb(
-        success.bytes, success.attachment.generateFileName());
+        success.bytes,
+        success.attachment.generateFileName());
   }
 
   void _viewAttachmentForWebSuccessAction(
-    DownloadAttachmentForWebSuccess success,
+    ViewAttachmentForWebSuccess success,
   ) {
     log('SingleEmailController::_viewAttachmentForWebSuccessAction():');
-    _attachmentsToHandleDownloadOrView.remove(success.taskId);
     final mimeType = success.attachment.type?.mimeType ??
         lookupMimeType('', headerBytes: success.bytes);
     if (mimeType != Constant.pdfMimeType) {
-      // As of 23/02/2024, open in new browser tab only support PDF file
       _downloadAttachmentForWebSuccessAction(success);
       return;
     }
@@ -786,13 +800,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
     _downloadManager.openDownloadedFileWeb(
-        success.bytes, success.attachment.type?.mimeType);
+        success.bytes, 
+        success.attachment.type?.mimeType);
   }
 
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {
     log('SingleEmailController::_downloadAttachmentForWebFailureAction(): $failure');
     if (failure.taskId != null) {
-      _attachmentsToHandleDownloadOrView.remove(failure.taskId);
       mailboxDashBoardController.deleteDownloadTask(failure.taskId!);
     }
 

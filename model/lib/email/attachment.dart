@@ -59,8 +59,7 @@ class Attachment with EquatableMixin {
   }
 
   @override
-  List<Object?> get props =>
-      [partId, blobId, size, name, type, cid, disposition];
+  List<Object?> get props => [partId, blobId, size, name, type, cid, disposition];
 }
 
 enum ContentDisposition {
