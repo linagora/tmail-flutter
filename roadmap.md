@@ -23,7 +23,8 @@ More far fetch features includes:
  - [ ] Integrating Twake Mail with Twake Chat
  - [ ] Dark theme
  - [ ] More system entries: More mails, starred mails, etc...
+ - [ ] Desktop mode
 
 We could also work on more advanced topics: PGP encryption for instance.
 
-Of course, we remain flexible: might you us to review our priorities, and consider other items/feature feel free to discuss this in the bug tracker or even contact [Linagora sales](sales@linagora.com).
+Of course, we remain flexible: might you us to review our priorities, and consider other items/feature feel free to discuss this in the bug tracker or even contact [Linagora sales](sales@linagora.com). We are open to contributions.
