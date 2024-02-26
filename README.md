@@ -98,34 +98,7 @@ This versatility is enabled by the use of the [Flutter framework](https://flutte
 
 ### **What would your roadmap look like?**
 
-<details>
-  <summary>Read more...</summary>
-Now that we plan having a simple JMAP email client supporting Android, IOS, and a webmail, we are working on some extra features on top of the TeamMail backend, including:
-
- - Better filters, with more actions, and combining conditions
- - Restoring deleted messages
- - Delegating full access to others for instance your security
- - Labels for better sorting your emails across folders
- - Automated actions: archiving, emptying your trash, your spam folders
- - Running filters against a folder
- - Attachment thumbnails
-
-We are also planning active work on drag and drops and other user experience / productivity enhancements.
-
-We do not currently plan working on desktop applications, on websockets for push on top of TeamMail web but such contributions would be appreciated. We also 
-welcome feedback and pull requests regarding Team-Mail portability (running TeamMail on top of third party mail servers).
-
-First, we plan to write a simple, multi-platform JMAP email client. This includes reading your mails and mailboxes, managing them, sending emails, searching your emails. 
-This will likely keep us busy by the end of 2021.
-
-Then, we have plan for multiple features including:
-
-  - Support for Twake Mail encrypted mailbox (GPG)
-  - Interactions with some other software from [Linagora](https://linagora.com) including:
-      - Sending attachments via [TDrive](https://github.com/linagora/TDrive) file sharing platform.
-      - Transferring some attachments you received to [TDrive](https://github.com/linagora/TDrive) file sharing platform.
-      - Discussing some emails you received via [Twake](https://twake.app/en/) chat.
-</details>
+We maintain a dedicated page to our [roadmap](roadmap.md)
 
 ### **Any chance to support JMAP extension for calendar, contacts?**
 
