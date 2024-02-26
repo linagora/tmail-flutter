@@ -123,11 +123,13 @@ class FileUploader {
       );
       log('FileUploader::_handleUploadAttachmentAction(): RESULT_JSON = $resultJson');
       if (argsUpload.mobileFileUpload.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
-        final fileCharset = await argsUpload.fileUtils.getFileCharset(argsUpload.mobileFileUpload.filePath);
+        final fileCharset = await argsUpload.fileUtils.getCharsetFromBytes(
+          File(argsUpload.mobileFileUpload.filePath).readAsBytesSync()
+        );
         return _parsingResponse(
           resultJson: resultJson,
           fileName: argsUpload.mobileFileUpload.fileName,
-          fileCharset: fileCharset);
+          fileCharset: fileCharset.toLowerCase());
       } else {
         return _parsingResponse(
           resultJson: resultJson,
@@ -140,7 +142,7 @@ class FileUploader {
         requestOptions: exception.requestOptions.copyWith(data: ''));
     } catch (exception) {
       logError('FileUploader::_handleUploadAttachmentAction():OtherException: $exception');
-      
+
       rethrow;
     }
   }
@@ -181,8 +183,18 @@ class FileUploader {
         );
       }
     );
-    log('FileUploader::_handleUploadAttachmentActionOnWeb():resultJson: $resultJson');
-    return _parsingResponse(resultJson: resultJson, fileName: fileInfo.fileName);
+    log('FileUploader::_handleUploadAttachmentActionOnWeb(): RESULT_JSON = $resultJson');
+    if (fileInfo.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
+      final fileCharset = await _fileUtils.getCharsetFromBytes(fileInfo.bytes!);
+      return _parsingResponse(
+        resultJson: resultJson,
+        fileName: fileInfo.fileName,
+        fileCharset: fileCharset.toLowerCase());
+    } else {
+      return _parsingResponse(
+        resultJson: resultJson,
+        fileName: fileInfo.fileName);
+    }
   }
 
   static Attachment _parsingResponse({
