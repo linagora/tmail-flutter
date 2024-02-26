@@ -1,3 +1,11 @@
+## [0.11.3-patch4-6] - 2024-02-26
+### Fixed
+- #2326 Display total count of Draft 
+- #2362 Auto load more in big screen
+- #2465 Fix wrong time format in Blue bar
+- #2633 Fix blink blink in composer [Web]
+- #2599 Resolve notification flood in Android
+
 ## [0.11.3-patch4-5] - 2024-02-21
 ### Fixed
 - #2611 Get only one by one in FULL level when receive changes in notification
