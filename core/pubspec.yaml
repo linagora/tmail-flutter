@@ -79,7 +79,7 @@ dependencies:
 
   fk_user_agent: 2.1.0
 
-  flutter_charset_detector: 2.0.0
+  flutter_charset_detector: 3.0.0
 
 dev_dependencies:
   flutter_test:

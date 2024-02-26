@@ -1,4 +1,4 @@
-import 'dart:js' as js;
+import 'package:universal_html/js.dart' as js;
 
 /// Whether the CanvasKit renderer is being used on web.
 ///

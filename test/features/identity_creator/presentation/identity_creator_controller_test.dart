@@ -7,6 +7,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:core/utils/file_utils.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -74,6 +75,7 @@ import 'identity_creator_controller_test.mocks.dart';
   MockSpec<IdentityUtils>(),
   MockSpec<DioClient>(),
   MockSpec<Executor>(),
+  MockSpec<FileUtils>(),
   MockSpec<RemoteExceptionThrower>(),
   MockSpec<DownloadClient>(),
   MockSpec<HtmlAnalyzer>(),
@@ -155,6 +157,7 @@ void main() {
 
     Get.put<DioClient>(MockDioClient(), tag: BindingTag.isolateTag);
     Get.put<Executor>(MockExecutor());
+    Get.put<FileUtils>(MockFileUtils());
     Get.put<RemoteExceptionThrower>(MockRemoteExceptionThrower());
     Get.put<DownloadClient>(MockDownloadClient());
     Get.put<HtmlAnalyzer>(MockHtmlAnalyzer());
@@ -182,7 +185,7 @@ void main() {
       true,
       {CapabilityIdentifier.jmapPublicAsset: DefaultCapability({})});
     final session = Session(
-      {}, 
+      {},
       {accountId: account},
       {}, UserName('value'), Uri(), Uri(), Uri(), Uri(), State('value'));
 
@@ -271,14 +274,14 @@ void main() {
       final context = MockBuildContext();
       identityCreatorController.updateNameIdentity(context, identityName);
       identityCreatorController.updateContentHtmlEditor(htmlContent);
-      
+
       identityCreatorController.onUnloadBrowserListener(Event(''));
       await untilCalled(mockSaveIdentityCacheOnWebInteractor.execute(
         any,
         any,
         identityCache: anyNamed('identityCache'),
       ));
-      
+
       // assert
       verify(mockSaveIdentityCacheOnWebInteractor.execute(
         accountId,
@@ -321,14 +324,14 @@ void main() {
       final context = MockBuildContext();
       identityCreatorController.updateNameIdentity(context, identityName);
       identityCreatorController.updateContentHtmlEditor(htmlContent);
-      
+
       identityCreatorController.onBeforeReconnect();
       await untilCalled(mockSaveIdentityCacheOnWebInteractor.execute(
         any,
         any,
         identityCache: anyNamed('identityCache'),
       ));
-      
+
       // assert
       verify(mockSaveIdentityCacheOnWebInteractor.execute(
         accountId,

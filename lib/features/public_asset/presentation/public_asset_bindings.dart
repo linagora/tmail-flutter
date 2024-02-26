@@ -1,6 +1,7 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/utils/application_manager.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
@@ -38,7 +39,10 @@ class PublicAssetBindings extends BaseBindings {
   @override
   void dependencies() {
     Get.lazyPut(
-      () => FileUploader(Get.find<DioClient>(tag: BindingTag.isolateTag), Get.find<Executor>()),
+      () => FileUploader(
+              Get.find<DioClient>(tag: BindingTag.isolateTag),
+              Get.find<Executor>(),
+              Get.find<FileUtils>()),
       tag: BindingTag.publicAssetBindingsTag);
     Get.lazyPut(
       () => PublicAssetApi(Get.find<HttpClient>(), Get.find<Uuid>()),
