@@ -1114,8 +1114,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: a1b79695b844888ec8330d41964d1a054c348bc2
+      ref: cnb_support
+      resolved-ref: "351a1bf0fef48f59d771d3a485cbada950f2ed0a"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
