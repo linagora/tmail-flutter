@@ -5,6 +5,8 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 
+class IdleDownloadAttachmentForWeb extends UIState {}
+
 class StartDownloadAttachmentForWeb extends UIState {
 
   final DownloadTaskId taskId;

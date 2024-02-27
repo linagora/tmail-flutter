@@ -1,5 +1,7 @@
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 
+class IdleViewAttachmentForWeb extends IdleDownloadAttachmentForWeb {}
+
 class StartViewAttachmentForWeb extends StartDownloadAttachmentForWeb {
   StartViewAttachmentForWeb(super.taskId, super.attachment);
 }
