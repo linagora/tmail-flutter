@@ -34,6 +34,7 @@ class ViewAttachmentForWebInteractor {
               (failure) {
                 if (failure is DownloadAttachmentForWebFailure) {
                   return Left(ViewAttachmentForWebFailure(
+                    attachmentBlobId: attachment.blobId,
                     taskId: failure.taskId,
                     exception: failure.exception,
                   ));

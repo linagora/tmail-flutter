@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 
@@ -56,9 +57,12 @@ class DownloadAttachmentForWebSuccess extends UIState {
 class DownloadAttachmentForWebFailure extends FeatureFailure {
 
   final DownloadTaskId? taskId;
+  final Id? attachmentBlobId;
 
   DownloadAttachmentForWebFailure({
-    this.taskId, dynamic exception
+    required this.attachmentBlobId,
+    this.taskId,
+    dynamic exception
   }) : super(exception: exception);
 
   @override
