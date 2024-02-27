@@ -31,7 +31,6 @@ import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
@@ -56,7 +55,6 @@ import 'package:tmail_ui_user/features/composer/presentation/model/image_source.
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_arguments.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_view_event.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
@@ -158,10 +156,6 @@ class ComposerController extends BaseController {
   final ScrollController scrollControllerAttachment = ScrollController();
   final ScrollController scrollControllerIdentities = ScrollController();
 
-  final _saveToDraftEventController = StreamController<SaveToDraftViewEvent>();
-  Stream<SaveToDraftViewEvent> get _saveToDraftEventStream => _saveToDraftEventController.stream;
-  late StreamSubscription _saveToDraftStreamSubscription;
-
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
   String? _initTextEditor;
@@ -169,6 +163,7 @@ class ComposerController extends BaseController {
   EmailId? _emailIdEditing;
   bool isAttachmentCollapsed = false;
   ButtonState _closeComposerButtonState = ButtonState.enabled;
+  ButtonState _saveToDraftButtonState = ButtonState.enabled;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
@@ -246,8 +241,6 @@ class ComposerController extends BaseController {
     scrollControllerEmailAddress.dispose();
     scrollControllerAttachment.dispose();
     scrollControllerIdentities.dispose();
-    _saveToDraftStreamSubscription.cancel();
-    _saveToDraftEventController.close();
     super.dispose();
   }
 
@@ -325,21 +318,26 @@ class ComposerController extends BaseController {
       });
     });
 
-    _saveToDraftStreamSubscription = _saveToDraftEventStream
-      .debounceTime(const Duration(milliseconds: 300))
-      .listen(_handleSaveToDraft);
-
     dashboardViewStateWorker = ever(mailboxDashBoardController.viewState, (state) {
-      state.fold((failure) => null, (success) {
-        if (success is SaveEmailAsDraftsSuccess) {
-          _emailIdEditing = success.emailAsDrafts.id;
-          log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:SaveEmailAsDraftsSuccess:emailIdEditing: $_emailIdEditing');
-        } else if (success is UpdateEmailDraftsSuccess) {
-          _emailIdEditing = success.emailAsDrafts.id;
-          log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:UpdateEmailDraftsSuccess:emailIdEditing: $_emailIdEditing');
-        }
+      state.fold(
+        (failure) {
+          if (failure is SaveEmailAsDraftsFailure ||
+            failure is UpdateEmailDraftsFailure) {
+            _saveToDraftButtonState = ButtonState.enabled;
+          }
+        },
+        (success) {
+          if (success is SaveEmailAsDraftsSuccess) {
+            _emailIdEditing = success.emailAsDrafts.id;
+            _saveToDraftButtonState = ButtonState.enabled;
+            log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:SaveEmailAsDraftsSuccess:emailIdEditing: $_emailIdEditing');
+          } else if (success is UpdateEmailDraftsSuccess) {
+            _emailIdEditing = success.emailAsDrafts.id;
+            _saveToDraftButtonState = ButtonState.enabled;
+            log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:UpdateEmailDraftsSuccess:emailIdEditing: $_emailIdEditing');
+          }
+        });
       });
-    });
   }
 
   void _listenBrowserTabRefresh() {
@@ -1133,8 +1131,8 @@ class ComposerController extends BaseController {
     return false;
   }
 
-  Future<SaveToDraftArguments?> _handleSaveAsDrafts(BuildContext context) async {
-    log('ComposerController::_handleSaveAsDrafts:');
+  Future<SaveToDraftArguments?> _generateSaveAsDraftsArguments(BuildContext context) async {
+    log('ComposerController::_generateSaveAsDraftsArguments:');
     final arguments = composerArguments.value;
     final userProfile = mailboxDashBoardController.userProfile.value;
     final accountId = mailboxDashBoardController.accountId.value;
@@ -1194,45 +1192,37 @@ class ComposerController extends BaseController {
     }
   }
 
-  void saveToDraftAction(BuildContext context) {
+  void saveToDraftAction(BuildContext context) async {
+    if (_saveToDraftButtonState == ButtonState.disabled) {
+      log('ComposerController::saveToDraftAction: Saving to draft');
+      return;
+    }
+
+    _saveToDraftButtonState = ButtonState.disabled;
+
     final userProfile = mailboxDashBoardController.userProfile.value;
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
 
     if (draftMailboxId == null || userProfile == null || session == null || accountId == null) {
-      logError('ComposerController::saveToDraftAction: Param is NULL');
+      log('ComposerController::saveToDraftAction: Param is NULL');
       return;
     }
 
-    _saveToDraftEventController.add(
-      SaveToDraftViewEvent(
-        context: context,
-        session: session,
-        accountId: accountId,
-        userProfile: userProfile,
-        draftMailboxId: draftMailboxId,
-        emailIdEditing: _emailIdEditing,
-        arguments: mailboxDashBoardController.composerArguments,
-      )
-    );
-  }
-
-  void _handleSaveToDraft(SaveToDraftViewEvent event) async {
-    log('ComposerController::_handleSaveToDraft:emailIdEditing: ${event.emailIdEditing}');
     final newEmail = await _generateEmail(
-      event.context,
-      event.userProfile,
+      context,
+      userProfile,
       asDrafts: true,
-      draftMailboxId: event.draftMailboxId,
-      arguments: event.arguments
-    );
+      draftMailboxId: draftMailboxId,
+      arguments: mailboxDashBoardController.composerArguments);
+
     mailboxDashBoardController.saveEmailToDraft(
       arguments: SaveToDraftArguments(
-        session: event.session,
-        accountId: event.accountId,
+        session: session,
+        accountId:accountId,
         newEmail: newEmail,
-        oldEmailId: event.emailIdEditing
+        oldEmailId: _emailIdEditing
       )
     );
   }
@@ -2163,7 +2153,7 @@ class ComposerController extends BaseController {
 
     _closeComposerButtonState = ButtonState.disabled;
     clearFocus(context);
-    final draftArgs = await _handleSaveAsDrafts(context);
+    final draftArgs = await _generateSaveAsDraftsArguments(context);
     _closeComposerAction(result: draftArgs);
     _closeComposerButtonState = ButtonState.enabled;
   }
