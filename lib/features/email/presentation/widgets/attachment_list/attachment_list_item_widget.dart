@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_list_item_widget_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 
 typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
 
@@ -17,6 +18,7 @@ class AttachmentListItemWidget extends StatelessWidget {
 
   final Attachment attachment;
   final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
+  final OnViewAttachmentFileActionClick? viewAttachmentAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -24,6 +26,7 @@ class AttachmentListItemWidget extends StatelessWidget {
     Key? key,
     required this.attachment,
     this.downloadAttachmentAction,
+    this.viewAttachmentAction,
   }) : super(key: key);
 
   @override
@@ -31,7 +34,7 @@ class AttachmentListItemWidget extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        onTap: () => downloadAttachmentAction?.call(attachment),
+        onTap: () => viewAttachmentAction?.call(attachment),
         child: Padding(
           padding: AttachmentListItemWidgetStyle.contentPadding,
           child: Row(

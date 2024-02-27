@@ -13,6 +13,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
   final OnDragAttachmentStarted? onDragStarted;
   final OnDragAttachmentEnd? onDragEnd;
   final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
+  final OnViewAttachmentFileActionClick? viewAttachmentAction;
 
   const DraggableAttachmentItemWidget({
     Key? key,
@@ -20,6 +21,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
     this.onDragStarted,
     this.onDragEnd,
     this.downloadAttachmentAction,
+    this.viewAttachmentAction,
   }) : super(key: key);
 
   @override
@@ -31,7 +33,8 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
       onDragEnd: onDragEnd,
       child: AttachmentItemWidget(
         attachment: attachment,
-        downloadAttachmentAction: downloadAttachmentAction
+        downloadAttachmentAction: downloadAttachmentAction,
+        viewAttachmentAction: viewAttachmentAction,
       ),
     );
   }

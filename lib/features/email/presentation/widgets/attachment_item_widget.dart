@@ -12,11 +12,13 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_item_widget_style.dart';
 
 typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
+typedef OnViewAttachmentFileActionClick = void Function(Attachment attachment);
 
 class AttachmentItemWidget extends StatelessWidget {
 
   final Attachment attachment;
   final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
+  final OnViewAttachmentFileActionClick? viewAttachmentAction;
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -25,6 +27,7 @@ class AttachmentItemWidget extends StatelessWidget {
     Key? key,
     required this.attachment,
     this.downloadAttachmentAction,
+    this.viewAttachmentAction,
   }) : super(key: key);
 
   @override
@@ -32,7 +35,7 @@ class AttachmentItemWidget extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => downloadAttachmentAction?.call(attachment),
+        onTap: () => viewAttachmentAction?.call(attachment),
         customBorder: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
         ),

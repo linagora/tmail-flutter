@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/email/presentation/styles/attachment/atta
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_body_builder.dart';
 
 typedef OnDownloadAttachmentFileAction = void Function(Attachment attachment);
+typedef OnViewAttachmentFileAction = void Function(Attachment attachment);
 typedef OnDownloadAllButtonAction = void Function();
 typedef OnCancelButtonAction = void Function();
 typedef OnCloseButtonAction = void Function();
@@ -22,6 +23,7 @@ class AttachmentListDialogBuilder extends StatelessWidget {
   final double? heightDialog;
   final OnDownloadAllButtonAction? onDownloadAllButtonAction;
   final OnDownloadAttachmentFileAction? onDownloadAttachmentFileAction;
+  final OnViewAttachmentFileAction? onViewAttachmentFileAction;
   final OnCancelButtonAction? onCancelButtonAction;
   final OnCloseButtonAction? onCloseButtonAction;
 
@@ -36,6 +38,7 @@ class AttachmentListDialogBuilder extends StatelessWidget {
     this.heightDialog,
     this.onDownloadAllButtonAction,
     this.onDownloadAttachmentFileAction,
+    this.onViewAttachmentFileAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,
   }) : super(key: key);
@@ -59,6 +62,7 @@ class AttachmentListDialogBuilder extends StatelessWidget {
         scrollController: scrollController,
         onDownloadAllButtonAction: onDownloadAllButtonAction,
         onDownloadAttachmentFileAction: onDownloadAttachmentFileAction,
+        onViewAttachmentFileAction: onViewAttachmentFileAction,
         onCancelButtonAction: onCancelButtonAction,
         onCloseButtonAction: onCloseButtonAction,
       ),

@@ -345,7 +345,14 @@ class EmailView extends GetWidget<SingleEmailController> {
               },
               downloadAttachmentAction: (attachment) {
                 if (PlatformInfo.isWeb) {
-                  controller.downloadAttachmentForWeb(context, attachment);
+                  controller.downloadAttachmentForWeb(attachment);
+                } else {
+                  controller.exportAttachment(context, attachment);
+                }
+              },
+              viewAttachmentAction: (attachment) {
+                if (PlatformInfo.isWeb) {
+                  controller.viewAttachmentForWeb(attachment);
                 } else {
                   controller.exportAttachment(context, attachment);
                 }
