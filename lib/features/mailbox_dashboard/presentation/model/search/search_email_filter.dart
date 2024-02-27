@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -13,7 +14,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
-class SearchEmailFilter with EquatableMixin {
+class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final Set<String> from;
   final Set<String> to;
   final SearchQuery? text;
@@ -69,28 +70,20 @@ class SearchEmailFilter with EquatableMixin {
     Option<int>? positionOption,
   }) {
     return SearchEmailFilter(
-      from: _getOptionParam(fromOption, from),
-      to: _getOptionParam(toOption, to),
+      from: getOptionParam(fromOption, from),
+      to: getOptionParam(toOption, to),
       text: text ?? this.text,
-      subject: _getOptionParam(subjectOption, subject),
+      subject: getOptionParam(subjectOption, subject),
       notKeyword: notKeyword ?? this.notKeyword,
       mailbox: mailbox ?? this.mailbox,
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
-      before: _getOptionParam(beforeOption, before),
-      startDate: _getOptionParam(startDateOption, startDate),
-      endDate: _getOptionParam(endDateOption, endDate),
-      sortOrder: _getOptionParam(sortOrderOption, sortOrder),
-      position: _getOptionParam(positionOption, position),
+      before: getOptionParam(beforeOption, before),
+      startDate: getOptionParam(startDateOption, startDate),
+      endDate: getOptionParam(endDateOption, endDate),
+      sortOrder: getOptionParam(sortOrderOption, sortOrder),
+      position: getOptionParam(positionOption, position),
     );
-  }
-
-  T? _getOptionParam<T>(Option<T?>? option, T? defaultValue) {
-    if (option != null) {
-      return option.toNullable();
-    } else {
-      return defaultValue;
-    }
   }
 
   Filter? mappingToEmailFilterCondition({
