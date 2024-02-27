@@ -19,6 +19,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
+import 'package:mime/mime.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -44,6 +45,7 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -54,6 +56,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -107,6 +110,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
+  final ViewAttachmentForWebInteractor _viewAttachmentForWebInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -141,7 +145,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._markAsStarEmailInteractor,
     this._downloadAttachmentForWebInteractor,
     this._getAllIdentitiesInteractor,
-    this._storeOpenedEmailInteractor
+    this._storeOpenedEmailInteractor,
+    this._viewAttachmentForWebInteractor,
   );
 
   @override
@@ -174,6 +179,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _moveToMailboxSuccess(success);
     } else if (success is MarkAsStarEmailSuccess) {
       _markAsEmailStarSuccess(success);
+    } else if (success is ViewAttachmentForWebSuccess) {
+      _viewAttachmentForWebSuccessAction(success);
     } else if (success is DownloadAttachmentForWebSuccess) {
       _downloadAttachmentForWebSuccessAction(success);
     } else if (success is GetAllIdentitiesSuccess) {
@@ -198,6 +205,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _downloadAttachmentsFailure(failure);
     } else if (failure is ExportAttachmentFailure) {
       _exportAttachmentFailureAction(failure);
+    } else if (failure is ViewAttachmentForWebFailure) {
+      _viewAttachmentForWebFailureAction(failure);
     } else if (failure is DownloadAttachmentForWebFailure) {
       _downloadAttachmentForWebFailureAction(failure);
     } else if (failure is ParseCalendarEventFailure) {
@@ -721,11 +730,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void downloadAttachmentForWeb(BuildContext context, Attachment attachment) {
-    _downloadAttachmentForWebAction(context, attachment);
-  }
-
-  void _downloadAttachmentForWebAction(BuildContext context, Attachment attachment) async {
+  void downloadAttachmentForWeb(Attachment attachment) {
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
@@ -744,6 +749,25 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
+  void viewAttachmentForWeb(Attachment attachment) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId != null && session != null) {
+      final baseDownloadUrl = session.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+      final generateTaskId = DownloadTaskId(uuid.v4());
+      consumeState(_viewAttachmentForWebInteractor.execute(
+        generateTaskId,
+        attachment,
+        accountId,
+        baseDownloadUrl,
+        _downloadProgressStateController));
+    } else {
+      consumeState(Stream.value(
+        Left(ViewAttachmentForWebFailure(exception: NotFoundSessionException()))
+      ));
+    }
+  }
+
   void _downloadAttachmentForWebSuccessAction(DownloadAttachmentForWebSuccess success) {
     log('SingleEmailController::_downloadAttachmentForWebSuccessAction():');
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
@@ -751,6 +775,24 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _downloadManager.createAnchorElementDownloadFileWeb(
         success.bytes,
         success.attachment.generateFileName());
+  }
+
+  void _viewAttachmentForWebSuccessAction(
+    ViewAttachmentForWebSuccess success,
+  ) {
+    log('SingleEmailController::_viewAttachmentForWebSuccessAction():');
+    final mimeType = success.attachment.type?.mimeType ??
+        lookupMimeType('', headerBytes: success.bytes);
+    if (mimeType != Constant.pdfMimeType) {
+      _downloadAttachmentForWebSuccessAction(success);
+      return;
+    }
+
+    mailboxDashBoardController.deleteDownloadTask(success.taskId);
+
+    _downloadManager.openDownloadedFileWeb(
+        success.bytes, 
+        success.attachment.type?.mimeType);
   }
 
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {
@@ -764,6 +806,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).attachment_download_failed);
     }
+  }
+
+  void _viewAttachmentForWebFailureAction(ViewAttachmentForWebFailure failure) {
+    log('SingleEmailController::_viewAttachmentForWebFailureAction(): $failure');
+    _downloadAttachmentForWebFailureAction(failure);
   }
 
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
@@ -1384,7 +1431,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         ..onCloseButtonAction(() => popBack())
         ..onDownloadAttachmentFileAction((attachment) {
           if (PlatformInfo.isWeb) {
-            downloadAttachmentForWeb(context, attachment);
+            downloadAttachmentForWeb(attachment);
           } else {
             exportAttachment(context, attachment);
           }
@@ -1402,7 +1449,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onCloseButtonAction: () => popBack(),
             onDownloadAttachmentFileAction: (attachment) {
               if (PlatformInfo.isWeb) {
-                downloadAttachmentForWeb(context, attachment);
+                downloadAttachmentForWeb(attachment);
               } else {
                 exportAttachment(context, attachment);
               }
