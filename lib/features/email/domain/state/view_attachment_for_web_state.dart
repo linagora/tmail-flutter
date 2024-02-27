@@ -19,5 +19,9 @@ class ViewAttachmentForWebSuccess extends DownloadAttachmentForWebSuccess {
 }
 
 class ViewAttachmentForWebFailure extends DownloadAttachmentForWebFailure {
-  ViewAttachmentForWebFailure({super.taskId, super.exception});
+  ViewAttachmentForWebFailure({
+    required super.attachmentBlobId,
+    super.taskId,
+    super.exception,
+  });
 }

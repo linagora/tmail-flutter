@@ -55,6 +55,7 @@ void main() {
           (_) => Stream.value(
             Left(
               DownloadAttachmentForWebFailure(
+                attachmentBlobId: testAttachment.blobId,
                 taskId: testDownloadTaskId,
                 exception: testException,
               ),
@@ -74,6 +75,7 @@ void main() {
           emitsInOrder([
             Left(
               ViewAttachmentForWebFailure(
+                attachmentBlobId: testAttachment.blobId,
                 taskId: testDownloadTaskId,
                 exception: testException,
               ),

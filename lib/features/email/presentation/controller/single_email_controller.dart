@@ -744,7 +744,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           _downloadProgressStateController));
     } else {
       consumeState(Stream.value(
-        Left(DownloadAttachmentForWebFailure(exception: NotFoundSessionException()))
+        Left(DownloadAttachmentForWebFailure(
+          attachment: attachment,
+          exception: NotFoundSessionException()))
       ));
     }
   }
@@ -763,7 +765,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _downloadProgressStateController));
     } else {
       consumeState(Stream.value(
-        Left(ViewAttachmentForWebFailure(exception: NotFoundSessionException()))
+        Left(ViewAttachmentForWebFailure(
+          attachment: attachment,
+          exception: NotFoundSessionException()))
       ));
     }
   }
