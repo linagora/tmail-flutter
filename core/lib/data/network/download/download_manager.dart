@@ -104,6 +104,20 @@ class DownloadManager {
     }
   }
 
+  void openDownloadedFileWeb(Uint8List bytes, String? mimeType) {
+    try {
+      final blob = html.Blob([bytes], mimeType);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+
+      html.window.open(url, '_blank');
+
+      html.Url.revokeObjectUrl(url);
+    } catch (exception) {
+      logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
+      rethrow;
+    }
+  }
+
   MediaType? _extractMediaTypeFromResponse(ResponseBody responseBody) {
     try {
       final contentType = responseBody.headers[Headers.contentTypeHeader];
