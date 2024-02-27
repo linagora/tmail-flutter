@@ -1817,14 +1817,9 @@ class ComposerController extends BaseController {
     }
   }
 
-  void closeComposer(BuildContext context) {
-    FocusScope.of(context).unfocus();
-
-    if (PlatformInfo.isWeb) {
-      mailboxDashBoardController.closeComposerOverlay();
-    } else {
-      popBack();
-    }
+  void handleClickDeleteComposer(BuildContext context) {
+    clearFocus(context);
+    _closeComposerAction();
   }
 
   void _onEditorFocusOnMobile() {

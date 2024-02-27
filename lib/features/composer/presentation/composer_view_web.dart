@@ -440,7 +440,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                 insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                 showCodeViewAction: controller.richTextWebController.toggleCodeView,
-                deleteComposerAction: () => controller.closeComposer(context),
+                deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.saveToDraftAction(context),
                 sendMessageAction: () => controller.validateInformationBeforeSending(context),
                 requestReadReceiptAction: (position) {
@@ -657,7 +657,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                 insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                 showCodeViewAction: controller.richTextWebController.toggleCodeView,
-                deleteComposerAction: () => controller.closeComposer(context),
+                deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.saveToDraftAction(context),
                 sendMessageAction: () => controller.validateInformationBeforeSending(context),
                 requestReadReceiptAction: (position) {
@@ -753,7 +753,7 @@ class ComposerView extends GetWidget<ComposerController> {
           padding: ComposerStyle.popupItemPadding,
           onCallbackAction: () {
             popBack();
-            controller.closeComposer(context);
+            controller.handleClickDeleteComposer(context);
           },
         )
       ),
