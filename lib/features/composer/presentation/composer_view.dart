@@ -37,8 +37,8 @@ class ComposerView extends GetWidget<ComposerController> {
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileContainerView(
         keyboardRichTextController: controller.keyboardRichTextController,
-        onCloseViewAction: () => controller.saveToDraftAndClose(context),
-        onClearFocusAction: () => controller.clearFocusEditor(context),
+        onCloseViewAction: () => controller.handleClickCloseComposer(context),
+        onClearFocusAction: () => controller.clearFocus(context),
         onAttachFileAction: () => controller.isNetworkConnectionAvailable
           ? controller.openPickAttachmentMenu(
               context,
@@ -59,7 +59,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 if (controller.responsiveUtils.isLandscapeMobile(context))
                   Obx(() => LandscapeAppBarComposerWidget(
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
-                    onCloseViewAction: () => controller.saveToDraftAndClose(context),
+                    onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.validateInformationBeforeSending(context),
                     openContextMenuAction: (position) {
                       controller.openPopupMenuAction(
@@ -73,7 +73,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 else
                   Obx(() => AppBarComposerWidget(
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
-                    onCloseViewAction: () => controller.saveToDraftAndClose(context),
+                    onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.validateInformationBeforeSending(context),
                     openContextMenuAction: (position) {
                       controller.openPopupMenuAction(
@@ -222,8 +222,8 @@ class ComposerView extends GetWidget<ComposerController> {
       ),
       tablet: TabletContainerView(
         keyboardRichTextController: controller.keyboardRichTextController,
-        onCloseViewAction: () => controller.saveToDraftAndClose(context),
-        onClearFocusAction: () => controller.clearFocusEditor(context),
+        onCloseViewAction: () => controller.handleClickCloseComposer(context),
+        onClearFocusAction: () => controller.clearFocus(context),
         onAttachFileAction: () => controller.isNetworkConnectionAvailable
           ? controller.openPickAttachmentMenu(
               context,
@@ -239,7 +239,7 @@ class ComposerView extends GetWidget<ComposerController> {
             children: [
               Obx(() => DesktopAppBarComposerWidget(
                 emailSubject: controller.subjectEmail.value ?? '',
-                onCloseViewAction: () => controller.saveToDraftAndClose(context),
+                onCloseViewAction: () => controller.handleClickCloseComposer(context),
                 constraints: constraints,
               )),
               Expanded(

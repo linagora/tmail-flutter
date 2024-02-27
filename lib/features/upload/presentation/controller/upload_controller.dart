@@ -304,10 +304,6 @@ class UploadController extends BaseController {
     _uploadingStateInlineFiles.deleteElementByUploadTaskId(uploadId);
   }
 
-  void clearInlineFileUploaded() {
-    _uploadingStateInlineFiles.clear();
-  }
-
   void _handleUploadInlineAttachmentsSuccess(SuccessAttachmentUploadState success) {
     uploadInlineViewState.value = Right(success);
   }
