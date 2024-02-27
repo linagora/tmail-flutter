@@ -1453,7 +1453,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               } else {
                 exportAttachment(context, attachment);
               }
-            }
+            },
+            onViewAttachmentFileAction: (attachment) {
+              if (PlatformInfo.isWeb) {
+                viewAttachmentForWeb(attachment);
+              } else {
+                exportAttachment(context, attachment);
+              }
+            },
           )
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,

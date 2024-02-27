@@ -17,6 +17,7 @@ class AttachmentListDialogBodyBuilder extends StatelessWidget {
   final double? heightDialog;
   final OnDownloadAllButtonAction? onDownloadAllButtonAction;
   final OnDownloadAttachmentFileAction? onDownloadAttachmentFileAction;
+  final OnViewAttachmentFileAction? onViewAttachmentFileAction;
   final OnCancelButtonAction? onCancelButtonAction;
   final OnCloseButtonAction? onCloseButtonAction;
 
@@ -30,6 +31,7 @@ class AttachmentListDialogBodyBuilder extends StatelessWidget {
     this.heightDialog,
     this.onDownloadAllButtonAction,
     this.onDownloadAttachmentFileAction,
+    this.onViewAttachmentFileAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction
   });
@@ -108,6 +110,7 @@ class AttachmentListDialogBodyBuilder extends StatelessWidget {
                     return AttachmentListItemWidget(
                       attachment: attachments[index],
                       downloadAttachmentAction: onDownloadAttachmentFileAction,
+                      viewAttachmentAction: onViewAttachmentFileAction,
                     );
                   },
                   separatorBuilder: (context, index) {
