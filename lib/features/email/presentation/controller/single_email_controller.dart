@@ -122,6 +122,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final eventActions = <EventAction>[].obs;
   final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final emailUnsubscribe = Rxn<EmailUnsubscribe>();
+  final attachmentsViewState = RxMap<Id, Either<Failure, Success>>();
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -181,8 +182,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _markAsEmailStarSuccess(success);
     } else if (success is ViewAttachmentForWebSuccess) {
       _viewAttachmentForWebSuccessAction(success);
+    } else if (success is StartViewAttachmentForWeb) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+    } else if (success is ViewingAttachmentForWeb) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
     } else if (success is DownloadAttachmentForWebSuccess) {
       _downloadAttachmentForWebSuccessAction(success);
+    } else if (success is StartDownloadAttachmentForWeb) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+    } else if (success is DownloadingAttachmentForWeb) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
     } else if (success is GetAllIdentitiesSuccess) {
       _getAllIdentitiesSuccess(success);
     } else if (success is SendReceiptToSenderSuccess) {
@@ -450,6 +459,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (success.emailCurrent?.id == currentEmail?.id) {
       attachments.value = success.attachments;
+      attachmentsViewState.value = {
+        for (var attachment in attachments.where((item) => item.blobId != null))
+          attachment.blobId!: Right(IdleDownloadAttachmentForWeb())
+      };
 
       if (_canParseCalendarEvent(blobIds: success.attachments.calendarEventBlobIds)) {
         _parseCalendarEventAction(
@@ -490,6 +503,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (success.emailCurrent?.id == currentEmail?.id) {
       attachments.value = success.attachments;
+      attachmentsViewState.value = {
+        for (var attachment in attachments.where((item) => item.blobId != null))
+          attachment.blobId!: Right(IdleDownloadAttachmentForWeb())
+      };
 
       if (_canParseCalendarEvent(blobIds: success.attachments.calendarEventBlobIds)) {
         _parseCalendarEventAction(
@@ -556,6 +573,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailContents.value = null;
     _currentEmailLoaded = null;
     attachments.clear();
+    attachmentsViewState.value = {};
     calendarEvent.value = null;
     eventActions.clear();
     emailUnsubscribe.value = null;
@@ -745,7 +763,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       consumeState(Stream.value(
         Left(DownloadAttachmentForWebFailure(
-          attachment: attachment,
+          attachmentBlobId: attachment.blobId,
           exception: NotFoundSessionException()))
       ));
     }
@@ -766,7 +784,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       consumeState(Stream.value(
         Left(ViewAttachmentForWebFailure(
-          attachment: attachment,
+          attachmentBlobId: attachment.blobId,
           exception: NotFoundSessionException()))
       ));
     }
@@ -774,6 +792,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _downloadAttachmentForWebSuccessAction(DownloadAttachmentForWebSuccess success) {
     log('SingleEmailController::_downloadAttachmentForWebSuccessAction():');
+
+    _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
     _downloadManager.createAnchorElementDownloadFileWeb(
@@ -792,6 +813,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
+    _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
     _downloadManager.openDownloadedFileWeb(
@@ -805,6 +828,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       mailboxDashBoardController.deleteDownloadTask(failure.taskId!);
     }
 
+    _updateAttachmentsViewState(failure.attachmentBlobId, Left(failure));
+
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -815,6 +840,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _viewAttachmentForWebFailureAction(ViewAttachmentForWebFailure failure) {
     log('SingleEmailController::_viewAttachmentForWebFailureAction(): $failure');
     _downloadAttachmentForWebFailureAction(failure);
+  }
+
+  void _updateAttachmentsViewState(
+    Id? attachmentBlobId, 
+    Either<Failure, Success> viewState) {
+      if (attachmentBlobId != null) {
+        attachmentsViewState[attachmentBlobId] = viewState;
+      }
   }
 
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
