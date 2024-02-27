@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
@@ -129,24 +130,25 @@ class VacationController extends BaseController {
 
   void updateVacationPresentation({
     VacationResponderStatus? newStatus,
-    DateTime? startDate,
-    TimeOfDay? startTime,
-    DateTime? endDate,
-    TimeOfDay? endTime,
+    Option<DateTime>? startDateOption,
+    Option<TimeOfDay>? startTimeOption,
+    Option<DateTime>? endDateOption,
+    Option<TimeOfDay>? endTimeOption,
     bool? vacationStopEnabled,
-    String? messagePlainText,
-    String? messageHtmlText,
+    Option<String>? messagePlainTextOption,
+    Option<String>? messageHtmlTextOption,
   }) {
     final currentVacation = vacationPresentation.value;
-    final newVacation = currentVacation.copyWidth(
+    final stopEnabled = vacationStopEnabled ?? currentVacation.vacationStopEnabled;
+    final newVacation = currentVacation.copyWith(
         status: newStatus,
-        startDate: startDate,
-        startTime: startTime,
-        endDate: endDate,
-        endTime: endTime,
+        startDateOption: startDateOption,
+        startTimeOption: startTimeOption,
+        endDateOption: stopEnabled ? endDateOption : const None(),
+        endTimeOption: stopEnabled ? endTimeOption : const None(),
         vacationStopEnabled: vacationStopEnabled,
-        messagePlainText: messagePlainText,
-        messageHtmlText: messageHtmlText
+        messagePlainTextOption: messagePlainTextOption,
+        messageHtmlTextOption: messageHtmlTextOption
     );
     log('VacationController::updateVacationPresentation():newVacation: $newVacation');
     vacationPresentation.value = newVacation;
@@ -187,9 +189,9 @@ class VacationController extends BaseController {
     }
 
     if (dateType == DateType.start) {
-      updateVacationPresentation(startDate: datePicked);
+      updateVacationPresentation(startDateOption: Some(datePicked));
     } else {
-      updateVacationPresentation(endDate: datePicked);
+      updateVacationPresentation(endDateOption: Some(datePicked));
     }
   }
 
@@ -221,9 +223,9 @@ class VacationController extends BaseController {
     }
 
     if (dateType == DateType.start) {
-      updateVacationPresentation(startTime: timePicked);
+      updateVacationPresentation(startTimeOption: Some(timePicked));
     } else {
-      updateVacationPresentation(endTime: timePicked);
+      updateVacationPresentation(endTimeOption: Some(timePicked));
     }
   }
 
@@ -281,9 +283,9 @@ class VacationController extends BaseController {
 
       final subjectVacation = subjectTextController.text;
 
-      final newVacationPresentation = vacationPresentation.value.copyWidth(
-        messageHtmlText: messageHtmlText,
-        subject: subjectVacation
+      final newVacationPresentation = vacationPresentation.value.copyWith(
+        messageHtmlTextOption: Some(messageHtmlText),
+        subjectOption: Some(subjectVacation)
       );
       log('VacationController::saveVacation(): newVacationPresentation: $newVacationPresentation');
       final newVacationResponse = newVacationPresentation.toVacationResponse();
