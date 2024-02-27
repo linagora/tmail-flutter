@@ -82,12 +82,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   @override
-  void onResponse(Response response, ResponseInterceptorHandler handler) {
-    log('AuthorizationInterceptors::response(): STATUS_CODE = ${response.statusCode} | DATA = ${response.data}');
-    super.onResponse(response, handler);
-  }
-
-  @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
     try {
