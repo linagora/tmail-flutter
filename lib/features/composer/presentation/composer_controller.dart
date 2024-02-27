@@ -34,6 +34,7 @@ import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
@@ -167,9 +168,11 @@ class ComposerController extends BaseController {
   double? maxWithEditor;
   EmailId? _emailIdEditing;
   bool isAttachmentCollapsed = false;
+  ButtonState _closeComposerButtonState = ButtonState.enabled;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
+  late bool _isEmailBodyLoaded;
 
   ComposerController(
     this._deviceInfoPlugin,
@@ -408,12 +411,14 @@ class ComposerController extends BaseController {
   }
 
   void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) {
+    _isEmailBodyLoaded = true;
     if (identitySelected.value == null) {
       _getAllIdentities();
     }
   }
 
   void _initEmail() {
+    _isEmailBodyLoaded = false;
     final arguments = PlatformInfo.isWeb
       ? mailboxDashBoardController.composerArguments
       : Get.arguments;
@@ -785,7 +790,7 @@ class ComposerController extends BaseController {
       return;
     }
 
-    clearFocusEditor(context);
+    clearFocus(context);
 
     isSendEmailLoading.value = true;
 
@@ -1025,7 +1030,7 @@ class ComposerController extends BaseController {
   }
 
   void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) {
-    clearFocusEditor(context);
+    clearFocus(context);
 
     (ContextMenuBuilder(context)
         ..addHeader((ContextMenuHeaderBuilder(const Key('attachment_picker_context_menu_header_builder'))
@@ -1083,18 +1088,16 @@ class ComposerController extends BaseController {
     uploadController.deleteFileUploaded(uploadId);
   }
 
-  Future<bool> _isEmailChanged({
+  Future<bool> _validateEmailChange({
     required BuildContext context,
     required EmailActionType emailActionType,
     PresentationEmail? presentationEmail,
     Role? mailboxRole,
   }) async {
     final newEmailBody = await _getEmailBodyText(context, asDrafts: true);
-    log('ComposerController::_isEmailChanged(): newEmailBody: $newEmailBody');
     final oldEmailBody = _initTextEditor ?? '';
-    log('ComposerController::_isEmailChanged(): oldEmailBody: $oldEmailBody');
     final isEmailBodyChanged = !oldEmailBody.trim().isSame(newEmailBody.trim());
-    log('ComposerController::_isEmailChanged(): isEmailBodyChanged: $isEmailBodyChanged');
+
     final newEmailSubject = subjectEmail.value ?? '';
     final oldEmailSubject = emailActionType == EmailActionType.editDraft
       ? presentationEmail?.getEmailTitle().trim() ?? ''
@@ -1120,7 +1123,7 @@ class ComposerController extends BaseController {
     final isBccEmailAddressChanged = !oldBccEmailAddress.isSame(newBccEmailAddress);
 
     final isAttachmentsChanged = !initialAttachments.isSame(uploadController.attachmentsUploaded.toList());
-
+    log('ComposerController::_validateChangeEmail: isEmailBodyChanged = $isEmailBodyChanged | isEmailSubjectChanged = $isEmailSubjectChanged | isToEmailAddressChanged = $isToEmailAddressChanged | isCcEmailAddressChanged = $isCcEmailAddressChanged | isBccEmailAddressChanged = $isBccEmailAddressChanged | isAttachmentsChanged = $isAttachmentsChanged');
     if (isEmailBodyChanged || isEmailSubjectChanged
         || isToEmailAddressChanged || isCcEmailAddressChanged
         || isBccEmailAddressChanged || isAttachmentsChanged) {
@@ -1130,10 +1133,8 @@ class ComposerController extends BaseController {
     return false;
   }
 
-  void saveToDraftAndClose(BuildContext context) async {
-    log('ComposerController::saveToDraftAndClose:');
-    clearFocusEditor(context);
-
+  Future<SaveToDraftArguments?> _handleSaveAsDrafts(BuildContext context) async {
+    log('ComposerController::_handleSaveAsDrafts:');
     final arguments = composerArguments.value;
     final userProfile = mailboxDashBoardController.userProfile.value;
     final accountId = mailboxDashBoardController.accountId.value;
@@ -1146,9 +1147,7 @@ class ComposerController extends BaseController {
         session == null ||
         accountId == null
     ) {
-      logError('ComposerController::saveToDraftAndClose: Param is NULL');
-      _closeComposerAction();
-      return;
+      return null;
     }
 
     if (_emailIdEditing != null && _emailIdEditing != arguments.presentationEmail?.id) {
@@ -1160,20 +1159,19 @@ class ComposerController extends BaseController {
         arguments: arguments,
       );
 
-      _closeComposerAction(result: SaveToDraftArguments(
+      return SaveToDraftArguments(
         session: session,
         accountId: accountId,
         newEmail: newEmail,
-        oldEmailId: _emailIdEditing!
-      ));
+        oldEmailId: _emailIdEditing!);
     } else {
-      final isChanged = await _isEmailChanged(
+      final isChanged = await _validateEmailChange(
         context: context,
         emailActionType: arguments.emailActionType,
         presentationEmail: arguments.presentationEmail,
         mailboxRole: arguments.mailboxRole
       );
-      log('ComposerController::saveToDraftAndClose: isChanged: $isChanged');
+
       if (isChanged && context.mounted) {
         final newEmail = await _generateEmail(
           context,
@@ -1183,16 +1181,15 @@ class ComposerController extends BaseController {
           arguments: arguments,
         );
 
-        _closeComposerAction(result: SaveToDraftArguments(
+        return SaveToDraftArguments(
           session: session,
           accountId: accountId,
           newEmail: newEmail,
           oldEmailId: arguments.emailActionType == EmailActionType.editDraft
             ? arguments.presentationEmail?.id
-            : null
-        ));
+            : null);
       } else {
-        _closeComposerAction();
+        return null;
       }
     }
   }
@@ -1413,7 +1410,8 @@ class ComposerController extends BaseController {
     return '';
   }
 
-  void clearFocusEditor(BuildContext context) {
+  void clearFocus(BuildContext context) {
+    log('ComposerController::clearFocus:');
     if (PlatformInfo.isMobile) {
       htmlEditorApi?.unfocus();
       KeyboardUtils.hideSystemKeyboardMobile();
@@ -1422,19 +1420,14 @@ class ComposerController extends BaseController {
   }
 
   void _closeComposerAction({dynamic result}) {
-    uploadController.clearInlineFileUploaded();
+    log('ComposerController::_closeComposerAction:');
+    isSendEmailLoading.value = false;
 
     if (PlatformInfo.isWeb) {
-      _closeComposerWeb(result: result);
+      mailboxDashBoardController.closeComposerOverlay(result: result);
     } else {
-      isSendEmailLoading.value = false;
       popBack(result: result);
     }
-  }
-
-  void _closeComposerWeb({dynamic result}) {
-    isSendEmailLoading.value = false;
-    mailboxDashBoardController.closeComposerOverlay(result: result);
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
@@ -1722,7 +1715,7 @@ class ComposerController extends BaseController {
   }
 
   void insertImage(BuildContext context, double maxWith) async {
-    clearFocusEditor(context);
+    clearFocus(context);
 
     if (responsiveUtils.isMobile(context)) {
       maxWithEditor = maxWith - 40;
@@ -1915,6 +1908,8 @@ class ComposerController extends BaseController {
     subjectEmailInputFocusNode?.hasFocus == true;
 
   void handleInitHtmlEditorWeb(String initContent) {
+    log('ComposerController::handleInitHtmlEditorWeb:');
+    _isEmailBodyLoaded = true;
     richTextWebController.editorController.setFullScreen();
     onChangeTextEditorWeb(initContent);
     richTextWebController.setEnableCodeView();
@@ -2155,5 +2150,26 @@ class ComposerController extends BaseController {
       })
       ..onTextSearchChangedAction((searchText) => _searchIdentities(searchText))
     ).build();
+  }
+
+  void handleClickCloseComposer(BuildContext context) async {
+    log('ComposerController::handleClickCloseComposer:');
+    if (_closeComposerButtonState == ButtonState.disabled) {
+      log('ComposerController::handleClickCloseComposer: _closeComposerButtonState = disabled');
+      return;
+    }
+    
+    if (!_isEmailBodyLoaded) {
+      log('ComposerController::handleClickCloseComposer: _isEmailBodyLoaded = false');
+      clearFocus(context);
+      _closeComposerAction();
+      return;
+    }
+
+    _closeComposerButtonState = ButtonState.disabled;
+    clearFocus(context);
+    final draftArgs = await _handleSaveAsDrafts(context);
+    _closeComposerAction(result: draftArgs);
+    _closeComposerButtonState = ButtonState.enabled;
   }
 }

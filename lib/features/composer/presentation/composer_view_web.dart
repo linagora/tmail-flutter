@@ -37,7 +37,7 @@ class ComposerView extends GetWidget<ComposerController> {
       mobile: MobileResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocusEditor(context),
+            onTap: () => controller.clearFocus(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -46,7 +46,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   isFormattingOptionsEnabled: controller.richTextWebController.isFormattingOptionsEnabled,
                   openRichToolbarAction: controller.richTextWebController.toggleFormattingOptions,
                   isSendButtonEnabled: controller.isEnableEmailSendButton.value,
-                  onCloseViewAction: () => controller.saveToDraftAndClose(context),
+                  onCloseViewAction: () => controller.handleClickCloseComposer(context),
                   attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                   insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                   sendMessageAction: () => controller.validateInformationBeforeSending(context),
@@ -231,15 +231,12 @@ class ComposerView extends GetWidget<ComposerController> {
       desktop: Obx(() => DesktopResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocusEditor(context),
+            onTap: () => controller.clearFocus(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 emailSubject: controller.subjectEmail.value ?? '',
                 displayMode: controller.screenDisplayMode.value,
-                onCloseViewAction: () {
-                  controller.clearFocusEditor(context);
-                  controller.saveToDraftAndClose(context);
-                },
+                onCloseViewAction: () => controller.handleClickCloseComposer(context),
                 onChangeDisplayModeAction: controller.displayScreenTypeComposerAction,
                 constraints: constraints,
               )),
@@ -461,17 +458,17 @@ class ComposerView extends GetWidget<ComposerController> {
         },
         displayMode: controller.screenDisplayMode.value,
         emailSubject: controller.subjectEmail.value ?? '',
-        onCloseViewAction: () => controller.saveToDraftAndClose(context),
+        onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onChangeDisplayModeAction: controller.displayScreenTypeComposerAction,
       )),
       tablet: TabletResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocusEditor(context),
+            onTap: () => controller.clearFocus(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 emailSubject: controller.subjectEmail.value ?? '',
-                onCloseViewAction: () => controller.saveToDraftAndClose(context),
+                onCloseViewAction: () => controller.handleClickCloseComposer(context),
                 constraints: constraints,
               )),
               ConstrainedBox(
