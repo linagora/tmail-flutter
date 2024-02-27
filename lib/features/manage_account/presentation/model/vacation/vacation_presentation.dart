@@ -1,4 +1,6 @@
 
+import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -6,7 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
 
-class VacationPresentation with EquatableMixin {
+class VacationPresentation with EquatableMixin, OptionParamMixin {
   final VacationResponderStatus status;
   final DateTime? startDate;
   final TimeOfDay? startTime;
@@ -33,26 +35,26 @@ class VacationPresentation with EquatableMixin {
     return VacationPresentation();
   }
 
-  VacationPresentation copyWidth({
+  VacationPresentation copyWith({
      VacationResponderStatus? status,
-     DateTime? startDate,
-     TimeOfDay? startTime,
-     DateTime? endDate,
-     TimeOfDay? endTime,
-     String? messagePlainText,
-     String? messageHtmlText,
-     String? subject,
+     Option<DateTime>? startDateOption,
+     Option<TimeOfDay>? startTimeOption,
+     Option<DateTime>? endDateOption,
+     Option<TimeOfDay>? endTimeOption,
+     Option<String>? messagePlainTextOption,
+     Option<String>? messageHtmlTextOption,
+     Option<String>? subjectOption,
      bool? vacationStopEnabled,
   }) {
     return VacationPresentation(
       status: status ?? this.status,
-      startDate: startDate ?? this.startDate,
-      startTime: startTime ?? this.startTime,
-      endDate: endDate ?? this.endDate,
-      endTime: endTime ?? this.endTime,
-      messagePlainText: messagePlainText ?? this.messagePlainText,
-      messageHtmlText: messageHtmlText ?? this.messageHtmlText,
-      subject: subject ?? this.subject,
+      startDate: getOptionParam(startDateOption, startDate),
+      startTime: getOptionParam(startTimeOption, startTime),
+      endDate: getOptionParam(endDateOption, endDate),
+      endTime: getOptionParam(endTimeOption, endTime),
+      messagePlainText: getOptionParam(messagePlainTextOption, messagePlainText),
+      messageHtmlText: getOptionParam(messageHtmlTextOption, messageHtmlText),
+      subject: getOptionParam(subjectOption, subject),
       vacationStopEnabled: vacationStopEnabled ?? this.vacationStopEnabled
     );
   }
