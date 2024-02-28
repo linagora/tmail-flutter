@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-02-29T15:17:25.888801",
+  "@@last_modified": "2024-02-28T08:48:33.734928",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3650,6 +3650,12 @@
   },
   "externalDomain": "External domain",
   "@externalDomain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printAll": "Print all",
+  "@printAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

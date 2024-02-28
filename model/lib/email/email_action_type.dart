@@ -26,5 +26,6 @@ enum EmailActionType {
   createRule,
   unsubscribe,
   composeFromUnsubscribeMailtoLink,
-  archiveMessage
+  archiveMessage,
+  printAll
 }

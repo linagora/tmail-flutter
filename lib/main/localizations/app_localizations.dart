@@ -3806,4 +3806,10 @@ class AppLocalizations {
       'External domain',
       name: 'externalDomain');
   }
+
+  String get printAll {
+    return Intl.message(
+      'Print all',
+      name: 'printAll');
+  }
 }
