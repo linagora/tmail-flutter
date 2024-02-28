@@ -1,12 +1,13 @@
 import 'package:core/core.dart';
-import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/print_file_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_st
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -67,6 +69,7 @@ class EmailBindings extends BaseBindings {
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<StoreOpenedEmailInteractor>(),
       Get.find<ViewAttachmentForWebInteractor>(),
+      Get.find<PrintEmailInteractor>()
     ));
   }
 
@@ -76,6 +79,7 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
   }
 
   @override
@@ -96,6 +100,11 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
       Get.find<IOSSharingManager>(),
+      Get.find<CacheExceptionThrower>()
+    ));
+    Get.lazyPut(() => PrintFileDataSourceImpl(
+      Get.find<PrintUtils>(),
+      Get.find<ImagePaths>(),
       Get.find<CacheExceptionThrower>()
     ));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
@@ -141,6 +150,7 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => ViewAttachmentForWebInteractor(
         Get.find<DownloadAttachmentForWebInteractor>()));
     Get.lazyPut(() => StoreOpenedEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => PrintEmailInteractor(Get.find<EmailRepository>()));
     IdentityInteractorsBindings().dependencies();
   }
 
@@ -165,7 +175,8 @@ class EmailBindings extends BaseBindings {
         DataSourceType.hiveCache: Get.find<EmailHiveCacheDataSourceImpl>()
       },
       Get.find<HtmlDataSource>(),
-      Get.find<StateDataSource>()
+      Get.find<StateDataSource>(),
+      Get.find<PrintFileDataSource>(),
     ));
   }
 }

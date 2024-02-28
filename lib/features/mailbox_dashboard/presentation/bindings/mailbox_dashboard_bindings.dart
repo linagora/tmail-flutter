@@ -1,6 +1,8 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
@@ -11,9 +13,11 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_inter
 import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/print_file_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
@@ -178,6 +182,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<SearchDataSource>(() => Get.find<SearchDataSourceImpl>());
     Get.lazyPut<ThreadDataSource>(() => Get.find<ThreadDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<SessionStorageComposerDatasource>(() => Get.find<SessionStorageComposerDatasourceImpl>());
     Get.lazyPut<SpamReportDataSource>(() => Get.find<SpamReportDataSourceImpl>());
@@ -204,6 +209,11 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
       Get.find<IOSSharingManager>(),
+      Get.find<CacheExceptionThrower>()
+    ));
+    Get.lazyPut(() => PrintFileDataSourceImpl(
+      Get.find<PrintUtils>(),
+      Get.find<ImagePaths>(),
       Get.find<CacheExceptionThrower>()
     ));
     Get.lazyPut(() => MailboxDataSourceImpl(
@@ -346,6 +356,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       },
       Get.find<HtmlDataSource>(),
       Get.find<StateDataSource>(),
+      Get.find<PrintFileDataSource>(),
     ));
     Get.lazyPut(() => SearchRepositoryImpl(Get.find<SearchDataSource>()));
     Get.lazyPut(() => ThreadRepositoryImpl(

@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/utils/file_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
@@ -20,9 +19,11 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/print_file_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
@@ -102,6 +103,11 @@ class ComposerBindings extends BaseBindings {
       Get.find<IOSSharingManager>(),
       Get.find<CacheExceptionThrower>()
     ));
+    Get.lazyPut(() => PrintFileDataSourceImpl(
+      Get.find<PrintUtils>(),
+      Get.find<ImagePaths>(),
+      Get.find<CacheExceptionThrower>()
+    ));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
       Get.find<NewEmailCacheManager>(),
       Get.find<OpenedEmailCacheManager>(),
@@ -122,6 +128,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
   }
 
   @override
@@ -144,6 +151,7 @@ class ComposerBindings extends BaseBindings {
       },
       Get.find<HtmlDataSource>(),
       Get.find<StateDataSource>(),
+      Get.find<PrintFileDataSource>(),
     ));
   }
 
