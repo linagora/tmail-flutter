@@ -48,7 +48,7 @@ const RESOURCES = {"firebase-messaging-sw.js": "f76c3a61d564249a1734cf3487753856
 "main.dart.js_1.part.js": "d99da2caec813f680db2eb82b9d6f555",
 "main.dart.js_6.part.js": "5ecbf3ef449e2fa0d99786f00135b38d",
 "favicon.svg": "6cfee8482999da091bc2e5cd304e745f",
-"main.dart.js": "06dedfe28339c15893adcf8deaa84deb",
+"main.dart.js": "8287d3a9c23c982e744d0a577b038dda",
 "main.dart.js_7.part.js": "5a796336eb0549bff52c9dddfdfb9b64",
 "worker_service/style.css": "3ec186c93eb7bdab17e882de738e3123",
 "worker_service/worker_service.js": "28f72523e30987c4715c6b0729f953b7",
