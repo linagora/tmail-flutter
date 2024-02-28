@@ -23,7 +23,9 @@ import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -36,11 +38,13 @@ class EmailRepositoryImpl extends EmailRepository {
   final Map<DataSourceType, EmailDataSource> emailDataSource;
   final HtmlDataSource _htmlDataSource;
   final StateDataSource _stateDataSource;
+  final PrintFileDataSource _printFileDataSource;
 
   EmailRepositoryImpl(
     this.emailDataSource,
     this._htmlDataSource,
-    this._stateDataSource
+    this._stateDataSource,
+    this._printFileDataSource,
   );
 
   @override
@@ -227,5 +231,10 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
     return emailDataSource[DataSourceType.network]!.getRestoredDeletedMessage(emailRecoveryActionId);
+  }
+
+  @override
+  Future<void> printEmail(EmailPrint emailPrint) {
+    return _printFileDataSource.printEmailToPDF(emailPrint);
   }
 }

@@ -1,12 +1,16 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/print_file_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
@@ -71,6 +75,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut<EmailDataSource>(() => Get.find<EmailDataSourceImpl>());
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
+    Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
   }
 
   @override
@@ -104,6 +109,11 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
       Get.find<IOSSharingManager>(),
+      Get.find<CacheExceptionThrower>()
+    ));
+    Get.lazyPut(() => PrintFileDataSourceImpl(
+      Get.find<PrintUtils>(),
+      Get.find<ImagePaths>(),
       Get.find<CacheExceptionThrower>()
     ));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
@@ -171,6 +181,7 @@ class FcmInteractorBindings extends InteractorsBindings {
         DataSourceType.hiveCache: Get.find<EmailHiveCacheDataSourceImpl>()
       },
       Get.find<HtmlDataSource>(),
-      Get.find<StateDataSource>()));
+      Get.find<StateDataSource>(),
+      Get.find<PrintFileDataSource>()));
   }
 }

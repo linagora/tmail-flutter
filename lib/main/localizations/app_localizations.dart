@@ -3812,4 +3812,11 @@ class AppLocalizations {
       'Print all',
       name: 'printAll');
   }
+
+  String get replyToEmailAddressPrefix {
+    return Intl.message(
+      'Reply-To',
+      name: 'replyToEmailAddressPrefix',
+    );
+  }
 }

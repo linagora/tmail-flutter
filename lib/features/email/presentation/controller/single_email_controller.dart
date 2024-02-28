@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
+import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -54,6 +55,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
@@ -111,6 +113,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final ViewAttachmentForWebInteractor _viewAttachmentForWebInteractor;
+  final PrintEmailInteractor _printEmailInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -148,6 +151,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._getAllIdentitiesInteractor,
     this._storeOpenedEmailInteractor,
     this._viewAttachmentForWebInteractor,
+    this._printEmailInteractor,
   );
 
   @override
@@ -818,7 +822,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
     _downloadManager.openDownloadedFileWeb(
-        success.bytes, 
+        success.bytes,
         success.attachment.type?.mimeType);
   }
 
@@ -843,7 +847,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _updateAttachmentsViewState(
-    Id? attachmentBlobId, 
+    Id? attachmentBlobId,
     Either<Failure, Success> viewState) {
       if (attachmentBlobId != null) {
         attachmentsViewState[attachmentBlobId] = viewState;
@@ -1089,6 +1093,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         break;
       case EmailActionType.archiveMessage:
         archiveMessage(context, presentationEmail);
+        break;
+      case EmailActionType.printAll:
+        _printEmail(context, presentationEmail);
         break;
       default:
         break;
@@ -1577,5 +1584,29 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void archiveMessage(BuildContext context, PresentationEmail email) {
     mailboxDashBoardController.archiveMessage(context, email);
+  }
+
+  void _printEmail(BuildContext context, PresentationEmail email) {
+    if (email.id != _currentEmailLoaded?.emailCurrent?.id) {
+      log('SingleEmailController::_printEmail: EMAIL ${email.id?.asString} NOT LOADED');
+    }
+    final emailPrint = EmailPrint(
+      appName: AppLocalizations.of(context).app_name,
+      userName: mailboxDashBoardController.userProfile.value?.email ?? '',
+      emailInformation: email.toEmail(),
+      attachments: _currentEmailLoaded?.attachments,
+      emailContent: _currentEmailLoaded?.htmlContent ?? '',
+      locale: Localizations.localeOf(context).toLanguageTag(),
+      toPrefix: AppLocalizations.of(context).to_email_address_prefix,
+      ccPrefix: AppLocalizations.of(context).cc_email_address_prefix,
+      bccPrefix: AppLocalizations.of(context).bcc_email_address_prefix,
+      replyToPrefix: AppLocalizations.of(context).replyToEmailAddressPrefix,
+      titleAttachment: AppLocalizations.of(context).attachments.toLowerCase(),
+      toAddress: email.to?.listEmailAddressToString(isFullEmailAddress: true),
+      ccAddress: email.cc?.listEmailAddressToString(isFullEmailAddress: true),
+      bccAddress: email.bcc?.listEmailAddressToString(isFullEmailAddress: true),
+      replyToAddress: email.replyTo?.listEmailAddressToString(isFullEmailAddress: true),
+    );
+    consumeState(_printEmailInteractor.execute(emailPrint));
   }
 }
