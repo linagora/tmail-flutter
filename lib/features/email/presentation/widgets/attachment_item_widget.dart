@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_item_widget_style.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 
 typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
 typedef OnViewAttachmentFileActionClick = void Function(Attachment attachment);
@@ -32,67 +34,85 @@ class AttachmentItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => viewAttachmentAction?.call(attachment),
-        customBorder: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
-        ),
-        child: Container(
-          padding: AttachmentItemWidgetStyle.contentPadding,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius)),
-            border: Border.all(color: AttachmentItemWidgetStyle.borderColor),
-          ),
-          width: _getMaxWidthItem(context),
-          child: Row(
-            children: [
-              SvgPicture.asset(
-                attachment.getIcon(_imagePaths),
-                width: AttachmentItemWidgetStyle.iconSize,
-                height: AttachmentItemWidgetStyle.iconSize,
-                fit: BoxFit.fill
+    return Obx(
+      () {
+        final controller = Get.find<SingleEmailController>();
+        final attachmentsViewState = controller.attachmentsViewState;
+        bool isLoading = false;
+        if (attachment.blobId != null) {
+          isLoading = !EmailUtils.checkingIfAttachmentActionIsEnabled(
+            attachmentsViewState[attachment.blobId!]);
+        }
+
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: isLoading ? null : () => viewAttachmentAction?.call(attachment),
+            customBorder: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
+            ),
+            child: Container(
+              padding: AttachmentItemWidgetStyle.contentPadding,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius)),
+                border: Border.all(color: AttachmentItemWidgetStyle.borderColor),
               ),
-              const SizedBox(width: AttachmentItemWidgetStyle.space),
-              Expanded(
-                child: PlatformInfo.isCanvasKit
-                  ? ExtendedText(
-                      (attachment.name ?? ''),
-                      maxLines: 1,
-                      overflowWidget: const TextOverflowWidget(
-                        position: TextOverflowPosition.middle,
-                        child: Text(
-                          "...",
-                          style: AttachmentItemWidgetStyle.dotsLabelTextStyle,
-                        ),
+              width: _getMaxWidthItem(context),
+              child: Row(
+                children: [
+                  isLoading
+                    ? const SizedBox(
+                        width: AttachmentItemWidgetStyle.iconSize,
+                        height: AttachmentItemWidgetStyle.iconSize,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : SvgPicture.asset(attachment.getIcon(_imagePaths),
+                        width: AttachmentItemWidgetStyle.iconSize,
+                        height: AttachmentItemWidgetStyle.iconSize,
+                        fit: BoxFit.fill
                       ),
-                      style: AttachmentItemWidgetStyle.labelTextStyle,
-                    )
-                  : Text(
-                      (attachment.name ?? ''),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AttachmentItemWidgetStyle.labelTextStyle,
-                    )
-              ),
-              const SizedBox(width: AttachmentItemWidgetStyle.space),
-              Text(
-                filesize(attachment.size?.value),
-                maxLines: 1,
-                style: AttachmentItemWidgetStyle.sizeLabelTextStyle,
-              ),
-              TMailButtonWidget.fromIcon(
-                icon: _imagePaths.icDownloadAttachment,
-                backgroundColor: Colors.transparent,
-                padding: const EdgeInsets.all(5),
-                iconSize: AttachmentItemWidgetStyle.downloadIconSize,
-                onTapActionCallback: () => downloadAttachmentAction?.call(attachment)
+                  const SizedBox(width: AttachmentItemWidgetStyle.space),
+                  Expanded(
+                    child: PlatformInfo.isCanvasKit
+                      ? ExtendedText(
+                          (attachment.name ?? ''),
+                          maxLines: 1,
+                          overflowWidget: const TextOverflowWidget(
+                            position: TextOverflowPosition.middle,
+                            child: Text(
+                              "...",
+                              style: AttachmentItemWidgetStyle.dotsLabelTextStyle,
+                            ),
+                          ),
+                          style: AttachmentItemWidgetStyle.labelTextStyle,
+                        )
+                      : Text(
+                          (attachment.name ?? ''),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AttachmentItemWidgetStyle.labelTextStyle,
+                        )
+                  ),
+                  const SizedBox(width: AttachmentItemWidgetStyle.space),
+                  Text(
+                    filesize(attachment.size?.value),
+                    maxLines: 1,
+                    style: AttachmentItemWidgetStyle.sizeLabelTextStyle,
+                  ),
+                  TMailButtonWidget.fromIcon(
+                    icon: _imagePaths.icDownloadAttachment,
+                    backgroundColor: Colors.transparent,
+                    padding: const EdgeInsets.all(5),
+                    iconSize: AttachmentItemWidgetStyle.downloadIconSize,
+                    onTapActionCallback: isLoading
+                      ? null 
+                      : () => downloadAttachmentAction?.call(attachment)
+                  )
+                ]
               )
-            ]
-          )
-        ),
-      ),
+            ),
+          ),
+        );
+      }
     );
   }
 
