@@ -7,10 +7,12 @@ import 'package:core/presentation/views/text/slogan_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_warning_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -107,6 +109,14 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                                 padding: EdgeInsets.only(right: 16),
                                 child: Icon(Icons.timer, size: 20),
                               ));
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                      Obx(() {
+                        if (controller.forwardWarningBannerState.value == BannerState.enabled &&
+                          controller.accountMenuItemSelected.value == AccountMenuItem.forward) {
+                          return ForwardWarningBanner();
                         } else {
                           return const SizedBox.shrink();
                         }

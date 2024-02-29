@@ -14,6 +14,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -48,6 +49,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final settingsPageLevel = SettingsPageLevel.universal.obs;
   final vacationResponse = Rxn<VacationResponse>();
+  final forwardWarningBannerState = Rxn<BannerState>();
   final dashboardSettingAction = Rxn<UIAction>();
 
   Session? sessionCurrent;

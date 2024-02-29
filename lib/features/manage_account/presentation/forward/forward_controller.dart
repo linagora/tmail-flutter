@@ -8,15 +8,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/state/banner_state.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/add_recipients_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_local_copy_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_forward_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/add_recipients_in_forwarding_interactor.dart';
@@ -86,6 +89,7 @@ class ForwardController extends BaseController {
     if (success is GetForwardSuccess) {
       currentForward.value = success.forward;
       listRecipientForward.value = currentForward.value!.listRecipientForward;
+      _updateForwardWarningBannerState();
     } else if (success is DeleteRecipientInForwardingSuccess) {
       _handleDeleteRecipientSuccess(success);
     } else if (success is AddRecipientsInForwardingSuccess) {
@@ -157,6 +161,7 @@ class ForwardController extends BaseController {
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
     selectionMode.value = SelectMode.INACTIVE;
+    _updateForwardWarningBannerState();
   }
 
   List<RecipientForward> get listRecipientForwardSelected =>
@@ -169,6 +174,16 @@ class ForwardController extends BaseController {
 
   bool get isAllSelected =>
     listRecipientForward.every((recipient) => recipient.selectMode == SelectMode.ACTIVE);
+
+  bool get _isExistRecipientSameServerDomain =>
+    listRecipientForward.any((recipient) {
+      final serverDomain = accountDashBoardController.sessionCurrent?.serverDomain ?? '';
+      final isSameDomain = EmailUtils.isSameDomain(
+        emailAddress: recipient.emailAddress.emailAddress,
+        serverDomain: serverDomain
+      );
+      return !isSameDomain;
+    });
 
   void selectRecipientForward(RecipientForward recipientForward) {
     if (selectionMode.value == SelectMode.INACTIVE) {
@@ -260,6 +275,8 @@ class ForwardController extends BaseController {
     listRecipientForward.value = currentForward.value!.listRecipientForward;
 
     recipientController.clearAll();
+
+    _updateForwardWarningBannerState();
   }
 
   void handleEditLocalCopy() {
@@ -286,6 +303,8 @@ class ForwardController extends BaseController {
 
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
+
+    _updateForwardWarningBannerState();
   }
 
   void registerListenerWorker() {
@@ -310,5 +329,12 @@ class ForwardController extends BaseController {
         context,
         AppLocalizations.of(context).incorrectEmailFormat);
     }
+  }
+
+  void _updateForwardWarningBannerState() {
+    accountDashBoardController.forwardWarningBannerState.value = _isExistRecipientSameServerDomain
+      ? BannerState.enabled
+      : BannerState.disabled;
+    log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${accountDashBoardController.forwardWarningBannerState.value}');
   }
 }
