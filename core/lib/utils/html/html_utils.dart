@@ -7,6 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 
 class HtmlUtils {
+  static const lineHeight100Percent = (
+    script: '''
+      document.querySelectorAll("*")
+        .forEach((element) => {
+          if (element.style.lineHeight !== "normal")
+            element.style.lineHeight = "100%";
+        });''',
+    name: 'lineHeight100Percent');
+
   static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
     if (PlatformInfo.isWeb) {
       return '''
