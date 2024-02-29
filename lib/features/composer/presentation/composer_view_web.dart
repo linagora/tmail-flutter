@@ -385,7 +385,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         child: DropZoneWidget(
                                           width: constraints.maxWidth,
                                           height: constraints.maxHeight,
-                                          addAttachmentFromDropZone: controller.addAttachmentFromDropZone,
+                                          addAttachmentFromDropZone: controller.addAttachmentWhenDragFromOtherEmail,
                                         )
                                       )
                                   ],
