@@ -3821,5 +3821,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageWarningDialogForForwardsToOtherDomains": "Bạn đang chuyển hướng email đến một tên miền khác. Đây có thể là một mối đe dọa bảo mật hoặc được coi là trích xuất dữ liệu bất hợp pháp.",
+  "@messageWarningDialogForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "externalDomain": "Tên miền bên ngoài",
+  "@externalDomain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
