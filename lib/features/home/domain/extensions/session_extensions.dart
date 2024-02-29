@@ -2,9 +2,11 @@
 import 'dart:convert';
 
 import 'package:core/presentation/extensions/uri_extension.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_account_converter.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_capabilities_converter.dart';
@@ -41,6 +43,16 @@ extension SessionExtensions on Session {
       return apiUrl.toQualifiedUrl(baseUrl: Uri.parse(baseUrl)).toString();
     } else {
       return apiUrl.toString();
+    }
+  }
+
+  String get serverDomain {
+    if (GetUtils.isEmail(username.value)) {
+      return username.value.split('@').last;
+    } else if (GetUtils.isEmail(personalAccount.name.value)) {
+      return personalAccount.name.value.split('@').last;
+    } else {
+      return '';
     }
   }
 }
