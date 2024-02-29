@@ -1,0 +1,5 @@
+
+enum BannerState {
+  enabled,
+  disabled;
+}
