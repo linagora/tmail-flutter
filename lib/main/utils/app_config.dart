@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AppConfig {
   static const int limitCharToStartSearch = 3;
+  static const int maximumMegabytesSizeFileAttachedInComposer = 10;
 
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";
   static const String appFCMConfigurationPath = "configurations/env.fcm";
