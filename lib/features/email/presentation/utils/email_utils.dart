@@ -1,5 +1,7 @@
 
 import 'package:collection/collection.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -58,12 +60,21 @@ class EmailUtils {
       (failure) {
         return failure is DownloadAttachmentForWebFailure
           || failure is ViewAttachmentForWebFailure;
-      }, 
+      },
       (success) {
         return success is DownloadAttachmentForWebSuccess
           || success is ViewAttachmentForWebSuccess
           || success is IdleDownloadAttachmentForWeb
           || success is IdleViewAttachmentForWeb;
       }) ?? false;
+  }
+
+  static bool isSameDomain({
+    required String emailAddress,
+    required String serverDomain
+  }) {
+    log('EmailUtils::isSameDomain: emailAddress = $emailAddress | serverDomain = $serverDomain');
+    return GetUtils.isEmail(emailAddress) &&
+      emailAddress.split('@').last.toLowerCase() == serverDomain.toLowerCase();
   }
 }
