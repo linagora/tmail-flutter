@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/upload_attachment_extension.dart';
@@ -294,12 +293,11 @@ class UploadController extends BaseController {
   }
 
   void validateTotalSizeAttachmentsBeforeUpload({
-    required List<FileInfo> listFileInfo,
+    required num totalSizePreparedFiles,
     VoidCallback? callbackAction
   }) {
-    final totalSizeListFiles = listFileInfo.totalSize;
-    log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: totalSizeListFiles = $totalSizeListFiles');
-    if (isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: totalSizeListFiles)) {
+    log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: totalSizePreparedFiles = $totalSizePreparedFiles');
+    if (isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: totalSizePreparedFiles)) {
       if (currentContext == null) {
         log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: CONTEXT IS NULL');
         return;
@@ -309,7 +307,7 @@ class UploadController extends BaseController {
       return;
     }
 
-    if (isExceededMaxSizeFilesAttachedInComposer(totalSizePreparedFiles: totalSizeListFiles)) {
+    if (isExceededMaxSizeFilesAttachedInComposer(totalSizePreparedFiles: totalSizePreparedFiles)) {
       if (currentContext == null) {
         log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: CONTEXT IS NULL');
         return;
