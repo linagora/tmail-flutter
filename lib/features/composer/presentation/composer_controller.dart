@@ -1971,20 +1971,10 @@ class ComposerController extends BaseController {
   }
 
   void _addAttachmentFromDragAndDrop({required FileInfo fileInfo}) {
-    if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: fileInfo.fileSize)) {
-      _uploadAttachmentsAction([fileInfo]);
-    } else {
-      if (currentContext != null) {
-        showConfirmDialogAction(
-          currentContext!,
-          AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
-            filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-          AppLocalizations.of(currentContext!).got_it,
-          title: AppLocalizations.of(currentContext!).maximum_files_size,
-          hasCancelButton: false,
-        );
-      }
-    }
+    uploadController.validateTotalSizeAttachmentsBeforeUpload(
+      listFileInfo: [fileInfo],
+      callbackAction: () => _uploadAttachmentsAction([fileInfo])
+    );
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {
