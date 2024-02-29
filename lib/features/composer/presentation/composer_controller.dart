@@ -80,6 +80,7 @@ import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -1075,7 +1076,7 @@ class ComposerController extends BaseController {
 
   void _handlePickFileSuccess(LocalFilePickerSuccess success) {
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      listFileInfo: success.pickedFiles,
+      totalSizePreparedFiles: success.pickedFiles.totalSize,
       callbackAction: () => _uploadAttachmentsAction(success.pickedFiles)
     );
   }
@@ -1297,7 +1298,7 @@ class ComposerController extends BaseController {
     if (listFileAttachmentSharedMediaFile.isNotEmpty) {
       final listFileInfo = covertListSharedMediaFileToFileInfo(listSharedMediaFile);
       uploadController.validateTotalSizeAttachmentsBeforeUpload(
-        listFileInfo: listFileInfo,
+        totalSizePreparedFiles: listFileInfo.totalSize,
         callbackAction: () => _uploadAttachmentsAction(listFileInfo)
       );
     }
@@ -1969,7 +1970,7 @@ class ComposerController extends BaseController {
 
   void _addAttachmentFromDragAndDrop({required FileInfo fileInfo}) {
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      listFileInfo: [fileInfo],
+      totalSizePreparedFiles: fileInfo.fileSize,
       callbackAction: () => _uploadAttachmentsAction([fileInfo])
     );
   }
@@ -2065,22 +2066,12 @@ class ComposerController extends BaseController {
     _updateStatusEmailSendButton();
   }
 
-  void addAttachmentFromDropZone(Attachment attachment) {
-    log('ComposerController::addAttachmentFromDropZone: $attachment');
-    if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: attachment.size?.value ?? 0)) {
-      uploadController.initializeUploadAttachments([attachment]);
-    } else {
-      if (currentContext != null) {
-        showConfirmDialogAction(
-          currentContext!,
-          AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
-              filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-          AppLocalizations.of(currentContext!).got_it,
-          title: AppLocalizations.of(currentContext!).maximum_files_size,
-          hasCancelButton: false,
-        );
-      }
-    }
+  void addAttachmentWhenDragFromOtherEmail(Attachment attachment) {
+    log('ComposerController::addAttachmentWhenDragFromOtherEmail: attachment = $attachment');
+    uploadController.validateTotalSizeAttachmentsBeforeUpload(
+      totalSizePreparedFiles: attachment.size?.value ?? 0,
+      callbackAction: () => uploadController.initializeUploadAttachments([attachment])
+    );
   }
 
   void _handleGetAllIdentitiesFailure(GetAllIdentitiesFailure failure) async {
