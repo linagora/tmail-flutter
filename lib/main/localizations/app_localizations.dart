@@ -3800,4 +3800,10 @@ class AppLocalizations {
       name: 'messageWarningDialogForForwardsToOtherDomains'
     );
   }
+
+  String get externalDomain {
+    return Intl.message(
+      'External domain',
+      name: 'externalDomain');
+  }
 }

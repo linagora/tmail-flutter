@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSelectRecipientCallbackAction = Function(RecipientForward recipientForward);
 typedef OnDeleteRecipientCallbackAction = Function(RecipientForward recipientForward);
@@ -19,11 +22,16 @@ class EmailForwardItemWidget extends StatelessWidget {
 
   final RecipientForward recipientForward;
   final SelectMode selectionMode;
+  final String internalDomain;
   final OnSelectRecipientCallbackAction? onSelectRecipientCallback;
   final OnDeleteRecipientCallbackAction? onDeleteRecipientCallback;
 
-  const EmailForwardItemWidget(this.recipientForward, {
+  final ImagePaths _imagePaths = Get.find<ImagePaths>();
+
+  EmailForwardItemWidget({
     Key? key,
+    required this.recipientForward,
+    required this.internalDomain,
     this.selectionMode = SelectMode.INACTIVE,
     this.onSelectRecipientCallback,
     this.onDeleteRecipientCallback,
@@ -31,8 +39,6 @@ class EmailForwardItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Material(
@@ -53,23 +59,51 @@ class EmailForwardItemWidget extends StatelessWidget {
                 recipientForward.selectMode == SelectMode.ACTIVE ? 12 : 0))
             ),
             child: Row(children: [
-              _buildAvatarIcon(imagePaths),
+              _buildAvatarIcon(_imagePaths),
               const SizedBox(width: 12),
               Expanded(child: Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    recipientForward.emailAddress.asString(),
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
-                    maxLines: 1,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black
+                  if (EmailUtils.isSameDomain(
+                    emailAddress: recipientForward.emailAddress.emailAddress,
+                    internalDomain: internalDomain))
+                    Text(
+                      recipientForward.emailAddress.asString(),
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      maxLines: 1,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black
+                      )
                     )
-                  ),
+                  else
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            recipientForward.emailAddress.asString(),
+                            overflow: CommonTextStyle.defaultTextOverFlow,
+                            softWrap: CommonTextStyle.defaultSoftWrap,
+                            maxLines: 1,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black
+                            )
+                          ),
+                        ),
+                        TMailButtonWidget.fromIcon(
+                          icon: _imagePaths.icInfoCircleOutline,
+                          iconColor: AppColor.colorQuotaError,
+                          iconSize: 20,
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.all(3),
+                          tooltipMessage: AppLocalizations.of(context).externalDomain,
+                        )
+                      ],
+                    ),
                   if (recipientForward.emailAddress.displayName.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
@@ -92,7 +126,7 @@ class EmailForwardItemWidget extends StatelessWidget {
                 buildIconWeb(
                   iconSize: 30,
                   splashRadius: 20,
-                  icon: SvgPicture.asset(imagePaths.icDeleteRecipient),
+                  icon: SvgPicture.asset(_imagePaths.icDeleteRecipient),
                   onTap: () => onDeleteRecipientCallback?.call(recipientForward)
                 )
             ]),

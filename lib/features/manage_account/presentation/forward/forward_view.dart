@@ -126,7 +126,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   Widget _buildAddRecipientsFormWidget(BuildContext context) {
     return AutocompleteContactTextFieldWithTags(
       listEmailAddress: controller.recipientController.listRecipients,
-      serverDomain: controller.accountDashBoardController.sessionCurrent?.serverDomain ?? '',
+      internalDomain: controller.accountDashBoardController.sessionCurrent?.internalDomain ?? '',
       controller: controller.recipientController.inputRecipientController,
       onSuggestionCallback: controller.recipientController.getAutoCompleteSuggestion,
       hasAddContactButton: true,

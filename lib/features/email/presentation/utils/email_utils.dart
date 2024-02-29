@@ -71,10 +71,10 @@ class EmailUtils {
 
   static bool isSameDomain({
     required String emailAddress,
-    required String serverDomain
+    required String internalDomain
   }) {
-    log('EmailUtils::isSameDomain: emailAddress = $emailAddress | serverDomain = $serverDomain');
+    log('EmailUtils::isSameDomain: emailAddress = $emailAddress | internalDomain = $internalDomain');
     return GetUtils.isEmail(emailAddress) &&
-      emailAddress.split('@').last.toLowerCase() == serverDomain.toLowerCase();
+      emailAddress.split('@').last.toLowerCase() == internalDomain.toLowerCase();
   }
 }

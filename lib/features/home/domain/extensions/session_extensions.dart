@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:core/presentation/extensions/uri_extension.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
@@ -46,12 +47,17 @@ extension SessionExtensions on Session {
     }
   }
 
-  String get serverDomain {
-    if (GetUtils.isEmail(username.value)) {
-      return username.value.split('@').last;
-    } else if (GetUtils.isEmail(personalAccount.name.value)) {
-      return personalAccount.name.value.split('@').last;
-    } else {
+  String get internalDomain {
+    try {
+      if (GetUtils.isEmail(username.value)) {
+        return username.value.split('@').last;
+      } else if (GetUtils.isEmail(personalAccount.name.value)) {
+        return personalAccount.name.value.split('@').last;
+      } else {
+        return '';
+      }
+    } catch (e) {
+      logError('SessionExtensions::internalDomain: Exception: $e');
       return '';
     }
   }
