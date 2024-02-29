@@ -79,6 +79,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -264,7 +265,7 @@ class ComposerController extends BaseController {
         success is TransformHtmlEmailContentSuccess) {
       emailContentsViewState.value = Right(success);
     } else if (success is LocalFilePickerSuccess) {
-      _pickFileSuccess(success);
+      _handlePickFileSuccess(success);
     } else if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
     } else if (success is GetEmailContentFromCacheSuccess) {
@@ -877,7 +878,7 @@ class ComposerController extends BaseController {
       return;
     }
 
-    if (!uploadController.hasEnoughMaxAttachmentSize()) {
+    if (uploadController.isExceededMaxSizeAttachmentsPerEmail()) {
       showConfirmDialogAction(
         context,
         AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
@@ -1072,29 +1073,21 @@ class ComposerController extends BaseController {
     }
   }
 
-  void _pickFileSuccess(LocalFilePickerSuccess success) {
-    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo(success.pickedFiles))) {
-      _uploadAttachmentsAction(success.pickedFiles);
-    } else {
-      if (currentContext != null) {
-        showConfirmDialogAction(
-            currentContext!,
-            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
-                filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-            AppLocalizations.of(currentContext!).got_it,
-            onConfirmAction: () => {isSendEmailLoading.value = false},
-            title: AppLocalizations.of(currentContext!).maximum_files_size,
-            hasCancelButton: false);
-      }
-    }
+  void _handlePickFileSuccess(LocalFilePickerSuccess success) {
+    uploadController.validateTotalSizeAttachmentsBeforeUpload(
+      listFileInfo: success.pickedFiles,
+      callbackAction: () => _uploadAttachmentsAction(success.pickedFiles)
+    );
   }
 
-  void _uploadAttachmentsAction(List<FileInfo> pickedFiles) async {
+  void _uploadAttachmentsAction(List<FileInfo> pickedFiles) {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
       final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
       uploadController.justUploadAttachmentsAction(pickedFiles, uploadUri);
+    } else {
+      log('ComposerController::_uploadAttachmentsAction: SESSION OR ACCOUNT_ID is NULL');
     }
   }
 
@@ -1303,7 +1296,7 @@ class ComposerController extends BaseController {
     }
     if (listFileAttachmentSharedMediaFile.isNotEmpty) {
       final listFile = covertListSharedMediaFileToFileInfo(listSharedMediaFile);
-      if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo(listFile))) {
+      if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: listFile.totalSize)) {
         _uploadAttachmentsAction(listFile);
       } else {
         if (currentContext != null) {
@@ -1778,7 +1771,7 @@ class ComposerController extends BaseController {
   }
 
   void _uploadInlineAttachmentsAction(FileInfo pickedFile, {bool fromFileShared = false}) async {
-    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo([pickedFile]))) {
+    if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: pickedFile.fileSize)) {
       final session = mailboxDashBoardController.sessionCurrent;
       final accountId = mailboxDashBoardController.accountId.value;
       if (session != null && accountId != null) {
@@ -1985,7 +1978,7 @@ class ComposerController extends BaseController {
   }
 
   void _addAttachmentFromDragAndDrop({required FileInfo fileInfo}) {
-    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: uploadController.getTotalSizeFromListFileInfo([fileInfo]))) {
+    if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: fileInfo.fileSize)) {
       _uploadAttachmentsAction([fileInfo]);
     } else {
       if (currentContext != null) {
@@ -2094,7 +2087,7 @@ class ComposerController extends BaseController {
 
   void addAttachmentFromDropZone(Attachment attachment) {
     log('ComposerController::addAttachmentFromDropZone: $attachment');
-    if (uploadController.hasEnoughMaxAttachmentSize(fileInfoTotalSize: attachment.size?.value)) {
+    if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: attachment.size?.value ?? 0)) {
       uploadController.initializeUploadAttachments([attachment]);
     } else {
       if (currentContext != null) {
@@ -2173,7 +2166,7 @@ class ComposerController extends BaseController {
     _closeComposerAction(result: draftArgs);
     _closeComposerButtonState = ButtonState.enabled;
   }
-  
+
   void _getAlwaysReadReceiptSetting() {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {

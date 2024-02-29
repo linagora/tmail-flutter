@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-04-05T12:00:06.899366",
+  "@@last_modified": "2024-02-29T16:08:18.479839",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3746,6 +3746,18 @@
   },
   "zoomOut": "Zoom Out",
   "@zoomOut": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogWhenExceedMaximumFileSizeComposer": "Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.",
+  "@messageWarningDialogWhenExceedMaximumFileSizeComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "continueAction": "Continue",
+  "@continueAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -6,7 +6,7 @@ import 'package:model/extensions/attachment_extension.dart';
 
 extension ListAttachmentExtension on List<Attachment> {
 
-  num totalSize() {
+  num get totalSize {
     if (isNotEmpty) {
       final currentListSize = map((attachment) => attachment.size?.value ?? 0).toList();
       final totalSize = currentListSize.reduce((sum, size) => sum + size);
