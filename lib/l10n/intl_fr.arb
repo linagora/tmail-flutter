@@ -3815,5 +3815,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageWarningDialogForForwardsToOtherDomains": "Vous redirigez vos e-mails vers un autre domaine. Cela pourrait constituer une menace pour la sécurité ou être considéré comme une extraction illégale de données.",
+  "@messageWarningDialogForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "externalDomain": "Domaine externe",
+  "@externalDomain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
