@@ -1,12 +1,15 @@
 
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
@@ -17,6 +20,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/upload_attachment_extension.dart';
@@ -25,6 +29,7 @@ import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_sta
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class UploadController extends BaseController {
 
@@ -268,31 +273,96 @@ class UploadController extends BaseController {
     }
   }
 
-  bool hasEnoughMaxAttachmentSize({num? fileInfoTotalSize}) {
-    final currentTotalAttachmentsSize = attachmentsUploaded.totalSize();
-    final totalInlineAttachmentsSize = inlineAttachmentsUploaded.totalSize();
-    log('UploadController::_validateAttachmentsSize(): $currentTotalAttachmentsSize');
-    log('UploadController::_validateAttachmentsSize(): totalInlineAttachmentsSize: $totalInlineAttachmentsSize');
-    num uploadedTotalSize = fileInfoTotalSize ?? 0;
-
-    final totalSizeReadyToUpload = currentTotalAttachmentsSize +
-        totalInlineAttachmentsSize +
-        uploadedTotalSize;
-    log('UploadController::_validateAttachmentsSize(): totalSizeReadyToUpload: $totalSizeReadyToUpload');
-
+  bool isExceededMaxSizeAttachmentsPerEmail({num totalSizePreparedFiles = 0}) {
+    final currentTotalSize = attachmentsUploaded.totalSize + inlineAttachmentsUploaded.totalSize + totalSizePreparedFiles;
     final maxSizeAttachmentsPerEmail = _mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value;
+    log('UploadController::isExceededMaxSizeAttachmentsPerEmail(): currentTotalSize = $currentTotalSize | maxSizeAttachmentsPerEmail = $maxSizeAttachmentsPerEmail');
     if (maxSizeAttachmentsPerEmail != null) {
-      return totalSizeReadyToUpload <= maxSizeAttachmentsPerEmail;
+      return currentTotalSize > maxSizeAttachmentsPerEmail;
     } else {
       return false;
     }
   }
 
-  num getTotalSizeFromListFileInfo(List<FileInfo> listFiles) {
-    final uploadedListSize = listFiles.map((file) => file.fileSize).toList();
-    num totalSize = uploadedListSize.reduce((sum, size) => sum + size);
-    log('UploadController::_getTotalSizeFromListFileInfo():totalSize: $totalSize');
-    return totalSize;
+  bool isExceededMaxSizeFilesAttachedInComposer({num totalSizePreparedFiles = 0}) {
+    final currentTotalSizeAttachments = attachmentsUploaded.totalSize + totalSizePreparedFiles;
+    const maximumBytesSizeFileAttachedInComposer = AppConfig.maximumMegabytesSizeFileAttachedInComposer * 1024 * 1024;
+    log('UploadController::isExceededMaxSizeFilesAttachedInComposer(): currentTotalSizeAttachments = $currentTotalSizeAttachments | maximumBytesSizeFileAttachedInComposer = $maximumBytesSizeFileAttachedInComposer');
+    return currentTotalSizeAttachments > maximumBytesSizeFileAttachedInComposer;
+  }
+
+  void validateTotalSizeAttachmentsBeforeUpload({
+    required List<FileInfo> listFileInfo,
+    VoidCallback? callbackAction
+  }) {
+    final totalSizeListFiles = listFileInfo.totalSize;
+    log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: totalSizeListFiles = $totalSizeListFiles');
+    if (isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: totalSizeListFiles)) {
+      if (currentContext == null) {
+        log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: CONTEXT IS NULL');
+        return;
+      }
+
+      _showConfirmDialogWhenExceededMaxSizeAttachmentsPerEmail(context: currentContext!);
+      return;
+    }
+
+    if (isExceededMaxSizeFilesAttachedInComposer(totalSizePreparedFiles: totalSizeListFiles)) {
+      if (currentContext == null) {
+        log('UploadController::_validateTotalSizeAttachmentsBeforeUpload: CONTEXT IS NULL');
+        return;
+      }
+
+      _showWarningDialogWhenExceededMaxSizeFilesAttachedInComposer(
+        context: currentContext!,
+        confirmAction: callbackAction
+      );
+      return;
+    }
+
+    callbackAction?.call();
+  }
+
+  void _showConfirmDialogWhenExceededMaxSizeAttachmentsPerEmail({required BuildContext context}) {
+    final maxSizeAttachmentsPerEmail = filesize(_mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0);
+    showConfirmDialogAction(
+      context,
+      AppLocalizations.of(context).message_dialog_upload_attachments_exceeds_maximum_size(maxSizeAttachmentsPerEmail),
+      AppLocalizations.of(context).got_it,
+      title: AppLocalizations.of(context).maximum_files_size,
+      hasCancelButton: false);
+  }
+
+  void _showWarningDialogWhenExceededMaxSizeFilesAttachedInComposer({
+    required BuildContext context,
+    VoidCallback? confirmAction,
+  }) {
+    showConfirmDialogAction(
+      context,
+      title: '',
+      AppLocalizations.of(context).messageWarningDialogWhenExceedMaximumFileSizeComposer,
+      AppLocalizations.of(context).continueAction,
+      cancelTitle: AppLocalizations.of(context).cancel,
+      alignCenter: true,
+      onConfirmAction: confirmAction,
+      icon: SvgPicture.asset(
+        imagePaths.icQuotasWarning,
+        width: 40,
+        height: 40,
+        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
+      ),
+      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 14,
+        color: Colors.black
+      ),
+      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.white
+      ),
+      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      ));
   }
 
   bool get allUploadAttachmentsCompleted {

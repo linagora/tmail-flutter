@@ -64,7 +64,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                       child: Text(
                         AppLocalizations.of(context).titleHeaderAttachment(
                           attachments.length,
-                          filesize(attachments.totalSize(), 1)
+                          filesize(attachments.totalSize, 1)
                         ),
                         style: const TextStyle(
                           fontSize: EmailAttachmentsStyles.headerTextSize,

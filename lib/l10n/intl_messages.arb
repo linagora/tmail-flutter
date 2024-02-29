@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-15T11:06:05.333495",
+  "@@last_modified": "2024-02-29T16:08:18.479839",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3680,6 +3680,18 @@
   },
   "emailReadReceiptsToggleDescription": "Always request read receipts with outgoing messages",
   "@emailReadReceiptsToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogWhenExceedMaximumFileSizeComposer": "Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.",
+  "@messageWarningDialogWhenExceedMaximumFileSizeComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "continueAction": "Continue",
+  "@continueAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
