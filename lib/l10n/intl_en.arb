@@ -3244,5 +3244,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageWarningDialogWhenExceedMaximumFileSizeComposer": "Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.",
+  "@messageWarningDialogWhenExceedMaximumFileSizeComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "continueAction": "Continue",
+  "@continueAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
