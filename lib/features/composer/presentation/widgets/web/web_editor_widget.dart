@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
@@ -113,6 +114,12 @@ class _WebEditorState extends State<WebEditorWidget> {
             initialText: widget.content,
             customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
             spellCheck: true,
+            webInitialScripts: UnmodifiableListView([
+              WebScript(
+                name: HtmlUtils.lineHeight100Percent.name,
+                script: HtmlUtils.lineHeight100Percent.script,
+              )
+            ])
           ),
           htmlToolbarOptions: const HtmlToolbarOptions(
             toolbarType: ToolbarType.hide,
@@ -135,6 +142,9 @@ class _WebEditorState extends State<WebEditorWidget> {
             onImageUpload: widget.onImageUploadSuccessAction,
             onImageUploadError: widget.onImageUploadFailureAction,
             onTextFontSizeChanged: widget.onEditorTextSizeChanged,
+            onPaste: () => _editorController.evaluateJavascriptWeb(
+              HtmlUtils.lineHeight100Percent.name
+            ),
           ),
         );
       }
