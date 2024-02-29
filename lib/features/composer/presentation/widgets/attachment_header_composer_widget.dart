@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:filesize/filesize.dart';
@@ -7,6 +8,7 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/attachment_h
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnToggleExpandAttachmentViewAction = Function(bool isCollapsed);
 
@@ -66,13 +68,26 @@ class AttachmentHeaderComposerWidget extends StatelessWidget {
               ),
               padding: AttachmentHeaderComposerWidgetStyle.sizeLabelPadding,
               child: Text(
-                filesize(listFileUploaded.totalSize, 0),
+                filesize(listFileUploaded.totalSize),
                 style: AttachmentHeaderComposerWidgetStyle.sizeLabelTextSize,
               ),
-            )
+            ),
+            if (_isExceedMaximumSizeFileAttachedInComposer)
+              TMailButtonWidget.fromIcon(
+                icon: _imagePaths.icQuotasWarning,
+                iconSize: 20,
+                margin: const EdgeInsetsDirectional.only(start: 4),
+                padding: const EdgeInsets.all(3),
+                iconColor: AppColor.colorBackgroundQuotasWarning,
+                tooltipMessage: AppLocalizations.of(context).messageWarningDialogWhenExceedMaximumFileSizeComposer,
+                backgroundColor: Colors.transparent,
+              )
           ],
         ),
       ),
     );
   }
+
+  bool get _isExceedMaximumSizeFileAttachedInComposer =>
+    listFileUploaded.totalSize > AppConfig.maximumMegabytesSizeFileAttachedInComposer * 1024 * 1024;
 }
