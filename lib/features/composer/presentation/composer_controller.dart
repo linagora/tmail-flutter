@@ -1288,21 +1288,11 @@ class ComposerController extends BaseController {
       }
     }
     if (listFileAttachmentSharedMediaFile.isNotEmpty) {
-      final listFile = covertListSharedMediaFileToFileInfo(listSharedMediaFile);
-      if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: listFile.totalSize)) {
-        _uploadAttachmentsAction(listFile);
-      } else {
-        if (currentContext != null) {
-          showConfirmDialogAction(
-            currentContext!,
-            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
-              filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-            AppLocalizations.of(currentContext!).got_it,
-            title: AppLocalizations.of(currentContext!).maximum_files_size,
-            hasCancelButton: false,
-          );
-        }
-      }
+      final listFileInfo = covertListSharedMediaFileToFileInfo(listSharedMediaFile);
+      uploadController.validateTotalSizeAttachmentsBeforeUpload(
+        listFileInfo: listFileInfo,
+        callbackAction: () => _uploadAttachmentsAction(listFileInfo)
+      );
     }
   }
 
