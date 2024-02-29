@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/email_forward_item_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
@@ -34,10 +35,10 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
                 primary: false,
                 itemCount: controller.listRecipientForward.length,
                 padding: EdgeInsets.zero,
-                itemExtent: 75,
                 itemBuilder: (context, index) {
                   return EmailForwardItemWidget(
-                    controller.listRecipientForward[index],
+                    recipientForward: controller.listRecipientForward[index],
+                    internalDomain: controller.accountDashBoardController.sessionCurrent?.internalDomain ?? '',
                     selectionMode: controller.selectionMode.value,
                     onSelectRecipientCallback: controller.selectRecipientForward,
                     onDeleteRecipientCallback: (recipientForward) {

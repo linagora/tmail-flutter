@@ -35,12 +35,12 @@ class AutocompleteContactTextFieldWithTags extends StatefulWidget {
   final OnSuggestionContactCallbackAction? onSuggestionCallback;
   final OnAddListContactCallbackAction? onAddContactCallback;
   final OnExceptionAddListContactCallbackAction? onExceptionCallback;
-  final String serverDomain;
+  final String internalDomain;
 
   const AutocompleteContactTextFieldWithTags({
     Key? key,
     required this.listEmailAddress,
-    required this.serverDomain,
+    required this.internalDomain,
     this.controller,
     this.hasAddContactButton = false,
     this.onSuggestionCallback,
@@ -336,7 +336,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
 
     final validateSameDomain = EmailUtils.isSameDomain(
       emailAddress: emailAddress.emailAddress,
-      serverDomain: widget.serverDomain
+      internalDomain: widget.internalDomain
     );
 
     if (!validateSameDomain) {

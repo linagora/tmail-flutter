@@ -177,10 +177,10 @@ class ForwardController extends BaseController {
 
   bool get _isExistRecipientSameServerDomain =>
     listRecipientForward.any((recipient) {
-      final serverDomain = accountDashBoardController.sessionCurrent?.serverDomain ?? '';
+      final internalDomain = accountDashBoardController.sessionCurrent?.internalDomain ?? '';
       final isSameDomain = EmailUtils.isSameDomain(
         emailAddress: recipient.emailAddress.emailAddress,
-        serverDomain: serverDomain
+        internalDomain: internalDomain
       );
       return !isSameDomain;
     });

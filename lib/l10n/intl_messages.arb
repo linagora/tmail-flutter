@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-02-29T10:18:57.883345",
+  "@@last_modified": "2024-02-29T11:49:16.217272",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3644,6 +3644,12 @@
   },
   "messageWarningDialogForForwardsToOtherDomains": "You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",
   "@messageWarningDialogForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "externalDomain": "External domain",
+  "@externalDomain": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
