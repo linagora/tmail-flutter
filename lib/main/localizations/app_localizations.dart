@@ -3844,4 +3844,18 @@ class AppLocalizations {
       name: 'selectAllMessagesOfThisPage',
     );
   }
+
+  String get messageWarningDialogWhenExceedMaximumFileSizeComposer {
+    return Intl.message(
+      'Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.',
+      name: 'messageWarningDialogWhenExceedMaximumFileSizeComposer',
+    );
+  }
+
+  String get continueAction {
+    return Intl.message(
+      'Continue',
+      name: 'continueAction',
+    );
+  }
 }
