@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/autocomplete_contact_text_field_with_tags.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
@@ -124,7 +125,8 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
 
   Widget _buildAddRecipientsFormWidget(BuildContext context) {
     return AutocompleteContactTextFieldWithTags(
-      controller.recipientController.listRecipients,
+      listEmailAddress: controller.recipientController.listRecipients,
+      serverDomain: controller.accountDashBoardController.sessionCurrent?.serverDomain ?? '',
       controller: controller.recipientController.inputRecipientController,
       onSuggestionCallback: controller.recipientController.getAutoCompleteSuggestion,
       hasAddContactButton: true,

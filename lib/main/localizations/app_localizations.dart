@@ -3787,4 +3787,17 @@ class AppLocalizations {
       name: 'loadMore',
     );
   }
+
+  String get doYouWantToProceed {
+    return Intl.message(
+      'Do you want to proceed?',
+      name: 'doYouWantToProceed');
+  }
+
+  String get messageWarningDialogForForwardsToOtherDomains {
+    return Intl.message(
+      'You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.',
+      name: 'messageWarningDialogForForwardsToOtherDomains'
+    );
+  }
 }
