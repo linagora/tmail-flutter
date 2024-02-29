@@ -8,14 +8,17 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_icon_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_input_tag_item.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -32,21 +35,24 @@ class AutocompleteContactTextFieldWithTags extends StatefulWidget {
   final OnSuggestionContactCallbackAction? onSuggestionCallback;
   final OnAddListContactCallbackAction? onAddContactCallback;
   final OnExceptionAddListContactCallbackAction? onExceptionCallback;
+  final String serverDomain;
 
-  const AutocompleteContactTextFieldWithTags(this.listEmailAddress, {
+  const AutocompleteContactTextFieldWithTags({
     Key? key,
+    required this.listEmailAddress,
+    required this.serverDomain,
     this.controller,
     this.hasAddContactButton = false,
     this.onSuggestionCallback,
     this.onAddContactCallback,
-    this.onExceptionCallback
+    this.onExceptionCallback,
   }) : super(key: key);
 
   @override
   State<AutocompleteContactTextFieldWithTags> createState() => _AutocompleteContactTextFieldWithTagsState();
 }
 
-class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteContactTextFieldWithTags> {
+class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteContactTextFieldWithTags> with MessageDialogActionMixin {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -89,7 +95,6 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       autofocus: false,
       minTextFieldWidth: 20,
       debounceDuration: const Duration(milliseconds: 150),
-      resetTextOnSubmitted: true,
       autoScrollToInput: false,
       suggestionsBoxBackgroundColor: Colors.white,
       suggestionsBoxRadius: 16,
@@ -106,16 +111,14 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
           });
         }
       },
-      onSelectOptionAction: (item) {
-        if (!_isDuplicatedRecipient(item.emailAddress.emailAddress)) {
-          setState(() => listEmailAddress.add(item.emailAddress));
-        }
-      },
-      onSubmitted: (value) {
-        if (!_isDuplicatedRecipient(value)) {
-          setState(() => listEmailAddress.add(EmailAddress(null, value)));
-        }
-      },
+      onSelectOptionAction: (item) => _addEmailAddressToInputFieldAction(
+        context: context,
+        emailAddress: item.emailAddress
+      ),
+      onSubmitted: (value) => _addEmailAddressToInputFieldAction(
+        context: context,
+        emailAddress: EmailAddress(null, value)
+      ),
       textStyle: const TextStyle(
         color: Colors.black,
         fontSize: 16,
@@ -138,9 +141,10 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         }
       ),
       onTagChanged: (value) {
-        if (!_isDuplicatedRecipient(value)) {
-          setState(() => listEmailAddress.add(EmailAddress(null, value)));
-        }
+        _addEmailAddressToInputFieldAction(
+          context: context,
+          emailAddress: EmailAddress(null, value)
+        );
         _gapBetweenTagChangedAndFindSuggestion = Timer(
           const Duration(seconds: 1),
           _handleGapBetweenTagChangedAndFindSuggestion
@@ -155,7 +159,9 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
             shapeBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(12))),
             selectedContactCallbackAction: (contact) {
-              setState(() => listEmailAddress.add(contact));
+              _addEmailAddressToInputFieldAction(
+                context: context,
+                emailAddress: contact);
               tagEditorState.closeSuggestionBox();
               tagEditorState.resetTextField();
             },
@@ -193,6 +199,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   }
 
   bool _isDuplicatedRecipient(String inputEmail) {
+    log('_AutocompleteContactTextFieldWithTagsState::_isDuplicatedRecipient: inputEmail = $inputEmail');
     if (inputEmail.isEmpty) {
       return false;
     }
@@ -281,9 +288,10 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     _hideKeyboardForMobile();
     if (widget.controller?.text.isNotEmpty == true) {
       if (!_isDuplicatedRecipient(widget.controller?.text ?? '')) {
-        setState(() {
-          listEmailAddress.add(EmailAddress(null, widget.controller?.text));
-        });
+        _addEmailAddressToInputFieldAction(
+          context: context,
+          emailAddress: EmailAddress(null, widget.controller?.text)
+        );
         _closeSuggestionBox();
       } else {
         _closeSuggestionBox();
@@ -316,5 +324,74 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     if (!_responsiveUtils.isDesktop(context)) {
       FocusScope.of(context).unfocus();
     }
+  }
+
+  void _addEmailAddressToInputFieldAction({
+    required BuildContext context,
+    required EmailAddress emailAddress
+  }) {
+    if (_isDuplicatedRecipient(emailAddress.emailAddress)) {
+      return;
+    }
+
+    final validateSameDomain = EmailUtils.isSameDomain(
+      emailAddress: emailAddress.emailAddress,
+      serverDomain: widget.serverDomain
+    );
+
+    if (!validateSameDomain) {
+      _showWarningDialogWithExternalDomain(
+        context: context,
+        confirmAction: () {
+          keyToEmailTagEditor.currentState?.resetTextField();
+          setState(() => listEmailAddress.add(emailAddress));
+        },
+        cancelAction: () {
+          keyToEmailTagEditor.currentState?.resetTextField();
+        }
+      );
+    } else {
+      keyToEmailTagEditor.currentState?.resetTextField();
+      setState(() => listEmailAddress.add(emailAddress));
+    }
+  }
+
+  void _showWarningDialogWithExternalDomain({
+    required BuildContext context,
+    VoidCallback? confirmAction,
+    VoidCallback? cancelAction
+  }) async {
+    await showConfirmDialogAction(
+      context,
+      title: AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains,
+      AppLocalizations.of(context).doYouWantToProceed,
+      AppLocalizations.of(context).yes,
+      cancelTitle: AppLocalizations.of(context).no,
+      alignCenter: true,
+      onConfirmAction: confirmAction,
+      onCancelAction: cancelAction,
+      icon: SvgPicture.asset(
+        _imagePaths.icQuotasWarning,
+        width: 40,
+        height: 40,
+        colorFilter: AppColor.colorQuotaError.asFilter(),
+      ),
+      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      ),
+      titleStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+        fontSize: 14,
+        color: AppColor.colorMessageConfirmDialog
+      ),
+      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.white
+      ),
+      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      ),
+    );
   }
 }
