@@ -1,11 +1,11 @@
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
@@ -51,8 +51,9 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upload_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_arguments.dart';
@@ -69,6 +70,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
@@ -79,18 +81,21 @@ import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
+import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:universal_html/html.dart' as html;
 
-class ComposerController extends BaseController {
+class ComposerController extends BaseController with DragDropFileMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final richTextMobileTabletController = Get.find<RichTextMobileTabletController>();
@@ -116,6 +121,7 @@ class ComposerController extends BaseController {
   final listFromIdentities = RxList<Identity>();
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
+  final LocalImagePickerInteractor _localImagePickerInteractor;
   final DeviceInfoPlugin _deviceInfoPlugin;
   final GetEmailContentInteractor _getEmailContentInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
@@ -155,6 +161,12 @@ class ComposerController extends BaseController {
   FocusNode? bccAddressFocusNode;
   FocusNode? searchIdentitiesFocusNode;
 
+  StreamSubscription<html.Event>? _subscriptionOnBeforeUnload;
+  StreamSubscription<html.Event>? _subscriptionOnDragEnter;
+  StreamSubscription<html.Event>? _subscriptionOnDragOver;
+  StreamSubscription<html.Event>? _subscriptionOnDragLeave;
+  StreamSubscription<html.Event>? _subscriptionOnDrop;
+
   final RichTextController keyboardRichTextController = RichTextController();
 
   final ScrollController scrollController = ScrollController();
@@ -178,6 +190,7 @@ class ComposerController extends BaseController {
   ComposerController(
     this._deviceInfoPlugin,
     this._localFilePickerInteractor,
+    this._localImagePickerInteractor,
     this._getEmailContentInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
@@ -201,7 +214,7 @@ class ComposerController extends BaseController {
       });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _listenBrowserTabRefresh();
+        _listenBrowserEventAction();
       });
     }
     _getAlwaysReadReceiptSetting();
@@ -225,6 +238,11 @@ class ComposerController extends BaseController {
     emailContentsViewState.value = Right(UIClosedState());
     identitySelected.value = null;
     listFromIdentities.clear();
+    _subscriptionOnBeforeUnload?.cancel();
+    _subscriptionOnDragEnter?.cancel();
+    _subscriptionOnDragOver?.cancel();
+    _subscriptionOnDragLeave?.cancel();
+    _subscriptionOnDrop?.cancel();
     if (PlatformInfo.isMobile) {
       FkUserAgent.release();
     }
@@ -267,6 +285,8 @@ class ComposerController extends BaseController {
       emailContentsViewState.value = Right(success);
     } else if (success is LocalFilePickerSuccess) {
       _handlePickFileSuccess(success);
+    } else if (success is LocalImagePickerSuccess) {
+      _handlePickImageSuccess(success);
     } else if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
     } else if (success is GetEmailContentFromCacheSuccess) {
@@ -274,23 +294,11 @@ class ComposerController extends BaseController {
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is DownloadImageAsBase64Success) {
+      final inlineImage = InlineImage(fileInfo: success.fileInfo, base64Uri: success.base64Uri);
       if (PlatformInfo.isWeb) {
-        richTextWebController.insertImage(
-          InlineImage(
-            ImageSource.local,
-            fileInfo: success.fileInfo,
-            cid: success.cid,
-            base64Uri: success.base64Uri));
+        richTextWebController.insertImage(inlineImage);
       } else {
-        richTextMobileTabletController.insertImage(
-          InlineImage(
-            ImageSource.local,
-            fileInfo: success.fileInfo,
-            cid: success.cid,
-            base64Uri: success.base64Uri
-          ),
-          fromFileShare: success.fromFileShared
-        );
+        richTextMobileTabletController.insertImage(inlineImage);
       }
       maxWithEditor = null;
     } else if (success is GetAlwaysReadReceiptSettingSuccess) {
@@ -301,8 +309,10 @@ class ComposerController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
-    if (failure is LocalFilePickerFailure || failure is LocalFilePickerCancel) {
-      _pickFileFailure(failure);
+    if (failure is LocalFilePickerFailure) {
+      _handlePickFileFailure(failure);
+    } else if (failure is LocalImagePickerFailure) {
+      _handlePickImageFailure(failure);
     } else if (failure is GetEmailContentFailure ||
         failure is TransformHtmlEmailContentFailure) {
       emailContentsViewState.value = Left(failure);
@@ -358,14 +368,31 @@ class ComposerController extends BaseController {
       });
   }
 
-  void _listenBrowserTabRefresh() {
-    html.window.onBeforeUnload.listen((event) async {
+  void _listenBrowserEventAction() {
+    log('ComposerController::_listenBrowserEventAction:');
+    _subscriptionOnBeforeUnload = html.window.onBeforeUnload.listen((event) async {
       final userProfile = mailboxDashBoardController.userProfile.value;
       _removeComposerCacheOnWebInteractor.execute();
       if (userProfile != null) {
         final draftEmail = await _generateEmail(currentContext!, userProfile);
         _saveComposerCacheOnWebInteractor.execute(draftEmail);
       }
+    });
+
+    _subscriptionOnDragEnter = html.window.onDragEnter.listen((event) {
+      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+    });
+
+    _subscriptionOnDragOver = html.window.onDragOver.listen((event) {
+      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+    });
+
+    _subscriptionOnDragLeave = html.window.onDragLeave.listen((event) {
+      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+    });
+
+    _subscriptionOnDrop = html.window.onDrop.listen((event) {
+      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
     });
   }
 
@@ -1064,29 +1091,45 @@ class ComposerController extends BaseController {
     consumeState(_localFilePickerInteractor.execute(fileType: fileType));
   }
 
-  void _pickFileFailure(Failure failure) {
-    if (failure is LocalFilePickerFailure) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments);
-      }
+  void _handlePickFileFailure(LocalFilePickerFailure failure) {
+    if (currentOverlayContext != null && currentContext != null && failure.exception is! PickFileCanceledException) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).thisFileCannotBePicked);
+    }
+  }
+
+  void _handlePickImageFailure(LocalImagePickerFailure failure) {
+    if (currentOverlayContext != null && currentContext != null && failure.exception is! PickFileCanceledException) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).cannotSelectThisImage);
     }
   }
 
   void _handlePickFileSuccess(LocalFilePickerSuccess success) {
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
       totalSizePreparedFiles: success.pickedFiles.totalSize,
-      callbackAction: () => _uploadAttachmentsAction(success.pickedFiles)
+      onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: success.pickedFiles)
     );
   }
 
-  void _uploadAttachmentsAction(List<FileInfo> pickedFiles) {
+  void _handlePickImageSuccess(LocalImagePickerSuccess success) {
+    uploadController.validateTotalSizeInlineAttachmentsBeforeUpload(
+      totalSizePreparedFiles: success.fileInfo.fileSize,
+      onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: [success.fileInfo.withInline()])
+    );
+  }
+
+  void _uploadAttachmentsAction({required List<FileInfo> pickedFiles}) {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
       final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
-      uploadController.justUploadAttachmentsAction(pickedFiles, uploadUri);
+      uploadController.justUploadAttachmentsAction(
+        uploadFiles: pickedFiles,
+        uploadUri: uploadUri,
+      );
     } else {
       log('ComposerController::_uploadAttachmentsAction: SESSION OR ACCOUNT_ID is NULL');
     }
@@ -1237,71 +1280,17 @@ class ComposerController extends BaseController {
     );
   }
 
-  File _covertSharedMediaFileToFile(SharedMediaFile sharedMediaFile) {
-    return File(
-      Platform.isIOS
-          ? sharedMediaFile.type == SharedMediaType.FILE
-          ? sharedMediaFile.path.toString().replaceAll('file:/', '').replaceAll('%20', ' ')
-          : sharedMediaFile.path.toString().replaceAll('%20', ' ')
-          : sharedMediaFile.path,
-    );
-  }
-
-  FileInfo _covertFileToFileInfo(File file) {
-    return FileInfo(
-      file.path.split('/').last,
-      file.path,
-      file.existsSync() ? file.lengthSync() : 0,
-    );
-  }
-
-  List<InlineImage> covertListSharedMediaFileToInlineImage(List<SharedMediaFile> value) {
-    List<File> newFiles = List.empty(growable: true);
-    if (value.isNotEmpty) {
-      for (var element in value) {
-        newFiles.add(_covertSharedMediaFileToFile(element));
-      }
-    }
-
-    final List<InlineImage> listInlineImage = newFiles.map(
-            (e) => InlineImage(
-              ImageSource.local,
-              fileInfo: _covertFileToFileInfo(e),
-            )
-    ).toList();
-    return listInlineImage;
-  }
-
-  List<FileInfo> covertListSharedMediaFileToFileInfo(List<SharedMediaFile> value) {
-    List<File> newFiles = List.empty(growable: true);
-    if (value.isNotEmpty) {
-      for (var element in value) {
-        newFiles.add(_covertSharedMediaFileToFile(element));
-      }
-    }
-
-    final List<FileInfo> listFileInfo = newFiles.map(
-            (e) => _covertFileToFileInfo(e),
-    ).toList();
-    return listFileInfo;
-  }
-
   void _addAttachmentFromFileShare(List<SharedMediaFile> listSharedMediaFile) {
-    final listImageSharedMediaFile = listSharedMediaFile.where((element) => element.type == SharedMediaType.IMAGE);
-    final listFileAttachmentSharedMediaFile = listSharedMediaFile.where((element) => element.type != SharedMediaType.IMAGE);
-    if (listImageSharedMediaFile.isNotEmpty) {
-      final listInlineImage = covertListSharedMediaFileToInlineImage(listSharedMediaFile);
-      for (var e in listInlineImage) {
-        _uploadInlineAttachmentsAction(e.fileInfo!, fromFileShared: true);
-      }
-    }
-    if (listFileAttachmentSharedMediaFile.isNotEmpty) {
-      final listFileInfo = covertListSharedMediaFileToFileInfo(listSharedMediaFile);
-      uploadController.validateTotalSizeAttachmentsBeforeUpload(
-        totalSizePreparedFiles: listFileInfo.totalSize,
-        callbackAction: () => _uploadAttachmentsAction(listFileInfo)
-      );
-    }
+    final listFileInfo = listSharedMediaFile.toListFileInfo(isShared: true);
+
+    final tupleListFileInfo = partition(listFileInfo, (fileInfo) => fileInfo.isInline == true);
+    final listAttachments = tupleListFileInfo.value2;
+
+    uploadController.validateTotalSizeAttachmentsBeforeUpload(
+      totalSizePreparedFiles: listFileInfo.totalSize,
+      totalSizePreparedFilesWithDispositionAttachment: listAttachments.totalSize,
+      onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: listFileInfo)
+    );
   }
 
   void _getEmailContentFromSendingEmail(SendingEmail sendingEmail) {
@@ -1712,80 +1701,8 @@ class ComposerController extends BaseController {
     } else {
       maxWithEditor = maxWith - 120;
     }
-    final inlineImage = await _selectFromFile();
-    if (inlineImage != null) {
-      if (PlatformInfo.isWeb) {
-        _insertImageOnWeb(inlineImage);
-      } else {
-        _insertImageOnMobileAndTablet(inlineImage);
-      }
-    } else {
-      if (context.mounted) {
-        appToast.showToastErrorMessage(context, AppLocalizations.of(context).cannotSelectThisImage);
-      }
-    }
-  }
 
-  Future<InlineImage?> _selectFromFile() async {
-    final filePickerResult = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      withData: PlatformInfo.isWeb
-    );
-    if (filePickerResult?.files.isNotEmpty == true) {
-      PlatformFile platformFile = filePickerResult!.files.first;
-      final fileSelected = FileInfo(
-        platformFile.name,
-        PlatformInfo.isWeb ? '' : platformFile.path ?? '',
-        platformFile.size,
-        bytes: PlatformInfo.isWeb ? platformFile.bytes : null,
-      );
-      return InlineImage(ImageSource.local, fileInfo: fileSelected);
-    }
-
-    return null;
-  }
-
-  void _insertImageOnWeb(InlineImage inlineImage) {
-    if (inlineImage.source == ImageSource.local) {
-      _uploadInlineAttachmentsAction(inlineImage.fileInfo!);
-    } else {
-      richTextWebController.insertImage(inlineImage);
-    }
-  }
-
-  void _insertImageOnMobileAndTablet(InlineImage inlineImage) {
-    if (inlineImage.source == ImageSource.local) {
-      _uploadInlineAttachmentsAction(inlineImage.fileInfo!);
-    } else {
-      richTextMobileTabletController.insertImage(inlineImage);
-    }
-  }
-
-  void _uploadInlineAttachmentsAction(FileInfo pickedFile, {bool fromFileShared = false}) async {
-    if (!uploadController.isExceededMaxSizeAttachmentsPerEmail(totalSizePreparedFiles: pickedFile.fileSize)) {
-      final session = mailboxDashBoardController.sessionCurrent;
-      final accountId = mailboxDashBoardController.accountId.value;
-      if (session != null && accountId != null) {
-        final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
-        uploadController.uploadFileAction(
-          pickedFile,
-          uploadUri,
-          isInline: true,
-          fromFileShared: fromFileShared
-        );
-      }
-    } else {
-      if (currentContext != null) {
-        showConfirmDialogAction(
-            currentContext!,
-            AppLocalizations.of(currentContext!).message_dialog_upload_attachments_exceeds_maximum_size(
-                filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
-            AppLocalizations.of(currentContext!).got_it,
-            onConfirmAction: () => {isSendEmailLoading.value = false},
-            title: AppLocalizations.of(currentContext!).maximum_files_size,
-            hasCancelButton: false);
-      }
-    }
+    consumeState(_localImagePickerInteractor.execute());
   }
 
   void _handleUploadInlineSuccess(SuccessAttachmentUploadState uploadState) {
@@ -1802,7 +1719,6 @@ class ComposerController extends BaseController {
         uploadState.attachment.cid!,
         uploadState.fileInfo,
         maxWidth: maxWithEditor,
-        fromFileShared: uploadState.fromFileShared,
       ));
     }
   }
@@ -1896,6 +1812,7 @@ class ComposerController extends BaseController {
     log('ComposerController::handleInitHtmlEditorWeb:');
     _isEmailBodyLoaded = true;
     richTextWebController.editorController.setFullScreen();
+    richTextWebController.editorController.setOnDragDropEvent();
     onChangeTextEditorWeb(initContent);
     richTextWebController.setEnableCodeView();
     if (identitySelected.value == null) {
@@ -1921,10 +1838,25 @@ class ComposerController extends BaseController {
 
   void handleImageUploadSuccess (
     BuildContext context,
-    web_html_editor.FileUpload fileUpload
+    List<web_html_editor.FileUpload> listFileUpload
   ) async {
-    log('ComposerController::handleImageUploadSuccess:NAME: ${fileUpload.name} | TYPE: ${fileUpload.type} | SIZE: ${fileUpload.size}');
-    if (fileUpload.base64 == null) {
+    log('ComposerController::handleImageUploadSuccess: COUNT_FILE_UPLOADED = ${listFileUpload.length}');
+    List<FileInfo> listFileInfo = [];
+
+    await Future.forEach(listFileUpload, (fileUpload) async {
+      if (fileUpload.base64?.isNotEmpty == true) {
+        final fileInfo = await fileUpload.toFileInfo();
+        if (fileInfo != null) {
+          if (fileInfo.mimeType.startsWith(MediaTypeExtension.imageType) == true) {
+            listFileInfo.add(fileInfo.withInline());
+          } else {
+            listFileInfo.add(fileInfo);
+          }
+        }
+      }
+    });
+
+    if (listFileInfo.isEmpty && context.mounted) {
       appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).can_not_upload_this_file_as_attachments
@@ -1932,46 +1864,27 @@ class ComposerController extends BaseController {
       return;
     }
 
-    if (fileUpload.type?.startsWith(MediaTypeExtension.imageType) == true) {
-      final fileInfo = await fileUpload.toFileInfo();
-      if (fileInfo != null) {
-        _uploadInlineAttachmentsAction(fileInfo);
-      } else if (context.mounted) {
-        appToast.showToastErrorMessage(
-          context,
-          AppLocalizations.of(context).can_not_upload_this_file_as_attachments
-        );
-      }
-    } else {
-      final fileInfo = await fileUpload.toFileInfo();
-      if (fileInfo != null) {
-        _addAttachmentFromDragAndDrop(fileInfo: fileInfo);
-      } else if (context.mounted) {
-        appToast.showToastErrorMessage(
-          context,
-          AppLocalizations.of(context).can_not_upload_this_file_as_attachments
-        );
-      }
-    }
+    final listAttachments = listFileInfo
+      .where((fileInfo) => fileInfo.isInline != true)
+      .toList();
+
+    uploadController.validateTotalSizeAttachmentsBeforeUpload(
+      totalSizePreparedFiles: listFileInfo.totalSize,
+      totalSizePreparedFilesWithDispositionAttachment: listAttachments.totalSize,
+      onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: listFileInfo)
+    );
   }
 
   void handleImageUploadFailure({
     required BuildContext context,
     required web_html_editor.UploadError uploadError,
-    web_html_editor.FileUpload? fileUpload,
+    List<web_html_editor.FileUpload>? listFileUpload,
     String? base64Str,
   }) {
-    logError('ComposerController::handleImageUploadFailure:fileUpload: $fileUpload | uploadError: $uploadError');
+    logError('ComposerController::handleImageUploadFailure: COUNT_FILE_FAILED = ${listFileUpload?.length} | ERROR = $uploadError');
     appToast.showToastErrorMessage(
       context,
       '${AppLocalizations.of(context).can_not_upload_this_file_as_attachments}. (${uploadError.name})'
-    );
-  }
-
-  void _addAttachmentFromDragAndDrop({required FileInfo fileInfo}) {
-    uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      totalSizePreparedFiles: fileInfo.fileSize,
-      callbackAction: () => _uploadAttachmentsAction([fileInfo])
     );
   }
 
@@ -2066,11 +1979,11 @@ class ComposerController extends BaseController {
     _updateStatusEmailSendButton();
   }
 
-  void addAttachmentWhenDragFromOtherEmail(Attachment attachment) {
-    log('ComposerController::addAttachmentWhenDragFromOtherEmail: attachment = $attachment');
+  void onAttachmentDropZoneListener(Attachment attachment) {
+    log('ComposerController::onAttachmentDropZoneListener: attachment = $attachment');
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
       totalSizePreparedFiles: attachment.size?.value ?? 0,
-      callbackAction: () => uploadController.initializeUploadAttachments([attachment])
+      onValidationSuccess: () => uploadController.initializeUploadAttachments([attachment])
     );
   }
 
@@ -2143,5 +2056,34 @@ class ComposerController extends BaseController {
     if (accountId != null) {
       consumeState(_getAlwaysReadReceiptSettingInteractor.execute(accountId));
     }
+  }
+
+  void handleOnDragEnterHtmlEditorWeb() {
+    mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+  }
+
+  void onLocalFileDropZoneListener({
+    required BuildContext context,
+    required DropDoneDetails details
+  }) async {
+    final listFileInfo = await onDragDone(context: context, details: details);
+
+    if (listFileInfo.isEmpty && context.mounted) {
+      appToast.showToastErrorMessage(
+        context,
+        AppLocalizations.of(context).can_not_upload_this_file_as_attachments
+      );
+      return;
+    }
+
+    final listAttachments = listFileInfo
+      .where((fileInfo) => fileInfo.isInline != true)
+      .toList();
+
+    uploadController.validateTotalSizeAttachmentsBeforeUpload(
+      totalSizePreparedFiles: listFileInfo.totalSize,
+      totalSizePreparedFilesWithDispositionAttachment: listAttachments.totalSize,
+      onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: listFileInfo)
+    );
   }
 }

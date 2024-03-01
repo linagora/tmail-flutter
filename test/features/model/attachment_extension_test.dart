@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
+import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/media_type_extension.dart';
 
 void main() {
   final attachmentA = Attachment(
@@ -34,7 +34,7 @@ void main() {
       'WHEN perform call `attachmentA.isDisplayedPDFIcon()`\n'
       'SHOULD return true',
     () {
-      bool result = attachmentA.isDisplayedPDFIcon;
+      bool result = attachmentA.type!.validatePDFIcon(fileName: null);
 
       expect(result, isTrue);
     });
@@ -45,7 +45,7 @@ void main() {
       'WHEN perform call `attachmentB.isDisplayedPDFIcon()`\n'
       'SHOULD return true',
     () {
-      bool result = attachmentB.isDisplayedPDFIcon;
+      bool result = attachmentB.type!.validatePDFIcon(fileName: 'attachmentB.pdf');
 
       expect(result, isTrue);
     });
@@ -56,7 +56,7 @@ void main() {
       'WHEN perform call `attachmentC.isDisplayedPDFIcon()`\n'
       'SHOULD return false',
     () {
-      bool result = attachmentC.isDisplayedPDFIcon;
+      bool result = attachmentC.type!.validatePDFIcon(fileName: 'attachmentC.docx');
 
       expect(result, isFalse);
     });
@@ -67,7 +67,7 @@ void main() {
       'WHEN perform call `attachmentD.isDisplayedPDFIcon()`\n'
       'SHOULD return false',
     () {
-      bool result = attachmentD.isDisplayedPDFIcon;
+      bool result = attachmentD.type!.validatePDFIcon(fileName: 'attachmentD.png');
 
       expect(result, isFalse);
     });
@@ -78,7 +78,7 @@ void main() {
       'WHEN perform call `attachmentE.isDisplayedPDFIcon()`\n'
       'SHOULD return false',
     () {
-      bool result = attachmentE.isDisplayedPDFIcon;
+      bool result = attachmentE.type!.validatePDFIcon(fileName: 'attachmentE.pdf');
 
       expect(result, isFalse);
     });

@@ -3876,8 +3876,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExceedMaximumFileSizeComposer": "Votre message dépasse la taille généralement acceptée pour un email. \nSi vous confirmez l'envoi il y a un risque que le mail soit rejeté par le système de votre interlocuteur.",
-  "@messageWarningDialogWhenExceedMaximumFileSizeComposer": {
+  "warningMessageWhenExceedGenerallySizeInComposer": "Votre message dépasse la taille généralement acceptée pour un email. \nSi vous confirmez l'envoi il y a un risque que le mail soit rejeté par le système de votre interlocuteur.",
+  "@warningMessageWhenExceedGenerallySizeInComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

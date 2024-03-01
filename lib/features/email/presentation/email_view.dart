@@ -339,9 +339,9 @@ class EmailView extends GetWidget<SingleEmailController> {
               responsiveUtils: controller.responsiveUtils,
               attachments: controller.attachments,
               imagePaths: controller.imagePaths,
-              onDragStarted: controller.mailboxDashBoardController.enableDraggableApp,
+              onDragStarted: controller.mailboxDashBoardController.enableAttachmentDraggableApp,
               onDragEnd: (details) {
-                controller.mailboxDashBoardController.disableDraggableApp();
+                controller.mailboxDashBoardController.disableAttachmentDraggableApp();
               },
               downloadAttachmentAction: (attachment) {
                 if (PlatformInfo.isWeb) {
@@ -386,7 +386,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 calendarEvent: calendarEvent,
                 eventActions: controller.eventActions,
                 emailContent: controller.currentEmailLoaded?.htmlContent ?? '',
-                isDraggableAppActive: controller.mailboxDashBoardController.isDraggableAppActive,
+                isDraggableAppActive: controller.mailboxDashBoardController.isAttachmentDraggableAppActive,
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
                 onMailtoDelegateAction: controller.openMailToLink,
@@ -413,7 +413,14 @@ class EmailView extends GetWidget<SingleEmailController> {
                               mailtoDelegate: controller.openMailToLink,
                               direction: AppUtils.getCurrentDirection(context),
                             ),
-                            if (controller.mailboxDashBoardController.isDraggableAppActive)
+                            if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
+                              PointerInterceptor(
+                                child: SizedBox(
+                                  width: constraints.maxWidth,
+                                  height: constraints.maxHeight,
+                                )
+                              ),
+                            if (controller.mailboxDashBoardController.isLocalFileDraggableAppActive)
                               PointerInterceptor(
                                 child: SizedBox(
                                   width: constraints.maxWidth,
