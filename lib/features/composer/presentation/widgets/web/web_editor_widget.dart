@@ -1,9 +1,11 @@
+import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:universal_html/html.dart' hide VoidCallback;
 
 typedef OnChangeContentEditorAction = Function(String? text);
 typedef OnInitialContentEditorAction = Function(String text);
@@ -62,6 +64,16 @@ class _WebEditorState extends State<WebEditorWidget> {
   double? dropZoneWidth;
   double? dropZoneHeight;
   final ValueNotifier<double> _htmlEditorHeight = ValueNotifier(_defaultHtmlEditorHeight);
+  bool _dropListenerRegistered = false;
+
+  void _dropListener(Event event) {
+    if (event is MessageEvent) {
+      if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
+        _editorController.evaluateJavascriptWeb(
+          HtmlUtils.lineHeight100Percent.name);
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -76,6 +88,8 @@ class _WebEditorState extends State<WebEditorWidget> {
       dropZoneWidth = widget.width! - _offsetWidth;
     }
     log('_WebEditorState::initState:dropZoneWidth: $dropZoneWidth | dropZoneHeight: $dropZoneHeight');
+
+    window.addEventListener("message", _dropListener);
   }
 
   @override
@@ -96,6 +110,9 @@ class _WebEditorState extends State<WebEditorWidget> {
   @override
   void dispose() {
     _htmlEditorHeight.dispose();
+    _editorController.evaluateJavascriptWeb(
+      HtmlUtils.unregisterDropListener.name);
+    window.removeEventListener("message", _dropListener);
     super.dispose();
   }
 
@@ -118,7 +135,15 @@ class _WebEditorState extends State<WebEditorWidget> {
               WebScript(
                 name: HtmlUtils.lineHeight100Percent.name,
                 script: HtmlUtils.lineHeight100Percent.script,
-              )
+              ),
+              WebScript(
+                name: HtmlUtils.registerDropListener.name,
+                script: HtmlUtils.registerDropListener.script,
+              ),
+              WebScript(
+                name: HtmlUtils.unregisterDropListener.name,
+                script: HtmlUtils.unregisterDropListener.script,
+              ),
             ])
           ),
           htmlToolbarOptions: const HtmlToolbarOptions(
@@ -133,7 +158,14 @@ class _WebEditorState extends State<WebEditorWidget> {
           callbacks: Callbacks(
             onBeforeCommand: widget.onChangeContent,
             onChangeContent: widget.onChangeContent,
-            onInit: () => widget.onInitial?.call(widget.content),
+            onInit: () {
+              widget.onInitial?.call(widget.content);
+              if (!_dropListenerRegistered) {
+                _editorController.evaluateJavascriptWeb(
+                  HtmlUtils.registerDropListener.name);
+                _dropListenerRegistered = true;
+              }
+            },
             onFocus: widget.onFocus,
             onBlur: widget.onUnFocus,
             onMouseDown: () => widget.onMouseDown?.call(context),
