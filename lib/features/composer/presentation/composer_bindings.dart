@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_
 import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_upload_datasource_impl.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
+import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -125,7 +126,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
-      Get.find<ServerSettingsAPI>(), 
+      Get.find<ServerSettingsAPI>(),
       Get.find<RemoteExceptionThrower>()));
   }
 
@@ -182,6 +183,7 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => LocalFilePickerInteractor());
+    Get.lazyPut(() => LocalImagePickerInteractor());
     Get.lazyPut(() => UploadAttachmentInteractor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => SaveEmailAsDraftsInteractor(
         Get.find<EmailRepository>(),
@@ -207,6 +209,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => ComposerController(
       Get.find<DeviceInfoPlugin>(),
       Get.find<LocalFilePickerInteractor>(),
+      Get.find<LocalImagePickerInteractor>(),
       Get.find<GetEmailContentInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<UploadController>(),

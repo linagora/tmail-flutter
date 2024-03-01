@@ -344,6 +344,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  desktop_drop:
+    dependency: "direct main"
+    description:
+      name: desktop_drop
+      sha256: d55a010fe46c8e8fcff4ea4b451a9ff84a162217bdb3b2a0aa1479776205e15d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.4"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -973,6 +981,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  future_loading_dialog:
+    dependency: "direct main"
+    description:
+      name: future_loading_dialog
+      sha256: "2718b1a308db452da32ab9bca9ad496ff92b683e217add9e92cf50520f90537e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   get:
     dependency: "direct main"
     description:
@@ -1025,8 +1041,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: "96c199b233c5afde583295890ffbd880ea4c7d8c"
+      ref: support-enable-disable-drag-and-drop
+      resolved-ref: "1133e628c1d21b6c90659edf11afa5db60eae386"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"

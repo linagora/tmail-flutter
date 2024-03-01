@@ -3878,6 +3878,8 @@
   },
   "messageWarningDialogWhenExceedMaximumFileSizeComposer": "Thư của bạn lớn hơn kích thước thường được hệ thống email của bên thứ ba chấp nhận. Nếu bạn xác nhận đã gửi thư này, có nguy cơ nó sẽ bị hệ thống người nhận từ chối.",
   "@messageWarningDialogWhenExceedMaximumFileSizeComposer": {
+  "warningMessageWhenExceedGenerallySizeInComposer": "Thư của bạn lớn hơn kích thước thường được hệ thống email của bên thứ ba chấp nhận. Nếu bạn xác nhận đã gửi thư này, có nguy cơ nó sẽ bị hệ thống người nhận từ chối.",
+  "@warningMessageWhenExceedGenerallySizeInComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

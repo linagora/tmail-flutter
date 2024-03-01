@@ -79,7 +79,7 @@ class AttachmentHeaderComposerWidget extends StatelessWidget {
                 margin: const EdgeInsetsDirectional.only(start: 4),
                 padding: const EdgeInsets.all(3),
                 iconColor: AppColor.colorBackgroundQuotasWarning,
-                tooltipMessage: AppLocalizations.of(context).messageWarningDialogWhenExceedMaximumFileSizeComposer,
+                tooltipMessage: AppLocalizations.of(context).warningMessageWhenExceedGenerallySizeInComposer,
                 backgroundColor: Colors.transparent,
               )
           ],
@@ -89,5 +89,5 @@ class AttachmentHeaderComposerWidget extends StatelessWidget {
   }
 
   bool get _isExceedMaximumSizeFileAttachedInComposer =>
-    listFileUploaded.totalSize > AppConfig.maximumMegabytesSizeFileAttachedInComposer * 1024 * 1024;
+    listFileUploaded.totalSize > AppConfig.warningAttachmentFileSizeInMegabytes * 1024 * 1024;
 }
