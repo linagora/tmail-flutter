@@ -15,8 +15,6 @@ class UploadAttachmentInteractor {
     FileInfo fileInfo,
     Uri uploadUri, {
     CancelToken? cancelToken,
-    bool isInline = false,
-    bool fromFileShared = false,
   }) async* {
     try {
       final uploadAttachment = await _composerRepository.uploadAttachment(
@@ -24,17 +22,9 @@ class UploadAttachmentInteractor {
         uploadUri,
         cancelToken: cancelToken
       );
-      yield Right<Failure, Success>(UploadAttachmentSuccess(
-        uploadAttachment,
-        isInline: isInline,
-        fromFileShared: fromFileShared
-      ));
+      yield Right<Failure, Success>(UploadAttachmentSuccess(uploadAttachment));
     } catch (e) {
-      yield Left<Failure, Success>(UploadAttachmentFailure(
-        e,
-        isInline: isInline,
-        fromFileShared: fromFileShared
-      ));
+      yield Left<Failure, Success>(UploadAttachmentFailure(e, fileInfo));
     }
   }
 }

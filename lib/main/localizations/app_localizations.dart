@@ -3845,10 +3845,10 @@ class AppLocalizations {
     );
   }
 
-  String get messageWarningDialogWhenExceedMaximumFileSizeComposer {
+  String get warningMessageWhenExceedGenerallySizeInComposer {
     return Intl.message(
       'Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.',
-      name: 'messageWarningDialogWhenExceedMaximumFileSizeComposer',
+      name: 'warningMessageWhenExceedGenerallySizeInComposer',
     );
   }
 
@@ -3856,6 +3856,20 @@ class AppLocalizations {
     return Intl.message(
       'Continue',
       name: 'continueAction',
+    );
+  }
+
+  String get thisFileCannotBePicked {
+    return Intl.message(
+      'This file cannot be picked.',
+      name: 'thisFileCannotBePicked',
+    );
+  }
+
+  String get loadingPleaseWait {
+    return Intl.message(
+      'Loading... Please wait!',
+      name: 'loadingPleaseWait',
     );
   }
 }

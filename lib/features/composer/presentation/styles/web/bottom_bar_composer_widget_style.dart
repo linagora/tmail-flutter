@@ -10,6 +10,7 @@ class BottomBarComposerWidgetStyle {
   static const double richTextIconSize = 24;
   static const double sendButtonRadius = 8;
   static const double sendButtonIconSpace = 5;
+  static const double height = 60;
 
   static const Color backgroundColor = Colors.white;
   static const Color iconColor = AppColor.colorRichButtonComposer;
@@ -17,7 +18,7 @@ class BottomBarComposerWidgetStyle {
   static const Color selectedBackgroundColor = AppColor.colorSelected;
   static const Color selectedIconColor = AppColor.primaryColor;
 
-  static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 32, vertical: 12);
+  static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 32);
   static const EdgeInsetsGeometry iconPadding = EdgeInsetsDirectional.all(5);
   static const EdgeInsetsGeometry sendButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 24);
   static const EdgeInsetsGeometry richTextIconPadding = EdgeInsetsDirectional.all(2);

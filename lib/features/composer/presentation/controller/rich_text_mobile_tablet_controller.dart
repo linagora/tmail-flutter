@@ -6,27 +6,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 
 class RichTextMobileTabletController extends BaseRichTextController {
   HtmlEditorApi? htmlEditorApi;
 
-  void insertImage(
-    InlineImage image,
-    {
-      double? maxWithEditor,
-      bool fromFileShare = false
+  void insertImage(InlineImage inlineImage) async {
+    if (inlineImage.fileInfo.isShared == true) {
+      await htmlEditorApi?.moveCursorAtLastNode();
     }
-  ) async {
-    log('RichTextMobileTabletController::insertImage(): $image | maxWithEditor: $maxWithEditor | $fromFileShare');
-    if (image.source == ImageSource.network) {
-      htmlEditorApi?.insertImageLink(image.link!);
-    } else {
-      if (fromFileShare) {
-        await htmlEditorApi?.moveCursorAtLastNode();
-      }
-      await htmlEditorApi?.insertHtml(image.base64Uri ?? '');
+    if (inlineImage.base64Uri?.isNotEmpty == true) {
+      await htmlEditorApi?.insertHtml(inlineImage.base64Uri!);
     }
   }
 
