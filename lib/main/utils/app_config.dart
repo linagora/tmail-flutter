@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.d
 
 class AppConfig {
   static const int limitCharToStartSearch = 3;
-  static const int maximumMegabytesSizeFileAttachedInComposer = 10;
+  static const int warningAttachmentFileSizeInMegabytes = 10;
 
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";
   static const String appFCMConfigurationPath = "configurations/env.fcm";

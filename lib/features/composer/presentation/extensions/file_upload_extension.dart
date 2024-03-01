@@ -29,7 +29,8 @@ extension FileUploadExtension on FileUpload {
       return FileInfo.fromBytes(
         bytes: bytes,
         name: name,
-        size: size
+        size: size,
+        type: type,
       );
     } else {
       return null;

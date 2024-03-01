@@ -27,10 +27,7 @@ import 'package:worker_manager/worker_manager.dart' as worker;
 class FileUploader {
 
   static const String uploadAttachmentExtraKey = 'upload-attachment';
-  static const String platformExtraKey = 'platform';
-  static const String bytesExtraKey = 'bytes';
-  static const String typeExtraKey = 'type';
-  static const String sizeExtraKey = 'size';
+  static const String streamDataExtraKey = 'streamData';
   static const String filePathExtraKey = 'path';
 
   final DioClient _dioClient;
@@ -94,10 +91,7 @@ class FileUploader {
 
     final mapExtra = <String, dynamic>{
       uploadAttachmentExtraKey: {
-        platformExtraKey: 'mobile',
         filePathExtraKey: argsUpload.mobileFileUpload.filePath,
-        typeExtraKey: argsUpload.mobileFileUpload.mimeType,
-        sizeExtraKey: argsUpload.mobileFileUpload.fileSize,
       }
     };
 
@@ -109,7 +103,7 @@ class FileUploader {
       ),
       data: File(argsUpload.mobileFileUpload.filePath).openRead(),
       onSendProgress: (count, total) {
-        log('FileUploader::_handleUploadAttachmentAction():onSendProgress: [${argsUpload.uploadId.id}] = $count');
+        log('FileUploader::_handleUploadAttachmentAction():onSendProgress: FILE[${argsUpload.uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
         sendPort.send(
           UploadingAttachmentUploadState(
             argsUpload.uploadId,
@@ -139,10 +133,7 @@ class FileUploader {
 
     final mapExtra = <String, dynamic>{
       uploadAttachmentExtraKey: {
-        platformExtraKey: 'web',
-        bytesExtraKey: fileInfo.bytes,
-        typeExtraKey: fileInfo.mimeType,
-        sizeExtraKey: fileInfo.fileSize,
+        streamDataExtraKey: BodyBytesStream.fromBytes(fileInfo.bytes!),
       }
     };
 
@@ -155,7 +146,7 @@ class FileUploader {
       data: BodyBytesStream.fromBytes(fileInfo.bytes!),
       cancelToken: cancelToken,
       onSendProgress: (count, total) {
-        log('FileUploader::_handleUploadAttachmentActionOnWeb():onSendProgress: [${uploadId.id}] = $count');
+        log('FileUploader::_handleUploadAttachmentActionOnWeb():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
         onSendController.add(
           Right(UploadingAttachmentUploadState(
             uploadId,

@@ -60,7 +60,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: email_supported
+      ref: support-enable-disable-drag-and-drop
 
   jmap_dart_client:
     git:
@@ -233,6 +233,10 @@ dependencies:
   flutter_secure_storage: 8.0.0
 
   mime: 1.0.4
+
+  desktop_drop: 0.4.4
+
+  future_loading_dialog: 0.3.0
 
 dev_dependencies:
   flutter_test:

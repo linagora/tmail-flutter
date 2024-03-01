@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/image_source.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/order_list_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_type.dart';
@@ -194,13 +193,8 @@ class RichTextWebController extends BaseRichTextController {
   bool isTextStyleTypeSelected(RichTextStyleType richTextStyleType) =>
       listTextStyleApply.contains(richTextStyleType);
 
-  void insertImage(InlineImage image) async {
-    log('RichTextWebController::insertImage(): $image');
-    if (image.source == ImageSource.network) {
-      editorController.insertNetworkImage(image.link!);
-    } else {
-      editorController.insertHtml("<div>${image.base64Uri ?? ''}</div><br>");
-    }
+  void insertImage(InlineImage inlineImage) {
+    editorController.insertHtml("<div>${inlineImage.base64Uri ?? ''}</div><br>");
   }
 
   void applyNewFontStyle(FontNameType? newFont) {
