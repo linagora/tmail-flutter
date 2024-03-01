@@ -216,8 +216,9 @@ class MailboxDashBoardController extends ReloadableController {
   final searchMailboxActivated = RxBool(false);
   final listSendingEmails = RxList<SendingEmail>();
   final refreshingMailboxState = Rx<Either<Failure, Success>>(Right(UIState.idle));
-  final draggableAppState = Rxn<DraggableAppState>();
+  final attachmentDraggableAppState = Rxn<DraggableAppState>();
   final isRecoveringDeletedMessage = RxBool(false);
+  final localFileDraggableAppState = Rxn<DraggableAppState>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -2148,14 +2149,16 @@ class MailboxDashBoardController extends ReloadableController {
     openMailboxAction(inboxPresentation);
   }
 
-  bool get isDraggableAppActive => draggableAppState.value == DraggableAppState.active;
+  bool get isAttachmentDraggableAppActive => attachmentDraggableAppState.value == DraggableAppState.active;
 
-  void enableDraggableApp() {
-    draggableAppState.value = DraggableAppState.active;
+  bool get isLocalFileDraggableAppActive => localFileDraggableAppState.value == DraggableAppState.active;
+
+  void enableAttachmentDraggableApp() {
+    attachmentDraggableAppState.value = DraggableAppState.active;
   }
 
-  void disableDraggableApp() {
-    draggableAppState.value = DraggableAppState.inActive;
+  void disableAttachmentDraggableApp() {
+    attachmentDraggableAppState.value = DraggableAppState.inActive;
   }
 
   void saveEmailToDraft({required SaveToDraftArguments arguments}) {

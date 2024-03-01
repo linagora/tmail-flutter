@@ -26,11 +26,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final VoidCallback? onUnFocus;
   final OnMouseDownEditorAction? onMouseDown;
   final OnEditorSettingsChange? onEditorSettings;
-  final OnImageUploadSuccessAction? onImageUploadSuccessAction;
-  final OnImageUploadFailureAction? onImageUploadFailureAction;
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
+  final VoidCallback? onDragEnter;
 
   const WebEditorView({
     super.key,
@@ -44,11 +43,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onUnFocus,
     this.onMouseDown,
     this.onEditorSettings,
-    this.onImageUploadSuccessAction,
-    this.onImageUploadFailureAction,
     this.onEditorTextSizeChanged,
     this.width,
     this.height,
+    this.onDragEnter,
   });
 
   @override
@@ -71,11 +69,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onUnFocus: onUnFocus,
           onMouseDown: onMouseDown,
           onEditorSettings: onEditorSettings,
-          onImageUploadSuccessAction: onImageUploadSuccessAction,
-          onImageUploadFailureAction: onImageUploadFailureAction,
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           width: width,
           height: height,
+          onDragEnter: onDragEnter,
         );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
@@ -97,11 +94,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onUnFocus: onUnFocus,
             onMouseDown: onMouseDown,
             onEditorSettings: onEditorSettings,
-            onImageUploadSuccessAction: onImageUploadSuccessAction,
-            onImageUploadFailureAction: onImageUploadFailureAction,
             onEditorTextSizeChanged: onEditorTextSizeChanged,
             width: width,
             height: height,
+            onDragEnter: onDragEnter,
           ),
           (success) {
             if (success is GetEmailContentLoading) {
@@ -123,11 +119,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onUnFocus: onUnFocus,
                 onMouseDown: onMouseDown,
                 onEditorSettings: onEditorSettings,
-                onImageUploadSuccessAction: onImageUploadSuccessAction,
-                onImageUploadFailureAction: onImageUploadFailureAction,
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 width: width,
                 height: height,
+                onDragEnter: onDragEnter,
               );
             }
           }
@@ -156,11 +151,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onUnFocus: onUnFocus,
               onMouseDown: onMouseDown,
               onEditorSettings: onEditorSettings,
-              onImageUploadSuccessAction: onImageUploadSuccessAction,
-              onImageUploadFailureAction: onImageUploadFailureAction,
               onEditorTextSizeChanged: onEditorTextSizeChanged,
               width: width,
               height: height,
+              onDragEnter: onDragEnter,
             );
           },
           (success) {
@@ -185,11 +179,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onUnFocus: onUnFocus,
                 onMouseDown: onMouseDown,
                 onEditorSettings: onEditorSettings,
-                onImageUploadSuccessAction: onImageUploadSuccessAction,
-                onImageUploadFailureAction: onImageUploadFailureAction,
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 width: width,
                 height: height,
+                onDragEnter: onDragEnter,
               );
             }
           }
@@ -205,11 +198,10 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onUnFocus: onUnFocus,
           onMouseDown: onMouseDown,
           onEditorSettings: onEditorSettings,
-          onImageUploadSuccessAction: onImageUploadSuccessAction,
-          onImageUploadFailureAction: onImageUploadFailureAction,
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           width: width,
           height: height,
+          onDragEnter: onDragEnter,
         );
     }
   }
