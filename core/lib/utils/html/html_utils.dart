@@ -16,6 +16,22 @@ class HtmlUtils {
         });''',
     name: 'lineHeight100Percent');
 
+  static const registerDropListener = (
+    script: '''
+      document.querySelector(".note-editable").addEventListener(
+        "drop",
+        (event) => window.parent.postMessage(
+          JSON.stringify({"name": "registerDropListener"})))''',
+    name: 'registerDropListener');
+
+  static const unregisterDropListener = (
+    script: '''
+      console.log("unregisterDropListener");
+      const editor = document.querySelector(".note-editable");
+      const newEditor = editor.cloneNode(true);
+      editor.parentNode.replaceChild(newEditor, editor);''',
+    name: 'unregisterDropListener');
+
   static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
     if (PlatformInfo.isWeb) {
       return '''
