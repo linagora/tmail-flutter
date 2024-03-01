@@ -42,6 +42,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: BottomBarComposerWidgetStyle.padding,
+      height: BottomBarComposerWidgetStyle.height,
       color: BottomBarComposerWidgetStyle.backgroundColor,
       child: Row(
         children: [

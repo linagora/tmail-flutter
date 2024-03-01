@@ -240,6 +240,10 @@ dependencies:
 
   mime: 1.0.4
 
+  desktop_drop: 0.4.4
+
+  future_loading_dialog: 0.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

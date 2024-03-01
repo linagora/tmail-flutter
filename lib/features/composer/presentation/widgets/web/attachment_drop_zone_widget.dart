@@ -3,42 +3,35 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/drop_zone_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnAddAttachmentFromDropZone = Function(Attachment attachment);
+typedef OnAttachmentDropZoneListener = Function(Attachment attachment);
 
-class DropZoneWidget extends StatefulWidget {
+class AttachmentDropZoneWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final double? width;
   final double? height;
-  final OnAddAttachmentFromDropZone? addAttachmentFromDropZone;
+  final OnAttachmentDropZoneListener? onAttachmentDropZoneListener;
 
-  const DropZoneWidget({
+  const AttachmentDropZoneWidget({
     super.key,
+    required this.imagePaths,
     this.width,
     this.height,
-    this.addAttachmentFromDropZone
+    this.onAttachmentDropZoneListener
   });
-
-  @override
-  State<DropZoneWidget> createState() => _DropZoneWidgetState();
-}
-
-class _DropZoneWidgetState extends State<DropZoneWidget> {
-
-  final _imagePaths = Get.find<ImagePaths>();
-
-  bool _isDragging = false;
 
   @override
   Widget build(BuildContext context) {
     return DragTarget<Attachment>(
-      builder: (context, candidateData, rejectedData) {
-        if (_isDragging) {
-          return Padding(
+      builder: (context, _, __) {
+        return SizedBox(
+          width: width,
+          height: height,
+          child: Padding(
             padding: DropZoneWidgetStyle.margin,
             child: DottedBorder(
               borderType: BorderType.RRect,
@@ -48,20 +41,18 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
               dashPattern: DropZoneWidgetStyle.dashSize,
               child: Container(
                 clipBehavior: Clip.antiAlias,
-                decoration: const ShapeDecoration(
+                decoration: ShapeDecoration(
                   color: DropZoneWidgetStyle.backgroundColor,
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(DropZoneWidgetStyle.radius)),
                   ),
                 ),
-                width: widget.width,
-                height: widget.height,
                 padding: DropZoneWidgetStyle.padding,
                 alignment: AlignmentDirectional.center,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SvgPicture.asset(_imagePaths.icDropZoneIcon),
+                    SvgPicture.asset(imagePaths.icDropZoneIcon),
                     const SizedBox(height: DropZoneWidgetStyle.space),
                     Text(
                       AppLocalizations.of(context).dropFileHereToAttachThem,
@@ -71,22 +62,10 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
                 ),
               ),
             ),
-          );
-        } else {
-          return SizedBox(width: widget.width, height: widget.height);
-        }
+          ),
+        );
       },
-      onAccept: widget.addAttachmentFromDropZone,
-      onLeave: (attachment) {
-        if (_isDragging) {
-          setState(() => _isDragging = false);
-        }
-      },
-      onMove: (details) {
-        if (!_isDragging) {
-          setState(() => _isDragging = true);
-        }
-      },
+      onAccept: onAttachmentDropZoneListener
     );
   }
 }
