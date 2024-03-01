@@ -10,15 +10,11 @@ class DownloadImageAsBase64Success extends UIState {
   final String base64Uri;
   final String cid;
   final FileInfo fileInfo;
-  final bool fromFileShared;
 
   DownloadImageAsBase64Success(
     this.base64Uri,
     this.cid,
-    this.fileInfo,
-    {
-      this.fromFileShared = false
-    }
+    this.fileInfo
   );
 
   @override
@@ -26,7 +22,6 @@ class DownloadImageAsBase64Success extends UIState {
     base64Uri,
     cid,
     fileInfo,
-    fromFileShared,
   ];
 }
 

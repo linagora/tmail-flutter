@@ -11,8 +11,6 @@ typedef OnChangeContentEditorAction = Function(String? text);
 typedef OnInitialContentEditorAction = Function(String text);
 typedef OnMouseDownEditorAction = Function(BuildContext context);
 typedef OnEditorSettingsChange = Function(EditorSettings settings);
-typedef OnImageUploadSuccessAction = Function(FileUpload fileUpload);
-typedef OnImageUploadFailureAction = Function(FileUpload? fileUpload, String? base64Str, UploadError error);
 typedef OnEditorTextSizeChanged = Function(int? size);
 
 class WebEditorWidget extends StatefulWidget {
@@ -26,11 +24,10 @@ class WebEditorWidget extends StatefulWidget {
   final VoidCallback? onUnFocus;
   final OnMouseDownEditorAction? onMouseDown;
   final OnEditorSettingsChange? onEditorSettings;
-  final OnImageUploadSuccessAction? onImageUploadSuccessAction;
-  final OnImageUploadFailureAction? onImageUploadFailureAction;
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
+  final VoidCallback? onDragEnter;
 
   const WebEditorWidget({
     super.key,
@@ -43,11 +40,10 @@ class WebEditorWidget extends StatefulWidget {
     this.onUnFocus,
     this.onMouseDown,
     this.onEditorSettings,
-    this.onImageUploadSuccessAction,
-    this.onImageUploadFailureAction,
     this.onEditorTextSizeChanged,
     this.width,
     this.height,
+    this.onDragEnter,
   });
 
   @override
@@ -133,6 +129,7 @@ class _WebEditorState extends State<WebEditorWidget> {
             initialText: widget.content,
             customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
             spellCheck: true,
+            disableDragAndDrop: true,
             webInitialScripts: UnmodifiableListView([
               WebScript(
                 name: HtmlUtils.lineHeight100Percent.name,
@@ -145,7 +142,7 @@ class _WebEditorState extends State<WebEditorWidget> {
               WebScript(
                 name: HtmlUtils.unregisterDropListener.name,
                 script: HtmlUtils.unregisterDropListener.script,
-              ),
+              )
             ])
           ),
           htmlToolbarOptions: const HtmlToolbarOptions(
@@ -154,8 +151,8 @@ class _WebEditorState extends State<WebEditorWidget> {
           ),
           otherOptions: OtherOptions(
             height: height,
-            dropZoneWidth: dropZoneWidth,
-            dropZoneHeight: dropZoneHeight,
+            // dropZoneWidth: dropZoneWidth,
+            // dropZoneHeight: dropZoneHeight,
           ),
           callbacks: Callbacks(
             onBeforeCommand: widget.onChangeContent,
@@ -173,12 +170,12 @@ class _WebEditorState extends State<WebEditorWidget> {
             onMouseDown: () => widget.onMouseDown?.call(context),
             onChangeSelection: widget.onEditorSettings,
             onChangeCodeview: widget.onChangeContent,
-            onImageUpload: widget.onImageUploadSuccessAction,
-            onImageUploadError: widget.onImageUploadFailureAction,
             onTextFontSizeChanged: widget.onEditorTextSizeChanged,
             onPaste: () => _editorController.evaluateJavascriptWeb(
               HtmlUtils.lineHeight100Percent.name
             ),
+            onDragEnter: widget.onDragEnter,
+            onDragLeave: () {},
           ),
         );
       }

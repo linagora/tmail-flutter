@@ -1,0 +1,1 @@
+class PickFileCanceledException implements Exception {}

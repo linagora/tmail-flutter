@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
@@ -122,8 +121,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
-          requestOptions.headers[HttpHeaders.contentTypeHeader] = uploadExtra[FileUploader.typeExtraKey];
-          requestOptions.headers[HttpHeaders.contentLengthHeader] = uploadExtra[FileUploader.sizeExtraKey];
 
           final newOptions = Options(
             method: requestOptions.method,
@@ -155,11 +152,16 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Stream<List<int>>? _getDataUploadRequest(dynamic mapUploadExtra) {
-    final currentPlatform = mapUploadExtra[FileUploader.platformExtraKey];
-    if (currentPlatform == 'web') {
-      return BodyBytesStream.fromBytes(mapUploadExtra[FileUploader.bytesExtraKey]);
-    } else {
-      return File(mapUploadExtra[FileUploader.filePathExtraKey]).openRead();
+    try {
+      String? filePath = mapUploadExtra[FileUploader.filePathExtraKey];
+      if (filePath?.isNotEmpty == true) {
+        return File(filePath!).openRead();
+      } else {
+        return mapUploadExtra[FileUploader.streamDataExtraKey];
+      }
+    } catch(e) {
+      log('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+      return null;
     }
   }
 
