@@ -6834,7 +6834,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A._setArrayType([t1, C.SizedBox_4_null_null_null, A.Text$("" + t4 + " " + A.Intl__message("Attachments", _null, "attachments", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY30, _null, _null, _null, _null, _null), C.SizedBox_8_null_null_null, A.Container$(_null, A.Text$(A.filesize(B.ListUploadFileStateExtension_get_totalSize(t3), 2), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_1Gf10, _null, _null, _null, _null, _null), C.Clip_0, _null, _null, D.BoxDecoration_sQ5, _null, _null, _null, _null, D.EdgeInsetsDirectional_5_2_5_2, _null, _null, _null)], type$.JSArray_Widget);
       if (B.ListUploadFileStateExtension_get_totalSize(t3) > 10485760) {
         A.Localizations_of(context, C.Type_AppLocalizations_swi, t5).toString;
-        t4.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_quotas_warning.svg", C.Color_4294951175, 20, _null, C.EdgeInsetsDirectional_4_0_0_0, 1 / 0, _null, _null, C.EdgeInsets_3_3_3_3, A.Intl__message("Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.", _null, "messageWarningDialogWhenExceedMaximumFileSizeComposer", _null, _null)));
+        t4.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_quotas_warning.svg", C.Color_4294951175, 20, _null, C.EdgeInsetsDirectional_4_0_0_0, 1 / 0, _null, _null, C.EdgeInsets_3_3_3_3, A.Intl__message("Your message is larger than the size generally accepted by third party email systems. If you confirm sending this mail, there is a risk that it gets rejected by your recipient system.", _null, "warningMessageWhenExceedGenerallySizeInComposer", _null, _null)));
       }
       return A.InkWell$(false, _null, true, A.Container$(_null, A.Row$(t4, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, t2, _null, _null, _null, _null, C.EdgeInsetsDirectional_8_8_8_8, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.AttachmentHeaderComposerWidget_build_closure0(_this), _null, _null, _null, _null, _null, _null, _null);
     }
@@ -20352,5 +20352,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "uDNNY22Fd3PG7ki/8URrY58grQw=");
+})($__dart_deferred_initializers__, "RTT36H/iwQsmiqA7ODjA9ci+dbo=");
 ;
