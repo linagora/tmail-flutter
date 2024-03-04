@@ -325,7 +325,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onSuggestionCallback = t3;
       _.onAddContactCallback = t4;
       _.onExceptionCallback = t5;
-      _.serverDomain = t6;
+      _.internalDomain = t6;
       _.key = t7;
     },
     _AutocompleteContactTextFieldWithTagsState: function _AutocompleteContactTextFieldWithTagsState(t0, t1, t2, t3) {
@@ -419,7 +419,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _ = this;
       _.recipientForward = t0;
       _.selectionMode = t1;
-      _.serverDomain = t2;
+      _.internalDomain = t2;
       _.onSelectRecipientCallback = t3;
       _.onDeleteRecipientCallback = t4;
       _._email_forward_item_widget$_imagePaths = t5;
@@ -2029,7 +2029,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(_this);
       t4 = t2._as(t1.get(_this)).accountDashBoardController.sessionCurrent;
-      t4 = t4 == null ? null : A.SessionExtensions_get_serverDomain(t4);
+      t4 = t4 == null ? null : A.SessionExtensions_get_internalDomain(t4);
       if (t4 == null)
         t4 = "";
       A.Expando__checkType(_this);
@@ -2230,7 +2230,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return;
       if (t2)
         t1 = "";
-      if (!A.EmailUtils_isSameDomain(t1, _this._widget.serverDomain))
+      if (!A.EmailUtils_isSameDomain(t1, _this._widget.internalDomain))
         _this._showWarningDialogWithExternalDomain$3$cancelAction$confirmAction$context(new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure(_this), new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0(_this, emailAddress), context);
       else {
         t1 = _this.keyToEmailTagEditor.get$currentState();
@@ -2296,7 +2296,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = t2.email;
       t8 = t7 == null;
       t9 = t8 ? "" : t7;
-      if (A.EmailUtils_isSameDomain(t9, _this.serverDomain)) {
+      if (A.EmailUtils_isSameDomain(t9, _this.internalDomain)) {
         t9 = A.EmailAddressExtension_asString(t2);
         t10 = A.Theme_of(context).textTheme.labelSmall;
         t6.push(A.Text$(t9, _null, _null, 1, B.TextOverflow_2, _null, _null, true, _null, t10 == null ? _null : t10.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 16, B.FontWeight_3_400), _null, _null, _null, _null, _null));
@@ -3824,7 +3824,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = J.$index$asx(t4.get$value(t4), index);
       A.Expando__checkType(t1);
       t5 = t3._as(t2.get(t1)).accountDashBoardController.sessionCurrent;
-      t5 = t5 == null ? null : A.SessionExtensions_get_serverDomain(t5);
+      t5 = t5 == null ? null : A.SessionExtensions_get_internalDomain(t5);
       if (t5 == null)
         t5 = "";
       A.Expando__checkType(t1);
@@ -5741,5 +5741,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "8W7/R9c6YkU3fgSdYvcTDQmA+cQ=");
+})($__dart_deferred_initializers__, "vRNEGJyILXNEux6gVQITHCASFEI=");
 ;
