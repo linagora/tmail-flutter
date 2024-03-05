@@ -36,9 +36,11 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
@@ -848,7 +850,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
         AppLocalizations.of(context).send_anyway,
-        onConfirmAction: _handleSendMessages,
+        onConfirmAction: () => _handleSendMessages(context),
         title: AppLocalizations.of(context).empty_subject,
         showAsBottomSheet: true,
         icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
@@ -882,7 +884,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       return;
     }
 
-    _handleSendMessages();
+    _handleSendMessages(context);
   }
 
   Future<String> _getContentInEditor() async {
@@ -896,7 +898,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
   }
 
-  void _handleSendMessages() async {
+  void _handleSendMessages(BuildContext context) async {
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null
@@ -909,7 +911,23 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
     final emailContent = await _getContentInEditor();
 
-    final resultState = await Get.dialog(
+    final resultState = await _showSendingMessageDialog(emailContent: emailContent);
+
+    if (resultState is SendEmailSuccess) {
+      _sendButtonState = ButtonState.enabled;
+      _closeComposerAction(result: resultState);
+    } else if ((resultState is SendEmailFailure || resultState is GenerateEmailFailure) && context.mounted) {
+      _showConfirmDialogWhenSendMessageFailure(
+        context: context,
+        failure: resultState
+      );
+    } else {
+      _sendButtonState = ButtonState.enabled;
+    }
+  }
+
+  Future<dynamic> _showSendingMessageDialog({required String emailContent}) {
+    return Get.dialog(
       PointerInterceptor(
         child: SendingMessageDialogView(
           createEmailRequest: CreateEmailRequest(
@@ -929,8 +947,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
             outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
             sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
             draftsEmailId: composerArguments.value!.emailActionType == EmailActionType.editDraft
-              ? composerArguments.value!.presentationEmail?.id
-              : null,
+                ? composerArguments.value!.presentationEmail?.id
+                : null,
             answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
             unsubscribeEmailId: composerArguments.value!.previousEmailId,
             messageId: composerArguments.value!.messageId,
@@ -942,9 +960,50 @@ class ComposerController extends BaseController with DragDropFileMixin {
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
+  }
 
-    _sendButtonState = ButtonState.enabled;
-    _closeComposerAction(result: resultState);
+  void _showConfirmDialogWhenSendMessageFailure({
+    required BuildContext context,
+    required FeatureFailure failure
+  }) {
+    showConfirmDialogAction(
+      context,
+      title: '',
+      AppLocalizations.of(context).warningMessageWhenSendEmailFailure,
+      AppLocalizations.of(context).edit,
+      cancelTitle: AppLocalizations.of(context).closeAnyway,
+      alignCenter: true,
+      onConfirmAction: () {
+        _sendButtonState = ButtonState.enabled;
+        popBack();
+        _autoFocusFieldWhenLauncher();
+      },
+      onCancelAction: () async {
+        _sendButtonState = ButtonState.enabled;
+        await Future.delayed(
+          const Duration(milliseconds: 100),
+          _closeComposerAction
+        );
+      },
+      icon: SvgPicture.asset(
+        imagePaths.icQuotasWarning,
+        width: 40,
+        height: 40,
+        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
+      ),
+      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 14,
+        color: AppColor.colorTextBody
+      ),
+      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.white
+      ),
+      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      )
+    );
   }
 
   void _checkContactPermission() async {
