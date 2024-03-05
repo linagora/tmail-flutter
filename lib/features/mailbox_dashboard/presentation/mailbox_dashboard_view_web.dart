@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/username_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
@@ -339,13 +340,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           : const SizedBox.shrink(),
         const SizedBox(width: 24),
         Obx(() => (AvatarBuilder()
-          ..text(controller.userProfile.value?.getAvatarText() ?? '')
+          ..text(controller.sessionCurrent?.username.firstCharacter ?? '')
           ..backgroundColor(Colors.white)
           ..textColor(Colors.black)
           ..context(context)
           ..addOnTapAvatarActionWithPositionClick((position) =>
               controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
-                  controller.userProfile.value,
+                  controller.sessionCurrent?.username,
                   onLogoutAction: () {
                     popBack();
                     controller.logout(controller.sessionCurrent, controller.accountId.value);
@@ -598,7 +599,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Obx(() {
       final isFilterSelected = filter.isSelected(
         controller.searchController.searchEmailFilter.value,
-        controller.userProfile.value
       );
 
       return Padding(
@@ -776,7 +776,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   String _getQuickSearchFilterFromTitle(BuildContext context) {
     final searchEmailFilterFromFiled = controller.searchController.searchEmailFilter.value.from;
     if (searchEmailFilterFromFiled.length == 1) {
-      if (searchEmailFilterFromFiled.first == controller.userProfile.value?.email) {
+      if (searchEmailFilterFromFiled.first == controller.sessionCurrent?.username.value &&
+          controller.sessionCurrent?.username.value.isNotEmpty == true) {
         return QuickSearchFilter.fromMe.getTitle(context);
       } else {
         return '${AppLocalizations.of(context).from_email_address_prefix} ${searchEmailFilterFromFiled.first}';

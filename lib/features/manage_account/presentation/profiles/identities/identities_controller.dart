@@ -142,10 +142,9 @@ class IdentitiesController extends BaseController {
 
   void goToCreateNewIdentity(BuildContext context) async {
     final accountId = _accountDashBoardController.accountId.value;
-    final userProfile = _accountDashBoardController.userProfile.value;
     final session = _accountDashBoardController.sessionCurrent;
-    if (accountId != null && session != null && userProfile != null) {
-      final arguments = IdentityCreatorArguments(accountId, session, userProfile);
+    if (accountId != null && session != null) {
+      final arguments = IdentityCreatorArguments(accountId, session);
 
       final newIdentityArguments = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
@@ -249,13 +248,11 @@ class IdentitiesController extends BaseController {
 
   void goToEditIdentity(BuildContext context, Identity identity) async {
     final accountId = _accountDashBoardController.accountId.value;
-    final userProfile = _accountDashBoardController.userProfile.value;
     final session = _accountDashBoardController.sessionCurrent;
-    if (accountId != null && session != null && userProfile != null) {
+    if (accountId != null && session != null) {
       final arguments = IdentityCreatorArguments(
         accountId,
         session,
-        userProfile,
         identity: identity,
         actionType: IdentityActionType.edit);
 

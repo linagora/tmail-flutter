@@ -1193,8 +1193,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _handleSendReceiptToSenderAction(BuildContext context) {
     final accountId = mailboxDashBoardController.accountId.value;
-    final userProfile = mailboxDashBoardController.userProfile.value;
-    if (accountId == null || userProfile == null) {
+    final session = mailboxDashBoardController.sessionCurrent;
+    if (accountId == null || session == null) {
       return;
     }
 
@@ -1219,7 +1219,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? userProfile.email;
+    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? session.username.value;
     log('SingleEmailController::_handleSendReceiptToSenderAction():receiverEmailAddress: $receiverEmailAddress');
     final mdnToSender = _generateMDN(context, currentEmail!, receiverEmailAddress);
     final sendReceiptRequest = SendReceiptToSenderRequest(

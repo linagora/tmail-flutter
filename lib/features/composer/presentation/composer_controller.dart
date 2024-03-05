@@ -19,6 +19,7 @@ import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as web_html_editor;
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -368,13 +369,13 @@ class ComposerController extends BaseController with DragDropFileMixin {
       });
   }
 
-  void _listenBrowserEventAction() {
-    log('ComposerController::_listenBrowserEventAction:');
-    _subscriptionOnBeforeUnload = html.window.onBeforeUnload.listen((event) async {
-      final userProfile = mailboxDashBoardController.userProfile.value;
+  void _listenBrowserTabRefresh() {
+    _subscriptionOnBeforeUnload =  html.window.onBeforeUnload.listen((event) async {
       _removeComposerCacheOnWebInteractor.execute();
-      if (userProfile != null) {
-        final draftEmail = await _generateEmail(currentContext!, userProfile);
+      if (mailboxDashBoardController.sessionCurrent != null) {
+        final draftEmail = await _generateEmail(
+          currentContext!,
+          mailboxDashBoardController.sessionCurrent!.username);
         _saveComposerCacheOnWebInteractor.execute(draftEmail);
       }
     });
@@ -624,17 +625,17 @@ class ComposerController extends BaseController with DragDropFileMixin {
       emailActionType: actionType,
       mailboxRole: mailboxRole
     );
-    final userProfile =  mailboxDashBoardController.userProfile.value;
-    if (userProfile != null) {
-      final isSender = presentationEmail.from.asList().every((element) => element.email == userProfile.email);
+    final userName =  mailboxDashBoardController.sessionCurrent?.username;
+    if (userName != null) {
+      final isSender = presentationEmail.from.asList().every((element) => element.email == userName.value);
       if (isSender) {
         listToEmailAddress = List.from(recipients.value1.toSet());
         listCcEmailAddress = List.from(recipients.value2.toSet());
         listBccEmailAddress = List.from(recipients.value3.toSet());
       } else {
-        listToEmailAddress = List.from(recipients.value1.toSet().filterEmailAddress(userProfile.email));
-        listCcEmailAddress = List.from(recipients.value2.toSet().filterEmailAddress(userProfile.email));
-        listBccEmailAddress = List.from(recipients.value3.toSet().filterEmailAddress(userProfile.email));
+        listToEmailAddress = List.from(recipients.value1.toSet().filterEmailAddress(userName.value));
+        listCcEmailAddress = List.from(recipients.value2.toSet().filterEmailAddress(userName.value));
+        listBccEmailAddress = List.from(recipients.value3.toSet().filterEmailAddress(userName.value));
       }
     } else {
       listToEmailAddress = List.from(recipients.value1.toSet());
@@ -692,7 +693,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   Future<Email> _generateEmail(
     BuildContext context,
-    UserProfile userProfile,
+    UserName userName,
     {
       bool asDrafts = false,
       MailboxId? draftMailboxId,
@@ -700,7 +701,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       ComposerArguments? arguments,
     }
   ) async {
-    Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userProfile.email)};
+    Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userName.value)};
     if (identitySelected.value?.email?.isNotEmpty == true) {
       listFromEmailAddress = {
         EmailAddress(
@@ -709,7 +710,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
         )
       };
     }
-    Set<EmailAddress> listReplyToEmailAddress = {EmailAddress(null, userProfile.email)};
+    Set<EmailAddress> listReplyToEmailAddress = {EmailAddress(null, userName.value)};
     if (identitySelected.value?.replyTo?.isNotEmpty == true) {
       listReplyToEmailAddress = identitySelected.value!.replyTo!;
     }
@@ -925,7 +926,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   bool get _isParamUserNull {
     if (composerArguments.value == null ||
-        mailboxDashBoardController.userProfile.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null
     ) {
@@ -942,19 +942,18 @@ class ComposerController extends BaseController with DragDropFileMixin {
       return;
     }
 
-    final sendingArgs = await _createSendingEmailArguments(context);
+    final sendingArgs = await createSendingEmailArguments(context);
     _closeComposerAction(result: sendingArgs);
   }
 
-  Future<SendingEmailArguments> _createSendingEmailArguments(BuildContext context) async {
+  Future<SendingEmailArguments> createSendingEmailArguments(BuildContext context) async {
     final session = mailboxDashBoardController.sessionCurrent!;
     final arguments = composerArguments.value!;
     final accountId = mailboxDashBoardController.accountId.value!;
-    final userProfile = mailboxDashBoardController.userProfile.value!;
 
     final createdEmail = await _generateEmail(
       context,
-      userProfile,
+      session.username,
       outboxMailboxId: mailboxDashBoardController.outboxMailbox?.id,
       arguments: arguments
     );
@@ -1187,14 +1186,12 @@ class ComposerController extends BaseController with DragDropFileMixin {
   Future<SaveToDraftArguments?> _generateSaveAsDraftsArguments(BuildContext context) async {
     log('ComposerController::_generateSaveAsDraftsArguments:');
     final arguments = composerArguments.value;
-    final userProfile = mailboxDashBoardController.userProfile.value;
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
 
     if (arguments == null ||
         draftMailboxId == null ||
-        userProfile == null ||
         session == null ||
         accountId == null
     ) {
@@ -1204,7 +1201,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     if (_emailIdEditing != null && _emailIdEditing != arguments.presentationEmail?.id) {
       final newEmail = await _generateEmail(
         context,
-        userProfile,
+        session.username,
         asDrafts: true,
         draftMailboxId: draftMailboxId,
         arguments: arguments,
@@ -1226,7 +1223,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       if (isChanged && context.mounted) {
         final newEmail = await _generateEmail(
           context,
-          userProfile,
+          session.username,
           asDrafts: true,
           draftMailboxId: draftMailboxId,
           arguments: arguments,
@@ -1253,19 +1250,18 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
     _saveToDraftButtonState = ButtonState.disabled;
 
-    final userProfile = mailboxDashBoardController.userProfile.value;
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
 
-    if (draftMailboxId == null || userProfile == null || session == null || accountId == null) {
+    if (draftMailboxId == null || session == null || accountId == null) {
       log('ComposerController::saveToDraftAction: Param is NULL');
       return;
     }
 
     final newEmail = await _generateEmail(
       context,
-      userProfile,
+      session.username,
       asDrafts: true,
       draftMailboxId: draftMailboxId,
       arguments: mailboxDashBoardController.composerArguments);
@@ -1383,7 +1379,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       if (arguments.emailActionType == EmailActionType.editDraft) {
         return arguments.presentationEmail?.firstEmailAddressInFrom ?? '';
       } else {
-        return mailboxDashBoardController.userProfile.value?.email ?? '';
+        return mailboxDashBoardController.sessionCurrent?.username.value ?? '';
       }
     }
     return '';
@@ -1911,8 +1907,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   bool get isNetworkConnectionAvailable => networkConnectionController.isNetworkConnectionAvailable();
-
-  UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
 
   String? get textEditorWeb => _textEditorWeb;
 
