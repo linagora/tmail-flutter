@@ -193,10 +193,8 @@ class SendingEmailWorker extends Worker {
   }
 
   CreateNewMailboxRequest? _getMailboxRequest() {
-    if (_sendingEmail.mailboxNameRequest != null &&
-        _sendingEmail.creationIdRequest != null) {
+    if (_sendingEmail.mailboxNameRequest != null) {
       return CreateNewMailboxRequest(
-        _sendingEmail.creationIdRequest!,
         _sendingEmail.mailboxNameRequest!);
     } else {
       return null;
