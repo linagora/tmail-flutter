@@ -58,7 +58,9 @@ class ComposerRepositoryImpl extends ComposerRepository {
       emailAttachments.addAll(tupleContentInlineAttachments.value2);
     }
 
-    emailContent = await _removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
+    if (createEmailRequest.draftsMailboxId == null) {
+      emailContent = await _removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
+    }
 
     final userAgent = await _applicationManager.generateApplicationUserAgent();
     final emailBodyPartId = PartId(_uuid.v1());
