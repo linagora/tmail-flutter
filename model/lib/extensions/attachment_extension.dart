@@ -1,9 +1,10 @@
 
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
-import 'package:model/model.dart';
+import 'package:model/email/attachment.dart';
+import 'package:model/extensions/list_attachment_extension.dart';
 
 extension AttachmentExtension on Attachment {
-  EmailBodyPart toEmailBodyPart({String? disposition, String? charset}) => EmailBodyPart(
+  EmailBodyPart toEmailBodyPart({String? charset}) => EmailBodyPart(
     partId: partId,
     blobId: blobId,
     size: size,
@@ -11,7 +12,7 @@ extension AttachmentExtension on Attachment {
     type: type,
     cid: cid,
     charset: charset,
-    disposition: disposition ?? this.disposition?.value);
+    disposition: disposition?.name ?? ContentDisposition.attachment.name);
 
   Attachment toAttachmentWithDisposition({
     ContentDisposition? disposition,

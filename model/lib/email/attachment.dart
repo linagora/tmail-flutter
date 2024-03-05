@@ -68,19 +68,6 @@ enum ContentDisposition {
   other
 }
 
-extension ContentDispositionExtension on ContentDisposition {
-  String get value {
-    switch(this) {
-      case ContentDisposition.inline:
-        return 'inline';
-      case ContentDisposition.attachment:
-        return 'attachment';
-      case ContentDisposition.other:
-        return toString();
-    }
-  }
-}
-
 extension DispositionStringExtension on String? {
   ContentDisposition? toContentDisposition() {
     if (this != null) {

@@ -38,34 +38,24 @@ class SendEmailInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final result = await _emailRepository.sendEmail(
+      await _emailRepository.sendEmail(
         session,
         accountId,
         emailRequest,
         mailboxRequest: mailboxRequest
       );
 
-      if (result) {
-        if (emailRequest.emailIdDestroyed != null) {
-          await _emailRepository.deleteEmailPermanently(session, accountId, emailRequest.emailIdDestroyed!);
-        }
-
-        yield Right<Failure, Success>(
-          SendEmailSuccess(
-            currentEmailState: currentEmailState,
-            currentMailboxState: currentMailboxState,
-            emailRequest: emailRequest
-          )
-        );
-      } else {
-        yield Left<Failure, Success>(SendEmailFailure(
-          session: session,
-          accountId: accountId,
-          emailRequest: emailRequest,
-          mailboxRequest: mailboxRequest,
-          sendingEmailActionType: sendingEmailActionType,
-        ));
+      if (emailRequest.emailIdDestroyed != null) {
+        await _emailRepository.deleteEmailPermanently(session, accountId, emailRequest.emailIdDestroyed!);
       }
+
+      yield Right<Failure, Success>(
+        SendEmailSuccess(
+          currentEmailState: currentEmailState,
+          currentMailboxState: currentMailboxState,
+          emailRequest: emailRequest
+        )
+      );
     } catch (e) {
       yield Left<Failure, Success>(SendEmailFailure(
         exception: e,
