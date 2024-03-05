@@ -1,8 +1,10 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/popup_menu/popup_menu_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:model/model.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin UserSettingPopupMenuMixin {
@@ -10,18 +12,33 @@ mixin UserSettingPopupMenuMixin {
 
   List<PopupMenuEntry> popupMenuUserSettingActionTile(
     BuildContext context,
-    UserProfile? userProfile,
+    UserName? userName,
     {
       Function? onLogoutAction,
       Function? onSettingAction
     }
   ) {
     return [
-      PopupMenuItem(
-        enabled: false,
-        padding: EdgeInsets.zero,
-        child: _userInformation(context, userProfile)
-      ),
+      if (userName != null)
+        PopupMenuItem(
+          enabled: false,
+          padding: EdgeInsets.zero,
+          child: SizedBox(
+            width: 300,
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              title: Text(
+                userName.value,
+                maxLines: 1,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: AppColor.colorHintSearchBar,
+                  fontWeight: FontWeight.normal
+                )
+              )
+            ),
+          )
+        ),
       if (onSettingAction != null)
         ...[
           const PopupMenuDivider(height: 0.5),
@@ -40,21 +57,6 @@ mixin UserSettingPopupMenuMixin {
           ),
         ]
     ];
-  }
-
-  Widget _userInformation(BuildContext context, UserProfile? userProfile) {
-    if (userProfile != null) {
-      return SizedBox(
-        width: 300,
-        child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            title: Text(userProfile.email, maxLines: 1, style: const TextStyle(
-                fontSize: 15,
-                color: AppColor.colorHintSearchBar,
-                fontWeight: FontWeight.normal))),
-      );
-    }
-    return const SizedBox.shrink();
   }
 
   Widget _settingAction(BuildContext context, Function? onCallBack) {

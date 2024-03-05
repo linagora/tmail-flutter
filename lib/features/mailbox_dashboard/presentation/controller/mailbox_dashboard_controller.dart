@@ -199,7 +199,6 @@ class MailboxDashBoardController extends ReloadableController {
   final selectedMailbox = Rxn<PresentationMailbox>();
   final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
-  final userProfile = Rxn<UserProfile>();
   final dashBoardAction = Rxn<UIAction>();
   final mailboxUIAction = Rxn<MailboxUIAction>();
   final emailUIAction = Rxn<EmailUIAction>();
@@ -514,7 +513,6 @@ class MailboxDashBoardController extends ReloadableController {
     final currentAccountId = session.personalAccount.accountId;
     sessionCurrent = session;
     accountId.value = currentAccountId;
-    userProfile.value = UserProfile(session.username.value);
 
     injectAutoCompleteBindings(session, currentAccountId);
     injectRuleFilterBindings(session, currentAccountId);
@@ -1447,13 +1445,12 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void selectQuickSearchFilter(QuickSearchFilter filter) {
-    return searchController.selectQuickSearchFilter(filter, userProfile.value!);
+    return searchController.selectQuickSearchFilter(filter);
   }
 
   void selectQuickSearchFilterFrom(EmailAddress fromEmailFilter) {
     return searchController.selectQuickSearchFilter(
       QuickSearchFilter.fromMe,
-      userProfile.value!,
       fromEmailFilter: fromEmailFilter
     );
   }
@@ -1463,11 +1460,10 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
-    if (sessionCurrent != null && accountId.value != null && userProfile.value != null) {
+    if (sessionCurrent != null && accountId.value != null) {
       return searchController.quickSearchEmails(
         session: sessionCurrent!,
         accountId: accountId.value!,
-        userProfile: userProfile.value!,
         query: query
       );
     } else {

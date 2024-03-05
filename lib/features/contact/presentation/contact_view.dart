@@ -80,9 +80,10 @@ class ContactView extends GetWidget<ContactController> {
                             ),
                             if (PlatformInfo.isWeb)
                               Obx(() {
-                                final userEmail = controller.userProfile.value?.email;
-                                if (userEmail != null && userEmail.isNotEmpty) {
-                                  final userEmailAddress = EmailAddress(AppLocalizations.of(context).me, controller.userProfile.value?.email);
+                                if (controller.session?.username.value.isNotEmpty == true) {
+                                  final userEmailAddress = EmailAddress(
+                                    AppLocalizations.of(context).me,
+                                    controller.session?.username.value);
                                   final fromMeSuggestionEmailAddress = SuggestionEmailAddress(userEmailAddress, state: SuggestionEmailState.valid);
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 4),

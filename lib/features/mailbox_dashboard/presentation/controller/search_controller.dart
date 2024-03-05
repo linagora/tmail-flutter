@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
@@ -17,7 +18,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
@@ -73,10 +73,9 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void selectQuickSearchFilter(
     QuickSearchFilter quickSearchFilter,
-    UserProfile userProfile,
     {EmailAddress? fromEmailFilter}
   ) {
-    final isFilterSelected = quickSearchFilter.isSelected(searchEmailFilter.value, userProfile);
+    final isFilterSelected = quickSearchFilter.isSelected(searchEmailFilter.value);
 
     switch (quickSearchFilter) {
       case QuickSearchFilter.hasAttachment:
@@ -110,7 +109,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
     required Session session,
     required AccountId accountId,
     required String query,
-    required UserProfile userProfile,
   }) async {
     return await _quickSearchEmailInteractor.execute(
       session,
@@ -119,7 +117,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       sort: <Comparator>{}..add(
         EmailComparator(EmailComparatorProperty.receivedAt)
           ..setIsAscending(false)),
-      filter: _mappingToFilterOnSuggestionForm(userProfile: userProfile, query: query),
+      filter: _mappingToFilterOnSuggestionForm(userName: session.username, query: query),
       properties: ThreadConstants.propertiesQuickSearch
     ).then((result) => result.fold(
       (failure) => <PresentationEmail>[],
@@ -129,7 +127,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     ));
   }
 
-  Filter? _mappingToFilterOnSuggestionForm({required String query, required UserProfile userProfile}) {
+  Filter? _mappingToFilterOnSuggestionForm({required String query, required UserName userName}) {
     log('SearchController::_mappingToFilterOnSuggestionForm():query: $query');
     final filterCondition = EmailFilterCondition(
       text: query.isNotEmpty == true ? query : null,
@@ -143,7 +141,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
         ? true
         : null,
       from: listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)
-        ? userProfile.email
+        ? userName.value
         : null
     );
 
@@ -152,7 +150,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       : null;
   }
 
-  void applyFilterSuggestionToSearchFilter(UserProfile? userProfile) {
+  void applyFilterSuggestionToSearchFilter(UserName? userName) {
     final receiveTime = listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
       ? EmailReceiveTimeType.last7Days
       : EmailReceiveTimeType.allTime;
@@ -160,11 +158,11 @@ class SearchController extends BaseController with DateRangePickerMixin {
     final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment) ? true : false;
 
     var listFromAddress = searchEmailFilter.value.from;
-    if (userProfile != null) {
+    if (userName != null) {
       if (listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
-        listFromAddress.add(userProfile.email);
+        listFromAddress.add(userName.value);
       } else {
-        listFromAddress.remove(userProfile.email);
+        listFromAddress.remove(userName.value);
       }
     }
 
