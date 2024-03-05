@@ -38,7 +38,7 @@ mixin MessageDialogActionMixin {
     if (alignCenter) {
       return await Get.dialog(
         PointerInterceptor(
-          child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan, heightButton: 44)
+          child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
             ..key(const Key('confirm_dialog_action'))
             ..title(title ?? '')
             ..content(message)
