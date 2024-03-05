@@ -1,10 +1,15 @@
 import 'package:collection/collection.dart';
+import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart';
 import 'package:html/parser.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
+import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
+import 'package:model/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 
 class HtmlAnalyzer {
@@ -98,5 +103,58 @@ class HtmlAnalyzer {
       transformConfiguration: configuration
     );
     return htmlContentTransformed;
+  }
+
+  Future<Tuple2<String, Set<EmailBodyPart>>> replaceImageBase64ToImageCID({
+    required String emailContent,
+    required Map<String, Attachment> inlineAttachments
+  }) async {
+    final document = parse(emailContent);
+    final listImgTag = document.querySelectorAll('img[src^="data:image/"][id^="cid:"]');
+
+    final listInlineAttachment = await Future.wait(listImgTag.map((imgTag) async {
+      final idImg = imgTag.attributes['id'];
+      final cid = idImg!.replaceFirst('cid:', '').trim();
+      imgTag.attributes['src'] = 'cid:$cid';
+      imgTag.attributes.remove('id');
+      return cid;
+    })).then((listCid) {
+      final listInlineAttachment = listCid
+        .map((cid) {
+          if (inlineAttachments.containsKey(cid)) {
+            return inlineAttachments[cid]!.toEmailBodyPart(charset: Constant.base64Charset);
+          } else {
+            return null;
+          }
+        })
+        .whereNotNull()
+        .toSet();
+
+      return listInlineAttachment;
+    });
+
+    final newContent = document.body?.innerHtml ?? emailContent;
+
+    return Tuple2(newContent, listInlineAttachment);
+  }
+
+  Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent}) async {
+    log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: BEFORE = $emailContent');
+    final document = parse(emailContent);
+    final signatureElements = document.querySelectorAll('div.tmail-signature');
+    await Future.wait(signatureElements.map((signatureTag) async {
+      final signatureChildren = signatureTag.children;
+      for (var child in signatureChildren) {
+        log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: CHILD = ${child.outerHtml}');
+        if (child.attributes['class']?.contains('tmail-signature-button') == true) {
+          child.remove();
+        } else if (child.attributes['class']?.contains('tmail-signature-content') == true) {
+          signatureTag.innerHtml = child.innerHtml;
+        }
+      }
+    }));
+    final newContent = document.body?.innerHtml ?? emailContent;
+    log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: AFTER = $newContent');
+    return newContent;
   }
 }
