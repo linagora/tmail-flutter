@@ -28,7 +28,7 @@ class SaveEmailAsDraftsInteractor {
       final emailAsDrafts = await _emailRepository.saveEmailAsDrafts(session, accountId, email);
       yield Right<Failure, Success>(
         SaveEmailAsDraftsSuccess(
-          emailAsDrafts,
+          emailAsDrafts.id!,
           currentEmailState: currentEmailState,
           currentMailboxState: currentMailboxState
         )
