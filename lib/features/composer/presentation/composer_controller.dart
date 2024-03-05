@@ -16,15 +16,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as web_html_editor;
-import 'package:http_parser/http_parser.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
-import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -48,6 +42,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_a
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -71,7 +66,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
@@ -336,14 +330,43 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   void _listenBrowserTabRefresh() {
-    _subscriptionOnBeforeUnload =  html.window.onBeforeUnload.listen((event) async {
-      _removeComposerCacheOnWebInteractor.execute();
-      if (mailboxDashBoardController.sessionCurrent != null) {
-        final draftEmail = await _generateEmail(
-          currentContext!,
-          mailboxDashBoardController.sessionCurrent!.username);
-        _saveComposerCacheOnWebInteractor.execute(draftEmail);
+    _subscriptionOnBeforeUnload = html.window.onBeforeUnload.listen((event) async {
+      await _removeComposerCacheOnWebInteractor.execute();
+
+      if (composerArguments.value == null ||
+          mailboxDashBoardController.sessionCurrent == null ||
+          mailboxDashBoardController.accountId.value == null
+      ) {
+        log('ComposerController::_listenBrowserTabRefresh: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
+        return;
       }
+
+      final emailContent = await _getContentInEditor();
+
+      await _saveComposerCacheOnWebInteractor.execute(CreateEmailRequest(
+        session: mailboxDashBoardController.sessionCurrent!,
+        accountId: mailboxDashBoardController.accountId.value!,
+        emailActionType: composerArguments.value!.emailActionType,
+        subject: subjectEmail.value ?? '',
+        emailContent: emailContent,
+        fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+        toRecipients: listToEmailAddress.toSet(),
+        ccRecipients: listCcEmailAddress.toSet(),
+        bccRecipients: listBccEmailAddress.toSet(),
+        isRequestReadReceipt: hasRequestReadReceipt.value,
+        identity: identitySelected.value,
+        attachments: uploadController.attachmentsUploaded,
+        inlineAttachments: uploadController.mapInlineAttachments,
+        outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
+        sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+        draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
+        draftsEmailId: _getDraftEmailId(),
+        answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
+        unsubscribeEmailId: composerArguments.value!.previousEmailId,
+        messageId: composerArguments.value!.messageId,
+        references: composerArguments.value!.references,
+        emailSendingQueue: composerArguments.value!.sendingEmail
+      ));
     });
 
     _subscriptionOnDragEnter = html.window.onDragEnter.listen((event) {
@@ -656,128 +679,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
       isEnableEmailSendButton.value = true;
     } else {
       isEnableEmailSendButton.value = false;
-    }
-  }
-
-  Future<Email> _generateEmail(
-    BuildContext context,
-    UserName userName,
-    {
-      bool asDrafts = false,
-      MailboxId? draftMailboxId,
-      MailboxId? outboxMailboxId,
-      ComposerArguments? arguments,
-    }
-  ) async {
-    Set<EmailAddress> listFromEmailAddress = {EmailAddress(null, userName.value)};
-    if (identitySelected.value?.email?.isNotEmpty == true) {
-      listFromEmailAddress = {
-        EmailAddress(
-          identitySelected.value?.name,
-          identitySelected.value?.email
-        )
-      };
-    }
-    Set<EmailAddress> listReplyToEmailAddress = {EmailAddress(null, userName.value)};
-    if (identitySelected.value?.replyTo?.isNotEmpty == true) {
-      listReplyToEmailAddress = identitySelected.value!.replyTo!;
-    }
-
-    final attachments = <EmailBodyPart>{};
-    attachments.addAll(uploadController.generateAttachments() ?? []);
-
-    var emailBodyText = await _getEmailBodyText(context, asDrafts: asDrafts);
-    if (uploadController.mapInlineAttachments.isNotEmpty) {
-      final mapContents = await _getMapContent(emailBodyText);
-      emailBodyText = mapContents.value1;
-      final listInlineAttachment = mapContents.value2;
-      final listInlineEmailBodyPart = listInlineAttachment
-          .map((attachment) => attachment.toEmailBodyPart(charset: 'base64'))
-          .toSet();
-      attachments.addAll(listInlineEmailBodyPart);
-    }
-
-    final userAgent = await applicationManager.getUserAgent();
-    log('ComposerController::_generateEmail(): userAgent: $userAgent');
-
-    Map<MailboxId, bool> mailboxIds = {};
-    if (asDrafts && draftMailboxId != null) {
-      mailboxIds[draftMailboxId] = true;
-    }
-    if (outboxMailboxId != null) {
-      mailboxIds[outboxMailboxId] = true;
-    }
-
-    Map<KeyWordIdentifier, bool>? mapKeywords = {};
-    if (asDrafts) {
-      mapKeywords[KeyWordIdentifier.emailDraft] = true;
-      mapKeywords[KeyWordIdentifier.emailSeen] = true;
-    }
-
-    final inReplyTo = _generateInReplyTo(arguments);
-    final references = _generateReferences(arguments);
-
-    final generatePartId = PartId(uuid.v1());
-
-    return Email(
-      mailboxIds: mailboxIds.isNotEmpty ? mailboxIds : null,
-      from: listFromEmailAddress,
-      to: listToEmailAddress.toSet(),
-      cc: listCcEmailAddress.toSet(),
-      bcc: listBccEmailAddress.toSet(),
-      replyTo: listReplyToEmailAddress,
-      inReplyTo: inReplyTo,
-      references: references,
-      keywords: mapKeywords.isNotEmpty ? mapKeywords : null,
-      subject: subjectEmail.value,
-      htmlBody: {
-        EmailBodyPart(
-          partId: generatePartId,
-          type: MediaType.parse('text/html')
-        )},
-      bodyValues: {
-        generatePartId: EmailBodyValue(emailBodyText, false, false)
-      },
-      attachments: attachments.isNotEmpty ? attachments : null,
-      headerMdn: hasRequestReadReceipt.value ? { IndividualHeaderIdentifier.headerMdn: getEmailAddressSender() } : {},
-    );
-  }
-
-  MessageIdsHeaderValue? _generateInReplyTo(ComposerArguments? arguments) {
-    if (arguments?.emailActionType == EmailActionType.reply ||
-        arguments?.emailActionType == EmailActionType.replyAll) {
-      return arguments?.messageId;
-    }
-    return null;
-  }
-
-  MessageIdsHeaderValue? _generateReferences(ComposerArguments? arguments) {
-    if (arguments?.emailActionType == EmailActionType.reply ||
-        arguments?.emailActionType == EmailActionType.replyAll ||
-        arguments?.emailActionType == EmailActionType.forward) {
-      Set<String> ids = {};
-      if (arguments?.messageId?.ids.isNotEmpty == true) {
-        ids.addAll(arguments!.messageId!.ids);
-      }
-      if (arguments?.references?.ids.isNotEmpty == true) {
-        ids.addAll(arguments!.references!.ids);
-      }
-      if (ids.isNotEmpty) {
-        return MessageIdsHeaderValue(ids);
-      }
-    }
-    return null;
-  }
-
-  Future<Tuple2<String, List<Attachment>>> _getMapContent(String emailBodyText) async {
-    if (kIsWeb) {
-      return await richTextWebController.refactorContentHasInlineImage(
-          emailBodyText,
-          uploadController.mapInlineAttachments);
-    } else {
-      return await richTextMobileTabletController.refactorContentHasInlineImage(
-          emailBodyText,
-          uploadController.mapInlineAttachments);
     }
   }
 
@@ -1889,32 +1790,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
-
-  Future<String> _getEmailBodyText(BuildContext context, {bool asDrafts = false}) async {
-    var contentHtml = '';
-
-    if (PlatformInfo.isWeb) {
-      if (responsiveUtils.isDesktop(context) &&
-          screenDisplayMode.value == ScreenDisplayMode.minimize) {
-        contentHtml = _textEditorWeb ?? '';
-      } else {
-        if (asDrafts) {
-          contentHtml = await richTextWebController.editorController.getText();
-        } else {
-          contentHtml = await richTextWebController.editorController.getTextWithSignatureContent();
-        }
-      }
-    } else {
-      if (asDrafts) {
-        contentHtml = (await htmlEditorApi?.getText()) ?? '';
-      } else {
-        contentHtml = (await htmlEditorApi?.getTextWithSignatureContent()) ?? '';
-      }
-    }
-
-    final newContentHtml = contentHtml.removeEditorStartTag();
-    return newContentHtml;
-  }
 
   void removeDraggableEmailAddress(DraggableEmailAddress draggableEmailAddress) {
     log('ComposerController::removeDraggableEmailAddress: $draggableEmailAddress');

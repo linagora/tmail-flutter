@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/composer/domain/repository/contact_reposi
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -43,7 +44,6 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -191,7 +191,10 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => UploadAttachmentInteractor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
-    Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => SaveComposerCacheOnWebInteractor(
+      Get.find<ComposerCacheRepository>(),
+      Get.find<ComposerRepository>(),
+    ));
     Get.lazyPut(() => DownloadImageAsBase64Interactor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => TransformHtmlEmailContentInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetAlwaysReadReceiptSettingInteractor(Get.find<ServerSettingsRepository>()));
