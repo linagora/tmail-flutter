@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
@@ -7,6 +8,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
@@ -82,7 +84,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
           borderRadius: BorderRadius.all(Radius.circular(12)),
           color: Colors.white,
         ),
-        width: 400,
+        width: min(context.width, 400),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
