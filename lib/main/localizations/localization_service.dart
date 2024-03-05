@@ -38,17 +38,22 @@ class LocalizationService extends Translations {
   }
 
   static Locale getLocaleFromLanguage({String? langCode}) {
-    final languageCacheManager = getBinding<LanguageCacheManager>();
-    log('LocalizationService::_getLocaleFromLanguage:languageCacheManager: $languageCacheManager');
-    final localeStored = languageCacheManager?.getStoredLanguage();
-    log('LocalizationService::_getLocaleFromLanguage():localeStored: $localeStored');
-    if (localeStored != null) {
-      return localeStored;
-    } else {
-      final languageCodeCurrent = langCode ?? Get.deviceLocale?.languageCode;
-      log('LocalizationService::_getLocaleFromLanguage():languageCodeCurrent: $languageCodeCurrent');
-      final localeSelected = supportedLocales.firstWhereOrNull((locale) => locale.languageCode == languageCodeCurrent);
-      return localeSelected ?? Get.deviceLocale ?? defaultLocale;
+    try {
+      final languageCacheManager = getBinding<LanguageCacheManager>();
+      log('LocalizationService::_getLocaleFromLanguage:languageCacheManager: $languageCacheManager');
+      final localeStored = languageCacheManager?.getStoredLanguage();
+      log('LocalizationService::_getLocaleFromLanguage():localeStored: $localeStored');
+      if (localeStored != null) {
+        return localeStored;
+      } else {
+        final languageCodeCurrent = langCode ?? Get.deviceLocale?.languageCode;
+        log('LocalizationService::_getLocaleFromLanguage():languageCodeCurrent: $languageCodeCurrent');
+        final localeSelected = supportedLocales.firstWhereOrNull((locale) => locale.languageCode == languageCodeCurrent);
+        return localeSelected ?? Get.deviceLocale ?? defaultLocale;
+      }
+    } catch (e) {
+      logError('LocalizationService::getLocaleFromLanguage: Exception: $e');
+      return Get.deviceLocale ?? defaultLocale;
     }
   }
 

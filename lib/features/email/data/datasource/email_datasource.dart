@@ -27,7 +27,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.
 abstract class EmailDataSource {
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId);
 
-  Future<bool> sendEmail(
+  Future<void> sendEmail(
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,

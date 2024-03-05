@@ -94,4 +94,6 @@ class NetworkConnectionController extends GetxController {
       );
     }
   }
+
+  Future<bool> hasInternetConnection() async => isNetworkConnectionAvailable();
 }

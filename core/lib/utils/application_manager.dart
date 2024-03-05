@@ -34,6 +34,7 @@ class ApplicationManager {
         userAgent = FkUserAgent.userAgent ?? '';
         FkUserAgent.release();
       }
+      log('ApplicationManager::getUserAgent: $userAgent');
       return userAgent;
     } catch(e) {
       logError('ApplicationManager::getUserAgent: Exception: $e');

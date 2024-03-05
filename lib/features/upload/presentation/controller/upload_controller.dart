@@ -253,8 +253,7 @@ class UploadController extends BaseController {
       return null;
     }
     return attachmentsUploaded
-      .map((attachment) => attachment.toEmailBodyPart(
-          disposition: ContentDisposition.attachment.value))
+      .map((attachment) => attachment.toEmailBodyPart())
       .toSet();
   }
 
