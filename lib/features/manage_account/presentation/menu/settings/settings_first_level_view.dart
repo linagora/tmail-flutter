@@ -19,7 +19,9 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
       controller: PlatformInfo.isMobile ? null : controller.settingScrollController,
       child: Column(children: [
         Obx(() => UserInformationWidget(
-          userName: controller.manageAccountDashboardController.sessionCurrent?.username,
+          userName: controller.manageAccountDashboardController.accountId.value != null
+            ? controller.manageAccountDashboardController.sessionCurrent?.username
+            : null,
           padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
           titlePadding: const EdgeInsetsDirectional.only(start: 16))),
         Divider(
