@@ -283,11 +283,8 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   }
 
   CreateNewMailboxRequest? _getMailboxRequest(SendingEmail sendingEmail) {
-    if (sendingEmail.mailboxNameRequest != null &&
-        sendingEmail.creationIdRequest != null
-    ) {
+    if (sendingEmail.mailboxNameRequest != null) {
       return CreateNewMailboxRequest(
-        sendingEmail.creationIdRequest!,
         sendingEmail.mailboxNameRequest!
       );
     } else {

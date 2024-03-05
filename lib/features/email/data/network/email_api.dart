@@ -113,7 +113,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<bool> sendEmail(
+  Future<void> sendEmail(
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
@@ -125,9 +125,10 @@ class EmailAPI with HandleSetErrorMixin {
     MailboxId? outboxMailboxId;
 
     if (mailboxRequest != null) {
+      final generateCreateId = Id(_uuid.v1());
       final setMailboxMethod = SetMailboxMethod(accountId)
         ..addCreate(
-            mailboxRequest.creationId,
+            generateCreateId,
             Mailbox(
               name: mailboxRequest.newName,
               parentId: mailboxRequest.parentId,
@@ -139,7 +140,7 @@ class EmailAPI with HandleSetErrorMixin {
 
       outboxMailboxId = MailboxId(ReferenceId(
           ReferencePrefix.defaultPrefix,
-          mailboxRequest.creationId));
+          generateCreateId));
       emailNeedsToBeCreated = emailRequest.email.updatedEmail(newMailboxIds: {outboxMailboxId: true});
     } else {
       outboxMailboxId = emailRequest.email.mailboxIds?.keys.first;
@@ -222,9 +223,7 @@ class EmailAPI with HandleSetErrorMixin {
       markAsAnsweredOrForwardedSetResponse
     ]);
 
-    if (emailCreated != null && mapErrors.isEmpty) {
-      return true;
-    } else {
+    if (emailCreated == null || mapErrors.isNotEmpty) {
       throw SetMethodException(mapErrors);
     }
   }
