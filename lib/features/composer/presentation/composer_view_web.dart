@@ -754,7 +754,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                 showCodeViewAction: controller.richTextWebController.toggleCodeView,
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                saveToDraftAction: () => controller.saveToDraftAction(context),
+                saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: (position) {
                   controller.openPopupMenuAction(
@@ -836,7 +836,7 @@ class ComposerView extends GetWidget<ComposerController> {
           padding: ComposerStyle.popupItemPadding,
           onCallbackAction: () {
             popBack();
-            controller.saveToDraftAction(context);
+            controller.handleClickSaveAsDraftsButton(context);
           }
         )
       ),
