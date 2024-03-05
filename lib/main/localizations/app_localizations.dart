@@ -3913,4 +3913,28 @@ class AppLocalizations {
       'Save this message to your drafts folder and close composer?',
       name: 'warningMessageWhenClickCloseComposer');
   }
+
+  String get savingMessage {
+    return Intl.message(
+      'Saving message',
+      name: 'savingMessage');
+  }
+
+  String get creatingMessage {
+    return Intl.message(
+      'Creating message',
+      name: 'creatingMessage');
+  }
+
+  String get savingMessageToDraftFolder {
+    return Intl.message(
+      'Saving message to draft folder',
+      name: 'savingMessageToDraftFolder');
+  }
+
+  String get warningMessageWhenSaveEmailToDraftsFailure {
+    return Intl.message(
+      'Saving of the message to drafts folder failed.\nAn error occurred while saving mail.',
+      name: 'warningMessageWhenSaveEmailToDraftsFailure');
+  }
 }
