@@ -421,7 +421,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   void onCreatedMobileEditorAction(BuildContext context, HtmlEditorApi editorApi, String? content) {
-    initTextEditor(content);
+    if (identitySelected.value != null) {
+      initTextEditor(content);
+    }
     richTextMobileTabletController.htmlEditorApi = editorApi;
     keyboardRichTextController.onCreateHTMLEditor(
       editorApi,
@@ -975,7 +977,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
       alignCenter: true,
       onConfirmAction: () {
         _sendButtonState = ButtonState.enabled;
-        popBack();
         _autoFocusFieldWhenLauncher();
       },
       onCancelAction: () async {
@@ -1163,8 +1164,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
     PresentationEmail? presentationEmail,
     Role? mailboxRole,
   }) async {
-    final newEmailBody = await _getEmailBodyText(context, asDrafts: true);
+    final newEmailBody = await _getContentInEditor();
     final oldEmailBody = _initTextEditor ?? '';
+    log('ComposerController::_validateEmailChange: newEmailBody = $newEmailBody | oldEmailBody = $oldEmailBody');
     final isEmailBodyChanged = !oldEmailBody.trim().isSame(newEmailBody.trim());
 
     final newEmailSubject = subjectEmail.value ?? '';
@@ -1929,7 +1931,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
   HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController.htmlEditorApi;
 
   void onChangeTextEditorWeb(String? text) {
-    initTextEditor(text);
+    if (identitySelected.value != null) {
+      initTextEditor(text);
+    }
     _textEditorWeb = text;
   }
 
@@ -2046,19 +2050,92 @@ class ComposerController extends BaseController with DragDropFileMixin {
       log('ComposerController::handleClickCloseComposer: _closeComposerButtonState = disabled');
       return;
     }
-    
-    if (!_isEmailBodyLoaded) {
-      log('ComposerController::handleClickCloseComposer: _isEmailBodyLoaded = false');
+
+    _closeComposerButtonState = ButtonState.disabled;
+
+    if (composerArguments.value == null) {
+      log('ComposerController::handleClickCloseComposer: ARGUMENTS is NULL');
       clearFocus(context);
       _closeComposerAction();
       return;
     }
 
-    _closeComposerButtonState = ButtonState.disabled;
-    clearFocus(context);
-    final draftArgs = await _generateSaveAsDraftsArguments(context);
-    _closeComposerAction(result: draftArgs);
-    _closeComposerButtonState = ButtonState.enabled;
+    final isChanged = await _validateEmailChange(
+      context: context,
+      emailActionType: composerArguments.value!.emailActionType,
+      presentationEmail: composerArguments.value!.presentationEmail,
+      mailboxRole: composerArguments.value!.mailboxRole
+    );
+
+    if (isChanged && context.mounted) {
+      clearFocus(context);
+      _showConfirmDialogSaveMessage(context);
+      return;
+    }
+
+    if (!_isEmailBodyLoaded && context.mounted) {
+      log('ComposerController::handleClickCloseComposer: EDITOR NOT LOADED');
+      _closeComposerButtonState = ButtonState.enabled;
+      clearFocus(context);
+      _closeComposerAction();
+      return;
+    }
+
+    if (context.mounted) {
+      _closeComposerButtonState = ButtonState.enabled;
+      clearFocus(context);
+      _closeComposerAction();
+    }
+  }
+
+  void _showConfirmDialogSaveMessage(BuildContext context) {
+    showConfirmDialogAction(
+      context,
+      title: AppLocalizations.of(context).saveMessage.capitalizeFirstEach,
+      AppLocalizations.of(context).warningMessageWhenClickCloseComposer,
+      AppLocalizations.of(context).save,
+      cancelTitle: AppLocalizations.of(context).discardChanges,
+      alignCenter: true,
+      onConfirmAction: () {
+        _closeComposerButtonState = ButtonState.enabled;
+      },
+      onCancelAction: () async {
+        _closeComposerButtonState = ButtonState.enabled;
+        await Future.delayed(
+          const Duration(milliseconds: 100),
+          _closeComposerAction
+        );
+      },
+      onCloseButtonAction: () {
+        _closeComposerButtonState = ButtonState.enabled;
+        popBack();
+        _autoFocusFieldWhenLauncher();
+      },
+      marginIcon: EdgeInsets.zero,
+      icon: SvgPicture.asset(
+        imagePaths.icQuotasWarning,
+        width: 40,
+        height: 40,
+        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
+      ),
+      titleStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Colors.black
+      ),
+      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 14,
+        color: AppColor.colorTextBody
+      ),
+      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.white
+      ),
+      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      )
+    );
   }
 
   void _getAlwaysReadReceiptSetting() {
