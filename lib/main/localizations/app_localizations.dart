@@ -3872,4 +3872,22 @@ class AppLocalizations {
       name: 'loadingPleaseWait',
     );
   }
+
+  String get status {
+    return Intl.message(
+      'Status',
+      name: 'status');
+  }
+
+  String get progress {
+    return Intl.message(
+      'Progress',
+      name: 'progress');
+  }
+
+  String get sendingMessage {
+    return Intl.message(
+      'Sending message',
+      name: 'sendingMessage');
+  }
 }

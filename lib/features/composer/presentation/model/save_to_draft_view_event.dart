@@ -4,14 +4,12 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 
 class SaveToDraftViewEvent extends ViewEvent {
   final BuildContext context;
   final Session session;
   final AccountId accountId;
-  final UserProfile userProfile;
   final MailboxId draftMailboxId;
   final EmailId? emailIdEditing;
   final ComposerArguments? arguments;
@@ -20,7 +18,6 @@ class SaveToDraftViewEvent extends ViewEvent {
     required this.context,
     required this.session,
     required this.accountId,
-    required this.userProfile,
     required this.draftMailboxId,
     this.emailIdEditing,
     this.arguments,
@@ -31,7 +28,6 @@ class SaveToDraftViewEvent extends ViewEvent {
     context,
     session,
     accountId,
-    userProfile,
     draftMailboxId,
     emailIdEditing,
     arguments,

@@ -2,7 +2,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -89,7 +88,7 @@ enum QuickSearchFilter {
 
   bool isApplied(List<QuickSearchFilter> listFilter) => listFilter.contains(this);
 
-  bool isSelected(SearchEmailFilter filter, UserProfile? userProfile) {
+  bool isSelected(SearchEmailFilter filter) {
     switch (this) {
       case QuickSearchFilter.hasAttachment:
         return filter.hasAttachment == true;
