@@ -116,7 +116,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   final fromRecipientState = PrefixRecipientState.disabled.obs;
   final ccRecipientState = PrefixRecipientState.disabled.obs;
   final bccRecipientState = PrefixRecipientState.disabled.obs;
-  final isSendEmailLoading = false.obs;
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
 
@@ -182,6 +181,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
   bool isAttachmentCollapsed = false;
   ButtonState _closeComposerButtonState = ButtonState.enabled;
   ButtonState _saveToDraftButtonState = ButtonState.enabled;
+  ButtonState _sendButtonState = ButtonState.enabled;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
@@ -309,9 +309,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     } else if (failure is GetEmailContentFailure ||
         failure is TransformHtmlEmailContentFailure) {
       emailContentsViewState.value = Left(failure);
-      if (isSendEmailLoading.isTrue) {
-        isSendEmailLoading.value = false;
-      }
     } else if (failure is GetAllIdentitiesFailure) {
       if (identitySelected.value == null) {
         _autoFocusFieldWhenLauncher();
@@ -805,14 +802,14 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
   }
 
-  void validateInformationBeforeSending(BuildContext context) async {
-    if (isSendEmailLoading.isTrue) {
+  void handleClickSendButton(BuildContext context) async {
+    if (_sendButtonState == ButtonState.disabled) {
+      log('ComposerController::handleClickSendButton: SENDING EMAIL');
       return;
     }
+    _sendButtonState = ButtonState.disabled;
 
     clearFocus(context);
-
-    isSendEmailLoading.value = true;
 
     if (toEmailAddressController.text.isNotEmpty
         || ccEmailAddressController.text.isNotEmpty
@@ -825,12 +822,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
       showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_without_recipient,
         AppLocalizations.of(context).add_recipients,
-        onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false,
         showAsBottomSheet: true,
-      ).whenComplete(() => isSendEmailLoading.value = false);
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
 
@@ -846,13 +842,12 @@ class ComposerController extends BaseController with DragDropFileMixin {
           toAddressExpandMode.value = ExpandMode.EXPAND;
           ccAddressExpandMode.value = ExpandMode.EXPAND;
           bccAddressExpandMode.value = ExpandMode.EXPAND;
-          isSendEmailLoading.value = false;
         },
         showAsBottomSheet: true,
         title: AppLocalizations.of(context).sending_failed,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
-      ).whenComplete(() => isSendEmailLoading.value = false);
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
 
@@ -860,12 +855,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
       showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
         AppLocalizations.of(context).send_anyway,
-        onConfirmAction: () => _handleSendMessages(context),
-        onCancelAction: () => isSendEmailLoading.value = false,
+        onConfirmAction: _handleSendMessages,
         title: AppLocalizations.of(context).empty_subject,
         showAsBottomSheet: true,
         icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
-      ).whenComplete(() => isSendEmailLoading.value = false);
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
 
@@ -874,12 +868,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
         context,
         AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
         AppLocalizations.of(context).got_it,
-        onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
         showAsBottomSheet: true,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
-      ).whenComplete(() => isSendEmailLoading.value = false);
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
 
@@ -889,15 +882,14 @@ class ComposerController extends BaseController with DragDropFileMixin {
         AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
             filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
         AppLocalizations.of(context).got_it,
-        onConfirmAction: () => isSendEmailLoading.value = false,
         title: AppLocalizations.of(context).sending_failed,
         icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
-      ).whenComplete(() => isSendEmailLoading.value = false);
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
 
-    _handleSendMessages(context);
+    _handleSendMessages();
   }
 
   Future<String> _getContentInEditor() async {
@@ -911,12 +903,13 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
   }
 
-  void _handleSendMessages(BuildContext context) async {
+  void _handleSendMessages() async {
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null
     ) {
       log('ComposerController::_handleSendMessages: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
+      _sendButtonState = ButtonState.enabled;
       _closeComposerAction();
       return;
     }
@@ -957,6 +950,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
 
+    _sendButtonState = ButtonState.enabled;
     _closeComposerAction(result: resultState);
   }
 
@@ -1368,8 +1362,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   void _closeComposerAction({dynamic result}) {
-    isSendEmailLoading.value = false;
-
     if (PlatformInfo.isWeb) {
       mailboxDashBoardController.closeComposerOverlay(result: result);
     } else {
