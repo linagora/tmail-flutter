@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-15T21:34:52.177175",
+  "@@last_modified": "2024-03-06T00:47:30.311599",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3710,6 +3710,36 @@
   },
   "loadingPleaseWait": "Loading... Please wait!",
   "@loadingPleaseWait": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "status": "Status",
+  "@status": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "progress": "Progress",
+  "@progress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingMessage": "Sending message",
+  "@sendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSendEmailFailure": "Sending of the message failed.\nAn error occurred while sending mail.",
+  "@warningMessageWhenSendEmailFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeAnyway": "Close anyway",
+  "@closeAnyway": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
