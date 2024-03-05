@@ -8,7 +8,7 @@ class RemoveComposerCacheOnWebInteractor {
 
   RemoveComposerCacheOnWebInteractor(this.composerCacheRepository);
 
-  Either<Failure, Success> execute() {
+  Future<Either<Failure, Success>> execute() async {
     try {
       composerCacheRepository.removeComposerCacheOnWeb();
       return Right(RemoveComposerCacheSuccess());
