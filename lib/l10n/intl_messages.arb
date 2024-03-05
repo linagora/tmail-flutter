@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-06T00:47:30.311599",
+  "@@last_modified": "2024-03-06T01:50:29.250412",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3734,6 +3734,24 @@
   },
   "closeAnyway": "Close anyway",
   "@closeAnyway": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessage": "Save message",
+  "@saveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discardChanges": "Discard changes",
+  "@discardChanges": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenClickCloseComposer": "Save this message to your drafts folder and close composer?",
+  "@warningMessageWhenClickCloseComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
