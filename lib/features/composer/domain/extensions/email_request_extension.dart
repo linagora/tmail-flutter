@@ -24,7 +24,6 @@ extension EmailRequestExtension on EmailRequest {
       emailIdAnsweredOrForwarded: emailIdAnsweredOrForwarded,
       identityId: identityId,
       mailboxNameRequest: mailboxRequest?.newName,
-      creationIdRequest: mailboxRequest?.creationId,
       sendingState: newState,
       previousEmailId: previousEmailId
     );
