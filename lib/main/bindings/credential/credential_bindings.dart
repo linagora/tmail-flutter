@@ -71,7 +71,7 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<IOSSharingManager>(),
       Get.find<CacheExceptionThrower>())
     );
-    Get.put(AuthenticationDataSourceImpl());
+    Get.put(AuthenticationDataSourceImpl(Get.find<RemoteExceptionThrower>()));
     Get.put(AuthenticationOIDCDataSourceImpl(
       Get.find<OIDCHttpClient>(),
       Get.find<AuthenticationClientBase>(),

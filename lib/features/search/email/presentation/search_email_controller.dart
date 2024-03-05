@@ -24,7 +24,6 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
@@ -110,8 +109,6 @@ class SearchEmailController extends BaseController
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
-
-  UserProfile? get userProfile => mailboxDashBoardController.userProfile.value;
 
   SearchQuery? get searchQuery => simpleSearchFilter.value.text;
 

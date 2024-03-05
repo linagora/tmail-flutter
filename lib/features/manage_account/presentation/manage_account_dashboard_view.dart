@@ -7,6 +7,7 @@ import 'package:core/presentation/views/text/slogan_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
@@ -139,7 +140,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
       const Spacer(),
       const SizedBox(width: 16),
       Obx(() => (AvatarBuilder()
-          ..text(controller.userProfile.value?.getAvatarText() ?? '')
+          ..text(controller.sessionCurrent?.username.firstCharacter ?? '')
           ..backgroundColor(Colors.white)
           ..textColor(Colors.black)
           ..context(context)
@@ -149,7 +150,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
               position,
               popupMenuUserSettingActionTile(
                 context,
-                controller.userProfile.value,
+                controller.sessionCurrent?.username,
                 onLogoutAction: () {
                   popBack();
                   controller.logout(controller.sessionCurrent, controller.accountId.value);
