@@ -96,7 +96,7 @@ class EmailBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
       Get.find<HtmlAnalyzer>(),
-      Get.find<RemoteExceptionThrower>()));
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
       Get.find<IOSSharingManager>(),

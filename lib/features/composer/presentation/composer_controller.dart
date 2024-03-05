@@ -17,7 +17,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as web_html_editor;
 import 'package:http_parser/http_parser.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -29,6 +28,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -36,12 +36,12 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
-import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
@@ -53,6 +53,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upl
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -60,13 +61,13 @@ import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -76,7 +77,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
@@ -131,6 +131,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
   final GetAlwaysReadReceiptSettingInteractor _getAlwaysReadReceiptSettingInteractor;
+  final CreateNewAndSendEmailInteractor _createNewAndSendEmailInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -198,6 +199,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
     this._getAlwaysReadReceiptSettingInteractor,
+    this._createNewAndSendEmailInteractor,
   );
 
   @override
@@ -760,7 +762,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
       bodyValues: {
         generatePartId: EmailBodyValue(emailBodyText, false, false)
       },
-      headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
       attachments: attachments.isNotEmpty ? attachments : null,
       headerMdn: hasRequestReadReceipt.value ? { IndividualHeaderIdentifier.headerMdn: getEmailAddressSender() } : {},
     );
@@ -899,67 +900,64 @@ class ComposerController extends BaseController with DragDropFileMixin {
     _handleSendMessages(context);
   }
 
-  bool get _isParamUserNull {
+  Future<String> _getContentInEditor() async {
+    final htmlTextEditor = PlatformInfo.isWeb
+      ? _textEditorWeb
+      : await htmlEditorApi?.getText();
+    if (htmlTextEditor?.isNotEmpty == true) {
+      return htmlTextEditor!.removeEditorStartTag();
+    } else {
+      return '';
+    }
+  }
+
+  void _handleSendMessages(BuildContext context) async {
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null
     ) {
-      logError('ComposerController::isParamUserNotNull: Param is NULL');
-      return true;
-    }
-    return false;
-  }
-
-  void _handleSendMessages(BuildContext context) async {
-    if (_isParamUserNull) {
-      logError('ComposerController::_handleSendMessages: Param is NULL');
+      log('ComposerController::_handleSendMessages: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       _closeComposerAction();
       return;
     }
 
-    final sendingArgs = await createSendingEmailArguments(context);
-    _closeComposerAction(result: sendingArgs);
-  }
+    final emailContent = await _getContentInEditor();
 
-  Future<SendingEmailArguments> createSendingEmailArguments(BuildContext context) async {
-    final session = mailboxDashBoardController.sessionCurrent!;
-    final arguments = composerArguments.value!;
-    final accountId = mailboxDashBoardController.accountId.value!;
-
-    final createdEmail = await _generateEmail(
-      context,
-      session.username,
-      outboxMailboxId: mailboxDashBoardController.outboxMailbox?.id,
-      arguments: arguments
+    final resultState = await Get.dialog(
+      PointerInterceptor(
+        child: SendingMessageDialogView(
+          createEmailRequest: CreateEmailRequest(
+            session: mailboxDashBoardController.sessionCurrent!,
+            accountId: mailboxDashBoardController.accountId.value!,
+            emailActionType: composerArguments.value!.emailActionType,
+            subject: subjectEmail.value ?? '',
+            emailContent: emailContent,
+            fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+            toRecipients: listToEmailAddress.toSet(),
+            ccRecipients: listCcEmailAddress.toSet(),
+            bccRecipients: listBccEmailAddress.toSet(),
+            isRequestReadReceipt: hasRequestReadReceipt.value,
+            identity: identitySelected.value,
+            attachments: uploadController.attachmentsUploaded,
+            inlineAttachments: uploadController.mapInlineAttachments,
+            outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
+            sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+            draftsEmailId: composerArguments.value!.emailActionType == EmailActionType.editDraft
+              ? composerArguments.value!.presentationEmail?.id
+              : null,
+            answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
+            unsubscribeEmailId: composerArguments.value!.previousEmailId,
+            messageId: composerArguments.value!.messageId,
+            references: composerArguments.value!.references,
+            emailSendingQueue: composerArguments.value!.sendingEmail
+          ),
+          createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor
+        ),
+      ),
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
 
-    final emailRequest = arguments.emailActionType == EmailActionType.editSendingEmail
-      ? arguments.sendingEmail!.toEmailRequest(newEmail: createdEmail)
-      : EmailRequest(
-          email: createdEmail,
-          sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-          identityId: identitySelected.value?.id,
-          emailIdDestroyed: arguments.emailActionType == EmailActionType.editDraft
-            ? arguments.presentationEmail?.id
-            : null,
-          emailIdAnsweredOrForwarded: arguments.presentationEmail?.id,
-          emailActionType: arguments.emailActionType,
-          previousEmailId: arguments.previousEmailId,
-        );
-
-    final mailboxRequest = mailboxDashBoardController.outboxMailbox?.id == null
-      ? CreateNewMailboxRequest(
-          Id(uuid.v1()),
-          MailboxName(PresentationMailbox.outboxRole.inCaps)
-        )
-      : null;
-
-    return SendingEmailArguments(
-      session,
-      accountId,
-      emailRequest,
-      mailboxRequest,
-    );
+    _closeComposerAction(result: resultState);
   }
 
   void _checkContactPermission() async {
@@ -1370,7 +1368,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   void _closeComposerAction({dynamic result}) {
-    log('ComposerController::_closeComposerAction:');
     isSendEmailLoading.value = false;
 
     if (PlatformInfo.isWeb) {

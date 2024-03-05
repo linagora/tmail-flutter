@@ -2,7 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/application_manager.dart';
 import 'package:flutter/material.dart';
 
-class ApplicationVersionWidget extends StatelessWidget {
+class ApplicationVersionWidget extends StatefulWidget {
 
   final ApplicationManager applicationManager;
   final EdgeInsetsGeometry? padding;
@@ -18,17 +18,31 @@ class ApplicationVersionWidget extends StatelessWidget {
   });
 
   @override
+  State<ApplicationVersionWidget> createState() => _ApplicationVersionWidgetState();
+}
+
+class _ApplicationVersionWidgetState extends State<ApplicationVersionWidget> {
+
+  Future<String>? _versionStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _versionStream = widget.applicationManager.getVersion();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: applicationManager.getVersion(),
+      future: _versionStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Padding(
-            padding: padding ?? const EdgeInsets.only(top: 6),
+            padding: widget.padding ?? const EdgeInsets.only(top: 6),
             child: Text(
-              '${title ?? 'v.'}${snapshot.data}',
+              '${widget.title ?? 'v.'}${snapshot.data}',
               textAlign: TextAlign.center,
-              style: textStyle ?? Theme.of(context).textTheme.labelMedium?.copyWith(
+              style: widget.textStyle ?? Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontSize: 13,
                 color: AppColor.colorContentEmail,
                 fontWeight: FontWeight.w500
