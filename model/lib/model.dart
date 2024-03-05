@@ -57,7 +57,7 @@ export 'extensions/presentation_email_extension.dart';
 export 'extensions/presentation_mailbox_extension.dart';
 export 'extensions/properties_extension.dart';
 export 'extensions/session_extension.dart';
-export 'extensions/user_profile_extension.dart';
+export 'extensions/username_extension.dart';
 export 'extensions/utc_date_extension.dart';
 // Identity
 export 'identity/identity_request_dto.dart';
@@ -80,6 +80,3 @@ export 'oidc/token_oidc.dart';
 // Upload
 export 'upload/file_info.dart';
 export 'upload/upload_response.dart';
-// User
-export 'user/user_profile.dart';
-export 'user/user_profile_response.dart';

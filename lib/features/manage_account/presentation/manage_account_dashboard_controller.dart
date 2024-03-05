@@ -16,7 +16,6 @@ import 'package:server_settings/server_settings/capability_server_settings.dart'
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
@@ -46,7 +45,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   UpdateVacationInteractor? _updateVacationInteractor;
 
   final appInformation = Rxn<PackageInfo>();
-  final userProfile = Rxn<UserProfile>();
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final settingsPageLevel = SettingsPageLevel.universal.obs;
@@ -74,9 +72,7 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   @override
   void handleSuccessViewState(Success success) {
-    if (success is GetUserProfileSuccess) {
-      userProfile.value = success.userProfile;
-    } else if (success is GetAllVacationSuccess) {
+    if (success is GetAllVacationSuccess) {
       if (success.listVacationResponse.isNotEmpty) {
         vacationResponse.value = success.listVacationResponse.first;
       }
@@ -92,7 +88,6 @@ class ManageAccountDashBoardController extends ReloadableController {
     log('ManageAccountDashBoardController::handleReloaded:');
     sessionCurrent = session;
     accountId.value = session.personalAccount.accountId;
-    _getUserProfile();
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
     _getParametersRouter();
@@ -104,7 +99,6 @@ class ManageAccountDashBoardController extends ReloadableController {
       sessionCurrent = arguments.session;
       accountId.value = arguments.session?.personalAccount.accountId;
       previousUri = arguments.previousUri;
-      _getUserProfile();
       _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
       _getVacationResponse();
       if (arguments.menuSettingCurrent != null) {
@@ -161,11 +155,6 @@ class ManageAccountDashBoardController extends ReloadableController {
     final info = await PackageInfo.fromPlatform();
     log('ManageAccountDashBoardController::_getAppVersion(): ${info.version}');
     appInformation.value = info;
-  }
-
-  void _getUserProfile() async {
-    log('ManageAccountDashBoardController::_getUserProfile(): $sessionCurrent');
-    userProfile.value = sessionCurrent != null ? UserProfile(sessionCurrent!.username.value) : null;
   }
 
   void _getVacationResponse() {

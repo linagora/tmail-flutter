@@ -23,7 +23,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/identity_extension.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/user/user_profile.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -81,7 +80,6 @@ class IdentityCreatorController extends BaseController {
   String? _contentHtmlEditor;
   AccountId? accountId;
   Session? session;
-  UserProfile? userProfile;
   Identity? identity;
   IdentityCreatorArguments? arguments;
 
@@ -123,7 +121,6 @@ class IdentityCreatorController extends BaseController {
     if (arguments != null) {
       accountId = arguments!.accountId;
       session = arguments!.session;
-      userProfile = arguments!.userProfile;
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
       _checkDefaultIdentityIsSupported();
@@ -214,8 +211,8 @@ class IdentityCreatorController extends BaseController {
   void _setDefaultEmailAddressList() {
     listEmailAddressOfReplyTo.add(noneEmailAddress);
 
-    if (userProfile != null && userProfile?.email.isNotEmpty == true) {
-      final userEmailAddress = EmailAddress(null, userProfile!.email);
+    if (session?.username.value.isNotEmpty == true) {
+      final userEmailAddress = EmailAddress(null, session?.username.value);
       listEmailAddressDefault.add(userEmailAddress);
       listEmailAddressOfReplyTo.addAll(listEmailAddressDefault);
     }
