@@ -3902,4 +3902,22 @@ class AppLocalizations {
       'Close anyway',
       name: 'closeAnyway');
   }
+
+  String get saveMessage {
+    return Intl.message(
+      'Save message',
+      name: 'saveMessage');
+  }
+
+  String get discardChanges {
+    return Intl.message(
+      'Discard changes',
+      name: 'discardChanges');
+  }
+
+  String get warningMessageWhenClickCloseComposer {
+    return Intl.message(
+      'Save this message to your drafts folder and close composer?',
+      name: 'warningMessageWhenClickCloseComposer');
+  }
 }

@@ -15,6 +15,7 @@ mixin MessageDialogActionMixin {
       {
         Function? onConfirmAction,
         Function? onCancelAction,
+        OnCloseButtonAction? onCloseButtonAction,
         String? title,
         String? cancelTitle,
         bool hasCancelButton = true,
@@ -28,6 +29,7 @@ mixin MessageDialogActionMixin {
         TextStyle? cancelStyle,
         Color? actionButtonColor,
         Color? cancelButtonColor,
+        EdgeInsetsGeometry? marginIcon,
       }
   ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -43,7 +45,7 @@ mixin MessageDialogActionMixin {
             ..addIcon(icon)
             ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
             ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-            ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
+            ..marginIcon(icon != null ? (marginIcon ?? const EdgeInsets.only(top: 24)) : null)
             ..paddingTitle(icon != null
                 ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
                 : const EdgeInsetsDirectional.symmetric(horizontal: 24)
@@ -66,6 +68,7 @@ mixin MessageDialogActionMixin {
                   onCancelAction?.call();
                 }
             )
+            ..onCloseButtonAction(onCloseButtonAction)
           ).build()
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -111,7 +114,7 @@ mixin MessageDialogActionMixin {
                       onCancelAction?.call();
                     }
                 )
-                ..onCloseButtonAction(() => popBack()))
+                ..onCloseButtonAction(onCloseButtonAction ?? () => popBack()))
               .build()
             ),
             isScrollControlled: true,
@@ -171,7 +174,7 @@ mixin MessageDialogActionMixin {
                     onCancelAction?.call();
                   }
               )
-              ..onCloseButtonAction(() => popBack()))
+              ..onCloseButtonAction(onCloseButtonAction ?? () => popBack()))
             .build()
           ),
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,

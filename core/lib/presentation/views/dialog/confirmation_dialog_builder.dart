@@ -27,7 +27,7 @@ class ConfirmDialogBuilder {
   EdgeInsets? _paddingContent;
   EdgeInsets? _paddingButton;
   EdgeInsets? _outsideDialogPadding;
-  EdgeInsets? _marginIcon;
+  EdgeInsetsGeometry? _marginIcon;
   EdgeInsets? _margin;
   double? _widthDialog;
   double? _heightDialog;
@@ -107,7 +107,7 @@ class ConfirmDialogBuilder {
     _paddingButton = value;
   }
 
-  void marginIcon(EdgeInsets? value) {
+  void marginIcon(EdgeInsetsGeometry? value) {
     _marginIcon = value;
   }
 
