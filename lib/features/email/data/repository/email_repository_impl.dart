@@ -54,7 +54,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> sendEmail(
+  Future<void> sendEmail(
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,

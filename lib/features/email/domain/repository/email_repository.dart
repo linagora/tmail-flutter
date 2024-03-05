@@ -30,7 +30,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 abstract class EmailRepository {
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId);
 
-  Future<bool> sendEmail(
+  Future<void> sendEmail(
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,

@@ -68,7 +68,7 @@ class SendEmailInteractorBindings extends InteractorsBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
       Get.find<HtmlAnalyzer>(),
-      Get.find<RemoteExceptionThrower>()));
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
       Get.find<IOSSharingManager>(),
