@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-06T01:50:29.250412",
+  "@@last_modified": "2024-03-06T02:46:19.947772",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3758,6 +3758,30 @@
   },
   "warningMessageWhenClickCloseComposer": "Save this message to your drafts folder and close composer?",
   "@warningMessageWhenClickCloseComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessage": "Saving message",
+  "@savingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "creatingMessage": "Creating message",
+  "@creatingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessageToDraftFolder": "Saving message to draft folder",
+  "@savingMessageToDraftFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSaveEmailToDraftsFailure": "Saving of the message to drafts folder failed.\nAn error occurred while saving mail.",
+  "@warningMessageWhenSaveEmailToDraftsFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -29,7 +29,7 @@ class UpdateEmailDraftsInteractor {
       final newEmailDrafts = await _emailRepository.updateEmailDrafts(session, accountId, newEmail, oldEmailId);
       yield Right<Failure, Success>(
         UpdateEmailDraftsSuccess(
-          newEmailDrafts,
+          newEmailDrafts.id!,
           currentEmailState: currentEmailState,
           currentMailboxState: currentMailboxState
         )
