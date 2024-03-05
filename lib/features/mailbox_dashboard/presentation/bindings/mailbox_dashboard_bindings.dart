@@ -8,9 +8,7 @@ import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
@@ -170,8 +168,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetAllSendingEmailInteractor>(),
       Get.find<StoreSessionInteractor>(),
       Get.find<EmptySpamFolderInteractor>(),
-      Get.find<SaveEmailAsDraftsInteractor>(),
-      Get.find<UpdateEmailDraftsInteractor>(),
       Get.find<DeleteSendingEmailInteractor>(),
       Get.find<UnsubscribeEmailInteractor>(),
       Get.find<RestoredDeletedMessageInteractor>(),
@@ -328,14 +324,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     ));
     SendingQueueInteractorBindings().dependencies();
     Get.lazyPut(() => StoreSessionInteractor(Get.find<SessionRepository>()));
-    Get.lazyPut(() => SaveEmailAsDraftsInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>()
-    ));
-    Get.lazyPut(() => UpdateEmailDraftsInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>()
-    ));
     Get.lazyPut(() => UnsubscribeEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => RestoredDeletedMessageInteractor(
       Get.find<EmailRepository>(),
