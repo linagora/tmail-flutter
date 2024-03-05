@@ -19,7 +19,6 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback saveToDraftAction;
   final VoidCallback sendMessageAction;
   final OnRequestReadReceiptAction? requestReadReceiptAction;
-  final bool isSending;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -35,7 +34,6 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.saveToDraftAction,
     required this.sendMessageAction,
     this.requestReadReceiptAction,
-    this.isSending = false,
   });
 
   @override
@@ -129,7 +127,7 @@ class BottomBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.sendButtonSpace),
           TMailButtonWidget(
-            text: isSending ? AppLocalizations.of(context).sending : AppLocalizations.of(context).send,
+            text: AppLocalizations.of(context).send,
             icon: _imagePaths.icSend,
             iconAlignment: TextDirection.rtl,
             padding: BottomBarComposerWidgetStyle.sendButtonPadding,
@@ -139,7 +137,6 @@ class BottomBarComposerWidget extends StatelessWidget {
             backgroundColor: BottomBarComposerWidgetStyle.sendButtonBackgroundColor,
             borderRadius: BottomBarComposerWidgetStyle.sendButtonRadius,
             onTapActionCallback: sendMessageAction,
-            isLoading: isSending,
           )
         ]
       ),

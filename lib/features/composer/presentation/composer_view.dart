@@ -60,7 +60,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   Obx(() => LandscapeAppBarComposerWidget(
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
-                    sendMessageAction: () => controller.validateInformationBeforeSending(context),
+                    sendMessageAction: () => controller.handleClickSendButton(context),
                     openContextMenuAction: (position) {
                       controller.openPopupMenuAction(
                         context,
@@ -74,7 +74,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   Obx(() => AppBarComposerWidget(
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
-                    sendMessageAction: () => controller.validateInformationBeforeSending(context),
+                    sendMessageAction: () => controller.handleClickSendButton(context),
                     openContextMenuAction: (position) {
                       controller.openPopupMenuAction(
                         context,
@@ -362,7 +362,7 @@ class ComposerView extends GetWidget<ComposerController> {
               TabletBottomBarComposerWidget(
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.saveToDraftAction(context),
-                sendMessageAction: () => controller.validateInformationBeforeSending(context),
+                sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: (position) {
                   controller.openPopupMenuAction(
                     context,
