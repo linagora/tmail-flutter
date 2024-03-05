@@ -50,7 +50,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   onCloseViewAction: () => controller.handleClickCloseComposer(context),
                   attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                   insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-                  sendMessageAction: () => controller.validateInformationBeforeSending(context),
+                  sendMessageAction: () => controller.handleClickSendButton(context),
                   openContextMenuAction: (position) {
                     controller.openPopupMenuAction(
                       context,
@@ -465,7 +465,6 @@ class ComposerView extends GetWidget<ComposerController> {
                                     radius: ComposerStyle.popupMenuRadius
                                 );
                               },
-                              isSending: controller.isSendEmailLoading.value,
                             )),
                           ],
                         ),
@@ -756,7 +755,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 showCodeViewAction: controller.richTextWebController.toggleCodeView,
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.saveToDraftAction(context),
-                sendMessageAction: () => controller.validateInformationBeforeSending(context),
+                sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: (position) {
                   controller.openPopupMenuAction(
                     context,
