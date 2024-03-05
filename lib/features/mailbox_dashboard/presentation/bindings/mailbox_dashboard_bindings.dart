@@ -204,7 +204,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => HtmlDataSourceImpl(
       Get.find<HtmlAnalyzer>(),
-      Get.find<RemoteExceptionThrower>()));
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => SearchDataSourceImpl(
       Get.find<RecentSearchCacheClient>(),
       Get.find<CacheExceptionThrower>()));

@@ -132,7 +132,10 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
       const Spacer(),
       const SizedBox(width: 16),
       Obx(() => (AvatarBuilder()
-          ..text(controller.sessionCurrent?.username.firstCharacter ?? '')
+          ..text(controller.accountId.value != null
+              ? controller.sessionCurrent?.username.firstCharacter ?? ''
+              : ''
+            )
           ..backgroundColor(Colors.white)
           ..textColor(Colors.black)
           ..context(context)
