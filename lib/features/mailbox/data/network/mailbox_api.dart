@@ -148,9 +148,11 @@ class MailboxAPI with HandleSetErrorMixin {
   }
 
   Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest request) async {
+    final generateCreateId = Id(_uuid.v1());
+
     final setMailboxMethod = SetMailboxMethod(accountId)
       ..addCreate(
-          request.creationId,
+          generateCreateId,
           Mailbox(
             name: request.newName,
             isSubscribed: IsSubscribed(request.isSubscribed),
@@ -176,14 +178,14 @@ class MailboxAPI with HandleSetErrorMixin {
 
     final mapMailboxCreated = setMailboxResponse?.created;
     if (mapMailboxCreated != null &&
-        mapMailboxCreated.containsKey(request.creationId)) {
-      final mailboxCreated = mapMailboxCreated[request.creationId]!;
+        mapMailboxCreated.containsKey(generateCreateId)) {
+      final mailboxCreated = mapMailboxCreated[generateCreateId]!;
       final newMailboxCreated = mailboxCreated.toMailbox(
           request.newName,
           parentId: request.parentId);
       return newMailboxCreated;
     } else {
-      throw _parseErrorForSetMailboxResponse(setMailboxResponse, request.creationId);
+      throw _parseErrorForSetMailboxResponse(setMailboxResponse, generateCreateId);
     }
   }
 
