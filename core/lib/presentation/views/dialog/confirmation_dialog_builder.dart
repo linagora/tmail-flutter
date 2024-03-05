@@ -22,7 +22,6 @@ class ConfirmDialogBuilder {
   TextStyle? _styleTitle;
   TextStyle? _styleContent;
   double? _radiusButton;
-  double? heightButton;
   EdgeInsets? _paddingTitle;
   EdgeInsets? _paddingContent;
   EdgeInsets? _paddingButton;
@@ -46,7 +45,6 @@ class ConfirmDialogBuilder {
     {
       this.showAsBottomSheet = false,
       this.listTextSpan,
-      this.heightButton,
       this.maxWith = double.infinity,
     }
   );
@@ -240,7 +238,6 @@ class ConfirmDialogBuilder {
                             name: _cancelText,
                             bgColor: _colorCancelButton,
                             radius: _radiusButton,
-                            height: heightButton,
                             textStyle: _styleTextCancelButton,
                             action: _onCancelButtonAction)),
                       if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 16),
@@ -249,7 +246,6 @@ class ConfirmDialogBuilder {
                             name: _confirmText,
                             bgColor: _colorConfirmButton,
                             radius: _radiusButton,
-                            height: heightButton,
                             textStyle: _styleTextConfirmButton,
                             action: _onConfirmButtonAction))
                     ]
@@ -264,12 +260,10 @@ class ConfirmDialogBuilder {
     TextStyle? textStyle,
     Color? bgColor,
     double? radius,
-    double? height,
     Function? action
   }) {
     return SizedBox(
       width: double.infinity,
-      height: height ?? 48,
       child: ElevatedButton(
         onPressed: () => action?.call(),
         style: ButtonStyle(
@@ -281,8 +275,7 @@ class ConfirmDialogBuilder {
               borderRadius: BorderRadius.circular(radius ?? 8),
               side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton),
             )),
-            padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-                    (Set<MaterialState> states) => const EdgeInsets.symmetric(horizontal: 16)),
+            padding: MaterialStateProperty.resolveWith<EdgeInsets>((Set<MaterialState> states) => const EdgeInsets.all(8)),
             elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
         child: Text(name ?? '',
             textAlign: TextAlign.center,
