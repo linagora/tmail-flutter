@@ -361,7 +361,7 @@ class ComposerView extends GetWidget<ComposerController> {
               ),
               TabletBottomBarComposerWidget(
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                saveToDraftAction: () => controller.saveToDraftAction(context),
+                saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: (position) {
                   controller.openPopupMenuAction(
@@ -453,7 +453,7 @@ class ComposerView extends GetWidget<ComposerController> {
           padding: ComposerStyle.popupItemPadding,
           onCallbackAction: () {
             popBack();
-            controller.saveToDraftAction(context);
+            controller.handleClickSaveAsDraftsButton(context);
           }
         )
       ),

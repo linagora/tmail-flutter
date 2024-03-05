@@ -13,8 +13,6 @@ import 'package:tmail_ui_user/features/composer/domain/repository/contact_reposi
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -191,13 +189,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => LocalFilePickerInteractor());
     Get.lazyPut(() => LocalImagePickerInteractor());
     Get.lazyPut(() => UploadAttachmentInteractor(Get.find<ComposerRepository>()));
-    Get.lazyPut(() => SaveEmailAsDraftsInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => UpdateEmailDraftsInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => DownloadImageAsBase64Interactor(Get.find<ComposerRepository>()));

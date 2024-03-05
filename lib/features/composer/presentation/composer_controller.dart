@@ -59,7 +59,6 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_arguments.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
@@ -334,27 +333,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
         }
       });
     });
-
-    dashboardViewStateWorker = ever(mailboxDashBoardController.viewState, (state) {
-      state.fold(
-        (failure) {
-          if (failure is SaveEmailAsDraftsFailure ||
-            failure is UpdateEmailDraftsFailure) {
-            _saveToDraftButtonState = ButtonState.enabled;
-          }
-        },
-        (success) {
-          if (success is SaveEmailAsDraftsSuccess) {
-            _emailIdEditing = success.emailId;
-            _saveToDraftButtonState = ButtonState.enabled;
-            log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:SaveEmailAsDraftsSuccess:emailIdEditing: $_emailIdEditing');
-          } else if (success is UpdateEmailDraftsSuccess) {
-            _emailIdEditing = success.emailId;
-            _saveToDraftButtonState = ButtonState.enabled;
-            log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:UpdateEmailDraftsSuccess:emailIdEditing: $_emailIdEditing');
-          }
-        });
-      });
   }
 
   void _listenBrowserTabRefresh() {
@@ -1208,38 +1186,62 @@ class ComposerController extends BaseController with DragDropFileMixin {
     return false;
   }
 
-  void saveToDraftAction(BuildContext context) async {
+  void handleClickSaveAsDraftsButton(BuildContext context) async {
     if (_saveToDraftButtonState == ButtonState.disabled) {
-      log('ComposerController::saveToDraftAction: Saving to draft');
+      log('ComposerController::handleClickSaveAsDraftsButton: Saving to draft');
       return;
     }
 
     _saveToDraftButtonState = ButtonState.disabled;
 
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-    final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
-
-    if (draftMailboxId == null || session == null || accountId == null) {
-      log('ComposerController::saveToDraftAction: Param is NULL');
+    if (composerArguments.value == null ||
+        mailboxDashBoardController.sessionCurrent == null ||
+        mailboxDashBoardController.accountId.value == null ||
+        mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts] == null
+    ) {
+      log('ComposerController::handleClickSaveAsDraftsButton: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
+      _saveToDraftButtonState = ButtonState.enabled;
       return;
     }
 
-    final newEmail = await _generateEmail(
-      context,
-      session.username,
-      asDrafts: true,
-      draftMailboxId: draftMailboxId,
-      arguments: mailboxDashBoardController.composerArguments);
+    final emailContent = await _getContentInEditor();
 
-    mailboxDashBoardController.saveEmailToDraft(
-      arguments: SaveToDraftArguments(
-        session: session,
-        accountId:accountId,
-        newEmail: newEmail,
-        oldEmailId: _emailIdEditing
-      )
+    final resultState = await _showSavingMessageToDraftsDialog(
+      emailContent: emailContent,
+      draftEmailId: _emailIdEditing
     );
+
+    if (resultState is SaveEmailAsDraftsSuccess) {
+      _saveToDraftButtonState = ButtonState.enabled;
+      _emailIdEditing = resultState.emailId;
+      mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
+    } else if (resultState is UpdateEmailDraftsSuccess) {
+      _saveToDraftButtonState = ButtonState.enabled;
+      _emailIdEditing = resultState.emailId;
+      mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
+    } else if ((resultState is SaveEmailAsDraftsFailure ||
+        resultState is UpdateEmailDraftsFailure ||
+        resultState is GenerateEmailFailure) &&
+        context.mounted
+    ) {
+      _showConfirmDialogWhenSaveMessageToDraftsFailure(
+        context: context,
+        failure: resultState,
+        onConfirmAction: () {
+          _saveToDraftButtonState = ButtonState.enabled;
+          _autoFocusFieldWhenLauncher();
+        },
+        onCancelAction: () async {
+          _saveToDraftButtonState = ButtonState.enabled;
+          await Future.delayed(
+            const Duration(milliseconds: 100),
+            _closeComposerAction
+          );
+        }
+      );
+    } else {
+      _saveToDraftButtonState = ButtonState.enabled;
+    }
   }
 
   void _addAttachmentFromFileShare(List<SharedMediaFile> listSharedMediaFile) {
@@ -2207,7 +2209,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   void _showConfirmDialogWhenSaveMessageToDraftsFailure({
     required BuildContext context,
-    required FeatureFailure failure
+    required FeatureFailure failure,
+    VoidCallback? onConfirmAction,
+    VoidCallback? onCancelAction,
   }) {
     showConfirmDialogAction(
       context,
@@ -2216,11 +2220,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
       AppLocalizations.of(context).edit,
       cancelTitle: AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
-      onConfirmAction: () {
+      onConfirmAction: onConfirmAction ?? () {
         _closeComposerButtonState = ButtonState.enabled;
         _autoFocusFieldWhenLauncher();
       },
-      onCancelAction: () async {
+      onCancelAction: onCancelAction ?? () async {
         _closeComposerButtonState = ButtonState.enabled;
         await Future.delayed(
           const Duration(milliseconds: 100),

@@ -35,13 +35,10 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -179,8 +176,6 @@ class MailboxDashBoardController extends ReloadableController {
   final GetAllSendingEmailInteractor _getAllSendingEmailInteractor;
   final StoreSessionInteractor _storeSessionInteractor;
   final EmptySpamFolderInteractor _emptySpamFolderInteractor;
-  final SaveEmailAsDraftsInteractor _saveEmailAsDraftsInteractor;
-  final UpdateEmailDraftsInteractor _updateEmailDraftsInteractor;
   final DeleteSendingEmailInteractor _deleteSendingEmailInteractor;
   final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
   final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
@@ -258,8 +253,6 @@ class MailboxDashBoardController extends ReloadableController {
     this._getAllSendingEmailInteractor,
     this._storeSessionInteractor,
     this._emptySpamFolderInteractor,
-    this._saveEmailAsDraftsInteractor,
-    this._updateEmailDraftsInteractor,
     this._deleteSendingEmailInteractor,
     this._unsubscribeEmailInteractor,
     this._restoreDeletedMessageInteractor,
@@ -1258,8 +1251,6 @@ class MailboxDashBoardController extends ReloadableController {
     composerOverlayState.value = ComposerOverlayState.inActive;
     if (result is SendingEmailArguments) {
       handleSendEmailAction(result);
-    } else if (result is SaveToDraftArguments) {
-      saveEmailToDraft(arguments: result);
     } else if (result is SendEmailSuccess ||
         result is SaveEmailAsDraftsSuccess ||
         result is UpdateEmailDraftsSuccess) {
@@ -1395,8 +1386,6 @@ class MailboxDashBoardController extends ReloadableController {
       final result = await push(AppRoutes.composer, arguments: arguments);
       if (result is SendingEmailArguments) {
         handleSendEmailAction(result);
-      } else if (result is SaveToDraftArguments) {
-        saveEmailToDraft(arguments: result);
       } else if (result is SendEmailSuccess ||
           result is SaveEmailAsDraftsSuccess ||
           result is UpdateEmailDraftsSuccess) {
@@ -2157,27 +2146,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   void disableAttachmentDraggableApp() {
     attachmentDraggableAppState.value = DraggableAppState.inActive;
-  }
-
-  void saveEmailToDraft({required SaveToDraftArguments arguments}) {
-    if (arguments.oldEmailId != null) {
-      consumeState(
-        _updateEmailDraftsInteractor.execute(
-          arguments.session,
-          arguments.accountId,
-          arguments.newEmail,
-          arguments.oldEmailId!
-        )
-      );
-    } else {
-      consumeState(
-        _saveEmailAsDraftsInteractor.execute(
-          arguments.session,
-          arguments.accountId,
-          arguments.newEmail,
-        )
-      );
-    }
   }
 
   void _handleSendEmailSuccess(SendEmailSuccess success) {
