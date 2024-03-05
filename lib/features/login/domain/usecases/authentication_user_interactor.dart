@@ -29,24 +29,24 @@ class AuthenticationInteractor {
   }) async* {
     try {
       yield Right(AuthenticationUserLoading());
-      final user = await authenticationRepository.authenticationUser(baseUrl, userName, password);
+      final username = await authenticationRepository.authenticationUser(baseUrl, userName, password);
       await Future.wait([
         credentialRepository.saveBaseUrl(baseUrl),
         credentialRepository.storeAuthenticationInfo(
           AuthenticationInfoCache(
-            userName.value,
+            username.value,
             password.value
           )
         ),
       ]);
       await _accountRepository.setCurrentAccount(
         PersonalAccount(
-          userName.value,
+          username.value,
           AuthenticationType.basic,
           isSelected: true
         )
       );
-      yield Right(AuthenticationUserSuccess(user));
+      yield Right(AuthenticationUserSuccess(username));
     } catch (e) {
       yield Left(AuthenticationUserFailure(e));
     }

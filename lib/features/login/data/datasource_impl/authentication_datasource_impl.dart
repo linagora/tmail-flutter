@@ -1,16 +1,18 @@
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/password.dart';
-import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class AuthenticationDataSourceImpl extends AuthenticationDataSource {
 
-  AuthenticationDataSourceImpl();
+  final ExceptionThrower _exceptionThrower;
+
+  AuthenticationDataSourceImpl(this._exceptionThrower);
 
   @override
-  Future<UserProfile> authenticationUser(Uri baseUrl, UserName userName, Password password) {
-    return Future.sync(() {
-      return UserProfile(userName.value);
-    });
+  Future<UserName> authenticationUser(Uri baseUrl, UserName userName, Password password) async {
+    return Future.sync(() async {
+      return userName;
+    }).catchError(_exceptionThrower.throwException);
   }
 }

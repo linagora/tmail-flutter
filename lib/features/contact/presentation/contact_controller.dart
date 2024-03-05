@@ -2,21 +2,20 @@
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
-import 'package:model/user/user_profile.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
@@ -32,7 +31,6 @@ class ContactController extends BaseController {
   final searchQuery = SearchQuery.initial().obs;
   final listContactSearched = RxList<EmailAddress>();
   final scrollListViewController = ScrollController();
-  final userProfile = Rxn<UserProfile>();
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -40,7 +38,7 @@ class ContactController extends BaseController {
 
   final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 300), initialValue: '');
   AccountId? _accountId;
-  Session? _session;
+  Session? session;
 
   ContactArguments? arguments;
   EmailAddress? contactSelected;
@@ -65,17 +63,14 @@ class ContactController extends BaseController {
     textInputSearchFocus.requestFocus();
     if (arguments != null) {
       _accountId = arguments!.accountId;
-      _session = arguments!.session;
-      if (_session != null) {
-        userProfile.value = UserProfile(_session!.username.value);
-      }
+      session = arguments!.session;
       final listContactSelected = arguments!.listContactSelected;
       log('ContactController::onReady(): arguments: $arguments');
       log('ContactController::onReady(): listContactSelected: $listContactSelected');
       if (listContactSelected.isNotEmpty) {
         contactSelected = EmailAddress(listContactSelected.first, listContactSelected.first);
       }
-      injectAutoCompleteBindings(_session, _accountId);
+      injectAutoCompleteBindings(session, _accountId);
     }
     if (PlatformInfo.isMobile) {
       Future.delayed(

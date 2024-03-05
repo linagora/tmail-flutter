@@ -167,7 +167,7 @@ class MailboxView extends BaseMailboxView {
             return const SizedBox.shrink();
           }
           return UserInformationWidget(
-            userProfile: controller.mailboxDashBoardController.userProfile.value,
+            userName: controller.mailboxDashBoardController.sessionCurrent?.username,
             subtitle: AppLocalizations.of(context).manage_account,
             onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
             border: const Border(
