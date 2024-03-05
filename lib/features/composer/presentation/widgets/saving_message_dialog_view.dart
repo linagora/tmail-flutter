@@ -10,28 +10,29 @@ import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class SendingMessageDialogView extends StatefulWidget {
+class SavingMessageDialogView extends StatefulWidget {
 
   final CreateEmailRequest createEmailRequest;
-  final CreateNewAndSendEmailInteractor createNewAndSendEmailInteractor;
+  final CreateNewAndSaveEmailToDraftsInteractor createNewAndSaveEmailToDraftsInteractor;
 
-  const SendingMessageDialogView({
+  const SavingMessageDialogView({
     super.key,
     required this.createEmailRequest,
-    required this.createNewAndSendEmailInteractor,
+    required this.createNewAndSaveEmailToDraftsInteractor,
   });
 
   @override
-  State<SendingMessageDialogView> createState() => _SendingMessageDialogViewState();
+  State<SavingMessageDialogView> createState() => _SavingMessageDialogViewState();
 }
 
-class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
+class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
 
   StreamSubscription? _streamSubscription;
   final ValueNotifier<dartz.Either<Failure, Success>?> _viewStateNotifier = ValueNotifier(null);
@@ -39,7 +40,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
   @override
   void initState() {
     super.initState();
-    _streamSubscription = widget.createNewAndSendEmailInteractor
+    _streamSubscription = widget.createNewAndSaveEmailToDraftsInteractor
       .execute(widget.createEmailRequest)
       .listen(
         _handleDataStream,
@@ -52,12 +53,14 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
 
     newState.fold(
       (failure) {
-        if (failure is SendEmailFailure || failure is GenerateEmailFailure) {
+        if (failure is SaveEmailAsDraftsFailure ||
+            failure is UpdateEmailDraftsFailure ||
+            failure is GenerateEmailFailure) {
           popBack(result: failure);
         }
       },
       (success) {
-        if (success is SendEmailSuccess) {
+        if (success is SaveEmailAsDraftsSuccess || success is UpdateEmailDraftsSuccess) {
           popBack(result: success);
         }
       }
@@ -65,8 +68,8 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
   }
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
-    logError('_SendingMessageDialogViewState::_handleErrorStream: Exception = $error');
-    popBack(result: SendEmailFailure(exception: error));
+    logError('_SavingMessageDialogViewState::_handleErrorStream: Exception = $error');
+    popBack(result: SaveEmailAsDraftsFailure(error));
   }
 
   @override
@@ -98,7 +101,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
               ),
               alignment: Alignment.center,
               child: Text(
-                AppLocalizations.of(context).sendingMessage.capitalizeFirstEach,
+                AppLocalizations.of(context).savingMessage.capitalizeFirstEach,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -144,7 +147,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                                   );
                                 } else {
                                   return Text(
-                                    '${AppLocalizations.of(context).sendingMessage}...',
+                                    '${AppLocalizations.of(context).savingMessageToDraftFolder}...',
                                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                       color: AppColor.labelColor,
                                       fontSize: 14

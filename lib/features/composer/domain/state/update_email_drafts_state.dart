@@ -4,14 +4,14 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
-class UpdatingEmailDrafts extends UIState {}
+class UpdatingEmailDrafts extends LoadingState {}
 
 class UpdateEmailDraftsSuccess extends UIActionState {
 
-  final Email emailAsDrafts;
+  final EmailId emailId;
 
   UpdateEmailDraftsSuccess(
-    this.emailAsDrafts,
+    this.emailId,
     {
       jmap.State? currentEmailState,
       jmap.State? currentMailboxState,
@@ -19,7 +19,7 @@ class UpdateEmailDraftsSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [emailAsDrafts, ...super.props];
+  List<Object?> get props => [emailId, ...super.props];
 }
 
 class UpdateEmailDraftsFailure extends FeatureFailure {

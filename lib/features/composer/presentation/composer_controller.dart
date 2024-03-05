@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
@@ -63,6 +64,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/save_to_draft
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -133,6 +135,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
   final GetAlwaysReadReceiptSettingInteractor _getAlwaysReadReceiptSettingInteractor;
   final CreateNewAndSendEmailInteractor _createNewAndSendEmailInteractor;
+  final CreateNewAndSaveEmailToDraftsInteractor _createNewAndSaveEmailToDraftsInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -202,6 +205,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     this._transformHtmlEmailContentInteractor,
     this._getAlwaysReadReceiptSettingInteractor,
     this._createNewAndSendEmailInteractor,
+    this._createNewAndSaveEmailToDraftsInteractor,
   );
 
   @override
@@ -348,11 +352,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
         },
         (success) {
           if (success is SaveEmailAsDraftsSuccess) {
-            _emailIdEditing = success.emailAsDrafts.id;
+            _emailIdEditing = success.emailId;
             _saveToDraftButtonState = ButtonState.enabled;
             log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:SaveEmailAsDraftsSuccess:emailIdEditing: $_emailIdEditing');
           } else if (success is UpdateEmailDraftsSuccess) {
-            _emailIdEditing = success.emailAsDrafts.id;
+            _emailIdEditing = success.emailId;
             _saveToDraftButtonState = ButtonState.enabled;
             log('ComposerController::_listenStreamEvent::dashboardViewStateWorker:UpdateEmailDraftsSuccess:emailIdEditing: $_emailIdEditing');
           }
@@ -1211,65 +1215,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     return false;
   }
 
-  Future<SaveToDraftArguments?> _generateSaveAsDraftsArguments(BuildContext context) async {
-    log('ComposerController::_generateSaveAsDraftsArguments:');
-    final arguments = composerArguments.value;
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-    final draftMailboxId = mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts];
-
-    if (arguments == null ||
-        draftMailboxId == null ||
-        session == null ||
-        accountId == null
-    ) {
-      return null;
-    }
-
-    if (_emailIdEditing != null && _emailIdEditing != arguments.presentationEmail?.id) {
-      final newEmail = await _generateEmail(
-        context,
-        session.username,
-        asDrafts: true,
-        draftMailboxId: draftMailboxId,
-        arguments: arguments,
-      );
-
-      return SaveToDraftArguments(
-        session: session,
-        accountId: accountId,
-        newEmail: newEmail,
-        oldEmailId: _emailIdEditing!);
-    } else {
-      final isChanged = await _validateEmailChange(
-        context: context,
-        emailActionType: arguments.emailActionType,
-        presentationEmail: arguments.presentationEmail,
-        mailboxRole: arguments.mailboxRole
-      );
-
-      if (isChanged && context.mounted) {
-        final newEmail = await _generateEmail(
-          context,
-          session.username,
-          asDrafts: true,
-          draftMailboxId: draftMailboxId,
-          arguments: arguments,
-        );
-
-        return SaveToDraftArguments(
-          session: session,
-          accountId: accountId,
-          newEmail: newEmail,
-          oldEmailId: arguments.emailActionType == EmailActionType.editDraft
-            ? arguments.presentationEmail?.id
-            : null);
-      } else {
-        return null;
-      }
-    }
-  }
-
   void saveToDraftAction(BuildContext context) async {
     if (_saveToDraftButtonState == ButtonState.disabled) {
       log('ComposerController::saveToDraftAction: Saving to draft');
@@ -2103,9 +2048,10 @@ class ComposerController extends BaseController with DragDropFileMixin {
       AppLocalizations.of(context).save,
       cancelTitle: AppLocalizations.of(context).discardChanges,
       alignCenter: true,
-      onConfirmAction: () {
-        _closeComposerButtonState = ButtonState.enabled;
-      },
+      onConfirmAction: () async => await Future.delayed(
+        const Duration(milliseconds: 100),
+        () => _handleSaveMessageToDraft(context)
+      ),
       onCancelAction: () async {
         _closeComposerButtonState = ButtonState.enabled;
         await Future.delayed(
@@ -2178,6 +2124,134 @@ class ComposerController extends BaseController with DragDropFileMixin {
       totalSizePreparedFiles: listFileInfo.totalSize,
       totalSizePreparedFilesWithDispositionAttachment: listAttachments.totalSize,
       onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: listFileInfo)
+    );
+  }
+
+  void _handleSaveMessageToDraft(BuildContext context) async {
+    if (composerArguments.value == null ||
+        mailboxDashBoardController.sessionCurrent == null ||
+        mailboxDashBoardController.accountId.value == null ||
+        mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts] == null
+    ) {
+      log('ComposerController::_handleSaveMessageToDraft: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
+      _closeComposerButtonState = ButtonState.enabled;
+      _closeComposerAction();
+      return;
+    }
+
+    final emailContent = await _getContentInEditor();
+    final draftEmailId = _getDraftEmailId();
+    log('ComposerController::_handleSaveMessageToDraft: draftEmailId = $draftEmailId');
+    final resultState = await _showSavingMessageToDraftsDialog(
+      emailContent: emailContent,
+      draftEmailId: draftEmailId
+    );
+
+    if (resultState is SaveEmailAsDraftsSuccess || resultState is UpdateEmailDraftsSuccess) {
+      _closeComposerButtonState = ButtonState.enabled;
+      _closeComposerAction(result: resultState);
+    } else if ((resultState is SaveEmailAsDraftsFailure ||
+        resultState is UpdateEmailDraftsFailure ||
+        resultState is GenerateEmailFailure) &&
+        context.mounted
+    ) {
+      _showConfirmDialogWhenSaveMessageToDraftsFailure(
+        context: context,
+        failure: resultState
+      );
+    } else {
+      _closeComposerButtonState = ButtonState.enabled;
+    }
+  }
+
+  EmailId? _getDraftEmailId() {
+    if (_emailIdEditing != null &&
+        _emailIdEditing != composerArguments.value!.presentationEmail?.id) {
+      return _emailIdEditing;
+    } else if (composerArguments.value!.emailActionType == EmailActionType.editDraft) {
+      return composerArguments.value!.presentationEmail?.id;
+    } else {
+      return null;
+    }
+  }
+
+  Future<dynamic> _showSavingMessageToDraftsDialog({
+    required String emailContent,
+    EmailId? draftEmailId,
+  }) {
+    return Get.dialog(
+      PointerInterceptor(
+        child: SavingMessageDialogView(
+          createEmailRequest: CreateEmailRequest(
+            session: mailboxDashBoardController.sessionCurrent!,
+            accountId: mailboxDashBoardController.accountId.value!,
+            emailActionType: composerArguments.value!.emailActionType,
+            subject: subjectEmail.value ?? '',
+            emailContent: emailContent,
+            fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+            toRecipients: listToEmailAddress.toSet(),
+            ccRecipients: listCcEmailAddress.toSet(),
+            bccRecipients: listBccEmailAddress.toSet(),
+            isRequestReadReceipt: hasRequestReadReceipt.value,
+            identity: identitySelected.value,
+            attachments: uploadController.attachmentsUploaded,
+            inlineAttachments: uploadController.mapInlineAttachments,
+            sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+            draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
+            draftsEmailId: draftEmailId,
+            answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
+            unsubscribeEmailId: composerArguments.value!.previousEmailId,
+            messageId: composerArguments.value!.messageId,
+            references: composerArguments.value!.references,
+            emailSendingQueue: composerArguments.value!.sendingEmail
+          ),
+          createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor
+        ),
+      ),
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    );
+  }
+
+  void _showConfirmDialogWhenSaveMessageToDraftsFailure({
+    required BuildContext context,
+    required FeatureFailure failure
+  }) {
+    showConfirmDialogAction(
+      context,
+      title: '',
+      AppLocalizations.of(context).warningMessageWhenSaveEmailToDraftsFailure,
+      AppLocalizations.of(context).edit,
+      cancelTitle: AppLocalizations.of(context).closeAnyway,
+      alignCenter: true,
+      onConfirmAction: () {
+        _closeComposerButtonState = ButtonState.enabled;
+        _autoFocusFieldWhenLauncher();
+      },
+      onCancelAction: () async {
+        _closeComposerButtonState = ButtonState.enabled;
+        await Future.delayed(
+          const Duration(milliseconds: 100),
+          _closeComposerAction
+        );
+      },
+      icon: SvgPicture.asset(
+        imagePaths.icQuotasWarning,
+        width: 40,
+        height: 40,
+        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
+      ),
+      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 14,
+        color: AppColor.colorTextBody
+      ),
+      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.white
+      ),
+      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      )
     );
   }
 }

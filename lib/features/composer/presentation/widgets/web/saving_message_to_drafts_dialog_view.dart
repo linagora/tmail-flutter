@@ -16,30 +16,30 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class SendingMessageDialogView extends StatefulWidget {
+class SavingMessageToDraftsDialogView extends StatefulWidget {
 
   final CreateEmailRequest createEmailRequest;
   final CreateNewAndSendEmailInteractor createNewAndSendEmailInteractor;
 
-  const SendingMessageDialogView({
+  const SavingMessageToDraftsDialogView({
     super.key,
     required this.createEmailRequest,
     required this.createNewAndSendEmailInteractor,
   });
 
   @override
-  State<SendingMessageDialogView> createState() => _SendingMessageDialogViewState();
+  State<SavingMessageToDraftsDialogView> createState() => _SavingMessageToDraftsDialogViewState();
 }
 
-class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
+class _SavingMessageToDraftsDialogViewState extends State<SavingMessageToDraftsDialogView> {
 
-  StreamSubscription? _streamSubscription;
-  final ValueNotifier<dartz.Either<Failure, Success>?> _viewStateNotifier = ValueNotifier(null);
+  StreamSubscription? _sendingStreamSubscription;
+  final ValueNotifier<dartz.Either<Failure, Success>?> _sendingNotifier = ValueNotifier(null);
 
   @override
   void initState() {
     super.initState();
-    _streamSubscription = widget.createNewAndSendEmailInteractor
+    _sendingStreamSubscription = widget.createNewAndSendEmailInteractor
       .execute(widget.createEmailRequest)
       .listen(
         _handleDataStream,
@@ -48,7 +48,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
   }
 
   void _handleDataStream(dartz.Either<Failure, Success> newState) {
-    _viewStateNotifier.value = newState;
+    _sendingNotifier.value = newState;
 
     newState.fold(
       (failure) {
@@ -125,7 +125,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: ValueListenableBuilder(
-                          valueListenable: _viewStateNotifier,
+                          valueListenable: _sendingNotifier,
                           builder: (context, value, child) {
                             if (value == null) {
                               return child!;
@@ -136,13 +136,13 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                               (success) {
                                 if (success is GenerateEmailLoading) {
                                   return Text(
-                                    '${AppLocalizations.of(context).creatingMessage}...',
+                                    'Creating email...',
                                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                       color: AppColor.labelColor,
                                       fontSize: 14
                                     ),
                                   );
-                                } else {
+                                } else if (success is SendEmailLoading) {
                                   return Text(
                                     '${AppLocalizations.of(context).sendingMessage}...',
                                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -150,12 +150,14 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                                       fontSize: 14
                                     ),
                                   );
+                                } else {
+                                  return child!;
                                 }
                               }
                             );
                           },
                           child: Text(
-                            '...',
+                            '${AppLocalizations.of(context).sendingMessage}...',
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               color: AppColor.labelColor,
                               fontSize: 14
@@ -199,8 +201,8 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
 
   @override
   void dispose() {
-    _streamSubscription?.cancel();
-    _viewStateNotifier.dispose();
+    _sendingStreamSubscription?.cancel();
+    _sendingNotifier.dispose();
     super.dispose();
   }
 }
