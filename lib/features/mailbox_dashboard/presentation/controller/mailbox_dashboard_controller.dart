@@ -656,7 +656,7 @@ class MailboxDashBoardController extends ReloadableController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).drafts_saved,
         actionName: AppLocalizations.of(currentContext!).discard,
-        onActionClick: () => _discardEmail(success.emailAsDrafts),
+        onActionClick: () => _discardEmail(success.emailId),
         leadingSVGIcon: imagePaths.icMailboxDrafts,
         leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -699,11 +699,11 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _discardEmail(Email email) {
+  void _discardEmail(EmailId emailId) {
     final currentAccountId = accountId.value;
     final session = sessionCurrent;
-    if (currentAccountId != null && session != null && email.id != null) {
-      consumeState(_removeEmailDraftsInteractor.execute(session, currentAccountId, email.id!));
+    if (currentAccountId != null && session != null) {
+      consumeState(_removeEmailDraftsInteractor.execute(session, currentAccountId, emailId));
     }
   }
 
@@ -1260,7 +1260,9 @@ class MailboxDashBoardController extends ReloadableController {
       handleSendEmailAction(result);
     } else if (result is SaveToDraftArguments) {
       saveEmailToDraft(arguments: result);
-    } else if (result is SendEmailSuccess) {
+    } else if (result is SendEmailSuccess ||
+        result is SaveEmailAsDraftsSuccess ||
+        result is UpdateEmailDraftsSuccess) {
       consumeState(Stream.value(Right<Failure, Success>(result)));
     }
   }
@@ -1395,7 +1397,9 @@ class MailboxDashBoardController extends ReloadableController {
         handleSendEmailAction(result);
       } else if (result is SaveToDraftArguments) {
         saveEmailToDraft(arguments: result);
-      } else if (result is SendEmailSuccess) {
+      } else if (result is SendEmailSuccess ||
+          result is SaveEmailAsDraftsSuccess ||
+          result is UpdateEmailDraftsSuccess) {
         consumeState(Stream.value(Right<Failure, Success>(result)));
       }
     }

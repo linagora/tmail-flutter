@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:core/utils/application_manager.dart';
-import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
@@ -11,6 +10,7 @@ import 'package:tmail_ui_user/features/composer/data/repository/composer_reposit
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
@@ -208,6 +208,11 @@ class ComposerBindings extends BaseBindings {
       Get.find<MailboxRepository>(),
       Get.find<ComposerRepository>(),
     ));
+    Get.lazyPut(() => CreateNewAndSaveEmailToDraftsInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<MailboxRepository>(),
+      Get.find<ComposerRepository>(),
+    ));
 
     IdentityInteractorsBindings().dependencies();
   }
@@ -229,6 +234,8 @@ class ComposerBindings extends BaseBindings {
       Get.find<DownloadImageAsBase64Interactor>(),
       Get.find<TransformHtmlEmailContentInteractor>(),
       Get.find<GetAlwaysReadReceiptSettingInteractor>(),
+      Get.find<CreateNewAndSendEmailInteractor>(),
+      Get.find<CreateNewAndSaveEmailToDraftsInteractor>(),
     ));
   }
 
