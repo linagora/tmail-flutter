@@ -100,7 +100,9 @@ class MailboxView extends BaseMailboxView {
               child: Column(children: [
                 if (!controller.responsiveUtils.isDesktop(context))
                   Obx(() => UserInformationWidget(
-                    userName: controller.mailboxDashBoardController.sessionCurrent?.username,
+                    userName: controller.mailboxDashBoardController.accountId.value != null
+                      ? controller.mailboxDashBoardController.sessionCurrent?.username
+                      : null,
                     subtitle: AppLocalizations.of(context).manage_account,
                     onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
                     border: const Border(
