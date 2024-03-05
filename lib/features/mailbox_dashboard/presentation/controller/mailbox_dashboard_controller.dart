@@ -30,7 +30,6 @@ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dar
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
@@ -1263,8 +1262,6 @@ class MailboxDashBoardController extends ReloadableController {
       saveEmailToDraft(arguments: result);
     } else if (result is SendEmailSuccess) {
       consumeState(Stream.value(Right<Failure, Success>(result)));
-    } else if (result is SendEmailFailure || result is GenerateEmailFailure) {
-      consumeState(Stream.value(Left<Failure, Success>(result)));
     }
   }
 
@@ -1400,8 +1397,6 @@ class MailboxDashBoardController extends ReloadableController {
         saveEmailToDraft(arguments: result);
       } else if (result is SendEmailSuccess) {
         consumeState(Stream.value(Right<Failure, Success>(result)));
-      } else if (result is SendEmailFailure || result is GenerateEmailFailure) {
-        consumeState(Stream.value(Left<Failure, Success>(result)));
       }
     }
   }

@@ -3962,4 +3962,16 @@ class AppLocalizations {
       'Sending message',
       name: 'sendingMessage');
   }
+
+  String get warningMessageWhenSendEmailFailure {
+    return Intl.message(
+      'Sending of the message failed.\nAn error occurred while sending mail.',
+      name: 'warningMessageWhenSendEmailFailure');
+  }
+
+  String get closeAnyway {
+    return Intl.message(
+      'Close anyway',
+      name: 'closeAnyway');
+  }
 }
