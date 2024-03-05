@@ -4,14 +4,17 @@ import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:model/user/user_profile.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/extensions/username_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSubtitleClick = void Function();
 
 class UserInformationWidget extends StatelessWidget {
-  final UserProfile? userProfile;
+  final UserName? userName;
   final String? subtitle;
   final EdgeInsetsGeometry? titlePadding;
   final OnSubtitleClick? onSubtitleClick;
@@ -20,7 +23,7 @@ class UserInformationWidget extends StatelessWidget {
 
   const UserInformationWidget({
     Key? key,
-    this.userProfile,
+    this.userName,
     this.subtitle,
     this.titlePadding,
     this.onSubtitleClick,
@@ -35,7 +38,7 @@ class UserInformationWidget extends StatelessWidget {
       decoration: BoxDecoration(border: border),
       child: Row(children: [
         (AvatarBuilder()
-            ..text(userProfile != null ? userProfile!.getAvatarText() : '')
+            ..text(userName?.firstCharacter ?? '')
             ..backgroundColor(Colors.white)
             ..textColor(Colors.black)
             ..addBoxShadows([const BoxShadow(
@@ -48,7 +51,7 @@ class UserInformationWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextOverflowBuilder(
-              userProfile != null ? '${userProfile?.email}' : '',
+              userName?.value ?? '',
               style: const TextStyle(
                 fontSize: 17,
                 color: AppColor.colorNameEmail,
