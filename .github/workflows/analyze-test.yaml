@@ -22,6 +22,7 @@ jobs:
           - rule_filter
           - fcm
           - email_recovery
+          - server_settings
       fail-fast: false
 
     steps:
