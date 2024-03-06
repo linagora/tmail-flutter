@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -85,13 +85,25 @@ class MailboxView extends BaseMailboxView {
                           : const SizedBox.shrink(),
                         ),
                         Obx(() {
-                          final appInformation = controller.mailboxDashBoardController.appInformation.value;
-                          if (appInformation != null
-                              && !controller.isSelectionEnabled()) {
-                            if (controller.responsiveUtils.isLandscapeMobile(context)) {
-                              return const SizedBox.shrink();
-                            }
-                            return _buildVersionInformation(context, appInformation);
+                          if (!controller.isSelectionEnabled() && controller.responsiveUtils.isPortraitMobile(context)) {
+                            return Container(
+                              color: AppColor.colorBgMailbox,
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              child: SafeArea(
+                                top: false,
+                                child: ApplicationVersionWidget(
+                                  applicationManager: controller.applicationManager,
+                                  padding: EdgeInsets.zero,
+                                  title: '${AppLocalizations.of(context).version} ',
+                                  textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    fontSize: 16,
+                                    color: AppColor.colorContentEmail,
+                                    fontWeight: FontWeight.w500
+                                  ),
+                                ),
+                              ),
+                            );
                           } else {
                             return const SizedBox.shrink();
                           }
@@ -364,21 +376,5 @@ class MailboxView extends BaseMailboxView {
             ));
           }
       }).toList() ?? <Widget>[];
-  }
-
-  Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {
-    return Container(
-      color: AppColor.colorBgMailbox,
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      child: SafeArea(
-        top: false,
-        child: Text(
-          '${AppLocalizations.of(context).version} ${packageInfo.version}',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 16, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
-        ),
-      ),
-    );
   }
 }
