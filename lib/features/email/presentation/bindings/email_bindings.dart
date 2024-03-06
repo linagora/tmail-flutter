@@ -105,6 +105,7 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => PrintFileDataSourceImpl(
       Get.find<PrintUtils>(),
       Get.find<ImagePaths>(),
+      Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()
     ));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(

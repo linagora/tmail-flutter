@@ -1,8 +1,10 @@
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart' as html;
 
 class HtmlUtils {
   static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
@@ -93,5 +95,32 @@ class HtmlUtils {
       </body>
       </html> 
     ''';
+  }
+
+  static String createTemplateHtmlDocument({String? title}) {
+    return '''
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          ${title != null ? '<title>$title</title>' : ''}
+        </head>
+        <body></body>
+      </html> 
+    ''';
+  }
+
+  static String generateSVGImageData(String base64Data) => 'data:image/svg+xml;base64,$base64Data';
+
+  static void openNewTabHtmlDocument(String htmlDocument) {
+    final blob = html.Blob([htmlDocument], Constant.textHtmlMimeType);
+
+    final url = html.Url.createObjectUrlFromBlob(blob);
+
+    html.window.open(url, '_blank');
+
+    html.Url.revokeObjectUrl(url);
   }
 }

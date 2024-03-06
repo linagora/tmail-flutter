@@ -1,9 +1,8 @@
 import 'package:core/data/model/print_attachment.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:filesize/filesize.dart';
-import 'package:flutter/services.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/utc_date_extension.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
@@ -15,16 +14,18 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
 
   final PrintUtils _printUtils;
   final ImagePaths _imagePaths;
+  final FileUtils _fileUtils;
   final ExceptionThrower _exceptionThrower;
 
   PrintFileDataSourceImpl(
     this._printUtils,
     this._imagePaths,
+    this._fileUtils,
     this._exceptionThrower
   );
 
   @override
-  Future<void> printEmailToPDF(EmailPrint emailPrint) {
+  Future<void> printEmail(EmailPrint emailPrint) {
     return Future.sync(() async {
       final sender = emailPrint.emailInformation.from?.isNotEmpty == true
         ? emailPrint.emailInformation.from!.first
@@ -37,9 +38,9 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
 
       if (emailPrint.attachments?.isNotEmpty == true) {
         await Future.forEach<Attachment>(emailPrint.attachments ?? [], (attachment) async {
-          final iconSvg = await rootBundle.loadString(attachment.getIcon(_imagePaths));
+          final iconBase64Data = await _fileUtils.convertImageAssetToBase64(attachment.getIcon(_imagePaths));
           final printAttachment = PrintAttachment(
-            iconSvg: iconSvg,
+            iconBase64Data: iconBase64Data,
             name: attachment.name ?? '',
             size: filesize(attachment.size?.value)
           );
@@ -47,11 +48,11 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
         });
       }
 
-      final result = await _printUtils.printEmailToPDF(
+      return await _printUtils.printEmail(
         appName: emailPrint.appName,
         userName: emailPrint.userName,
         locale: emailPrint.locale,
-        title: emailPrint.emailInformation.subject ?? '',
+        subject: emailPrint.emailInformation.subject ?? '',
         emailContent: emailPrint.emailContent,
         senderName: sender?.name ?? '',
         senderEmailAddress: sender?.email ?? '',
@@ -67,8 +68,6 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
         titleAttachment: emailPrint.titleAttachment,
         listAttachment: listPrintAttachment
       );
-      log('PrintFileDataSourceImpl::printEmailToPDF: RESULT = $result');
-      return result;
     }).catchError(_exceptionThrower.throwException);
   }
 }

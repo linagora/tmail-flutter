@@ -235,6 +235,6 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<void> printEmail(EmailPrint emailPrint) {
-    return _printFileDataSource.printEmailToPDF(emailPrint);
+    return _printFileDataSource.printEmail(emailPrint);
   }
 }

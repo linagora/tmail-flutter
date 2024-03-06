@@ -2,19 +2,19 @@
 import 'package:equatable/equatable.dart';
 
 class PrintAttachment with EquatableMixin {
-  final String iconSvg;
+  final String iconBase64Data;
   final String name;
   final String size;
 
   PrintAttachment({
-    required this.iconSvg,
+    required this.iconBase64Data,
     required this.name,
     required this.size
   });
 
   @override
   List<Object?> get props => [
-    iconSvg,
+    iconBase64Data,
     name,
     size
   ];
