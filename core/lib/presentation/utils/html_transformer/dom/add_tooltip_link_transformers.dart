@@ -1,7 +1,7 @@
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
-import 'package:core/presentation/utils/html_transformer/html_template.dart';
+import 'package:core/utils/html/html_template.dart';
 import 'package:html/dom.dart';
 
 class AddTooltipLinkTransformer extends DomTransformer {
@@ -28,9 +28,9 @@ class AddTooltipLinkTransformer extends DomTransformer {
       final innerHtml = element.innerHtml;
       final tagClass = element.attributes['class'];
       if (tagClass != null) {
-        element.attributes['class'] = '$tagClass $nameClassToolTip';
+        element.attributes['class'] = '$tagClass ${HtmlTemplate.nameClassToolTip}';
       } else {
-        element.attributes['class'] = nameClassToolTip;
+        element.attributes['class'] = HtmlTemplate.nameClassToolTip;
       }
       element.innerHtml = innerHtml + textHasToolTip(url);
     }

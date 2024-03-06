@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/html_transformer/html_template.dart';
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
+import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_interaction.dart';
+import 'package:core/utils/html/html_template.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:universal_html/html.dart' as html;
-import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
 
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
@@ -162,11 +163,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
-    final htmlTemplate = generateHtml(content,
+    final htmlTemplate = HtmlUtils.generateHtmlDocument(
+      content: content,
       minHeight: minHeight,
       minWidth: _minWidth,
-      styleCSS: tooltipLinkCss,
-      javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlUtils.scriptsHandleLazyLoadingBackgroundImage,
+      styleCSS: HtmlTemplate.tooltipLinkCss,
+      javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
       direction: widget.direction);
 
     return htmlTemplate;

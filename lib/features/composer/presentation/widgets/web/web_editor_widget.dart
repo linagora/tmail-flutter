@@ -1,6 +1,6 @@
 
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 

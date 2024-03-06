@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:core/core.dart';
-import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
+import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_interaction.dart';
+import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -72,9 +74,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
       };
     }
     if (PlatformInfo.isAndroid) {
-      _customScripts = HtmlUtils.scriptsHandleLazyLoadingBackgroundImage + HtmlUtils.scriptsHandleContentSizeChanged;
+      _customScripts = HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage + HtmlInteraction.scriptsHandleContentSizeChanged;
     } else {
-      _customScripts = HtmlUtils.scriptsHandleLazyLoadingBackgroundImage;
+      _customScripts = HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage;
     }
     _initialData();
   }
@@ -91,8 +93,8 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   void _initialData() {
     _actualHeight = _minHeight;
-    _htmlData = generateHtml(
-      widget.contentHtml,
+    _htmlData = HtmlUtils.generateHtmlDocument(
+      content: widget.contentHtml,
       direction: widget.direction,
       javaScripts: _customScripts
     );
@@ -138,13 +140,13 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     await controller.loadData(data: _htmlData ?? '');
 
     controller.addJavaScriptHandler(
-      handlerName: HtmlUtils.scrollEventJSChannelName,
+      handlerName: HtmlInteraction.scrollEventJSChannelName,
       callback: _onHandleScrollEvent
     );
 
     if (PlatformInfo.isAndroid) {
       controller.addJavaScriptHandler(
-        handlerName: HtmlUtils.contentSizeChangedEventJSChannelName,
+        handlerName: HtmlInteraction.contentSizeChangedEventJSChannelName,
         callback: _onHandleContentSizeChangedEvent
       );
     }
@@ -174,9 +176,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   void _onHandleScrollEvent(List<dynamic> parameters) {
     log('_HtmlContentViewState::_onHandleScrollEvent():parameters: $parameters');
     final message = parameters.first;
-    if (message == HtmlEventAction.scrollLeftEndAction) {
+    if (message == HtmlInteraction.scrollLeftEndAction) {
       widget.onScrollHorizontalEnd?.call(true);
-    } else if (message == HtmlEventAction.scrollRightEndAction) {
+    } else if (message == HtmlInteraction.scrollRightEndAction) {
       widget.onScrollHorizontalEnd?.call(false);
     }
   }
@@ -234,7 +236,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
 
     if (!isScrollActivated) {
-      await _webViewController.evaluateJavascript(source: HtmlUtils.runScriptsHandleScrollEvent);
+      await _webViewController.evaluateJavascript(source: HtmlInteraction.runScriptsHandleScrollEvent);
     }
     widget.onLoadWidthHtmlViewer?.call(isScrollActivated);
   }

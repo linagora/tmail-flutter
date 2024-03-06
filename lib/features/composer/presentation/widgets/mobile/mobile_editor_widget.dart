@@ -1,5 +1,5 @@
 
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 

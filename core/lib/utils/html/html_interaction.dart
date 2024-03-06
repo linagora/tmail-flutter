@@ -1,16 +1,11 @@
 
-import 'package:core/presentation/extensions/html_extension.dart';
-import 'package:core/presentation/utils/html_transformer/html_event_action.dart';
-import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
-import 'package:flutter/material.dart';
+class HtmlInteraction {
+  static const String scrollRightEndAction = 'ScrollRightEndAction';
+  static const String scrollLeftEndAction = 'ScrollLeftEndAction';
+  static const String scrollEventJSChannelName = 'ScrollEventListener';
+  static const String contentSizeChangedEventJSChannelName = 'ContentSizeChangedEventListener';
 
-class HtmlUtils {
-
-  static const scrollEventJSChannelName = 'ScrollEventListener';
-  static const contentSizeChangedEventJSChannelName = 'ContentSizeChangedEventListener';
-
-  static const runScriptsHandleScrollEvent = '''
+  static const String runScriptsHandleScrollEvent = '''
     let contentElement = document.getElementsByClassName('tmail-content')[0];
     var xDown = null;                                                        
     var yDown = null;
@@ -50,11 +45,11 @@ class HtmlUtils {
           if (maxOffset === scrollLeftRounded || 
               maxOffset === (scrollLeftRounded + 1) || 
               maxOffset === (scrollLeftRounded - 1)) {
-            window.flutter_inappwebview.callHandler('$scrollEventJSChannelName', '${HtmlEventAction.scrollRightEndAction}');
+            window.flutter_inappwebview.callHandler('$scrollEventJSChannelName', '$scrollRightEndAction');
           }
         } else {
           if (scrollLeftRounded === 0) {
-            window.flutter_inappwebview.callHandler('$scrollEventJSChannelName', '${HtmlEventAction.scrollLeftEndAction}');
+            window.flutter_inappwebview.callHandler('$scrollEventJSChannelName', '$scrollLeftEndAction');
           }
         }                       
       }
@@ -64,7 +59,7 @@ class HtmlUtils {
     }
   ''';
 
-  static const scriptsHandleContentSizeChanged = '''
+  static const String scriptsHandleContentSizeChanged = '''
     <script>
       const bodyResizeObserver = new ResizeObserver(entries => {
         window.flutter_inappwebview.callHandler('$contentSizeChangedEventJSChannelName', '');
@@ -74,7 +69,7 @@ class HtmlUtils {
     </script>
   ''';
 
-  static const scriptsHandleLazyLoadingBackgroundImage = '''
+  static const String scriptsHandleLazyLoadingBackgroundImage = '''
     <script>
       const lazyImages = document.querySelectorAll('[lazy]');
       const lazyImageObserver = new IntersectionObserver((entries, observer) => {
@@ -96,53 +91,4 @@ class HtmlUtils {
       });
     </script>
   ''';
-
-  static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
-    if (PlatformInfo.isWeb) {
-      return '''
-        <style>
-          .note-editable {
-            direction: ${direction.name};
-          }
-          
-          .note-editable .tmail-signature {
-            text-align: ${direction == TextDirection.rtl ? 'right' : 'left'};
-          }
-        </style>
-      ''';
-    } else if (PlatformInfo.isMobile) {
-      return '''
-        #editor {
-          direction: ${direction.name};
-        }
-        
-        #editor .tmail-signature {
-          text-align: ${direction == TextDirection.rtl ? 'right' : 'left'};
-        }
-      ''';
-    } else {
-      return '';
-    }
-  }
-
-  static String validateHtmlImageResourceMimeType(String mimeType) {
-    if (mimeType.endsWith('svg')) {
-      mimeType = 'image/svg+xml';
-    }
-    log('HtmlUtils::validateHtmlImageResourceMimeType:mimeType: $mimeType');
-    return mimeType;
-  }
-
-  static String convertBase64ToImageResourceData({
-    required String base64Data,
-    required String mimeType
-  }) {
-    mimeType = validateHtmlImageResourceMimeType(mimeType);
-    if (!base64Data.endsWith('==')) {
-      base64Data.append('==');
-    }
-    final imageResource = 'data:$mimeType;base64,$base64Data';
-    log('HtmlUtils::convertBase64ToImageResourceData:imageResource: $imageResource');
-    return imageResource;
-  }
 }

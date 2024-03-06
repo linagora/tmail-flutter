@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

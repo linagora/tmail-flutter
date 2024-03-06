@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/utils/compress_file_utils.dart';
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
