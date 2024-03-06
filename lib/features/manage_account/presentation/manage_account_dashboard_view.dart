@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
+import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
@@ -55,18 +56,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                         logoSVG: controller.imagePaths.icTMailLogo,
                         onTapCallback: () => controller.backToMailboxDashBoard(context: context),
                       ),
-                      Obx(() {
-                        if (controller.appInformation.value != null) {
-                          return Padding(padding: const EdgeInsets.only(top: 6),
-                              child: Text(
-                                'v.${controller.appInformation.value!.version}',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
-                              ));
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
+                      ApplicationVersionWidget(
+                        applicationManager: controller.applicationManager
+                      )
                     ])
                 ),
                 Expanded(child: Padding(
