@@ -777,7 +777,7 @@ class ComposerController extends BaseController {
       } else {
         userAgent = FkUserAgent.userAgent ?? '';
       }
-    } on Exception {
+    } catch (e) {
       userAgent = '';
     }
     return 'Team-Mail/${mailboxDashBoardController.appInformation.value?.version} $userAgent';
