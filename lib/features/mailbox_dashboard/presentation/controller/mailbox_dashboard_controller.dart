@@ -23,7 +23,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -203,7 +202,6 @@ class MailboxDashBoardController extends ReloadableController {
   final mailboxUIAction = Rxn<MailboxUIAction>();
   final emailUIAction = Rxn<EmailUIAction>();
   final dashboardRoute = DashboardRoutes.waiting.obs;
-  final appInformation = Rxn<PackageInfo>();
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
@@ -281,7 +279,6 @@ class MailboxDashBoardController extends ReloadableController {
     _registerPendingEmailContents();
     _registerPendingFileInfo();
     _handleArguments();
-    _getAppVersion();
     super.onReady();
   }
 
@@ -539,12 +536,6 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute(DashboardRoutes.waiting);
     _handleSession(arguments.session);
     _handleNotificationMessageFromEmailId(arguments.emailId);
-  }
-
-  Future<void> _getAppVersion() async {
-    final info = await PackageInfo.fromPlatform();
-    log('MailboxDashBoardController::_getAppVersion(): ${info.version}');
-    appInformation.value = info;
   }
 
   void _getVacationResponse() {
@@ -1941,12 +1932,16 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _storeSendingEmailInCaseOfSendingFailureInMobile(SendEmailFailure failure) {
-    if (PlatformInfo.isMobile) {
+    if (PlatformInfo.isMobile &&
+        failure.session != null &&
+        failure.accountId != null &&
+        failure.emailRequest != null
+    ) {
       _tryToStoreSendingEmail(
-          failure.session,
-          failure.accountId,
-          failure.emailRequest,
-          failure.mailboxRequest
+        failure.session!,
+        failure.accountId!,
+        failure.emailRequest!,
+        failure.mailboxRequest
       );
     }
   }

@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -71,6 +72,7 @@ const fallbackGenerators = {
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<PrintEmailInteractor>(),
+  MockSpec<ApplicationManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -102,6 +104,7 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
+  final applicationManager = MockApplicationManager();
 
   late SingleEmailController singleEmailController = SingleEmailController(
     getEmailContentInteractor,
@@ -145,6 +148,7 @@ void main() {
     Get.put<ImagePaths>(imagePaths);
     Get.put<ResponsiveUtils>(responsiveUtils);
     Get.put<Uuid>(uuid);
+    Get.put<ApplicationManager>(applicationManager);
 
     when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
     when(uuid.v4()).thenReturn(testTaskId);

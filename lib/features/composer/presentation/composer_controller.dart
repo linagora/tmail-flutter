@@ -10,7 +10,6 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
-import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -122,7 +121,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;
-  final DeviceInfoPlugin _deviceInfoPlugin;
   final GetEmailContentInteractor _getEmailContentInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
@@ -188,7 +186,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   late bool _isEmailBodyLoaded;
 
   ComposerController(
-    this._deviceInfoPlugin,
     this._localFilePickerInteractor,
     this._localImagePickerInteractor,
     this._getEmailContentInteractor,
@@ -208,11 +205,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     createFocusNodeInput();
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
     _listenStreamEvent();
-    if (PlatformInfo.isMobile) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        await FkUserAgent.init();
-      });
-    } else {
+    if (PlatformInfo.isWeb) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _listenBrowserEventAction();
       });
@@ -237,9 +230,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     _subscriptionOnDragOver?.cancel();
     _subscriptionOnDragLeave?.cancel();
     _subscriptionOnDrop?.cancel();
-    if (PlatformInfo.isMobile) {
-      FkUserAgent.release();
-    }
     super.onClose();
   }
 
@@ -722,7 +712,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       attachments.addAll(listInlineEmailBodyPart);
     }
 
-    final userAgent = await userAgentPlatform;
+    final userAgent = await applicationManager.getUserAgent();
     log('ComposerController::_generateEmail(): userAgent: $userAgent');
 
     Map<MailboxId, bool> mailboxIds = {};
@@ -805,21 +795,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
           emailBodyText,
           uploadController.mapInlineAttachments);
     }
-  }
-
-  Future<String> get userAgentPlatform async {
-    String userAgent;
-    try {
-      if (kIsWeb) {
-        final webBrowserInfo = await _deviceInfoPlugin.webBrowserInfo;
-        userAgent = webBrowserInfo.userAgent ?? '';
-      } else {
-        userAgent = FkUserAgent.userAgent ?? '';
-      }
-    } catch (e) {
-      userAgent = '';
-    }
-    return 'Team-Mail/${mailboxDashBoardController.appInformation.value?.version} $userAgent';
   }
 
   void validateInformationBeforeSending(BuildContext context) async {
