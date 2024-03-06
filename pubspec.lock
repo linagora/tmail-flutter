@@ -1495,6 +1495,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  server_settings:
+    dependency: "direct main"
+    description:
+      path: server_settings
+      relative: true
+    source: path
+    version: "0.0.1"
   share_plus:
     dependency: "direct main"
     description:
