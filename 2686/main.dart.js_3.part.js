@@ -2038,54 +2038,44 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return false;
     },
-    CalendarEventExtension_dateTimeStringForAllDayEvent(_this, startDate, endDate) {
-      var t1, t2, dateStart, endDateToDisplay, dateEnd,
-        timeZoneOffset = C.JSInt_methods._tdivFast$1(new A.DateTime(Date.now(), false).get$timeZoneOffset()._duration, 3600000000),
-        timeZoneOffsetAsString = "" + timeZoneOffset;
-      if (timeZoneOffset >= 0)
-        timeZoneOffsetAsString = "+" + timeZoneOffsetAsString;
-      t1 = B.AppUtils_getCurrentDateLocale();
-      t2 = type$.JSArray_String;
-      dateStart = B.formatDate(startDate, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t2), t1);
-      endDateToDisplay = endDate.subtract$1(D.Duration_86400000000);
-      t1 = B.AppUtils_getCurrentDateLocale();
-      dateEnd = B.formatDate(endDateToDisplay, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t2), t1);
+    CalendarEventExtension_dateTimeStringForAllDayEvent(_this, dateLocale, endDate, startDate, timeZone) {
+      var t1 = type$.JSArray_String,
+        dateStart = B.formatDate(startDate, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t1), dateLocale),
+        endDateToDisplay = endDate.subtract$1(D.Duration_86400000000),
+        dateEnd = B.formatDate(endDateToDisplay, A._setArrayType(["DD", ", ", "MM", " ", "dd", ", ", "yyyy"], t1), dateLocale);
       if (A.DateUtils_isSameDay(startDate, endDateToDisplay))
-        return dateStart + " (GMT" + timeZoneOffsetAsString + ")";
+        return dateStart + " (" + timeZone + ")";
       else
-        return dateStart + " - " + dateEnd + " (GMT" + timeZoneOffsetAsString + ")";
+        return dateStart + " - " + dateEnd + " (" + timeZone + ")";
     },
-    CalendarEventExtension_get_dateTimeEventAsString(_this) {
-      var t1, t2, timeStart, timeEnd;
-      if (B.CalendarEventExtension_get_isAllDayEvent(_this))
-        return B.CalendarEventExtension_dateTimeStringForAllDayEvent(_this, _this.startUtcDate.value, _this.endUtcDate.value);
+    CalendarEventExtension_getDateTimeEvent(_this, dateLocale, timeZone) {
+      var t1, timeStart, timeEnd;
+      if (B.CalendarEventExtension_get_isAllDayEvent(_this)) {
+        t1 = _this.startUtcDate.value;
+        return B.CalendarEventExtension_dateTimeStringForAllDayEvent(_this, dateLocale, _this.endUtcDate.value, t1, timeZone);
+      }
       if (B.CalendarEventExtension_get_localStartDate(_this) != null && B.CalendarEventExtension_get_localEndDate(_this) != null) {
-        t1 = B.AppUtils_getCurrentDateLocale();
-        t2 = B.CalendarEventExtension_get_localStartDate(_this);
-        t2.toString;
-        timeStart = B.CalendarEventExtension_formatDateTime(_this, t1, t2);
+        t1 = B.CalendarEventExtension_get_localStartDate(_this);
+        t1.toString;
+        timeStart = B.CalendarEventExtension_formatDateTime(_this, dateLocale, t1);
         if (A.DateUtils_isSameDay(B.CalendarEventExtension_get_localStartDate(_this), B.CalendarEventExtension_get_localEndDate(_this))) {
-          t1 = B.AppUtils_getCurrentDateLocale();
-          t2 = B.CalendarEventExtension_get_localEndDate(_this);
-          t2.toString;
-          timeEnd = B.formatDate(t2, A._setArrayType(["hh", ":", "nn", " ", "am"], type$.JSArray_String), t1);
+          t1 = B.CalendarEventExtension_get_localEndDate(_this);
+          t1.toString;
+          timeEnd = B.formatDate(t1, A._setArrayType(["hh", ":", "nn", " ", "am"], type$.JSArray_String), dateLocale);
         } else {
-          t1 = B.AppUtils_getCurrentDateLocale();
-          t2 = B.CalendarEventExtension_get_localEndDate(_this);
-          t2.toString;
-          timeEnd = B.CalendarEventExtension_formatDateTime(_this, t1, t2);
+          t1 = B.CalendarEventExtension_get_localEndDate(_this);
+          t1.toString;
+          timeEnd = B.CalendarEventExtension_formatDateTime(_this, dateLocale, t1);
         }
         return timeStart + " - " + timeEnd;
       } else if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
-        t1 = B.AppUtils_getCurrentDateLocale();
-        t2 = B.CalendarEventExtension_get_localStartDate(_this);
-        t2.toString;
-        return B.CalendarEventExtension_formatDateTime(_this, t1, t2);
+        t1 = B.CalendarEventExtension_get_localStartDate(_this);
+        t1.toString;
+        return B.CalendarEventExtension_formatDateTime(_this, dateLocale, t1);
       } else if (B.CalendarEventExtension_get_localEndDate(_this) != null) {
-        t1 = B.AppUtils_getCurrentDateLocale();
-        t2 = B.CalendarEventExtension_get_localEndDate(_this);
-        t2.toString;
-        return B.CalendarEventExtension_formatDateTime(_this, t1, t2);
+        t1 = B.CalendarEventExtension_get_localEndDate(_this);
+        t1.toString;
+        return B.CalendarEventExtension_formatDateTime(_this, dateLocale, t1);
       } else
         return "";
     },
@@ -4908,6 +4898,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return D.C_ItalianDateLocale;
       else
         return D.C_EnglishDateLocale;
+    },
+    AppUtils_getTimeZone() {
+      var timeZoneOffset = C.JSInt_methods._tdivFast$1(new A.DateTime(Date.now(), false).get$timeZoneOffset()._duration, 3600000000),
+        timeZoneOffsetAsString = "" + timeZoneOffset;
+      return "GMT" + (timeZoneOffset >= 0 ? "+" + timeZoneOffsetAsString : timeZoneOffsetAsString);
     }
   },
   D, F, E;
@@ -7642,8 +7637,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventDescriptionDetailWidget(t3, _this.onOpenNewTabAction, _this.onOpenComposerAction, _null), _null));
       } else
         t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventBodyContentWidget(_this.emailContent, _this.isDraggableAppActive, _this.onMailtoDelegateAction, _null), _null));
-      if (B.CalendarEventExtension_get_dateTimeEventAsString(t2).length !== 0)
-        t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventTimeWidgetWidget(B.CalendarEventExtension_get_dateTimeEventAsString(t2), _null), _null));
+      t1.push(_this._buildEventTimeWidget$0());
       if (B.CalendarEventExtension_get_videoConferences(t2).length !== 0)
         t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventLinkDetailWidget(B.CalendarEventExtension_get_videoConferences(t2), _null), _null));
       t3 = t2.location;
@@ -7662,6 +7656,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t2.get$isEmpty(t2))
         t1.push(new B.CalendarEventActionButtonWidget(t2, _null, _null));
       return A.Container$(_null, A.Column$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_0, _null, _null, _null, D.EdgeInsetsDirectional_16_12_16_12, C.EdgeInsets_16_16_16_16, _null, _null, 1 / 0);
+    },
+    _buildEventTimeWidget$0() {
+      var dateTimeEvent = B.CalendarEventExtension_getDateTimeEvent(this.calendarEvent, B.AppUtils_getCurrentDateLocale(), B.AppUtils_getTimeZone());
+      if (dateTimeEvent.length !== 0)
+        return new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventTimeWidgetWidget(dateTimeEvent, null), null);
+      else
+        return C.SizedBox_0_0_null_null;
     }
   };
   B.CalendarEventInformationWidget.prototype = {
@@ -7693,8 +7694,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.toString;
           t3.push(new B.EventTitleWidget(t1, _null));
         }
-        if (B.CalendarEventExtension_get_dateTimeEventAsString(t5).length !== 0)
-          t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventTimeInformationWidget(B.CalendarEventExtension_get_dateTimeEventAsString(t5), _null), _null));
+        t3.push(_this._buildEventTimeInformationWidget$0());
         t1 = t5.location;
         if ((t1 == null ? _null : t1.length !== 0) === true) {
           t1.toString;
@@ -7720,8 +7720,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.toString;
           t3.push(new B.EventTitleWidget(t1, _null));
         }
-        if (B.CalendarEventExtension_get_dateTimeEventAsString(t5).length !== 0)
-          t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventTimeInformationWidget(B.CalendarEventExtension_get_dateTimeEventAsString(t5), _null), _null));
+        t3.push(_this._buildEventTimeInformationWidget$0());
         t1 = t5.location;
         if ((t1 == null ? _null : t1.length !== 0) === true) {
           t1.toString;
@@ -7740,6 +7739,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = A.Row$(A._setArrayType([new B.CalendarDateIconWidget(t5, 100, _null), A.Expanded$(A.Container$(_null, A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_5me0, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null), 1)], t4), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       }
       return A.Container$(_null, t1, C.Clip_2, _null, _null, D.ShapeDecoration_aL3, _null, _null, _null, D.EdgeInsetsDirectional_16_12_16_12, _null, _null, _null, _null);
+    },
+    _buildEventTimeInformationWidget$0() {
+      var dateTimeEvent = B.CalendarEventExtension_getDateTimeEvent(this.calendarEvent, B.AppUtils_getCurrentDateLocale(), B.AppUtils_getTimeZone());
+      if (dateTimeEvent.length !== 0)
+        return new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventTimeInformationWidget(dateTimeEvent, null), null);
+      else
+        return C.SizedBox_0_0_null_null;
     }
   };
   B.EventAttendeeDetailWidget.prototype = {
@@ -20294,5 +20300,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "acU+l6ePceezCqWqDdc5LQ6rHik=");
+})($__dart_deferred_initializers__, "iuTycFDpgQqMNk+wu+X1XUtdeJE=");
 ;
