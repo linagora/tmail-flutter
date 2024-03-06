@@ -207,7 +207,6 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => UploadController(Get.find<UploadAttachmentInteractor>()));
     Get.lazyPut(() => RichTextWebController());
     Get.lazyPut(() => ComposerController(
-      Get.find<DeviceInfoPlugin>(),
       Get.find<LocalFilePickerInteractor>(),
       Get.find<LocalImagePickerInteractor>(),
       Get.find<GetEmailContentInteractor>(),

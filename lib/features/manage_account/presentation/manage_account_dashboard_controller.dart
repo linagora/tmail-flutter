@@ -10,7 +10,6 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -44,7 +43,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
 
-  final appInformation = Rxn<PackageInfo>();
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final settingsPageLevel = SettingsPageLevel.universal.obs;
@@ -66,7 +64,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   void onReady() {
     _initialPageLevel();
     _getArguments();
-    _getAppVersion();
     super.onReady();
   }
 
@@ -149,12 +146,6 @@ class ManageAccountDashBoardController extends ReloadableController {
     } catch (e) {
       logError('ManageAccountDashBoardController::injectVacationBindings(): $e');
     }
-  }
-
-  Future<void> _getAppVersion() async {
-    final info = await PackageInfo.fromPlatform();
-    log('ManageAccountDashBoardController::_getAppVersion(): ${info.version}');
-    appInformation.value = info;
   }
 
   void _getVacationResponse() {

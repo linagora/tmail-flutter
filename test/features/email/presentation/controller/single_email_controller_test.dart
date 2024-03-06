@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:core/core.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -86,6 +87,7 @@ const fallbackGenerators = {
   MockSpec<RejectCalendarEventInteractor>(),
   MockSpec<StoreEventAttendanceStatusInteractor>(),
   MockSpec<PrintUtils>(),
+  MockSpec<ApplicationManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -118,6 +120,7 @@ void main() {
   final printEmailInteractor = MockPrintEmailInteractor();
   final storeEventAttendanceStatusInteractor = MockStoreEventAttendanceStatusInteractor();
   final printUtils = MockPrintUtils();
+  final applicationManager = MockApplicationManager();
 
   late SingleEmailController singleEmailController;
 
@@ -151,6 +154,7 @@ void main() {
     Get.put<ResponsiveUtils>(responsiveUtils);
     Get.put<Uuid>(uuid);
     Get.put<PrintUtils>(printUtils);
+    Get.put<ApplicationManager>(applicationManager);
 
     when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
     when(uuid.v4()).thenReturn(testTaskId);
@@ -257,7 +261,7 @@ void main() {
             BlobCalendarEvent(
               blobId: blobId,
               calendarEventList: [calendarEvent])]));
-        
+
         // act
         singleEmailController.onCalendarEventReplyAction(EventActionType.no, emailId);
         await untilCalled(rejectCalendarEventInteractor.execute(any, any, any, any));

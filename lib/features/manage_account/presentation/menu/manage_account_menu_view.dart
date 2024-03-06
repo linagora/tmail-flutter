@@ -4,6 +4,7 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/account_menu_item_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -31,20 +32,10 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                            textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
                            logoSVG: controller.imagePaths.icTMailLogo
                          ),
-                         Obx(() {
-                           if (controller.dashBoardController.appInformation.value != null) {
-                             return Padding(
-                               padding: const EdgeInsets.only(top: 4),
-                               child: Text(
-                                 'v.${controller.dashBoardController.appInformation.value!.version}',
-                                 textAlign: TextAlign.center,
-                                 style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
-                               ),
-                             );
-                           } else {
-                             return const SizedBox.shrink();
-                           }
-                         }),
+                         ApplicationVersionWidget(
+                           applicationManager:  controller.dashBoardController.applicationManager,
+                           padding: const EdgeInsets.only(top: 4),
+                         )
                        ])
                    ),
                  if (!controller.responsiveUtils.isWebDesktop(context))
