@@ -2,8 +2,8 @@
 import 'dart:convert';
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

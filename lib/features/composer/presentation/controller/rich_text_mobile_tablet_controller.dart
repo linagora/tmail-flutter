@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:core/presentation/utils/html_transformer/html_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
