@@ -73,6 +73,10 @@ dependencies:
 
   linkify: 5.0.0
 
+  package_info_plus: 4.2.0
+
+  fk_user_agent: 2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
