@@ -99,18 +99,21 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
                   )
                 ),
-                const SizedBox(width: EmailViewAppBarWidgetStyles.space),
-                TMailButtonWidget.fromIcon(
-                  icon: _imagePaths.icPrinter,
-                  iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
-                  backgroundColor: Colors.transparent,
-                  padding: EmailViewAppBarWidgetStyles.buttonPadding,
-                  tooltipMessage: AppLocalizations.of(context).printAll,
-                  onTapActionCallback: () => onEmailActionClick?.call(
-                    presentationEmail,
-                    EmailActionType.printAll
-                  )
-                ),
+                if (PlatformInfo.isWeb)
+                  ...[
+                    const SizedBox(width: EmailViewAppBarWidgetStyles.space),
+                    TMailButtonWidget.fromIcon(
+                      icon: _imagePaths.icPrinter,
+                      iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
+                      backgroundColor: Colors.transparent,
+                      padding: EmailViewAppBarWidgetStyles.buttonPadding,
+                      tooltipMessage: AppLocalizations.of(context).printAll,
+                      onTapActionCallback: () => onEmailActionClick?.call(
+                        presentationEmail,
+                        EmailActionType.printAll
+                      )
+                    ),
+                  ],
                 const SizedBox(width: EmailViewAppBarWidgetStyles.space),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icDeleteComposer,
