@@ -8,6 +8,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/fps_manager.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -76,6 +77,7 @@ abstract class BaseController extends GetxController
   final ImagePaths imagePaths = Get.find<ImagePaths>();
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
+  final ApplicationManager applicationManager = Get.find<ApplicationManager>();
 
   bool _isFcmEnabled = false;
 

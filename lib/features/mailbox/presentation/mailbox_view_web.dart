@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
@@ -68,13 +68,10 @@ class MailboxView extends BaseMailboxView {
             textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
             logoSVG: controller.imagePaths.icTMailLogo
           ),
-          Obx(() {
-            if (controller.mailboxDashBoardController.appInformation.value != null) {
-              return _buildVersionInformation(context, controller.mailboxDashBoardController.appInformation.value!);
-            } else {
-              return const SizedBox.shrink();
-            }
-          }),
+          ApplicationVersionWidget(
+            applicationManager: controller.mailboxDashBoardController.applicationManager,
+            padding: const EdgeInsets.only(top: 4),
+          )
         ])
     );
   }
@@ -330,16 +327,5 @@ class MailboxView extends BaseMailboxView {
     } else {
       controller.mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction(listEmails, presentationMailbox);
     }
-  }
-
-  Widget _buildVersionInformation(BuildContext context, PackageInfo packageInfo) {
-    return Container(
-      padding: const EdgeInsets.only(top: 4),
-      child: Text(
-        'v.${packageInfo.version}',
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 13, color: AppColor.colorContentEmail, fontWeight: FontWeight.w500),
-      ),
-    );
   }
 }
