@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/username_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -76,21 +77,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             logoSVG: controller.imagePaths.icTMailLogo,
                             onTapCallback: controller.redirectToInboxAction,
                           ),
-                          Obx(() {
-                            if (controller.appInformation.value != null) {
-                              return Padding(padding: const EdgeInsets.only(top: 6),
-                                child: Text(
-                                  'v${controller.appInformation.value!.version}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: AppColor.colorContentEmail,
-                                    fontWeight: FontWeight.w500),
-                                ));
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
+                          ApplicationVersionWidget(
+                            applicationManager: controller.applicationManager
+                          )
                         ])
                       ),
                       Expanded(child: Container(
@@ -340,7 +329,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           : const SizedBox.shrink(),
         const SizedBox(width: 24),
         Obx(() => (AvatarBuilder()
-          ..text(controller.sessionCurrent?.username.firstCharacter ?? '')
+          ..text(controller.accountId.value != null
+              ? controller.sessionCurrent?.username.firstCharacter ?? ''
+              : ''
+            )
           ..backgroundColor(Colors.white)
           ..textColor(Colors.black)
           ..context(context)
