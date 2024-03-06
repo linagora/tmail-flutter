@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -69,6 +70,7 @@ const fallbackGenerators = {
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
+  MockSpec<PrintEmailInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -99,6 +101,7 @@ void main() {
   final imagePaths = MockImagePaths();
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
+  final printEmailInteractor = MockPrintEmailInteractor();
 
   late SingleEmailController singleEmailController = SingleEmailController(
     getEmailContentInteractor,
@@ -112,6 +115,7 @@ void main() {
     getAllIdentitiesInteractor,
     storeOpenedEmailInteractor,
     viewAttachmentForWebInteractor,
+    printEmailInteractor,
   );
 
   final testAccountId = AccountId(Id('123'));

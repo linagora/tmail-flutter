@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
+
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtils {
@@ -110,5 +113,12 @@ class FileUtils {
     } catch (e) {
       logError('FileUtils::removeFolder():EXCEPTION: $e');
     }
+  }
+
+  Future<String> convertImageAssetToBase64(String assetImage) async {
+    ByteData bytes = await rootBundle.load(assetImage);
+    final buffer = bytes.buffer;
+    final base64Data = base64Encode(Uint8List.view(buffer));
+    return base64Data;
   }
 }

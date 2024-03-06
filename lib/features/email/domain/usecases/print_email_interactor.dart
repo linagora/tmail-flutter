@@ -29,7 +29,6 @@ class PrintEmailInteractor {
       final htmlContentTransformed = await emailRepository.transformHtmlEmailContent(
         emailContent,
         TransformConfiguration.forPrintEmail());
-      log('PrintEmailInteractor::_transformHtmlEmailContent: htmlContentTransformed: $htmlContentTransformed');
       return htmlContentTransformed;
     } catch (e) {
       logError('PrintEmailInteractor::_transformHtmlEmailContent: Exception: $e');

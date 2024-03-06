@@ -91,4 +91,13 @@ class HtmlInteraction {
       });
     </script>
   ''';
+
+  static const String scriptHandleInvokePrinterOnBrowser = '''
+    <script type="text/javascript">
+      document.body.onload= function() {
+        document.body.offsetHeight;
+        window.print();
+      };
+    </script>
+  ''';
 }
