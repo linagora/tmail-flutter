@@ -51,6 +51,12 @@ import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_work
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/server_settings/data/datasource/server_settings_data_source.dart';
+import 'package:tmail_ui_user/features/server_settings/data/datasource_impl/remote_server_settings_data_source_impl.dart';
+import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
+import 'package:tmail_ui_user/features/server_settings/data/repository/server_settings_repository_impl.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/repository/server_settings_repository.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_upload_datasource_impl.dart';
@@ -118,6 +124,9 @@ class ComposerBindings extends BaseBindings {
       Get.find<SendingEmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
+      Get.find<ServerSettingsAPI>(), 
+      Get.find<RemoteExceptionThrower>()));
   }
 
   @override
@@ -130,6 +139,8 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
     Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
+    Get.lazyPut<ServerSettingsDataSource>(
+      () => Get.find<RemoteServerSettingsDataSourceImpl>());
   }
 
   @override
@@ -154,6 +165,9 @@ class ComposerBindings extends BaseBindings {
       Get.find<StateDataSource>(),
       Get.find<PrintFileDataSource>(),
     ));
+    Get.lazyPut(() => ServerSettingsRepositoryImpl(
+      Get.find<ServerSettingsDataSource>(),
+    ));
   }
 
   @override
@@ -162,6 +176,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut<ContactRepository>(() => Get.find<ContactRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
+    Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
   }
 
   @override
@@ -179,6 +194,7 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => DownloadImageAsBase64Interactor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => TransformHtmlEmailContentInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => GetAlwaysReadReceiptSettingInteractor(Get.find<ServerSettingsRepository>()));
 
     IdentityInteractorsBindings().dependencies();
   }
@@ -199,6 +215,7 @@ class ComposerBindings extends BaseBindings {
         Get.find<RichTextWebController>(),
         Get.find<DownloadImageAsBase64Interactor>(),
         Get.find<TransformHtmlEmailContentInteractor>(),
+        Get.find<GetAlwaysReadReceiptSettingInteractor>(),
     ));
   }
 
