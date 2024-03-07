@@ -32,6 +32,11 @@ import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_work
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/server_settings/data/datasource/server_settings_data_source.dart';
+import 'package:tmail_ui_user/features/server_settings/data/datasource_impl/remote_server_settings_data_source_impl.dart';
+import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
+import 'package:tmail_ui_user/features/server_settings/data/repository/server_settings_repository_impl.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/repository/server_settings_repository.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
@@ -46,6 +51,7 @@ class SendEmailInteractorBindings extends InteractorsBindings {
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
     Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
+    Get.lazyPut<ServerSettingsDataSource>(() => Get.find<RemoteServerSettingsDataSourceImpl>());
   }
 
   @override
@@ -82,17 +88,24 @@ class SendEmailInteractorBindings extends InteractorsBindings {
       Get.find<SendingEmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
+      Get.find<ServerSettingsAPI>(),
+      Get.find<RemoteExceptionThrower>()));
   }
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>(), Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SendEmailInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<MailboxRepository>(),
+      Get.find<ServerSettingsRepository>()));
   }
 
   @override
   void bindingsRepository() {
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
+    Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
   }
 
   @override
@@ -113,6 +126,8 @@ class SendEmailInteractorBindings extends InteractorsBindings {
       },
       Get.find<StateDataSource>(),
     ));
+    Get.lazyPut(() => ServerSettingsRepositoryImpl(
+      Get.find<ServerSettingsDataSource>()));
   }
 
 }
