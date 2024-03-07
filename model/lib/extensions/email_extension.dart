@@ -180,4 +180,40 @@ extension EmailExtension on Email {
       headerCalendarEvent: headerCalendarEvent
     );
   }
+
+  Email updateEmailHeaderMdn(
+    Map<IndividualHeaderIdentifier, String?> value,
+  ) {
+    return Email(
+      id: id,
+      blobId: blobId,
+      threadId: threadId,
+      mailboxIds: mailboxIds,
+      keywords: keywords,
+      size: size,
+      receivedAt: receivedAt,
+      headers: headers,
+      messageId: messageId,
+      inReplyTo: inReplyTo,
+      references: references,
+      subject: subject,
+      sentAt: sentAt,
+      hasAttachment: hasAttachment,
+      preview: preview,
+      sender: sender,
+      from: from,
+      to: to,
+      cc: cc,
+      bcc: bcc,
+      replyTo: replyTo,
+      textBody: textBody,
+      htmlBody: htmlBody,
+      attachments: attachments,
+      bodyStructure: bodyStructure,
+      bodyValues: bodyValues,
+      headerUserAgent: headerUserAgent,
+      headerMdn: value,
+      headerCalendarEvent: headerCalendarEvent,
+    );
+  }
 }
