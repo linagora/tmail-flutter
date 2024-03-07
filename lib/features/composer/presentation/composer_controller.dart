@@ -76,6 +76,8 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -120,6 +122,7 @@ class ComposerController extends BaseController {
   final RichTextWebController richTextWebController;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
+  final GetAlwaysReadReceiptSettingInteractor _getAlwaysReadReceiptSettingInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -180,6 +183,7 @@ class ComposerController extends BaseController {
     this.richTextWebController,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
+    this._getAlwaysReadReceiptSettingInteractor,
   );
 
   @override
@@ -197,6 +201,7 @@ class ComposerController extends BaseController {
         _listenBrowserTabRefresh();
       });
     }
+    _getAlwaysReadReceiptSetting();
   }
 
   @override
@@ -279,6 +284,8 @@ class ComposerController extends BaseController {
         );
       }
       maxWithEditor = null;
+    } else if (success is GetAlwaysReadReceiptSettingSuccess) {
+      hasRequestReadReceipt.value = success.alwaysReadReceiptEnabled;
     }
   }
 
@@ -297,6 +304,8 @@ class ComposerController extends BaseController {
       if (identitySelected.value == null) {
         _autoFocusFieldWhenLauncher();
       }
+    } else if (failure is GetAlwaysReadReceiptSettingFailure) {
+      hasRequestReadReceipt.value = true;
     }
   }
 
@@ -2156,5 +2165,12 @@ class ComposerController extends BaseController {
     final draftArgs = await _generateSaveAsDraftsArguments(context);
     _closeComposerAction(result: draftArgs);
     _closeComposerButtonState = ButtonState.enabled;
+  }
+  
+  void _getAlwaysReadReceiptSetting() {
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId != null) {
+      consumeState(_getAlwaysReadReceiptSettingInteractor.execute(accountId));
+    }
   }
 }
