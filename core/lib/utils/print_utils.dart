@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:core/data/model/print_attachment.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -16,18 +17,18 @@ class PrintUtils {
 
   PrintUtils(this._imagePaths, this._fileUtils);
 
-  Future<Element> _createUserInformationElement({
+  Future<Element?> _createUserInformationElement({
     required String appName,
     required String userName,
   }) async {
-    final logoBase64Data = await _fileUtils.convertImageAssetToBase64(_imagePaths.icTMailLogo);
+    try {
+      final logoBase64Data = await _fileUtils.convertImageAssetToBase64(_imagePaths.icLogoApp);
 
-    return Element.html('''
+      return Element.html('''
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tbody>
           <tr height="14px">
-            <td width="40"><img src="${HtmlUtils.generateSVGImageData(logoBase64Data)}" width="40" height="40" class="logo" /></td>
-            <td style="padding-left: 10px;font-size: 20px;color: #000;"><b>$appName</b></td>
+            <td width="200"><img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: logoBase64Data, mimeType: 'image/png')}" width="200" height="40" class="logo" /></td>
             <td align="right" style="color: #777;">
               <b>$userName</b>
             </td>
@@ -35,12 +36,24 @@ class PrintUtils {
         </tbody>
       </table>
     ''');
+    } catch (e) {
+      logError('PrintUtils::_createUserInformationElement: Exception = $e');
+      return null;
+    }
   }
 
-  Element get dividerElement => Element.html('<hr />');
+  Element? get dividerElement {
+    try {
+      return Element.html('<hr />');
+    } catch (e) {
+      logError('PrintUtils::dividerElement: Exception = $e');
+      return null;
+    }
+  }
 
-  Element _createSubjectElement(String subject) {
-    return Element.html('''
+  Element? _createSubjectElement(String subject) {
+    try {
+      return Element.html('''
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tbody>
           <tr>
@@ -51,14 +64,19 @@ class PrintUtils {
         </tbody>
       </table>
     ''');
+    } catch (e) {
+      logError('PrintUtils::_createSubjectElement: Exception = $e');
+      return null;
+    }
   }
 
-  Element _createSenderElement({
+  Element? _createSenderElement({
     required String senderName,
     required String senderEmailAddress,
     required String dateTime,
   }) {
-    return Element.html('''
+    try {
+      return Element.html('''
       <tr>
         <td>
           <font size="-1"><b>$senderName </b>&lt;$senderEmailAddress&gt;</font>
@@ -66,15 +84,24 @@ class PrintUtils {
         <td align="right"><font size="-1">$dateTime</font></td>
       </tr>
     ''');
+    } catch (e) {
+      logError('PrintUtils::_createSenderElement: Exception = $e');
+      return null;
+    }
   }
 
-  String _createRecipientHtmlTag(String prefix, String emailAddress) {
-    Element element = Element.html('<div class="${prefix.toLowerCase()}"></div>');
-    element.text = '$prefix: $emailAddress';
-    return element.outerHtml;
+  String? _createRecipientHtmlTag(String prefix, String emailAddress) {
+    try {
+      Element element = Element.html('<div class="${prefix.toLowerCase()}"></div>');
+      element.text = '$prefix: $emailAddress';
+      return element.outerHtml;
+    } catch (e) {
+      logError('PrintUtils::_createRecipientHtmlTag: Exception = $e');
+      return '';
+    }
   }
 
-  Element _createRecipientsElement({
+  Element? _createRecipientsElement({
     required String toPrefix,
     required String ccPrefix,
     required String bccPrefix,
@@ -84,7 +111,8 @@ class PrintUtils {
     String? bccAddress,
     String? replyToAddress,
   }) {
-    return Element.html('''
+    try {
+      return Element.html('''
       <tr>
         <td colspan="2" style="padding-bottom: 4px;" class="recipient">
           ${replyToAddress?.isNotEmpty == true ? _createRecipientHtmlTag(replyToPrefix, replyToAddress!) : ''}
@@ -94,10 +122,15 @@ class PrintUtils {
         </td>
       </tr>
     ''');
+    } catch (e) {
+      logError('PrintUtils::_createRecipientsElement: Exception = $e');
+      return null;
+    }
   }
 
-  Element _createEmailContentElement(String emailContent) {
-    return Element.html('''
+  Element? _createEmailContentElement(String emailContent) {
+    try {
+      return Element.html('''
       <tr>
         <td colspan="2">
           <table width="100%" cellpadding="12" cellspacing="0" border="0">
@@ -110,6 +143,10 @@ class PrintUtils {
         </td>
       </tr>
     ''');
+    } catch (e) {
+      logError('PrintUtils::_createEmailContentElement: Exception = $e');
+      return null;
+    }
   }
 
   String _createTitleAttachmentHtmlTag({
@@ -144,11 +181,12 @@ class PrintUtils {
     ''';
   }
 
-  Element _createAttachmentsElement({
+  Element? _createAttachmentsElement({
     required String titleAttachment,
     required List<PrintAttachment> listAttachment
   }) {
-    return Element.html('''
+    try {
+      return Element.html('''
       <table class="attachments" cellspacing="0" cellpadding="5" border="0">
         <tbody>
           ${_createTitleAttachmentHtmlTag(countAttachments: listAttachment.length, titleAttachment: titleAttachment)}
@@ -156,6 +194,10 @@ class PrintUtils {
         </tbody>
       </table>
     ''');
+    } catch (e) {
+      logError('PrintUtils::_createAttachmentsElement: Exception = $e');
+      return null;
+    }
   }
 
   Future<void> printEmail({
@@ -185,18 +227,18 @@ class PrintUtils {
     Element messageElement = Element.html('<table width="100%" cellpadding="0" cellspacing="0" border="0" class="message"></table>');
     Element messageBodyElement = Element.html('<tbody></tbody>');
 
-    Element userInfoElement = await _createUserInformationElement(
+    Element? userInfoElement = await _createUserInformationElement(
       appName: appName,
       userName: userName);
 
-    Element subjectElement = _createSubjectElement(subject);
+    Element? subjectElement = _createSubjectElement(subject);
 
-    Element senderElement = _createSenderElement(
+    Element? senderElement = _createSenderElement(
       senderName: senderName,
       senderEmailAddress: senderEmailAddress,
       dateTime: dateTime);
 
-    Element recipientsElement = _createRecipientsElement(
+    Element? recipientsElement = _createRecipientsElement(
       toPrefix: toPrefix,
       ccPrefix: ccPrefix,
       bccPrefix: bccPrefix,
@@ -207,39 +249,55 @@ class PrintUtils {
       replyToAddress: replyToAddress,
     );
 
-    Element emailContentElement = _createEmailContentElement(emailContent);
+    Element? emailContentElement = _createEmailContentElement(emailContent);
 
-    bodyContainerElement.append(userInfoElement);
-    bodyContainerElement.append(dividerElement);
-
-    mainContentElement.append(subjectElement);
-    mainContentElement.append(dividerElement);
-
-    messageBodyElement.append(senderElement);
-    messageBodyElement.append(recipientsElement);
-    messageBodyElement.append(emailContentElement);
-
+    if (senderElement != null) {
+      messageBodyElement.append(senderElement);
+    }
+    if (recipientsElement != null) {
+      messageBodyElement.append(recipientsElement);
+    }
+    if (emailContentElement != null) {
+      messageBodyElement.append(emailContentElement);
+    }
     messageElement.append(messageBodyElement);
 
+    if (subjectElement != null) {
+      mainContentElement.append(subjectElement);
+    }
+    if (dividerElement != null) {
+      mainContentElement.append(dividerElement!);
+    }
     mainContentElement.append(messageElement);
 
     if (listAttachment?.isNotEmpty == true) {
-      Element attachmentsElement = _createAttachmentsElement(
-          titleAttachment: titleAttachment,
-          listAttachment: listAttachment!);
-      mainContentElement.append(dividerElement);
-      mainContentElement.append(attachmentsElement);
+      final attachmentsElement = _createAttachmentsElement(
+        titleAttachment: titleAttachment,
+        listAttachment: listAttachment!);
+
+      if (dividerElement != null) {
+        mainContentElement.append(dividerElement!);
+      }
+      if (attachmentsElement != null) {
+        mainContentElement.append(attachmentsElement);
+      }
     }
 
+    if (userInfoElement != null) {
+      bodyContainerElement.append(userInfoElement);
+    }
+    if (dividerElement != null) {
+      bodyContainerElement.append(dividerElement!);
+    }
     bodyContainerElement.append(mainContentElement);
+
+    Element styleElement = Element.html(HtmlTemplate.printDocumentCssStyle);
+    document.head?.append(styleElement);
 
     document.body?.append(bodyContainerElement);
 
     Element scriptElement = Element.html(HtmlInteraction.scriptHandleInvokePrinterOnBrowser);
     document.body?.append(scriptElement);
-
-    Element styleElement = Element.html(HtmlTemplate.printDocumentCssStyle);
-    document.head?.append(styleElement);
 
     final htmlDocument = document.outerHtml;
 

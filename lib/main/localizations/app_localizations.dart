@@ -3819,4 +3819,18 @@ class AppLocalizations {
       name: 'replyToEmailAddressPrefix',
     );
   }
+
+  String get printingInProgress {
+    return Intl.message(
+      'Printing in progress',
+      name: 'printingInProgress'
+    );
+  }
+
+  String get printingFailed {
+    return Intl.message(
+      'Printing failed',
+      name: 'printingFailed'
+    );
+  }
 }

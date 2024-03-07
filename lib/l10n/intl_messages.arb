@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-02-28T17:05:44.385016",
+  "@@last_modified": "2024-03-08T11:39:58.409792",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3662,6 +3662,18 @@
   },
   "replyToEmailAddressPrefix": "Reply-To",
   "@replyToEmailAddressPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingInProgress": "Printing in progress",
+  "@printingInProgress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingFailed": "Printing failed",
+  "@printingFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
