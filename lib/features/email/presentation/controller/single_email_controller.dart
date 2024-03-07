@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
@@ -206,6 +207,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       emailLoadedViewState.value = Right<Failure, Success>(success);
     } else if (success is ParseCalendarEventSuccess) {
       _handleParseCalendarEventSuccess(success);
+    } else if (success is PrintEmailLoading) {
+      _showMessageWhenStartingEmailPrinting();
     }
   }
 
@@ -226,6 +229,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handleParseCalendarEventFailure(failure);
     } else if (failure is GetEmailContentFailure) {
       emailLoadedViewState.value = Left<Failure, Success>(failure);
+    } else if (failure is PrintEmailFailure) {
+      _showMessageWhenEmailPrintingFailed();
     }
   }
 
@@ -1587,9 +1592,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _printEmail(BuildContext context, PresentationEmail email) {
-    if (email.id != _currentEmailLoaded?.emailCurrent?.id) {
-      log('SingleEmailController::_printEmail: EMAIL ${email.id?.asString} NOT LOADED');
-    }
     final emailPrint = EmailPrint(
       appName: AppLocalizations.of(context).app_name,
       userName: mailboxDashBoardController.userProfile.value?.email ?? '',
@@ -1608,5 +1610,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       replyToAddress: email.replyTo?.listEmailAddressToString(isFullEmailAddress: true),
     );
     consumeState(_printEmailInteractor.execute(emailPrint));
+  }
+
+  void _showMessageWhenStartingEmailPrinting() {
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).printingInProgress,
+        leadingSVGIconColor: AppColor.primaryColor,
+        leadingSVGIcon: imagePaths.icPrinter);
+    }
+  }
+
+  void _showMessageWhenEmailPrintingFailed() {
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).printingFailed);
+    }
   }
 }
