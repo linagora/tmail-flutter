@@ -91,6 +91,11 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sendi
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_bindings.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/bindings/sending_queue_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/server_settings/data/datasource/server_settings_data_source.dart';
+import 'package:tmail_ui_user/features/server_settings/data/datasource_impl/remote_server_settings_data_source_impl.dart';
+import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
+import 'package:tmail_ui_user/features/server_settings/data/repository/server_settings_repository_impl.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/repository/server_settings_repository.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -183,6 +188,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<SpamReportDataSource>(() => Get.find<SpamReportDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<MailboxCacheDataSourceImpl>(() => Get.find<MailboxCacheDataSourceImpl>());
+    Get.lazyPut<ServerSettingsDataSource>(
+      () => Get.find<RemoteServerSettingsDataSourceImpl>());
   }
 
   @override
@@ -234,6 +241,10 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<SendingEmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
+      Get.find<ServerSettingsAPI>(),
+      Get.find<RemoteExceptionThrower>()
+    ));
   }
 
   @override
@@ -302,7 +313,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetSpamMailboxCachedInteractor(Get.find<SpamReportRepository>()));
     Get.lazyPut(() => SendEmailInteractor(
       Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>()
+      Get.find<MailboxRepository>(),
+      Get.find<ServerSettingsRepository>()
     ));
     SendingQueueInteractorBindings().dependencies();
     Get.lazyPut(() => StoreSessionInteractor(Get.find<SessionRepository>()));
@@ -335,6 +347,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<ComposerCacheRepository>(() => Get.find<ComposerCacheRepositoryImpl>());
     Get.lazyPut<SpamReportRepository>(() => Get.find<SpamReportRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
+    Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
   }
 
   @override
@@ -377,5 +390,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       },
       Get.find<StateDataSource>(),
     ));
+    Get.lazyPut(() => ServerSettingsRepositoryImpl(Get.find<ServerSettingsDataSource>()));
   }
 }
