@@ -38,6 +38,8 @@ class ManageAccountMenuController extends GetxController {
       AccountMenuItem.profiles,
       if (dashBoardController.isRuleFilterCapabilitySupported)
         AccountMenuItem.emailRules,
+      if (dashBoardController.isServerSettingsCapabilitySupported)
+        AccountMenuItem.alwaysReadReceipt,
       if (dashBoardController.isForwardCapabilitySupported)
         AccountMenuItem.forward,
       if (dashBoardController.isVacationCapabilitySupported)
