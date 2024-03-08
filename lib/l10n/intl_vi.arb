@@ -3833,5 +3833,41 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "printAll": "In",
+  "@printAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToEmailAddressPrefix": "Reply-To",
+  "@replyToEmailAddressPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingInProgress": "Đang tiến hành in",
+  "@printingInProgress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loadMore": "Tải thêm",
+  "@loadMore": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToProceed": "Bạn có muốn tiếp tục?",
+  "@doYouWantToProceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingFailed": "In thất bại",
+  "@printingFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
