@@ -159,4 +159,15 @@ class SettingsUtils {
       return const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 48);
     }
   }
+
+  static EdgeInsets getPaddingAlwaysReadReceiptSetting(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils
+  ) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsets.all(24);
+    } else {
+      return EdgeInsets.zero;
+    }
+  }
 }

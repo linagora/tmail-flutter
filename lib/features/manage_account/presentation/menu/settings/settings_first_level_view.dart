@@ -61,6 +61,26 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           }
         }),
         Obx(() {
+          if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
+            return Column(children: [
+              SettingFirstLevelTileBuilder(
+                AccountMenuItem.alwaysReadReceipt.getName(context),
+                AccountMenuItem.alwaysReadReceipt.getIcon(controller.imagePaths),
+                subtitle: AppLocalizations.of(context).emailReadReceiptsSettingExplanation,
+                () => controller.selectSettings(AccountMenuItem.alwaysReadReceipt)
+              ),
+              Divider(
+                color: AppColor.colorDividerHorizontal,
+                height: 1,
+                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+              ),
+            ]);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Obx(() {
           if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
