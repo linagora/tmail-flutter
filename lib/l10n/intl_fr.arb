@@ -840,7 +840,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_dialog_message": "Vous êtes sur le point de supprimer définitivement tous les éléments de la Corbeille. Voulez-vous continuer ?",
+  "empty_trash_dialog_message": "Vous allez supprimer définitivement tous les éléments de la Corbeille. Voulez-vous continuer ?",
   "@empty_trash_dialog_message": {
     "type": "text",
     "placeholders_order": [],
@@ -932,7 +932,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_multiple_messages_dialog": "Vous êtes sur le point de supprimer définitivement {count} éléments dans {mailboxName}. Voulez-vous continuer ?",
+  "delete_multiple_messages_dialog": "Vous allez supprimer définitivement {count} éléments dans {mailboxName}. Voulez-vous continuer ?",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
@@ -2942,7 +2942,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamMessageDialog": "Vous êtes sur le point de supprimer définitivement tous les messages du dossier Indésirables. Voulez-vous continuer ?",
+  "emptySpamMessageDialog": "Vous allez supprimer définitivement tous les messages du dossier Indésirables. Voulez-vous continuer ?",
   "@emptySpamMessageDialog": {
     "type": "text",
     "placeholders_order": [],
@@ -3824,6 +3824,42 @@
   },
   "externalDomain": "Domaine externe",
   "@externalDomain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToProceed": "Voulez-vous continuer ?",
+  "@doYouWantToProceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingInProgress": "Impression en cours",
+  "@printingInProgress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingFailed": "Échec de l'impression",
+  "@printingFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToEmailAddressPrefix": "Reply-To",
+  "@replyToEmailAddressPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loadMore": "Charger la suite",
+  "@loadMore": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printAll": "Tout imprimer",
+  "@printAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
