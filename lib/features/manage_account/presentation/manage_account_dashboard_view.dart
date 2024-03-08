@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
@@ -175,6 +176,12 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         case AccountMenuItem.emailRules:
           if(controller.isRuleFilterCapabilitySupported){
             return EmailRulesView();
+          } else {
+            return const SizedBox.shrink();
+          }
+        case AccountMenuItem.alwaysReadReceipt:
+          if(controller.isServerSettingsCapabilitySupported){
+            return const AlwaysReadReceiptView();
           } else {
             return const SizedBox.shrink();
           }
