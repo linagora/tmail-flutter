@@ -209,6 +209,7 @@ class ImagePaths {
   String get icFilterSB => _getImagePath('ic_filter_sb.svg');
   String get icUnsubscribe => _getImagePath('ic_unsubscribe.svg');
   String get icRecoverDeletedMessages => _getImagePath('ic_recover_deleted_messages.svg');
+  String get icAlwaysReadReceipt => _getImagePath('ic_always_read_receipt.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
