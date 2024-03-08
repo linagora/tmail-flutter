@@ -104,6 +104,7 @@ extension AppColor on Color {
   static const colorShadowComposerFullScreen = Color(0x33000000);
   static const colorCancelButton = Color(0xFFF2F2F2);
   static const colorTextButtonHeaderThread = Color(0xFF686E76);
+  static const colorTextSettingDescriptions = colorTextButtonHeaderThread;
   static const colorButtonHeaderThread = Color(0x99EBEDF0);
   static const colorBorderBodyThread = Color(0x5CB8C1CC);
   static const colorBgDesktop = Color(0xFFF6F6F6);
