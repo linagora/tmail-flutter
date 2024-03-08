@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-08T11:39:58.409792",
+  "@@last_modified": "2024-03-13T15:04:05.816015",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3674,6 +3674,24 @@
   },
   "printingFailed": "Printing failed",
   "@printingFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceipts": "Email read receipts",
+  "@emailReadReceipts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsSettingExplanation": "Read receipts are notifications that can be sent to and from your users to verify that mail has been read.",
+  "@emailReadReceiptsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsToggleDescription": "Always request read receipts with outgoing messages",
+  "@emailReadReceiptsToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

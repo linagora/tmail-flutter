@@ -3833,4 +3833,22 @@ class AppLocalizations {
       name: 'printingFailed'
     );
   }
+
+  String get emailReadReceipts {
+    return Intl.message(
+      'Email read receipts',
+      name: 'emailReadReceipts');
+  }
+
+  String get emailReadReceiptsSettingExplanation {
+    return Intl.message(
+      'Read receipts are notifications that can be sent to and from your users to verify that mail has been read.',
+      name: 'emailReadReceiptsSettingExplanation');
+  }
+
+  String get emailReadReceiptsToggleDescription {
+    return Intl.message(
+      'Always request read receipts with outgoing messages',
+      name: 'emailReadReceiptsToggleDescription');
+  }
 }
