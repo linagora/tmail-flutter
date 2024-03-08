@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
+import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
@@ -21,6 +22,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacati
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/bindings/always_read_receipt_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
@@ -198,6 +200,9 @@ class ManageAccountDashBoardController extends ReloadableController {
       case AccountMenuItem.emailRules:
         EmailRulesBindings().dependencies();
         break;
+      case AccountMenuItem.alwaysReadReceipt:
+        AlwaysReadReceiptBindings().dependencies();
+        break;
       case AccountMenuItem.forward:
         ForwardBindings().dependencies();
         break;
@@ -234,6 +239,14 @@ class ManageAccountDashBoardController extends ReloadableController {
   bool get isVacationCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
       return [CapabilityIdentifier.jmapVacationResponse].isSupported(sessionCurrent!, accountId.value!);
+    } else {
+      return false;
+    }
+  }
+
+  bool get isServerSettingsCapabilitySupported {
+    if (accountId.value != null && sessionCurrent != null) {
+      return [capabilityServerSettings].isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
     }
