@@ -1,3 +1,13 @@
+## [0.11.3-patch4-7] - 2024-03-08
+### Fixed
+- #2597 Handle one action in the same time in composer
+- Handle crash in composer when try to open/close composer many times
+
+### Added
+- #2628 Download and Open PDF file: Open by clicking on file - Download by clicking on download icon
+- #2613 Warning when forwarding email to external email address
+- #2520 Print email in PDF 
+
 ## [0.11.3-patch4-6] - 2024-02-26
 ### Fixed
 - #2326 Display total count of Draft 
