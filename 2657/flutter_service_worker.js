@@ -3,8 +3,8 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"main.dart.js_6.part.js": "0da5ca0c7147b562153deb2810523025",
-"main.dart.js_3.part.js": "7d3abe061096bdf8abc280db10a0963c",
+const RESOURCES = {"main.dart.js_6.part.js": "15f6159e7ccb9b8d3016005918193335",
+"main.dart.js_3.part.js": "846b69c70596d1c58b1958b80b10bc86",
 "worker_service/img/ic-close-4x.png": "05a898c9308bad96d32143261c3e7182",
 "worker_service/img/tmail-3x.png": "7b5f8e671c4f39ae5d1a67b46fe494d7",
 "worker_service/img/tmail-1x.png": "823f38fc9060c91a404462a7b6517a10",
@@ -326,7 +326,7 @@ const RESOURCES = {"main.dart.js_6.part.js": "0da5ca0c7147b562153deb2810523025",
 "i18n/vi.json": "05652be4397bcaa1ccbf0d0fd5fa9caf",
 "i18n/en.json": "e0bf88bb60efa34f25f4aec02e17cfee",
 "i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
-"main.dart.js": "b255e8b2ba3ffb555abf47f0737691f0",
+"main.dart.js": "560e2ee76be40deb32d7a0f7e2af137e",
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
 "main.dart.js_5.part.js": "4a20c06152b44abe50bf6e92605e8072",
 "main.dart.js_7.part.js": "5a796336eb0549bff52c9dddfdfb9b64",

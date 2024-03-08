@@ -3363,7 +3363,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(success) {
       return success instanceof A.LoadingState ? new A.Padding(D.EdgeInsets_0_0_0_24, B.Center_Jxw, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   C.EmailRulesItemWidget_build_closure.prototype = {
     call$0() {
@@ -3523,7 +3523,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(success) {
       return success instanceof A.LoadingState ? new A.Padding(B.EdgeInsets_24_24_24_24, B.Center_Jxw, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure.prototype = {
     call$1(listRecipientsSelected) {
@@ -4014,7 +4014,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(success) {
       return success instanceof A.LoadingState || success instanceof A.LoadingBuildTreeMailboxVisibility ? new A.Padding(B.EdgeInsets_0_16_0_0, B.Center_Jxw, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   C.MailboxVisibilityView__buildListMailbox_closure.prototype = {
     call$0() {
@@ -4964,7 +4964,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   C.IdentityListTileBuilder_build_closure1.prototype = {
     call$0() {
@@ -5741,5 +5741,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "TcxmTsrU/40IZRAVQ2JaNrrsZNY=");
+})($__dart_deferred_initializers__, "WpKpy6VEw8GRaUES2t18lnBLjSM=");
 ;

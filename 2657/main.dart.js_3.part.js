@@ -13596,7 +13596,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.KeyEventResult_1;
     },
-    $signature: 72
+    $signature: 71
   };
   B._RecipientComposerWidgetState_build__closure.prototype = {
     call$2(context, stateSetter) {
@@ -15425,7 +15425,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   B.MailboxDashBoardView_build_closure5.prototype = {
     call$0() {
@@ -16086,7 +16086,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   B.MailboxDashBoardView__buildDownloadTaskStateWidget_closure.prototype = {
     call$0() {
@@ -18092,7 +18092,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(success) {
       return success instanceof A.SearchingState ? new A.Padding(C.EdgeInsets_0_16_0_16, C.Center_Jxw, null) : C.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure.prototype = {
     call$1(email) {
@@ -18126,7 +18126,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(success) {
       return success instanceof A.SearchingMoreState ? new A.Padding(D.EdgeInsets_0_0_0_16, C.Center_Jxw, null) : C.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   B.SearchEmailView__buildSearchFilterByMailboxButton_closure.prototype = {
     call$0() {
@@ -18350,7 +18350,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   B.SearchMailboxView__buildSearchInputForm_closure.prototype = {
     call$0() {
@@ -19317,7 +19317,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   B.DefaultWebAppBarThreadWidget_build_closure.prototype = {
     call$2(context, constraints) {
@@ -19784,7 +19784,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 68
+    $signature: 67
   };
   B.ListUploadFileStateExtension_get_totalSize_closure.prototype = {
     call$1(file) {
@@ -20351,5 +20351,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "c95Cc+Dn19BIdXUeF91uDGXWIdM=");
+})($__dart_deferred_initializers__, "nMFAJBUlq6IiL7dsI1NysS9/8UM=");
 ;
