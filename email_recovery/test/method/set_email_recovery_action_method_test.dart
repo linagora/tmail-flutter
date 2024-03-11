@@ -79,10 +79,10 @@ void main() {
         ..addCreate(
           createRequestId,
           EmailRecoveryAction(
-            deletedBefore: UTCDate(DateTime.parse('2023-02-09T10:00:00')),
-            deletedAfter: UTCDate(DateTime.parse('2023-02-09T09:00:00')),
-            receivedBefore: UTCDate(DateTime.parse('2023-02-09T10:00:00')),
-            receivedAfter: UTCDate(DateTime.parse('2023-02-09T09:00:00')),
+            deletedBefore: UTCDate(DateTime.parse('2023-02-09T10:00:00Z')),
+            deletedAfter: UTCDate(DateTime.parse('2023-02-09T09:00:00Z')),
+            receivedBefore: UTCDate(DateTime.parse('2023-02-09T10:00:00Z')),
+            receivedAfter: UTCDate(DateTime.parse('2023-02-09T09:00:00Z')),
             hasAttachment: true,
             subject: 'Simple topic',
             sender: 'bob@domain.tld',
