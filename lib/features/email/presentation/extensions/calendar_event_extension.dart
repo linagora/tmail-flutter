@@ -298,37 +298,46 @@ extension CalendarEventExtension on CalendarEvent {
     return false;
   }
 
-  String dateTimeStringForAllDayEvent(DateTime startDate, DateTime endDate) {
-    final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
-    final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
-
-    final dateStart = formatDate(AppUtils.getCurrentDateLocale(), startDate);
-
+  String dateTimeStringForAllDayEvent({
+    required DateTime startDate,
+    required DateTime endDate,
+    required date_format.DateLocale dateLocale,
+    required String timeZone
+  }) {
+    final dateStart = formatDate(dateLocale, startDate);
     final endDateToDisplay = endDate.subtract(const Duration(days: 1));
-    final dateEnd = formatDate(AppUtils.getCurrentDateLocale(), endDateToDisplay);
+    final dateEnd = formatDate(dateLocale, endDateToDisplay);
 
     if (DateUtils.isSameDay(startDate, endDateToDisplay)) {
-      return '$dateStart (GMT$timeZoneOffsetAsString)';
+      return '$dateStart ($timeZone)';
     } else {
-      return '$dateStart - $dateEnd (GMT$timeZoneOffsetAsString)';
+      return '$dateStart - $dateEnd ($timeZone)';
     }
   }
 
-  String get dateTimeEventAsString {
+  String getDateTimeEvent({
+    required date_format.DateLocale dateLocale,
+    required String timeZone
+  }) {
     if (isAllDayEvent) {
-      return dateTimeStringForAllDayEvent(startUtcDate!.value, endUtcDate!.value);
+      return dateTimeStringForAllDayEvent(
+        startDate: startUtcDate!.value,
+        endDate: endUtcDate!.value,
+        dateLocale: dateLocale,
+        timeZone: timeZone,
+      );
     }
 
     if (localStartDate != null && localEndDate != null) {
-      final timeStart = formatDateTime(AppUtils.getCurrentDateLocale(), localStartDate!);
+      final timeStart = formatDateTime(dateLocale, localStartDate!);
       final timeEnd = DateUtils.isSameDay(localStartDate, localEndDate)
-        ? formatTime(AppUtils.getCurrentDateLocale(), localEndDate!)
-        : formatDateTime(AppUtils.getCurrentDateLocale(), localEndDate!);
+        ? formatTime(dateLocale, localEndDate!)
+        : formatDateTime(dateLocale, localEndDate!);
       return '$timeStart - $timeEnd';
     } else if (localStartDate != null) {
-      return formatDateTime(AppUtils.getCurrentDateLocale(), localStartDate!);
+      return formatDateTime(dateLocale, localStartDate!);
     } else if (localEndDate != null) {
-      return formatDateTime(AppUtils.getCurrentDateLocale(), localEndDate!);
+      return formatDateTime(dateLocale, localEndDate!);
     } else {
       return '';
     }

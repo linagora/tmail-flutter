@@ -7,14 +7,15 @@ import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_information_widget.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class CalendarEventInformationWidget extends StatelessWidget {
 
@@ -94,11 +95,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                     const SizedBox(height: CalendarEventInformationWidgetStyles.space),
                     if (calendarEvent.title?.isNotEmpty == true)
                       EventTitleWidget(title: calendarEvent.title!),
-                    if (calendarEvent.dateTimeEventAsString.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
-                        child: EventTimeInformationWidget(timeEvent: calendarEvent.dateTimeEventAsString),
-                      ),
+                    _buildEventTimeInformationWidget(),
                     if (calendarEvent.location?.isNotEmpty == true)
                       Padding(
                         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
@@ -168,11 +165,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                     const SizedBox(height: CalendarEventInformationWidgetStyles.space),
                     if (calendarEvent.title?.isNotEmpty == true)
                       EventTitleWidget(title: calendarEvent.title!),
-                    if (calendarEvent.dateTimeEventAsString.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
-                        child: EventTimeInformationWidget(timeEvent: calendarEvent.dateTimeEventAsString),
-                      ),
+                    _buildEventTimeInformationWidget(),
                     if (calendarEvent.location?.isNotEmpty == true)
                       Padding(
                         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
@@ -201,5 +194,20 @@ class CalendarEventInformationWidget extends StatelessWidget {
             ],
           ),
     );
+  }
+
+  Widget _buildEventTimeInformationWidget() {
+    final dateTimeEvent = calendarEvent.getDateTimeEvent(
+      dateLocale: AppUtils.getCurrentDateLocale(),
+      timeZone: AppUtils.getTimeZone()
+    );
+    if (dateTimeEvent.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
+        child: EventTimeInformationWidget(timeEvent: dateTimeEvent),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }

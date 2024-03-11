@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class CalendarEventDetailWidget extends StatelessWidget {
 
@@ -77,11 +78,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 onMailtoDelegateAction: onMailtoDelegateAction,
               )
             ),
-          if (calendarEvent.dateTimeEventAsString.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
-              child: EventTimeWidgetWidget(timeEvent: calendarEvent.dateTimeEventAsString),
-            ),
+          _buildEventTimeWidget(),
           if (calendarEvent.videoConferences.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
@@ -109,5 +106,20 @@ class CalendarEventDetailWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildEventTimeWidget() {
+    final dateTimeEvent = calendarEvent.getDateTimeEvent(
+      dateLocale: AppUtils.getCurrentDateLocale(),
+      timeZone: AppUtils.getTimeZone()
+    );
+    if (dateTimeEvent.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+        child: EventTimeWidgetWidget(timeEvent: dateTimeEvent),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }

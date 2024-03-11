@@ -1,3 +1,4 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -18,7 +19,10 @@ void main() {
         endUtcDate: UTCDate(endDate),
       );
 
-      final formattedDateString = calendarEvent.dateTimeEventAsString;
+      final formattedDateString = calendarEvent.getDateTimeEvent(
+        timeZone: 'GMT+0',
+        dateLocale: const EnglishDateLocale()
+      );
 
       expect(formattedDateString, expectedFormattedDateString);
     });
@@ -36,7 +40,10 @@ void main() {
         endUtcDate: UTCDate(endDate),
       );
 
-      final formattedDateString = calendarEvent.dateTimeEventAsString;
+      final formattedDateString = calendarEvent.getDateTimeEvent(
+        timeZone: 'GMT+0',
+        dateLocale: const EnglishDateLocale()
+      );
 
       expect(formattedDateString, expectedFormattedDateString);
     });
