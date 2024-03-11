@@ -314,7 +314,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => SendEmailInteractor(
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>(),
-      Get.find<ServerSettingsRepository>()
     ));
     SendingQueueInteractorBindings().dependencies();
     Get.lazyPut(() => StoreSessionInteractor(Get.find<SessionRepository>()));
