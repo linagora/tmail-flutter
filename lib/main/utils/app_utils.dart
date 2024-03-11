@@ -68,4 +68,10 @@ class AppUtils {
       return const date_format.EnglishDateLocale();
     }
   }
+
+  static String getTimeZone() {
+    final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
+    final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
+    return 'GMT$timeZoneOffsetAsString';
+  }
 }
