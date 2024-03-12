@@ -14,6 +14,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
   final PresentationEmail? presentationEmail;
+  final VoidCallback? onMailToAttendeesAction;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
@@ -23,6 +24,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
     required this.calendarEventReplying,
     this.margin,
     this.presentationEmail,
+    this.onMailToAttendeesAction,
   });
 
   @override
@@ -57,7 +59,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
                 color: _getButtonBorderColor(action)
               ),
               onTapActionCallback: _getCallbackFunction(action),
-            ),
+            )
           ))
           .toList(),
       ),
