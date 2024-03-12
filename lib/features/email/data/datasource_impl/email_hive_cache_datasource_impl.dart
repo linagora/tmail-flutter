@@ -71,7 +71,12 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   );
 
   @override
-  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId) {
+  Future<bool> deleteEmailPermanently(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) {
     throw UnimplementedError();
   }
 
@@ -134,7 +139,15 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> sendEmail(Session session, AccountId accountId, EmailRequest emailRequest, {CreateNewMailboxRequest? mailboxRequest}) {
+  Future<bool> sendEmail(
+    Session session,
+    AccountId accountId,
+    EmailRequest emailRequest,
+    {
+      CreateNewMailboxRequest? mailboxRequest,
+      CancelToken? cancelToken
+    }
+  ) {
     throw UnimplementedError();
   }
 

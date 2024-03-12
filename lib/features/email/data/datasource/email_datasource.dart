@@ -32,7 +32,10 @@ abstract class EmailDataSource {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
+    {
+      CreateNewMailboxRequest? mailboxRequest,
+      CancelToken? cancelToken
+    }
   );
 
   Future<List<Email>> markAsRead(Session session, AccountId accountId, List<Email> emails, ReadActions readActions);
@@ -79,7 +82,12 @@ abstract class EmailDataSource {
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
 
-  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId);
+  Future<bool> deleteEmailPermanently(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  );
 
   Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);
 
