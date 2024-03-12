@@ -11188,7 +11188,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = _this.onCreateFiltersActionCallback;
       t6 = t5 != null;
       t7 = t6 ? 22 : 20;
-      t4.push(new A.Padding(C.EdgeInsetsDirectional_0_12_0_12, A.Text$(_this.title, _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, t7, _null, _null, t6 ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null), _null));
+      t4.push(new A.Padding(D.EdgeInsetsDirectional_0_12_0_12, A.Text$(_this.title, _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, t7, _null, _null, t6 ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null), _null));
       t7 = _this.subTitle;
       if (t7 != null)
         t4.push(A.Text$(t7, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_jjv3, C.TextAlign_2, _null, _null, _null, _null));
@@ -11200,7 +11200,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t7 = t7.get$orientation(t7) === C.Orientation_0;
         } else
           t7 = false;
-        t4.push(A.TMailButtonWidget_TMailButtonWidget$fromText(D.Color_4294177783, 10, D.EdgeInsetsDirectional_0_28_0_0, t5, D.EdgeInsetsDirectional_24_12_24_12, t6, C.TextAlign_2, C.TextStyle_yzp0, t7 ? 1 / 0 : _null));
+        t4.push(A.TMailButtonWidget_TMailButtonWidget$fromText(D.Color_4294177783, 10, D.EdgeInsetsDirectional_0_28_0_0, t5, C.EdgeInsetsDirectional_24_12_24_12, t6, C.TextAlign_2, C.TextStyle_yzp0, t7 ? 1 / 0 : _null));
       }
       childWidget = new A.Padding(C.EdgeInsetsDirectional_16_16_16_16, A.Column$(t4, C.CrossAxisAlignment_2, t2, C.MainAxisSize_1, C.VerticalDirection_1), _null);
       return A.Container$(D.AlignmentDirectional_0_0, A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600 ? A.SingleChildScrollView$(childWidget, _null, _null, _null, _null, _null, C.Axis_1) : A.CustomScrollView$(_null, _null, _null, _null, C.Axis_1, false, A._setArrayType([A.SliverFillRemaining$(childWidget, true)], t3)), C.Clip_0, _null, D.BoxConstraints_ah9, _null, _null, _null, _null, _null, _null, _null, _null, _null);
@@ -20174,6 +20174,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_0_0_24_0 = new A.EdgeInsetsDirectional(0, 0, 24, 0);
     D.EdgeInsetsDirectional_0_0_5_0 = new A.EdgeInsetsDirectional(0, 0, 5, 0);
     D.EdgeInsetsDirectional_0_12_0_0 = new A.EdgeInsetsDirectional(0, 12, 0, 0);
+    D.EdgeInsetsDirectional_0_12_0_12 = new A.EdgeInsetsDirectional(0, 12, 0, 12);
     D.EdgeInsetsDirectional_0_12_16_12 = new A.EdgeInsetsDirectional(0, 12, 16, 12);
     D.EdgeInsetsDirectional_0_12_24_12 = new A.EdgeInsetsDirectional(0, 12, 24, 12);
     D.EdgeInsetsDirectional_0_16_0_0 = new A.EdgeInsetsDirectional(0, 16, 0, 0);
@@ -20202,7 +20203,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_20_0_20_16 = new A.EdgeInsetsDirectional(20, 0, 20, 16);
     D.EdgeInsetsDirectional_24_0_0_0 = new A.EdgeInsetsDirectional(24, 0, 0, 0);
     D.EdgeInsetsDirectional_24_0_24_8 = new A.EdgeInsetsDirectional(24, 0, 24, 8);
-    D.EdgeInsetsDirectional_24_12_24_12 = new A.EdgeInsetsDirectional(24, 12, 24, 12);
     D.EdgeInsetsDirectional_24_24_24_24 = new A.EdgeInsetsDirectional(24, 24, 24, 24);
     D.EdgeInsetsDirectional_24_8_24_8 = new A.EdgeInsetsDirectional(24, 8, 24, 8);
     D.EdgeInsetsDirectional_28_0_0_0 = new A.EdgeInsetsDirectional(28, 0, 0, 0);
@@ -20406,5 +20406,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "o98GkFPEXMHk/LAy+wV651uah1c=");
+})($__dart_deferred_initializers__, "HHFulqJjJRjz9a+FefuSoHkskS8=");
 ;

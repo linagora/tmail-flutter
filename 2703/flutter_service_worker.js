@@ -4,7 +4,7 @@ const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
 const RESOURCES = {"main.dart.js_6.part.js": "0d3cddcea040e4bd8f5bc51263a5f8a5",
-"main.dart.js_3.part.js": "7ce7c226a5b9327061abfd7ecbb24def",
+"main.dart.js_3.part.js": "5b44b905bc75ce550b0d88873282a8a1",
 "worker_service/img/ic-close-4x.png": "05a898c9308bad96d32143261c3e7182",
 "worker_service/img/tmail-3x.png": "7b5f8e671c4f39ae5d1a67b46fe494d7",
 "worker_service/img/tmail-1x.png": "823f38fc9060c91a404462a7b6517a10",
@@ -326,7 +326,7 @@ const RESOURCES = {"main.dart.js_6.part.js": "0d3cddcea040e4bd8f5bc51263a5f8a5",
 "i18n/vi.json": "05652be4397bcaa1ccbf0d0fd5fa9caf",
 "i18n/en.json": "e0bf88bb60efa34f25f4aec02e17cfee",
 "i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
-"main.dart.js": "70047c722b69e8811b6f0ff797274751",
+"main.dart.js": "6e245e2f5836f4688d6a411bd7ad2236",
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
 "main.dart.js_5.part.js": "4a20c06152b44abe50bf6e92605e8072",
 "main.dart.js_7.part.js": "5a796336eb0549bff52c9dddfdfb9b64",
