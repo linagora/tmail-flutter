@@ -26,3 +26,5 @@ class SaveEmailAsDraftsFailure extends FeatureFailure {
 
   SaveEmailAsDraftsFailure(dynamic exception) : super(exception: exception);
 }
+
+class CancelSavingEmailToDrafts extends LoadingState {}
