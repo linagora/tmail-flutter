@@ -412,10 +412,10 @@ class ThreadController extends BaseController with EmailActionController {
       }
       _getAllEmailAction();
     } else if (error is MethodLevelErrors) {
-      if (currentOverlayContext != null && error.message?.isNotEmpty == true) {
+      if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
           currentOverlayContext!,
-          error.message!
+          error.message?.toString() ?? ''
         );
       }
       clearState();

@@ -57,9 +57,18 @@ class EmailRepositoryImpl extends EmailRepository {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
+    {
+      CreateNewMailboxRequest? mailboxRequest,
+      CancelToken? cancelToken
+    }
   ) {
-    return emailDataSource[DataSourceType.network]!.sendEmail(session, accountId, emailRequest, mailboxRequest: mailboxRequest);
+    return emailDataSource[DataSourceType.network]!.sendEmail(
+      session,
+      accountId,
+      emailRequest,
+      mailboxRequest: mailboxRequest,
+      cancelToken: cancelToken,
+    );
   }
 
   @override
@@ -169,8 +178,18 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId) {
-    return emailDataSource[DataSourceType.network]!.deleteEmailPermanently(session, accountId, emailId);
+  Future<bool> deleteEmailPermanently(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) {
+    return emailDataSource[DataSourceType.network]!.deleteEmailPermanently(
+      session,
+      accountId,
+      emailId,
+      cancelToken: cancelToken
+    );
   }
 
   @override
