@@ -239,9 +239,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           ),
           const SizedBox(height: 12),
           if (controller.isMobile(context))
-            _buildActionButtonMobile(context)
-          else
-            _buildActionButtonDesktop(context),
+            _buildActionButtonMobile(context),
           if (PlatformInfo.isMobile)
             Obx(() {
               if (controller.isMobileEditorFocus.isTrue) {
@@ -258,7 +256,14 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
       onTap: () => controller.clearFocusEditor(context),
       child: Column(children: [
         _buildHeaderView(context),
-        Expanded(child: PointerInterceptor(child: bodyCreatorView))
+        Expanded(child: PointerInterceptor(child: bodyCreatorView)),
+        if (!controller.isMobile(context)) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: _buildActionButtonDesktop(context),
+          ),
+          const SizedBox(height: 12),
+        ],
       ]),
     );
   }
