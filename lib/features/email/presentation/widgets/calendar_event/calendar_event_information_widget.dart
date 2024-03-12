@@ -72,8 +72,8 @@ class CalendarEventInformationWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: TextSpan(
+                    Text.rich(
+                      TextSpan(
                         style: const TextStyle(
                           fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
                           fontWeight: FontWeight.w500,
@@ -142,8 +142,8 @@ class CalendarEventInformationWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: TextSpan(
+                    Text.rich(
+                      TextSpan(
                         style: const TextStyle(
                           fontSize: CalendarEventInformationWidgetStyles.invitationMessageTextSize,
                           fontWeight: FontWeight.w500,
