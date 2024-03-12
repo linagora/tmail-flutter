@@ -20,7 +20,9 @@ class AlwaysReadReceiptController extends BaseController {
   final UpdateAlwaysReadReceiptSettingInteractor _updateAlwaysReadReceiptSettingInteractor;
 
   final alwaysReadReceipt = true.obs;
-  final isLoading = false.obs;
+  bool get isLoading => viewState.value.fold(
+    (failure) => false, 
+    (success) => success is GettingAlwaysReadReceiptSetting || success is UpdatingAlwaysReadReceiptSetting);
   final _manageAccountDashBoardController = Get.find<ManageAccountDashBoardController>();
 
   @override
@@ -37,10 +39,6 @@ class AlwaysReadReceiptController extends BaseController {
       _getAlwaysReadReceiptSettingSuccess(success);
     } else if (success is UpdateAlwaysReadReceiptSettingSuccess) {
       _updateAlwaysReadReceiptSettingSuccess(success);
-    } else if (success is GettingAlwaysReadReceiptSetting) {
-      _gettingAlwaysReadReceiptSetting();
-    } else if (success is UpdatingAlwaysReadReceiptSetting) {
-      _updatingAlwaysReadReceiptSetting();
     }
   }
 
@@ -54,21 +52,11 @@ class AlwaysReadReceiptController extends BaseController {
     }
   }
 
-  void _updatingAlwaysReadReceiptSetting() => _toggleLoadingValue(true);
-
-  void _gettingAlwaysReadReceiptSetting() => _toggleLoadingValue(true);
-
-  void _toggleLoadingValue(bool value) {
-    isLoading.value = value;
-  }
-
   void _updateAlwaysReadReceiptValue(bool value) {
-    _toggleLoadingValue(false);
     alwaysReadReceipt.value = value;
   }
 
   void _updateAlwaysReadReceiptSettingFailure() {
-    _toggleLoadingValue(false);
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -83,7 +71,7 @@ class AlwaysReadReceiptController extends BaseController {
   }
 
   void toggleAlwaysReadReceipt() {
-    if (isLoading.value) return;
+    if (isLoading) return;
     final accountId = _manageAccountDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_updateAlwaysReadReceiptSettingInteractor.execute(
@@ -93,7 +81,6 @@ class AlwaysReadReceiptController extends BaseController {
   }
 
   void _getAlwaysReadReceiptSettingFailure() {
-    _toggleLoadingValue(false);
     alwaysReadReceipt.value = true;
   }
 
