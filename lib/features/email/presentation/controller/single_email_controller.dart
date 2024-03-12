@@ -16,6 +16,8 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
@@ -1659,7 +1661,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         break;
     }
   }
-  
+
   void _acceptCalendarEventAction(EmailId emailId) {
     if (_acceptCalendarEventInteractor == null
       || _displayingEventBlobId == null

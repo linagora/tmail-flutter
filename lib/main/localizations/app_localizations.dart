@@ -4023,4 +4023,11 @@ class AppLocalizations {
       name: 'canceling'
     );
   }
+
+  String get mailToAttendees {
+    return Intl.message(
+      'Mail to attendees',
+      name: 'mailToAttendees'
+    );
+  }
 }
