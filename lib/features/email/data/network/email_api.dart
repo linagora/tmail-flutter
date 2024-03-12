@@ -475,7 +475,12 @@ class EmailAPI with HandleSetErrorMixin {
     });
   }
 
-  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email) async {
+  Future<Email> saveEmailAsDrafts(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  ) async {
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(idCreateMethod, email);
@@ -490,7 +495,7 @@ class EmailAPI with HandleSetErrorMixin {
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
-      .execute();
+      .execute(cancelToken: cancelToken);
 
     final setEmailResponse = response.parse<SetEmailResponse>(
       setEmailInvocation.methodCallId,
@@ -507,7 +512,12 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId) async {
+  Future<bool> removeEmailDrafts(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy({emailId.id});
 
@@ -521,7 +531,7 @@ class EmailAPI with HandleSetErrorMixin {
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
-      .execute();
+      .execute(cancelToken: cancelToken);
 
     final setEmailResponse = response.parse<SetEmailResponse>(
         setEmailInvocation.methodCallId,
@@ -538,7 +548,8 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     Email newEmail,
-    EmailId oldEmailId
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
   ) async {
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
@@ -555,7 +566,7 @@ class EmailAPI with HandleSetErrorMixin {
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
-      .execute();
+      .execute(cancelToken: cancelToken);
 
     final setEmailResponse = response.parse<SetEmailResponse>(
       setEmailInvocation.methodCallId,
