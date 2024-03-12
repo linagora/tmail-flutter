@@ -115,23 +115,55 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email) {
+  Future<Email> saveEmailAsDrafts(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  ) {
     return Future.sync(() async {
-      return await emailAPI.saveEmailAsDrafts(session, accountId, email);
+      return await emailAPI.saveEmailAsDrafts(
+        session,
+        accountId,
+        email,
+        cancelToken: cancelToken
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId) {
+  Future<bool> removeEmailDrafts(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) {
     return Future.sync(() async {
-      return await emailAPI.removeEmailDrafts(session, accountId, emailId);
+      return await emailAPI.removeEmailDrafts(
+        session,
+        accountId,
+        emailId,
+        cancelToken: cancelToken
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId) {
+  Future<Email> updateEmailDrafts(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  ) {
     return Future.sync(() async {
-      return await emailAPI.updateEmailDrafts(session, accountId, newEmail, oldEmailId);
+      return await emailAPI.updateEmailDrafts(
+        session,
+        accountId,
+        newEmail,
+        oldEmailId,
+        cancelToken: cancelToken
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 

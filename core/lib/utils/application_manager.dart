@@ -25,14 +25,12 @@ class ApplicationManager {
 
   Future<String> getUserAgent() async {
     try {
-      String userAgent;
+      String userAgent = '';
       if (PlatformInfo.isWeb) {
         final webBrowserInfo = await _deviceInfoPlugin.webBrowserInfo;
         userAgent = webBrowserInfo.userAgent ?? '';
-      } else {
-        await FkUserAgent.init();
+      } else if (PlatformInfo.isMobile) {
         userAgent = FkUserAgent.userAgent ?? '';
-        FkUserAgent.release();
       }
       log('ApplicationManager::getUserAgent: $userAgent');
       return userAgent;
@@ -42,9 +40,21 @@ class ApplicationManager {
     }
   }
 
+  Future<void> initUserAgent() async {
+    if (PlatformInfo.isMobile) {
+      await FkUserAgent.init();
+    }
+  }
+
+  Future<void> releaseUserAgent() async {
+    if (PlatformInfo.isMobile) {
+      FkUserAgent.release();
+    }
+  }
+
   Future<String> generateApplicationUserAgent() async {
     final userAgent = await getUserAgent();
     final version = await getVersion();
-    return 'Team-Mail/$version $userAgent';
+    return 'Twake-Mail/$version $userAgent';
   }
 }

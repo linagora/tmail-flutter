@@ -1594,7 +1594,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _printEmail(BuildContext context, PresentationEmail email) {
     final emailPrint = EmailPrint(
       appName: AppLocalizations.of(context).app_name,
-      userName: mailboxDashBoardController.userProfile.value?.email ?? '',
+      userName: mailboxDashBoardController.sessionCurrent?.username.value ?? '',
       emailInformation: email.toEmail(),
       attachments: _currentEmailLoaded?.attachments,
       emailContent: _currentEmailLoaded?.htmlContent ?? '',

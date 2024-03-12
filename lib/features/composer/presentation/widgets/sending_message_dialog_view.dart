@@ -151,31 +151,13 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                             return value.fold(
                               (failure) => child!,
                               (success) {
-                                if (success is GenerateEmailLoading) {
-                                  return Text(
-                                    '${AppLocalizations.of(context).creatingMessage}...',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: AppColor.labelColor,
-                                      fontSize: 14
-                                    ),
-                                  );
-                                } else if (success is CancelSendingEmail) {
-                                  return Text(
-                                    '${AppLocalizations.of(context).canceling}...',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: AppColor.labelColor,
-                                      fontSize: 14
-                                    ),
-                                  );
-                                } else {
-                                  return Text(
-                                    '${AppLocalizations.of(context).sendingMessage}...',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: AppColor.labelColor,
-                                      fontSize: 14
-                                    ),
-                                  );
-                                }
+                                return Text(
+                                  '${_getStatusMessage(success)}...',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AppColor.labelColor,
+                                    fontSize: 14
+                                  ),
+                                );
                               }
                             );
                           },
@@ -237,6 +219,16 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
         ),
       ),
     );
+  }
+
+  String _getStatusMessage(Success success) {
+    if (success is GenerateEmailLoading) {
+      return AppLocalizations.of(context).creatingMessage;
+    } else if (success is CancelSendingEmail) {
+      return AppLocalizations.of(context).canceling;
+    } else {
+      return AppLocalizations.of(context).sendingMessage;
+    }
   }
 
   @override
