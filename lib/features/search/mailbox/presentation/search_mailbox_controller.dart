@@ -81,7 +81,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final currentSearchQuery = RxString('');
   final listMailboxSearched = RxList<PresentationMailbox>();
   final textInputSearchController = TextEditingController();
-  final scrollbarController = ScrollController();
   late Debouncer<String> _deBouncerTime;
 
   PresentationMailbox? get selectedMailbox => dashboardController.selectedMailbox.value;
@@ -730,7 +729,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   void onClose() {
     textInputSearchController.dispose();
     _deBouncerTime.cancel();
-    scrollbarController.dispose();
     super.onClose();
   }
 }

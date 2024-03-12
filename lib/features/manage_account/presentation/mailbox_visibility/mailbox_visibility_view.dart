@@ -43,12 +43,7 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
           _buildLoadingView(),
           Expanded(child: Padding(
             padding: MailboxVisibilityUtils.getPaddingListView(context, controller.responsiveUtils),
-            child: PlatformInfo.isMobile
-              ? _buildListMailbox(context)
-              : ScrollbarListView(
-                  scrollController: controller.mailboxListScrollController,
-                  child: _buildListMailbox(context)
-                )
+            child: _buildListMailbox(context)
           ))
         ]
       ),
