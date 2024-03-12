@@ -141,18 +141,50 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email) {
-    return emailDataSource[DataSourceType.network]!.saveEmailAsDrafts(session, accountId, email);
+  Future<Email> saveEmailAsDrafts(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  ) {
+    return emailDataSource[DataSourceType.network]!.saveEmailAsDrafts(
+      session,
+      accountId,
+      email,
+      cancelToken: cancelToken
+    );
   }
 
   @override
-  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId) {
-    return emailDataSource[DataSourceType.network]!.removeEmailDrafts(session, accountId, emailId);
+  Future<bool> removeEmailDrafts(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) {
+    return emailDataSource[DataSourceType.network]!.removeEmailDrafts(
+      session,
+      accountId,
+      emailId,
+      cancelToken: cancelToken
+    );
   }
 
   @override
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId) {
-    return emailDataSource[DataSourceType.network]!.updateEmailDrafts(session, accountId, newEmail, oldEmailId);
+  Future<Email> updateEmailDrafts(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  ) {
+    return emailDataSource[DataSourceType.network]!.updateEmailDrafts(
+      session,
+      accountId,
+      newEmail,
+      oldEmailId,
+      cancelToken: cancelToken
+    );
   }
 
   @override

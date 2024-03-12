@@ -260,9 +260,12 @@ class MailboxDashBoardController extends ReloadableController {
   );
 
   @override
-  void onInit() {
+  void onInit() async {
     _registerStreamListener();
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await applicationManager.initUserAgent();
+    });
     super.onInit();
   }
 
@@ -2466,6 +2469,7 @@ class MailboxDashBoardController extends ReloadableController {
     _refreshActionEventController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
+    applicationManager.releaseUserAgent();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     super.onClose();
   }
