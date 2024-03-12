@@ -5,27 +5,37 @@ import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
+typedef OnCancelSavingEmailToDraftsAction = Function({CancelToken? cancelToken});
 
 class SavingMessageDialogView extends StatefulWidget {
 
   final CreateEmailRequest createEmailRequest;
   final CreateNewAndSaveEmailToDraftsInteractor createNewAndSaveEmailToDraftsInteractor;
+  final OnCancelSavingEmailToDraftsAction? onCancelSavingEmailToDraftsAction;
+  final CancelToken? cancelToken;
 
   const SavingMessageDialogView({
     super.key,
     required this.createEmailRequest,
     required this.createNewAndSaveEmailToDraftsInteractor,
+    this.onCancelSavingEmailToDraftsAction,
+    this.cancelToken,
   });
 
   @override
@@ -41,7 +51,10 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
   void initState() {
     super.initState();
     _streamSubscription = widget.createNewAndSaveEmailToDraftsInteractor
-      .execute(widget.createEmailRequest)
+      .execute(
+        createEmailRequest: widget.createEmailRequest,
+        cancelToken: widget.cancelToken
+      )
       .listen(
         _handleDataStream,
         onError: _handleErrorStream
@@ -69,7 +82,11 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
     logError('_SavingMessageDialogViewState::_handleErrorStream: Exception = $error');
-    popBack(result: SaveEmailAsDraftsFailure(error));
+    if (error is UnknownError && error.message is List<SavingEmailToDraftsCanceledException>) {
+      popBack(result: SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
+    } else {
+      popBack(result: SaveEmailAsDraftsFailure(error));
+    }
   }
 
   @override
@@ -137,23 +154,13 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
                             return value.fold(
                               (failure) => child!,
                               (success) {
-                                if (success is GenerateEmailLoading) {
-                                  return Text(
-                                    '${AppLocalizations.of(context).creatingMessage}...',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: AppColor.labelColor,
-                                      fontSize: 14
-                                    ),
-                                  );
-                                } else {
-                                  return Text(
-                                    '${AppLocalizations.of(context).savingMessageToDraftFolder}...',
-                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      color: AppColor.labelColor,
-                                      fontSize: 14
-                                    ),
-                                  );
-                                }
+                                return Text(
+                                  '${_getStatusMessage(success)}...',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AppColor.labelColor,
+                                    fontSize: 14
+                                  ),
+                                );
                               }
                             );
                           },
@@ -170,7 +177,7 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 4, bottom: 24),
+                  padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 4, bottom: 16),
                   child: Row(
                     children: [
                       Text(
@@ -191,13 +198,40 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
                       )
                     ],
                   ),
-                )
+                ),
+                if (widget.onCancelSavingEmailToDraftsAction != null)
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TMailButtonWidget.fromText(
+                      text: AppLocalizations.of(context).cancel,
+                      textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.black87,
+                        fontSize: 15
+                      ),
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 8),
+                      margin: const EdgeInsetsDirectional.only(start: 12, end: 12, bottom: 16),
+                      onTapActionCallback: () {
+                        _viewStateNotifier.value = dartz.Right<Failure, Success>(CancelSavingEmailToDrafts());
+                        widget.onCancelSavingEmailToDraftsAction!(cancelToken: widget.cancelToken);
+                      },
+                    ),
+                  )
               ],
             )
           ],
         ),
       ),
     );
+  }
+
+  String _getStatusMessage(Success success) {
+    if (success is GenerateEmailLoading) {
+      return AppLocalizations.of(context).creatingMessage;
+    } else if (success is CancelSavingEmailToDrafts) {
+      return AppLocalizations.of(context).canceling;
+    } else {
+      return AppLocalizations.of(context).savingMessageToDraftFolder;
+    }
   }
 
   @override
