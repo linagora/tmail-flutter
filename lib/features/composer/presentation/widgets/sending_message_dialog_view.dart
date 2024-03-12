@@ -5,26 +5,36 @@ import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+
+typedef OnCancelSendingEmailAction = Function({CancelToken? cancelToken});
 
 class SendingMessageDialogView extends StatefulWidget {
 
   final CreateEmailRequest createEmailRequest;
   final CreateNewAndSendEmailInteractor createNewAndSendEmailInteractor;
+  final OnCancelSendingEmailAction? onCancelSendingEmailAction;
+  final CancelToken? cancelToken;
 
   const SendingMessageDialogView({
     super.key,
     required this.createEmailRequest,
     required this.createNewAndSendEmailInteractor,
+    this.onCancelSendingEmailAction,
+    this.cancelToken,
   });
 
   @override
@@ -40,7 +50,10 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
   void initState() {
     super.initState();
     _streamSubscription = widget.createNewAndSendEmailInteractor
-      .execute(widget.createEmailRequest)
+      .execute(
+        createEmailRequest: widget.createEmailRequest,
+        cancelToken: widget.cancelToken
+      )
       .listen(
         _handleDataStream,
         onError: _handleErrorStream
@@ -66,7 +79,11 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
     logError('_SendingMessageDialogViewState::_handleErrorStream: Exception = $error');
-    popBack(result: SendEmailFailure(exception: error));
+    if (error is UnknownError && error.message is List<SendingEmailCanceledException>) {
+      popBack(result: SendEmailFailure(exception: SendingEmailCanceledException()));
+    } else {
+      popBack(result: SendEmailFailure(exception: error));
+    }
   }
 
   @override
@@ -142,6 +159,14 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                                       fontSize: 14
                                     ),
                                   );
+                                } else if (success is CancelSendingEmail) {
+                                  return Text(
+                                    '${AppLocalizations.of(context).canceling}...',
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      color: AppColor.labelColor,
+                                      fontSize: 14
+                                    ),
+                                  );
                                 } else {
                                   return Text(
                                     '${AppLocalizations.of(context).sendingMessage}...',
@@ -167,7 +192,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 4, bottom: 24),
+                  padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 4, bottom: 16),
                   child: Row(
                     children: [
                       Text(
@@ -188,7 +213,24 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
                       )
                     ],
                   ),
-                )
+                ),
+                if (widget.onCancelSendingEmailAction != null)
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TMailButtonWidget.fromText(
+                      text: AppLocalizations.of(context).cancel,
+                      textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Colors.black87,
+                        fontSize: 15
+                      ),
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 20, vertical: 8),
+                      margin: const EdgeInsetsDirectional.only(start: 12, end: 12, bottom: 16),
+                      onTapActionCallback: () {
+                        _viewStateNotifier.value = dartz.Right<Failure, Success>(CancelSendingEmail());
+                        widget.onCancelSendingEmailAction!(cancelToken: widget.cancelToken);
+                      },
+                    ),
+                  )
               ],
             )
           ],

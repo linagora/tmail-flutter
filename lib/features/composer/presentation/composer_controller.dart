@@ -7,6 +7,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
@@ -28,6 +29,7 @@ import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
@@ -795,12 +797,17 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
 
     final emailContent = await _getContentInEditor();
-
-    final resultState = await _showSendingMessageDialog(emailContent: emailContent);
-
+    final cancelToken = CancelToken();
+    final resultState = await _showSendingMessageDialog(
+      emailContent: emailContent,
+      cancelToken: cancelToken
+    );
+    log('ComposerController::_handleSendMessages: resultState = $resultState');
     if (resultState is SendEmailSuccess) {
       _sendButtonState = ButtonState.enabled;
       _closeComposerAction(result: resultState);
+    } else if (resultState is SendEmailFailure && resultState.exception is SendingEmailCanceledException) {
+      _sendButtonState = ButtonState.enabled;
     } else if ((resultState is SendEmailFailure || resultState is GenerateEmailFailure) && context.mounted) {
       _showConfirmDialogWhenSendMessageFailure(
         context: context,
@@ -811,7 +818,10 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
   }
 
-  Future<dynamic> _showSendingMessageDialog({required String emailContent}) {
+  Future<dynamic> _showSendingMessageDialog({
+    required String emailContent,
+    CancelToken? cancelToken
+  }) {
     return Get.dialog(
       PointerInterceptor(
         child: SendingMessageDialogView(
@@ -840,11 +850,17 @@ class ComposerController extends BaseController with DragDropFileMixin {
             references: composerArguments.value!.references,
             emailSendingQueue: composerArguments.value!.sendingEmail
           ),
-          createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor
+          createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
+          onCancelSendingEmailAction: _handleCancelSendingMessage,
+          cancelToken: cancelToken,
         ),
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
+  }
+
+  void _handleCancelSendingMessage({CancelToken? cancelToken}) {
+    cancelToken?.cancel([SendingEmailCanceledException()]);
   }
 
   void _showConfirmDialogWhenSendMessageFailure({

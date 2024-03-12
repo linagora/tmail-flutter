@@ -115,7 +115,10 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
+    {
+      CreateNewMailboxRequest? mailboxRequest,
+      CancelToken? cancelToken,
+    }
   ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
@@ -197,7 +200,7 @@ class EmailAPI with HandleSetErrorMixin {
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
-      .execute();
+      .execute(cancelToken: cancelToken);
 
     final setEmailResponse = response.parse<SetEmailResponse>(
       setEmailInvocation.methodCallId,
@@ -602,7 +605,12 @@ class EmailAPI with HandleSetErrorMixin {
     return List.empty();
   }
 
-  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId) async {
+  Future<bool> deleteEmailPermanently(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy({emailId.id});
@@ -615,7 +623,7 @@ class EmailAPI with HandleSetErrorMixin {
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
-      .execute();
+      .execute(cancelToken: cancelToken);
 
     final setEmailResponse = response.parse<SetEmailResponse>(
         setEmailInvocation.methodCallId,
