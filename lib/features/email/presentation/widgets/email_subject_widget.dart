@@ -12,11 +12,9 @@ class EmailSubjectWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EmailSubjectStyles.padding,
-      child: SelectableText(
+      child: Text(
         presentationEmail.getEmailTitle(),
         maxLines: EmailSubjectStyles.maxLines,
-        minLines: EmailSubjectStyles.minLines,
-        cursorColor: EmailSubjectStyles.cursorColor,
         style: const TextStyle(
           fontSize: EmailSubjectStyles.textSize,
           color: EmailSubjectStyles.textColor,

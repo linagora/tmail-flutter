@@ -49,8 +49,8 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              RichText(
-                text: TextSpan(
+              Text.rich(
+                TextSpan(
                   style: TextStyle(
                     fontSize: CalendarEventActionBannerStyles.titleTextSize,
                     fontWeight: FontWeight.w400,
