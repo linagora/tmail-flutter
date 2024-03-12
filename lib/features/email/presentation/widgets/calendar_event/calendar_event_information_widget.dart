@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_ev
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_information_widget.dart';

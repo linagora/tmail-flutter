@@ -151,6 +151,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
                   constraints: BoxConstraints(maxHeight: _maxHeight),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       if (widget.emailSelected.to.numberEmailAddress() > 0)
                         _buildRecipientsWidgetToDisplayFull(
