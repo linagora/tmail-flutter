@@ -115,7 +115,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final _downloadManager = Get.find<DownloadManager>();
   final _printUtils = Get.find<PrintUtils>();
   final _attachmentListScrollController = ScrollController();
-  final emailContentScrollController = ScrollController();
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -190,7 +189,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void onClose() {
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
-    emailContentScrollController.dispose();
     super.onClose();
   }
 
