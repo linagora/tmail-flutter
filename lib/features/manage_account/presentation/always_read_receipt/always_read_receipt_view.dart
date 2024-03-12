@@ -22,8 +22,8 @@ class AlwaysReadReceiptView extends GetWidget<AlwaysReadReceiptController> with 
         child: Column(
           children: [
             Obx(() {
-              if (!controller.isLoading.value) {
-                return const SizedBox.shrink();
+              if (!controller.isLoading) {
+                return const SizedBox(height: 3);
               }
               return horizontalLoadingWidget;
             }),
