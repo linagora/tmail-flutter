@@ -11,7 +11,7 @@ abstract class RemoteException with EquatableMixin implements Exception {
   static const badCredentials = 'Bad credentials';
   static const socketException = 'Socket exception';
 
-  final String? message;
+  final Object? message;
   final int? code;
 
   const RemoteException({this.code, this.message});
@@ -25,7 +25,7 @@ class BadCredentialsException extends RemoteException {
 }
 
 class UnknownError extends RemoteException {
-  const UnknownError({int? code, String? message}) : super(code: code, message: message);
+  const UnknownError({int? code, Object? message}) : super(code: code, message: message);
 
   @override
   List<Object?> get props => [code, message];

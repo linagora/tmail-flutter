@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-06T02:46:19.947772",
+  "@@last_modified": "2024-03-12T12:50:35.525381",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3842,6 +3842,12 @@
   },
   "warningMessageWhenSaveEmailToDraftsFailure": "Saving of the message to drafts folder failed.\nAn error occurred while saving mail.",
   "@warningMessageWhenSaveEmailToDraftsFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceling": "Canceling",
+  "@canceling": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
