@@ -2,10 +2,12 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -14,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 
 class CreateNewAndSaveEmailToDraftsInteractor {
   final EmailRepository _emailRepository;
@@ -26,7 +29,10 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     this._composerRepository,
   );
 
-  Stream<dartz.Either<Failure, Success>> execute(CreateEmailRequest createEmailRequest) async* {
+  Stream<dartz.Either<Failure, Success>> execute({
+    required CreateEmailRequest createEmailRequest,
+    CancelToken? cancelToken,
+  }) async* {
     try {
       yield dartz.Right<Failure, Success>(GenerateEmailLoading());
 
@@ -44,7 +50,8 @@ class CreateNewAndSaveEmailToDraftsInteractor {
           final emailDraftSaved = await _emailRepository.saveEmailAsDrafts(
             createEmailRequest.session,
             createEmailRequest.accountId,
-            emailCreated
+            emailCreated,
+            cancelToken: cancelToken
           );
 
           yield dartz.Right<Failure, Success>(
@@ -61,13 +68,15 @@ class CreateNewAndSaveEmailToDraftsInteractor {
             createEmailRequest.session,
             createEmailRequest.accountId,
             emailCreated,
-            createEmailRequest.draftsEmailId!
+            createEmailRequest.draftsEmailId!,
+            cancelToken: cancelToken
           );
 
           await _deleteOldDraftsEmail(
             session: createEmailRequest.session,
             accountId: createEmailRequest.accountId,
-            draftEmailId: createEmailRequest.draftsEmailId!
+            draftEmailId: createEmailRequest.draftsEmailId!,
+            cancelToken: cancelToken
           );
 
           yield dartz.Right<Failure, Success>(
@@ -83,10 +92,18 @@ class CreateNewAndSaveEmailToDraftsInteractor {
       }
     } catch (e) {
       logError('CreateNewAndSaveEmailToDraftsInteractor::execute: Exception: $e');
-      if (createEmailRequest.draftsEmailId == null) {
-        yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(e));
+      if (e is UnknownError && e.message is List<SavingEmailToDraftsCanceledException>) {
+        if (createEmailRequest.draftsEmailId == null) {
+          yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
+        } else {
+          yield dartz.Left<Failure, Success>(UpdateEmailDraftsFailure(SavingEmailToDraftsCanceledException()));
+        }
       } else {
-        yield dartz.Left<Failure, Success>(UpdateEmailDraftsFailure(e));
+        if (createEmailRequest.draftsEmailId == null) {
+          yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(e));
+        } else {
+          yield dartz.Left<Failure, Success>(UpdateEmailDraftsFailure(e));
+        }
       }
     }
   }
@@ -124,13 +141,15 @@ class CreateNewAndSaveEmailToDraftsInteractor {
   Future<void> _deleteOldDraftsEmail({
     required Session session,
     required AccountId accountId,
-    required EmailId draftEmailId
+    required EmailId draftEmailId,
+    CancelToken? cancelToken
   }) async {
     try {
       await _emailRepository.removeEmailDrafts(
         session,
         accountId,
-        draftEmailId
+        draftEmailId,
+        cancelToken: cancelToken
       );
     } catch (e) {
       logError('CreateNewAndSaveEmailToDraftsInteractor::_deleteOldDraftsEmail: Exception: $e');
