@@ -3944,4 +3944,11 @@ class AppLocalizations {
       'Saving of the message to drafts folder failed.\nAn error occurred while saving mail.',
       name: 'warningMessageWhenSaveEmailToDraftsFailure');
   }
+
+  String get canceling {
+    return Intl.message(
+      'Canceling',
+      name: 'canceling'
+    );
+  }
 }
