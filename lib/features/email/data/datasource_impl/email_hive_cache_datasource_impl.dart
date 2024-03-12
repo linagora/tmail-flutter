@@ -129,12 +129,22 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId) {
+  Future<bool> removeEmailDrafts(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email) {
+  Future<Email> saveEmailAsDrafts(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  ) {
     throw UnimplementedError();
   }
 
@@ -178,7 +188,13 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId) {
+  Future<Email> updateEmailDrafts(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  ) {
     throw UnimplementedError();
   }
 

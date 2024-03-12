@@ -74,11 +74,27 @@ abstract class EmailDataSource {
     MarkStarAction markStarAction
   );
 
-  Future<Email> saveEmailAsDrafts(Session session, AccountId accountId, Email email);
+  Future<Email> saveEmailAsDrafts(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  );
 
-  Future<bool> removeEmailDrafts(Session session, AccountId accountId, EmailId emailId);
+  Future<bool> removeEmailDrafts(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  );
 
-  Future<Email> updateEmailDrafts(Session session, AccountId accountId, Email newEmail, EmailId oldEmailId);
+  Future<Email> updateEmailDrafts(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  );
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
 

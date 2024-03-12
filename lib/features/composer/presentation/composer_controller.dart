@@ -1129,10 +1129,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
 
     final emailContent = await _getContentInEditor();
-
+    final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
       emailContent: emailContent,
-      draftEmailId: _emailIdEditing
+      draftEmailId: _emailIdEditing,
+      cancelToken: cancelToken
     );
 
     if (resultState is SaveEmailAsDraftsSuccess) {
@@ -1143,6 +1144,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
       _saveToDraftButtonState = ButtonState.enabled;
       _emailIdEditing = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
+    } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
+        (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
+      _saveToDraftButtonState = ButtonState.enabled;
     } else if ((resultState is SaveEmailAsDraftsFailure ||
         resultState is UpdateEmailDraftsFailure ||
         resultState is GenerateEmailFailure) &&
@@ -2035,14 +2039,20 @@ class ComposerController extends BaseController with DragDropFileMixin {
     final emailContent = await _getContentInEditor();
     final draftEmailId = _getDraftEmailId();
     log('ComposerController::_handleSaveMessageToDraft: draftEmailId = $draftEmailId');
+    final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
       emailContent: emailContent,
-      draftEmailId: draftEmailId
+      draftEmailId: draftEmailId,
+      cancelToken: cancelToken
     );
 
     if (resultState is SaveEmailAsDraftsSuccess || resultState is UpdateEmailDraftsSuccess) {
       _closeComposerButtonState = ButtonState.enabled;
       _closeComposerAction(result: resultState);
+    } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
+        (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
+      _closeComposerButtonState = ButtonState.enabled;
+      _closeComposerAction();
     } else if ((resultState is SaveEmailAsDraftsFailure ||
         resultState is UpdateEmailDraftsFailure ||
         resultState is GenerateEmailFailure) &&
@@ -2071,6 +2081,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
   Future<dynamic> _showSavingMessageToDraftsDialog({
     required String emailContent,
     EmailId? draftEmailId,
+    CancelToken? cancelToken,
   }) {
     return Get.dialog(
       PointerInterceptor(
@@ -2098,11 +2109,17 @@ class ComposerController extends BaseController with DragDropFileMixin {
             references: composerArguments.value!.references,
             emailSendingQueue: composerArguments.value!.sendingEmail
           ),
-          createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor
+          createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
+          onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,
+          cancelToken: cancelToken,
         ),
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
+  }
+
+  void _handleCancelSavingMessageToDrafts({CancelToken? cancelToken}) {
+    cancelToken?.cancel([SavingEmailToDraftsCanceledException()]);
   }
 
   void _showConfirmDialogWhenSaveMessageToDraftsFailure({
