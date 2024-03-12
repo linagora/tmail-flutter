@@ -137,30 +137,26 @@ class ContactView extends GetWidget<ContactController> {
                                   return Container(
                                     color: Colors.white,
                                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                                    child: ScrollbarListView(
-                                      scrollController: controller.scrollListViewController,
-                                      child: ListView.separated(
-                                        itemCount: controller.listContactSearched.length,
-                                        controller: controller.scrollListViewController,
-                                        separatorBuilder: (context, index) {
-                                          return Padding(
-                                            padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
-                                            child: const Divider(height: 1, color: AppColor.colorDivider),
-                                          );
-                                        },
-                                        itemBuilder: (context, index) {
-                                          final emailAddress = controller.listContactSearched[index];
-                                          final suggestionEmailAddress = _toSuggestionEmailAddress(
-                                            emailAddress,
-                                            controller.contactSelected != null ? [controller.contactSelected!] : []
-                                          );
-                                          return ContactSuggestionBoxItem(
-                                            suggestionEmailAddress,
-                                            padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                                            selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
-                                          );
-                                        }
-                                      ),
+                                    child: ListView.separated(
+                                      itemCount: controller.listContactSearched.length,
+                                      separatorBuilder: (context, index) {
+                                        return Padding(
+                                          padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                                          child: const Divider(height: 1, color: AppColor.colorDivider),
+                                        );
+                                      },
+                                      itemBuilder: (context, index) {
+                                        final emailAddress = controller.listContactSearched[index];
+                                        final suggestionEmailAddress = _toSuggestionEmailAddress(
+                                          emailAddress,
+                                          controller.contactSelected != null ? [controller.contactSelected!] : []
+                                        );
+                                        return ContactSuggestionBoxItem(
+                                          suggestionEmailAddress,
+                                          padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                                          selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
+                                        );
+                                      }
                                     )
                                   );
                                 }

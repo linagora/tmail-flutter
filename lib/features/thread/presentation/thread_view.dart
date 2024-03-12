@@ -381,38 +381,35 @@ class ThreadView extends GetWidget<ThreadController>
             focusNode: controller.focusNodeKeyBoard,
             autofocus: true,
             onKey: controller.handleKeyEvent,
-            child: ScrollbarListView(
-              scrollController: controller.listEmailController,
-              child: ListView.separated(
-                key: const PageStorageKey('list_presentation_email_in_threads'),
-                controller: controller.listEmailController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: listPresentationEmail.length + 2,
-                itemBuilder: (context, index) => Obx(() {
-                  if (index == listPresentationEmail.length) {
-                    return _buildLoadMoreButton(
-                      context,
-                      controller.loadingMoreStatus.value);
-                  }
-                  if (index == listPresentationEmail.length + 1) {
-                    return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
-                  }
-                  return  _buildEmailItem(
+            child: ListView.separated(
+              key: const PageStorageKey('list_presentation_email_in_threads'),
+              controller: controller.listEmailController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: listPresentationEmail.length + 2,
+              itemBuilder: (context, index) => Obx(() {
+                if (index == listPresentationEmail.length) {
+                  return _buildLoadMoreButton(
                     context,
-                    listPresentationEmail[index]);
-                }),
-                separatorBuilder: (context, index) {
-                  return Padding(
-                    padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
-                    child: Divider(
-                      color: index < listPresentationEmail.length - 1 &&
-                        controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
-                          ? null
-                          : Colors.white,
-                    )
-                  );
-                },
-              ),
+                    controller.loadingMoreStatus.value);
+                }
+                if (index == listPresentationEmail.length + 1) {
+                  return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
+                }
+                return  _buildEmailItem(
+                  context,
+                  listPresentationEmail[index]);
+              }),
+              separatorBuilder: (context, index) {
+                return Padding(
+                  padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
+                  child: Divider(
+                    color: index < listPresentationEmail.length - 1 &&
+                      controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
+                        ? null
+                        : Colors.white,
+                  )
+                );
+              },
             ),
           )
     );
