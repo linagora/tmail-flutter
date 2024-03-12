@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_ev
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_information_widget.dart';
@@ -23,18 +24,21 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final List<EventAction> eventActions;
   final OnOpenNewTabAction? onOpenNewTabAction;
   final OnOpenComposerAction? onOpenComposerAction;
+  final OnMailtoAttendeesAction? onMailtoAttendeesAction;
 
-  const CalendarEventInformationWidget({
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  CalendarEventInformationWidget({
     super.key,
     required this.calendarEvent,
     required this.eventActions,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
+    this.onMailtoAttendeesAction,
   });
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: const ShapeDecoration(
@@ -50,7 +54,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
       margin: const EdgeInsetsDirectional.symmetric(
         vertical: CalendarEventInformationWidgetStyles.verticalMargin,
         horizontal: CalendarEventInformationWidgetStyles.horizontalMargin),
-      child: responsiveUtils.isPortraitMobile(context)
+      child: _responsiveUtils.isPortraitMobile(context)
         ? Column(
             children: [
               CalendarDateIconWidget(
@@ -117,6 +121,10 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       CalendarEventActionButtonWidget(
                         eventActions: eventActions,
                         margin: EdgeInsetsDirectional.zero,
+                        onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
+                          calendarEvent.organizer,
+                          calendarEvent.participants,
+                        ),
                       ),
                   ],
                 ),
@@ -187,6 +195,10 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       CalendarEventActionButtonWidget(
                         eventActions: eventActions,
                         margin: EdgeInsetsDirectional.zero,
+                        onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
+                          calendarEvent.organizer,
+                          calendarEvent.participants,
+                        ),
                       ),
                   ],
                 ),

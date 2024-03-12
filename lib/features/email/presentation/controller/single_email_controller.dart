@@ -15,6 +15,8 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
@@ -1465,6 +1467,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailLoadedViewState.value = Right<Failure, Success>(success);
     calendarEvent.value = success.calendarEventList.first;
     eventActions.value = success.eventActionList;
+    if (calendarEvent.value?.participants?.isNotEmpty == true) {
+      eventActions.add(EventAction.mailToAttendees());
+    }
     if (PlatformInfo.isMobile) {
       _enableScrollPageView();
     }
@@ -1668,5 +1673,25 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
        EmailPrint.generate(printEmailAction: action, emailLoaded: emailLoaded)
      )
    );
+  }
+
+  void handleMailToAttendees(CalendarOrganizer? organizer, List<CalendarAttendee>? attendees) {
+    final listEmailAddressAttendees = attendees
+      ?.map((attendee) => EmailAddress(attendee.name?.name, attendee.mailto?.mailAddress.value))
+      .toList() ?? [];
+
+    if (organizer != null) {
+      listEmailAddressAttendees.add(EmailAddress(organizer.name, organizer.mailto?.value));
+    }
+
+    final listEmailAddressMailTo = listEmailAddressAttendees
+      .where((emailAddress) => emailAddress.emailAddress.isNotEmpty && emailAddress.emailAddress != mailboxDashBoardController.sessionCurrent?.username.value)
+      .toSet()
+      .toList();
+
+    log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
+    mailboxDashBoardController.goToComposer(
+      ComposerArguments.fromMailtoUri(listEmailAddress: listEmailAddressMailTo)
+    );
   }
 }
