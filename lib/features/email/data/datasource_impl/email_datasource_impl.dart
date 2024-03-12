@@ -45,10 +45,19 @@ class EmailDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     EmailRequest emailRequest,
-    {CreateNewMailboxRequest? mailboxRequest}
+    {
+      CreateNewMailboxRequest? mailboxRequest,
+      CancelToken? cancelToken,
+    }
   ) async {
     try {
-      return await emailAPI.sendEmail(session, accountId, emailRequest, mailboxRequest: mailboxRequest);
+      return await emailAPI.sendEmail(
+        session,
+        accountId,
+        emailRequest,
+        mailboxRequest: mailboxRequest,
+        cancelToken: cancelToken
+      );
     } catch (error, stackTrace) {
       return await _sendEmailExceptionThrower.throwException(error, stackTrace);
     }
@@ -154,9 +163,19 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<bool> deleteEmailPermanently(Session session, AccountId accountId, EmailId emailId) {
+  Future<bool> deleteEmailPermanently(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) {
     return Future.sync(() async {
-      return await emailAPI.deleteEmailPermanently(session, accountId, emailId);
+      return await emailAPI.deleteEmailPermanently(
+        session,
+        accountId,
+        emailId,
+        cancelToken: cancelToken
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 
