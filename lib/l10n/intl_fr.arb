@@ -3846,7 +3846,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToEmailAddressPrefix": "Reply-To",
+  "replyToEmailAddressPrefix": "Répondre à",
   "@replyToEmailAddressPrefix": {
     "type": "text",
     "placeholders_order": [],
@@ -3860,6 +3860,24 @@
   },
   "printAll": "Tout imprimer",
   "@printAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsToggleDescription": "Toujours exiger des accusés de réception avec les messages sortants",
+  "@emailReadReceiptsToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceipts": "Accusés de réception",
+  "@emailReadReceipts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsSettingExplanation": "Les accusés de réception sont des notifications qui peuvent être envoyées à l'expéditeur pour confirmer que le destinataire a bien ouvert le message.",
+  "@emailReadReceiptsSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
