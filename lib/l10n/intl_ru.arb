@@ -3864,7 +3864,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToEmailAddressPrefix": "Ответить",
+  "replyToEmailAddressPrefix": "Ответ",
   "@replyToEmailAddressPrefix": {
     "type": "text",
     "placeholders_order": [],
