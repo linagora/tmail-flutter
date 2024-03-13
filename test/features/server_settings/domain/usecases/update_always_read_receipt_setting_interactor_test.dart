@@ -31,7 +31,7 @@ void main() {
           .execute(accountId, alwaysReadReceipts),
         emitsInOrder([
           Right(UpdatingAlwaysReadReceiptSetting()),
-          Right(UpdateAlwaysReadReceiptSettingSuccess(isEnabled: alwaysReadReceipts)),
+          Right(UpdateAlwaysReadReceiptSettingSuccess(alwaysReadReceiptIsEnabled: alwaysReadReceipts)),
         ])
       );
     });
