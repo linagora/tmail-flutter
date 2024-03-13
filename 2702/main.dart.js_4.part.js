@@ -535,21 +535,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.UserSettingPopupMenuMixin.prototype = {
     popupMenuUserSettingActionTile$4$onLogoutAction$onSettingAction(context, userProfile, onLogoutAction, onSettingAction) {
-      var t4, t5, _null = null,
-        t1 = type$.dynamic,
-        t2 = type$.JSArray_PopupMenuEntry_dynamic,
-        t3 = A._setArrayType([A.PopupMenuItem$(this._userInformation$2(context, userProfile), false, 48, _null, B.EdgeInsets_0_0_0_0, _null, t1)], t2);
+      var _null = null,
+        t1 = type$.JSArray_PopupMenuEntry_dynamic,
+        t2 = A._setArrayType([A.PopupMenuItem$(this._userInformation$2(context, userProfile), false, 48, _null, B.EdgeInsets_0_0_0_0, _null, type$.dynamic)], t1);
       if (onSettingAction != null) {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        t4 = A.Intl__message("Manage account", _null, "manage_account", _null, _null);
-        t5 = A.Theme_of(context).textTheme.labelMedium;
-        B.JSArray_methods.addAll$1(t3, A._setArrayType([D.PopupMenuDivider_null, A.PopupMenuItem$(C.PopupMenuItemWidget$(_null, "assets/images/ic_setting.svg", _null, t4, onSettingAction, D.EdgeInsets_20_16_20_16, 12, t5 == null ? _null : t5.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 15, B.FontWeight_4_500)), true, 48, _null, B.EdgeInsets_0_0_0_0, _null, t1), D.PopupMenuDivider_null], t2));
+        B.JSArray_methods.addAll$1(t2, A._setArrayType([D.PopupMenuDivider_null, this._popupMenuAction$4$context$icon$onCallBack$title(context, "assets/images/ic_setting.svg", onSettingAction, A.Intl__message("Manage account", _null, "manage_account", _null, _null))], t1));
       }
       A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      t4 = A.Intl__message("Sign out", _null, "sign_out", _null, _null);
-      t5 = A.Theme_of(context).textTheme.labelMedium;
-      B.JSArray_methods.addAll$1(t3, A._setArrayType([D.PopupMenuDivider_null, A.PopupMenuItem$(C.PopupMenuItemWidget$(_null, "assets/images/ic_logout.svg", _null, t4, onLogoutAction, D.EdgeInsets_20_16_20_16, 12, t5 == null ? _null : t5.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 15, B.FontWeight_4_500)), true, 48, _null, B.EdgeInsets_0_0_0_0, _null, t1)], t2));
-      return t3;
+      B.JSArray_methods.addAll$1(t2, A._setArrayType([D.PopupMenuDivider_null, this._popupMenuAction$4$context$icon$onCallBack$title(context, "assets/images/ic_logout.svg", onSettingAction, A.Intl__message("Sign out", _null, "sign_out", _null, _null))], t1));
+      return t2;
     },
     popupMenuUserSettingActionTile$3$onLogoutAction(context, userProfile, onLogoutAction) {
       return this.popupMenuUserSettingActionTile$4$onLogoutAction$onSettingAction(context, userProfile, onLogoutAction, null);
@@ -559,6 +554,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (userProfile != null)
         return new A.SizedBox(300, _null, A.ListTile$(B.EdgeInsets_20_0_20_0, _null, _null, _null, A.Text$(userProfile.email, _null, _null, 1, _null, _null, _null, _null, _null, B.TextStyle_chs3, _null, _null, _null, _null, _null), _null), _null);
       return B.SizedBox_0_0_null_null;
+    },
+    _popupMenuAction$4$context$icon$onCallBack$title(context, icon, onCallBack, title) {
+      var _null = null,
+        t1 = A.Theme_of(context).textTheme.labelMedium;
+      return A.PopupMenuItem$(C.PopupMenuItemWidget$(_null, icon, _null, title, onCallBack, D.EdgeInsets_20_16_20_16, 12, t1 == null ? _null : t1.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 15, B.FontWeight_4_500)), true, 48, _null, B.EdgeInsets_0_0_0_0, _null, type$.dynamic);
     }
   };
   C.VacationNotificationMessageWidget.prototype = {
@@ -927,5 +927,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "hC4/sI0fjjB6gleH2Kul7KeK+rM=");
+})($__dart_deferred_initializers__, "/8G5edfIB7fslZ15GMJQQttDh6w=");
 ;
