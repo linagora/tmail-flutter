@@ -3869,5 +3869,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "emailReadReceipts": "Xác nhận đã đọc tin nhắn",
+  "@emailReadReceipts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsSettingExplanation": "Xác nhận đã đọc là thông báo có thể được gửi đến và đi từ người dùng của bạn để xác minh rằng thư đã được đọc.",
+  "@emailReadReceiptsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsToggleDescription": "Luôn yêu cầu xác nhận đã đọc khi gửi tin nhắn",
+  "@emailReadReceiptsToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
