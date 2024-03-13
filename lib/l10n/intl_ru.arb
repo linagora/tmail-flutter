@@ -3833,5 +3833,71 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "loadMore": "Больше",
+  "@loadMore": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToProceed": "Вы хотите продолжить?",
+  "@doYouWantToProceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogForForwardsToOtherDomains": "Вы перенаправляете письма на другой домен. Это может угрожать безопасности или считаться незаконным извлечением данных.",
+  "@messageWarningDialogForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "externalDomain": "Внешний домен",
+  "@externalDomain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printAll": "Печатать все",
+  "@printAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToEmailAddressPrefix": "Ответить",
+  "@replyToEmailAddressPrefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingInProgress": "Идет процесс печати",
+  "@printingInProgress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "printingFailed": "Ошибка печати",
+  "@printingFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceipts": "Уведомления о прочтении",
+  "@emailReadReceipts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsToggleDescription": "Всегда запрашивать уведомления о прочтении при отправке писем",
+  "@emailReadReceiptsToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsSettingExplanation": "Уведомления о прочтении — это уведомления, которые можно отправлять и получать, чтобы быть уверенными, что письмо было прочитано.",
+  "@emailReadReceiptsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
