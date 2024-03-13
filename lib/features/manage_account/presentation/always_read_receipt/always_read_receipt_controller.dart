@@ -67,7 +67,7 @@ class AlwaysReadReceiptController extends BaseController {
   void _updateAlwaysReadReceiptSettingSuccess(
     UpdateAlwaysReadReceiptSettingSuccess success
   ) {
-    _updateAlwaysReadReceiptValue(success.isEnabled);
+    _updateAlwaysReadReceiptValue(success.alwaysReadReceiptIsEnabled);
   }
 
   void toggleAlwaysReadReceipt() {

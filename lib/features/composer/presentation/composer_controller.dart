@@ -735,7 +735,7 @@ class ComposerController extends BaseController {
       },
       headerUserAgent: {IndividualHeaderIdentifier.headerUserAgent : userAgent},
       attachments: attachments.isNotEmpty ? attachments : null,
-      headerMdn: {IndividualHeaderIdentifier.headerMdn: getEmailAddressSender()},
+      headerMdn: hasRequestReadReceipt.value ? { IndividualHeaderIdentifier.headerMdn: getEmailAddressSender() } : {},
     );
   }
 

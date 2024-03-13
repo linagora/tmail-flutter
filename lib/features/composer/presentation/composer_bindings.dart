@@ -205,17 +205,17 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => UploadController(Get.find<UploadAttachmentInteractor>()));
     Get.lazyPut(() => RichTextWebController());
     Get.lazyPut(() => ComposerController(
-        Get.find<DeviceInfoPlugin>(),
-        Get.find<LocalFilePickerInteractor>(),
-        Get.find<GetEmailContentInteractor>(),
-        Get.find<GetAllIdentitiesInteractor>(),
-        Get.find<UploadController>(),
-        Get.find<RemoveComposerCacheOnWebInteractor>(),
-        Get.find<SaveComposerCacheOnWebInteractor>(),
-        Get.find<RichTextWebController>(),
-        Get.find<DownloadImageAsBase64Interactor>(),
-        Get.find<TransformHtmlEmailContentInteractor>(),
-        Get.find<GetAlwaysReadReceiptSettingInteractor>(),
+      Get.find<DeviceInfoPlugin>(),
+      Get.find<LocalFilePickerInteractor>(),
+      Get.find<GetEmailContentInteractor>(),
+      Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<UploadController>(),
+      Get.find<RemoveComposerCacheOnWebInteractor>(),
+      Get.find<SaveComposerCacheOnWebInteractor>(),
+      Get.find<RichTextWebController>(),
+      Get.find<DownloadImageAsBase64Interactor>(),
+      Get.find<TransformHtmlEmailContentInteractor>(),
+      Get.find<GetAlwaysReadReceiptSettingInteractor>(),
     ));
   }
 

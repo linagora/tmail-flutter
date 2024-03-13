@@ -23,7 +23,7 @@ class UpdateAlwaysReadReceiptSettingInteractor {
         )
       );
       yield Right(UpdateAlwaysReadReceiptSettingSuccess(
-        isEnabled: result.settings?.alwaysReadReceipts ?? true));
+        alwaysReadReceiptIsEnabled: result.settings?.alwaysReadReceipts ?? true));
     } catch (e) {
       yield Left(UpdateAlwaysReadReceiptSettingFailure(e));
     }
