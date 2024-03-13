@@ -56,7 +56,6 @@ import 'package:tmail_ui_user/features/server_settings/data/network/server_setti
 import 'package:tmail_ui_user/features/server_settings/data/repository/server_settings_repository_impl.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/repository/server_settings_repository.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
-import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_always_read_receipt_setting_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_upload_datasource_impl.dart';
@@ -187,7 +186,6 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => DownloadImageAsBase64Interactor(Get.find<ComposerRepository>()));
     Get.lazyPut(() => TransformHtmlEmailContentInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetAlwaysReadReceiptSettingInteractor(Get.find<ServerSettingsRepository>()));
-    Get.lazyPut(() => UpdateAlwaysReadReceiptSettingInteractor(Get.find<ServerSettingsRepository>()));
 
     IdentityInteractorsBindings().dependencies();
   }
