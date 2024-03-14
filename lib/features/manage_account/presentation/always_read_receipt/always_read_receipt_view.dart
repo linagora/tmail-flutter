@@ -14,67 +14,76 @@ class AlwaysReadReceiptView extends GetWidget<AlwaysReadReceiptController> with 
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: SettingsUtils.getBackgroundColor(context, controller.responsiveUtils),
-      body: Container(
-        color: SettingsUtils.getContentBackgroundColor(context, controller.responsiveUtils),
-        decoration: SettingsUtils.getBoxDecorationForContent(context, controller.responsiveUtils),
-        margin: SettingsUtils.getMarginViewForSettingDetails(context, controller.responsiveUtils),
-        padding: SettingsUtils.getPaddingAlwaysReadReceiptSetting(context, controller.responsiveUtils),
+      body: Padding(
+        padding: SettingsUtils.getMarginViewForSettingDetails(context, controller.responsiveUtils),
         child: Column(
           children: [
             Obx(() {
               if (!controller.isLoading) {
-                return const SizedBox(height: 3);
+                return const SizedBox.shrink();
               }
-              return horizontalLoadingWidget;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: horizontalLoadingWidget,
+              );
             }),
             Expanded(
-              child: ListView(
-                physics: const ClampingScrollPhysics(),
-                children: [
-                  Text(
-                    AppLocalizations.of(context).emailReadReceipts,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      height: 24 / 17,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black)),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppLocalizations.of(context).emailReadReceiptsSettingExplanation,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      height: 20 / 16,
-                      color: AppColor.colorTextSettingDescriptions)),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: controller.toggleAlwaysReadReceipt,
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Obx(() {
-                            return SvgPicture.asset(
-                              controller.alwaysReadReceipt.value
-                                ? controller.imagePaths.icSwitchOn
-                                : controller.imagePaths.icSwitchOff,
-                              fit: BoxFit.fill,
-                              width: 32,
-                              height: 20);
-                          }),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          AppLocalizations.of(context).emailReadReceiptsToggleDescription,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            height: 20 / 16,
-                            color: Colors.black),
-                        )),
-                    ],
-                  ),
-                ],
+              child: Container(
+                color: SettingsUtils.getContentBackgroundColor(context, controller.responsiveUtils),
+                decoration: SettingsUtils.getBoxDecorationForContent(context, controller.responsiveUtils),
+                padding: SettingsUtils.getPaddingAlwaysReadReceiptSetting(context, controller.responsiveUtils),
+                child: ListView(
+                  physics: const ClampingScrollPhysics(),
+                  children: [
+                    Text(
+                      AppLocalizations.of(context).emailReadReceipts,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        height: 24 / 17,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black)),
+                    const SizedBox(height: 8),
+                    Text(
+                      AppLocalizations.of(context).emailReadReceiptsSettingExplanation,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        height: 20 / 16,
+                        color: AppColor.colorTextSettingDescriptions)),
+                    const SizedBox(height: 24),
+                    Obx(() {
+                      if (controller.alwaysReadReceipt.value == null) {
+                        return const SizedBox.shrink();
+                      }
+                
+                      return Row(
+                        children: [
+                          InkWell(
+                            onTap: controller.toggleAlwaysReadReceipt,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: SvgPicture.asset(
+                                controller.alwaysReadReceipt.value!
+                                  ? controller.imagePaths.icSwitchOn
+                                  : controller.imagePaths.icSwitchOff,
+                                fit: BoxFit.fill,
+                                width: 32,
+                                height: 20),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              AppLocalizations.of(context).emailReadReceiptsToggleDescription,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                height: 20 / 16,
+                                color: Colors.black),
+                            )),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
           ],
