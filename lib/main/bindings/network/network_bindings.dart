@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:contact/data/network/contact_api.dart';
 import 'package:core/core.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
@@ -101,7 +102,7 @@ class NetworkBindings extends Bindings {
   void _bindingApi() {
     Get.put(HttpClient(Get.find<Dio>()));
     Get.put(DownloadClient(Get.find<DioClient>(), Get.find<CompressFileUtils>()));
-    Get.put(DownloadManager(Get.find<DownloadClient>()));
+    Get.put(DownloadManager(Get.find<DownloadClient>(), Get.find<DeviceInfoPlugin>()));
     Get.put(MailboxAPI(Get.find<HttpClient>(), Get.find<Uuid>()));
     Get.put(SessionAPI(Get.find<HttpClient>()));
     Get.put(ThreadAPI(Get.find<HttpClient>()));
