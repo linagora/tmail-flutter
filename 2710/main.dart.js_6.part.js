@@ -3391,10 +3391,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       if (!A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).get$isLoading())
-        return E.SizedBox_null_3_null_null;
-      return B.Center_2No;
+        return B.SizedBox_0_0_null_null;
+      return new A.Padding(B.EdgeInsets_0_0_0_8, B.Center_2No, null);
     },
-    $signature: 4
+    $signature: 48
   };
   C.AlwaysReadReceiptView_build_closure0.prototype = {
     call$0() {
@@ -4276,7 +4276,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 53
+    $signature: 48
   };
   C.ManageAccountDashBoardView_build_closure1.prototype = {
     call$0() {
@@ -4492,7 +4492,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 53
+    $signature: 48
   };
   C.ManageAccountMenuView_build_closure0.prototype = {
     call$0() {
@@ -5887,5 +5887,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ODlmnZ85tEUjyDQjNnPRDzxU03U=");
+})($__dart_deferred_initializers__, "pba593WrP9BUK3znu38/JviAtRE=");
 ;
