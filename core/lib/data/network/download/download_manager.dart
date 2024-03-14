@@ -1,19 +1,25 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:js_interop';
 import 'dart:typed_data';
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:universal_html/html.dart' as html;
 
 class DownloadManager {
   final DownloadClient _downloadClient;
+  final DeviceInfoPlugin _deviceInfoPlugin;
 
-  DownloadManager(this._downloadClient);
+  DownloadManager(this._downloadClient, this._deviceInfoPlugin);
 
   Future<DownloadedResponse> downloadFile(
       String downloadUrl,
@@ -104,18 +110,58 @@ class DownloadManager {
     }
   }
 
-  void openDownloadedFileWeb(Uint8List bytes, String? mimeType) {
+  Future<void> openDownloadedFileWeb(Uint8List bytes, String? mimeType) async {
     try {
-      final blob = html.Blob([bytes], mimeType);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-
-      html.window.open(url, '_blank');
-
-      html.Url.revokeObjectUrl(url);
+      final deviceInfo = await _deviceInfoPlugin.deviceInfo;
+      if ('${deviceInfo.data['browserName']}' != 'BrowserName.chrome'
+          || mimeType != Constant.pdfMimeType) {
+        final blob = html.Blob([bytes], mimeType);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        html.window.open(url, '_blank');
+        html.Url.revokeObjectUrl(url);
+      } else {
+        HtmlUtils.openNewTabHtmlDocument(_pdfViewer(bytes));
+      }
     } catch (exception) {
       logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
       rethrow;
     }
+  }
+
+
+  String _pdfViewer(Uint8List bytes) {
+    return '''
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+        </head>
+        <style>
+          body {
+            margin: 0;
+          }
+
+          iframe {
+            ${HtmlUtils.iframeFullScreenCssStyle}
+          }
+        </style>
+        <body></body>
+        <script>
+          const bytesJs = new Uint8Array(${bytes.toJS}).buffer;
+          const blob = new Blob([bytesJs], { type: "application/pdf" });
+          const url = URL.createObjectURL(blob);
+
+          window.onload = function() {
+            const iframe = document.createElement("iframe");
+            iframe.src = url;
+            document.body.appendChild(iframe);
+          };
+          window.addEventListener("beforeunload", function listener(event) {
+            URL.revokeObjectURL(url);
+            window.removeEventListener("beforeunload", listener);
+          });
+        </script>
+      </html>''';
   }
 
   MediaType? _extractMediaTypeFromResponse(ResponseBody responseBody) {

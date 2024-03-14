@@ -148,4 +148,10 @@ class HtmlUtils {
 
     html.Url.revokeObjectUrl(url);
   }
+
+  static get iframeFullScreenCssStyle => '''
+      position: fixed;
+      border: 0;
+      width: 100%;
+      height: 100%;''';
 }
