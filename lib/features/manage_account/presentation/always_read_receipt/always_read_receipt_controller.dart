@@ -19,7 +19,7 @@ class AlwaysReadReceiptController extends BaseController {
   final GetAlwaysReadReceiptSettingInteractor _getAlwaysReadReceiptSettingInteractor;
   final UpdateAlwaysReadReceiptSettingInteractor _updateAlwaysReadReceiptSettingInteractor;
 
-  final alwaysReadReceipt = true.obs;
+  final alwaysReadReceipt = Rxn<bool>();
   bool get isLoading => viewState.value.fold(
     (failure) => false, 
     (success) => success is GettingAlwaysReadReceiptSetting || success is UpdatingAlwaysReadReceiptSetting);
@@ -71,12 +71,12 @@ class AlwaysReadReceiptController extends BaseController {
   }
 
   void toggleAlwaysReadReceipt() {
-    if (isLoading) return;
+    if (isLoading || alwaysReadReceipt.value == null) return;
     final accountId = _manageAccountDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_updateAlwaysReadReceiptSettingInteractor.execute(
         accountId,
-        !alwaysReadReceipt.value));
+        !alwaysReadReceipt.value!));
     }
   }
 
