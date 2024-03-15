@@ -52,7 +52,7 @@ When you're in Profle page, you can see your identity list
 - (1) Click on "Create New Identity" button
 - (2) Enter the name for the identity.
 - (3) Email: Specify the email address associated with this identity. You can select one email from drop-down list. 
-- (4) Reply to:  Specify the email address that will appear on recepient's composer when he reply to your email 
+- (4) Reply to: Specify the email address that will appear on recepient's composer when he reply to your email 
 - (5) BCC: When you compose a new email wiht this identity, the emails in this field will be added to "Bcc" field of composer automatically
 - (6) Customize the signature if needed.
 - (7) Set as default identity: When an identity is set as dedault, its settings such as signature, BCC... will be used when you compose a new email. You can still change to a non default identity by selecting it in the composer.
