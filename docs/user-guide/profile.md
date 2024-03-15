@@ -4,7 +4,7 @@ After logged in your Tmail account, click on avatar on top right then select opt
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/f702aeab-b931-4c69-a75e-b6ec73c0cc02)
 
-On Mobile,  after you loggin TeanMail application, click on Folder Inbox => then select Manage account, the Settings screen will be displayed.
+On Mobile, after you loggin TeanMail application, click on Folder Inbox => then select Manage account, the Settings screen will be displayed.
 
 ![Frame 7](https://github.com/linagora/tmail-flutter/assets/68209176/f5eb88e7-0951-48d0-9851-67c93648f33f)
 
