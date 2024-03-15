@@ -2,18 +2,23 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:universal_html/html.dart' as html;
 
 class DownloadManager {
   final DownloadClient _downloadClient;
+  final DeviceInfoPlugin _deviceInfoPlugin;
 
-  DownloadManager(this._downloadClient);
+  DownloadManager(this._downloadClient, this._deviceInfoPlugin);
 
   Future<DownloadedResponse> downloadFile(
       String downloadUrl,
@@ -104,14 +109,18 @@ class DownloadManager {
     }
   }
 
-  void openDownloadedFileWeb(Uint8List bytes, String? mimeType) {
+  Future<void> openDownloadedFileWeb(Uint8List bytes, String? mimeType) async {
     try {
-      final blob = html.Blob([bytes], mimeType);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-
-      html.window.open(url, '_blank');
-
-      html.Url.revokeObjectUrl(url);
+      final deviceInfo = await _deviceInfoPlugin.deviceInfo;
+      if ('${deviceInfo.data['browserName']}' != 'BrowserName.chrome'
+          || mimeType != Constant.pdfMimeType) {
+        final blob = html.Blob([bytes], mimeType);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        html.window.open(url, '_blank');
+        html.Url.revokeObjectUrl(url);
+      } else {
+        HtmlUtils.openNewTabHtmlDocument(HtmlUtils.pdfViewer(bytes));
+      }
     } catch (exception) {
       logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
       rethrow;
