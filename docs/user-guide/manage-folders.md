@@ -1,4 +1,4 @@
-![Group 121](https://github.com/linagora/tmail-flutter/assets/68209176/583bc92d-eb2f-4c5c-9cdf-0529eb8b8fa7)# Manage folders - Web 
+# Manage folders - Web 
 
 The left panel of the main view displays folders of this account.
 
