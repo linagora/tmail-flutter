@@ -46,7 +46,7 @@ class AttachmentListItemWidget extends StatelessWidget {
         return Material(
           type: MaterialType.transparency,
           child: InkWell(
-            onTap: isLoading ? null : () => viewAttachmentAction?.call(attachment),
+            onTap: isLoading ? null : () => (viewAttachmentAction?? downloadAttachmentAction)?.call(attachment),
             child: Padding(
               padding: AttachmentListItemWidgetStyle.contentPadding,
               child: Row(
