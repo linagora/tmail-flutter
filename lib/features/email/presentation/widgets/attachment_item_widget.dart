@@ -47,7 +47,7 @@ class AttachmentItemWidget extends StatelessWidget {
         return Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: isLoading ? null : () => viewAttachmentAction?.call(attachment),
+            onTap: isLoading ? null : () => (viewAttachmentAction ?? downloadAttachmentAction)?.call(attachment),
             customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius))
             ),
