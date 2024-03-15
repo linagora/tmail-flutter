@@ -1,3 +1,14 @@
+## [0.11.3-patch4-9] - 2024-03-15
+### Added
+- Always settings for read receipt request
+- Translate en, fr, ru, vi
+
+### Fixed
+- Copy/Drop text from LibreOffice files to composer
+- Download PDF file from Chrome viewer
+- Download attachment for mobile
+- Small improvement for Printing email
+
 ## [0.11.3-patch4-7] - 2024-03-08
 ### Fixed
 - #2597 Handle one action in the same time in composer
