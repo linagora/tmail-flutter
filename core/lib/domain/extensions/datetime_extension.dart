@@ -48,13 +48,10 @@ extension DateTimeNullableExtension on DateTime? {
   }
 
   String toPatternForEmailView() {
-    if (this != null) {
-      if (this!.isThisYear()) {
-        return 'dd.MM, HH:mm';
-      } else {
-        return 'dd/MM/yyyy';
-      }
+    if (this?.isThisYear() == true) {
+      return 'dd.MM, HH:mm';
+    } else {
+      return 'dd.MM.yyyy, HH:mm';
     }
-    return 'dd/MM/yyyy';
   }
 }

@@ -1335,18 +1335,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "form": "Da",
-  "@form": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "to": "A",
-  "@to": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "subject": "Oggetto",
   "@subject": {
     "type": "text",

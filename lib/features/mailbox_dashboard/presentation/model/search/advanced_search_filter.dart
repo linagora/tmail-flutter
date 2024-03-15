@@ -16,9 +16,9 @@ enum AdvancedSearchFilterField {
   String getTitle(BuildContext context) {
     switch (this) {
       case AdvancedSearchFilterField.from:
-        return AppLocalizations.of(context).form;
+        return AppLocalizations.of(context).from_email_address_prefix;
       case AdvancedSearchFilterField.to:
-        return AppLocalizations.of(context).to;
+        return AppLocalizations.of(context).to_email_address_prefix;
       case AdvancedSearchFilterField.subject:
         return AppLocalizations.of(context).subject;
       case AdvancedSearchFilterField.hasKeyword:

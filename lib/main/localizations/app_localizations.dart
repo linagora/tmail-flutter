@@ -1457,20 +1457,6 @@ class AppLocalizations {
         name: 'wrongUrlMessage');
   }
 
-  String get form {
-    return Intl.message(
-      'From',
-      name: 'form',
-    );
-  }
-
-  String get to {
-    return Intl.message(
-      'To',
-      name: 'to',
-    );
-  }
-
   String get subject {
     return Intl.message(
       'Subject',

@@ -9,19 +9,16 @@ import 'package:model/extensions/presentation_email_extension.dart';
 class ReceivedTimeBuilder extends StatelessWidget {
 
   final PresentationEmail emailSelected;
-  final EdgeInsetsGeometry? margin;
 
   const ReceivedTimeBuilder({
     Key? key,
     required this.emailSelected,
-    this.margin,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 100),
-      margin: margin,
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(start: 16),
       child: Text(
         emailSelected.getReceivedAt(
           Localizations.localeOf(context).toLanguageTag(),

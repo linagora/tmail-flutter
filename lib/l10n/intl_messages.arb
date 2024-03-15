@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-13T15:04:05.816015",
+  "@@last_modified": "2024-03-15T11:06:05.333495",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1436,18 +1436,6 @@
   },
   "wrongUrlMessage": "Server URL is not valid, please try again",
   "@wrongUrlMessage": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "form": "From",
-  "@form": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "to": "To",
-  "@to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
