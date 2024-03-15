@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:core/data/constants/constant.dart';
@@ -120,48 +119,12 @@ class DownloadManager {
         html.window.open(url, '_blank');
         html.Url.revokeObjectUrl(url);
       } else {
-        HtmlUtils.openNewTabHtmlDocument(_pdfViewer(bytes));
+        HtmlUtils.openNewTabHtmlDocument(HtmlUtils.pdfViewer(bytes));
       }
     } catch (exception) {
       logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
       rethrow;
     }
-  }
-
-
-  String _pdfViewer(Uint8List bytes) {
-    return '''
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-        </head>
-        <style>
-          body {
-            margin: 0;
-          }
-
-          iframe {
-            ${HtmlUtils.iframeFullScreenCssStyle}
-          }
-        </style>
-        <body></body>
-        <script>
-          const bytesJs = new Uint8Array(${bytes.toJS}).buffer;
-          const blob = new Blob([bytesJs], { type: "application/pdf" });
-          const url = URL.createObjectURL(blob);
-
-          window.onload = function() {
-            const iframe = document.createElement("iframe");
-            iframe.src = url;
-            document.body.appendChild(iframe);
-          };
-          window.addEventListener("beforeunload", function listener(event) {
-            URL.revokeObjectURL(url);
-            window.removeEventListener("beforeunload", listener);
-          });
-        </script>
-      </html>''';
   }
 
   MediaType? _extractMediaTypeFromResponse(ResponseBody responseBody) {

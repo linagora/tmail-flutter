@@ -1,3 +1,5 @@
+import 'js_interop_stub.dart' if (dart.library.html) 'dart:js_interop';
+import 'dart:typed_data';
 
 import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
@@ -154,4 +156,39 @@ class HtmlUtils {
       border: 0;
       width: 100%;
       height: 100%;''';
+
+  static String pdfViewer(Uint8List bytes) {
+    return '''
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+        </head>
+        <style>
+          body {
+            margin: 0;
+          }
+
+          iframe {
+            ${HtmlUtils.iframeFullScreenCssStyle}
+          }
+        </style>
+        <body></body>
+        <script>
+          const bytesJs = new Uint8Array(${bytes.toJS}).buffer;
+          const blob = new Blob([bytesJs], { type: "application/pdf" });
+          const url = URL.createObjectURL(blob);
+
+          window.onload = function() {
+            const iframe = document.createElement("iframe");
+            iframe.src = url;
+            document.body.appendChild(iframe);
+          };
+          window.addEventListener("beforeunload", function listener(event) {
+            URL.revokeObjectURL(url);
+            window.removeEventListener("beforeunload", listener);
+          });
+        </script>
+      </html>''';
+  }
 }
