@@ -9,6 +9,7 @@ class EmailPrint with EquatableMixin {
   final String emailContent;
   final String locale;
   final String toPrefix;
+  final String fromPrefix;
   final String ccPrefix;
   final String bccPrefix;
   final String replyToPrefix;
@@ -25,6 +26,7 @@ class EmailPrint with EquatableMixin {
     required this.emailInformation,
     required this.emailContent,
     required this.locale,
+    required this.fromPrefix,
     required this.toPrefix,
     required this.ccPrefix,
     required this.bccPrefix,
@@ -44,6 +46,7 @@ class EmailPrint with EquatableMixin {
     emailInformation,
     emailContent,
     locale,
+    fromPrefix,
     toPrefix,
     ccPrefix,
     bccPrefix,
@@ -66,6 +69,7 @@ extension EmailPrintExtension on EmailPrint {
       emailContent: newEmailContent,
       titleAttachment: titleAttachment,
       locale: locale,
+      fromPrefix: fromPrefix,
       toPrefix: toPrefix,
       ccPrefix: ccPrefix,
       bccPrefix: bccPrefix,

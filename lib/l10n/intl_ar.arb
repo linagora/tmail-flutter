@@ -1871,20 +1871,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "form": "من",
-  "@form": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "subject": "الموضوع",
   "@subject": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "to": "إلى",
-  "@to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

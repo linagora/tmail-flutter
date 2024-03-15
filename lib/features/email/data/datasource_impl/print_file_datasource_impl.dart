@@ -1,10 +1,11 @@
 import 'package:core/data/model/print_attachment.dart';
+import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:filesize/filesize.dart';
 import 'package:model/email/attachment.dart';
-import 'package:model/extensions/utc_date_extension.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
@@ -30,9 +31,10 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
       final sender = emailPrint.emailInformation.from?.isNotEmpty == true
         ? emailPrint.emailInformation.from!.first
         : null;
-      final receiveTime = emailPrint.emailInformation.receivedAt?.formatDateToLocal(
-        pattern: 'E, MMM d, yyyy \'at\' h:mm a',
-        locale: emailPrint.locale);
+      final receiveTime = emailPrint.emailInformation.getReceivedAt(
+        newLocale: emailPrint.locale,
+        pattern: emailPrint.emailInformation.receivedAt?.value.toLocal().toPatternForEmailView()
+      );
 
       final List<PrintAttachment> listPrintAttachment = [];
 
@@ -51,12 +53,12 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
       return await _printUtils.printEmail(
         appName: emailPrint.appName,
         userName: emailPrint.userName,
-        locale: emailPrint.locale,
         subject: emailPrint.emailInformation.subject ?? '',
         emailContent: emailPrint.emailContent,
         senderName: sender?.name ?? '',
         senderEmailAddress: sender?.email ?? '',
-        dateTime: receiveTime ?? '',
+        dateTime: receiveTime,
+        fromPrefix: emailPrint.fromPrefix,
         toPrefix: emailPrint.toPrefix,
         ccPrefix: emailPrint.ccPrefix,
         bccPrefix: emailPrint.bccPrefix,

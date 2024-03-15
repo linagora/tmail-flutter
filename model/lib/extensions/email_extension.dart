@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -42,6 +43,17 @@ extension EmailExtension on Email {
     return !hasMdnSent &&
         headers.readReceiptHasBeenRequested &&
         mailboxCurrent?.isSent == false;
+  }
+
+  String getReceivedAt({required String newLocale, String? pattern}) {
+    log('EmailExtension::getReceivedAt: newLocale = $newLocale | pattern = $pattern');
+    if (receivedAt != null) {
+      return receivedAt!.formatDateToLocal(
+        pattern: pattern ?? receivedAt!.value.toLocal().toPattern(),
+        locale: newLocale
+      );
+    }
+    return '';
   }
 
   Set<String> getRecipientEmailAddressList() {

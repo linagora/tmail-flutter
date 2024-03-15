@@ -1439,18 +1439,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "form": "From",
-  "@form": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "to": "To",
-  "@to": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "subject": "Subject",
   "@subject": {
     "type": "text",

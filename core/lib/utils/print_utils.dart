@@ -71,6 +71,7 @@ class PrintUtils {
   }
 
   Element? _createSenderElement({
+    required String fromPrefix,
     required String senderName,
     required String senderEmailAddress,
     required String dateTime,
@@ -79,7 +80,7 @@ class PrintUtils {
       return Element.html('''
       <tr>
         <td>
-          <font size="-1"><b>$senderName </b>&lt;$senderEmailAddress&gt;</font>
+          <font size="-1">$fromPrefix: <b>$senderName </b>&lt;$senderEmailAddress&gt;</font>
         </td>
         <td align="right"><font size="-1">$dateTime</font></td>
       </tr>
@@ -207,8 +208,8 @@ class PrintUtils {
     required String emailContent,
     required String senderName,
     required String senderEmailAddress,
-    required String locale,
     required String dateTime,
+    required String fromPrefix,
     required String toPrefix,
     required String ccPrefix,
     required String bccPrefix,
@@ -234,6 +235,7 @@ class PrintUtils {
     Element? subjectElement = _createSubjectElement(subject);
 
     Element? senderElement = _createSenderElement(
+      fromPrefix: fromPrefix,
       senderName: senderName,
       senderEmailAddress: senderEmailAddress,
       dateTime: dateTime);

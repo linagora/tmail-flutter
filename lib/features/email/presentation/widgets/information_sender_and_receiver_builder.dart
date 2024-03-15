@@ -81,10 +81,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                           ],
                         )
                       ),
-                      ReceivedTimeBuilder(
-                        emailSelected: emailSelected,
-                        margin: const EdgeInsetsDirectional.only(start: 16),
-                      ),
+                      ReceivedTimeBuilder(emailSelected: emailSelected),
                     ]),
                   if (emailSelected.numberOfAllEmailAddress() > 0)
                     EmailReceiverWidget(

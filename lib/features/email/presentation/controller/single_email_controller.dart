@@ -1599,6 +1599,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       attachments: _currentEmailLoaded?.attachments,
       emailContent: _currentEmailLoaded?.htmlContent ?? '',
       locale: Localizations.localeOf(context).toLanguageTag(),
+      fromPrefix: AppLocalizations.of(context).from_email_address_prefix,
       toPrefix: AppLocalizations.of(context).to_email_address_prefix,
       ccPrefix: AppLocalizations.of(context).cc_email_address_prefix,
       bccPrefix: AppLocalizations.of(context).bcc_email_address_prefix,

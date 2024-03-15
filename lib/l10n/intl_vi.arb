@@ -748,18 +748,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "form": "Từ",
-  "@form": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "to": "Tới",
-  "@to": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "subject": "Tiêu đề",
   "@subject": {
     "type": "text",

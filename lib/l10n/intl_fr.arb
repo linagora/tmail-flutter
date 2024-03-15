@@ -108,7 +108,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "to_email_address_prefix": "Pour",
+  "to_email_address_prefix": "À",
   "@to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
@@ -1170,18 +1170,6 @@
   },
   "wrongUrlMessage": "L'URL du serveur n'est pas valide, veuillez réessayer",
   "@wrongUrlMessage": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "form": "De",
-  "@form": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "to": "À",
-  "@to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2734,7 +2722,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleRecipientSendingEmail": "Pour : {recipients}",
+  "titleRecipientSendingEmail": "À: {recipients}",
   "@titleRecipientSendingEmail": {
     "type": "text",
     "placeholders_order": [
