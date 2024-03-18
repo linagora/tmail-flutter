@@ -372,7 +372,6 @@ class AdvancedFilterController extends BaseController {
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
     _destinationMailboxSelected = null;
-    searchController.sortOrderFiltered.value = EmailSortOrderType.mostRecent;
   }
 
   void _clearAllTextFieldInput() {
