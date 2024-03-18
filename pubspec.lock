@@ -405,7 +405,7 @@ packages:
     description:
       path: "."
       ref: "bugfix/signature_got_clipped"
-      resolved-ref: "8a1ab90d8a4a75efc0062d2cfbadb748cf1bdd61"
+      resolved-ref: ab70f4f2e43998347c9805711889b6251a29abda
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
