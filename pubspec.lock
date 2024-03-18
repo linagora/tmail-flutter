@@ -1025,8 +1025,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "enhancement/upgrade-version-inappwebview"
-      resolved-ref: c9f4b33bafc9d2aea633c3a6de640bd417044dad
+      ref: "enhancement/upgrade-dependencies"
+      resolved-ref: a351d61af94966a144cc360e0e94386c293e8060
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
