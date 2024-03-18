@@ -127,6 +127,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                            onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
                           )),
                           Obx(() {
                             if (controller.ccRecipientState.value == PrefixRecipientState.enabled) {
@@ -280,6 +281,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                            onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
                           ),
                           if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(

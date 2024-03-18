@@ -2120,4 +2120,10 @@ class ComposerController extends BaseController with DragDropFileMixin {
       )
     );
   }
+
+  void handleEnableRecipientsInputAction(bool isEnabled) {
+    fromRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+    ccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+    bccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+  }
 }
