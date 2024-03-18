@@ -68,7 +68,16 @@ class EmailUtils {
     required String internalDomain
   }) {
     log('EmailUtils::isSameDomain: emailAddress = $emailAddress | internalDomain = $internalDomain');
-    return GetUtils.isEmail(emailAddress) &&
+    return EmailUtils.isEmailAddressValid(emailAddress) &&
       emailAddress.split('@').last.toLowerCase() == internalDomain.toLowerCase();
+  }
+
+  static bool isEmailAddressValid(String address) {
+    try {
+      return GetUtils.isEmail(address) && MailAddress.validate(address).asString().isNotEmpty;
+    } catch(e) {
+      logError('EmailUtils::isEmailAddressValid: Exception = $e');
+      return false;
+    }
   }
 }
