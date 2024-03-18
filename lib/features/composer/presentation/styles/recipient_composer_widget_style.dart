@@ -25,6 +25,7 @@ class RecipientComposerWidgetStyle {
   static const EdgeInsetsGeometry prefixButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 3, horizontal: 5);
   static const EdgeInsetsGeometry labelMargin = EdgeInsetsDirectional.only(top: 16);
   static const EdgeInsetsGeometry recipientMargin = EdgeInsetsDirectional.only(top: 12);
+  static const EdgeInsetsGeometry enableRecipientButtonMargin = EdgeInsetsDirectional.only(top: 10);
 
   static const TextStyle prefixButtonTextStyle = TextStyle(
     fontSize: 15,
