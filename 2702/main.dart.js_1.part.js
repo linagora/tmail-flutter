@@ -316,7 +316,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(_this)).toString;
-      return new A.Stack(B.AlignmentDirectional_m1_m1, _null, B.StackFit_0, B.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_EcO5, t1, _null), A.Positioned$fill(24, new A.Align(B.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", B.Alignment_0_0, _null, B.BoxFit_0, 44, _null, 97), _null))], t2), _null);
+      return new A.Stack(B.AlignmentDirectional_m1_m1, _null, B.StackFit_0, B.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_EcO4, t1, _null), A.Positioned$fill(24, new A.Align(B.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", B.Alignment_0_0, _null, B.BoxFit_0, 44, _null, 97), _null))], t2), _null);
     },
     _buildWebForm$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
@@ -609,7 +609,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 81
+    $signature: 80
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -733,7 +733,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   (function constants() {
     var makeConstList = hunkHelpers.makeConstList;
     D.AutofillContextAction_0 = new C.AutofillContextAction(0, "commit");
-    D.BoxConstraints_EcO5 = new A.BoxConstraints(200, 720, 720, 1 / 0);
+    D.BoxConstraints_EcO4 = new A.BoxConstraints(200, 720, 720, 1 / 0);
     D.EdgeInsetsDirectional_24_0_24_16 = new A.EdgeInsetsDirectional(24, 0, 24, 16);
     D.EdgeInsetsDirectional_25_15_25_15 = new A.EdgeInsetsDirectional(25, 15, 25, 15);
     D.EdgeInsetsDirectional_25_15_40_15 = new A.EdgeInsetsDirectional(25, 15, 40, 15);
@@ -778,5 +778,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "WmlRzPEj6F0Mfb3G0u/sJfCGyIc=");
+})($__dart_deferred_initializers__, "714Jq/t3XOlo7SQAwiQAvC12AE8=");
 ;
