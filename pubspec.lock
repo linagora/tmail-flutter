@@ -1026,7 +1026,7 @@ packages:
     description:
       path: "."
       ref: "enhancement/upgrade-dependencies"
-      resolved-ref: a351d61af94966a144cc360e0e94386c293e8060
+      resolved-ref: c345ec8b7b95d2c6456884b7a4254dc6e46f2808
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
