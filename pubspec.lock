@@ -1476,7 +1476,7 @@ packages:
     description:
       path: "."
       ref: "enhancement/update_enough_html_editor_dependency"
-      resolved-ref: de722f8c3ca5264e4b9ec1aa6cdad3ee7250800b
+      resolved-ref: faa57d54709e589ae2dea76b286c07024a80b7f2
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"
