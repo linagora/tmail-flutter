@@ -405,7 +405,6 @@ class ComposerController extends BaseController {
     keyboardRichTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDown,
-      context: context,
       onFocus: _onEditorFocusOnMobile,
       onChangeCursor: (coordinates) {
         _onChangeCursorOnMobile(coordinates, context);

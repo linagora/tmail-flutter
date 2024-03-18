@@ -361,10 +361,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_keyboard_visibility
-      sha256: "4983655c26ab5b959252ee204c2fffa4afeb4413cd030455194ec0caa3b8e7cb"
+      sha256: "98664be7be0e3ffca00de50f7f6a287ab62c763fc8c762e0a21584584a3ff4f8"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.1"
+    version: "6.0.0"
   flutter_keyboard_visibility_linux:
     dependency: transitive
     description:
@@ -430,10 +430,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_typeahead
-      sha256: f31211a8536f87908c3dcbdb88666e2f4d77f5f06c2b3a48eaad5599969ff32d
+      sha256: ef2dd5a505d2d95a5b4c571c81ad2d6e7955f583dddec49064fec57acffd7a96
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.0"
+    version: "5.0.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -731,10 +731,34 @@ packages:
     dependency: transitive
     description:
       name: pointer_interceptor
-      sha256: "49e6b86ba931d801ce852990d4a8913726ea3964266559e0b058baa3b4408435"
+      sha256: fda979f3eb65558a389517521c8315060289dda5a1a6087f3892bdea9550eade
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.1"
+    version: "0.10.0"
+  pointer_interceptor_ios:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_ios
+      sha256: "4282ebfe21b54e21e26ab982c6086f0a67dc63423026bfba8db39a2e22045f26"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
+  pointer_interceptor_platform_interface:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_platform_interface
+      sha256: "59a446ead3be360bde72c3725f5ecacbba203c8a760e3061024c20f7da53f825"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
+  pointer_interceptor_web:
+    dependency: transitive
+    description:
+      name: pointer_interceptor_web
+      sha256: dfd32b9c6e01a18f80535e7791e9d3add009a3395645d6db2f1e22b2642bfab4
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.1"
   pool:
     dependency: transitive
     description:
@@ -1054,4 +1078,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.2.0 <4.0.0"
-  flutter: ">=3.13.0"
+  flutter: ">=3.16.0"

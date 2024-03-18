@@ -32,20 +32,24 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
     if (PlatformInfo.isWeb) {
       return _buildVacationFormView(context);
     } else {
-      return KeyboardRichText(
-        richTextController: controller.richTextControllerForMobile,
-        keyBroadToolbar: RichTextKeyboardToolBar(
-          titleBack: AppLocalizations.of(context).format,
-          backgroundKeyboardToolBarColor: PlatformInfo.isIOS
-            ? AppColor.colorBackgroundKeyboard
-            : AppColor.colorBackgroundKeyboardAndroid,
-          titleFormatBottomSheet: AppLocalizations.of(context).format,
+      return SafeArea(
+        bottom: false,
+        child: KeyboardRichText(
           richTextController: controller.richTextControllerForMobile,
-          titleQuickStyleBottomSheet: AppLocalizations.of(context).quickStyles,
-          titleBackgroundBottomSheet: AppLocalizations.of(context).background,
-          titleForegroundBottomSheet: AppLocalizations.of(context).foreground,
+          keyBroadToolbar: RichTextKeyboardToolBar(
+            rootContext: context,
+            titleBack: AppLocalizations.of(context).format,
+            backgroundKeyboardToolBarColor: PlatformInfo.isIOS
+              ? AppColor.colorBackgroundKeyboard
+              : AppColor.colorBackgroundKeyboardAndroid,
+            formatLabel: AppLocalizations.of(context).format,
+            richTextController: controller.richTextControllerForMobile,
+            quickStyleLabel: AppLocalizations.of(context).quickStyles,
+            backgroundLabel: AppLocalizations.of(context).background,
+            foregroundLabel: AppLocalizations.of(context).foreground,
+          ),
+          child: _buildVacationFormView(context)
         ),
-        child: _buildVacationFormView(context)
       );
     }
   }
@@ -448,7 +452,6 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               htmlApi,
               onFocus: controller.onFocusHTMLEditor,
               onEnterKeyDown: controller.onEnterKeyDown,
-              context: context,
             );
           }
       );

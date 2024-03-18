@@ -404,8 +404,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: f13a35eb76fafb2ee1e686ca19c4c742d0efa78a
+      ref: "bugfix/signature_got_clipped"
+      resolved-ref: "8a1ab90d8a4a75efc0062d2cfbadb748cf1bdd61"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -715,10 +715,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_keyboard_visibility
-      sha256: "4983655c26ab5b959252ee204c2fffa4afeb4413cd030455194ec0caa3b8e7cb"
+      sha256: "98664be7be0e3ffca00de50f7f6a287ab62c763fc8c762e0a21584584a3ff4f8"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.1"
+    version: "6.0.0"
   flutter_keyboard_visibility_linux:
     dependency: transitive
     description:
@@ -925,10 +925,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_typeahead
-      sha256: f31211a8536f87908c3dcbdb88666e2f4d77f5f06c2b3a48eaad5599969ff32d
+      sha256: ef2dd5a505d2d95a5b4c571c81ad2d6e7955f583dddec49064fec57acffd7a96
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.0"
+    version: "5.0.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -1025,8 +1025,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: "96c199b233c5afde583295890ffbd880ea4c7d8c"
+      ref: "enhancement/upgrade-version-inappwebview"
+      resolved-ref: c9f4b33bafc9d2aea633c3a6de640bd417044dad
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
@@ -1475,8 +1475,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "867d22aaa2da242bb1c5929e2804e3cb1d4acaf6"
+      ref: "enhancement/update_enough_html_editor_dependency"
+      resolved-ref: de722f8c3ca5264e4b9ec1aa6cdad3ee7250800b
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"

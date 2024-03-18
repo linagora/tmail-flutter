@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:rich_text_composer/richtext_controller.dart';
+import 'package:rich_text_composer/rich_text_controller.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -354,8 +354,9 @@ class VacationController extends BaseController {
 
     await Scrollable.ensureVisible(htmlKey.currentContext!);
     await Future.delayed(const Duration(milliseconds: 500), () {
+      // defaultKeyboardToolbarHeight old value is 48
       scrollController.animateTo(
-        scrollController.position.pixels + defaultKeyboardToolbarHeight + htmlEditorMinHeight,
+        scrollController.position.pixels + 48 + htmlEditorMinHeight,
         duration: const Duration(milliseconds: 1),
         curve: Curves.linear,
       );

@@ -140,23 +140,25 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
     if (PlatformInfo.isWeb) {
       return responsiveWidget;
     } else {
-      return KeyboardRichText(
-        keyBroadToolbar: RichTextKeyboardToolBar(
-          titleBack: AppLocalizations.of(context).titleFormat,
-          backgroundKeyboardToolBarColor: PlatformInfo.isIOS
-            ? AppColor.colorBackgroundKeyboard
-            : AppColor.colorBackgroundKeyboardAndroid,
-          isLandScapeMode: controller.responsiveUtils.isLandscapeMobile(context),
+      return SafeArea(
+        bottom: false,
+        child: KeyboardRichText(
+          keyBroadToolbar: RichTextKeyboardToolBar(
+            rootContext: context,
+            titleBack: AppLocalizations.of(context).titleFormat,
+            backgroundKeyboardToolBarColor: PlatformInfo.isIOS
+              ? AppColor.colorBackgroundKeyboard
+              : AppColor.colorBackgroundKeyboardAndroid,
+            richTextController: controller.keyboardRichTextController,
+            quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
+            backgroundLabel: AppLocalizations.of(context).titleBackground,
+            foregroundLabel: AppLocalizations.of(context).titleForeground,
+            formatLabel: AppLocalizations.of(context).titleFormat,
+            insertImage: () => controller.pickImage(context),
+          ),
           richTextController: controller.keyboardRichTextController,
-          titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-          titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-          titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-          titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-          insertImage: () => controller.pickImage(context),
+          child: responsiveWidget
         ),
-        richTextController: controller.keyboardRichTextController,
-        paddingChild: EdgeInsets.zero,
-        child: responsiveWidget
       );
     }
   }

@@ -210,7 +210,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               return const SizedBox.shrink();
                             }
                           }),
-                          const SizedBox(height: ComposerStyle.keyboardMaxHeight),
+                          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom),
                         ],
                       ),
                     ),

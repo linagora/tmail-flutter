@@ -442,7 +442,6 @@ class IdentityCreatorController extends BaseController {
       editorApi,
       onEnterKeyDown: _onEnterKeyDownOnMobile,
       onFocus: _onFocusHTMLEditorOnMobile,
-      context: context
     );
     keyboardRichTextController.htmlEditorApi?.onFocusOut = () {
       keyboardRichTextController.hideRichTextView();
@@ -458,9 +457,8 @@ class IdentityCreatorController extends BaseController {
       await Scrollable.ensureVisible(htmlKey.currentContext!);
     }
     await Future.delayed(const Duration(milliseconds: 500), () {
-      final offset = scrollController.position.pixels +
-        defaultKeyboardToolbarHeight +
-        htmlEditorMinHeight;
+      // defaultKeyboardToolbarHeight old value is 48
+      final offset = scrollController.position.pixels + 48 + htmlEditorMinHeight;
       scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 1),

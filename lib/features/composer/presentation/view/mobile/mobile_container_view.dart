@@ -1,7 +1,5 @@
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart' as rich_composer;
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/mobile_container_view_style.dart';
@@ -19,9 +17,7 @@ class MobileContainerView extends StatelessWidget {
   final VoidCallback? onClearFocusAction;
   final Color? backgroundColor;
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
-  MobileContainerView({
+  const MobileContainerView({
     super.key,
     required this.childBuilder,
     required this.keyboardRichTextController,
@@ -42,31 +38,36 @@ class MobileContainerView extends StatelessWidget {
         child: Scaffold(
           backgroundColor: backgroundColor ?? MobileContainerViewStyle.outSideBackgroundColor,
           resizeToAvoidBottomInset: false,
-          body: LayoutBuilder(builder: (context, constraints) {
-            return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
-              return rich_composer.KeyboardRichText(
-                richTextController: keyboardRichTextController,
-                keyBroadToolbar: RichTextKeyboardToolBar(
-                  backgroundKeyboardToolBarColor: MobileContainerViewStyle.keyboardToolbarBackgroundColor,
-                  isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
-                  insertAttachment: onAttachFileAction,
-                  insertImage: () => onInsertImageAction != null
-                    ? onInsertImageAction!(constraints)
-                    : null,
+          body: SafeArea(
+            bottom: false,
+            child: LayoutBuilder(builder: (context, constraints) {
+              return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+                return rich_composer.KeyboardRichText(
                   richTextController: keyboardRichTextController,
-                  titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
-                  titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
-                  titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
-                  titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
-                  titleBack: AppLocalizations.of(context).format,
-                ),
-                paddingChild: isKeyboardVisible
-                  ? MobileContainerViewStyle.keyboardToolbarPadding
-                  : EdgeInsets.zero,
-                child: childBuilder(context),
-              );
-            });
-          })
+                  keyBroadToolbar: RichTextKeyboardToolBar(
+                    rootContext: context,
+                    backgroundKeyboardToolBarColor: MobileContainerViewStyle.keyboardToolbarBackgroundColor,
+                    insertAttachment: onAttachFileAction,
+                    insertImage: () => onInsertImageAction != null
+                      ? onInsertImageAction!(constraints)
+                      : null,
+                    richTextController: keyboardRichTextController,
+                    quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
+                    backgroundLabel: AppLocalizations.of(context).titleBackground,
+                    foregroundLabel: AppLocalizations.of(context).titleForeground,
+                    formatLabel: AppLocalizations.of(context).titleFormat,
+                    titleBack: AppLocalizations.of(context).format,
+                  ),
+                  child: Padding(
+                    padding: isKeyboardVisible
+                      ? MobileContainerViewStyle.keyboardToolbarPadding
+                      : EdgeInsets.zero,
+                    child: childBuilder(context),
+                  ),
+                );
+              });
+            }),
+          )
         ),
       )
     );

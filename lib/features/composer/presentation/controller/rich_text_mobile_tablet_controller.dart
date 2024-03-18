@@ -24,7 +24,7 @@ class RichTextMobileTabletController extends BaseRichTextController {
       htmlEditorApi?.insertImageLink(image.link!);
     } else {
       if (fromFileShare) {
-        await htmlEditorApi?.moveCursorAtLastNode();
+        await htmlEditorApi?.requestFocusLastChild();
       }
       await htmlEditorApi?.insertHtml(image.base64Uri ?? '');
     }

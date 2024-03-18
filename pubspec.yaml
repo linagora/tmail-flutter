@@ -55,12 +55,12 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: master
+      ref: enhancement/update_enough_html_editor_dependency
 
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: email_supported
+      ref: enhancement/upgrade-version-inappwebview
 
   jmap_dart_client:
     git:
@@ -208,9 +208,9 @@ dependencies:
 
   workmanager: 0.5.1
 
-  flutter_typeahead: 4.6.0
+  flutter_typeahead: 5.0.2
 
-  flutter_keyboard_visibility: 5.4.1
+  flutter_keyboard_visibility: 6.0.0
 
   extended_text: 12.0.0
 
