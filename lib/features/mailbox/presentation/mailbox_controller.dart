@@ -550,7 +550,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   ) {
     log('MailboxController::_handleOpenMailbox():MailboxName: ${presentationMailboxSelected.name}');
     KeyboardUtils.hideKeyboard(context);
-    mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.clearSelectedEmail();
     if (presentationMailboxSelected.id != mailboxDashBoardController.selectedMailbox.value?.id) {
       mailboxDashBoardController.clearFilterMessageOption();
@@ -558,6 +557,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     _disableAllSearchEmail();
     _replaceBrowserHistory();
     mailboxDashBoardController.closeMailboxMenuDrawer();
+    mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
   }
 
