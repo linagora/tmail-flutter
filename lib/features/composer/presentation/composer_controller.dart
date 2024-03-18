@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_c
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -721,7 +722,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
     final allListEmailAddress = listToEmailAddress + listCcEmailAddress + listBccEmailAddress;
     final listEmailAddressInvalid = allListEmailAddress
-        .where((emailAddress) => !GetUtils.isEmail(emailAddress.emailAddress))
+        .where((emailAddress) => !EmailUtils.isEmailAddressValid(emailAddress.emailAddress))
         .toList();
     if (listEmailAddressInvalid.isNotEmpty) {
       showConfirmDialogAction(context,
