@@ -32,7 +32,6 @@ extension PresentationEmailExtension on PresentationEmail {
   int numberOfAllEmailAddress() => to.numberEmailAddress() + cc.numberEmailAddress() + bcc.numberEmailAddress();
 
   String getReceivedAt(String newLocale, {String? pattern}) {
-    log('PresentationEmailExtension::getReceivedAt: newLocale = $newLocale | pattern = $pattern');
     final emailTime = receivedAt;
     if (emailTime != null) {
       return emailTime.formatDateToLocal(
