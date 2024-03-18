@@ -46,7 +46,6 @@ extension EmailExtension on Email {
   }
 
   String getReceivedAt({required String newLocale, String? pattern}) {
-    log('EmailExtension::getReceivedAt: newLocale = $newLocale | pattern = $pattern');
     if (receivedAt != null) {
       return receivedAt!.formatDateToLocal(
         pattern: pattern ?? receivedAt!.value.toLocal().toPattern(),
