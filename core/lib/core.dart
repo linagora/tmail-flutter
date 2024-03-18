@@ -45,6 +45,8 @@ export 'utils/file_utils.dart';
 export 'utils/option_param_mixin.dart';
 export 'utils/print_utils.dart';
 export 'utils/list_utils.dart';
+export 'utils/mail/domain.dart';
+export 'utils/mail/mail_address.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';

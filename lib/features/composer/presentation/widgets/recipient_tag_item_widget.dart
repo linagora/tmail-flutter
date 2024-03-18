@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/draggable_ema
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/draggable_recipient_tag_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 
 class RecipientTagItemWidget extends StatelessWidget {
 
@@ -172,7 +173,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   Color _getTagBackgroundColor() {
     if (isLatestTagFocused && isLatestEmail) {
       return AppColor.colorItemRecipientSelected;
-    } else if (GetUtils.isEmail(currentEmailAddress.emailAddress)) {
+    } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
       return AppColor.colorEmailAddressTag;
     } else {
       return Colors.white;
@@ -182,7 +183,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   BorderSide _getTagBorderSide() {
     if (isLatestTagFocused && isLatestEmail) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
-    } else if (GetUtils.isEmail(currentEmailAddress.emailAddress)) {
+    } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
       return const BorderSide(width: 1, color: AppColor.colorEmailAddressTag);
     } else {
       return const BorderSide(
