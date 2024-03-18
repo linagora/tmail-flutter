@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
@@ -34,6 +35,7 @@ typedef OnShowFullListEmailAddressAction = void Function(PrefixEmailAddress pref
 typedef OnFocusEmailAddressChangeAction = void Function(PrefixEmailAddress prefix, bool isFocus);
 typedef OnRemoveDraggableEmailAddressAction = void Function(DraggableEmailAddress draggableEmailAddress);
 typedef OnDeleteTagAction = void Function(EmailAddress emailAddress);
+typedef OnEnableAllRecipientsInputAction = void Function(bool isEnabled);
 
 class RecipientComposerWidget extends StatefulWidget {
 
@@ -58,6 +60,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final VoidCallback? onFocusNextAddressAction;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
+  final OnEnableAllRecipientsInputAction? onEnableAllRecipientsInputAction;
 
   const RecipientComposerWidget({
     super.key,
@@ -82,6 +85,7 @@ class RecipientComposerWidget extends StatefulWidget {
     this.onFocusEmailAddressChangeAction,
     this.onFocusNextAddressAction,
     this.onRemoveDraggableEmailAddressAction,
+    this.onEnableAllRecipientsInputAction,
   });
 
   @override
@@ -240,7 +244,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           textInputAction: TextInputAction.done,
                           debounceDuration: RecipientComposerWidgetStyle.suggestionDebounceDuration,
                           tagSpacing: RecipientComposerWidgetStyle.tagSpacing,
-                          autofocus: widget.prefix != PrefixEmailAddress.to && _currentListEmailAddress.isEmpty,
                           minTextFieldWidth: RecipientComposerWidgetStyle.minTextFieldWidth,
                           resetTextOnSubmitted: true,
                           autoScrollToInput: false,
@@ -299,34 +302,52 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
               )
             ),
             const SizedBox(width: RecipientComposerWidgetStyle.space),
-            if (widget.prefix == PrefixEmailAddress.to && widget.fromState == PrefixRecipientState.disabled)
-              TMailButtonWidget.fromText(
-                text: AppLocalizations.of(context).from_email_address_prefix,
-                textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-                backgroundColor: Colors.transparent,
-                padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-                margin: RecipientComposerWidgetStyle.recipientMargin,
-                onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.from),
-              ),
-            if (widget.prefix == PrefixEmailAddress.to && widget.ccState == PrefixRecipientState.disabled)
-              TMailButtonWidget.fromText(
-                text: AppLocalizations.of(context).cc_email_address_prefix,
-                textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-                backgroundColor: Colors.transparent,
-                padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-                margin: RecipientComposerWidgetStyle.recipientMargin,
-                onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc),
-              ),
-            if (widget.prefix == PrefixEmailAddress.to && widget.bccState == PrefixRecipientState.disabled)
-              TMailButtonWidget.fromText(
-                text: AppLocalizations.of(context).bcc_email_address_prefix,
-                textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-                backgroundColor: Colors.transparent,
-                padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-                margin: RecipientComposerWidgetStyle.recipientMargin,
-                onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
-              ),
-            if (widget.prefix != PrefixEmailAddress.to)
+            if (widget.prefix == PrefixEmailAddress.to)
+              if (PlatformInfo.isWeb)
+                ...[
+                  if (widget.fromState == PrefixRecipientState.disabled)
+                    TMailButtonWidget.fromText(
+                      text: AppLocalizations.of(context).from_email_address_prefix,
+                      textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                      backgroundColor: Colors.transparent,
+                      padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                      margin: RecipientComposerWidgetStyle.recipientMargin,
+                      onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.from),
+                    ),
+                  if (widget.ccState == PrefixRecipientState.disabled)
+                    TMailButtonWidget.fromText(
+                      text: AppLocalizations.of(context).cc_email_address_prefix,
+                      textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                      backgroundColor: Colors.transparent,
+                      padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                      margin: RecipientComposerWidgetStyle.recipientMargin,
+                      onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc),
+                    ),
+                  if (widget.bccState == PrefixRecipientState.disabled)
+                    TMailButtonWidget.fromText(
+                      text: AppLocalizations.of(context).bcc_email_address_prefix,
+                      textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                      backgroundColor: Colors.transparent,
+                      padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                      margin: RecipientComposerWidgetStyle.recipientMargin,
+                      onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
+                    ),
+                ]
+              else if (PlatformInfo.isMobile)
+                ...[
+                  TMailButtonWidget.fromIcon(
+                    icon: _isAllRecipientInputEnabled
+                      ? _imagePaths.icChevronUp
+                      : _imagePaths.icChevronDown,
+                    backgroundColor: Colors.transparent,
+                    iconSize: 20,
+                    padding: const EdgeInsets.all(5),
+                    iconColor: AppColor.colorLabelComposer,
+                    margin: RecipientComposerWidgetStyle.enableRecipientButtonMargin,
+                    onTapActionCallback: () => widget.onEnableAllRecipientsInputAction?.call(_isAllRecipientInputEnabled),
+                  )
+                ]
+            else if (PlatformInfo.isWeb)
               TMailButtonWidget.fromIcon(
                 icon: _imagePaths.icClose,
                 backgroundColor: Colors.transparent,
@@ -343,6 +364,10 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   }
 
   bool get _isCollapse => _currentListEmailAddress.length > 1 && widget.expandMode == ExpandMode.COLLAPSE;
+
+  bool get _isAllRecipientInputEnabled => widget.fromState == PrefixRecipientState.enabled &&
+    widget.ccState == PrefixRecipientState.enabled &&
+    widget.bccState == PrefixRecipientState.enabled;
 
   List<EmailAddress> get _collapsedListEmailAddress => _isCollapse
     ? _currentListEmailAddress.sublist(0, 1)
