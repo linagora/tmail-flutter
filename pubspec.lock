@@ -1041,8 +1041,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: support-enable-disable-drag-and-drop
-      resolved-ref: "1133e628c1d21b6c90659edf11afa5db60eae386"
+      ref: cnb_supported
+      resolved-ref: "31300fa930999fb9fefb774feba6ab5410b423c2"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"

@@ -60,7 +60,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: support-enable-disable-drag-and-drop
+      ref: cnb_supported
 
   jmap_dart_client:
     git:
