@@ -261,6 +261,11 @@ dependency_overrides:
 
   firebase_core_platform_interface: 4.6.0
 
+  enough_html_editor:
+    git:
+      url: https://github.com/linagora/enough_html_editor.git
+      ref: improve/allow-enable-disable-colllapsed-signature
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
