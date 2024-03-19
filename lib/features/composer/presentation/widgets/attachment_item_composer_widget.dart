@@ -9,9 +9,10 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/attachment_item_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_progress_loading_composer_widget.dart';
+import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 
-typedef OnDeleteAttachmentAction = void Function(UploadFileState fileState);
+typedef OnDeleteAttachmentAction = void Function(UploadTaskId uploadTaskId);
 
 class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
 
@@ -100,7 +101,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
             borderRadius: AttachmentItemComposerWidgetStyle.deleteIconRadius,
             padding: AttachmentItemComposerWidgetStyle.deleteIconPadding,
             iconColor: AttachmentItemComposerWidgetStyle.deleteIconColor,
-            onTapActionCallback: () => onDeleteAttachmentAction?.call(fileState),
+            onTapActionCallback: () => onDeleteAttachmentAction?.call(fileState.uploadTaskId),
           )
         ],
       ),
