@@ -1571,7 +1571,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     if (PlatformInfo.isWeb) {
       richTextWebController.editorController.insertSignature(signature);
     } else {
-      await htmlEditorApi?.insertSignature(signature);
+      await htmlEditorApi?.insertSignature(signature, allowCollapsed: false);
     }
   }
 
