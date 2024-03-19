@@ -99,7 +99,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
                   )
                 ),
-                if (PlatformInfo.isWeb)
+                if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
                   ...[
                     const SizedBox(width: EmailViewAppBarWidgetStyles.space),
                     TMailButtonWidget.fromIcon(
