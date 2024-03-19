@@ -81,7 +81,7 @@ class AlwaysReadReceiptController extends BaseController {
   }
 
   void _getAlwaysReadReceiptSettingFailure() {
-    alwaysReadReceipt.value = true;
+    alwaysReadReceipt.value = false;
   }
 
   void _getAlwaysReadReceiptSettingSuccess(

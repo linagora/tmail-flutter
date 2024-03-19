@@ -15,7 +15,7 @@ class GetAlwaysReadReceiptSettingInteractor {
       yield Right(GettingAlwaysReadReceiptSetting());
       final result = await _serverSettingsRepository.getServerSettings(accountId);
       yield Right(GetAlwaysReadReceiptSettingSuccess(
-        alwaysReadReceiptEnabled: result.settings?.alwaysReadReceipts ?? true));
+        alwaysReadReceiptEnabled: result.settings?.alwaysReadReceipts ?? false));
     } catch (e) {
       yield Left(GetAlwaysReadReceiptSettingFailure(e));
     }

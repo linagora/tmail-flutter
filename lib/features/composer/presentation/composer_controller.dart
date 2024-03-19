@@ -305,7 +305,7 @@ class ComposerController extends BaseController {
         _autoFocusFieldWhenLauncher();
       }
     } else if (failure is GetAlwaysReadReceiptSettingFailure) {
-      hasRequestReadReceipt.value = true;
+      hasRequestReadReceipt.value = false;
     }
   }
 
