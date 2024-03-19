@@ -109,7 +109,9 @@ class EmailAttachmentsWidget extends StatelessWidget {
                           onDragStarted: onDragStarted,
                           onDragEnd: onDragEnd,
                           downloadAttachmentAction: downloadAttachmentAction,
-                          viewAttachmentAction: viewAttachmentAction,
+                          viewAttachmentAction: PlatformInfo.isCanvasKit
+                            ? viewAttachmentAction
+                            : null,
                       );
                     } else {
                       return AttachmentItemWidget(
