@@ -190,7 +190,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   return AttachmentComposerWidget(
                                     listFileUploaded: controller.uploadController.listUploadAttachments,
                                     isCollapsed: controller.isAttachmentCollapsed,
-                                    onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                    onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
                                     onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                   );
                                 } else {
@@ -423,7 +423,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         return AttachmentComposerWidget(
                                           listFileUploaded: controller.uploadController.listUploadAttachments,
                                           isCollapsed: controller.isAttachmentCollapsed,
-                                          onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                          onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
                                           onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                         );
                                       } else {
@@ -675,7 +675,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   return AttachmentComposerWidget(
                                     listFileUploaded: controller.uploadController.listUploadAttachments,
                                     isCollapsed: controller.isAttachmentCollapsed,
-                                    onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                    onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
                                     onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                   );
                                 } else {
