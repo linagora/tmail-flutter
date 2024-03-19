@@ -252,10 +252,12 @@ class UploadController extends BaseController {
     if (attachmentsUploaded.isEmpty) {
       return null;
     }
-    return attachmentsUploaded
+    final listEmailBodyPart = attachmentsUploaded
       .map((attachment) => attachment.toEmailBodyPart(
           disposition: ContentDisposition.attachment.value))
       .toSet();
+    log('UploadController::generateAttachments: listEmailBodyPart = $listEmailBodyPart');
+    return listEmailBodyPart;
   }
 
   void _showToastMessageWhenUploadAttachmentsFailure(ErrorAttachmentUploadState failure) {

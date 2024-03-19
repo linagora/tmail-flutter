@@ -20,6 +20,7 @@ class Attachment with EquatableMixin {
   final MediaType? type;
   final String? cid;
   final ContentDisposition? disposition;
+  final String? charset;
 
   Attachment({
     this.partId,
@@ -29,6 +30,7 @@ class Attachment with EquatableMixin {
     this.type,
     this.cid,
     this.disposition,
+    this.charset,
   });
 
   bool noCid() => cid == null || cid?.isEmpty == true;
@@ -59,7 +61,16 @@ class Attachment with EquatableMixin {
   }
 
   @override
-  List<Object?> get props => [partId, blobId, size, name, type, cid, disposition];
+  List<Object?> get props => [
+    partId,
+    blobId,
+    size,
+    name,
+    type,
+    cid,
+    disposition,
+    charset
+  ];
 }
 
 enum ContentDisposition {

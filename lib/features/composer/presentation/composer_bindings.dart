@@ -80,7 +80,11 @@ class ComposerBindings extends BaseBindings {
   }
 
   void _bindingsUtils() {
-    Get.lazyPut(() => FileUploader(Get.find<DioClient>(tag: BindingTag.isolateTag), Get.find<Executor>()));
+    Get.lazyPut(() => FileUploader(
+      Get.find<DioClient>(tag: BindingTag.isolateTag),
+      Get.find<Executor>(),
+      Get.find<FileUtils>(),
+    ));
   }
 
   @override

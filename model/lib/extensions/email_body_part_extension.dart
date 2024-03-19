@@ -9,5 +9,6 @@ extension EmailBodyPartExtension on EmailBodyPart {
     name: name,
     type: type,
     cid: cid,
+    charset: charset,
     disposition: disposition.toContentDisposition());
 }
