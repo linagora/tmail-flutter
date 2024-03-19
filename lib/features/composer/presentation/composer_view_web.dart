@@ -455,8 +455,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                               showCodeViewAction: controller.richTextWebController.toggleCodeView,
                               deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                              saveToDraftAction: () => controller.saveToDraftAction(context),
-                              sendMessageAction: () => controller.validateInformationBeforeSending(context),
+                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
+                              sendMessageAction: () => controller.handleClickSendButton(context),
                               requestReadReceiptAction: (position) {
                                 controller.openPopupMenuAction(
                                     context,
