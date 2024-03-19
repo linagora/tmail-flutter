@@ -14934,8 +14934,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t7 = A.Intl__message("Mark as starred", _null, "mark_as_starred", _null, _null);
       }
       t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, t8, _null, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure0(t3), C.EdgeInsets_5_5_5_5, t7));
-      A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
-      C.JSArray_methods.addAll$1(t5, A._setArrayType([C.SizedBox_5_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_printer.svg", _null, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure1(t3), C.EdgeInsets_5_5_5_5, A.Intl__message("Print all", _null, "printAll", _null, _null))], t1));
+      t7 = $.$get$_context().$index(0, "flutterCanvasKit");
+      if (t7 != null) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
+        C.JSArray_methods.addAll$1(t5, A._setArrayType([C.SizedBox_5_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_printer.svg", _null, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure1(t3), C.EdgeInsets_5_5_5_5, A.Intl__message("Print all", _null, "printAll", _null, _null))], t1));
+      }
       t5.push(C.SizedBox_5_null_null_null);
       t1 = t3.get$canDeletePermanently() ? C.Color_4293281350 : C.Color_4278221567;
       if (t3.get$canDeletePermanently()) {
@@ -20387,5 +20390,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "iPTKU9K/HyiwLkUlYbyBmdyy7V4=");
+})($__dart_deferred_initializers__, "vxSTgnBCVxBGudLPiOzKpUGQfqc=");
 ;
