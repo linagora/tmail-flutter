@@ -3944,4 +3944,17 @@ class AppLocalizations {
       name: 'canceling'
     );
   }
+
+  String showMore(int count) {
+    return Intl.message(
+      'Show more (+$count)',
+      name: 'showMore',
+      args: [count]);
+  }
+
+  String get showLess {
+    return Intl.message(
+      'Show less',
+      name: 'showLess');
+  }
 }

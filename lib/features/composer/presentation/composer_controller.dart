@@ -97,7 +97,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
 
-  final expandModeAttachments = ExpandMode.EXPAND.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
@@ -1311,12 +1310,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   void deleteComposer() {
     FocusManager.instance.primaryFocus?.unfocus();
     mailboxDashBoardController.closeComposerOverlay();
-  }
-
-  void toggleDisplayAttachments() {
-    final newExpandMode = expandModeAttachments.value == ExpandMode.COLLAPSE
-        ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
-    expandModeAttachments.value = newExpandMode;
   }
 
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-12T12:50:35.525381",
+  "@@last_modified": "2024-03-19T12:10:23.549474",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3782,6 +3782,22 @@
   },
   "canceling": "Canceling",
   "@canceling": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMore": "Show more (+{count})",
+  "@showMore": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "showLess": "Show less",
+  "@showLess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

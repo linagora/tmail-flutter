@@ -338,9 +338,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                   TMailButtonWidget.fromIcon(
                     icon: _isAllRecipientInputEnabled
                       ? _imagePaths.icChevronUp
-                      : _imagePaths.icChevronDown,
+                      : _imagePaths.icChevronDownOutline,
                     backgroundColor: Colors.transparent,
-                    iconSize: 20,
+                    iconSize: 24,
                     padding: const EdgeInsets.all(5),
                     iconColor: AppColor.colorLabelComposer,
                     margin: RecipientComposerWidgetStyle.enableRecipientButtonMargin,
