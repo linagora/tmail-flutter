@@ -185,6 +185,16 @@ class ComposerView extends GetWidget<ComposerController> {
                             margin: ComposerStyle.mobileSubjectMargin,
                             onTapOutside: controller.onTapOutsideSubject,
                           ),
+                          Obx(() {
+                            if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                              return MobileAttachmentComposerWidget(
+                                listFileUploaded: controller.uploadController.listUploadAttachments,
+                                onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
                           Obx(() => Center(
                             child: InsertImageLoadingBarWidget(
                               uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
@@ -201,16 +211,6 @@ class ComposerView extends GetWidget<ComposerController> {
                               onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                             ),
                           )),
-                          Obx(() {
-                            if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                              return MobileAttachmentComposerWidget(
-                                listFileUploaded: controller.uploadController.listUploadAttachments,
-                                onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
                           const SizedBox(height: ComposerStyle.keyboardMaxHeight),
                         ],
                       ),
@@ -331,6 +331,16 @@ class ComposerView extends GetWidget<ComposerController> {
                         margin: ComposerStyle.mobileSubjectMargin,
                         onTapOutside: controller.onTapOutsideSubject,
                       ),
+                      Obx(() {
+                        if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                          return MobileAttachmentComposerWidget(
+                            listFileUploaded: controller.uploadController.listUploadAttachments,
+                            onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
                       Obx(() => Center(
                         child: InsertImageLoadingBarWidget(
                           uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
@@ -347,16 +357,6 @@ class ComposerView extends GetWidget<ComposerController> {
                           onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                         ),
                       )),
-                      Obx(() {
-                        if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                          return MobileAttachmentComposerWidget(
-                            listFileUploaded: controller.uploadController.listUploadAttachments,
-                            onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      })
                     ],
                   ),
                 )
