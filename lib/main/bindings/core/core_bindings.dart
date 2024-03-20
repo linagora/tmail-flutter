@@ -61,7 +61,7 @@ class CoreBindings extends Bindings {
     Get.put(CompressFileUtils());
     Get.put(AppConfigLoader());
     Get.put(FileUtils());
-    Get.put(PrintUtils(Get.find<ImagePaths>(), Get.find<FileUtils>()));
+    Get.put(PrintUtils());
   }
 
   void _bindingIsolate() {

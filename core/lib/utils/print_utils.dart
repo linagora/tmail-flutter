@@ -2,9 +2,7 @@
 import 'dart:async';
 
 import 'package:core/data/model/print_attachment.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -12,23 +10,15 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
 class PrintUtils {
-  final ImagePaths _imagePaths;
-  final FileUtils _fileUtils;
-
-  PrintUtils(this._imagePaths, this._fileUtils);
-
-  Future<Element?> _createUserInformationElement({
+  Element? _createUserInformationElement({
     required String appName,
     required String userName,
-  }) async {
+  }) {
     try {
-      final logoBase64Data = await _fileUtils.convertImageAssetToBase64(_imagePaths.icLogoApp);
-
       return Element.html('''
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tbody>
           <tr height="14px">
-            <td width="200"><img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: logoBase64Data, mimeType: 'image/png')}" width="200" height="40" class="logo" /></td>
             <td align="right" style="color: #777;">
               <b>$userName</b>
             </td>
@@ -228,7 +218,7 @@ class PrintUtils {
     Element messageElement = Element.html('<table width="100%" cellpadding="0" cellspacing="0" border="0" class="message"></table>');
     Element messageBodyElement = Element.html('<tbody></tbody>');
 
-    Element? userInfoElement = await _createUserInformationElement(
+    Element? userInfoElement = _createUserInformationElement(
       appName: appName,
       userName: userName);
 
