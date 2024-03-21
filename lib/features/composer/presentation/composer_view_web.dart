@@ -248,7 +248,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onLocalFileDropZoneListener: (details) =>
                                       controller.onLocalFileDropZoneListener(
                                         context: context,
-                                        details: details
+                                        details: details,
+                                        maxWidth: constraintsEditor.maxWidth,
                                       ),
                                   )
                                 ),
@@ -503,7 +504,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                   onLocalFileDropZoneListener: (details) =>
                                     controller.onLocalFileDropZoneListener(
                                       context: context,
-                                      details: details
+                                      details: details,
+                                      maxWidth: constraintsEditor.maxWidth,
                                     ),
                                 )
                               ),
@@ -731,7 +733,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onLocalFileDropZoneListener: (details) =>
                                       controller.onLocalFileDropZoneListener(
                                         context: context,
-                                        details: details
+                                        details: details,
+                                        maxWidth: constraintsEditor.maxWidth,
                                       ),
                                   )
                                 ),

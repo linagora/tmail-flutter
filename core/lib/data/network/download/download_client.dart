@@ -63,7 +63,8 @@ class DownloadClient {
           'bytesData': bytesData,
           'mimeType': 'image/$fileExtension',
           'cid': cid,
-          'fileName': fileName
+          'fileName': fileName,
+          'maxWidth': maxWidth
         });
 
         return base64Uri;
@@ -77,7 +78,8 @@ class DownloadClient {
             'bytesData': bytesDataCompressed,
             'mimeType': 'image/$fileExtension',
             'cid': cid,
-            'fileName': fileName
+            'fileName': fileName,
+            'maxWidth': maxWidth
           });
 
           return base64Uri;
@@ -86,7 +88,8 @@ class DownloadClient {
             'bytesData': bytesData,
             'mimeType': 'image/$fileExtension',
             'cid': cid,
-            'fileName': fileName
+            'fileName': fileName,
+            'maxWidth': maxWidth
           });
 
           return base64Uri;
@@ -103,11 +106,14 @@ class DownloadClient {
     var mimeType = entryParam['mimeType'];
     final cid = entryParam['cid'];
     var fileName = entryParam['fileName'];
+    var maxWidth = entryParam['maxWidth'] != null
+      ? '${entryParam['maxWidth']}px'
+      : '100%';
     final base64Data = base64Encode(bytesData);
     if (fileName.contains('.')) {
       fileName = fileName.split('.').first;
     }
-    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="$fileName" id="cid:$cid" style="max-width: 100%" />';
+    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="$fileName" id="cid:$cid" style="max-width: $maxWidth;" />';
     return base64Uri;
   }
 }

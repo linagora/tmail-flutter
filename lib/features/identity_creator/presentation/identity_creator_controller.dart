@@ -546,7 +546,7 @@ class IdentityCreatorController extends BaseController {
       }
     } else {
       if (PlatformInfo.isWeb) {
-        richTextWebController.insertImageAsBase64(platformFile: file);
+        richTextWebController.insertImageAsBase64(platformFile: file, maxWidth: maxWidth);
       } else if (PlatformInfo.isMobile) {
         richTextMobileTabletController.insertImageData(platformFile: file, maxWidth: maxWidth);
         if (file.path != null) {
