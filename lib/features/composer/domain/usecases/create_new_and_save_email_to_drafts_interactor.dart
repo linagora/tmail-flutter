@@ -72,13 +72,6 @@ class CreateNewAndSaveEmailToDraftsInteractor {
             cancelToken: cancelToken
           );
 
-          await _deleteOldDraftsEmail(
-            session: createEmailRequest.session,
-            accountId: createEmailRequest.accountId,
-            draftEmailId: createEmailRequest.draftsEmailId!,
-            cancelToken: cancelToken
-          );
-
           yield dartz.Right<Failure, Success>(
             UpdateEmailDraftsSuccess(
               emailDraftSaved.id!,
@@ -135,24 +128,6 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     } catch (e) {
       logError('CreateNewAndSaveEmailToDraftsInteractor::_getStoredCurrentState: Exception: $e');
       return null;
-    }
-  }
-
-  Future<void> _deleteOldDraftsEmail({
-    required Session session,
-    required AccountId accountId,
-    required EmailId draftEmailId,
-    CancelToken? cancelToken
-  }) async {
-    try {
-      await _emailRepository.removeEmailDrafts(
-        session,
-        accountId,
-        draftEmailId,
-        cancelToken: cancelToken
-      );
-    } catch (e) {
-      logError('CreateNewAndSaveEmailToDraftsInteractor::_deleteOldDraftsEmail: Exception: $e');
     }
   }
 }

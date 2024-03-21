@@ -541,11 +541,14 @@ class EmailAPI with HandleSetErrorMixin {
         setEmailInvocation.methodCallId,
         SetEmailResponse.deserialize);
 
-    return Future.sync(() async {
-      return setEmailResponse?.destroyed?.contains(emailId.id) == true;
-    }).catchError((error) {
-      throw error;
-    });
+    final isEmailDestroyed = setEmailResponse?.destroyed?.contains(emailId.id) ?? false;
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (isEmailDestroyed && mapErrors.isEmpty) {
+      return isEmailDestroyed;
+    } else {
+      throw SetMethodException(mapErrors);
+    }
   }
 
   Future<Email> updateEmailDrafts(
@@ -555,37 +558,25 @@ class EmailAPI with HandleSetErrorMixin {
     EmailId oldEmailId,
     {CancelToken? cancelToken}
   ) async {
-    final idCreateMethod = Id(_uuid.v1());
-    final setEmailMethod = SetEmailMethod(accountId)
-      ..addCreate(idCreateMethod, newEmail)
-      ..addDestroy({oldEmailId.id});
-
-    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
-
-    final capabilities = setEmailMethod.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
-
-    final response = await (requestBuilder
-        ..usings(capabilities))
-      .build()
-      .execute(cancelToken: cancelToken);
-
-    final setEmailResponse = response.parse<SetEmailResponse>(
-      setEmailInvocation.methodCallId,
-      SetEmailResponse.deserialize
+    final emailCreated = await saveEmailAsDrafts(
+      session,
+      accountId,
+      newEmail,
+      cancelToken: cancelToken
     );
 
-    final emailUpdated = setEmailResponse?.created?[idCreateMethod];
-    final isEmailDeleted = setEmailResponse?.destroyed?.contains(oldEmailId.id);
-    final mapErrors = handleSetResponse([setEmailResponse]);
-
-    if (emailUpdated != null && isEmailDeleted == true && mapErrors.isEmpty) {
-      return emailUpdated;
-    } else {
-      throw SetMethodException(mapErrors);
+    try {
+      await removeEmailDrafts(
+        session,
+        accountId,
+        oldEmailId,
+        cancelToken: cancelToken
+      );
+    } catch (e) {
+      logError('EmailAPI::updateEmailDrafts: Exception = $e');
     }
+
+    return emailCreated;
   }
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(
