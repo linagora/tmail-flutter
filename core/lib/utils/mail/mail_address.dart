@@ -25,19 +25,15 @@ class MailAddress with EquatableMixin {
 
   MailAddress({required this.localPart, required this.domain});
 
-  String asString() {
-    return '$localPart@${domain.asString()}';
-  }
-
-  String asPrettyString() {
-    return '<${asString()}>';
-  }
-
-  static MailAddress validate(String address) {
+  factory MailAddress.validateAddress(String address) {
+    log('MailAddress::validate: Address = $address');
     String localPart;
     Domain domain;
 
     address = address.trim();
+    if (address.isEmpty) {
+      throw AddressException('Addresses should not be empty');
+    }
     int pos = 0;
 
     // Test if mail address has source routing information (RFC-821) and get rid of it!!
@@ -96,7 +92,7 @@ class MailAddress with EquatableMixin {
         throw AddressException('No domain found at position ${pos + 1} in "$address"');
       }
     } catch (e) {
-      log('MailAddress::validate: Exception = $e');
+      logError('MailAddress::validate: Exception = $e');
       if (e is AddressException) {
         rethrow;
       } else {
@@ -114,9 +110,36 @@ class MailAddress with EquatableMixin {
 
     domain = _createDomain(domainSB.toString());
 
-    log('MailAddress::validate: localPart = $localPart | domain = $domain');
-
     return MailAddress(localPart: localPart, domain: domain);
+  }
+
+  factory MailAddress.validateLocalPartAndDomain({required String localPart, required dynamic domain}) {
+    if (domain is Domain) {
+      return MailAddress.validateAddress('$localPart@${domain.name()}');
+    } else {
+      return MailAddress.validateAddress('$localPart@$domain');
+    }
+  }
+
+  String asString() {
+    return '$localPart@${domain.asString()}';
+  }
+
+  String asPrettyString() {
+    return '<${asString()}>';
+  }
+
+  Domain getDomain() {
+    return domain;
+  }
+
+  String getLocalPart() {
+    return localPart;
+  }
+
+  @override
+  String toString() {
+    return '$localPart@${domain.asString()}';
   }
 
   static bool _haveDoubleDot(String localPart) {
