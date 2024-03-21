@@ -78,6 +78,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_da
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -180,6 +181,7 @@ class MailboxDashBoardController extends ReloadableController {
   final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
   final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
+  final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -257,6 +259,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._unsubscribeEmailInteractor,
     this._restoreDeletedMessageInteractor,
     this._getRestoredDeletedMessageInteractor,
+    this._removeComposerCacheOnWebInteractor,
   );
 
   @override
@@ -1248,7 +1251,7 @@ class MailboxDashBoardController extends ReloadableController {
     composerOverlayState.value = ComposerOverlayState.active;
   }
 
-  void closeComposerOverlay({dynamic result}) {
+  void closeComposerOverlay({dynamic result}) async {
     composerArguments = null;
     ComposerBindings().dispose();
     composerOverlayState.value = ComposerOverlayState.inActive;
@@ -1259,6 +1262,8 @@ class MailboxDashBoardController extends ReloadableController {
         result is UpdateEmailDraftsSuccess) {
       consumeState(Stream.value(Right<Failure, Success>(result)));
     }
+
+    await _removeComposerCacheOnWeb();
   }
 
   void dispatchRoute(DashboardRoutes route) {
@@ -1394,6 +1399,8 @@ class MailboxDashBoardController extends ReloadableController {
           result is UpdateEmailDraftsSuccess) {
         consumeState(Stream.value(Right<Failure, Success>(result)));
       }
+
+      await _removeComposerCacheOnWeb();
     }
   }
 
@@ -2457,7 +2464,11 @@ class MailboxDashBoardController extends ReloadableController {
     isRecoveringDeletedMessage.value = true;
   }
 
-  String get userEmail => userProfile.value?.email ?? '';
+  String get userEmail => sessionCurrent?.username.value ?? '';
+
+  Future<void> _removeComposerCacheOnWeb() async {
+    await _removeComposerCacheOnWebInteractor.execute();
+  }
 
   @override
   void onClose() {
