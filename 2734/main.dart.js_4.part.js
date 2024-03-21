@@ -215,7 +215,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = padding == null ? C.EdgeInsets_8_8_8_8 : padding,
         t2 = A.ColorNullableExtension_asFilter(iconColor),
-        iconWidget = new A.Padding(t1, A.SvgPicture$asset(icon, C.Alignment_0_0, t2, C.BoxFit_0, iconSize, _null, iconSize), _null);
+        iconWidget = new A.Padding(t1, A.SvgPicture$asset(icon, C.Alignment_0_0, t2, C.BoxFit_0, iconSize, _null, _null, iconSize), _null);
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, tooltip != null ? A.Tooltip$(iconWidget, tooltip) : iconWidget, C.CircleBorder_Umb, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onTap, _null, onTapDown, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
     VacationResponseExtension_get_vacationResponderIsReady(_this) {
@@ -370,7 +370,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.PopupMenuItemWidget.prototype = {
     build$1(context) {
       var _null = null,
-        t1 = A._setArrayType([A.SvgPicture$asset(this.icon, C.Alignment_0_0, A.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, 20), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY11, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
+        t1 = A._setArrayType([A.SvgPicture$asset(this.icon, C.Alignment_0_0, A.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, _null, 20), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY11, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
       return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null);
     }
   };
@@ -461,7 +461,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.PopupMenuWidgetMixin.prototype = {
     popupItem$5$colorIcon$onCallbackAction$styleName(iconAction, nameAction, colorIcon, onCallbackAction, styleName) {
       var _null = null,
-        t1 = A.SvgPicture$asset(iconAction, C.Alignment_0_0, A.ColorNullableExtension_asFilter(colorIcon), C.BoxFit_0, 20, _null, 20);
+        t1 = A.SvgPicture$asset(iconAction, C.Alignment_0_0, A.ColorNullableExtension_asFilter(colorIcon), C.BoxFit_0, 20, _null, _null, 20);
       return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(nameAction, _null, _null, _null, _null, _null, _null, _null, _null, styleName, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onCallbackAction, _null, _null, _null, _null, _null, _null, _null);
     }
   };
@@ -812,14 +812,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 80
+    $signature: 82
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 80
+    $signature: 82
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -938,5 +938,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "IFid027frAKg8npjEH3TEjZSV3Y=");
+})($__dart_deferred_initializers__, "+q6iRgvEbe5RXpLUOIdKt1GoWWo=");
 ;
