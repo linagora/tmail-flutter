@@ -82,7 +82,7 @@ class EmailUtils {
 
   static bool isEmailAddressValid(String address) {
     try {
-      return GetUtils.isEmail(address) && MailAddress.validate(address).asString().isNotEmpty;
+      return GetUtils.isEmail(address) && MailAddress.validateAddress(address).asString().isNotEmpty;
     } catch(e) {
       logError('EmailUtils::isEmailAddressValid: Exception = $e');
       return false;
