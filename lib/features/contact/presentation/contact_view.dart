@@ -62,8 +62,6 @@ class ContactView extends GetWidget<ContactController> {
                               searchInputController: controller.textInputSearchController,
                               hasBackButton: false,
                               hasSearchButton: true,
-                              padding: EdgeInsets.zero,
-                              heightSearchBar: 44,
                               margin: ContactUtils.getPaddingSearchInputForm(context, controller.responsiveUtils),
                               decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -80,10 +78,11 @@ class ContactView extends GetWidget<ContactController> {
                             ),
                             if (PlatformInfo.isWeb)
                               Obx(() {
-                                if (controller.session?.username.value.isNotEmpty == true) {
+                                final username = controller.session.value?.username.value ?? '';
+                                if (username.isNotEmpty) {
                                   final userEmailAddress = EmailAddress(
                                     AppLocalizations.of(context).me,
-                                    controller.session?.username.value);
+                                    username);
                                   final fromMeSuggestionEmailAddress = SuggestionEmailAddress(userEmailAddress, state: SuggestionEmailState.valid);
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 4),
