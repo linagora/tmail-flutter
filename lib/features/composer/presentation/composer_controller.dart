@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart' as web_html_editor;
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -47,7 +46,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_ca
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/file_upload_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
@@ -1715,58 +1713,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     Navigator.maybePop(context);
     FocusScope.of(context).unfocus();
     onEditorFocusChange(true);
-  }
-
-  void handleImageUploadSuccess (
-    BuildContext context,
-    List<web_html_editor.FileUpload> listFileUpload
-  ) async {
-    log('ComposerController::handleImageUploadSuccess: COUNT_FILE_UPLOADED = ${listFileUpload.length}');
-    List<FileInfo> listFileInfo = [];
-
-    await Future.forEach(listFileUpload, (fileUpload) async {
-      if (fileUpload.base64?.isNotEmpty == true) {
-        final fileInfo = await fileUpload.toFileInfo();
-        if (fileInfo != null) {
-          if (fileInfo.mimeType.startsWith(MediaTypeExtension.imageType) == true) {
-            listFileInfo.add(fileInfo.withInline());
-          } else {
-            listFileInfo.add(fileInfo);
-          }
-        }
-      }
-    });
-
-    if (listFileInfo.isEmpty && context.mounted) {
-      appToast.showToastErrorMessage(
-        context,
-        AppLocalizations.of(context).can_not_upload_this_file_as_attachments
-      );
-      return;
-    }
-
-    final listAttachments = listFileInfo
-      .where((fileInfo) => fileInfo.isInline != true)
-      .toList();
-
-    uploadController.validateTotalSizeAttachmentsBeforeUpload(
-      totalSizePreparedFiles: listFileInfo.totalSize,
-      totalSizePreparedFilesWithDispositionAttachment: listAttachments.totalSize,
-      onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: listFileInfo)
-    );
-  }
-
-  void handleImageUploadFailure({
-    required BuildContext context,
-    required web_html_editor.UploadError uploadError,
-    List<web_html_editor.FileUpload>? listFileUpload,
-    String? base64Str,
-  }) {
-    logError('ComposerController::handleImageUploadFailure: COUNT_FILE_FAILED = ${listFileUpload?.length} | ERROR = $uploadError');
-    appToast.showToastErrorMessage(
-      context,
-      '${AppLocalizations.of(context).can_not_upload_this_file_as_attachments}. (${uploadError.name})'
-    );
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {
