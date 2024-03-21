@@ -178,7 +178,10 @@ void main() {
       'when attachment mime type is pdf',
       () async {
         // arrange
-        final testAttachment = Attachment(type: MediaType('application', 'pdf'));
+        const attachmentName = 'test_name.pdf';
+        final testAttachment = Attachment(
+          type: MediaType('application', 'pdf'),
+          name: attachmentName);
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
         when(viewAttachmentForWebInteractor.execute(
           testDownloadTaskId,
@@ -201,10 +204,11 @@ void main() {
         await untilCalled(mailboxDashboardController.deleteDownloadTask(any));
         verify(mailboxDashboardController.deleteDownloadTask(testDownloadTaskId))
             .called(1);
-        await untilCalled(downloadManager.openDownloadedFileWeb(any, any));
+        await untilCalled(downloadManager.openDownloadedFileWeb(any, any, any));
         verify(downloadManager.openDownloadedFileWeb(
           testBytes,
           Constant.pdfMimeType,
+          attachmentName,
         )).called(1);
       },
     );

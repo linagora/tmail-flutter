@@ -828,7 +828,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     _downloadManager.openDownloadedFileWeb(
         success.bytes,
-        success.attachment.type?.mimeType);
+        success.attachment.type?.mimeType,
+        success.attachment.name);
   }
 
   void _downloadAttachmentForWebFailureAction(DownloadAttachmentForWebFailure failure) {
