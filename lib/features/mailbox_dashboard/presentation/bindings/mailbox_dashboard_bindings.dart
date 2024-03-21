@@ -171,6 +171,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<UnsubscribeEmailInteractor>(),
       Get.find<RestoredDeletedMessageInteractor>(),
       Get.find<GetRestoredDeletedMessageInterator>(),
+      Get.find<RemoveComposerCacheOnWebInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -275,6 +276,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmailRepository>())
     );
     Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(
         Get.find<EmailRepository>(),
