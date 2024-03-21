@@ -12,7 +12,7 @@ import 'package:model/extensions/media_type_nullable_extension.dart';
 
 class ComposerCache with EquatableMixin {
 
-  final EmailId id;
+  final EmailId? id;
   final Map<MailboxId, bool>? mailboxIds;
   final String? subject;
   final Set<EmailAddress>? from;
@@ -24,24 +24,23 @@ class ComposerCache with EquatableMixin {
   final Set<EmailBodyPart>? htmlBody;
   final Map<PartId, EmailBodyValue>? bodyValues;
 
-  ComposerCache(
-      this.id,
-      {
-        this.mailboxIds,
-        this.subject,
-        this.from,
-        this.to,
-        this.cc,
-        this.bcc,
-        this.replyTo,
-        this.textBody,
-        this.htmlBody,
-        this.bodyValues,
-      });
+  ComposerCache({
+    this.id,
+    this.mailboxIds,
+    this.subject,
+    this.from,
+    this.to,
+    this.cc,
+    this.bcc,
+    this.replyTo,
+    this.textBody,
+    this.htmlBody,
+    this.bodyValues,
+  });
 
   factory ComposerCache.fromJson(Map<String, dynamic> json) {
     return ComposerCache(
-      EmailId(Id(json['id'])),
+      id: json['id'] != null ? EmailId(Id(json['id'])) : null,
       mailboxIds: (json['mailboxIds'] as Map<String, dynamic>?)?.map((key, value) => EmailMailboxIdsConverter().parseEntry(key, value)),
       subject: json['subject'] as String?,
       from: (json['from'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
