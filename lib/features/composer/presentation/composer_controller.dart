@@ -1580,7 +1580,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     if (responsiveUtils.isMobile(context)) {
       maxWithEditor = maxWith - 40;
     } else {
-      maxWithEditor = maxWith - 120;
+      maxWithEditor = maxWith - 70;
     }
 
     consumeState(_localImagePickerInteractor.execute());
@@ -1993,8 +1993,15 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   void onLocalFileDropZoneListener({
     required BuildContext context,
-    required DropDoneDetails details
+    required DropDoneDetails details,
+    required double maxWidth
   }) async {
+    if (responsiveUtils.isMobile(context)) {
+      maxWithEditor = maxWidth - 40;
+    } else {
+      maxWithEditor = maxWidth - 70;
+    }
+
     final listFileInfo = await onDragDone(context: context, details: details);
 
     if (listFileInfo.isEmpty && context.mounted) {
