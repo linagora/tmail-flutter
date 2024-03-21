@@ -109,17 +109,25 @@ class DownloadManager {
     }
   }
 
-  Future<void> openDownloadedFileWeb(Uint8List bytes, String? mimeType) async {
+  Future<void> openDownloadedFileWeb(
+    Uint8List bytes,
+    String? mimeType,
+    String? fileName
+  ) async {
     try {
+      fileName ??= 'unknown.pdf';
       final deviceInfo = await _deviceInfoPlugin.deviceInfo;
-      if ('${deviceInfo.data['browserName']}' != 'BrowserName.chrome'
-          || mimeType != Constant.pdfMimeType) {
+      if (mimeType != Constant.pdfMimeType 
+          || '${deviceInfo.data['browserName']}' == 'BrowserName.firefox') {
         final blob = html.Blob([bytes], mimeType);
-        final url = html.Url.createObjectUrlFromBlob(blob);
+        final file = html.File([blob], fileName, {'type': mimeType});
+        final url = html.Url.createObjectUrl(file);
         html.window.open(url, '_blank');
         html.Url.revokeObjectUrl(url);
+      } else if ('${deviceInfo.data['browserName']}' == 'BrowserName.chrome') {
+        HtmlUtils.openNewTabHtmlDocument(HtmlUtils.chromePdfViewer(bytes, fileName));
       } else {
-        HtmlUtils.openNewTabHtmlDocument(HtmlUtils.pdfViewer(bytes));
+        HtmlUtils.openNewTabHtmlDocument(HtmlUtils.safariPdfViewer(bytes, fileName));
       }
     } catch (exception) {
       logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
