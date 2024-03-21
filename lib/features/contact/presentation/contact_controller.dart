@@ -29,6 +29,7 @@ class ContactController extends BaseController {
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
   final searchQuery = SearchQuery.initial().obs;
+  final session = Rxn<Session>();
   final listContactSearched = RxList<EmailAddress>();
   final scrollListViewController = ScrollController();
 
@@ -38,7 +39,6 @@ class ContactController extends BaseController {
 
   final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 300), initialValue: '');
   AccountId? _accountId;
-  Session? session;
 
   ContactArguments? arguments;
   EmailAddress? contactSelected;
@@ -63,14 +63,14 @@ class ContactController extends BaseController {
     textInputSearchFocus.requestFocus();
     if (arguments != null) {
       _accountId = arguments!.accountId;
-      session = arguments!.session;
+      session.value = arguments!.session;
       final listContactSelected = arguments!.listContactSelected;
       log('ContactController::onReady(): arguments: $arguments');
       log('ContactController::onReady(): listContactSelected: $listContactSelected');
       if (listContactSelected.isNotEmpty) {
         contactSelected = EmailAddress(listContactSelected.first, listContactSelected.first);
       }
-      injectAutoCompleteBindings(session, _accountId);
+      injectAutoCompleteBindings(session.value, _accountId);
     }
     if (PlatformInfo.isMobile) {
       Future.delayed(
