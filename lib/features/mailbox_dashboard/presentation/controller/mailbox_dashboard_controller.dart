@@ -1391,7 +1391,12 @@ class MailboxDashBoardController extends ReloadableController {
         openComposerOverlay(arguments);
       }
     } else {
+      BackButtonInterceptor.removeByName(AppRoutes.dashboard);
+
       final result = await push(AppRoutes.composer, arguments: arguments);
+
+      BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
+
       if (result is SendingEmailArguments) {
         handleSendEmailAction(result);
       } else if (result is SendEmailSuccess ||
