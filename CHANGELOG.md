@@ -1,3 +1,10 @@
+## [0.11.3-patch4-10] - 2024-03-22
+### Fixed
+- #2730 Fallback value for Always read receipt settings is false
+- #2628 Disable view PDF file in mobile
+- #2726 Remove logo in printed email
+- #2737 View PDF in js to support download with name
+
 ## [0.11.3-patch4-9] - 2024-03-15
 ### Added
 - Always settings for read receipt request
