@@ -392,7 +392,10 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     super.handleExceptionAction(failure: failure, exception: exception);
-    if (failure is SendEmailFailure && exception is NoNetworkError) {
+    if (failure is SendEmailFailure &&
+        exception is NoNetworkError &&
+        PlatformInfo.isMobile
+    ) {
       log('MailboxDashBoardController::handleExceptionAction(): $failure');
       _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     }
@@ -1261,6 +1264,8 @@ class MailboxDashBoardController extends ReloadableController {
         result is SaveEmailAsDraftsSuccess ||
         result is UpdateEmailDraftsSuccess) {
       consumeState(Stream.value(Right<Failure, Success>(result)));
+    } else if (validateSendingEmailFailedWhenNetworkIsLostOnMobile(result)) {
+      _storeSendingEmailInCaseOfSendingFailureInMobile(result);
     }
 
     await _removeComposerCacheOnWeb();
@@ -1403,6 +1408,8 @@ class MailboxDashBoardController extends ReloadableController {
           result is SaveEmailAsDraftsSuccess ||
           result is UpdateEmailDraftsSuccess) {
         consumeState(Stream.value(Right<Failure, Success>(result)));
+      } else if (validateSendingEmailFailedWhenNetworkIsLostOnMobile(result)) {
+        _storeSendingEmailInCaseOfSendingFailureInMobile(result);
       }
 
       await _removeComposerCacheOnWeb();
@@ -1813,7 +1820,9 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSendEmailFailure(SendEmailFailure failure) {
     logError('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
-    _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
+    if (PlatformInfo.isMobile) {
+      _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
+    }
     if (currentContext == null) {
       clearState();
       return;
@@ -1943,8 +1952,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _storeSendingEmailInCaseOfSendingFailureInMobile(SendEmailFailure failure) {
-    if (PlatformInfo.isMobile &&
-        failure.session != null &&
+    if (failure.session != null &&
         failure.accountId != null &&
         failure.emailRequest != null
     ) {
@@ -2471,6 +2479,12 @@ class MailboxDashBoardController extends ReloadableController {
 
   Future<void> _removeComposerCacheOnWeb() async {
     await _removeComposerCacheOnWebInteractor.execute();
+  }
+
+  bool validateSendingEmailFailedWhenNetworkIsLostOnMobile(FeatureFailure failure) {
+    return failure is SendEmailFailure &&
+      failure.exception is NoNetworkError &&
+      PlatformInfo.isMobile;
   }
 
   @override
