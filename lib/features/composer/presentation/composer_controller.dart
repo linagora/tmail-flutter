@@ -800,7 +800,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       cancelToken: cancelToken
     );
     log('ComposerController::_handleSendMessages: resultState = $resultState');
-    if (resultState is SendEmailSuccess) {
+    if (resultState is SendEmailSuccess || mailboxDashBoardController.validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
       _sendButtonState = ButtonState.enabled;
       _closeComposerAction(result: resultState);
     } else if (resultState is SendEmailFailure && resultState.exception is SendingEmailCanceledException) {
