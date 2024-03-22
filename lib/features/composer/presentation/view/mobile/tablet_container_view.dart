@@ -32,7 +32,7 @@ class TabletContainerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) => !didPop ? onCloseViewAction : null,
+      onPopInvoked: (didPop) => !didPop ? onCloseViewAction.call() : null,
       canPop: false,
       child: GestureDetector(
         onTap: onClearFocusAction,
