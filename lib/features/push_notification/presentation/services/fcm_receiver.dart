@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:universal_html/html.dart' as html;
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
@@ -29,6 +30,9 @@ class FcmReceiver {
 
     _onForegroundMessage();
     _onBackgroundMessage();
+    if (PlatformInfo.isWeb) {
+      _onMessageBroadcastChannel();
+    }
 
     if (PlatformInfo.isIOS) {
       notificationInteractionChannel.setMethodCallHandler((call) async {
@@ -47,6 +51,11 @@ class FcmReceiver {
 
   void _onBackgroundMessage() {
     FirebaseMessaging.onBackgroundMessage(handleFirebaseBackgroundMessage);
+  }
+
+  void _onMessageBroadcastChannel() {
+    final broadcast = html.BroadcastChannel('background-message');
+    broadcast.onMessage.listen(FcmService.instance.handleMessageEventBroadcastChannel);
   }
 
   Future<String?> _getInitialToken() async {
