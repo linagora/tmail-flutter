@@ -819,39 +819,44 @@ class ComposerController extends BaseController with DragDropFileMixin {
     required String emailContent,
     CancelToken? cancelToken
   }) {
-    return Get.dialog(
-      PointerInterceptor(
-        child: SendingMessageDialogView(
-          createEmailRequest: CreateEmailRequest(
-            session: mailboxDashBoardController.sessionCurrent!,
-            accountId: mailboxDashBoardController.accountId.value!,
-            emailActionType: composerArguments.value!.emailActionType,
-            subject: subjectEmail.value ?? '',
-            emailContent: emailContent,
-            fromSender: composerArguments.value!.presentationEmail?.from ?? {},
-            toRecipients: listToEmailAddress.toSet(),
-            ccRecipients: listCcEmailAddress.toSet(),
-            bccRecipients: listBccEmailAddress.toSet(),
-            isRequestReadReceipt: hasRequestReadReceipt.value,
-            identity: identitySelected.value,
-            attachments: uploadController.attachmentsUploaded,
-            inlineAttachments: uploadController.mapInlineAttachments,
-            outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
-            sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-            draftsEmailId: composerArguments.value!.emailActionType == EmailActionType.editDraft
-                ? composerArguments.value!.presentationEmail?.id
-                : null,
-            answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
-            unsubscribeEmailId: composerArguments.value!.previousEmailId,
-            messageId: composerArguments.value!.messageId,
-            references: composerArguments.value!.references,
-            emailSendingQueue: composerArguments.value!.sendingEmail
-          ),
-          createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
-          onCancelSendingEmailAction: _handleCancelSendingMessage,
-          cancelToken: cancelToken,
+    final childWidget = PointerInterceptor(
+      child: SendingMessageDialogView(
+        createEmailRequest: CreateEmailRequest(
+          session: mailboxDashBoardController.sessionCurrent!,
+          accountId: mailboxDashBoardController.accountId.value!,
+          emailActionType: composerArguments.value!.emailActionType,
+          subject: subjectEmail.value ?? '',
+          emailContent: emailContent,
+          fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+          toRecipients: listToEmailAddress.toSet(),
+          ccRecipients: listCcEmailAddress.toSet(),
+          bccRecipients: listBccEmailAddress.toSet(),
+          isRequestReadReceipt: hasRequestReadReceipt.value,
+          identity: identitySelected.value,
+          attachments: uploadController.attachmentsUploaded,
+          inlineAttachments: uploadController.mapInlineAttachments,
+          outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
+          sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+          draftsEmailId: composerArguments.value!.emailActionType == EmailActionType.editDraft
+            ? composerArguments.value!.presentationEmail?.id
+            : null,
+          answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
+          unsubscribeEmailId: composerArguments.value!.previousEmailId,
+          messageId: composerArguments.value!.messageId,
+          references: composerArguments.value!.references,
+          emailSendingQueue: composerArguments.value!.sendingEmail
         ),
+        createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
+        onCancelSendingEmailAction: _handleCancelSendingMessage,
+        cancelToken: cancelToken,
       ),
+    );
+
+    return Get.dialog(
+      PlatformInfo.isMobile
+        ? PopScope(canPop: false, child: childWidget)
+        : childWidget,
+      barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
   }
@@ -2028,37 +2033,41 @@ class ComposerController extends BaseController with DragDropFileMixin {
     EmailId? draftEmailId,
     CancelToken? cancelToken,
   }) {
-    return Get.dialog(
-      PointerInterceptor(
-        child: SavingMessageDialogView(
-          createEmailRequest: CreateEmailRequest(
-            session: mailboxDashBoardController.sessionCurrent!,
-            accountId: mailboxDashBoardController.accountId.value!,
-            emailActionType: composerArguments.value!.emailActionType,
-            subject: subjectEmail.value ?? '',
-            emailContent: emailContent,
-            fromSender: composerArguments.value!.presentationEmail?.from ?? {},
-            toRecipients: listToEmailAddress.toSet(),
-            ccRecipients: listCcEmailAddress.toSet(),
-            bccRecipients: listBccEmailAddress.toSet(),
-            isRequestReadReceipt: hasRequestReadReceipt.value,
-            identity: identitySelected.value,
-            attachments: uploadController.attachmentsUploaded,
-            inlineAttachments: uploadController.mapInlineAttachments,
-            sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-            draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
-            draftsEmailId: draftEmailId,
-            answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
-            unsubscribeEmailId: composerArguments.value!.previousEmailId,
-            messageId: composerArguments.value!.messageId,
-            references: composerArguments.value!.references,
-            emailSendingQueue: composerArguments.value!.sendingEmail
-          ),
-          createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
-          onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,
-          cancelToken: cancelToken,
+    final childWidget = PointerInterceptor(
+      child: SavingMessageDialogView(
+        createEmailRequest: CreateEmailRequest(
+          session: mailboxDashBoardController.sessionCurrent!,
+          accountId: mailboxDashBoardController.accountId.value!,
+          emailActionType: composerArguments.value!.emailActionType,
+          subject: subjectEmail.value ?? '',
+          emailContent: emailContent,
+          fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+          toRecipients: listToEmailAddress.toSet(),
+          ccRecipients: listCcEmailAddress.toSet(),
+          bccRecipients: listBccEmailAddress.toSet(),
+          isRequestReadReceipt: hasRequestReadReceipt.value,
+          identity: identitySelected.value,
+          attachments: uploadController.attachmentsUploaded,
+          inlineAttachments: uploadController.mapInlineAttachments,
+          sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+          draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
+          draftsEmailId: draftEmailId,
+          answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
+          unsubscribeEmailId: composerArguments.value!.previousEmailId,
+          messageId: composerArguments.value!.messageId,
+          references: composerArguments.value!.references,
+          emailSendingQueue: composerArguments.value!.sendingEmail
         ),
+        createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
+        onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,
+        cancelToken: cancelToken,
       ),
+    );
+    return Get.dialog(
+      PlatformInfo.isMobile
+        ? PopScope(canPop: false, child: childWidget)
+        : childWidget,
+      barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
   }
