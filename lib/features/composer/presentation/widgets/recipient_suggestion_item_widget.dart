@@ -3,7 +3,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
@@ -17,16 +16,16 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
 
   final SuggestionEmailState suggestionState;
   final EmailAddress emailAddress;
+  final ImagePaths imagePaths;
   final String? suggestionValid;
   final bool highlight;
   final OnSelectedRecipientSuggestionAction? onSelectedAction;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  RecipientSuggestionItemWidget({
+  const RecipientSuggestionItemWidget({
     super.key,
     required this.suggestionState,
     required this.emailAddress,
+    required this.imagePaths,
     this.suggestionValid,
     this.highlight = false,
     this.onSelectedAction,
@@ -61,7 +60,7 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
                 )
               : null,
             trailing: SvgPicture.asset(
-              _imagePaths.icFilterSelected,
+              imagePaths.icFilterSelected,
               width: RecipientSuggestionItemWidgetStyle.selectedIconSize,
               height: RecipientSuggestionItemWidgetStyle.selectedIconSize,
               fit: BoxFit.fill
