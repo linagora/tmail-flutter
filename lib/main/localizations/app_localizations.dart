@@ -3837,4 +3837,11 @@ class AppLocalizations {
       'Always request read receipts with outgoing messages',
       name: 'emailReadReceiptsToggleDescription');
   }
+
+  String get selectAllMessagesOfThisPage {
+    return Intl.message(
+      'Select all messages of this page',
+      name: 'selectAllMessagesOfThisPage',
+    );
+  }
 }

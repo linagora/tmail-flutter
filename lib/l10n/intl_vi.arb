@@ -3875,5 +3875,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "selectAllMessagesOfThisPage": "Chọn tất cả tin nhắn của trang này",
+  "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

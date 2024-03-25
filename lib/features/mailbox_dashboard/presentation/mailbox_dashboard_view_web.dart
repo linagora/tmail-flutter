@@ -396,14 +396,34 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         );
       }),
       const SizedBox(width: 16),
-      TMailButtonWidget(
-        key: const Key('select_all_emails_button'),
-        text: AppLocalizations.of(context).select_all,
-        icon: controller.imagePaths.icSelectAll,
-        borderRadius: 10,
-        iconSize: 16,
-        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
-        onTapActionCallback: controller.selectAllEmailAction,
+      Tooltip(
+        message: AppLocalizations.of(context).selectAllMessagesOfThisPage,
+        child: ElevatedButton.icon(
+          onPressed: controller.selectAllEmailAction,
+          icon: SvgPicture.asset(
+            controller.imagePaths.icSelectAll,
+            width: 16,
+            height: 16,
+            fit: BoxFit.fill,
+          ),
+          label: Text(
+            AppLocalizations.of(context).selectAllMessagesOfThisPage,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColor.colorButtonHeaderThread,
+            shadowColor: Colors.transparent,
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            elevation: 0.0,
+            foregroundColor: AppColor.colorTextButtonHeaderThread,
+            maximumSize: const Size.fromWidth(250),
+            textStyle: const TextStyle(fontSize: 12),
+          ),
+        ),
       ),
       if (controller.isAbleMarkAllAsRead())
         Padding(

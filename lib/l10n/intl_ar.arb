@@ -3048,5 +3048,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "selectAllMessagesOfThisPage": "اختر كافة رسائل هذه الصفحة",
+  "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
