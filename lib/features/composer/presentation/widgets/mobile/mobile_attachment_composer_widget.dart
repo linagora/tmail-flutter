@@ -60,25 +60,70 @@ class _MobileAttachmentComposerWidgetState extends State<MobileAttachmentCompose
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_responsiveUtils.isLandscapeMobile(context))
-            SizedBox(
-              width: _responsiveUtils.getSizeScreenWidth(context) * 0.7,
-              child: GridView.builder(
-                primary: false,
-                shrinkWrap: true,
-                itemCount: _listFileDisplayed.length,
-                gridDelegate: const SliverGridDelegateFixedHeight(
-                  height: MobileAttachmentComposerWidgetStyle.listItemHeight,
-                  crossAxisCount: MobileAttachmentComposerWidgetStyle.maxItemRow,
-                  crossAxisSpacing: MobileAttachmentComposerWidgetStyle.listItemSpace,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  flex: 7,
+                  child: GridView.builder(
+                    primary: false,
+                    shrinkWrap: true,
+                    itemCount: _listFileDisplayed.length,
+                    gridDelegate: const SliverGridDelegateFixedHeight(
+                      height: MobileAttachmentComposerWidgetStyle.listItemHeight,
+                      crossAxisCount: MobileAttachmentComposerWidgetStyle.maxItemRow,
+                      crossAxisSpacing: MobileAttachmentComposerWidgetStyle.listItemSpace,
+                    ),
+                    itemBuilder: (context, index) {
+                      return AttachmentItemComposerWidget(
+                        fileState: _listFileDisplayed[index],
+                        itemMargin: MobileAttachmentComposerWidgetStyle.itemMargin,
+                        itemPadding: const EdgeInsets.symmetric(horizontal: 8),
+                        onDeleteAttachmentAction: widget.onDeleteAttachmentAction
+                      );
+                    }
+                  )
                 ),
-                itemBuilder: (context, index) {
-                  return AttachmentItemComposerWidget(
-                    fileState: _listFileDisplayed[index],
-                    itemMargin: MobileAttachmentComposerWidgetStyle.itemMargin,
-                    onDeleteAttachmentAction: widget.onDeleteAttachmentAction
-                  );
-                }
-              ),
+                Flexible(
+                  flex: 3,
+                  child: _isExceededDisplayedAttachments
+                    ? Row(
+                        children: [
+                          if (!_isCollapsed)
+                            TMailButtonWidget(
+                              text: AppLocalizations.of(context).showLess,
+                              icon: _imagePaths.icChevronUp,
+                              iconAlignment: TextDirection.rtl,
+                              iconSpace: 2,
+                              iconSize: 24,
+                              iconColor: AppColor.primaryColor,
+                              backgroundColor: Colors.transparent,
+                              textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                fontSize: 15,
+                                color: AppColor.primaryColor
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              margin: const EdgeInsetsDirectional.only(start: 8, top: 10),
+                              onTapActionCallback: _toggleListAttachments
+                            )
+                          else
+                            TMailButtonWidget.fromText(
+                              text: AppLocalizations.of(context).showMoreAttachment(_countRemainingAttachments),
+                              backgroundColor: Colors.transparent,
+                              textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                fontSize: 15,
+                                color: AppColor.primaryColor
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              margin: const EdgeInsetsDirectional.only(start: 8, top: 10),
+                              onTapActionCallback: _toggleListAttachments
+                            ),
+                          const Spacer(),
+                        ],
+                      )
+                    : const SizedBox.shrink()
+                )
+              ],
             )
           else
             ...[
@@ -122,7 +167,7 @@ class _MobileAttachmentComposerWidgetState extends State<MobileAttachmentCompose
               ),
               if (_isCollapsed && _isExceededDisplayedAttachments)
                 TMailButtonWidget.fromText(
-                  text: AppLocalizations.of(context).showMore(_countRemainingAttachments),
+                  text: AppLocalizations.of(context).showMoreAttachment(_countRemainingAttachments),
                   backgroundColor: Colors.transparent,
                   textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontSize: 15,
