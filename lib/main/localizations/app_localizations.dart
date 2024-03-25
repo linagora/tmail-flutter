@@ -3944,4 +3944,11 @@ class AppLocalizations {
       name: 'canceling'
     );
   }
+
+  String get changeEmailAddress {
+    return Intl.message(
+      'Change email address',
+      name: 'changeEmailAddress'
+    );
+  }
 }

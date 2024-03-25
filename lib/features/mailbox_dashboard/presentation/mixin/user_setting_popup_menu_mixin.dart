@@ -14,8 +14,8 @@ mixin UserSettingPopupMenuMixin {
     BuildContext context,
     UserName? userName,
     {
-      Function? onLogoutAction,
-      Function? onSettingAction
+      VoidCallback? onLogoutAction,
+      VoidCallback? onSettingAction
     }
   ) {
     return [
@@ -42,34 +42,46 @@ mixin UserSettingPopupMenuMixin {
       if (onSettingAction != null)
         ...[
           const PopupMenuDivider(height: 0.5),
-          PopupMenuItem(
-            padding: EdgeInsets.zero,
-            child: _settingAction(context, onSettingAction)
+          _popupMenuAction(
+            context: context,
+            title: AppLocalizations.of(context).manage_account,
+            icon: _imagePaths.icSetting,
+            onCallBack: onSettingAction
           ),
-          const PopupMenuDivider(height: 0.5),
         ],
       if (onLogoutAction != null)
         ...[
           const PopupMenuDivider(height: 0.5),
-          PopupMenuItem(
-            padding: EdgeInsets.zero,
-            child: _logoutAction(context, onLogoutAction)
+          _popupMenuAction(
+            context: context,
+            title: AppLocalizations.of(context).sign_out,
+            icon: _imagePaths.icLogout,
+            onCallBack: onLogoutAction
           ),
         ]
     ];
   }
 
-  Widget _settingAction(BuildContext context, Function? onCallBack) {
-    return PopupMenuItemWidget(
-        _imagePaths.icSetting,
-        AppLocalizations.of(context).manage_account,
-        () => onCallBack?.call());
-  }
-
-  Widget _logoutAction(BuildContext context, Function? onCallBack) {
-    return PopupMenuItemWidget(
-        _imagePaths.icLogout,
-        AppLocalizations.of(context).sign_out,
-        () => onCallBack?.call());
+  PopupMenuEntry _popupMenuAction({
+    required BuildContext context,
+    required String title,
+    required String icon,
+    VoidCallback? onCallBack
+  }) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: PopupMenuItemWidget(
+        name: title,
+        icon: icon,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+          fontSize: 15,
+          color: Colors.black,
+          fontWeight: FontWeight.w500
+        ),
+        space: 12,
+        onCallbackAction: onCallBack,
+      ),
+    );
   }
 }

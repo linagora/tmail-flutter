@@ -2481,7 +2481,7 @@ class MailboxDashBoardController extends ReloadableController {
     await _removeComposerCacheOnWebInteractor.execute();
   }
 
-  bool validateSendingEmailFailedWhenNetworkIsLostOnMobile(FeatureFailure failure) {
+  bool validateSendingEmailFailedWhenNetworkIsLostOnMobile(FeatureFailure? failure) {
     return failure is SendEmailFailure &&
       failure.exception is NoNetworkError &&
       PlatformInfo.isMobile;

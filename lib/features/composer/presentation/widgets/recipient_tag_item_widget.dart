@@ -1,9 +1,12 @@
+import 'package:core/presentation/action/popup_menu_action.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/presentation/views/popup_menu/popup_menu_button_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +16,12 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/recipient_action.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/draggable_recipient_tag_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RecipientTagItemWidget extends StatelessWidget {
 
@@ -30,6 +35,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   final List<EmailAddress> collapsedListEmailAddress;
   final OnShowFullListEmailAddressAction? onShowFullAction;
   final OnDeleteTagAction? onDeleteTagAction;
+  final OnSelectRecipientAction? onSelectRecipientAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -45,6 +51,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     this.onShowFullAction,
     this.onDeleteTagAction,
     this.maxWidth,
+    this.onSelectRecipientAction,
   });
 
   @override
@@ -60,17 +67,15 @@ class RecipientTagItemWidget extends StatelessWidget {
                 padding: EdgeInsetsDirectional.only(
                   top: !PlatformInfo.isCanvasKit ? 0 : 8
                 ),
-                child: InkWell(
-                  onTap: () => isCollapsed
-                    ? onShowFullAction?.call(prefix)
-                    : null,
-                  child: Draggable<DraggableEmailAddress>(
-                    data: DraggableEmailAddress(emailAddress: currentEmailAddress, prefix: prefix),
-                    feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
-                    childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.grab,
-                      child: Chip(
+                child: Draggable<DraggableEmailAddress>(
+                  data: DraggableEmailAddress(emailAddress: currentEmailAddress, prefix: prefix),
+                  feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
+                  childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.grab,
+                    child: PopupMenuButtonBuilder<RecipientAction>(
+                      listAction: _buildListRecipientAction(context),
+                      childBuilder: (isSelected) => Chip(
                         labelPadding: EdgeInsetsDirectional.symmetric(
                           horizontal: 4,
                           vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
@@ -84,8 +89,8 @@ class RecipientTagItemWidget extends StatelessWidget {
                         ),
                         deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
                         labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-                        backgroundColor: _getTagBackgroundColor(),
-                        side: _getTagBorderSide(),
+                        backgroundColor: _getTagBackgroundColor(isSelected),
+                        side: _getTagBorderSide(isSelected),
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
                         ),
@@ -100,17 +105,15 @@ class RecipientTagItemWidget extends StatelessWidget {
                         onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
                       ),
                     ),
-                  )
+                  ),
                 ),
               ),
             )
           else
             Flexible(
-              child: InkWell(
-                onTap: () => isCollapsed
-                  ? onShowFullAction?.call(prefix)
-                  : null,
-                child: Chip(
+              child: PopupMenuButtonBuilder(
+                listAction: _buildListRecipientAction(context),
+                childBuilder: (isSelected) => Chip(
                   labelPadding: EdgeInsetsDirectional.symmetric(
                     horizontal: 4,
                     vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
@@ -124,8 +127,8 @@ class RecipientTagItemWidget extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
                   labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-                  backgroundColor: _getTagBackgroundColor(),
-                  side: _getTagBorderSide(),
+                  backgroundColor: _getTagBackgroundColor(isSelected),
+                  side: _getTagBorderSide(isSelected),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
                   ),
@@ -138,7 +141,7 @@ class RecipientTagItemWidget extends StatelessWidget {
                       )
                     : null,
                   onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
-                )
+                ),
               ),
             ),
           if (isCollapsed)
@@ -170,8 +173,8 @@ class RecipientTagItemWidget extends StatelessWidget {
 
   int get countRecipients => currentListEmailAddress.length - collapsedListEmailAddress.length;
 
-  Color _getTagBackgroundColor() {
-    if (isLatestTagFocused && isLatestEmail) {
+  Color _getTagBackgroundColor(bool isSelected) {
+    if ((isLatestTagFocused && isLatestEmail) || isSelected) {
       return AppColor.colorItemRecipientSelected;
     } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
       return AppColor.colorEmailAddressTag;
@@ -180,8 +183,8 @@ class RecipientTagItemWidget extends StatelessWidget {
     }
   }
 
-  BorderSide _getTagBorderSide() {
-    if (isLatestTagFocused && isLatestEmail) {
+  BorderSide _getTagBorderSide(bool isSelected) {
+    if ((isLatestTagFocused && isLatestEmail) || isSelected) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
     } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
       return const BorderSide(width: 1, color: AppColor.colorEmailAddressTag);
@@ -191,5 +194,22 @@ class RecipientTagItemWidget extends StatelessWidget {
         color: AppColor.colorBorderEmailAddressInvalid
       );
     }
+  }
+
+  List<PopupMenuAction<RecipientAction>> _buildListRecipientAction(BuildContext context) {
+    return RecipientAction.values
+      .map((action) => PopupMenuAction<RecipientAction>(
+        name: action.getTitle(context),
+        value: action,
+        icon: action.getIcon(_imagePaths),
+        onSelected: _onSelectRecipientAction,
+      ))
+      .toList();
+  }
+
+  void _onSelectRecipientAction(RecipientAction recipientAction) {
+    popBack();
+    log('RecipientTagItemWidget::_onSelectRecipientAction: recipientAction = $recipientAction');
+    onSelectRecipientAction?.call(recipientAction, prefix, currentEmailAddress);
   }
 }

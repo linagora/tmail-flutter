@@ -89,6 +89,7 @@ export 'presentation/views/container/tmail_container_widget.dart';
 export 'presentation/views/clipper/side_arrow_clipper.dart';
 export 'presentation/views/avatar/gradient_circle_avatar_icon.dart';
 export 'presentation/views/loading/cupertino_loading_widget.dart';
+export 'presentation/views/popup_menu/popup_menu_button_builder.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

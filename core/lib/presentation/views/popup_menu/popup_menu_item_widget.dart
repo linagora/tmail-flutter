@@ -1,51 +1,79 @@
-
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-@immutable
 class PopupMenuItemWidget extends StatelessWidget {
 
-  final Function onTapCallback;
-  final String icon;
   final String name;
+  final String? icon;
   final Color? iconColor;
-  final String? iconSelection;
+  final double? iconSize;
+  final TextStyle? textStyle;
+  final String? iconSelected;
+  final EdgeInsetsGeometry? padding;
+  final double? space;
+  final double? height;
+  final VoidCallback? onCallbackAction;
 
-  const PopupMenuItemWidget(
+  const PopupMenuItemWidget({
+    Key? key,
+    required this.name,
     this.icon,
-    this.name,
-    this.onTapCallback,
-    {Key? key,
-      this.iconSelection,
-      this.iconColor
-    }) : super(key: key);
+    this.iconSize,
+    this.iconColor,
+    this.textStyle,
+    this.iconSelected,
+    this.padding,
+    this.space,
+    this.height,
+    this.onCallbackAction,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () => onTapCallback.call(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: SizedBox(
-              child: Row(children: [
-                SvgPicture.asset(
-                  icon,
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.fill,
-                  colorFilter: iconColor.asFilter()
+    return PointerInterceptor(
+      child: InkWell(
+        onTap: onCallbackAction,
+        child: Container(
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 12),
+          height: height,
+          child: Row(
+            children: [
+              if (icon != null)
+                Padding(
+                  padding: EdgeInsetsDirectional.only(end: space ?? 8),
+                  child: SvgPicture.asset(
+                    icon!,
+                    width: iconSize ?? 20,
+                    height: iconSize ?? 20,
+                    fit: BoxFit.fill,
+                    colorFilter: iconColor?.asFilter()
+                  ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(child: Text(name,
-                    style: const TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500))),
-                if (iconSelection != null)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: SvgPicture.asset(iconSelection!, width: 16, height: 16, fit: BoxFit.fill)),
-              ])
+              Expanded(
+                child: Text(
+                  name,
+                  style: textStyle ?? Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.black87,
+                    fontSize: 15
+                  )
+                )
+              ),
+              if (iconSelected != null)
+                Padding(
+                  padding: EdgeInsetsDirectional.only(start: space ?? 8),
+                  child: SvgPicture.asset(
+                    iconSelected!,
+                    width: 16,
+                    height: 16,
+                    fit: BoxFit.fill
+                  ),
+                )
+            ]
           ),
         )
+      ),
     );
   }
 }

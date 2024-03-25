@@ -1482,21 +1482,18 @@ class ComposerController extends BaseController with DragDropFileMixin {
     } else {
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputToEmail = toEmailAddressController.text;
           if (inputToEmail.isNotEmpty) {
             _autoCreateToEmailTag(inputToEmail);
           }
           break;
         case PrefixEmailAddress.cc:
-          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputCcEmail = ccEmailAddressController.text;
           if (inputCcEmail.isNotEmpty) {
             _autoCreateCcEmailTag(inputCcEmail);
           }
           break;
         case PrefixEmailAddress.bcc:
-          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputBccEmail = bccEmailAddressController.text;
           if (inputBccEmail.isNotEmpty) {
             _autoCreateBccEmailTag(inputBccEmail);
