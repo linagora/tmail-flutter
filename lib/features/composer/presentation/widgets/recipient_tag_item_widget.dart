@@ -8,7 +8,6 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -23,7 +22,9 @@ class RecipientTagItemWidget extends StatelessWidget {
   final bool isCollapsed;
   final bool isLatestTagFocused;
   final bool isLatestEmail;
+  final ImagePaths imagePaths;
   final double? maxWidth;
+  final int index;
   final PrefixEmailAddress prefix;
   final EmailAddress currentEmailAddress;
   final List<EmailAddress> currentListEmailAddress;
@@ -31,14 +32,14 @@ class RecipientTagItemWidget extends StatelessWidget {
   final OnShowFullListEmailAddressAction? onShowFullAction;
   final OnDeleteTagAction? onDeleteTagAction;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  RecipientTagItemWidget({
+  const RecipientTagItemWidget({
     super.key,
+    required this.index,
     required this.prefix,
     required this.currentEmailAddress,
     required this.currentListEmailAddress,
     required this.collapsedListEmailAddress,
+    required this.imagePaths,
     this.isCollapsed = false,
     this.isLatestTagFocused = false,
     this.isLatestEmail = false,
@@ -50,6 +51,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: Key('recipient_tag_item_${prefix.name}_$index'),
       constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -77,12 +79,17 @@ class RecipientTagItemWidget extends StatelessWidget {
                         ),
                         padding: EdgeInsets.zero,
                         label: Text(
+                          key: Key('label_recipient_tag_item_${prefix.name}_$index'),
                           currentEmailAddress.asString(),
                           maxLines: 1,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                         ),
-                        deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
+                        deleteIcon: SvgPicture.asset(
+                          imagePaths.icClose,
+                          key: Key('delete_icon_recipient_tag_item_${prefix.name}_$index'),
+                          fit: BoxFit.fill
+                        ),
                         labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
                         backgroundColor: _getTagBackgroundColor(),
                         side: _getTagBorderSide(),
@@ -91,6 +98,7 @@ class RecipientTagItemWidget extends StatelessWidget {
                         ),
                         avatar: currentEmailAddress.displayName.isNotEmpty
                           ? GradientCircleAvatarIcon(
+                              key: Key('avatar_icon_recipient_tag_item_${prefix.name}_$index'),
                               colors: currentEmailAddress.avatarColors,
                               label: currentEmailAddress.displayName.firstLetterToUpperCase,
                               labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,
@@ -116,13 +124,18 @@ class RecipientTagItemWidget extends StatelessWidget {
                     vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
                   ),
                   label: Text(
+                    key: Key('label_recipient_tag_item_${prefix.name}_$index'),
                     currentEmailAddress.asString(),
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                   ),
                   padding: EdgeInsets.zero,
-                  deleteIcon: SvgPicture.asset(_imagePaths.icClose, fit: BoxFit.fill),
+                  deleteIcon: SvgPicture.asset(
+                    imagePaths.icClose,
+                    key: Key('delete_icon_recipient_tag_item_${prefix.name}_$index'),
+                    fit: BoxFit.fill
+                  ),
                   labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
                   backgroundColor: _getTagBackgroundColor(),
                   side: _getTagBorderSide(),
@@ -131,6 +144,7 @@ class RecipientTagItemWidget extends StatelessWidget {
                   ),
                   avatar: currentEmailAddress.displayName.isNotEmpty
                     ? GradientCircleAvatarIcon(
+                        key: Key('avatar_icon_recipient_tag_item_${prefix.name}_$index'),
                         colors: currentEmailAddress.avatarColors,
                         label: currentEmailAddress.displayName.firstLetterToUpperCase,
                         labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,

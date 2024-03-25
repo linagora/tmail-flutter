@@ -11,7 +11,7 @@ typedef OnInsertImageAction = Function(BoxConstraints constraints);
 
 class MobileContainerView extends StatelessWidget {
 
-  final Widget Function(BuildContext context) childBuilder;
+  final Widget Function(BuildContext context, BoxConstraints constraints) childBuilder;
   final rich_composer.RichTextController keyboardRichTextController;
   final VoidCallback onCloseViewAction;
   final VoidCallback? onAttachFileAction;
@@ -63,7 +63,7 @@ class MobileContainerView extends StatelessWidget {
                 paddingChild: isKeyboardVisible
                   ? MobileContainerViewStyle.keyboardToolbarPadding
                   : EdgeInsets.zero,
-                child: childBuilder(context),
+                child: childBuilder(context, constraints),
               );
             });
           })
