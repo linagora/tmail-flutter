@@ -21,6 +21,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
   final UploadFileState fileState;
   final double? maxWidth;
   final EdgeInsetsGeometry? itemMargin;
+  final EdgeInsetsGeometry? itemPadding;
   final OnDeleteAttachmentAction? onDeleteAttachmentAction;
   final Widget? buttonAction;
 
@@ -29,6 +30,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
     required this.fileState,
     this.maxWidth,
     this.itemMargin,
+    this.itemPadding,
     this.buttonAction,
     this.onDeleteAttachmentAction,
   });
@@ -42,7 +44,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
         color: AttachmentItemComposerWidgetStyle.backgroundColor
       ),
       width: AttachmentItemComposerWidgetStyle.width,
-      padding: AttachmentItemComposerWidgetStyle.padding,
+      padding: itemPadding ?? AttachmentItemComposerWidgetStyle.padding,
       margin: itemMargin,
       child: Row(
         children: [
