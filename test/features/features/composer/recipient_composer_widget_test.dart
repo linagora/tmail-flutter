@@ -105,7 +105,8 @@ void main() {
       expect(recipientTagItemWidget.constraints!.maxWidth, 360);
     });
 
-    testWidgets('RecipientTagItemWidget should have all the components (AvatarIcon, Label, DeleteIcon)', (tester) async {
+    testWidgets('WHEN EmailAddress has address is not empty AND display name is not empty\n'
+        'RecipientTagItemWidget should have all the components (AvatarIcon, Label, DeleteIcon)', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),
       ];
@@ -178,6 +179,87 @@ void main() {
       expect(
         prefixRecipientComposerWidgetSize.width + recipientTagItemWidgetSize.width,
         lessThanOrEqualTo(360)
+      );
+    });
+
+    testWidgets('WHEN EmailAddress has address is too long AND display name is NULL\n'
+        'RecipientTagItemWidget should have all the components (Label, DeleteIcon)', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress(null, 'test123456789123456789@example.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 392.7,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final recipientTagItemWidgetFinder = find.byKey(Key('recipient_tag_item_${prefix.name}_0'));
+      final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
+      final deleteIconRecipientTagItemWidgetFinder = find.byKey(Key('delete_icon_recipient_tag_item_${prefix.name}_0'));
+
+      final Size recipientTagItemWidgetSize = tester.getSize(recipientTagItemWidgetFinder);
+      final Size labelRecipientTagItemWidgetSize = tester.getSize(labelRecipientTagItemWidgetFinder);
+      final Size deleteIconRecipientTagItemWidgetSize = tester.getSize(deleteIconRecipientTagItemWidgetFinder);
+
+      log('recipient_composer_widget_test::main: TagSize = $recipientTagItemWidgetSize | LabelTagSize = $labelRecipientTagItemWidgetSize | DeleteIconTagSize = $deleteIconRecipientTagItemWidgetSize');
+
+      expect(labelRecipientTagItemWidgetFinder, findsOneWidget);
+      expect(deleteIconRecipientTagItemWidgetFinder, findsOneWidget);
+
+      expect(
+          labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width,
+          lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+      );
+    });
+
+    testWidgets('WHEN EmailAddress has address is too long AND display name is too long\n'
+        'RecipientTagItemWidget should have all the components (AvatarIcon, Label, DeleteIcon)', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test12345678912345678909123456789', 'test1234567891234567895678909123456789@example.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 392.7,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final recipientTagItemWidgetFinder = find.byKey(Key('recipient_tag_item_${prefix.name}_0'));
+      final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
+      final deleteIconRecipientTagItemWidgetFinder = find.byKey(Key('delete_icon_recipient_tag_item_${prefix.name}_0'));
+      final avatarIconRecipientTagItemWidgetFinder = find.byKey(Key('avatar_icon_recipient_tag_item_${prefix.name}_0'));
+
+      final Size recipientTagItemWidgetSize = tester.getSize(recipientTagItemWidgetFinder);
+      final Size labelRecipientTagItemWidgetSize = tester.getSize(labelRecipientTagItemWidgetFinder);
+      final Size deleteIconRecipientTagItemWidgetSize = tester.getSize(deleteIconRecipientTagItemWidgetFinder);
+      final Size avatarIconRecipientTagItemWidgetSize = tester.getSize(avatarIconRecipientTagItemWidgetFinder);
+
+      log('recipient_composer_widget_test::main: TagSize = $recipientTagItemWidgetSize | LabelTagSize = $labelRecipientTagItemWidgetSize | DeleteIconTagSize = $deleteIconRecipientTagItemWidgetSize | AvatarIconTagSize = $avatarIconRecipientTagItemWidgetSize');
+
+      expect(labelRecipientTagItemWidgetFinder, findsOneWidget);
+      expect(deleteIconRecipientTagItemWidgetFinder, findsOneWidget);
+      expect(avatarIconRecipientTagItemWidgetFinder, findsOneWidget);
+
+      expect(
+        labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width + avatarIconRecipientTagItemWidgetSize.width,
+        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
       );
     });
   });
