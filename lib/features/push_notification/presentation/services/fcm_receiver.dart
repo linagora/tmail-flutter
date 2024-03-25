@@ -1,12 +1,13 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/broadcast_channel/broadcast_channel.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
-import 'package:universal_html/html.dart' as html;
+import 'package:universal_html/html.dart' as html show MessageEvent;
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
@@ -54,8 +55,12 @@ class FcmReceiver {
   }
 
   void _onMessageBroadcastChannel() {
-    final broadcast = html.BroadcastChannel('background-message');
-    broadcast.onMessage.listen(FcmService.instance.handleMessageEventBroadcastChannel);
+    final broadcast = BroadcastChannel('background-message');
+    broadcast.onMessage.listen((event) {
+      if (event is html.MessageEvent) {
+        FcmService.instance.handleMessageEventBroadcastChannel(event);
+      }
+    });
   }
 
   Future<String?> _getInitialToken() async {

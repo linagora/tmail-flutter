@@ -1,0 +1,1 @@
+export 'broadcast_channel_stub.dart' if (dart.library.html) 'broadcast_channel_web.dart';
