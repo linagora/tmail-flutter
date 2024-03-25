@@ -3869,5 +3869,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "selectAllMessagesOfThisPage": "Sélectionnez tous les messages de cette page",
+  "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

@@ -2678,5 +2678,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "selectAllMessagesOfThisPage": "Seleziona tutti i messaggi di questa pagina",
+  "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
