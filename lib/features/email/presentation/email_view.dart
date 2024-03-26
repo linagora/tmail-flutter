@@ -2,7 +2,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -126,10 +125,11 @@ class EmailView extends GetWidget<SingleEmailController> {
                   }),
                   Expanded(
                     child: LayoutBuilder(builder: (context, constraints) {
-                      log('EmailView::build: EMAIL_BODY_MAX_HEIGHT = ${constraints.maxHeight}');
                       return Obx(() {
-                        if (controller.emailSupervisorController.supportedPageView.isTrue) {
-                          final currentListEmail = controller.emailSupervisorController.currentListEmail;
+                        bool supportedPageView = controller.emailSupervisorController.supportedPageView.isTrue && PlatformInfo.isMobile;
+                        final currentListEmail = controller.emailSupervisorController.currentListEmail;
+
+                        if (supportedPageView) {
                           return PageView.builder(
                             physics: controller.emailSupervisorController.scrollPhysicsPageView.value,
                             itemCount: currentListEmail.length,
