@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 class ComposerStyle {
   static const double radius = 28;
-  static const double keyboardMaxHeight = 500;
   static const double keyboardToolBarHeight = 200;
   static const double popupMenuRadius = 8;
 
