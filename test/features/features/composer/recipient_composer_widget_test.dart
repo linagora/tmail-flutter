@@ -11,6 +11,7 @@ import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 void main() {
@@ -144,7 +145,7 @@ void main() {
 
       expect(
         labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width + avatarIconRecipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+        lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
@@ -179,7 +180,7 @@ void main() {
       expect(recipientTagItemWidgetFinder, findsOneWidget);
       expect(
         prefixRecipientComposerWidgetSize.width + recipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(360)
+        lessThan(360)
       );
     });
 
@@ -219,7 +220,7 @@ void main() {
 
       expect(
           labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width,
-          lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+          lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
@@ -261,7 +262,7 @@ void main() {
 
       expect(
         labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width + avatarIconRecipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+        lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
@@ -299,7 +300,7 @@ void main() {
       expect(recipientTagItemWidgetFinder, findsOneWidget);
       expect(
         prefixRecipientComposerWidgetSize.width + recipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(360)
+        lessThan(360)
       );
 
       final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
@@ -326,7 +327,7 @@ void main() {
 
       expect(
         totalSizeOfAllComponents,
-        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+        lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
@@ -402,7 +403,7 @@ void main() {
       expect(isExceededTextOverflow, equals(true));
     });
 
-    testWidgets('WHEN EmailAddress has address is too long AND display name is NULL\n'
+    testWidgets('WHEN EmailAddress has address short AND display name is NULL\n'
         'RecipientTagItemWidget SHOULD have text display full', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress(null, 'test123@example.com'),
@@ -443,6 +444,64 @@ void main() {
       log('recipient_composer_widget_test::main: LABEL_TAB_WIDTH = $labelTagWidth | TextPainterWidth = ${textPainter.width} | isExceededTextOverflow = $isExceededTextOverflow');
 
       expect(isExceededTextOverflow, equals(false));
+    });
+
+    testWidgets('RecipientComponentWidget should display prefix To label correctly when the locale is fr-FR', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test1', 'test1@example.com'),
+      ];
+
+      Get.updateLocale(const Locale(LanguageCodeConstants.french, 'FR'));
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 360,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final prefixRecipientComposerWidgetFinder = find.byKey(Key('prefix_${prefix.name}_recipient_composer_widget'));
+      final prefixRecipientComposerWidget = tester.widget<Text>(prefixRecipientComposerWidgetFinder);
+
+      log('recipient_composer_widget_test::main: PREFIX_LABEL = ${prefixRecipientComposerWidget.data}');
+
+      expect(prefixRecipientComposerWidget.data, equals('À:'));
+    });
+
+    testWidgets('RecipientComponentWidget should display prefix To label correctly when the locale is vi-VN', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test1', 'test1@example.com'),
+      ];
+
+      Get.updateLocale(const Locale(LanguageCodeConstants.vietnamese, 'VN'));
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 360,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final prefixRecipientComposerWidgetFinder = find.byKey(Key('prefix_${prefix.name}_recipient_composer_widget'));
+      final prefixRecipientComposerWidget = tester.widget<Text>(prefixRecipientComposerWidgetFinder);
+
+      log('recipient_composer_widget_test::main: PREFIX_LABEL = ${prefixRecipientComposerWidget.data}');
+
+      expect(prefixRecipientComposerWidget.data, equals('Đến:'));
     });
   });
 }
