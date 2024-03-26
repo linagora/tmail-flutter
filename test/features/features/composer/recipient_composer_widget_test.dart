@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
@@ -170,7 +171,7 @@ void main() {
       final recipientTagItemWidgetFinder = find.byKey(Key('recipient_tag_item_${prefix.name}_0'));
 
       final Size prefixRecipientComposerWidgetSize = tester.getSize(prefixRecipientComposerWidgetFinder);
-      final Size recipientTagItemWidgetSize = tester.getSize(prefixRecipientComposerWidgetFinder);
+      final Size recipientTagItemWidgetSize = tester.getSize(recipientTagItemWidgetFinder);
 
       log('recipient_composer_widget_test::main: PrefixLabelSize = $prefixRecipientComposerWidgetSize | TagSize = $recipientTagItemWidgetSize');
 
@@ -212,6 +213,7 @@ void main() {
 
       log('recipient_composer_widget_test::main: TagSize = $recipientTagItemWidgetSize | LabelTagSize = $labelRecipientTagItemWidgetSize | DeleteIconTagSize = $deleteIconRecipientTagItemWidgetSize');
 
+      expect(recipientTagItemWidgetFinder, findsOneWidget);
       expect(labelRecipientTagItemWidgetFinder, findsOneWidget);
       expect(deleteIconRecipientTagItemWidgetFinder, findsOneWidget);
 
@@ -261,6 +263,100 @@ void main() {
         labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width + avatarIconRecipientTagItemWidgetSize.width,
         lessThanOrEqualTo(recipientTagItemWidgetSize.width)
       );
+    });
+
+    testWidgets('WHEN To has multiple recipients AND expandMode is COLLAPSE\n'
+        'RecipientTagItemWidget should have all the components (AvatarIcon, Label, DeleteIcon, CounterTag)', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test1', 'test1@example.com'),
+        EmailAddress('test2', 'test2@example.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 360,
+          expandMode: ExpandMode.COLLAPSE,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final prefixRecipientComposerWidgetFinder = find.byKey(Key('prefix_${prefix.name}_recipient_composer_widget'));
+      final recipientTagItemWidgetFinder = find.byKey(Key('recipient_tag_item_${prefix.name}_0'));
+
+      final Size prefixRecipientComposerWidgetSize = tester.getSize(prefixRecipientComposerWidgetFinder);
+      final Size recipientTagItemWidgetSize = tester.getSize(recipientTagItemWidgetFinder);
+
+      log('recipient_composer_widget_test::main: PrefixLabelSize = $prefixRecipientComposerWidgetSize | TagSize = $recipientTagItemWidgetSize');
+
+      expect(prefixRecipientComposerWidgetFinder, findsOneWidget);
+      expect(recipientTagItemWidgetFinder, findsOneWidget);
+      expect(
+        prefixRecipientComposerWidgetSize.width + recipientTagItemWidgetSize.width,
+        lessThanOrEqualTo(360)
+      );
+
+      final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
+      final deleteIconRecipientTagItemWidgetFinder = find.byKey(Key('delete_icon_recipient_tag_item_${prefix.name}_0'));
+      final avatarIconRecipientTagItemWidgetFinder = find.byKey(Key('avatar_icon_recipient_tag_item_${prefix.name}_0'));
+      final counterRecipientTagItemWidgetFinder = find.byKey(Key('counter_recipient_tag_item_${prefix.name}_0'));
+
+      final Size labelRecipientTagItemWidgetSize = tester.getSize(labelRecipientTagItemWidgetFinder);
+      final Size deleteIconRecipientTagItemWidgetSize = tester.getSize(deleteIconRecipientTagItemWidgetFinder);
+      final Size avatarIconRecipientTagItemWidgetSize = tester.getSize(avatarIconRecipientTagItemWidgetFinder);
+      final Size counterRecipientTagItemWidgetSize = tester.getSize(counterRecipientTagItemWidgetFinder);
+
+      log('recipient_composer_widget_test::main: LabelTagSize = $labelRecipientTagItemWidgetSize | DeleteIconTagSize = $deleteIconRecipientTagItemWidgetSize | AvatarIconTagSize = $avatarIconRecipientTagItemWidgetSize | CounterTagSize = $counterRecipientTagItemWidgetSize');
+
+      expect(labelRecipientTagItemWidgetFinder, findsOneWidget);
+      expect(deleteIconRecipientTagItemWidgetFinder, findsOneWidget);
+      expect(avatarIconRecipientTagItemWidgetFinder, findsOneWidget);
+      expect(counterRecipientTagItemWidgetFinder, findsOneWidget);
+
+      final totalSizeOfAllComponents = labelRecipientTagItemWidgetSize.width +
+        deleteIconRecipientTagItemWidgetSize.width +
+        avatarIconRecipientTagItemWidgetSize.width;
+        counterRecipientTagItemWidgetSize.width;
+
+      expect(
+        totalSizeOfAllComponents,
+        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+      );
+    });
+
+    testWidgets('WHEN To has multiple recipients AND expandMode is EXPAND\n'
+        'RecipientTagItemWidget should have all the components (AvatarIcon, Label, DeleteIcon)', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test1', 'test1@example.com'),
+        EmailAddress('test2', 'test2@example.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 360,
+          expandMode: ExpandMode.EXPAND,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final prefixRecipientComposerWidgetFinder = find.byKey(Key('prefix_${prefix.name}_recipient_composer_widget'));
+      final recipientTagItemWidgetFinder = find.byType(RecipientTagItemWidget);
+
+      expect(prefixRecipientComposerWidgetFinder, findsOneWidget);
+      expect(recipientTagItemWidgetFinder, findsNWidgets(2));
     });
   });
 }
