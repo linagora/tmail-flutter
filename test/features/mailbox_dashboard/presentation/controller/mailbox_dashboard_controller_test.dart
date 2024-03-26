@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
@@ -52,11 +53,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_com
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -233,7 +236,7 @@ void main() {
   late MailboxController mailboxController;
 
   // mock thread controller direct dependencies
-  final getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
+  late MockGetEmailsInMailboxInteractor getEmailsInMailboxInteractor;
   final refreshChangesEmailsInMailboxInteractor =
       MockRefreshChangesEmailsInMailboxInteractor();
   final loadMoreEmailsInMailboxInteractor = MockLoadMoreEmailsInMailboxInteractor();
@@ -241,164 +244,229 @@ void main() {
   final searchMoreEmailInteractor = MockSearchMoreEmailInteractor();
   late ThreadController threadController;
 
+  late AdvancedFilterController advancedFilterController;
+
   final context = MockBuildContext();
   const queryString = 'test text';
   final google = Uri.parse('https://www.google.com');
   final testSession =
       Session({}, {}, {}, UserName('data'), google, google, google, google, State('1'));
   final testMailboxId = MailboxId(Id('1'));
+  final testAccountId = AccountId(Id('123'));
 
-  setUp(() {
-    Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
-    Get.put<EmailReceiveManager>(emailReceiveManager);
-    Get.put<DownloadController>(downloadController);
-    Get.put<AppGridDashboardController>(appGridDashboardController);
-    Get.put<SpamReportController>(spamReportController);
-    Get.put<NetworkConnectionController>(networkConnectionController);
-    Get.put<CachingManager>(cachingManager);
-    Get.put<LanguageCacheManager>(languageCacheManager);
-    Get.put<AuthorizationInterceptors>(authorizationInterceptors);
-    Get.put<AuthorizationInterceptors>(
-      authorizationInterceptors,
-      tag: BindingTag.isolateTag,
-    );
-    Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
-    Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
-    Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
-    Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
-    Get.put<AppToast>(appToast);
-    Get.put<ImagePaths>(imagePaths);
-    Get.put<ResponsiveUtils>(responsiveUtils);
-    Get.put<Uuid>(uuid);
-    Get.put<GetSessionInteractor>(getSessionInteractor);
-    Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
-    Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
+  group('search/sort/filter feature:', () {
+    setUp(() {
+      getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
 
-    Get.testMode = true;
-    PackageInfo.setMockInitialValues(
-      appName: '',
-      packageName: '',
-      version: '',
-      buildNumber: '',
-      buildSignature: '');
+      Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
+      Get.put<EmailReceiveManager>(emailReceiveManager);
+      Get.put<DownloadController>(downloadController);
+      Get.put<AppGridDashboardController>(appGridDashboardController);
+      Get.put<SpamReportController>(spamReportController);
+      Get.put<NetworkConnectionController>(networkConnectionController);
+      Get.put<CachingManager>(cachingManager);
+      Get.put<LanguageCacheManager>(languageCacheManager);
+      Get.put<AuthorizationInterceptors>(authorizationInterceptors);
+      Get.put<AuthorizationInterceptors>(
+        authorizationInterceptors,
+        tag: BindingTag.isolateTag,
+      );
+      Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
+      Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
+      Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
+      Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
+      Get.put<AppToast>(appToast);
+      Get.put<ImagePaths>(imagePaths);
+      Get.put<ResponsiveUtils>(responsiveUtils);
+      Get.put<Uuid>(uuid);
+      Get.put<GetSessionInteractor>(getSessionInteractor);
+      Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
+      Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
 
-    when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
-    when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
-    when(emailReceiveManager.pendingFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      Get.testMode = true;
+      PackageInfo.setMockInitialValues(
+        appName: '',
+        packageName: '',
+        version: '',
+        buildNumber: '',
+        buildSignature: '');
 
-    searchController = SearchController(
-      quickSearchEmailInteractor,
-      saveRecentSearchInteractor,
-      getAllRecentSearchLatestInteractor);
-    Get.put(searchController);
+      when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
+      when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
+      when(emailReceiveManager.pendingFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
 
-    mailboxDashboardController = MailboxDashBoardController(
-      moveToMailboxInteractor,
-      deleteEmailPermanentlyInteractor,
-      markAsMailboxReadInteractor,
-      getEmailCacheOnWebInteractor,
-      markAsEmailReadInteractor,
-      markAsStarEmailInteractor,
-      markAsMultipleEmailReadInteractor,
-      markAsStarMultipleEmailInteractor,
-      moveMultipleEmailToMailboxInteractor,
-      emptyTrashFolderInteractor,
-      deleteMultipleEmailsPermanentlyInteractor,
-      getEmailByIdInteractor,
-      sendEmailInteractor,
-      storeSendingEmailInteractor,
-      updateSendingEmailInteractor,
-      getAllSendingEmailInteractor,
-      storeSessionInteractor,
-      emptySpamFolderInteractor,
-      saveEmailAsDraftsInteractor,
-      updateEmailDraftsInteractor,
-      deleteSendingEmailInteractor,
-      unsubscribeEmailInteractor,
-      restoreDeletedMessageInteractor,
-      getRestoredDeletedMessageInteractor);
-    Get.put(mailboxDashboardController);
-    mailboxDashboardController.onReady();
+      searchController = SearchController(
+        quickSearchEmailInteractor,
+        saveRecentSearchInteractor,
+        getAllRecentSearchLatestInteractor);
+      Get.put(searchController);
 
-    mailboxController = MailboxController(
-      createNewMailboxInteractor,
-      deleteMultipleMailboxInteractor,
-      renameMailboxInteractor,
-      moveMailboxInteractor,
-      subscribeMailboxInteractor,
-      subscribeMultipleMailboxInteractor,
-      createDefaultMailboxInteractor,
-      treeBuilder,
-      verifyNameInteractor,
-      getAllMailboxInteractor,
-      refreshAllMailboxInteractor);
-    mailboxController.onReady();
+      mailboxDashboardController = MailboxDashBoardController(
+        moveToMailboxInteractor,
+        deleteEmailPermanentlyInteractor,
+        markAsMailboxReadInteractor,
+        getEmailCacheOnWebInteractor,
+        markAsEmailReadInteractor,
+        markAsStarEmailInteractor,
+        markAsMultipleEmailReadInteractor,
+        markAsStarMultipleEmailInteractor,
+        moveMultipleEmailToMailboxInteractor,
+        emptyTrashFolderInteractor,
+        deleteMultipleEmailsPermanentlyInteractor,
+        getEmailByIdInteractor,
+        sendEmailInteractor,
+        storeSendingEmailInteractor,
+        updateSendingEmailInteractor,
+        getAllSendingEmailInteractor,
+        storeSessionInteractor,
+        emptySpamFolderInteractor,
+        saveEmailAsDraftsInteractor,
+        updateEmailDraftsInteractor,
+        deleteSendingEmailInteractor,
+        unsubscribeEmailInteractor,
+        restoreDeletedMessageInteractor,
+        getRestoredDeletedMessageInteractor);
+      Get.put(mailboxDashboardController);
+      mailboxDashboardController.onReady();
 
-    threadController = ThreadController(
-      getEmailsInMailboxInteractor,
-      refreshChangesEmailsInMailboxInteractor,
-      loadMoreEmailsInMailboxInteractor,
-      searchEmailInteractor,
-      searchMoreEmailInteractor,
-      getEmailByIdInteractor);
-    Get.put(threadController);
+      mailboxController = MailboxController(
+        createNewMailboxInteractor,
+        deleteMultipleMailboxInteractor,
+        renameMailboxInteractor,
+        moveMailboxInteractor,
+        subscribeMailboxInteractor,
+        subscribeMultipleMailboxInteractor,
+        createDefaultMailboxInteractor,
+        treeBuilder,
+        verifyNameInteractor,
+        getAllMailboxInteractor,
+        refreshAllMailboxInteractor);
+      mailboxController.onReady();
 
-    mailboxDashboardController.sessionCurrent = testSession;
-    mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
-    mailboxDashboardController.userProfile.value = UserProfile('test@gmail.com');
-  });
+      threadController = ThreadController(
+        getEmailsInMailboxInteractor,
+        refreshChangesEmailsInMailboxInteractor,
+        loadMoreEmailsInMailboxInteractor,
+        searchEmailInteractor,
+        searchMoreEmailInteractor,
+        getEmailByIdInteractor);
+      Get.put(threadController);
 
-  tearDown(Get.deleteAll);
+      advancedFilterController = AdvancedFilterController();
 
-  test('WHEN user search email by keyword, '
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
+      mailboxDashboardController.userProfile.value = UserProfile('test@gmail.com');
+      mailboxDashboardController.accountId.value = testAccountId;
+    });
+
+    test('WHEN user search email by keyword, '
     'THEN user filter search result, '
     'THEN user tap on mail box, '
     'SHOULD reset all search and filter options, '
     'THEN query get all email with default options',
-  () async {
-    // arrange
-    when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
-    final testAccountId = AccountId(Id('123'));
-    mailboxDashboardController.accountId.value = testAccountId;
+    () async {
+      // arrange
+      when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
+      
+      // expect query in search controller update as expected
+      mailboxDashboardController.searchEmail(context, queryString: queryString);
+      expect(searchController.searchEmailFilter.value.text, SearchQuery(queryString));
+      
+      // expect sort in search controller update as expected
+      mailboxDashboardController.selectSortOrderQuickSearchFilter(
+        context,
+        EmailSortOrderType.oldest);
+      expect(searchController.sortOrderFiltered.value, EmailSortOrderType.oldest);
 
-    // expect query in search controller update as expected
-    mailboxDashboardController.searchEmail(context, queryString: queryString);
-    expect(searchController.searchEmailFilter.value.text, SearchQuery(queryString));
-    
-    // expect sort in search controller update as expected
-    mailboxDashboardController.selectSortOrderQuickSearchFilter(
-      context,
-      EmailSortOrderType.oldest);
-    expect(searchController.sortOrderFiltered.value, EmailSortOrderType.oldest);
+      // expect filter in search controller update as expected
+      mailboxDashboardController.selectQuickSearchFilterAction(QuickSearchFilter.hasAttachment);
+      expect(searchController.searchEmailFilter.value.hasAttachment, true);
+      mailboxDashboardController.selectQuickSearchFilterAction(QuickSearchFilter.last7Days);
+      mailboxDashboardController.selectReceiveTimeQuickSearchFilter(context, EmailReceiveTimeType.last30Days);
+      expect(searchController.searchEmailFilter.value.emailReceiveTimeType, EmailReceiveTimeType.last30Days);
 
-    // expect filter in search controller update as expected
-    mailboxDashboardController.selectQuickSearchFilterAction(QuickSearchFilter.hasAttachment);
-    expect(searchController.searchEmailFilter.value.hasAttachment, true);
-    mailboxDashboardController.selectQuickSearchFilterAction(QuickSearchFilter.last7Days);
-    mailboxDashboardController.selectReceiveTimeQuickSearchFilter(context, EmailReceiveTimeType.last30Days);
-    expect(searchController.searchEmailFilter.value.emailReceiveTimeType, EmailReceiveTimeType.last30Days);
+      // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
+      // when [selectedMailbox] is changed and triggered obx listener in thread controller
+      mailboxController.openMailbox(context, PresentationMailbox(testMailboxId));
+      await untilCalled(getEmailsInMailboxInteractor.execute(
+        any, any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated')));
+      expect(searchController.sortOrderFiltered.value, EmailSortOrderType.mostRecent);
+      expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
+      verify(getEmailsInMailboxInteractor.execute(
+        testSession, testAccountId,
+        limit: ThreadConstants.defaultLimit,
+        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+        emailFilter: EmailFilter(
+          filter: EmailFilterCondition(inMailbox: testMailboxId),
+          filterOption: FilterMessageOption.all,
+          mailboxId: testMailboxId),
+        propertiesCreated: ThreadConstants.propertiesDefault,
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault));
+    });
 
-    // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
-    // when [selectedMailbox] is changed and triggered obx listener in thread controller
-    mailboxController.openMailbox(context, PresentationMailbox(testMailboxId));
-    await untilCalled(getEmailsInMailboxInteractor.execute(
-      any, testAccountId,
-      limit: anyNamed('limit'),
-      sort: anyNamed('sort'),
-      emailFilter: anyNamed('emailFilter'),
-      propertiesCreated: anyNamed('propertiesCreated'),
-      propertiesUpdated: anyNamed('propertiesUpdated')));
-    expect(searchController.sortOrderFiltered.value, EmailSortOrderType.mostRecent);
-    expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
-    verify(getEmailsInMailboxInteractor.execute(
-      testSession, testAccountId,
-      limit: ThreadConstants.defaultLimit,
-      sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-      emailFilter: EmailFilter(
-        filter: EmailFilterCondition(inMailbox: testMailboxId),
-        filterOption: FilterMessageOption.all,
-        mailboxId: testMailboxId),
-      propertiesCreated: ThreadConstants.propertiesDefault,
-      propertiesUpdated: ThreadConstants.propertiesUpdatedDefault));
+    test('WHEN user use advanced search/sort/filter feature, '
+      'THEN user tap on mail box, '
+      'SHOULD reset all advanced search and filter options, '
+      'THEN query get all email with default options',
+    () async {
+      final fromEmailAddress = EmailAddress('test from', 'test-from@gmail.com');
+      final toEmailAddress = EmailAddress('test to', 'test-to@gmail.com');
+      const emailSubject = 'test subject';
+      const emailContainsWord = 'test word';
+      const emailNotContainsWord = 'test not word';
+      // arrange
+      when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
+
+      // expect query in advanced filter controller update as expected
+      advancedFilterController.updateListEmailAddress(AdvancedSearchFilterField.from, [fromEmailAddress]);
+      advancedFilterController.updateListEmailAddress(AdvancedSearchFilterField.to, [toEmailAddress]);
+      advancedFilterController.subjectFilterInputController.text = emailSubject;
+      advancedFilterController.hasKeyWordFilterInputController.text = emailContainsWord;
+      advancedFilterController.notKeyWordFilterInputController.text = emailNotContainsWord;
+      // mailbox: impossible? due to private field
+      advancedFilterController.updateReceiveDateSearchFilter(context, EmailReceiveTimeType.last30Days);
+      advancedFilterController.updateSortOrder(EmailSortOrderType.relevance);
+      advancedFilterController.applyAdvancedSearchFilter(context);
+      expect(searchController.searchEmailFilter.value, SearchEmailFilter(
+        from: {fromEmailAddress.email!},
+        to: {toEmailAddress.email!},
+        subject: emailSubject,
+        text: SearchQuery(emailContainsWord),
+        notKeyword: {emailNotContainsWord},
+        emailReceiveTimeType: EmailReceiveTimeType.last30Days,
+        sortOrder: EmailSortOrderType.relevance.getSortOrder().toNullable(),
+        position: 0));
+
+      // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
+      // when [selectedMailbox] is changed and triggered obx listener in thread controller
+      mailboxController.openMailbox(context, PresentationMailbox(testMailboxId));
+      await untilCalled(getEmailsInMailboxInteractor.execute(
+        any, any,
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+        emailFilter: anyNamed('emailFilter'),
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated')));
+      expect(searchController.sortOrderFiltered.value, EmailSortOrderType.mostRecent);
+      expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
+      verify(getEmailsInMailboxInteractor.execute(
+        testSession, testAccountId,
+        limit: ThreadConstants.defaultLimit,
+        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+        emailFilter: EmailFilter(
+          filter: EmailFilterCondition(inMailbox: testMailboxId),
+          filterOption: FilterMessageOption.all,
+          mailboxId: testMailboxId),
+        propertiesCreated: ThreadConstants.propertiesDefault,
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault));
+    });
+
+    tearDown(Get.deleteAll);
   });
 }
