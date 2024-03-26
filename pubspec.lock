@@ -429,7 +429,7 @@ packages:
     description:
       path: "."
       ref: cnb_supported
-      resolved-ref: "669cfd989498cf398c88a6618eebb089967b9e28"
+      resolved-ref: "69996e32a708a62b8a613f2524c5635f5c556617"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
