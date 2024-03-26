@@ -1,6 +1,6 @@
 import 'dart:collection';
+
 import 'package:collection/collection.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +114,7 @@ class EmailSupervisorController extends GetxController {
 
   void _jumpToPage(int page) {
     if (PlatformInfo.isWeb) {
-      pageController?.jumpToPage(page);
+      onPageChanged(page);
     } else {
       pageController?.animateToPage(
         page,
@@ -124,11 +124,12 @@ class EmailSupervisorController extends GetxController {
   }
 
   void updateScrollPhysicPageView(bool isScrollPageViewActivated) {
-    log('EmailSupervisorController::updateScrollPhysicPageView:isScrollPageViewActivated: $isScrollPageViewActivated');
-    if (PlatformInfo.isWeb || !isScrollPageViewActivated) {
-      scrollPhysicsPageView.value = const NeverScrollableScrollPhysics();
-    } else {
-      scrollPhysicsPageView.value = null;
+    if (PlatformInfo.isMobile) {
+      if (!isScrollPageViewActivated) {
+        scrollPhysicsPageView.value = const NeverScrollableScrollPhysics();
+      } else {
+        scrollPhysicsPageView.value = null;
+      }
     }
   }
 
