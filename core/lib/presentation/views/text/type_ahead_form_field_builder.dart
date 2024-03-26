@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -10,7 +11,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
   final SuggestionsCallback<T> suggestionsCallback;
   final ItemBuilder<T> itemBuilder;
   final SuggestionSelectionCallback<T> onSuggestionSelected;
-  final SuggestionsBoxDecoration suggestionsBoxDecoration;
+  final BoxDecoration suggestionsBoxDecoration;
   final WidgetBuilder? noItemsFoundBuilder;
   final bool hideOnEmpty;
   final bool hideOnError;
@@ -31,7 +32,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
     required this.suggestionsCallback,
     required this.itemBuilder,
     required this.onSuggestionSelected,
-    this.suggestionsBoxDecoration = const SuggestionsBoxDecoration(),
+    this.suggestionsBoxDecoration = const BoxDecoration(),
     this.textDirection = TextDirection.ltr,
     this.debounceDuration = const Duration(milliseconds: 300),
     this.decoration = const InputDecoration(),
@@ -68,40 +69,48 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadFormField<T>(
-      key: widget.key,
-      textFieldConfiguration: TextFieldConfiguration(
-        controller: widget.controller,
-        textInputAction: widget.textInputAction,
-        autocorrect: widget.autocorrect,
-        autofillHints: widget.autofillHints,
-        keyboardType: widget.keyboardType,
-        decoration: widget.decoration,
-        focusNode: widget.focusNode,
-        textDirection: _textDirection,
-        cursorColor: widget.cursorColor,
-        onChanged: (value) {
-          widget.onTextChange?.call(value);
-          if (value.isNotEmpty) {
-            final directionByText = DirectionUtils.getDirectionByEndsText(value);
-            if (directionByText != _textDirection) {
-              setState(() {
-                _textDirection = directionByText;
-              });
-            }
-          }
-        },
-        onSubmitted: widget.onTextSubmitted
-      ),
+    return TypeAheadField<T>(
+      controller: widget.controller,
+      focusNode: widget.focusNode,
       debounceDuration: widget.debounceDuration,
-      suggestionsCallback: widget.suggestionsCallback,
       itemBuilder: widget.itemBuilder,
-      onSuggestionSelected: widget.onSuggestionSelected,
-      suggestionsBoxDecoration: widget.suggestionsBoxDecoration,
-      noItemsFoundBuilder: widget.noItemsFoundBuilder,
+      onSelected: widget.onSuggestionSelected,
+      suggestionsCallback: widget.suggestionsCallback,
+      decorationBuilder: (context, child) => Material(
+        elevation: 4.0,
+        shadowColor: Colors.black,
+        borderRadius: widget.suggestionsBoxDecoration.borderRadius,
+        child: child),
+      emptyBuilder: widget.noItemsFoundBuilder,
       hideOnEmpty: widget.hideOnEmpty,
       hideOnError: widget.hideOnError,
       hideOnLoading: widget.hideOnLoading,
+      builder: (context, controller, focusNode) {
+        return TextFormField(
+          key: widget.key,
+          controller: controller,
+          focusNode: focusNode,
+          textInputAction: widget.textInputAction,
+          autocorrect: widget.autocorrect,
+          autofillHints: widget.autofillHints,
+          keyboardType: widget.keyboardType,
+          decoration: widget.decoration,
+          textDirection: _textDirection,
+          cursorColor: widget.cursorColor,
+          onChanged: (value) {
+          widget.onTextChange?.call(value);
+            if (value.isNotEmpty) {
+              final directionByText = DirectionUtils.getDirectionByEndsText(value);
+              if (directionByText != _textDirection) {
+                setState(() {
+                  _textDirection = directionByText;
+                });
+              }
+            }
+          },
+          onFieldSubmitted: widget.onTextSubmitted,
+        );
+      },
     );
   }
 

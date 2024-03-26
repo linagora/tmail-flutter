@@ -412,8 +412,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: f13a35eb76fafb2ee1e686ca19c4c742d0efa78a
+      ref: "bugfix/signature_got_clipped"
+      resolved-ref: "0447d5ea5bf15408c890b1c3a635fe737696c2d9"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -723,10 +723,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_keyboard_visibility
-      sha256: "4983655c26ab5b959252ee204c2fffa4afeb4413cd030455194ec0caa3b8e7cb"
+      sha256: "98664be7be0e3ffca00de50f7f6a287ab62c763fc8c762e0a21584584a3ff4f8"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.1"
+    version: "6.0.0"
   flutter_keyboard_visibility_linux:
     dependency: transitive
     description:
@@ -933,10 +933,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_typeahead
-      sha256: f31211a8536f87908c3dcbdb88666e2f4d77f5f06c2b3a48eaad5599969ff32d
+      sha256: ef2dd5a505d2d95a5b4c571c81ad2d6e7955f583dddec49064fec57acffd7a96
       url: "https://pub.dev"
     source: hosted
-    version: "4.6.0"
+    version: "5.0.2"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -1041,8 +1041,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: cnb_supported
-      resolved-ref: "31300fa930999fb9fefb774feba6ab5410b423c2"
+      ref: "enhancement/upgrade-dependencies"
+      resolved-ref: eb35300ce4756595601c35f09f1d5957e794dc3c
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
@@ -1491,8 +1491,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "867d22aaa2da242bb1c5929e2804e3cb1d4acaf6"
+      ref: "enhancement/update_enough_html_editor_dependency"
+      resolved-ref: faa57d54709e589ae2dea76b286c07024a80b7f2
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"
