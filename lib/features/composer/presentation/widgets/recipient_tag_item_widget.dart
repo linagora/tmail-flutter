@@ -157,6 +157,7 @@ class RecipientTagItemWidget extends StatelessWidget {
             ),
           if (isCollapsed)
             TMailButtonWidget.fromText(
+              key: Key('counter_recipient_tag_item_${prefix.name}_$index'),
               margin: _counterMargin,
               text: '+$countRecipients',
               onTapActionCallback: () => onShowFullAction?.call(prefix),
