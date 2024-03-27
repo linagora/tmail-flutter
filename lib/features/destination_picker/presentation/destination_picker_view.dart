@@ -154,6 +154,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                                 PointerDeviceKind.mouse,
                                                 PointerDeviceKind.trackpad
                                               },
+                                              scrollbars: false
                                             ),
                                             scrollController: controller.destinationListScrollController,
                                             child: RefreshIndicator(
@@ -179,6 +180,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                                 PointerDeviceKind.mouse,
                                                 PointerDeviceKind.trackpad
                                               },
+                                              scrollbars: false
                                             ),
                                             scrollController: controller.destinationListScrollController,
                                             child: RefreshIndicator(

@@ -11,8 +11,8 @@ class HyperLinkWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
+    return Text.rich(
+      TextSpan(
         text: urlString,
         style: const TextStyle(
           color: HyperLinkWidgetStyles.textColor,

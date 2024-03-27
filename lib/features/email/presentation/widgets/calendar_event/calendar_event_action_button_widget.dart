@@ -1,5 +1,6 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
@@ -10,20 +11,23 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
 
   final List<EventAction> eventActions;
   final EdgeInsetsGeometry? margin;
+  final VoidCallback? onMailToAttendeesAction;
 
-  const CalendarEventActionButtonWidget({
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  CalendarEventActionButtonWidget({
     super.key,
     required this.eventActions,
     this.margin,
+    this.onMailToAttendeesAction,
   });
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Container(
       width: double.infinity,
       margin: margin ?? CalendarEventActionButtonWidgetStyles.margin,
-      padding: responsiveUtils.isPortraitMobile(context)
+      padding: _responsiveUtils.isPortraitMobile(context)
         ? CalendarEventActionButtonWidgetStyles.paddingMobile
         : CalendarEventActionButtonWidgetStyles.paddingWeb,
       child: Wrap(
@@ -42,12 +46,18 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
             minWidth: CalendarEventActionButtonWidgetStyles.minWidth,
-            width: responsiveUtils.isPortraitMobile(context) ? double.infinity : null,
+            width: _responsiveUtils.isPortraitMobile(context) ? double.infinity : null,
             border: Border.all(
               width: CalendarEventActionButtonWidgetStyles.borderWidth,
               color: CalendarEventActionButtonWidgetStyles.textColor
             ),
-            onTapActionCallback: () => AppUtils.launchLink(action.link),
+            onTapActionCallback: () {
+              if (action.actionType == EventActionType.mailToAttendees) {
+                onMailToAttendeesAction?.call();
+              } else {
+                AppUtils.launchLink(action.link);
+              }
+            },
           ))
           .toList(),
       ),

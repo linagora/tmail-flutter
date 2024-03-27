@@ -10,6 +10,7 @@ class TMailButtonWidget extends StatelessWidget {
 
   final OnTapActionCallback? onTapActionCallback;
   final OnTapActionAtPositionCallback? onTapActionAtPositionCallback;
+  final OnLongPressActionCallback? onLongPressActionCallback;
 
   final double borderRadius;
   final double? width;
@@ -44,6 +45,7 @@ class TMailButtonWidget extends StatelessWidget {
     required this.text,
     this.onTapActionCallback,
     this.onTapActionAtPositionCallback,
+    this.onLongPressActionCallback,
     this.borderRadius = 20,
     this.width,
     this.maxWidth = double.infinity,
@@ -77,6 +79,7 @@ class TMailButtonWidget extends StatelessWidget {
     final Key? key,
     OnTapActionCallback? onTapActionCallback,
     OnTapActionAtPositionCallback? onTapActionAtPositionCallback,
+    OnLongPressActionCallback? onLongPressActionCallback,
     double borderRadius = 20,
     double? width,
     double maxWidth = double.infinity,
@@ -99,6 +102,7 @@ class TMailButtonWidget extends StatelessWidget {
       text: '',
       onTapActionCallback: onTapActionCallback,
       onTapActionAtPositionCallback: onTapActionAtPositionCallback,
+      onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
       maxWidth : maxWidth,
@@ -124,6 +128,7 @@ class TMailButtonWidget extends StatelessWidget {
     final Key? key,
     OnTapActionCallback? onTapActionCallback,
     OnTapActionAtPositionCallback? onTapActionAtPositionCallback,
+    OnLongPressActionCallback? onLongPressActionCallback,
     double borderRadius = 20,
     double? width,
     double maxWidth = double.infinity,
@@ -145,6 +150,7 @@ class TMailButtonWidget extends StatelessWidget {
       text: text,
       onTapActionCallback: onTapActionCallback,
       onTapActionAtPositionCallback: onTapActionAtPositionCallback,
+      onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
       maxWidth : maxWidth,
@@ -335,6 +341,7 @@ class TMailButtonWidget extends StatelessWidget {
     return TMailContainerWidget(
       onTapActionCallback: onTapActionCallback,
       onTapActionAtPositionCallback: onTapActionAtPositionCallback,
+      onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
       maxWidth: maxWidth,

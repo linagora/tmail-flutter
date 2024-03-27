@@ -88,6 +88,7 @@ class MailboxView extends BaseMailboxView {
               PointerDeviceKind.mouse,
               PointerDeviceKind.trackpad
             },
+            scrollbars: false
           ),
           child: RefreshIndicator(
             color: AppColor.primaryColor,
@@ -131,7 +132,11 @@ class MailboxView extends BaseMailboxView {
                 const SizedBox(height: 8),
                 const Divider(color: AppColor.colorDividerMailbox, height: 1),
                 Padding(
-                  padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
+                  padding: EdgeInsetsDirectional.only(
+                    top: 4,
+                    bottom: 4,
+                    start: controller.responsiveUtils.isDesktop(context) ? 0 : 16
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -249,7 +254,10 @@ class MailboxView extends BaseMailboxView {
             controller.imagePaths,
             categories,
             controller,
-            toggleMailboxCategories: controller.toggleMailboxCategories
+            toggleMailboxCategories: controller.toggleMailboxCategories,
+            padding: controller.responsiveUtils.isDesktop(context)
+              ? null
+              : const EdgeInsetsDirectional.only(start: 16)
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),

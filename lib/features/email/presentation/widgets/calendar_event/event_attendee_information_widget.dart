@@ -36,8 +36,8 @@ class EventAttendeeInformationWidget extends StatelessWidget {
             ),
           ),
         ),
-        Expanded(child: RichText(
-          text: TextSpan(
+        Expanded(child: Text.rich(
+          TextSpan(
             style: const TextStyle(
               fontSize: EventAttendeeInformationWidgetStyles.textSize,
               fontWeight: FontWeight.w500,

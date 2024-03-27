@@ -37,8 +37,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
+    return Padding(
       padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16),
       child: Row(
         crossAxisAlignment: emailSelected.numberOfAllEmailAddress() > 0
@@ -55,32 +54,26 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                 children: [
                   if (emailSelected.from?.isNotEmpty == true)
                     Row(children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Flexible(child: Transform(
-                              transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
-                              child: EmailSenderBuilder(
-                                emailAddress: emailSelected.from!.first,
-                                openEmailAddressDetailAction: openEmailAddressDetailAction,
-                              )
-                            )),
-                            if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
-                              TMailButtonWidget.fromText(
-                                text: AppLocalizations.of(context).unsubscribe,
-                                textStyle: const TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 14,
-                                  color: AppColor.colorTextBody,
-                                  decoration: TextDecoration.underline,
-                                ),
-                                padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
-                                backgroundColor: Colors.transparent,
-                                onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
-                              ),
-                          ],
-                        )
-                      ),
+                      Flexible(child: Transform(
+                          transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
+                          child: EmailSenderBuilder(
+                            emailAddress: emailSelected.from!.first,
+                            openEmailAddressDetailAction: openEmailAddressDetailAction,
+                          )
+                      )),
+                      if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
+                        TMailButtonWidget.fromText(
+                          text: AppLocalizations.of(context).unsubscribe,
+                          textStyle: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                            color: AppColor.colorTextBody,
+                            decoration: TextDecoration.underline,
+                          ),
+                          padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+                          backgroundColor: Colors.transparent,
+                          onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
+                        ),
                       ReceivedTimeBuilder(emailSelected: emailSelected),
                     ]),
                   if (emailSelected.numberOfAllEmailAddress() > 0)

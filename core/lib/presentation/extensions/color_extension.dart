@@ -160,7 +160,6 @@ extension AppColor on Color {
   static const colorBackgroundQuotasWarning = Color(0xFFFFC107);
   static const colorQuotaWarning = Color(0xFFF05C44);
   static const colorQuotaError = Color(0xffE64646);
-  static const colorThumbScrollBar = Color(0xFFAEB7C2);
   static const colorCreateNewIdentityButton = Color(0xFFEBEDF0);
   static const colorSpamReportBannerBackground = Color(0xFFBFDEFF);
   static const colorSpamReportBannerStrokeBorder = Color(0x1F000000);

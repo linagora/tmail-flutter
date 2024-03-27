@@ -16,8 +16,8 @@ class AttendeeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
+    return Text.rich(
+      TextSpan(
         style: const TextStyle(
           fontSize: AttendeeWidgetStyles.textSize,
           fontWeight: FontWeight.w500,

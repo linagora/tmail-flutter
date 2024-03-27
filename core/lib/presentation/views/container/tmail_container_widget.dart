@@ -7,6 +7,7 @@ class TMailContainerWidget extends StatelessWidget {
 
   final OnTapActionCallback? onTapActionCallback;
   final OnTapActionAtPositionCallback? onTapActionAtPositionCallback;
+  final OnLongPressActionCallback? onLongPressActionCallback;
 
   final Widget child;
   final double borderRadius;
@@ -26,6 +27,7 @@ class TMailContainerWidget extends StatelessWidget {
     required this.child,
     this.onTapActionCallback,
     this.onTapActionAtPositionCallback,
+    this.onLongPressActionCallback,
     this.borderRadius = 20,
     this.width,
     this.maxWidth = double.infinity,
@@ -58,6 +60,7 @@ class TMailContainerWidget extends StatelessWidget {
             onTapActionAtPositionCallback!.call(position);
           }
         },
+        onLongPress: onLongPressActionCallback,
         borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         child: tooltipMessage != null
           ? Tooltip(

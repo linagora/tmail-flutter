@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_controller.dart';
 import 'package:tmail_ui_user/features/contact/presentation/utils/contact_utils.dart';
@@ -137,30 +136,26 @@ class ContactView extends GetWidget<ContactController> {
                                   return Container(
                                     color: Colors.white,
                                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                                    child: ScrollbarListView(
-                                      scrollController: controller.scrollListViewController,
-                                      child: ListView.separated(
-                                        itemCount: controller.listContactSearched.length,
-                                        controller: controller.scrollListViewController,
-                                        separatorBuilder: (context, index) {
-                                          return Padding(
-                                            padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
-                                            child: const Divider(height: 1, color: AppColor.colorDivider),
-                                          );
-                                        },
-                                        itemBuilder: (context, index) {
-                                          final emailAddress = controller.listContactSearched[index];
-                                          final suggestionEmailAddress = _toSuggestionEmailAddress(
-                                            emailAddress,
-                                            controller.contactSelected != null ? [controller.contactSelected!] : []
-                                          );
-                                          return ContactSuggestionBoxItem(
-                                            suggestionEmailAddress,
-                                            padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                                            selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
-                                          );
-                                        }
-                                      ),
+                                    child: ListView.separated(
+                                      itemCount: controller.listContactSearched.length,
+                                      separatorBuilder: (context, index) {
+                                        return Padding(
+                                          padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                                          child: const Divider(height: 1, color: AppColor.colorDivider),
+                                        );
+                                      },
+                                      itemBuilder: (context, index) {
+                                        final emailAddress = controller.listContactSearched[index];
+                                        final suggestionEmailAddress = _toSuggestionEmailAddress(
+                                          emailAddress,
+                                          controller.contactSelected != null ? [controller.contactSelected!] : []
+                                        );
+                                        return ContactSuggestionBoxItem(
+                                          suggestionEmailAddress,
+                                          padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                                          selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
+                                        );
+                                      }
                                     )
                                   );
                                 }
