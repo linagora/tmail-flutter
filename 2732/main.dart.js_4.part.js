@@ -72,6 +72,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     PopupMenuItemWidget_build_closure: function PopupMenuItemWidget_build_closure(t0) {
       this.$this = t0;
     },
+    _ElevatedButtonWithIcon$(icon, label, onPressed, style) {
+      var _null = null;
+      return new B._ElevatedButtonWithIcon(onPressed, _null, _null, _null, style, C.Clip_0, _null, false, _null, true, new B._ElevatedButtonWithIconChild(label, icon, _null), _null);
+    },
+    _ElevatedButtonWithIcon: function _ElevatedButtonWithIcon(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
+      var _ = this;
+      _.onPressed = t0;
+      _.onLongPress = t1;
+      _.onHover = t2;
+      _.onFocusChange = t3;
+      _.style = t4;
+      _.clipBehavior = t5;
+      _.focusNode = t6;
+      _.autofocus = t7;
+      _.statesController = t8;
+      _.isSemanticButton = t9;
+      _.child = t10;
+      _.key = t11;
+    },
+    _ElevatedButtonWithIconChild: function _ElevatedButtonWithIconChild(t0, t1, t2) {
+      this.label = t0;
+      this.icon = t1;
+      this.key = t2;
+    },
     PopupMenuDivider: function PopupMenuDivider(t0) {
       this.key = t0;
     },
@@ -372,6 +396,32 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = A._setArrayType([A.SvgPicture$asset(this.icon, C.Alignment_0_0, A.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, 20), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY11, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
       return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null);
+    }
+  };
+  B._ElevatedButtonWithIcon.prototype = {
+    defaultStyleOf$1(context) {
+      var t1, scaledPadding;
+      A.Theme_of(context);
+      t1 = A.MediaQuery__maybeOf(context, C._MediaQueryAspect_4);
+      t1 = t1 == null ? null : t1.get$textScaler();
+      scaledPadding = A.ButtonStyleButton_scaledPadding(C.EdgeInsetsDirectional_16_0_24_0, D.EdgeInsetsDirectional_8_0_12_0, D.EdgeInsetsDirectional_4_0_6_0, (t1 == null ? C._LinearTextScaler_1 : t1).get$textScaleFactor());
+      return this.super$ElevatedButton$defaultStyleOf(context).copyWith$1$padding(new A.MaterialStatePropertyAll(scaledPadding, type$.MaterialStatePropertyAll_EdgeInsetsGeometry));
+    }
+  };
+  B._ElevatedButtonWithIconChild.prototype = {
+    build$1(context) {
+      var scale, gap, _null = null,
+        t1 = A.MediaQuery__maybeOf(context, C._MediaQueryAspect_4);
+      t1 = t1 == null ? _null : t1.get$textScaler();
+      scale = (t1 == null ? C._LinearTextScaler_1 : t1).get$textScaleFactor();
+      if (scale <= 1)
+        gap = 8;
+      else {
+        t1 = A.lerpDouble(8, 4, Math.min(scale - 1, 1));
+        t1.toString;
+        gap = t1;
+      }
+      return A.Row$(A._setArrayType([this.icon, new A.SizedBox(gap, _null, _null, _null), new A.Flexible(1, C.FlexFit_1, this.label, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_0, _null);
     }
   };
   B.PopupMenuDivider.prototype = {
@@ -732,7 +782,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 243
+    $signature: 163
   };
   B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -857,14 +907,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(A.Closure, [B._HtmlContentViewerOnWebState__setUpWeb_closure, B._HtmlContentViewerOnWebState__setUpWeb__closure, B._HtmlContentViewerOnWebState__setUpWeb_closure0]);
     _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__setUpWeb___closure, B._HtmlContentViewerOnWebState__setUpWeb___closure0, B._HtmlContentViewerOnWebState__setUpWeb___closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure1, B.PopupMenuItemWidget_build_closure, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, B.VacationNotificationMessageWidget__buildBodyForMobile_closure, B.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
     _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure]);
-    _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
+    _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B._ElevatedButtonWithIconChild, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
+    _inherit(B._ElevatedButtonWithIcon, A.ElevatedButton);
     _inherit(B.PopupMenuDivider, A.PopupMenuEntry);
     _inheritMany(A.Object, [B.PortalLink, B.PopupMenuWidgetMixin, B.UserSettingPopupMenuMixin]);
     _inherit(B.PortalLinkScope, A.InheritedWidget);
     _inherit(B.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(B.RenderPortalTheater, A.RenderProxyBox);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -876,6 +927,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       JSArray_Object: findType("JSArray<Object>"),
       JSArray_PopupMenuEntry_dynamic: findType("JSArray<PopupMenuEntry<@>>"),
       JSArray_Widget: findType("JSArray<Widget>"),
+      MaterialStatePropertyAll_EdgeInsetsGeometry: findType("MaterialStatePropertyAll<EdgeInsetsGeometry>"),
       MessageEvent: findType("MessageEvent"),
       Object: findType("Object"),
       PortalLinkOverlay: findType("PortalLinkOverlay"),
@@ -908,6 +960,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_12_0_16_0 = new A.EdgeInsetsDirectional(12, 0, 16, 0);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
+    D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
+    D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
     D.EdgeInsets_0_0_16_0 = new A.EdgeInsets(0, 0, 16, 0);
     D.EdgeInsets_0_12_12_0 = new A.EdgeInsets(0, 12, 12, 0);
@@ -938,5 +992,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dTRwf1MY6aw1e0jThppXz+LEOio=");
+})($__dart_deferred_initializers__, "HAYW+SNS64lMEmDK3J1aq7+G/30=");
 ;

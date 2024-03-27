@@ -12,3 +12,9 @@ firebase.initializeApp({
 });
 // Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
+
+const broadcast = new BroadcastChannel('background-message');
+
+messaging.onBackgroundMessage((message) => {
+    broadcast.postMessage(message);
+});
