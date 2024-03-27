@@ -1648,8 +1648,13 @@ class ComposerController extends BaseController with DragDropFileMixin {
     double headerEditorMobileHeight,
     BuildContext context,
   ) {
+    final scrollTarget = realCoordinateY -
+      (responsiveUtils.isLandscapeMobile(context)
+        ? 0
+        : headerEditorMobileHeight / 2);
+    final maxScrollExtend = scrollController.position.maxScrollExtent;
     scrollController.jumpTo(
-      realCoordinateY - (responsiveUtils.isLandscapeMobile(context) ? 0 : headerEditorMobileHeight / 2),
+      scrollTarget > maxScrollExtend ? maxScrollExtend : scrollTarget,
     );
   }
 
