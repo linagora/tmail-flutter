@@ -1624,7 +1624,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       if (coordinates?[1] != null && coordinates?[1] != 0) {
         final coordinateY = max((coordinates?[1] ?? 0) - defaultPaddingCoordinateYCursorEditor, 0);
         final realCoordinateY = coordinateY + (headerEditorMobileSize?.height ?? 0);
-        final outsideHeight = Get.height - ComposerStyle.keyboardMaxHeight - ComposerStyle.keyboardToolBarHeight;
+        final outsideHeight = Get.height - MediaQuery.viewInsetsOf(context).bottom - ComposerStyle.keyboardToolBarHeight;
         final webViewEditorClientY = max(outsideHeight, 0) + scrollController.position.pixels;
         if (scrollController.position.pixels >= realCoordinateY) {
           _scrollToCursorEditor(
