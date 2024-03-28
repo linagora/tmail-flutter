@@ -1653,9 +1653,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
         ? 0
         : headerEditorMobileHeight / 2);
     final maxScrollExtend = scrollController.position.maxScrollExtent;
-    scrollController.jumpTo(
-      scrollTarget > maxScrollExtend ? maxScrollExtend : scrollTarget,
-    );
+    scrollController.jumpTo(min(scrollTarget, maxScrollExtend));
   }
 
   void _onEnterKeyDown() {
