@@ -87,6 +87,8 @@ class ComposerView extends GetWidget<ComposerController> {
                         RecipientComposerWidget(
                           prefix: PrefixEmailAddress.to,
                           listEmailAddress: controller.listToEmailAddress,
+                          imagePaths: controller.imagePaths,
+                          maxWidth: constraints.maxWidth,
                           fromState: controller.fromRecipientState.value,
                           ccState: controller.ccRecipientState.value,
                           bccState: controller.bccRecipientState.value,
@@ -110,6 +112,8 @@ class ComposerView extends GetWidget<ComposerController> {
                           RecipientComposerWidget(
                             prefix: PrefixEmailAddress.cc,
                             listEmailAddress: controller.listCcEmailAddress,
+                            imagePaths: controller.imagePaths,
+                            maxWidth: constraints.maxWidth,
                             expandMode: controller.ccAddressExpandMode.value,
                             controller: controller.ccEmailAddressController,
                             focusNode: controller.ccAddressFocusNode,
@@ -130,6 +134,8 @@ class ComposerView extends GetWidget<ComposerController> {
                           RecipientComposerWidget(
                             prefix: PrefixEmailAddress.bcc,
                             listEmailAddress: controller.listBccEmailAddress,
+                            imagePaths: controller.imagePaths,
+                            maxWidth: constraints.maxWidth,
                             expandMode: controller.bccAddressExpandMode.value,
                             controller: controller.bccEmailAddressController,
                             focusNode: controller.bccAddressFocusNode,
@@ -190,7 +196,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   return AttachmentComposerWidget(
                                     listFileUploaded: controller.uploadController.listUploadAttachments,
                                     isCollapsed: controller.isAttachmentCollapsed,
-                                    onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                    onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
                                     onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                   );
                                 } else {
@@ -305,6 +311,8 @@ class ComposerView extends GetWidget<ComposerController> {
                       RecipientComposerWidget(
                         prefix: PrefixEmailAddress.to,
                         listEmailAddress: controller.listToEmailAddress,
+                        imagePaths: controller.imagePaths,
+                        maxWidth: constraints.maxWidth,
                         fromState: controller.fromRecipientState.value,
                         ccState: controller.ccRecipientState.value,
                         bccState: controller.bccRecipientState.value,
@@ -328,6 +336,8 @@ class ComposerView extends GetWidget<ComposerController> {
                         RecipientComposerWidget(
                           prefix: PrefixEmailAddress.cc,
                           listEmailAddress: controller.listCcEmailAddress,
+                          imagePaths: controller.imagePaths,
+                          maxWidth: constraints.maxWidth,
                           expandMode: controller.ccAddressExpandMode.value,
                           controller: controller.ccEmailAddressController,
                           focusNode: controller.ccAddressFocusNode,
@@ -348,6 +358,8 @@ class ComposerView extends GetWidget<ComposerController> {
                         RecipientComposerWidget(
                           prefix: PrefixEmailAddress.bcc,
                           listEmailAddress: controller.listBccEmailAddress,
+                          imagePaths: controller.imagePaths,
+                          maxWidth: constraints.maxWidth,
                           expandMode: controller.bccAddressExpandMode.value,
                           controller: controller.bccEmailAddressController,
                           focusNode: controller.bccAddressFocusNode,
@@ -423,7 +435,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         return AttachmentComposerWidget(
                                           listFileUploaded: controller.uploadController.listUploadAttachments,
                                           isCollapsed: controller.isAttachmentCollapsed,
-                                          onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                          onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
                                           onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                         );
                                       } else {
@@ -562,6 +574,8 @@ class ComposerView extends GetWidget<ComposerController> {
                       RecipientComposerWidget(
                         prefix: PrefixEmailAddress.to,
                         listEmailAddress: controller.listToEmailAddress,
+                        imagePaths: controller.imagePaths,
+                        maxWidth: constraints.maxWidth,
                         fromState: controller.fromRecipientState.value,
                         ccState: controller.ccRecipientState.value,
                         bccState: controller.bccRecipientState.value,
@@ -585,6 +599,8 @@ class ComposerView extends GetWidget<ComposerController> {
                         RecipientComposerWidget(
                           prefix: PrefixEmailAddress.cc,
                           listEmailAddress: controller.listCcEmailAddress,
+                          imagePaths: controller.imagePaths,
+                          maxWidth: constraints.maxWidth,
                           expandMode: controller.ccAddressExpandMode.value,
                           controller: controller.ccEmailAddressController,
                           focusNode: controller.ccAddressFocusNode,
@@ -605,6 +621,8 @@ class ComposerView extends GetWidget<ComposerController> {
                         RecipientComposerWidget(
                           prefix: PrefixEmailAddress.bcc,
                           listEmailAddress: controller.listBccEmailAddress,
+                          imagePaths: controller.imagePaths,
+                          maxWidth: constraints.maxWidth,
                           expandMode: controller.bccAddressExpandMode.value,
                           controller: controller.bccEmailAddressController,
                           focusNode: controller.bccAddressFocusNode,
@@ -675,7 +693,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   return AttachmentComposerWidget(
                                     listFileUploaded: controller.uploadController.listUploadAttachments,
                                     isCollapsed: controller.isAttachmentCollapsed,
-                                    onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
+                                    onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
                                     onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                   );
                                 } else {

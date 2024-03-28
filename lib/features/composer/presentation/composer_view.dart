@@ -49,7 +49,7 @@ class ComposerView extends GetWidget<ComposerController> {
           ? controller.insertImage(context, constraints.maxWidth)
           : null,
         backgroundColor: MobileAppBarComposerWidgetStyle.backgroundColor,
-        childBuilder: (context) => SafeArea(
+        childBuilder: (context, constraints) => SafeArea(
           left: !controller.responsiveUtils.isLandscapeMobile(context),
           right: !controller.responsiveUtils.isLandscapeMobile(context),
           child: Container(
@@ -110,6 +110,8 @@ class ComposerView extends GetWidget<ComposerController> {
                           Obx(() => RecipientComposerWidget(
                             prefix: PrefixEmailAddress.to,
                             listEmailAddress: controller.listToEmailAddress,
+                            imagePaths: controller.imagePaths,
+                            maxWidth: constraints.maxWidth,
                             fromState: controller.fromRecipientState.value,
                             ccState: controller.ccRecipientState.value,
                             bccState: controller.bccRecipientState.value,
@@ -127,12 +129,15 @@ class ComposerView extends GetWidget<ComposerController> {
                             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                            onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
                           )),
                           Obx(() {
                             if (controller.ccRecipientState.value == PrefixRecipientState.enabled) {
                               return RecipientComposerWidget(
                                 prefix: PrefixEmailAddress.cc,
                                 listEmailAddress: controller.listCcEmailAddress,
+                                imagePaths: controller.imagePaths,
+                                maxWidth: constraints.maxWidth,
                                 expandMode: controller.ccAddressExpandMode.value,
                                 controller: controller.ccEmailAddressController,
                                 focusNode: controller.ccAddressFocusNode,
@@ -157,6 +162,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               return RecipientComposerWidget(
                                 prefix: PrefixEmailAddress.bcc,
                                 listEmailAddress: controller.listBccEmailAddress,
+                                imagePaths: controller.imagePaths,
+                                maxWidth: constraints.maxWidth,
                                 expandMode: controller.bccAddressExpandMode.value,
                                 controller: controller.bccEmailAddressController,
                                 focusNode: controller.bccAddressFocusNode,
@@ -184,6 +191,16 @@ class ComposerView extends GetWidget<ComposerController> {
                             margin: ComposerStyle.mobileSubjectMargin,
                             onTapOutside: controller.onTapOutsideSubject,
                           ),
+                          Obx(() {
+                            if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                              return MobileAttachmentComposerWidget(
+                                listFileUploaded: controller.uploadController.listUploadAttachments,
+                                onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
                           Obx(() => Center(
                             child: InsertImageLoadingBarWidget(
                               uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
@@ -200,16 +217,6 @@ class ComposerView extends GetWidget<ComposerController> {
                               onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                             ),
                           )),
-                          Obx(() {
-                            if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                              return MobileAttachmentComposerWidget(
-                                listFileUploaded: controller.uploadController.listUploadAttachments,
-                                onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
                           const SizedBox(height: ComposerStyle.keyboardMaxHeight),
                         ],
                       ),
@@ -263,6 +270,8 @@ class ComposerView extends GetWidget<ComposerController> {
                           RecipientComposerWidget(
                             prefix: PrefixEmailAddress.to,
                             listEmailAddress: controller.listToEmailAddress,
+                            imagePaths: controller.imagePaths,
+                            maxWidth: constraints.maxWidth,
                             fromState: controller.fromRecipientState.value,
                             ccState: controller.ccRecipientState.value,
                             bccState: controller.bccRecipientState.value,
@@ -280,11 +289,14 @@ class ComposerView extends GetWidget<ComposerController> {
                             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                            onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
                           ),
                           if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
                               prefix: PrefixEmailAddress.cc,
                               listEmailAddress: controller.listCcEmailAddress,
+                              imagePaths: controller.imagePaths,
+                              maxWidth: constraints.maxWidth,
                               expandMode: controller.ccAddressExpandMode.value,
                               controller: controller.ccEmailAddressController,
                               focusNode: controller.ccAddressFocusNode,
@@ -304,6 +316,8 @@ class ComposerView extends GetWidget<ComposerController> {
                             RecipientComposerWidget(
                               prefix: PrefixEmailAddress.bcc,
                               listEmailAddress: controller.listBccEmailAddress,
+                              imagePaths: controller.imagePaths,
+                              maxWidth: constraints.maxWidth,
                               expandMode: controller.bccAddressExpandMode.value,
                               controller: controller.bccEmailAddressController,
                               focusNode: controller.bccAddressFocusNode,
@@ -329,6 +343,16 @@ class ComposerView extends GetWidget<ComposerController> {
                         margin: ComposerStyle.mobileSubjectMargin,
                         onTapOutside: controller.onTapOutsideSubject,
                       ),
+                      Obx(() {
+                        if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                          return MobileAttachmentComposerWidget(
+                            listFileUploaded: controller.uploadController.listUploadAttachments,
+                            onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
                       Obx(() => Center(
                         child: InsertImageLoadingBarWidget(
                           uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
@@ -345,16 +369,6 @@ class ComposerView extends GetWidget<ComposerController> {
                           onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                         ),
                       )),
-                      Obx(() {
-                        if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                          return MobileAttachmentComposerWidget(
-                            listFileUploaded: controller.uploadController.listUploadAttachments,
-                            onDeleteAttachmentAction: (fileState) => controller.deleteAttachmentUploaded(fileState.uploadTaskId),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      })
                     ],
                   ),
                 )

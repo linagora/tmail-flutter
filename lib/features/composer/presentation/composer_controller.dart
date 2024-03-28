@@ -97,7 +97,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
 
-  final expandModeAttachments = ExpandMode.EXPAND.obs;
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
   final isInitialRecipient = false.obs;
@@ -1313,12 +1312,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     mailboxDashBoardController.closeComposerOverlay();
   }
 
-  void toggleDisplayAttachments() {
-    final newExpandMode = expandModeAttachments.value == ExpandMode.COLLAPSE
-        ? ExpandMode.EXPAND : ExpandMode.COLLAPSE;
-    expandModeAttachments.value = newExpandMode;
-  }
-
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.from:
@@ -1564,7 +1557,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     if (PlatformInfo.isWeb) {
       richTextWebController.editorController.insertSignature(signature);
     } else {
-      await htmlEditorApi?.insertSignature(signature);
+      await htmlEditorApi?.insertSignature(signature, allowCollapsed: false);
     }
   }
 
@@ -2119,5 +2112,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
         color: Colors.black
       )
     );
+  }
+
+  void handleEnableRecipientsInputAction(bool isEnabled) {
+    fromRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+    ccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+    bccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
   }
 }
