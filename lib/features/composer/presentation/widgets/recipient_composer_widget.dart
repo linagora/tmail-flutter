@@ -371,9 +371,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   bool get _isCollapse => _currentListEmailAddress.length > 1 && widget.expandMode == ExpandMode.COLLAPSE;
 
-  bool get _isAllRecipientInputEnabled => widget.fromState == PrefixRecipientState.enabled &&
-    widget.ccState == PrefixRecipientState.enabled &&
-    widget.bccState == PrefixRecipientState.enabled;
+  bool get _isAllRecipientInputEnabled => widget.fromState == PrefixRecipientState.enabled
+    && widget.ccState == PrefixRecipientState.enabled
+    && widget.bccState == PrefixRecipientState.enabled;
 
   List<EmailAddress> get _collapsedListEmailAddress => _isCollapse
     ? _currentListEmailAddress.sublist(0, 1)

@@ -145,7 +145,7 @@ void main() {
 
       expect(
         labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width + avatarIconRecipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+        lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
@@ -180,7 +180,7 @@ void main() {
       expect(recipientTagItemWidgetFinder, findsOneWidget);
       expect(
         prefixRecipientComposerWidgetSize.width + recipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(360)
+        lessThan(360)
       );
     });
 
@@ -220,7 +220,7 @@ void main() {
 
       expect(
           labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width,
-          lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+          lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
@@ -262,7 +262,7 @@ void main() {
 
       expect(
         labelRecipientTagItemWidgetSize.width + deleteIconRecipientTagItemWidgetSize.width + avatarIconRecipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+        lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
@@ -300,7 +300,7 @@ void main() {
       expect(recipientTagItemWidgetFinder, findsOneWidget);
       expect(
         prefixRecipientComposerWidgetSize.width + recipientTagItemWidgetSize.width,
-        lessThanOrEqualTo(360)
+        lessThan(360)
       );
 
       final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
@@ -327,7 +327,7 @@ void main() {
 
       expect(
         totalSizeOfAllComponents,
-        lessThanOrEqualTo(recipientTagItemWidgetSize.width)
+        lessThan(recipientTagItemWidgetSize.width)
       );
     });
 
