@@ -403,7 +403,7 @@ void main() {
       expect(isExceededTextOverflow, equals(true));
     });
 
-    testWidgets('WHEN EmailAddress has address is too long AND display name is NULL\n'
+    testWidgets('WHEN EmailAddress has address short AND display name is NULL\n'
         'RecipientTagItemWidget SHOULD have text display full', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress(null, 'test123@example.com'),
