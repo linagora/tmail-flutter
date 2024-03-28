@@ -85,7 +85,10 @@ void main() {
           newToken: OIDCFixtures.tokenOidcExpiredTime,
           newConfig: OIDCFixtures.oidcConfiguration);
 
-        final result = authorizationInterceptors.validateToRefreshToken(responseStatusCode: responseStatusCode401);
+        final result = authorizationInterceptors.validateToRefreshToken(
+          responseStatusCode: responseStatusCode401,
+          tokenOIDC: OIDCFixtures.tokenOidcExpiredTime,
+        );
 
         expect(result, true);
       });
@@ -95,7 +98,10 @@ void main() {
           newToken: OIDCFixtures.tokenOidcExpiredTime,
           newConfig: OIDCFixtures.oidcConfiguration);
 
-        final result = authorizationInterceptors.validateToRefreshToken(responseStatusCode: responseStatusCode500);
+        final result = authorizationInterceptors.validateToRefreshToken(
+          responseStatusCode: responseStatusCode500,
+          tokenOIDC: OIDCFixtures.tokenOidcExpiredTime,
+        );
 
         expect(result, false);
       });
@@ -105,7 +111,10 @@ void main() {
           newToken: OIDCFixtures.tokenOidcExpiredTime,
           newConfig: null);
 
-        final result = authorizationInterceptors.validateToRefreshToken(responseStatusCode: responseStatusCode401);
+        final result = authorizationInterceptors.validateToRefreshToken(
+          responseStatusCode: responseStatusCode401,
+          tokenOIDC: OIDCFixtures.tokenOidcExpiredTime,
+        );
 
         expect(result, false);
       });
@@ -115,7 +124,10 @@ void main() {
           newToken: OIDCFixtures.tokenOidcExpiredTimeAndTokenEmpty,
           newConfig: OIDCFixtures.oidcConfiguration);
 
-        final result = authorizationInterceptors.validateToRefreshToken(responseStatusCode: responseStatusCode401);
+        final result = authorizationInterceptors.validateToRefreshToken(
+          responseStatusCode: responseStatusCode401,
+          tokenOIDC: OIDCFixtures.tokenOidcExpiredTimeAndTokenEmpty,
+        );
 
         expect(result, false);
       });
@@ -125,7 +137,10 @@ void main() {
           newToken: OIDCFixtures.tokenOidcExpiredTimeAndRefreshTokenEmpty,
           newConfig: OIDCFixtures.oidcConfiguration);
 
-        final result = authorizationInterceptors.validateToRefreshToken(responseStatusCode: responseStatusCode401);
+        final result = authorizationInterceptors.validateToRefreshToken(
+          responseStatusCode: responseStatusCode401,
+          tokenOIDC: OIDCFixtures.tokenOidcExpiredTimeAndRefreshTokenEmpty,
+        );
 
         expect(result, false);
       });
@@ -135,7 +150,10 @@ void main() {
           newToken: OIDCFixtures.newTokenOidc,
           newConfig: OIDCFixtures.oidcConfiguration);
 
-        final result = authorizationInterceptors.validateToRefreshToken(responseStatusCode: responseStatusCode401);
+        final result = authorizationInterceptors.validateToRefreshToken(
+          responseStatusCode: responseStatusCode401,
+          tokenOIDC: OIDCFixtures.newTokenOidc,
+        );
 
         expect(result, false);
       });
