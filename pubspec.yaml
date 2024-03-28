@@ -60,7 +60,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: enhancement/upgrade-dependencies
+      ref: cnb_supported
 
   jmap_dart_client:
     git:
@@ -204,9 +204,9 @@ dependencies:
 
   workmanager: 0.5.1
 
-  flutter_typeahead: 5.0.2
+  flutter_typeahead: 4.6.0
 
-  flutter_keyboard_visibility: 6.0.0
+  flutter_keyboard_visibility: 5.4.1
 
   extended_text: 12.0.0
 

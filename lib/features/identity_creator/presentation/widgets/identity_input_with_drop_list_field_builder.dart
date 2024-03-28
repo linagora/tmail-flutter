@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_decoration_builder.dart';
 
@@ -77,7 +78,7 @@ class IdentityInputWithDropListFieldBuilder extends StatelessWidget {
             onSelectedSuggestionAction!(emailSelected);
           }
         },
-        suggestionsBoxDecoration: BoxDecoration(
+        suggestionsBoxDecoration: SuggestionsBoxDecoration(
           borderRadius: BorderRadius.circular(14)
         ),
         noItemsFoundBuilder: (context) => const SizedBox(),
