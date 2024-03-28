@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
@@ -35,7 +36,12 @@ class MobileContainerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) => !didPop ? onCloseViewAction : null,
+      onPopInvoked: (didPop) {
+        log('MobileContainerView::build:onPopInvoked: didPop = $didPop');
+        if (!didPop) {
+          onCloseViewAction.call();
+        }
+      },
       canPop: false,
       child: GestureDetector(
         onTap: onClearFocusAction,
