@@ -49,11 +49,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
-    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: TOKEN_INITIAL = $newToken');
+    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: INITIAL_TOKEN = ${newToken?.token} | EXPIRED_TIME = ${newToken?.expiredTime}');
   }
 
   void _updateNewToken(TokenOIDC newToken) {
-    log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = $newToken');
+    log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
     _token = newToken;
   }
 
@@ -83,13 +83,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
+    logError('AuthorizationInterceptors::onError(): TOKEN = ${_token?.expiredTime} | DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
     try {
-      if (validateToRefreshToken(responseStatusCode: err.response?.statusCode)) {
-        log('AuthorizationInterceptors::onError:_validateToRefreshToken');
-        final requestOptions = err.requestOptions;
-        final extraInRequest = requestOptions.extra;
+      final requestOptions = err.requestOptions;
+      final extraInRequest = requestOptions.extra;
+      bool isRetryRequest = false;
 
+      if (validateToRefreshToken(
+        responseStatusCode: err.response?.statusCode,
+        tokenOIDC: _token
+      )) {
+        log('AuthorizationInterceptors::onError:_validateToRefreshToken');
         final newTokenOidc = PlatformInfo.isIOS
           ? await _handleRefreshTokenOnIOSPlatform()
           : await _handleRefreshTokenOnOtherPlatform();
@@ -101,6 +105,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
         _updateNewToken(newTokenOidc);
 
+        isRetryRequest = true;
+      } else if (validateToRetryTheRequestWithNewToken(
+        authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
+        tokenOIDC: _token
+      )) {
+        log('AuthorizationInterceptors::onError:validateToRetryTheRequestWithNewToken');
+        isRetryRequest = true;
+      } else {
+        return super.onError(err, handler);
+      }
+
+      if (isRetryRequest) {
         if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
           log('AuthorizationInterceptors::onError: Perform upload attachment request');
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
@@ -147,24 +163,33 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     }
   }
 
-  bool _isTokenExpired() => _token?.isExpired == true;
+  bool _isTokenExpired(TokenOIDC? tokenOIDC) => tokenOIDC?.isExpired == true;
 
   bool _isAuthenticationOidcValid() => _authenticationType == AuthenticationType.oidc && _configOIDC != null;
 
-  bool _isTokenNotEmpty() => _token?.token.isNotEmpty == true;
+  bool _isTokenNotEmpty(TokenOIDC? tokenOIDC) => tokenOIDC?.token.isNotEmpty == true;
 
-  bool _isRefreshTokenNotEmpty() => _token?.refreshToken.isNotEmpty == true;
+  bool _isRefreshTokenNotEmpty(TokenOIDC? tokenOIDC) => tokenOIDC?.refreshToken.isNotEmpty == true;
 
-  bool validateToRefreshToken({int? responseStatusCode}) {
-    if (responseStatusCode == 401 &&
-        _isAuthenticationOidcValid() &&
-        _isTokenNotEmpty() &&
-        _isRefreshTokenNotEmpty() &&
-        _isTokenExpired()
-    ) {
-      return true;
-    }
-    return false;
+  bool validateToRefreshToken({
+    required int? responseStatusCode,
+    required TokenOIDC? tokenOIDC
+  }) {
+    return responseStatusCode == 401
+      && _isAuthenticationOidcValid()
+      && _isTokenNotEmpty(tokenOIDC)
+      && _isRefreshTokenNotEmpty(tokenOIDC)
+      && _isTokenExpired(tokenOIDC);
+  }
+
+  bool validateToRetryTheRequestWithNewToken({
+    required String? authHeader,
+    required TokenOIDC? tokenOIDC
+  }) {
+    return authHeader != null
+      && _isTokenNotEmpty(tokenOIDC)
+      && !_isTokenExpired(tokenOIDC)
+      && !authHeader.contains(tokenOIDC!.token);
   }
 
   String _getAuthorizationAsBasicHeader(String? authorization) => 'Basic $authorization';
