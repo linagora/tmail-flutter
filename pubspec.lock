@@ -412,8 +412,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: f13a35eb76fafb2ee1e686ca19c4c742d0efa78a
+      ref: "bugfix/signature_got_clipped"
+      resolved-ref: ab5315dc447cbe49568d4ff23ef51ea1c1807fa4
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -1491,8 +1491,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "867d22aaa2da242bb1c5929e2804e3cb1d4acaf6"
+      ref: "enhancement/update_enough_html_editor_dependency"
+      resolved-ref: edf51fe18a28c290b3f17e65b9e58a48615d3029
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"
