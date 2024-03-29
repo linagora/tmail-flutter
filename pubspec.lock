@@ -635,7 +635,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "8efda22c0e67d8e0be839a860169041e95ab035c"
+      resolved-ref: f63af47b82b3087a6a7d28506ae4781b057b1d3a
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
     version: "1.0.2"
