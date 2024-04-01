@@ -1464,6 +1464,8 @@ class MailboxDashBoardController extends ReloadableController {
         () => _replaceBrowserHistory(uri: result.value2)
       );
     }
+
+    _getAllIdentities();
   }
 
   void selectQuickSearchFilter(QuickSearchFilter filter) {
@@ -1542,6 +1544,8 @@ class MailboxDashBoardController extends ReloadableController {
         () => _replaceBrowserHistory(uri: result.value2)
       );
     }
+
+    _getAllIdentities();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
