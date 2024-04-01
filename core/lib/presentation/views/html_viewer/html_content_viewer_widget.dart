@@ -277,6 +277,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   void dispose() {
     _loadingBarNotifier.dispose();
+    _htmlData = null;
     super.dispose();
   }
 }
