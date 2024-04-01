@@ -200,7 +200,7 @@ class HtmlUtils {
           <script type="module">
             function renderPage(pdfDoc, pageNumber, canvas) {
               pdfDoc.getPage(pageNumber).then(page => {
-                const viewport = page.getViewport({ scale: 1.5 });
+                const viewport = page.getViewport({ scale: 1 });
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
 
