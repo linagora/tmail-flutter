@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/exceptions/download_file_exception.dart';
@@ -117,17 +116,30 @@ class DownloadManager {
     try {
       fileName ??= 'unknown.pdf';
       final deviceInfo = await _deviceInfoPlugin.deviceInfo;
-      if (mimeType != Constant.pdfMimeType 
-          || '${deviceInfo.data['browserName']}' == 'BrowserName.firefox') {
-        final blob = html.Blob([bytes], mimeType);
-        final file = html.File([blob], fileName, {'type': mimeType});
-        final url = html.Url.createObjectUrl(file);
-        html.window.open(url, '_blank');
-        html.Url.revokeObjectUrl(url);
-      } else if ('${deviceInfo.data['browserName']}' == 'BrowserName.chrome') {
-        HtmlUtils.openNewTabHtmlDocument(HtmlUtils.chromePdfViewer(bytes, fileName));
+      log('DownloadManager::openDownloadedFileWeb: TYPE = ${deviceInfo.runtimeType} | ${deviceInfo.data}');
+      if (deviceInfo is WebBrowserInfo) {
+        switch(deviceInfo.browserName) {
+          case BrowserName.chrome:
+          case BrowserName.edge:
+            HtmlUtils.openNewTabHtmlDocument(HtmlUtils.chromePdfViewer(bytes, fileName));
+            break;
+          case BrowserName.safari:
+            HtmlUtils.openNewTabHtmlDocument(HtmlUtils.safariPdfViewer(bytes, fileName));
+            break;
+          default:
+            HtmlUtils.openFileViewer(
+              bytes: bytes,
+              fileName: fileName,
+              mimeType: mimeType
+            );
+            break;
+        }
       } else {
-        HtmlUtils.openNewTabHtmlDocument(HtmlUtils.safariPdfViewer(bytes, fileName));
+        HtmlUtils.openFileViewer(
+          bytes: bytes,
+          fileName: fileName,
+          mimeType: mimeType
+        );
       }
     } catch (exception) {
       logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
