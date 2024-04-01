@@ -18,6 +18,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -38,6 +39,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -63,6 +65,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/composer_arguments_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
@@ -96,8 +99,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
@@ -182,6 +187,7 @@ class MailboxDashBoardController extends ReloadableController {
   final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
+  final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -221,6 +227,7 @@ class MailboxDashBoardController extends ReloadableController {
   final listResultSearch = RxList<PresentationEmail>();
   PresentationMailbox? outboxMailbox;
   ComposerArguments? composerArguments;
+  List<Identity>? _identities;
 
   late StreamSubscription _emailAddressStreamSubscription;
   late StreamSubscription _emailContentStreamSubscription;
@@ -260,6 +267,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._restoreDeletedMessageInteractor,
     this._getRestoredDeletedMessageInteractor,
     this._removeComposerCacheOnWebInteractor,
+    this._getAllIdentitiesInteractor,
   );
 
   @override
@@ -285,8 +293,8 @@ class MailboxDashBoardController extends ReloadableController {
     _getEmailCacheOnWebInteractor.execute().fold(
       (failure) {},
       (success) {
-        if(success is GetComposerCacheSuccess){
-          openComposerOverlay(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
+        if (success is GetComposerCacheSuccess) {
+          goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
         }
       },
     );
@@ -362,6 +370,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!);
     } else if (success is GetRestoredDeletedMessageSuccess) {
       _handleGetRestoredDeletedMessageSuccess(success);
+    } else if (success is GetAllIdentitiesSuccess) {
+      _handleGetAllIdentitiesSuccess(success);
     }
   }
 
@@ -520,6 +530,7 @@ class MailboxDashBoardController extends ReloadableController {
 
     _getVacationResponse();
     spamReportController.getSpamReportStateAction();
+    _getAllIdentities();
 
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
@@ -1391,14 +1402,16 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void goToComposer(ComposerArguments arguments) async {
+    final argumentsWithIdentity = arguments.withIdentity(identities: _identities);
+
     if (PlatformInfo.isWeb) {
       if (composerOverlayState.value == ComposerOverlayState.inActive) {
-        openComposerOverlay(arguments);
+        openComposerOverlay(argumentsWithIdentity);
       }
     } else {
       BackButtonInterceptor.removeByName(AppRoutes.dashboard);
 
-      final result = await push(AppRoutes.composer, arguments: arguments);
+      final result = await push(AppRoutes.composer, arguments: argumentsWithIdentity);
 
       BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
 
@@ -2481,10 +2494,27 @@ class MailboxDashBoardController extends ReloadableController {
     await _removeComposerCacheOnWebInteractor.execute();
   }
 
-  bool validateSendingEmailFailedWhenNetworkIsLostOnMobile(FeatureFailure failure) {
+  bool validateSendingEmailFailedWhenNetworkIsLostOnMobile(dynamic failure) {
     return failure is SendEmailFailure &&
       failure.exception is NoNetworkError &&
       PlatformInfo.isMobile;
+  }
+
+  void _getAllIdentities() {
+    if (accountId.value != null && sessionCurrent != null) {
+      consumeState(_getAllIdentitiesInteractor.execute(
+        sessionCurrent!,
+        accountId.value!
+      ));
+    }
+  }
+
+  void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) async {
+    final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
+    if (listIdentitiesMayDeleted.isNotEmpty) {
+      _identities = listIdentitiesMayDeleted;
+    }
+    log('MailboxDashBoardController::_handleGetAllIdentitiesSuccess: IDENTITIES_SIZE = ${_identities?.length}');
   }
 
   @override

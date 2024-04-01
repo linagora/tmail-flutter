@@ -1,3 +1,4 @@
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -22,6 +23,7 @@ class ComposerArguments extends RouterArguments {
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
   final EmailId? previousEmailId;
+  final List<Identity>? identities;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -37,6 +39,7 @@ class ComposerArguments extends RouterArguments {
     this.messageId,
     this.references,
     this.previousEmailId,
+    this.identities,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -170,5 +173,6 @@ class ComposerArguments extends RouterArguments {
     body,
     messageId,
     references,
+    identities,
   ];
 }
