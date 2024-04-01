@@ -78,6 +78,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
@@ -172,6 +176,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<RestoredDeletedMessageInteractor>(),
       Get.find<GetRestoredDeletedMessageInterator>(),
       Get.find<RemoveComposerCacheOnWebInteractor>(),
+      Get.find<GetAllIdentitiesInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -277,7 +282,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     );
     Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
-    Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(
         Get.find<EmailRepository>(),
         Get.find<MailboxRepository>()
@@ -332,6 +336,12 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetRestoredDeletedMessageInterator(
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>()
+    ));
+
+    IdentityInteractorsBindings().dependencies();
+    Get.lazyPut(() => GetAllIdentitiesInteractor(
+      Get.find<IdentityRepository>(),
+      Get.find<IdentityUtils>()
     ));
   }
 
