@@ -241,7 +241,7 @@ class HtmlUtils {
               console.error(reason);
             });
 
-            ${_fileInfoScript(bytes, fileName)}
+            ${_fileInfoScript(fileName)}
 
             ${_downloadButtonListenerScript(bytes, fileName)}
           </script>
@@ -308,7 +308,7 @@ class HtmlUtils {
             const bytesJs = new Uint8Array(${bytes.toJS});
             PDFObject.embed('data:application/pdf;base64,$base64', "#pdf-viewer");
 
-            ${_fileInfoScript(bytes, fileName)}
+            ${_fileInfoScript(fileName)}
 
             ${_downloadButtonListenerScript(bytes, fileName)}
           </script>
@@ -406,7 +406,7 @@ class HtmlUtils {
       });''';
   }
 
-  static String _fileInfoScript(Uint8List bytes, String? fileName) {
+  static String _fileInfoScript(String? fileName) {
     return '''
       function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
@@ -420,7 +420,6 @@ class HtmlUtils {
       fileNameSpan.textContent = "$fileName";
 
       const fileSizeSpan = document.getElementById('file-size');
-      const byteArray = new Uint8Array(${bytes.toJS});
       fileSizeSpan.textContent = formatFileSize(bytesJs.length);''';
   }
 }
