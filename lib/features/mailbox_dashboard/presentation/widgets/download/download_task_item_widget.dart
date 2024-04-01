@@ -61,19 +61,26 @@ class DownloadTaskItemWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(taskState.attachment.generateFileName(),
+                DefaultTextStyle(
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  child: Text(
+                    taskState.attachment.generateFileName(),
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     maxLines: 1,
-                    style: const TextStyle(color: Colors.white, fontSize: 14)),
+                  )
+                ),
                 const SizedBox(height: 4),
-                Text(
+                DefaultTextStyle(
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  child: Text(
                     '${ByteConverter(taskState.downloaded.toDouble()).toHumanReadable(SizeUnit.MB)}/'
                         '${ByteConverter(taskState.total.toDouble()).toHumanReadable(SizeUnit.MB)}',
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     maxLines: 1,
-                    style: const TextStyle(color: Colors.white, fontSize: 12))
+                  )
+                )
               ],
             ),
           )
