@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
-import 'package:universal_html/html.dart' as html show MessageEvent;
+import 'package:universal_html/html.dart' as html show MessageEvent, DomException;
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
@@ -24,25 +24,46 @@ class FcmReceiver {
   static FcmReceiver get instance => _instance;
 
   static const notificationInteractionChannel = MethodChannel('notification_interaction_channel');
+  static const int MAX_COUNT_RETRY_TO_GET_FCM_TOKEN = 3;
+
+  int _countRetryToGetFcmToken = 0;
 
   Future onInitialFcmListener() async {
-    log('FcmReceiver::onInitialFcmListener:');
-    await _onHandleFcmToken();
-
+    _countRetryToGetFcmToken = 0;
     _onForegroundMessage();
     _onBackgroundMessage();
+
     if (PlatformInfo.isWeb) {
       _onMessageBroadcastChannel();
+      await _requestNotificationPermissionOnWeb();
+    } else if (PlatformInfo.isIOS) {
+      _setUpIOSNotificationInteraction();
+      await _onHandleFcmToken();
+    } else {
+      await _onHandleFcmToken();
     }
+  }
 
-    if (PlatformInfo.isIOS) {
-      notificationInteractionChannel.setMethodCallHandler((call) async {
-        log('FcmReceiver::onInitialFcmListener:notificationInteractionChannel: $call');
-        if (call.method == 'openEmail' && call.arguments is String) {
-          log('FcmReceiver::onInitialFcmListener:openEmail with id = ${call.arguments}');
-          FcmService.instance.handleOpenEmailFromNotification(call.arguments);
-        }
-      });
+  void _setUpIOSNotificationInteraction() {
+    notificationInteractionChannel.setMethodCallHandler((call) async {
+      log('FcmReceiver::_setUpIOSNotificationInteraction:notificationInteractionChannel: $call');
+      if (call.method == 'openEmail' && call.arguments is String) {
+        log('FcmReceiver::_setUpIOSNotificationInteraction:openEmail with id = ${call.arguments}');
+        FcmService.instance.handleOpenEmailFromNotification(call.arguments);
+      }
+    });
+  }
+
+  Future<void> _requestNotificationPermissionOnWeb() async {
+    NotificationSettings notificationSetting = await FirebaseMessaging.instance.getNotificationSettings();
+    log('FcmReceiver::_requestNotificationPermissionOnWeb: authorizationStatus = ${notificationSetting.authorizationStatus}');
+    if (notificationSetting.authorizationStatus != AuthorizationStatus.authorized) {
+      notificationSetting = await FirebaseMessaging.instance.requestPermission();
+      if (notificationSetting.authorizationStatus == AuthorizationStatus.authorized) {
+        await _onHandleFcmToken();
+      }
+    } else {
+      await _onHandleFcmToken();
     }
   }
 
@@ -64,11 +85,29 @@ class FcmReceiver {
   }
 
   Future<String?> _getInitialToken() async {
-    final token = await FirebaseMessaging.instance.getToken(
-      vapidKey: PlatformInfo.isWeb ? AppConfig.fcmVapidPublicKeyWeb : null
-    );
-    log('FcmReceiver::_getInitialToken:token: $token');
-    return token;
+    try {
+      final vapidKey = PlatformInfo.isWeb ? AppConfig.fcmVapidPublicKeyWeb : null;
+      final token = await FirebaseMessaging.instance.getToken(vapidKey: vapidKey);
+      log('FcmReceiver::_getInitialToken:token: $token');
+      return token;
+    } catch (e) {
+      logError('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
+      /// Workaround to fix error `no active Service Worker` on Firebase
+      /// Related Issue: https://github.com/firebase/firebase-js-sdk/issues/7575
+      /// Related Issue: https://github.com/firebase/firebase-js-sdk/issues/7693
+      if (PlatformInfo.isWeb
+          && e is html.DomException
+          && _countRetryToGetFcmToken < MAX_COUNT_RETRY_TO_GET_FCM_TOKEN) {
+        return await _retryGetToken();
+      }
+      return null;
+    }
+  }
+
+  Future<String?> _retryGetToken() async {
+    _countRetryToGetFcmToken++;
+    log('FcmReceiver::_retryGetToken: CountRetry = $_countRetryToGetFcmToken');
+    return await _getInitialToken();
   }
 
   Future _onHandleFcmToken() async {
