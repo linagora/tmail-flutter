@@ -48,6 +48,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final PrefixRecipientState bccState;
   final bool? isInitial;
   final FocusNode? focusNode;
+  final FocusNode? focusNodeKeyboard;
   final GlobalKey? keyTagEditor;
   final FocusNode? nextFocusNode;
   final TextEditingController? controller;
@@ -89,6 +90,7 @@ class RecipientComposerWidget extends StatefulWidget {
     this.onFocusNextAddressAction,
     this.onRemoveDraggableEmailAddressAction,
     this.onEnableAllRecipientsInputAction,
+    this.focusNodeKeyboard,
   });
 
   @override
@@ -164,6 +166,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                             controller: widget.controller,
                             focusNode: widget.focusNode,
                             enableBorder: _isDragging,
+                            focusNodeKeyboard: widget.focusNodeKeyboard,
                             borderRadius: RecipientComposerWidgetStyle.enableBorderRadius,
                             enableBorderColor: RecipientComposerWidgetStyle.enableBorderColor,
                             keyboardType: TextInputType.emailAddress,
@@ -244,6 +247,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         length: _collapsedListEmailAddress.length,
                         controller: widget.controller,
                         focusNode: widget.focusNode,
+                        focusNodeKeyboard: widget.focusNodeKeyboard,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.done,
                         debounceDuration: RecipientComposerWidgetStyle.suggestionDebounceDuration,
