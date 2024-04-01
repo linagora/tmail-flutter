@@ -257,7 +257,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           emailSupervisorController.disposePageViewController();
         }
         _updateCurrentEmailId(null);
-        _resetToOriginalValue();
+        _resetToOriginalValue(isEmailClosing: true);
         mailboxDashBoardController.clearSelectedEmail();
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
         mailboxDashBoardController.clearEmailUIAction();
@@ -421,7 +421,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _identitySelected = identities.first;
   }
 
-  void _getEmailContentAction(EmailId emailId) async {
+  void _getEmailContentAction(EmailId emailId) {
     final emailLoaded = emailSupervisorController.getEmailInQueueByEmailId(emailId);
 
     if (emailLoaded != null) {
@@ -578,7 +578,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _resetToOriginalValue() {
+  void _resetToOriginalValue({bool isEmailClosing = false}) {
     emailContents.value = null;
     _currentEmailLoaded = null;
     attachments.clear();
@@ -586,6 +586,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     calendarEvent.value = null;
     eventActions.clear();
     emailUnsubscribe.value = null;
+    if (isEmailClosing) {
+      emailLoadedViewState.value = Right(UIState.idle);
+      viewState.value = Right(UIState.idle);
+    }
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
@@ -1273,7 +1277,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
     mailboxDashBoardController.clearSelectedEmail();
     _updateCurrentEmailId(null);
-    _resetToOriginalValue();
+    _resetToOriginalValue(isEmailClosing: true);
     _replaceBrowserHistory();
     if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
       if (context != null && responsiveUtils.isWebDesktop(context)) {
