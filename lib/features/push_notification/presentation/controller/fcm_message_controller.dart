@@ -69,21 +69,21 @@ class FcmMessageController extends FcmBaseController {
   void _listenForegroundMessageStream() {
     FcmService.instance.foregroundMessageStreamController
       ?.stream
-      .throttleTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
+      .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
       .listen(_handleForegroundMessageAction);
   }
 
   void _listenBackgroundMessageStream() {
     FcmService.instance.backgroundMessageStreamController
       ?.stream
-      .throttleTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
+      .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
       .listen(_handleBackgroundMessageAction);
   }
 
   void _listenTokenStream() {
     FcmService.instance.fcmTokenStreamController
       ?.stream
-      .throttleTime(const Duration(milliseconds: FcmUtils.durationRefreshToken))
+      .debounceTime(const Duration(milliseconds: FcmUtils.durationRefreshToken))
       .listen(FcmTokenController.instance.onFcmTokenChanged);
   }
 
