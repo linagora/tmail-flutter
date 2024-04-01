@@ -409,11 +409,11 @@ packages:
     source: path
     version: "1.0.0+1"
   enough_html_editor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "."
-      ref: "improve/allow-enable-disable-colllapsed-signature"
-      resolved-ref: b0038f647bf90ba40bf21efe7290a22dec4d2867
+      ref: cnb_supported
+      resolved-ref: "669cfd989498cf398c88a6618eebb089967b9e28"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
@@ -1491,8 +1491,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "867d22aaa2da242bb1c5929e2804e3cb1d4acaf6"
+      ref: cnb_supported
+      resolved-ref: ef8bcdd1824badd7262aa63952d4b83a47ef0dc4
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
     version: "0.0.2"
