@@ -1,3 +1,12 @@
+## [0.11.3-patch4-11] - 2024-04-01
+### Fixed
+- #2460 Implement realtime update for web app in background
+- #2646 Change term `Select All` to `Select all message of this page`
+- #2694 Clear sort order in search when select another mailbox
+- #2754 Add handler to preview PDF in Edge, Opera
+- #2735 Add gesture back for composer in Android 14
+- #2658 Fix background color in data time picker
+
 ## [0.11.3-patch4-10] - 2024-03-22
 ### Fixed
 - #2730 Fallback value for Always read receipt settings is false
