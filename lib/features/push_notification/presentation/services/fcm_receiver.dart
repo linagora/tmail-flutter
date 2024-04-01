@@ -92,9 +92,6 @@ class FcmReceiver {
       return token;
     } catch (e) {
       logError('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
-      /// Workaround to fix error `no active Service Worker` on Firebase
-      /// Related Issue: https://github.com/firebase/firebase-js-sdk/issues/7575
-      /// Related Issue: https://github.com/firebase/firebase-js-sdk/issues/7693
       if (PlatformInfo.isWeb
           && e is html.DomException
           && _countRetryToGetFcmToken < MAX_COUNT_RETRY_TO_GET_FCM_TOKEN) {
