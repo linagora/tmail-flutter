@@ -310,6 +310,18 @@ class HtmlUtils {
       </html>''';
   }
 
+  static void openFileViewer({
+    required Uint8List bytes,
+    required String fileName,
+    String? mimeType
+  }) {
+    final blob = html.Blob([bytes], mimeType);
+    final file = html.File([blob], fileName, {'type': mimeType});
+    final url = html.Url.createObjectUrl(file);
+    html.window.open(url, '_blank');
+    html.Url.revokeObjectUrl(url);
+  }
+
   static const String _pdfContainerStyle = '''
     display: flex;
     flex-direction: column;
@@ -359,7 +371,7 @@ class HtmlUtils {
     <div id="app-bar">
       <div id="file-info">
         <span id="file-name" style="margin-right: 10px;"></span> 
-        (<span id="file-size", style="white-space: nowrap;"></span>)
+        (<span id="file-size" style="white-space: nowrap;"></span>)
       </div>
       <div style="width: 10px;"></div>
       <div id="buttons">
