@@ -502,23 +502,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MaterialTextButton.prototype = {
     build$1(context) {
-      var t3, t4, _this = this, _null = null,
+      var t3, _this = this, _null = null,
         t1 = A.BorderRadius$circular(_this.borderRadius),
-        t2 = _this.padding;
-      if (t2 == null)
-        t2 = D.EdgeInsets_8_5_8_5;
-      t3 = _this.customStyle;
-      if (t3 == null) {
-        t3 = _this.labelColor;
+        t2 = _this.customStyle;
+      if (t2 == null) {
+        t2 = _this.labelColor;
+        if (t2 == null)
+          t2 = C.Color_4278221567;
+        t3 = _this.labelWeight;
         if (t3 == null)
-          t3 = C.Color_4278221567;
-        t4 = _this.labelWeight;
-        if (t4 == null)
-          t4 = C.FontWeight_3_400;
-        t4 = A.TextStyle$(_null, _null, t3, _null, _null, _null, _null, _null, _null, _null, _null, _this.labelSize, _null, _null, t4, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
-        t3 = t4;
+          t3 = C.FontWeight_3_400;
+        t3 = A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, _this.labelSize, _null, _null, t3, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
+        t2 = t3;
       }
-      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(t2, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, t3, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, C.BorderSide_8xm), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
+      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(_this.padding, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, t2, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, C.BorderSide_8xm), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     }
   };
   B.UserInformationWidget.prototype = {
@@ -678,7 +675,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$call$1, $async$completer);
     },
-    $signature: 270
+    $signature: 298
   };
   B._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
     call$1($event) {
@@ -760,7 +757,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 233
+    $signature: 249
   };
   B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
     call$0() {
@@ -786,7 +783,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 422
+    $signature: 421
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
     call$0() {
@@ -827,7 +824,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1665
+    $signature: 1671
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -852,21 +849,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1666
+    $signature: 1672
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 77
+    $signature: 92
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 77
+    $signature: 92
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -984,5 +981,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "wELkPH//OuLPLN+lnMyxUWZeYTA=");
+})($__dart_deferred_initializers__, "39m0L3AWeS0lg6q7z8p7TI2nYSM=");
 ;
