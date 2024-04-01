@@ -155,6 +155,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
   FocusNode? ccAddressFocusNode;
   FocusNode? bccAddressFocusNode;
   FocusNode? searchIdentitiesFocusNode;
+  FocusNode? toAddressFocusNodeKeyboard;
+  FocusNode? ccAddressFocusNodeKeyboard;
+  FocusNode? bccAddressFocusNodeKeyboard;
 
   StreamSubscription<html.Event>? _subscriptionOnBeforeUnload;
   StreamSubscription<html.Event>? _subscriptionOnDragEnter;
@@ -249,6 +252,12 @@ class ComposerController extends BaseController with DragDropFileMixin {
     ccAddressFocusNode = null;
     bccAddressFocusNode?.dispose();
     bccAddressFocusNode = null;
+    toAddressFocusNodeKeyboard?.dispose();
+    toAddressFocusNodeKeyboard = null;
+    ccAddressFocusNodeKeyboard?.dispose();
+    ccAddressFocusNodeKeyboard = null;
+    bccAddressFocusNodeKeyboard?.dispose();
+    bccAddressFocusNodeKeyboard = null;
     searchIdentitiesFocusNode?.dispose();
     searchIdentitiesFocusNode = null;
     subjectEmailInputController.dispose();
@@ -417,6 +426,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
     ccAddressFocusNode = FocusNode();
     bccAddressFocusNode = FocusNode();
     searchIdentitiesFocusNode = FocusNode();
+    toAddressFocusNodeKeyboard = FocusNode();
+    ccAddressFocusNodeKeyboard = FocusNode();
+    bccAddressFocusNodeKeyboard = FocusNode();
 
     subjectEmailInputFocusNode?.addListener(() {
       log('ComposerController::createFocusNodeInput():subjectEmailInputFocusNode: ${subjectEmailInputFocusNode?.hasFocus}');
@@ -1313,7 +1325,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
-    createFocusNodeInput();
     _updateTextForEditor();
     screenDisplayMode.value = displayMode;
 
