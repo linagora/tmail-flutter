@@ -263,6 +263,12 @@ class HtmlUtils {
             background-color: black;
           }
 
+          body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+          }
+          
           #pdf-container {
             $_pdfContainerStyle
             overflow: hidden;
