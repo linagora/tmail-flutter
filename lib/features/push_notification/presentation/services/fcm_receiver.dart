@@ -122,10 +122,6 @@ class FcmReceiver {
     });
   }
 
-  Future deleteFcmToken() async {
-    await FirebaseMessaging.instance.deleteToken();
-  }
-
   Future<Map<String, dynamic>?> getIOSInitialNotificationInfo() async {
     try {
       final notificationInfo = await notificationInteractionChannel.invokeMethod('getInitialNotificationInfo');
