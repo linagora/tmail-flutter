@@ -121,6 +121,7 @@ class DownloadManager {
         switch(deviceInfo.browserName) {
           case BrowserName.chrome:
           case BrowserName.edge:
+          case BrowserName.opera:
             HtmlUtils.openNewTabHtmlDocument(HtmlUtils.chromePdfViewer(bytes, fileName));
             break;
           case BrowserName.safari:
