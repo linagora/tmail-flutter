@@ -450,10 +450,13 @@ class ComposerController extends BaseController with DragDropFileMixin {
     subjectEmailInputFocusNode?.unfocus();
   }
 
-  void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) {
+  void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) async {
     _isEmailBodyLoaded = true;
     if (identitySelected.value == null) {
       _getAllIdentities();
+    } else {
+      await _selectIdentity(identitySelected.value);
+      _autoFocusFieldWhenLauncher();
     }
   }
 
@@ -464,6 +467,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
       : Get.arguments;
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
+
+      _initIdentities(arguments.identities);
 
       injectAutoCompleteBindings(
         mailboxDashBoardController.sessionCurrent,
@@ -592,7 +597,15 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
   }
 
+  void _initIdentities(List<Identity>? identities) {
+    if (identities?.isNotEmpty == true) {
+      listFromIdentities.value = identities!;
+      identitySelected.value = identities.first;
+    }
+  }
+
   void _getAllIdentities() {
+    log('ComposerController::_getAllIdentities: Fetch again identity !');
     final accountId = mailboxDashBoardController.accountId.value;
     final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
@@ -1692,7 +1705,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     bccAddressFocusNode?.hasFocus == true ||
     subjectEmailInputFocusNode?.hasFocus == true;
 
-  void handleInitHtmlEditorWeb(String initContent) {
+  void handleInitHtmlEditorWeb(String initContent) async {
     log('ComposerController::handleInitHtmlEditorWeb:');
     _isEmailBodyLoaded = true;
     richTextWebController.editorController.setFullScreen();
@@ -1701,6 +1714,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
     richTextWebController.setEnableCodeView();
     if (identitySelected.value == null) {
       _getAllIdentities();
+    } else {
+      await _selectIdentity(identitySelected.value);
+      _autoFocusFieldWhenLauncher();
     }
   }
 
