@@ -305,4 +305,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
     html.window.postMessage(jsonGetWidth, '*');
   }
+
+  @override
+  void dispose() {
+    _htmlData = null;
+    super.dispose();
+  }
 }
