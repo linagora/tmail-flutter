@@ -153,42 +153,90 @@ class HtmlUtils {
     html.Url.revokeObjectUrl(url);
   }
 
+  static const String _pdfViewerCssStyle = '''
+    body {
+      background-color: #525659;
+      font-family: system-ui, sans-serif;
+    }
+
+    #pdf-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;'
+    }
+
+    #pdf-viewer {
+      flex: 1; /* Allow viewer to fill remaining space */
+      border: 1px solid #ddd;
+      margin-left: auto;
+      margin-right: auto;
+      padding-top: 53px;
+      border: none;
+    }
+
+    #app-bar {
+      position: fixed; /* Fix app bar to top */
+      top: 0;
+      left: 0;
+      right: 0; /* Stretch across entire viewport */
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 8px;
+      background-color: #323639;
+      z-index: 100; /* Ensure buttons stay on top */
+      align-items: center;
+    }
+
+    .btn {
+      padding: 5px 8px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-left: 5px;
+      background-color: transparent;
+    }
+    
+    .btn:hover {
+      background-color: #555;
+    }
+
+    #file-info {
+      width: 30%;
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+    }
+
+    #file-name {
+      font-size: .87rem;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      color: #fff;
+    }
+    
+    #file-size {
+      font-size: .87rem;
+      font-weight: 200;
+      color: #ddd;
+    }
+  ''';
+
   static String chromePdfViewer(Uint8List bytes, String fileName) {
     return '''
       <!DOCTYPE html>
       <html lang="en">
         <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8" />
         <title>$fileName</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
         <style>
-          body {
-            background-color: black;
-          }
-
-          #pdf-container {
-            $_pdfContainerStyle
-          }
-
-          #pdf-viewer {
-            $_pdfViewerStyle
-          }
-
-          #app-bar {
-            $_pdfAppBarStyle
-          }
-
-          #download-btn {
-            $_pdfDownloadButtonStyle
-          }
-
-          #file-info {
-            $_pdfFileInfoStyle
-          }
-
-          #file-name {
-            $_pdfFileNameStyle
-          }
+          $_pdfViewerCssStyle
         </style>
         </head>
         <body>
@@ -256,13 +304,12 @@ class HtmlUtils {
       <!DOCTYPE html>
       <html lang="en">
         <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8" />
         <title>$fileName</title>
         <style>
-          body {
-            background-color: black;
-          }
-
+          $_pdfViewerCssStyle
+          
           body, html {
             margin: 0;
             padding: 0;
@@ -270,30 +317,12 @@ class HtmlUtils {
           }
           
           #pdf-container {
-            $_pdfContainerStyle
             overflow: hidden;
           }
 
           #pdf-viewer {
-            $_pdfViewerStyle
             width: 100%;
             height: calc(100vh - 53px);
-          }
-
-          #app-bar {
-            $_pdfAppBarStyle
-          }
-
-          #download-btn {
-            $_pdfDownloadButtonStyle
-          }
-
-          #file-info {
-            $_pdfFileInfoStyle
-          }
-
-          #file-name {
-            $_pdfFileNameStyle
           }
         </style>
         </head>
@@ -328,62 +357,23 @@ class HtmlUtils {
     html.Url.revokeObjectUrl(url);
   }
 
-  static const String _pdfContainerStyle = '''
-    display: flex;
-    flex-direction: column;
-    width: 100%;''';
-
-  static const String _pdfViewerStyle = '''
-    flex: 1; /* Allow viewer to fill remaining space */
-    border: 1px solid #ddd;
-    margin-left: auto;
-    margin-right: auto;
-    padding-top: 53px;
-    border: none;''';
-
-  static const String _pdfAppBarStyle = '''
-    position: fixed; /* Fix app bar to top */
-    top: 0;
-    left: 0;
-    right: 0; /* Stretch across entire viewport */
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 10px;
-    background-color: #f0f0f0;
-    z-index: 100; /* Ensure buttons stay on top */''';
-
-  static const String _pdfDownloadButtonStyle = '''
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;''';
-
-  static const String _pdfFileInfoStyle = '''
-    width: 30%;
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;''';
-
-  static const String _pdfFileNameStyle = '''
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;''';
-
   static const String _pdfAppbarElement = '''
     <div id="app-bar">
       <div id="file-info">
-        <span id="file-name" style="margin-right: 10px;"></span> 
-        (<span id="file-size" style="white-space: nowrap;"></span>)
+        <span id="file-name" style="margin-right: 5px;"></span> 
+        <span id="file-size" style="white-space: nowrap;"></span>
       </div>
-      <div style="width: 10px;"></div>
       <div id="buttons">
-        <button id="download-btn">
+        <button id="download-btn" class="btn" title="Download">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19 20V18H5V20H19ZM19 10H15V4H9V10H5L12 17L19 10Z" fill="#7B7B7B"/>
+            <path d="M19 20V18H5V20H19ZM19 10H15V4H9V10H5L12 17L19 10Z" fill="#FFFFFF"/>
+          </svg>
+        </button>
+        <button id="print-btn" class="btn" title="Print">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+             <g>
+                <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"  fill="#FFFFFF" />
+             </g>
           </svg>
         </button>
       </div>
@@ -418,8 +408,10 @@ class HtmlUtils {
 
       const fileNameSpan = document.getElementById('file-name');
       fileNameSpan.textContent = "$fileName";
+      fileNameSpan.title = "$fileName";
 
       const fileSizeSpan = document.getElementById('file-size');
-      fileSizeSpan.textContent = formatFileSize(bytesJs.length);''';
+      fileSizeSpan.textContent = "(" + formatFileSize(bytesJs.length) + ")";
+    ''';
   }
 }
