@@ -9348,7 +9348,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t5 = type$.JSArray_Widget;
       t4 = A.Container$(_null, new A.Stack(C.Alignment_0_0, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t1, A.Center$(t4, _null, _null)], t5), _null), C.Clip_0, C.Color_0, _null, _null, _null, 30, _null, _null, _null, _null, _null, 30);
-      t3 = A.Text$(t3.generateFileName$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, D.TextStyle_etK, _null, _null, _null, _null, _null);
+      t3 = A.DefaultTextStyle$(A.Text$(t3.generateFileName$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, D.TextStyle_etK, _null, _null, C.TextWidthBasis_0);
       t1 = t2.downloaded;
       t6 = new B.ByteConverter(t1);
       t6._bits = C.JSInt_methods.ceil$0(t1 * 8);
@@ -9356,7 +9356,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.total;
       t1 = new B.ByteConverter(t2);
       t1._bits = C.JSInt_methods.ceil$0(t2 * 8);
-      return A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([C.SizedBox_12_null_null_null, t4, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t3, C.SizedBox_null_4_null_null, A.Text$(t6 + "/" + t1.toHumanReadable$1(D.SizeUnit_2), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, D.TextStyle_etK0, _null, _null, _null, _null, _null)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_0, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_0_0_0, _null, _null, 240);
+      return A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([C.SizedBox_12_null_null_null, t4, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t3, C.SizedBox_null_4_null_null, A.DefaultTextStyle$(A.Text$(t6 + "/" + t1.toHumanReadable$1(D.SizeUnit_2), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, D.TextStyle_etK0, _null, _null, C.TextWidthBasis_0)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_0, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_0_0_0, _null, _null, 240);
     }
   };
   B.ContactQuickSearchItem.prototype = {
@@ -20395,5 +20395,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "xt4erokBuQMOqkr0VMYCezYSbWs=");
+})($__dart_deferred_initializers__, "FHS7Y7K6lE7MFDGNjDfJLm0clQo=");
 ;

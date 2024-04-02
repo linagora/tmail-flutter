@@ -27,6 +27,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._html_content_viewer_on_web_widget$_isLoading = true;
       _.minHeight = 100;
       _.___HtmlContentViewerOnWebState_sizeListener_F = $;
+      _.iframeLoaded = false;
       _._widget = null;
       _._debugLifecycleState = t0;
       _._framework$_element = null;
@@ -364,7 +365,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = _this.minHeight;
       t1 = t1.direction;
       t1 = t1 === C.TextDirection_0 ? 'dir="rtl"' : "";
-      _this._htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n        .tmail-content {\n          min-height: ' + A.S(t4) + "px;\n          min-width: 300px;\n          overflow: auto;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t1 + ' style = "overflow-x: hidden">\n      <div class="tmail-content">' + t2 + "</div>\n      " + ('      <script type="text/javascript">\n        window.parent.addEventListener(\'message\', handleMessage, false);\n        window.addEventListener(\'click\', handleOnClickLink, true);\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes("toIframe:")) {\n            var data = JSON.parse(e.data);\n            if (data["view"].includes("' + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n        window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n        window.parent.postMessage(JSON.stringify({"view": "' + t3 + "\", \"type\": \"toIframe: getWidth\"}), \"*\");\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ") + "\n      </body>\n      </html> \n    ";
+      _this._htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n        .tmail-content {\n          min-height: ' + A.S(t4) + "px;\n          min-width: 300px;\n          overflow: auto;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t1 + ' style = "overflow-x: hidden">\n      <div class="tmail-content">' + t2 + "</div>\n      " + ('      <script type="text/javascript">\n        window.parent.addEventListener(\'message\', handleMessage, false);\n        window.addEventListener(\'click\', handleOnClickLink, true);\n        window.addEventListener(\'load\', handleOnLoad);\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes("toIframe:")) {\n            var data = JSON.parse(e.data);\n            if (data["view"].includes("' + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n\n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + "\", \"type\": \"toIframe: getWidth\"}), \"*\");\n        }\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ") + "\n      </body>\n      </html> \n    ";
       t1 = document.createElement("iframe");
       t1.toString;
       t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
@@ -674,78 +675,53 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   var typesOffset = hunkHelpers.updateTypes(["bool(PortalLinkScope)"]);
   B._HtmlContentViewerOnWebState_initState_closure.prototype = {
     call$1($event) {
-      var t2, t3, docHeight, scrollHeightWithBuffer, docWidth, link, _this = this, _s4_ = "type", _s4_0 = "view",
+      var docHeight, scrollHeightWithBuffer, docWidth, link, _s4_ = "type",
         data = C.C_JsonCodec.decode$1(0, new A._AcceptStructuredCloneDart2Js([], []).convertNativeToDart_AcceptStructuredClone$2$mustCopy($event.data, true)),
-        t1 = J.getInterceptor$asx(data);
-      if (t1.$index(data, _s4_) != null)
-        if (J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlHeight")) {
-          t2 = t1.$index(data, _s4_0);
-          t3 = _this.$this.___HtmlContentViewerOnWebState__createdViewId_A;
-          t3 === $ && A.throwUnnamedLateFieldNI();
-          t3 = J.$eq$(t2, t3);
-          t2 = t3;
-        } else
-          t2 = false;
-      else
-        t2 = false;
-      if (t2) {
+        t1 = J.getInterceptor$asx(data),
+        t2 = t1.$index(data, "view"),
+        t3 = this.$this,
+        t4 = t3.___HtmlContentViewerOnWebState__createdViewId_A;
+      t4 === $ && A.throwUnnamedLateFieldNI();
+      if (!J.$eq$(t2, t4))
+        return;
+      if (J.$eq$(t1.$index(data, "message"), "iframeHasBeenLoaded"))
+        t3.iframeLoaded = true;
+      if (!t3.iframeLoaded)
+        return;
+      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlHeight")) {
         docHeight = t1.$index(data, "height");
         if (docHeight == null) {
-          t2 = _this.$this.___HtmlContentViewerOnWebState__actualHeight_A;
+          t2 = t3.___HtmlContentViewerOnWebState__actualHeight_A;
           t2 === $ && A.throwUnnamedLateFieldNI();
           docHeight = t2;
         }
-        t2 = _this.$this;
-        t3 = t2._framework$_element;
-        if (t3 != null) {
+        t2 = t3._framework$_element;
+        if (t2 != null) {
           scrollHeightWithBuffer = J.$add$ansx(docHeight, 30);
-          if (J.$gt$n(scrollHeightWithBuffer, t2.minHeight))
-            t2.setState$1(new B._HtmlContentViewerOnWebState_initState__closure(t2, scrollHeightWithBuffer));
+          if (J.$gt$n(scrollHeightWithBuffer, t3.minHeight))
+            t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure(t3, scrollHeightWithBuffer));
         }
-        if (t2._framework$_element != null && t2._html_content_viewer_on_web_widget$_isLoading)
-          t2.setState$1(new B._HtmlContentViewerOnWebState_initState__closure0(t2));
+        if (t3._framework$_element != null && t3._html_content_viewer_on_web_widget$_isLoading)
+          t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure0(t3));
       }
-      if (t1.$index(data, _s4_) != null)
-        if (J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlWidth")) {
-          t2 = t1.$index(data, _s4_0);
-          t3 = _this.$this.___HtmlContentViewerOnWebState__createdViewId_A;
-          t3 === $ && A.throwUnnamedLateFieldNI();
-          t3 = J.$eq$(t2, t3);
-          t2 = t3;
-        } else
-          t2 = false;
-      else
-        t2 = false;
-      if (t2) {
+      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlWidth")) {
         docWidth = t1.$index(data, "width");
         if (docWidth == null) {
-          t2 = _this.$this.___HtmlContentViewerOnWebState__actualWidth_A;
+          t2 = t3.___HtmlContentViewerOnWebState__actualWidth_A;
           t2 === $ && A.throwUnnamedLateFieldNI();
           docWidth = t2;
         }
-        t2 = _this.$this;
-        t3 = t2._framework$_element;
-        if (t3 != null)
-          if (J.$gt$n(docWidth, 300) && t2._widget.allowResizeToDocumentSize)
-            t2.setState$1(new B._HtmlContentViewerOnWebState_initState__closure1(t2, docWidth));
+        t2 = t3._framework$_element;
+        if (t2 != null)
+          if (J.$gt$n(docWidth, 300) && t3._widget.allowResizeToDocumentSize)
+            t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure1(t3, docWidth));
       }
-      if (t1.$index(data, _s4_) != null)
-        if (J.contains$1$asx(t1.$index(data, _s4_), "toDart: OpenLink")) {
-          t2 = t1.$index(data, _s4_0);
-          t3 = _this.$this.___HtmlContentViewerOnWebState__createdViewId_A;
-          t3 === $ && A.throwUnnamedLateFieldNI();
-          t3 = J.$eq$(t2, t3);
-          t2 = t3;
-        } else
-          t2 = false;
-      else
-        t2 = false;
-      if (t2) {
+      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: OpenLink")) {
         link = t1.$index(data, "url");
-        if (link != null && _this.$this._framework$_element != null) {
+        if (link != null && t3._framework$_element != null) {
           A._asString(link);
           if (C.JSString_methods.startsWith$1(link, "mailto:")) {
-            t1 = _this.$this._widget.mailtoDelegate;
+            t1 = t3._widget.mailtoDelegate;
             if (t1 != null)
               t1.call$1(A.Uri_parse(link, 0, null));
           }
@@ -958,5 +934,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "cybeccqbQ3vx4bbR9U35UVxVctw=");
+})($__dart_deferred_initializers__, "JBdzphyOkbsj3TqwfwCimPeNBRo=");
 ;
