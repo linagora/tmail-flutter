@@ -241,7 +241,7 @@ class HtmlUtils {
         </head>
         <body>
           <div id="pdf-container">
-            $_pdfAppbarElement
+            ${_pdfAppbarElement(isSupportedPrint: true)}
             <div id="pdf-viewer"></div>
           </div>
 
@@ -340,7 +340,7 @@ class HtmlUtils {
         </head>
         <body>
           <div id="pdf-container">
-            $_pdfAppbarElement
+            ${_pdfAppbarElement()}
             <div id="pdf-viewer"></div>
           </div>
 
@@ -369,7 +369,7 @@ class HtmlUtils {
     html.Url.revokeObjectUrl(url);
   }
 
-  static const String _pdfAppbarElement = '''
+  static String _pdfAppbarElement({bool isSupportedPrint = false}) => '''
     <div id="app-bar">
       <div id="file-info">
         <span id="file-name" style="margin-right: 5px;"></span> 
@@ -381,15 +381,19 @@ class HtmlUtils {
             <path d="M19 20V18H5V20H19ZM19 10H15V4H9V10H5L12 17L19 10Z" fill="#FFFFFF"/>
           </svg>
         </button>
-        <button id="print-btn" class="btn" title="Print">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-             <g>
-                <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"  fill="#FFFFFF" />
-             </g>
-          </svg>
-        </button>
+        ${isSupportedPrint ? _printButtonHtml : ''}
       </div>
     </div>''';
+
+  static const String _printButtonHtml = '''
+    <button id="print-btn" class="btn" title="Print">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <g>
+            <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"  fill="#FFFFFF" />
+         </g>
+      </svg>
+    </button>
+  ''';
 
   static String _downloadButtonListenerScript(Uint8List bytes, String? fileName) {
     return '''
