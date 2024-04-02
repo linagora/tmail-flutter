@@ -292,6 +292,8 @@ class HtmlUtils {
             ${_fileInfoScript(fileName)}
 
             ${_downloadButtonListenerScript(bytes, fileName)}
+            
+            ${_printButtonListenerScript(bytes, fileName)}
           </script>
         </body>
       </html>''';
@@ -412,6 +414,20 @@ class HtmlUtils {
 
       const fileSizeSpan = document.getElementById('file-size');
       fileSizeSpan.textContent = "(" + formatFileSize(bytesJs.length) + ")";
+    ''';
+  }
+
+  static String _printButtonListenerScript(Uint8List bytes, String? fileName) {
+    return '''
+      const printBtn = document.getElementById('print-btn');
+      printBtn.addEventListener('click', () => {
+        const buffer = new Uint8Array(${bytes.toJS}).buffer;
+        const blob = new Blob([buffer], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+        const pdfWindow = window.open(url);
+        pdfWindow.print();
+        window.URL.revokeObjectURL(url);
+      });
     ''';
   }
 }
