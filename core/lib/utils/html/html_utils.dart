@@ -248,13 +248,23 @@ class HtmlUtils {
           <script type="module">
             function renderPage(pdfDoc, pageNumber, canvas) {
               pdfDoc.getPage(pageNumber).then(page => {
-                const viewport = page.getViewport({ scale: 1 });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                const context = canvas.getContext('2d');
-                const renderContext = {
+                var scale = 1.5;
+                var viewport = page.getViewport({ scale: scale });
+                var outputScale = window.devicePixelRatio || 1;
+                var context = canvas.getContext('2d');
+                
+                canvas.width = Math.floor(viewport.width * outputScale);
+                canvas.height = Math.floor(viewport.height * outputScale);
+                canvas.style.width = Math.floor(viewport.width) + "px";
+                canvas.style.height =  Math.floor(viewport.height) + "px";
+                
+                var transform = outputScale !== 1
+                  ? [outputScale, 0, 0, outputScale, 0, 0]
+                  : null;
+                
+                var renderContext = {
                   canvasContext: context,
+                  transform: transform,
                   viewport: viewport
                 };
 
