@@ -192,6 +192,11 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                             onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
                             onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
                             onTapOutside: (_) {},
+                            onFocusTextInput: () {
+                              if (_isCollapse) {
+                                widget.onShowFullListEmailAddressAction?.call(widget.prefix);
+                              }
+                            },
                             inputDecoration: const InputDecoration(border: InputBorder.none),
                             tagBuilder: (context, index) {
                               final currentEmailAddress = _currentListEmailAddress[index];
@@ -271,6 +276,11 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
                         onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
                         onTapOutside: (_) {},
+                        onFocusTextInput: () {
+                          if (_isCollapse) {
+                            widget.onShowFullListEmailAddressAction?.call(widget.prefix);
+                          }
+                        },
                         inputDecoration: const InputDecoration(border: InputBorder.none),
                         tagBuilder: (context, index) {
                           final currentEmailAddress = _currentListEmailAddress[index];
