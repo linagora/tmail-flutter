@@ -31,6 +31,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   final List<EmailAddress> collapsedListEmailAddress;
   final OnShowFullListEmailAddressAction? onShowFullAction;
   final OnDeleteTagAction? onDeleteTagAction;
+  final bool isTestingForWeb;
 
   const RecipientTagItemWidget({
     super.key,
@@ -40,6 +41,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     required this.currentListEmailAddress,
     required this.collapsedListEmailAddress,
     required this.imagePaths,
+    @visibleForTesting this.isTestingForWeb = false,
     this.isCollapsed = false,
     this.isLatestTagFocused = false,
     this.isLatestEmail = false,
@@ -56,7 +58,7 @@ class RecipientTagItemWidget extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (PlatformInfo.isWeb)
+          if (PlatformInfo.isWeb || isTestingForWeb)
             Flexible(
               child: Padding(
                 padding: EdgeInsetsDirectional.only(
@@ -163,7 +165,7 @@ class RecipientTagItemWidget extends StatelessWidget {
               onTapActionCallback: () => onShowFullAction?.call(prefix),
               borderRadius: RecipientTagItemWidgetStyle.radius,
               textStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-              padding: PlatformInfo.isWeb
+              padding: PlatformInfo.isWeb || isTestingForWeb
                 ? RecipientTagItemWidgetStyle.counterPadding
                 : RecipientTagItemWidgetStyle.mobileCounterPadding,
               backgroundColor: AppColor.colorEmailAddressTag,
@@ -174,7 +176,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   }
 
   EdgeInsetsGeometry? get _counterMargin {
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb || isTestingForWeb) {
       return PlatformInfo.isCanvasKit
         ? RecipientTagItemWidgetStyle.webCounterMargin
         : RecipientTagItemWidgetStyle.webMobileCounterMargin;
