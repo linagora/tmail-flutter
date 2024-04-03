@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -149,7 +150,7 @@ void main() {
       );
     });
 
-    testWidgets('RecipientComponentWidget should have all the components (PrefixLabel, RecipientTagItemWidget)', (tester) async {
+    testWidgets('ToRecipientComponentWidget should have all the components (PrefixLabel, RecipientTagItemWidget)', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),
       ];
@@ -446,7 +447,7 @@ void main() {
       expect(isExceededTextOverflow, equals(false));
     });
 
-    testWidgets('RecipientComponentWidget should display prefix To label correctly when the locale is fr-FR', (tester) async {
+    testWidgets('ToRecipientComponentWidget should display prefix To label correctly when the locale is fr-FR', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),
       ];
@@ -475,7 +476,7 @@ void main() {
       expect(prefixRecipientComposerWidget.data, equals('À:'));
     });
 
-    testWidgets('RecipientComponentWidget should display prefix To label correctly when the locale is vi-VN', (tester) async {
+    testWidgets('ToRecipientComponentWidget should display prefix To label correctly when the locale is vi-VN', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),
       ];
@@ -502,6 +503,103 @@ void main() {
       log('recipient_composer_widget_test::main: PREFIX_LABEL = ${prefixRecipientComposerWidget.data}');
 
       expect(prefixRecipientComposerWidget.data, equals('Đến:'));
+    });
+
+    testWidgets('ToRecipientComponentWidget should have all the components (PrefixLabel, RecipientTagItemWidget, ExpandButton) on mobile platform', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test1', 'test1@example.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 360,
+          keyTagEditor: keyEmailTagEditor,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final prefixRecipientComposerWidgetFinder = find.byKey(Key('prefix_${prefix.name}_recipient_composer_widget'));
+      final recipientTagItemWidgetFinder = find.byKey(Key('recipient_tag_item_${prefix.name}_0'));
+
+      final Size prefixRecipientComposerWidgetSize = tester.getSize(prefixRecipientComposerWidgetFinder);
+      final Size recipientTagItemWidgetSize = tester.getSize(recipientTagItemWidgetFinder);
+
+      expect(prefixRecipientComposerWidgetFinder, findsOneWidget);
+      expect(recipientTagItemWidgetFinder, findsOneWidget);
+
+      log('recipient_composer_widget_test::main: PrefixLabelSize = $prefixRecipientComposerWidgetSize | TagSize = $recipientTagItemWidgetSize');
+
+      final recipientExpandButtonFinder = find.byKey(Key('prefix_${prefix.name}_recipient_expand_button'));
+
+      final Size recipientExpandButtonSize = tester.getSize(recipientExpandButtonFinder);
+
+      log('recipient_composer_widget_test::main: ExpandButtonSize = $recipientExpandButtonSize');
+
+      expect(recipientExpandButtonFinder, findsOneWidget);
+
+      final totalComponentsSize = prefixRecipientComposerWidgetSize.width
+        + recipientTagItemWidgetSize.width
+        + recipientExpandButtonSize.width;
+
+      log('recipient_composer_widget_test::main: totalComponentsSize = $totalComponentsSize');
+
+      expect(totalComponentsSize, lessThan(360));
+
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('ToRecipientComponentWidget should have all the components (PrefixLabel, RecipientTagItemWidget, FromButton, CCButton, BccButton) on web platform', (tester) async {
+      final listEmailAddress = <EmailAddress>[
+        EmailAddress('test1', 'test1@example.com'),
+      ];
+
+      final widget = makeTestableWidget(
+        child: RecipientComposerWidget(
+          prefix: prefix,
+          listEmailAddress: listEmailAddress,
+          imagePaths: imagePaths,
+          maxWidth: 360,
+          keyTagEditor: keyEmailTagEditor,
+          isTestingForWeb: true,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      final prefixRecipientComposerWidgetFinder = find.byKey(Key('prefix_${prefix.name}_recipient_composer_widget'));
+      final recipientTagItemWidgetFinder = find.byKey(Key('recipient_tag_item_${prefix.name}_0'));
+
+      final Size prefixRecipientComposerWidgetSize = tester.getSize(prefixRecipientComposerWidgetFinder);
+      final Size recipientTagItemWidgetSize = tester.getSize(recipientTagItemWidgetFinder);
+
+      expect(prefixRecipientComposerWidgetFinder, findsOneWidget);
+      expect(recipientTagItemWidgetFinder, findsOneWidget);
+
+      log('recipient_composer_widget_test::main: PrefixLabelSize = $prefixRecipientComposerWidgetSize | TagSize = $recipientTagItemWidgetSize');
+
+      final recipientFromButtonFinder = find.byKey(Key('prefix_${prefix.name}_recipient_from_button'));
+      final recipientCcButtonFinder = find.byKey(Key('prefix_${prefix.name}_recipient_cc_button'));
+      final recipientBccButtonFinder = find.byKey(Key('prefix_${prefix.name}_recipient_bcc_button'));
+
+      final Size recipientFromButtonSize = tester.getSize(recipientFromButtonFinder);
+      final Size recipientCcButtonSize = tester.getSize(recipientCcButtonFinder);
+      final Size recipientBccButtonSize = tester.getSize(recipientBccButtonFinder);
+
+      log('recipient_composer_widget_test::main: FromButtonSize = $recipientFromButtonSize | CcButtonSize = $recipientCcButtonSize | BccButtonSize = $recipientBccButtonSize');
+
+      expect(recipientFromButtonFinder, findsOneWidget);
+      expect(recipientCcButtonFinder, findsOneWidget);
+      expect(recipientBccButtonFinder, findsOneWidget);
     });
   });
 }
