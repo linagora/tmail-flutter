@@ -15545,7 +15545,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         t9 = false;
       t10 = this.stateSetter;
-      return A.TagEditor$(false, t9, _null, 10, _null, t5, C.Color_4278221567, C.Duration_150000, t7, C.Color_4278221567, true, t1.get$_recipient_composer_widget$_findSuggestions(), t6, t8, _null, D.InputDecoration_4ig, t2, C.TextInputType_5_null_null, t3, 20, new B._RecipientComposerWidgetState_build___closure1(t1, t10), new B._RecipientComposerWidgetState_build___closure2(t1, t10), _null, new B._RecipientComposerWidgetState_build___closure3(t1, t10), new B._RecipientComposerWidgetState_build___closure4(t1, t10), new B._RecipientComposerWidgetState_build___closure5(t1, t10), new B._RecipientComposerWidgetState_build___closure6(), _null, true, t1._recipient_composer_widget$_getSuggestionBoxWidth$1(t4.maxWidth), new B._RecipientComposerWidgetState_build___closure7(t1, t10), _null, _null, C.Color_4294967295, 20, 350, 20, new B._RecipientComposerWidgetState_build___closure8(t1, t10), 8, C.TextInputAction_2, C.TextStyle_oHY0, false, type$.SuggestionEmailAddress);
+      return A.TagEditor$(true, false, t9, _null, 10, _null, t5, C.Color_4278221567, C.Duration_150000, t7, C.Color_4278221567, true, t1.get$_recipient_composer_widget$_findSuggestions(), t6, t8, _null, C.InputDecoration_4ig, t2, C.TextInputType_5_null_null, t3, 20, new B._RecipientComposerWidgetState_build___closure1(t1, t10), new B._RecipientComposerWidgetState_build___closure2(t1, t10), _null, new B._RecipientComposerWidgetState_build___closure3(t1, t10), new B._RecipientComposerWidgetState_build___closure4(t1, t10), new B._RecipientComposerWidgetState_build___closure5(t1, t10), new B._RecipientComposerWidgetState_build___closure6(), _null, true, t1._recipient_composer_widget$_getSuggestionBoxWidth$1(t4.maxWidth), new B._RecipientComposerWidgetState_build___closure7(t1, t10), _null, _null, C.Color_4294967295, 20, 350, 20, new B._RecipientComposerWidgetState_build___closure8(t1, t10), 8, C.TextInputAction_2, C.TextStyle_oHY0, false, type$.SuggestionEmailAddress);
     },
     $signature: 1610
   };
@@ -18761,7 +18761,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = t7.length !== 0;
       t4 = A.InputDecoration$(_null, C.OutlineInputBorder_69N, _null, t7 ? C.EdgeInsetsDirectional_0_16_0_16 : C.EdgeInsetsDirectional_12_16_0_16, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, C.Color_4294967295, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, E.TextStyle_g3y0, t4, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
       t7 = t7 ? C.EdgeInsets_12_0_12_0 : C.EdgeInsets_0_0_0_0;
-      return A.TagEditor$(false, false, _null, 10, 1, t5, C.Color_4278221567, C.Duration_150000, true, C.Color_520093696, true, t1.get$_findSuggestions(), _null, t6, C.Color_4278221567, t4, t2, C.TextInputType_5_null_null, t3, 40, new B._TextFieldAutocompleteEmailAddressWebState_build___closure(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure0(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure1(t1), new B._TextFieldAutocompleteEmailAddressWebState_build___closure2(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure3(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure4(t1, setState), _null, t7, true, t1._getSuggestionBoxWidth$1(this.constraints.maxWidth), new B._TextFieldAutocompleteEmailAddressWebState_build___closure5(t1, setState), _null, _null, C.Color_4294967295, 20, 350, 20, new B._TextFieldAutocompleteEmailAddressWebState_build___closure6(t1, setState), 4, C.TextInputAction_2, C.TextStyle_oHY3, true, type$.SuggestionEmailAddress_2);
+      return A.TagEditor$(false, false, false, _null, 10, 1, t5, C.Color_4278221567, C.Duration_150000, true, C.Color_520093696, true, t1.get$_findSuggestions(), _null, t6, C.Color_4278221567, t4, t2, C.TextInputType_5_null_null, t3, 40, new B._TextFieldAutocompleteEmailAddressWebState_build___closure(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure0(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure1(t1), new B._TextFieldAutocompleteEmailAddressWebState_build___closure2(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure3(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure4(t1, setState), _null, t7, true, t1._getSuggestionBoxWidth$1(this.constraints.maxWidth), new B._TextFieldAutocompleteEmailAddressWebState_build___closure5(t1, setState), _null, _null, C.Color_4294967295, 20, 350, 20, new B._TextFieldAutocompleteEmailAddressWebState_build___closure6(t1, setState), 4, C.TextInputAction_2, C.TextStyle_oHY3, true, type$.SuggestionEmailAddress_2);
     },
     $signature: 507
   };
@@ -22113,7 +22113,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EmailViewEmptyWidget_null = new B.EmailViewEmptyWidget(null);
     D.EmailView_null = new B.EmailView(null);
     D.Expanded_SsX = new A.Expanded(1, C.FlexFit_0, D.EmailView_null, null);
-    D.InputDecoration_4ig = new A.InputDecoration(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C._NoInputBorder_uXA, true, null, null, null);
     D.LinearProgressIndicator_INh = new A.LinearProgressIndicator(2, C.BorderRadius_tLn, null, D.Color_4293128703, C.Color_4278221567, null, null, null, null);
     D.Color_251658240 = new A.Color(251658240);
     D.BoxShadow_oyn32 = new A.BoxShadow(0, C.BlurStyle_0, D.Color_251658240, C.Offset_0_0, 4);
@@ -22301,5 +22300,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "F3ujkzhM84/SGJr/K+z8kwHZhSI=");
+})($__dart_deferred_initializers__, "hM/RagsYkAVSV2qfBOdu5WH0N04=");
 ;
