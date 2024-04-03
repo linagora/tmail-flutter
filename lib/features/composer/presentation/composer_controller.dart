@@ -1472,12 +1472,15 @@ class ComposerController extends BaseController with DragDropFileMixin {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.to:
         toAddressExpandMode.value = ExpandMode.EXPAND;
+        toAddressFocusNode?.requestFocus();
         break;
       case PrefixEmailAddress.cc:
         ccAddressExpandMode.value = ExpandMode.EXPAND;
+        ccAddressFocusNode?.requestFocus();
         break;
       case PrefixEmailAddress.bcc:
         bccAddressExpandMode.value = ExpandMode.EXPAND;
+        bccAddressFocusNode?.requestFocus();
         break;
       default:
         break;
