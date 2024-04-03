@@ -8416,27 +8416,34 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.___RecipientComposerWidgetState__currentListEmailAddress_A = t1;
     },
     build$1(context) {
-      var _this = this, _null = null,
+      var t6, _this = this, _null = null,
         t1 = _this._widget,
         t2 = t1.padding,
         t3 = t1.margin,
-        t4 = type$.JSArray_Widget;
-      t1 = A._setArrayType([new A.Padding(D.EdgeInsetsDirectional_0_16_0_0, A.Text$(B.PrefixEmailAddressExtension_asName(t1.prefix, context) + ":", new A.ValueKey("prefix_" + _this._widget.prefix._core$_name + "_recipient_composer_widget", type$.ValueKey_String), _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY12, _null, _null, _null, _null, _null), _null), C.SizedBox_8_null_null_null, A.Expanded$(A.FocusScope$(false, A.Focus$(false, _null, new A.StatefulBuilder(new B._RecipientComposerWidgetState_build_closure(_this), _null), _null, _null, _null, _null, true, _null, new B._RecipientComposerWidgetState_build_closure0(_this), new B._RecipientComposerWidgetState_build_closure1(_this), _null, _null, _null), _null, _null, _null, _null), 1), C.SizedBox_8_null_null_null], t4);
+        t4 = type$.ValueKey_String,
+        t5 = type$.JSArray_Widget;
+      t1 = A._setArrayType([new A.Padding(D.EdgeInsetsDirectional_0_16_0_0, A.Text$(B.PrefixEmailAddressExtension_asName(t1.prefix, context) + ":", new A.ValueKey("prefix_" + _this._widget.prefix._core$_name + "_recipient_composer_widget", t4), _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY12, _null, _null, _null, _null, _null), _null), C.SizedBox_8_null_null_null, A.Expanded$(A.FocusScope$(false, A.Focus$(false, _null, new A.StatefulBuilder(new B._RecipientComposerWidgetState_build_closure(_this), _null), _null, _null, _null, _null, true, _null, new B._RecipientComposerWidgetState_build_closure0(_this), new B._RecipientComposerWidgetState_build_closure1(_this), _null, _null, _null), _null, _null, _null, _null), 1), C.SizedBox_8_null_null_null], t5);
       if (_this._widget.prefix === C.PrefixEmailAddress_1) {
-        t4 = A._setArrayType([], t4);
-        if (_this._widget.fromState === C.PrefixRecipientState_1) {
+        t5 = A._setArrayType([], t5);
+        t6 = _this._widget;
+        if (t6.fromState === C.PrefixRecipientState_1) {
+          t6 = t6.prefix;
           A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-          t4.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, _null, D.EdgeInsetsDirectional_0_12_0_0, _null, new B._RecipientComposerWidgetState_build_closure2(_this), D.EdgeInsetsDirectional_5_3_5_3, A.Intl__message("From", _null, "from_email_address_prefix", _null, _null), _null, D.TextStyle_7eO, _null));
+          t5.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, new A.ValueKey("prefix_" + t6._core$_name + "_recipient_from_button", t4), D.EdgeInsetsDirectional_0_12_0_0, _null, new B._RecipientComposerWidgetState_build_closure2(_this), D.EdgeInsetsDirectional_5_3_5_3, A.Intl__message("From", _null, "from_email_address_prefix", _null, _null), _null, D.TextStyle_7eO, _null));
         }
-        if (_this._widget.ccState === C.PrefixRecipientState_1) {
+        t6 = _this._widget;
+        if (t6.ccState === C.PrefixRecipientState_1) {
+          t6 = t6.prefix;
           A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-          t4.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, _null, D.EdgeInsetsDirectional_0_12_0_0, _null, new B._RecipientComposerWidgetState_build_closure3(_this), D.EdgeInsetsDirectional_5_3_5_3, A.Intl__message("Cc", _null, "cc_email_address_prefix", _null, _null), _null, D.TextStyle_7eO, _null));
+          t5.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, new A.ValueKey("prefix_" + t6._core$_name + "_recipient_cc_button", t4), D.EdgeInsetsDirectional_0_12_0_0, _null, new B._RecipientComposerWidgetState_build_closure3(_this), D.EdgeInsetsDirectional_5_3_5_3, A.Intl__message("Cc", _null, "cc_email_address_prefix", _null, _null), _null, D.TextStyle_7eO, _null));
         }
-        if (_this._widget.bccState === C.PrefixRecipientState_1) {
+        t6 = _this._widget;
+        if (t6.bccState === C.PrefixRecipientState_1) {
+          t6 = t6.prefix;
           A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-          t4.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, _null, D.EdgeInsetsDirectional_0_12_0_0, _null, new B._RecipientComposerWidgetState_build_closure4(_this), D.EdgeInsetsDirectional_5_3_5_3, A.Intl__message("Bcc", _null, "bcc_email_address_prefix", _null, _null), _null, D.TextStyle_7eO, _null));
+          t5.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, new A.ValueKey("prefix_" + t6._core$_name + "_recipient_bcc_button", t4), D.EdgeInsetsDirectional_0_12_0_0, _null, new B._RecipientComposerWidgetState_build_closure4(_this), D.EdgeInsetsDirectional_5_3_5_3, A.Intl__message("Bcc", _null, "bcc_email_address_prefix", _null, _null), _null, D.TextStyle_7eO, _null));
         }
-        C.JSArray_methods.addAll$1(t1, t4);
+        C.JSArray_methods.addAll$1(t1, t5);
       }
       return A.Container$(_null, A.Row$(t1, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_rfJ, _null, _null, _null, t3, t2, _null, _null, _null);
     },
@@ -22300,5 +22307,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "hM/RagsYkAVSV2qfBOdu5WH0N04=");
+})($__dart_deferred_initializers__, "w/toXMXU2NF5Ge+eSTjtNYp+w2M=");
 ;
