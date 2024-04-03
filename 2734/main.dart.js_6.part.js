@@ -2119,7 +2119,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = J.get$length$asx(t1.get$value(t1));
       t2 = _this._widget.controller;
       A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      itemTagEditor = A.TagEditor$(false, false, false, B.Color_4294112245, 12, _null, t2, B.Color_4278221567, B.Duration_150000, false, B.Color_520093696, true, _this.get$_autocomplete_contact_text_field_with_tags$_findSuggestions(), _null, _null, B.Color_4278221567, A.InputDecoration$(_null, B._NoInputBorder_uXA, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_chs2, A.Intl__message("Enter name or email address", _null, "hintInputAutocompleteContact", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.keyToEmailTagEditor, B.TextInputType_5_null_null, t1, 20, new C._AutocompleteContactTextFieldWithTagsState_build_closure(_this), new C._AutocompleteContactTextFieldWithTagsState_build_closure0(_this), _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure1(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure2(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure3(_this, context), _null, B.EdgeInsets_12_0_12_0, false, _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure4(_this), E.EdgeInsets_0_4_0_4, B.EdgeInsets_0_12_0_12, B.Color_4294967295, _null, 350, 16, new C._AutocompleteContactTextFieldWithTagsState_build_closure5(_this), 12, B.TextInputAction_2, B.TextStyle_oHY0, true, type$.SuggestionEmailAddress);
+      itemTagEditor = A.TagEditor$(false, false, false, B.Color_4294112245, 12, _null, t2, B.Color_4278221567, B.Duration_150000, false, B.Color_520093696, true, _this.get$_autocomplete_contact_text_field_with_tags$_findSuggestions(), _null, _null, B.Color_4278221567, A.InputDecoration$(_null, B._NoInputBorder_uXA, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_chs2, A.Intl__message("Enter name or email address", _null, "hintInputAutocompleteContact", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.keyToEmailTagEditor, B.TextInputType_5_null_null, t1, 20, new C._AutocompleteContactTextFieldWithTagsState_build_closure(_this), new C._AutocompleteContactTextFieldWithTagsState_build_closure0(_this), _null, _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure1(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure2(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure3(_this, context), _null, B.EdgeInsets_12_0_12_0, false, _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure4(_this), E.EdgeInsets_0_4_0_4, B.EdgeInsets_0_12_0_12, B.Color_4294967295, _null, 350, 16, new C._AutocompleteContactTextFieldWithTagsState_build_closure5(_this), 12, B.TextInputAction_2, B.TextStyle_oHY0, true, type$.SuggestionEmailAddress);
       _this._widget.toString;
       t1 = C.SettingsUtils_getPaddingInputRecipientForwarding(context, _this._autocomplete_contact_text_field_with_tags$_responsiveUtils);
       t2 = type$.JSArray_Widget;
@@ -3324,7 +3324,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t1._onSurfaceVariant;
       return t2 == null ? t1.onSurface : t2;
     },
-    $signature: 11
+    $signature: 12
   };
   C._RadioDefaultsM3_overlayColor_closure.prototype = {
     call$1(states) {
@@ -3358,7 +3358,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return B.Color_0;
     },
-    $signature: 11
+    $signature: 12
   };
   C.BorderButtonField_build_closure.prototype = {
     call$0() {
@@ -3667,7 +3667,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t2.get$isEmpty(t2))
         t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure2(t1));
     },
-    $signature: 12
+    $signature: 11
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure2.prototype = {
     call$0() {
@@ -4415,7 +4415,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t3._as(t2.get(t1)).accountId;
       t4.logout$2(t5, t1.get$value(t1));
     },
-    $signature: 12
+    $signature: 11
   };
   C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure.prototype = {
     call$0() {
@@ -5629,7 +5629,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1))._richTextControllerForWeb.editorController._evaluateJavascriptWeb$1$data(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: setFocus"], type$.String, type$.nullable_Object));
     },
-    $signature: 12
+    $signature: 11
   };
   (function aliases() {
     var _ = C.__RadioState_State_TickerProviderStateMixin.prototype;
@@ -5858,5 +5858,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "upcn2Fg7y9gv8yyFw78oIrBKFtw=");
+})($__dart_deferred_initializers__, "tpOH+XfQiJR5IeG5EfqOqcKKHVk=");
 ;
