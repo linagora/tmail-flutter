@@ -33,7 +33,7 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
         : null;
       final receiveTime = emailPrint.emailInformation.getReceivedAt(
         newLocale: emailPrint.locale,
-        pattern: emailPrint.emailInformation.receivedAt?.value.toLocal().toPatternForEmailView()
+        pattern: emailPrint.emailInformation.receivedAt?.value.toLocal().toPatternForPrinting(emailPrint.locale)
       );
 
       final List<PrintAttachment> listPrintAttachment = [];

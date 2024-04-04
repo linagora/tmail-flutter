@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 extension DateTimeExtension on DateTime {
 
   bool isToday() {
@@ -52,6 +54,14 @@ extension DateTimeNullableExtension on DateTime? {
       return 'dd.MM, HH:mm';
     } else {
       return 'dd.MM.yyyy, HH:mm';
+    }
+  }
+
+  String toPatternForPrinting(String locale) {
+    if (locale == const Locale('en', 'US').toLanguageTag()) {
+      return 'MMM dd y, HH:mm';
+    } else {
+      return 'dd MMM y, HH:mm';
     }
   }
 }
