@@ -24,6 +24,9 @@ class ImageTransformer extends DomTransformer {
     await Future.wait(imageElements.map((imageElement) async {
       var exStyle = imageElement.attributes['style'];
       if (exStyle != null) {
+        if (!exStyle.trim().endsWith(';')) {
+          exStyle = '$exStyle;';
+        }
         if (!exStyle.contains('display')) {
           exStyle = '$exStyle display:inline;';
         }

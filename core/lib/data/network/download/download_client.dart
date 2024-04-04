@@ -107,7 +107,7 @@ class DownloadClient {
     if (fileName.contains('.')) {
       fileName = fileName.split('.').first;
     }
-    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="$fileName" id="cid:$cid" style="max-width: 100%" />';
+    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="$fileName" id="cid:$cid" style="max-width: 100%;" />';
     return base64Uri;
   }
 }

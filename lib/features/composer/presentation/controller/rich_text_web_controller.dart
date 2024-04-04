@@ -289,7 +289,7 @@ class RichTextWebController extends BaseRichTextController {
     if (platformFile.bytes != null) {
       final base64Data = base64Encode(platformFile.bytes!);
       editorController.insertHtml(
-        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: 'image/${platformFile.extension}')}" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width: 100%"/>'
+        '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: 'image/${platformFile.extension}')}" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width: 100%;"/>'
       );
     } else {
       logError("RichTextWebController::insertImageAsBase64: bytes is null");
