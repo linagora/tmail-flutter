@@ -68,12 +68,16 @@ class PrintUtils {
   }) {
     try {
       return Element.html('''
-      <tr>
-        <td>
-          <font size="-1">$fromPrefix: <b>$senderName </b>&lt;$senderEmailAddress&gt;</font>
-        </td>
-        <td align="right"><font size="-1">$dateTime</font></td>
-      </tr>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody>
+          <tr>
+            <td>
+              <font size="-1">$fromPrefix: <b>$senderName </b>&lt;$senderEmailAddress&gt;</font>
+            </td>
+            <td align="right"><font size="-1">$dateTime</font></td>
+          </tr>
+        </tbody>
+      </table>
     ''');
     } catch (e) {
       logError('PrintUtils::_createSenderElement: Exception = $e');
