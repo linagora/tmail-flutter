@@ -9,6 +9,8 @@ import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transfo
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_collapsed_signature_button_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading_for_background_image_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/remove_max_width_in_image_style_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/remove_style_tag_outside_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_tooltip_link_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sigature_transformers.dart';
@@ -66,6 +68,8 @@ class TransformConfiguration {
       const RemoveTooltipLinkTransformer(),
     const RemoveLazyLoadingForBackgroundImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
+    const RemoveStyleTagOutsideTransformer(),
+    const RemoveMaxWidthInImageStyleTransformer(),
   ]);
 
   /// Provides easy access to a standard configuration that does not block external images.
