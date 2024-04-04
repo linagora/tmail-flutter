@@ -363,9 +363,9 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   }) async {
     await showConfirmDialogAction(
       context,
-      title: AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains,
       AppLocalizations.of(context).doYouWantToProceed,
       AppLocalizations.of(context).yes,
+      title: AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains,
       cancelTitle: AppLocalizations.of(context).no,
       alignCenter: true,
       onConfirmAction: confirmAction,

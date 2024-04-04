@@ -23,7 +23,7 @@ class ConfirmDialogBuilder {
   TextStyle? _styleContent;
   double? _radiusButton;
   double? heightButton;
-  EdgeInsets? _paddingTitle;
+  EdgeInsetsGeometry? _paddingTitle;
   EdgeInsets? _paddingContent;
   EdgeInsets? _paddingButton;
   EdgeInsets? _outsideDialogPadding;
@@ -95,7 +95,7 @@ class ConfirmDialogBuilder {
     _radiusButton = radius;
   }
 
-  void paddingTitle(EdgeInsets? value) {
+  void paddingTitle(EdgeInsetsGeometry? value) {
     _paddingTitle = value;
   }
 
@@ -199,7 +199,7 @@ class ConfirmDialogBuilder {
               ),
             if (_title.isNotEmpty)
               Padding(
-                  padding: _paddingTitle ?? const EdgeInsets.only(top: 12),
+                  padding: _paddingTitle ?? const EdgeInsetsDirectional.only(top: 12, start: 24, end: 24),
                   child: Center(
                       child: Text(
                           _title,
@@ -232,7 +232,7 @@ class ConfirmDialogBuilder {
                 ),
               ),
             Padding(
-                padding: _paddingButton ?? const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                padding: _paddingButton ?? const EdgeInsetsDirectional.only(bottom: 16, start: 24, end: 24),
                 child: Row(
                     children: [
                       if (_cancelText.isNotEmpty)
