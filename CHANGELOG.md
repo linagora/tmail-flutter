@@ -1,3 +1,12 @@
+## [0.11.3-patch4-12] - 2024-04-05
+### Fixed
+- #2774 Try to display big signature fit in composer
+- #2772 Fix printing a blank page in center of printed email
+- #2628 Disable PDF viewer in Web app
+- #2773 Fix text overflow in warning dialog of forwarding feature
+- #2533 Fix memory leak in Composer and Email view
+- Handle service worker in web app
+
 ## [0.11.3-patch4-11] - 2024-04-01
 ### Fixed
 - #2460 Implement realtime update for web app in background
