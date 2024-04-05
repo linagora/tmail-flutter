@@ -33,6 +33,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -216,6 +217,8 @@ class ComposerController extends BaseController {
   @override
   void onClose() {
     _initTextEditor = null;
+    _textEditorWeb = null;
+    viewState.value = Right(UIClosedState());
     if (PlatformInfo.isMobile) {
       FkUserAgent.release();
     }
