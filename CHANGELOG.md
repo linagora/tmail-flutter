@@ -6,6 +6,7 @@
 - #2773 Fix text overflow in warning dialog of forwarding feature
 - #2533 Fix memory leak in Composer and Email view
 - Handle service worker in web app
+- Fix reload app still keep composer open
 
 ## [0.11.3-patch4-11] - 2024-04-01
 ### Fixed
