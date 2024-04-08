@@ -2485,6 +2485,8 @@ class MailboxDashBoardController extends ReloadableController {
     isRecoveringDeletedMessage.value = true;
   }
 
+  String get userEmail => userProfile.value?.email ?? '';
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
