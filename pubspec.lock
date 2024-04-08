@@ -1025,8 +1025,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: email_supported
-      resolved-ref: "96c199b233c5afde583295890ffbd880ea4c7d8c"
+      ref: memory_fixed_in_cnb
+      resolved-ref: "0292fa1b9c8bb018b910c1b8248be231b88a97b6"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"

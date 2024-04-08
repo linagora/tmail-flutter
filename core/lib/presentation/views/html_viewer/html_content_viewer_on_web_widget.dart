@@ -147,6 +147,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         window.parent.addEventListener('message', handleMessage, false);
         window.addEventListener('click', handleOnClickLink, true);
         window.addEventListener('load', handleOnLoad);
+        window.addEventListener('beforeunload', (event) => {
+          window.parent.removeEventListener('message', handleMessage, false);
+        });
       
         function handleMessage(e) {
           if (e && e.data && e.data.includes("toIframe:")) {

@@ -65,15 +65,9 @@ class _WebEditorState extends State<WebEditorWidget> {
   double? dropZoneHeight;
   final ValueNotifier<double> _htmlEditorHeight = ValueNotifier(_defaultHtmlEditorHeight);
   bool _dropListenerRegistered = false;
+  Function(Event)? _dropListener;
 
-  void _dropListener(Event event) {
-    if (event is MessageEvent) {
-      if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
-        _editorController.evaluateJavascriptWeb(
-          HtmlUtils.lineHeight100Percent.name);
-      }
-    }
-  }
+ 
 
   @override
   void initState() {
@@ -89,6 +83,13 @@ class _WebEditorState extends State<WebEditorWidget> {
     }
     log('_WebEditorState::initState:dropZoneWidth: $dropZoneWidth | dropZoneHeight: $dropZoneHeight');
 
+    _dropListener = (event) {
+      if (event is MessageEvent) {
+        if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
+          _editorController.evaluateJavascriptWeb(HtmlUtils.lineHeight100Percent.name);
+        }
+      }
+    };
     window.addEventListener("message", _dropListener);
   }
 
@@ -113,6 +114,7 @@ class _WebEditorState extends State<WebEditorWidget> {
     _editorController.evaluateJavascriptWeb(
       HtmlUtils.unregisterDropListener.name);
     window.removeEventListener("message", _dropListener);
+    _dropListener = null;
     super.dispose();
   }
 
