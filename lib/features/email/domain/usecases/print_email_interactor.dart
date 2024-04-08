@@ -14,7 +14,6 @@ class PrintEmailInteractor {
 
   Stream<Either<Failure, Success>> execute(EmailPrint emailPrint) async* {
     try {
-      yield Right(PrintEmailLoading());
       final htmlContentTransformed = await _transformHtmlEmailContent(emailPrint.emailContent);
       final newEmailPrint = emailPrint.fromEmailContent(htmlContentTransformed);
       await emailRepository.printEmail(newEmailPrint);

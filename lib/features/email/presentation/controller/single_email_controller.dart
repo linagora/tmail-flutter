@@ -131,6 +131,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   EmailLoaded? _currentEmailLoaded;
+  PrintEmailAction? _printEmailAction;
 
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
@@ -209,6 +210,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handleParseCalendarEventSuccess(success);
     } else if (success is PrintEmailLoading) {
       _showMessageWhenStartingEmailPrinting();
+    } else if (success is PrintEmailSuccess) {
+      _handlePrintEmailSuccess(success);
     }
   }
 
@@ -230,7 +233,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (failure is GetEmailContentFailure) {
       emailLoadedViewState.value = Left<Failure, Success>(failure);
     } else if (failure is PrintEmailFailure) {
-      _showMessageWhenEmailPrintingFailed();
+      _showMessageWhenEmailPrintingFailed(failure);
     }
   }
 
@@ -527,6 +530,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailContents.value = success.htmlEmailContent;
       }
 
+      if (_printEmailAction != null) {
+        _handlePrintEmailWhenEmailContentLoaded(
+          action: _printEmailAction!,
+          emailLoaded: _currentEmailLoaded!
+        );
+      }
+
       if (PlatformInfo.isMobile) {
         final detailedEmail = DetailedEmail(
           emailId: currentEmail!.id!,
@@ -586,6 +596,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     calendarEvent.value = null;
     eventActions.clear();
     emailUnsubscribe.value = null;
+    _printEmailAction = null;
     if (isEmailClosing) {
       emailLoadedViewState.value = Right(UIState.idle);
       viewState.value = Right(UIState.idle);
@@ -1597,25 +1608,27 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _printEmail(BuildContext context, PresentationEmail email) {
-    final emailPrint = EmailPrint(
-      appName: AppLocalizations.of(context).app_name,
-      userName: mailboxDashBoardController.userProfile.value?.email ?? '',
-      emailInformation: email.toEmail(),
-      attachments: _currentEmailLoaded?.attachments,
-      emailContent: _currentEmailLoaded?.htmlContent ?? '',
-      locale: Localizations.localeOf(context).toLanguageTag(),
-      fromPrefix: AppLocalizations.of(context).from_email_address_prefix,
-      toPrefix: AppLocalizations.of(context).to_email_address_prefix,
-      ccPrefix: AppLocalizations.of(context).cc_email_address_prefix,
-      bccPrefix: AppLocalizations.of(context).bcc_email_address_prefix,
-      replyToPrefix: AppLocalizations.of(context).replyToEmailAddressPrefix,
-      titleAttachment: AppLocalizations.of(context).attachments.toLowerCase(),
-      toAddress: email.to?.listEmailAddressToString(isFullEmailAddress: true),
-      ccAddress: email.cc?.listEmailAddressToString(isFullEmailAddress: true),
-      bccAddress: email.bcc?.listEmailAddressToString(isFullEmailAddress: true),
-      replyToAddress: email.replyTo?.listEmailAddressToString(isFullEmailAddress: true),
+    if (_printEmailAction != null) {
+      log('SingleEmailController::_printEmail: Print email started');
+      return;
+    }
+
+    _printEmailAction = PrintEmailAction(
+      context: context,
+      userEmail: mailboxDashBoardController.userEmail,
+      email: email
     );
-    consumeState(_printEmailInteractor.execute(emailPrint));
+    consumeState(Stream.value(Right(PrintEmailLoading())));
+
+    if (_currentEmailLoaded == null) {
+      log('SingleEmailController::_printEmail: Email content loading');
+      return;
+    }
+
+    _handlePrintEmailWhenEmailContentLoaded(
+      action: _printEmailAction!,
+      emailLoaded: _currentEmailLoaded!
+    );
   }
 
   void _showMessageWhenStartingEmailPrinting() {
@@ -1628,11 +1641,34 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _showMessageWhenEmailPrintingFailed() {
+  void _handlePrintEmailSuccess(PrintEmailSuccess success) {
+    _printEmailAction = null;
+  }
+
+  void _showMessageWhenEmailPrintingFailed(PrintEmailFailure failure) {
+    _printEmailAction = null;
+
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).printingFailed);
     }
+  }
+
+  void _handlePrintEmailWhenEmailContentLoaded({
+    required PrintEmailAction action,
+    required EmailLoaded emailLoaded
+  }) {
+   if (action.email.id != emailLoaded.emailCurrent?.id) {
+     log('SingleEmailController::_handlePrintEmailInQueue: Print email action NOT matched email id');
+     _printEmailAction = null;
+     return;
+   }
+
+   consumeState(
+     _printEmailInteractor.execute(
+       EmailPrint.generate(printEmailAction: action, emailLoaded: emailLoaded)
+     )
+   );
   }
 }
