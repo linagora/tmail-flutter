@@ -94,8 +94,7 @@ class HtmlInteraction {
 
   static const String scriptHandleInvokePrinterOnBrowser = '''
     <script type="text/javascript">
-      document.body.onload= function() {
-        document.body.offsetHeight;
+      document.body.onload = function() {
         window.print();
       };
     </script>

@@ -35,7 +35,6 @@ abstract class DomTransformer {
 
       final backgroundImageUrl = match.group(0) ?? '';
       final imageUrl = match.group(1)?.replaceAll('\'', '').replaceAll('"', '') ?? '';
-      log('DomTransformer::findImageUrlFromStyleTag:backgroundImageUrl: $backgroundImageUrl | imageUrl: $imageUrl');
       if (backgroundImageUrl.isNotEmpty && imageUrl.isNotEmpty) {
         return Tuple2(backgroundImageUrl,  imageUrl);
       } else {
