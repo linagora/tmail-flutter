@@ -310,6 +310,7 @@ class RichTextWebController extends BaseRichTextController {
   void onClose() {
     menuParagraphController.dispose();
     menuOrderListController.dispose();
+    editorController.clear();
     super.onClose();
   }
 }

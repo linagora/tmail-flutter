@@ -218,7 +218,11 @@ class ComposerController extends BaseController {
   void onClose() {
     _initTextEditor = null;
     _textEditorWeb = null;
-    viewState.value = Right(UIClosedState());
+    dispatchState(Right(UIClosedState()));
+    composerArguments.value = null;
+    emailContentsViewState.value = Right(UIClosedState());
+    identitySelected.value = null;
+    listFromIdentities.clear();
     if (PlatformInfo.isMobile) {
       FkUserAgent.release();
     }
