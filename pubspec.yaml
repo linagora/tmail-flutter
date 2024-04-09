@@ -142,8 +142,6 @@ dependencies:
 
   share_plus: 7.2.1
 
-  file_picker: 5.3.1
-
   hive: 2.2.3
 
   fk_user_agent: 2.1.0
@@ -260,6 +258,13 @@ dependency_overrides:
   pointer_interceptor: 0.9.1
 
   firebase_core_platform_interface: 4.6.0
+
+  # TODO: replace when upstream PR is merged:
+  # https://github.com/miguelpruivo/flutter_file_picker/pull/1482
+  file_picker:
+    git:
+      url: https://github.com/linagora/flutter_file_picker
+      ref: email_supported_5.3.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
