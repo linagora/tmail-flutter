@@ -86,7 +86,7 @@ class FileUploader {
   ) async {
     final rootIsolateToken = argsUpload.isolateToken;
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-    await HiveCacheConfig().setUp();
+    await HiveCacheConfig.instance.setUp();
 
     final headerParam = argsUpload.dioClient.getHeaders();
     headerParam[HttpHeaders.contentTypeHeader] = argsUpload.mobileFileUpload.mimeType;

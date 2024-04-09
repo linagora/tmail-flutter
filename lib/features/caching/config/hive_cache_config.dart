@@ -34,12 +34,18 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class HiveCacheConfig {
 
-  Future setUp({String? cachePath}) async {
+  HiveCacheConfig._internal();
+
+  static final HiveCacheConfig _instance = HiveCacheConfig._internal();
+
+  static HiveCacheConfig get instance => _instance;
+
+  Future<void> setUp({String? cachePath}) async {
     await initializeDatabase(databasePath: cachePath);
-    registerAdapter();
+    _registerAdapter();
   }
 
-  Future initializeDatabase({String? databasePath}) async {
+  Future<void> initializeDatabase({String? databasePath}) async {
     if (databasePath != null) {
       Hive.init(databasePath);
     } else {
@@ -59,7 +65,7 @@ class HiveCacheConfig {
     }
   }
 
-  static Future<void> initializeEncryptionKey() async {
+  Future<void> initializeEncryptionKey() async {
     final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
     if (encryptionKeyCacheManager == null) {
       log('HiveCacheConfig::_initializeEncryptionKey(): encryptionKeyCacheManager not found');
@@ -74,7 +80,7 @@ class HiveCacheConfig {
     }
   }
 
-  static Future<Uint8List?> getEncryptionKey() async {
+  Future<Uint8List?> getEncryptionKey() async {
     final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
     if (encryptionKeyCacheManager == null) {
       log('HiveCacheConfig::getEncryptionKey(): encryptionKeyCacheManager not found');
@@ -92,7 +98,7 @@ class HiveCacheConfig {
     }
   }
 
-  void registerAdapter() {
+  void _registerAdapter() {
     registerCacheAdapter<MailboxCache>(
       MailboxCacheAdapter(),
       CachingConstants.MAILBOX_CACHE_IDENTIFY
@@ -177,7 +183,7 @@ class HiveCacheConfig {
     }
   }
 
-  Future closeHive() async {
-    await Hive.close();
+  Future<void> closeHive() async {
+    return await Hive.close();
   }
 }

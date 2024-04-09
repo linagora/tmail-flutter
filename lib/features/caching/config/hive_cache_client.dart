@@ -13,7 +13,7 @@ abstract class HiveCacheClient<T> {
 
   bool get encryption => false;
 
-  Future<Uint8List?> _getEncryptionKey() => HiveCacheConfig.getEncryptionKey();
+  Future<Uint8List?> _getEncryptionKey() => HiveCacheConfig.instance.getEncryptionKey();
 
   Future<Box<T>> openBox() async {
     if (Hive.isBoxOpen(tableName)) {
