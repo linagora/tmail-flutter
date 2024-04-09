@@ -51,4 +51,6 @@ abstract class MailboxRepository {
   Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox);
 
   Future<GetMailboxByRoleResponse> getMailboxByRole(Session session, AccountId accountId, Role role, {UnsignedInt? limit});
+
+  Future<List<MailboxId>> getListMailboxById(Session session, AccountId accountId, List<MailboxId> mailboxIds);
 }

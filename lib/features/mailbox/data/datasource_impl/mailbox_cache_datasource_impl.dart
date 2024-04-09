@@ -118,4 +118,9 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
       return await _mailboxCacheManager.clearAll(accountId, userName);
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<List<MailboxId>> getListMailboxById(Session session, AccountId accountId, List<MailboxId> mailboxIds) {
+    throw UnimplementedError();
+  }
 }
