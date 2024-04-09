@@ -91,7 +91,7 @@ class HomeController extends ReloadableController {
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
   void _cleanupCache() async {
-    await HiveCacheConfig().onUpgradeDatabase(cachingManager);
+    await HiveCacheConfig.instance.onUpgradeDatabase(cachingManager);
 
     await Future.wait([
       _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),

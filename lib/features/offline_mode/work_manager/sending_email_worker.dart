@@ -78,7 +78,7 @@ class SendingEmailWorker extends Worker {
   Future<void> bindDI() async {
     await Future.wait([
       MainBindings().dependencies(),
-      HiveCacheConfig().setUp()
+      HiveCacheConfig.instance.setUp()
     ]);
 
     await Future.sync(() {

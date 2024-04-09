@@ -178,7 +178,7 @@ class FcmMessageController extends FcmBaseController {
   Future<void> _initialAppConfig() async {
     await Future.wait([
       MainBindings().dependencies(),
-      HiveCacheConfig().setUp()
+      HiveCacheConfig.instance.setUp()
     ]);
 
     await Future.sync(() {

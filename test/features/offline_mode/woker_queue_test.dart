@@ -18,7 +18,7 @@ void main() {
   late MailboxStateWorkerQueue workerQueue;
 
   setUpAll(() {
-    HiveCacheConfig().setUp(cachePath: Directory.current.path);
+    HiveCacheConfig.instance.setUp(cachePath: Directory.current.path);
   });
 
   setUp(() {

@@ -86,7 +86,7 @@ class MailboxIsolateWorker {
   ) async {
     final rootIsolateToken = args.isolateToken;
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-    await HiveCacheConfig().setUp();
+    await HiveCacheConfig.instance.setUp();
 
     List<Email> emailListCompleted = List.empty(growable: true);
     try {

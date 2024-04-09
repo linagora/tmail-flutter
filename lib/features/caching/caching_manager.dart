@@ -129,7 +129,7 @@ class CachingManager {
   }
 
   Future<void> closeHive() async {
-    return await HiveCacheConfig().closeHive();
+    return await HiveCacheConfig.instance.closeHive();
   }
 
   Future<void> clearAllFileInStorage() async {

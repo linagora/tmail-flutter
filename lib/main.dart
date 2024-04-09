@@ -21,11 +21,11 @@ void main() async {
 
     await Future.wait([
        MainBindings().dependencies(),
-       HiveCacheConfig().setUp(),
+       HiveCacheConfig.instance.setUp(),
        Executor().warmUp(),
        AppUtils.loadEnvFile()
     ]);
-    await HiveCacheConfig.initializeEncryptionKey();
+    await HiveCacheConfig.instance.initializeEncryptionKey();
 
     setPathUrlStrategy();
 
