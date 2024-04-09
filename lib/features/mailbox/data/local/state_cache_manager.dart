@@ -21,12 +21,7 @@ class StateCacheManager {
   }
 
   Future<void> saveState(AccountId accountId, UserName userName, StateCache stateCache) async {
-    final stateCacheExist = await _stateCacheClient.isExistTable();
     final stateKey = TupleKey(stateCache.type.name, accountId.asString, userName.value).encodeKey;
-    if (stateCacheExist) {
-      return await _stateCacheClient.updateItem(stateKey, stateCache);
-    } else {
-      return await _stateCacheClient.insertItem(stateKey, stateCache);
-    }
+    return await _stateCacheClient.insertItem(stateKey, stateCache);
   }
 }

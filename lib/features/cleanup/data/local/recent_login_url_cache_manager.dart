@@ -10,8 +10,6 @@ class RecentLoginUrlCacheManager {
   RecentLoginUrlCacheManager(this._recentLoginUrlCacheClient);
 
   Future<void> clean(RecentLoginUrlCleanupRule cleanupRule) async {
-    final recentCacheExist = await _recentLoginUrlCacheClient.isExistTable();
-    if (recentCacheExist) {
       final listRecentUrlCache = await _recentLoginUrlCacheClient.getAll();
       listRecentUrlCache.sortByCreationDate();
 
@@ -22,6 +20,5 @@ class RecentLoginUrlCacheManager {
             .toList();
         await _recentLoginUrlCacheClient.deleteMultipleItem(newListKeyRecent);
       }
-    }
   }
 }

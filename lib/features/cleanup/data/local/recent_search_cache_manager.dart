@@ -10,8 +10,6 @@ class RecentSearchCacheManager {
   RecentSearchCacheManager(this._recentSearchCacheClient);
 
   Future<void> clean(RecentSearchCleanupRule cleanupRule) async {
-    final recentSearchCacheExist = await _recentSearchCacheClient.isExistTable();
-    if (recentSearchCacheExist) {
       final listRecentSearchCache = await _recentSearchCacheClient.getAll();
       listRecentSearchCache.sortByCreationDate();
 
@@ -22,6 +20,5 @@ class RecentSearchCacheManager {
             .toList();
         await _recentSearchCacheClient.deleteMultipleItem(newListKeyRecent);
       }
-    }
   }
 }
