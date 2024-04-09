@@ -14,6 +14,7 @@ import 'package:model/extensions/attachment_extension.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -57,6 +58,7 @@ class UploadController extends BaseController {
     _progressUploadStateStreamGroup.close();
     _uploadingStateInlineFiles.clear();
     _progressUploadInlineImageStateStreamGroup.close();
+    dispatchState(Right(UIClosedState()));
     super.onClose();
   }
 
