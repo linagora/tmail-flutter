@@ -10,8 +10,6 @@ class RecentLoginUsernameCacheManager {
   RecentLoginUsernameCacheManager(this._recentLoginUsernameCacheClient);
 
   Future<void> clean(RecentLoginUsernameCleanupRule cleanupRule) async {
-    final recentCacheExist = await _recentLoginUsernameCacheClient.isExistTable();
-    if (recentCacheExist) {
       final listRecentUsernameCache = await _recentLoginUsernameCacheClient.getAll();
       listRecentUsernameCache.sortByCreationDate();
 
@@ -22,6 +20,5 @@ class RecentLoginUsernameCacheManager {
             .toList();
         await _recentLoginUsernameCacheClient.deleteMultipleItem(newListKeyRecent);
       }
-    }
   }
 }

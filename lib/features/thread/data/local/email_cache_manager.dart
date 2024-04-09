@@ -75,23 +75,19 @@ class EmailCacheManager {
       await _emailCacheClient.updateMultipleItem(updatedCacheEmails);
     }
 
-    final emailCacheExist = await _emailCacheClient.isExistTable();
-    if (destroyed?.isNotEmpty == true && emailCacheExist) {
+    if (destroyed?.isNotEmpty == true) {
       final destroyedCacheEmails = destroyed!.toCacheKeyList(accountId, userName);
       await _emailCacheClient.deleteMultipleItem(destroyedCacheEmails);
     }
   }
 
   Future<void> clean(EmailCleanupRule cleanupRule) async {
-    final emailCacheExist = await _emailCacheClient.isExistTable();
-    if (emailCacheExist) {
       final listEmailCache = await _emailCacheClient.getAll();
       final listEmailIdCacheExpire = listEmailCache
         .where((emailCache) => emailCache.expireTimeCaching(cleanupRule))
         .map((emailCache) => emailCache.id)
         .toList();
       await _emailCacheClient.deleteMultipleItem(listEmailIdCacheExpire);
-    }
   }
 
   Future<void> storeEmail(AccountId accountId, UserName userName, EmailCache emailCache) {

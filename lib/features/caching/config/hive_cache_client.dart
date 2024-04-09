@@ -162,14 +162,6 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<bool> isExistTable() {
-    return Future.sync(() async {
-      return Hive.boxExists(tableName);
-    }).catchError((error) {
-      throw error;
-    });
-  }
-
   Future<void> deleteBox() {
     return Hive.deleteBoxFromDisk(tableName);
   }

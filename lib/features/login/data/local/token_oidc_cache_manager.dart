@@ -22,10 +22,7 @@ class TokenOidcCacheManager {
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
     log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
-    final emailCacheExist = await _tokenOidcCacheClient.isExistTable();
-    if (emailCacheExist) {
-      await _tokenOidcCacheClient.clearAllData();
-    }
+    await _tokenOidcCacheClient.clearAllData();
     log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
     log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
     log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');

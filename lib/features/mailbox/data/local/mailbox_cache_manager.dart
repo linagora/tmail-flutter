@@ -41,8 +41,7 @@ class MailboxCacheManager {
       await _mailboxCacheClient.updateMultipleItem(updatedCacheMailboxes);
     }
 
-    final mailboxCacheExist = await _mailboxCacheClient.isExistTable();
-    if (destroyed?.isNotEmpty == true && mailboxCacheExist) {
+    if (destroyed?.isNotEmpty == true) {
       final destroyedCacheMailboxes = destroyed!.toCacheKeyList(accountId, userName);
       await _mailboxCacheClient.deleteMultipleItem(destroyedCacheMailboxes);
     }
