@@ -81,43 +81,54 @@ class FileUploader {
       UploadFileArguments argsUpload,
       worker.TypeSendPort sendPort
   ) async {
-    final rootIsolateToken = argsUpload.isolateToken;
-    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-    await HiveCacheConfig.instance.setUp();
+    try {
+      final rootIsolateToken = argsUpload.isolateToken;
+      BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+      await HiveCacheConfig.instance.setUp();
 
-    final headerParam = argsUpload.dioClient.getHeaders();
-    headerParam[HttpHeaders.contentTypeHeader] = argsUpload.mobileFileUpload.mimeType;
-    headerParam[HttpHeaders.contentLengthHeader] = argsUpload.mobileFileUpload.fileSize;
+      final headerParam = argsUpload.dioClient.getHeaders();
+      headerParam[HttpHeaders.contentTypeHeader] = argsUpload.mobileFileUpload.mimeType;
+      headerParam[HttpHeaders.contentLengthHeader] = argsUpload.mobileFileUpload.fileSize;
 
-    final mapExtra = <String, dynamic>{
-      uploadAttachmentExtraKey: {
-        filePathExtraKey: argsUpload.mobileFileUpload.filePath,
-      }
-    };
+      final mapExtra = <String, dynamic>{
+        uploadAttachmentExtraKey: {
+          filePathExtraKey: argsUpload.mobileFileUpload.filePath,
+        }
+      };
 
-    final resultJson = await argsUpload.dioClient.post(
-      Uri.decodeFull(argsUpload.uploadUri.toString()),
-      options: Options(
-        headers: headerParam,
-        extra: mapExtra
-      ),
-      data: File(argsUpload.mobileFileUpload.filePath).openRead(),
-      onSendProgress: (count, total) {
-        log('FileUploader::_handleUploadAttachmentAction():onSendProgress: FILE[${argsUpload.uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
-        sendPort.send(
-          UploadingAttachmentUploadState(
-            argsUpload.uploadId,
-            count,
-            argsUpload.mobileFileUpload.fileSize
-          )
-        );
-      }
-    );
-    log('FileUploader::_handleUploadAttachmentAction():resultJson: $resultJson');
-    return _parsingResponse(
-      resultJson: resultJson,
-      fileName: argsUpload.mobileFileUpload.fileName
-    );
+      final resultJson = await argsUpload.dioClient.post(
+        Uri.decodeFull(argsUpload.uploadUri.toString()),
+        options: Options(
+          headers: headerParam,
+          extra: mapExtra
+        ),
+        data: File(argsUpload.mobileFileUpload.filePath).openRead(),
+        onSendProgress: (count, total) {
+          log('FileUploader::_handleUploadAttachmentAction():onSendProgress: [${argsUpload.uploadId.id}] = $count');
+          sendPort.send(
+            UploadingAttachmentUploadState(
+              argsUpload.uploadId,
+              count,
+              argsUpload.mobileFileUpload.fileSize
+            )
+          );
+        }
+      );
+      log('FileUploader::_handleUploadAttachmentAction():resultJson: $resultJson');
+      return _parsingResponse(
+        resultJson: resultJson,
+        fileName: argsUpload.mobileFileUpload.fileName
+      );
+    } on DioError catch (exception) {
+      logError('FileUploader::_handleUploadAttachmentAction():DioError: $exception');
+
+      throw exception.copyWith(
+        requestOptions: exception.requestOptions.copyWith(data: ''));
+    } catch (exception) {
+      logError('FileUploader::_handleUploadAttachmentAction():OtherException: $exception');
+      
+      rethrow;
+    }
   }
 
   Future<Attachment?> _handleUploadAttachmentActionOnWeb(
