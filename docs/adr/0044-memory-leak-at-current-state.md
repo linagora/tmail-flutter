@@ -27,7 +27,7 @@ Date: 2024-04-09
 
 ## Decision
 
-- This work will be on hold until further notice
+- This work will be on hold until significant memory leaks are reported (E.g. App consumes twice the regular amount of memory within one day usage)
   
 ## Consequences
 
