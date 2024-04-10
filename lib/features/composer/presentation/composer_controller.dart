@@ -59,6 +59,7 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/composer_sty
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/insert_link_dialog_widget.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
@@ -2166,5 +2167,26 @@ class ComposerController extends BaseController with DragDropFileMixin {
     fromRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     ccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     bccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+  }
+
+  void onEditLinkAction(
+    BuildContext context,
+    String? text,
+    String? url,
+    bool? isOpenNewTab,
+    String linkTagId
+  ) async {
+    Get.dialog(
+      PointerInterceptor(
+        child: InsertLinkDialogWidget(
+          responsiveUtils: responsiveUtils,
+          editorController: richTextWebController?.editorController,
+          linkTagId: linkTagId,
+          displayText: text ?? url ?? '',
+          link: url ?? '',
+          openNewTab: isOpenNewTab ?? true,
+        )
+      )
+    );
   }
 }

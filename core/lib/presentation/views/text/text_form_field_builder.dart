@@ -79,6 +79,42 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.validator != null) {
+      return TextFormField(
+        key: widget.key,
+        controller: _controller,
+        cursorColor: widget.cursorColor,
+        autocorrect: widget.autocorrect,
+        textInputAction: widget.textInputAction,
+        decoration: widget.decoration,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        keyboardAppearance: widget.keyboardAppearance,
+        style: widget.textStyle,
+        obscureText: widget.obscureText,
+        keyboardType: widget.keyboardType,
+        autofocus: widget.autoFocus,
+        focusNode: widget.focusNode,
+        textDirection: _textDirection,
+        readOnly: widget.readOnly,
+        mouseCursor: widget.mouseCursor,
+        autofillHints: widget.autofillHints,
+        onChanged: (value) {
+          widget.onTextChange?.call(value);
+          if (value.isNotEmpty) {
+            final directionByText = DirectionUtils.getDirectionByEndsText(value);
+            if (directionByText != _textDirection) {
+              setState(() {
+                _textDirection = directionByText;
+              });
+            }
+          }
+        },
+        onFieldSubmitted: widget.onTextSubmitted,
+        onTap: widget.onTap,
+        validator: widget.validator,
+      );
+    }
     return TextField(
       key: widget.key,
       controller: _controller,
@@ -111,7 +147,6 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
       },
       onSubmitted: widget.onTextSubmitted,
       onTap: widget.onTap,
-      validator: widget.validator,
     );
   }
 

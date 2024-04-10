@@ -1058,8 +1058,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: cnb_supported
-      resolved-ref: "978886d768e6540fc7dbe016dd83733c56ffb220"
+      ref: cherry-pick-insert-link-dialog
+      resolved-ref: "0286c90e75ae903bbb06ceab425f7cc8496d910b"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"

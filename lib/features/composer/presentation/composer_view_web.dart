@@ -191,6 +191,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     width: constraints.maxWidth,
                                     height: constraints.maxHeight,
                                     onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                    onEditLink: (text, url, isOpenNewTab, linkTagId) => controller.onEditLinkAction(context, text, url, isOpenNewTab, linkTagId),
                                   )),
                                 ),
                               ),
@@ -432,6 +433,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                             width: constraints.maxWidth,
                                             height: constraints.maxHeight,
                                             onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                            onEditLink: (text, url, isOpenNewTab, linkTagId) => controller.onEditLinkAction(context, text, url, isOpenNewTab, linkTagId),
                                           );
                                         }),
                                       ),
@@ -694,6 +696,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     width: constraints.maxWidth,
                                     height: constraints.maxHeight,
                                     onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                    onEditLink: (text, url, isOpenNewTab, linkTagId) => controller.onEditLinkAction(context, text, url, isOpenNewTab, linkTagId),
                                   )),
                                 ),
                               ),
