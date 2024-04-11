@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup flutter
         uses: subosito/flutter-action@v2
@@ -44,7 +44,7 @@ jobs:
         run: ./scripts/build-web.sh
 
       - name: Deploy to Github Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_dir: ${{ github.event.pull_request.number }}
@@ -52,7 +52,7 @@ jobs:
           publish_dir: "build/web"
 
       - name: Find deployment comment
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         id: fc
         with:
           comment-author: "github-actions[bot]"
@@ -60,7 +60,7 @@ jobs:
           body-includes: "This PR has been deployed to"
 
       - name: Create or update deployment comment
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
