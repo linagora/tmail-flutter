@@ -8,7 +8,6 @@ import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_body_content_widget.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_description_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_link_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_detail_widget.dart';
@@ -38,6 +37,10 @@ class CalendarEventDetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final eventDesc = calendarEvent.description?.isNotEmpty == true
+      ? calendarEvent.description!
+      : emailContent;
+
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: const ShapeDecoration(
@@ -60,24 +63,12 @@ class CalendarEventDetailWidget extends StatelessWidget {
         children: [
           if (calendarEvent.title?.isNotEmpty == true)
             EventTitleWidget(title: calendarEvent.title!),
-          if (calendarEvent.description?.isNotEmpty == true)
-            Padding(
-              padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
-              child: EventDescriptionDetailWidget(
-                description: calendarEvent.description!,
-                onOpenComposerAction: onOpenComposerAction,
-                onOpenNewTabAction: onOpenNewTabAction,
-              )
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
-              child: EventBodyContentWidget(
-                content: emailContent,
-                isDraggableAppActive: isDraggableAppActive,
-                onMailtoDelegateAction: onMailtoDelegateAction,
-              )
-            ),
+          Padding(
+            padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+            child: EventBodyContentWidget(
+              content: eventDesc,
+              isDraggableAppActive: isDraggableAppActive,
+              onMailtoDelegateAction: onMailtoDelegateAction)),
           _buildEventTimeWidget(),
           if (calendarEvent.videoConferences.isNotEmpty)
             Padding(
