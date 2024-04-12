@@ -1,7 +1,4 @@
 
-import 'package:core/presentation/extensions/string_extension.dart';
-import 'package:core/presentation/utils/style_utils.dart';
-import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 
 class TextOverflowBuilder extends StatelessWidget {
@@ -14,22 +11,23 @@ class TextOverflowBuilder extends StatelessWidget {
   final TextDirection? textDirection;
   final TextOverflow? overflow;
 
-  const TextOverflowBuilder(this.data, {
-    super.key,
-    this.style,
-    this.textAlign,
-    this.softWrap = CommonTextStyle.defaultSoftWrap,
-    this.maxLines = 1,
-    this.textDirection,
-    this.overflow = CommonTextStyle.defaultTextOverFlow,
-  });
+  const TextOverflowBuilder(
+    this.data,
+    {
+      super.key,
+      this.style,
+      this.textAlign,
+      this.softWrap = true,
+      this.maxLines = 1,
+      this.textDirection,
+      this.overflow = TextOverflow.ellipsis,
+    }
+  );
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      DirectionUtils.isDirectionRTLByLanguage(context)
-        ? data
-        : data.overflow,
+      data,
       style: style,
       textAlign: textAlign,
       softWrap: softWrap,
