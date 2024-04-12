@@ -1,5 +1,4 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:flutter/material.dart';
 
 extension StringExtension on String {
 
@@ -38,12 +37,5 @@ extension StringExtension on String {
       logError('StringExtension::firstLetterToUpperCase(): $e');
       return '';
     }
-  }
-
-  String get overflow {
-    return characters
-      .replaceAll(Characters(''), Characters('\u{200B}'))
-      .replaceAll(Characters('-'), Characters('\u{2011}'))
-      .toString();
   }
 }

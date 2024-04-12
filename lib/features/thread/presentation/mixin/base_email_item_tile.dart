@@ -1,12 +1,10 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
-import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -88,20 +86,20 @@ mixin BaseEmailItemTile {
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          DirectionUtils.isDirectionRTLByLanguage(context)
-            ? informationSender(email, mailbox)
-            : informationSender(email, mailbox).overflow,
-          query?.value ?? '',
-          TextStyle(
-              fontSize: 15,
-              color: buildTextColorForReadEmail(email),
-              fontWeight: buildFontForReadEmail(email)),
-          TextStyle(
-              fontSize: 15,
-              color: buildTextColorForReadEmail(email),
-              backgroundColor: AppColor.bgWordSearch,
-              fontWeight: buildFontForReadEmail(email))
-      ).build();
+        textOrigin: informationSender(email, mailbox),
+        wordToStyle: query?.value ?? '',
+        styleOrigin: TextStyle(
+          fontSize: 15,
+          color: buildTextColorForReadEmail(email),
+          fontWeight: buildFontForReadEmail(email)
+        ),
+        styleWord: TextStyle(
+          fontSize: 15,
+          color: buildTextColorForReadEmail(email),
+          backgroundColor: AppColor.bgWordSearch,
+          fontWeight: buildFontForReadEmail(email)
+        )
+      );
     } else {
       return TextOverflowBuilder(
         informationSender(email, mailbox),
@@ -122,20 +120,20 @@ mixin BaseEmailItemTile {
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          DirectionUtils.isDirectionRTLByLanguage(context)
-            ? email.getEmailTitle()
-            : email.getEmailTitle().overflow,
-          query?.value ?? '',
-          TextStyle(
-              fontSize: 13,
-              color: buildTextColorForReadEmail(email),
-              fontWeight: buildFontForReadEmail(email)),
-          TextStyle(
-              fontSize: 13,
-              backgroundColor: AppColor.bgWordSearch,
-              color: buildTextColorForReadEmail(email),
-              fontWeight: buildFontForReadEmail(email))
-      ).build();
+        textOrigin: email.getEmailTitle(),
+        wordToStyle: query?.value ?? '',
+        styleOrigin: TextStyle(
+          fontSize: 13,
+          color: buildTextColorForReadEmail(email),
+          fontWeight: buildFontForReadEmail(email)
+        ),
+        styleWord: TextStyle(
+          fontSize: 13,
+          backgroundColor: AppColor.bgWordSearch,
+          color: buildTextColorForReadEmail(email),
+          fontWeight: buildFontForReadEmail(email)
+        )
+      );
     } else {
       return TextOverflowBuilder(
         email.getEmailTitle(),
@@ -155,19 +153,19 @@ mixin BaseEmailItemTile {
   ) {
     if (isSearchEnabled(isSearchEmailRunning, query)) {
       return RichTextBuilder(
-          DirectionUtils.isDirectionRTLByLanguage(context)
-            ? email.getPartialContent()
-            : email.getPartialContent().overflow,
-          query?.value ?? '',
-          const TextStyle(
-              fontSize: 13,
-              color: AppColor.colorContentEmail,
-              fontWeight: FontWeight.normal),
-          const TextStyle(
-              fontSize: 13,
-              color: AppColor.colorContentEmail,
-              backgroundColor: AppColor.bgWordSearch)
-      ).build();
+        textOrigin: email.getPartialContent(),
+        wordToStyle: query?.value ?? '',
+        styleOrigin: const TextStyle(
+          fontSize: 13,
+          color: AppColor.colorContentEmail,
+          fontWeight: FontWeight.normal
+        ),
+        styleWord: const TextStyle(
+          fontSize: 13,
+          color: AppColor.colorContentEmail,
+          backgroundColor: AppColor.bgWordSearch
+        )
+      );
     } else {
       return TextOverflowBuilder(
         email.getPartialContent(),
