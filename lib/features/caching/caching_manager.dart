@@ -11,6 +11,8 @@ import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
@@ -26,6 +28,8 @@ class CachingManager {
   final StateCacheClient _stateCacheClient;
   final EmailCacheClient _emailCacheClient;
   final RecentSearchCacheClient _recentSearchCacheClient;
+  final RecentLoginUrlCacheClient _recentLoginUrlCacheClient;
+  final RecentLoginUsernameCacheClient _recentLoginUsernameCacheClient;
   final AccountCacheClient _accountCacheClient;
   final FcmCacheClient _fcmCacheClient;
   final FirebaseRegistrationCacheClient _firebaseRegistrationCacheClient;
@@ -43,6 +47,8 @@ class CachingManager {
     this._stateCacheClient,
     this._emailCacheClient,
     this._recentSearchCacheClient,
+    this._recentLoginUrlCacheClient,
+    this._recentLoginUsernameCacheClient,
     this._accountCacheClient,
     this._fcmCacheClient,
     this._firebaseRegistrationCacheClient,
@@ -110,15 +116,6 @@ class CachingManager {
     ], eagerError: true);
   }
 
-  Future<void> onUpgradeCache(int oldVersion, int newVersion) async {
-    log('CachingManager::onUpgradeCache():oldVersion $oldVersion | newVersion: $newVersion');
-    await clearData();
-    if (oldVersion > 0 && oldVersion < newVersion && newVersion == 7) {
-      await clearAll();
-    }
-    await storeCacheVersion(newVersion);
-  }
-
   Future<bool> storeCacheVersion(int newVersion) async {
     log('CachingManager::storeCacheVersion()');
     return _hiveCacheVersionClient.storeVersion(newVersion);
@@ -136,6 +133,13 @@ class CachingManager {
     await Future.wait([
       _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
       _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
+    ]);
+  }
+
+  Future<void> clearLoginRecentData() async {
+    await Future.wait([
+      _recentLoginUrlCacheClient.clearAllData(),
+      _recentLoginUsernameCacheClient.clearAllData(),
     ]);
   }
 }
