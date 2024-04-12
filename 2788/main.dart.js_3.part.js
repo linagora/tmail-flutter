@@ -16334,7 +16334,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           break;
       }
     },
-    $signature: 35
+    $signature: 34
   };
   B.MailboxDashBoardView_popupMenuEmailReceiveTimeType_closure.prototype = {
     call$1(receiveTime) {
@@ -17744,7 +17744,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 35
+    $signature: 34
   };
   B.SearchEmailView__buildQuickSearchFilterButton___closure.prototype = {
     call$1(receiveTime) {
@@ -18559,7 +18559,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = this.$this._widget;
       t3.onClickOpenMenuMailboxAction.call$2(new A.RelativeRect(t1, t2, screenSize._dx - t1, screenSize._dy - t2), t3._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 35
+    $signature: 34
   };
   B.ThreadView_build_closure6.prototype = {
     call$0() {
@@ -19039,12 +19039,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.ThreadView__buildEmailItemDraggable_closure2.prototype = {
     call$1(_) {
     },
-    $signature: 35
+    $signature: 34
   };
   B.ThreadView__buildEmailItemDraggable_closure3.prototype = {
     call$1(_) {
     },
-    $signature: 35
+    $signature: 34
   };
   B.ThreadView__buildEmailItemDraggable_closure0.prototype = {
     call$0() {
@@ -19705,7 +19705,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 35
+    $signature: 34
   };
   B._EmailTileBuilderState__buildSubjectAndContent_closure.prototype = {
     call$2(context, constraints) {
@@ -20395,5 +20395,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "HiR68020R9ZNBLSq+iTBl3FDQnk=");
+})($__dart_deferred_initializers__, "XG44G5FYC6XOACBmi6apmFU76t4=");
 ;
