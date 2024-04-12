@@ -87,7 +87,7 @@ class IdentityCreatorController extends BaseController {
   final htmlEditorMinHeight = 150;
 
   void updateNameIdentity(BuildContext context, String? value) {
-    _nameIdentity = value;
+    _nameIdentity = value?.trim();
     errorNameIdentity.value = _getErrorInputNameString(context);
   }
 
