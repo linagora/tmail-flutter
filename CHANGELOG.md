@@ -1,3 +1,11 @@
+## [0.11.3-patch4-13] - 2024-04-05
+### Fixed 
+- #2533 Remove iframe listener in composer (memory leak in composer)
+- #2533 Remove file picker memory leak in composer
+- #2758 Use web view to display calendar description
+- #2785 Prevent user try to click on print email too early
+- #2310 Fix Hive check in some browser block web app loading
+
 ## [0.11.3-patch4-12] - 2024-04-05
 ### Fixed
 - #2774 Try to display big signature fit in composer
