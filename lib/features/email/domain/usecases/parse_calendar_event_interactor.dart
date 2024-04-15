@@ -30,21 +30,18 @@ class ParseCalendarEventInteractor {
         eagerError: true
       );
 
-      final listCalendarEvent = List<CalendarEvent>.empty(growable: true);
+      final mapCalendarEvent = <Id, List<CalendarEvent>>{};
       final listEventAction = List<EventAction>.empty(growable: true);
 
       if (listResult[0] is Map<Id, List<CalendarEvent>>) {
-        final mapCalendarEvent = listResult[0] as Map<Id, List<CalendarEvent>>;
-        for (var calendarEvents in mapCalendarEvent.values) {
-          listCalendarEvent.addAll(calendarEvents);
-        }
+        mapCalendarEvent.addAll(listResult[0] as Map<Id, List<CalendarEvent>>);
       }
       if (listResult[1] is List<EventAction>) {
         listEventAction.addAll(listResult[1] as List<EventAction>);
       }
 
-      if (listCalendarEvent.isNotEmpty) {
-        yield Right(ParseCalendarEventSuccess(listCalendarEvent, listEventAction));
+      if (mapCalendarEvent.isNotEmpty) {
+        yield Right(ParseCalendarEventSuccess(mapCalendarEvent, listEventAction));
       } else {
         yield Left(ParseCalendarEventFailure(NotFoundCalendarEventException()));
       }
