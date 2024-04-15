@@ -1808,7 +1808,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleReadReceiptRequestNotificationMessage": "Demander un accusé de réception",
+  "titleReadReceiptRequestNotificationMessage": "Demander un accusé de lecture",
   "@titleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -2024,7 +2024,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subjectSendReceiptToSender": "Lire : {subject}",
+  "subjectSendReceiptToSender": "Lu : {subject}",
   "@subjectSendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -2204,7 +2204,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subTitleReadReceiptRequestNotificationMessage": "L'expéditeur a demandé l'envoi d'un accusé de réception pour ce message. Envoyer un accusé de réception ?",
+  "subTitleReadReceiptRequestNotificationMessage": "L'expéditeur a demandé l'envoi d'un accusé de lecture pour ce message. Envoyer un accusé de lecture ?",
   "@subTitleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -2578,7 +2578,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textBodySendReceiptToSender": "Le message a été lu par {receiver} le {time}\n\nSujet : {subject}\n\nRemarque : Cet accusé de réception de lecture confirme uniquement que le message a été affiché sur l'ordinateur du destinataire. Il n'y a aucune garantie que le destinataire ait lu ou compris le contenu du message.",
+  "textBodySendReceiptToSender": "Le message a été lu par {receiver} le {time}\n\nSujet : {subject}\n\nRemarque : Cet accusé de lecture confirme uniquement que le message a été affiché sur l'ordinateur du destinataire. Il n'y a aucune garantie que le destinataire ait lu ou compris le contenu du message.",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -2592,7 +2592,7 @@
       "time": {}
     }
   },
-  "toastMessageSendReceiptSuccess": "Un accusé de réception a été envoyé.",
+  "toastMessageSendReceiptSuccess": "Un accusé de lecture a été envoyé.",
   "@toastMessageSendReceiptSuccess": {
     "type": "text",
     "placeholders_order": [],
@@ -3852,7 +3852,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceiptsToggleDescription": "Toujours exiger des accusés de réception avec les messages sortants",
+  "emailReadReceiptsToggleDescription": "Toujours exiger des accusés de lecture pour les messages sortants",
   "@emailReadReceiptsToggleDescription": {
     "type": "text",
     "placeholders_order": [],
@@ -3864,7 +3864,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceiptsSettingExplanation": "Les accusés de réception sont des notifications qui peuvent être envoyées à l'expéditeur pour confirmer que le destinataire a bien ouvert le message.",
+  "emailReadReceiptsSettingExplanation": "Les accusés de lecture sont des notifications qui peuvent être envoyées à l'expéditeur pour confirmer que le destinataire a bien ouvert le message.",
   "@emailReadReceiptsSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
