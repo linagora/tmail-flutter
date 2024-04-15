@@ -56,4 +56,6 @@ abstract class MailboxDataSource {
   Future<GetMailboxByRoleResponse> getMailboxByRole(Session session, AccountId accountId, Role role);
 
   Future<void> clearAllMailboxCache(AccountId accountId, UserName userName);
+
+  Future<List<MailboxId>> getListMailboxById(Session session, AccountId accountId, List<MailboxId> mailboxIds);
 }

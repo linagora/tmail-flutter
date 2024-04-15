@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-25T10:51:29.520399",
+  "@@last_modified": "2024-04-09T16:12:25.744131",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3686,6 +3686,12 @@
   },
   "selectAllMessagesOfThisPage": "Select all messages of this page",
   "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningRuleCannotAppliedWhenTargetFolderNoExist": "The rule cannot be applied as the target folder do no longer exist.",
+  "@warningRuleCannotAppliedWhenTargetFolderNoExist": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -15,4 +15,6 @@ extension ListMailboxIdExtension on List<MailboxId> {
     };
     return maps;
   }
+
+  Set<Id> get ids => map((mailboxId) => mailboxId.id).toSet();
 }

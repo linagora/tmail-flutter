@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
@@ -8,9 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/get_list_mailbox_by_id_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_list_mailbox_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
@@ -23,6 +27,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_ema
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rule_bottom_sheet_action_tile_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/list_tmail_rule_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
@@ -37,19 +42,22 @@ class EmailRulesController extends BaseController {
   DeleteEmailRuleInteractor? _deleteEmailRuleInteractor;
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   EditEmailRuleFilterInteractor? _editEmailRuleFilterInteractor;
+  GetListMailboxByIdInteractor? _getListMailboxByIdInteractor;
 
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
 
   final listEmailRule = <TMailRule>[].obs;
+  final listMailboxIdsAppendIn = Rxn<List<MailboxId>>();
 
   @override
   void onInit() {
     super.onInit();
     try {
-      _getAllRulesInteractor = Get.find<GetAllRulesInteractor>();
-      _deleteEmailRuleInteractor = Get.find<DeleteEmailRuleInteractor>();
-      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
-      _editEmailRuleFilterInteractor = Get.find<EditEmailRuleFilterInteractor>();
+      _getAllRulesInteractor = getBinding<GetAllRulesInteractor>();
+      _deleteEmailRuleInteractor = getBinding<DeleteEmailRuleInteractor>();
+      _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
+      _editEmailRuleFilterInteractor = getBinding<EditEmailRuleFilterInteractor>();
+      _getListMailboxByIdInteractor = getBinding<GetListMailboxByIdInteractor>();
     } catch (e) {
       logError('EmailRulesController::onInit(): ${e.toString()}');
     }
@@ -65,15 +73,39 @@ class EmailRulesController extends BaseController {
   void handleSuccessViewState(Success success) {
     super.handleSuccessViewState(success);
     if (success is GetAllRulesSuccess) {
-      if (success.rules?.isNotEmpty == true) {
-        listEmailRule.addAll(success.rules!);
-      }
+      listEmailRule.value = success.rules;
+      _validateRuleMailboxAppendInExist();
     } else if (success is DeleteEmailRuleSuccess) {
       _handleDeleteEmailRuleSuccess(success);
+      _validateRuleMailboxAppendInExist();
     } else if (success is CreateNewRuleFilterSuccess) {
       _createNewRuleFilterSuccess(success);
+      _validateRuleMailboxAppendInExist();
     } else if (success is EditEmailRuleFilterSuccess) {
       _editEmailRuleFilterSuccess(success);
+      _validateRuleMailboxAppendInExist();
+    } else if (success is GetListMailboxByIdSuccess) {
+      listMailboxIdsAppendIn.value = success.mailboxIds;
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    log('EmailRulesController::handleFailureViewState: ${failure.runtimeType}');
+    if (failure is GetListMailboxByIdFailure) {
+      listMailboxIdsAppendIn.value = [];
+    } else {
+      super.handleFailureViewState(failure);
+    }
+  }
+
+  @override
+  void handleExceptionAction({Failure? failure, Exception? exception}) {
+    log('EmailRulesController::handleExceptionAction: ${failure.runtimeType}');
+    if (failure is GetListMailboxByIdFailure) {
+      listMailboxIdsAppendIn.value = [];
+    } else {
+      super.handleExceptionAction(failure: failure, exception: exception);
     }
   }
 
@@ -109,6 +141,7 @@ class EmailRulesController extends BaseController {
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).newFilterWasCreated);
       }
+      listMailboxIdsAppendIn.value = null;
       listEmailRule.value = success.newListRules;
       listEmailRule.refresh();
     }
@@ -150,6 +183,7 @@ class EmailRulesController extends BaseController {
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).yourFilterHasBeenUpdated);
       }
+      listMailboxIdsAppendIn.value = null;
       listEmailRule.value = success.listRulesUpdated;
       listEmailRule.refresh();
     }
@@ -237,6 +271,7 @@ class EmailRulesController extends BaseController {
     }
 
     if (success.rules?.isNotEmpty == true) {
+      listMailboxIdsAppendIn.value = null;
       listEmailRule.clear();
       listEmailRule.addAll(success.rules!);
     }
@@ -289,5 +324,24 @@ class EmailRulesController extends BaseController {
         editEmailRule(context, rule);
       }))
     .build();
+  }
+
+  void _validateRuleMailboxAppendInExist() {
+    final listMailboxIds = listEmailRule.mailboxesAppendIn;
+    final accountId = _accountDashBoardController.accountId.value;
+    final session = _accountDashBoardController.sessionCurrent;
+
+    if (listMailboxIds.isEmpty ||
+        accountId == null ||
+        session == null ||
+        _getListMailboxByIdInteractor == null) {
+      return;
+    }
+
+    consumeState(_getListMailboxByIdInteractor!.execute(
+      session,
+      accountId,
+      listMailboxIds
+    ));
   }
 }

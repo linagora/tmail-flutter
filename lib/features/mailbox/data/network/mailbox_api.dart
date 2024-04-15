@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -548,6 +549,36 @@ class MailboxAPI with HandleSetErrorMixin {
 
     if (mailboxResponse?.list.isNotEmpty == true) {
       return GetMailboxByRoleResponse(mailbox: mailboxResponse!.list.first);
+    } else {
+      throw NotFoundMailboxException();
+    }
+  }
+
+  Future<List<MailboxId>> getListMailboxById(Session session, AccountId accountId, List<MailboxId> mailboxIds) async {
+    final processingInvocation = ProcessingInvocation();
+
+    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+
+    final getMailboxCreated = GetMailboxMethod(accountId)
+      ..addIds(mailboxIds.ids)
+      ..addProperties(Properties({MailboxProperty.id}));
+
+    final queryInvocation = jmapRequestBuilder.invocation(getMailboxCreated);
+
+    final capabilities = getMailboxCreated.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (jmapRequestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final getMailboxResponse = result.parse<GetMailboxResponse>(
+      queryInvocation.methodCallId,
+      GetMailboxResponse.deserialize);
+
+    if (getMailboxResponse != null && getMailboxResponse.list.isNotEmpty) {
+      return getMailboxResponse.list.mailboxIds;
     } else {
       throw NotFoundMailboxException();
     }

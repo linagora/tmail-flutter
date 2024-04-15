@@ -146,4 +146,11 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<void> clearAllMailboxCache(AccountId accountId, UserName userName) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<MailboxId>> getListMailboxById(Session session, AccountId accountId, List<MailboxId> mailboxIds) {
+    return Future.sync(() async {
+      return await mailboxAPI.getListMailboxById(session, accountId, mailboxIds);
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

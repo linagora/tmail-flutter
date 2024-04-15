@@ -138,10 +138,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         await syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is GetAllRulesSuccess) {
-      log('RulesFilterCreatorController::handleSuccessViewState():GetAllRulesSuccess: ${success.rules}');
-      if (success.rules?.isNotEmpty == true) {
-        _listEmailRule = success.rules!;
-      }
+      _listEmailRule = success.rules;
     }
   }
 

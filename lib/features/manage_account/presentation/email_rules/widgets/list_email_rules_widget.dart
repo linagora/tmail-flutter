@@ -1,5 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -47,17 +46,25 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
               ),
               const Divider(),
               Obx(() {
-                log('ListEmailRulesWidget::build(): ${controller.listEmailRule}');
                 return ListView.separated(
                   shrinkWrap: true,
                   itemCount: controller.listEmailRule.length,
                   primary: false,
                   padding: EdgeInsets.zero,
                   itemBuilder: (context, index) {
-                    final ruleWithId = controller.listEmailRule[index]
-                        .copyWith(id: RuleId(id: Id(index.toString())));
-                    log('ListEmailRulesWidget::build(): $ruleWithId');
-                    return EmailRulesItemWidget(rule: ruleWithId);
+                    final ruleWithId = controller.listEmailRule[index].copyWith(id: RuleId(id: Id(index.toString())));
+
+                    return Obx(() {
+                      return EmailRulesItemWidget(
+                        imagePaths: controller.imagePaths,
+                        responsiveUtils: controller.responsiveUtils,
+                        rule: ruleWithId,
+                        mailboxIds: controller.listMailboxIdsAppendIn.value,
+                        editRuleAction: controller.editEmailRule,
+                        deleteRuleAction: controller.deleteEmailRule,
+                        openEditRuleMenuAction: controller.openEditRuleMenuAction,
+                      );
+                    });
                   },
                   separatorBuilder: (context, index) {
                     if (controller.listEmailRule.isNotEmpty) {

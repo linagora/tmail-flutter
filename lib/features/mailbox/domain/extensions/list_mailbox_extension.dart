@@ -1,4 +1,5 @@
 import 'package:built_collection/built_collection.dart';
+import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -18,4 +19,6 @@ extension ListMailboxExtensions on List<Mailbox> {
         validBuilder.build().toList(),
         invalidBuilder.build().toList());
   }
+
+  List<MailboxId> get mailboxIds => map((mailbox) => mailbox.id).whereNotNull().toList();
 }
