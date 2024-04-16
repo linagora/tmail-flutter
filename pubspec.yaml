@@ -60,7 +60,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: memory_fixed_in_cnb
+      ref: bugfix/composer-reply-memory-leak
 
   jmap_dart_client:
     git:
