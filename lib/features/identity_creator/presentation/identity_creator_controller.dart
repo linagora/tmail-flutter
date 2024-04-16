@@ -9,6 +9,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -85,6 +86,7 @@ class IdentityCreatorController extends BaseController {
 
   final GlobalKey htmlKey = GlobalKey();
   final htmlEditorMinHeight = 150;
+  bool isLoadSignatureCompleted = false;
 
   void updateNameIdentity(BuildContext context, String? value) {
     _nameIdentity = value?.trim();
@@ -137,6 +139,7 @@ class IdentityCreatorController extends BaseController {
   @override
   void onClose() {
     log('IdentityCreatorController::onClose():');
+    isLoadSignatureCompleted = false;
     inputNameIdentityFocusNode.dispose();
     inputBccIdentityFocusNode.dispose();
     inputNameIdentityController.dispose();
@@ -664,5 +667,18 @@ class IdentityCreatorController extends BaseController {
     } else {
       return math.max(responsiveUtils.getSizeScreenWidth(context) * 0.4, IdentityCreatorConstants.maxWidthInlineImageOther);
     }
+  }
+
+  void onLoadSignatureCompleted(String? content) {
+    isLoadSignatureCompleted = true;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.fastOutSlowIn
+        );
+      }
+    });
   }
 }
