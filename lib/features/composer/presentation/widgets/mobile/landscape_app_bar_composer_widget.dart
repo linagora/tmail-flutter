@@ -48,7 +48,6 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
               tooltipMessage: AppLocalizations.of(context).saveAndClose,
               iconSize: MobileAppBarComposerWidgetStyle.iconSize,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-              padding: MobileAppBarComposerWidgetStyle.iconPadding,
               onTapActionCallback: onCloseViewAction
             ),
             const Spacer(),
@@ -63,7 +62,7 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
             ),
             if (isNetworkConnectionAvailable)
               ...[
-                const SizedBox(width: 4),
+                const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icAttachFile,
                   iconColor: MobileAppBarComposerWidgetStyle.iconColor,
@@ -72,7 +71,7 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
                   tooltipMessage: AppLocalizations.of(context).attach_file,
                   onTapActionCallback: attachFileAction,
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icInsertImage,
                   iconColor: MobileAppBarComposerWidgetStyle.iconColor,
@@ -81,7 +80,7 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
                   tooltipMessage: AppLocalizations.of(context).insertImage,
                   onTapActionCallback: insertImageAction,
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
               ],
             TMailButtonWidget.fromIcon(
               icon: isSendButtonEnabled
@@ -97,7 +96,6 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
             TMailButtonWidget.fromIcon(
               icon: _imagePaths.icMore,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-              borderRadius: MobileAppBarComposerWidgetStyle.iconRadius,
               backgroundColor: Colors.transparent,
               padding: MobileAppBarComposerWidgetStyle.iconPadding,
               iconSize: MobileAppBarComposerWidgetStyle.iconSize,

@@ -48,13 +48,11 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
             tooltipMessage: AppLocalizations.of(context).saveAndClose,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-            padding: MobileAppBarComposerWidgetStyle.iconPadding,
             onTapActionCallback: onCloseViewAction
           ),
           const Spacer(),
           TMailButtonWidget.fromIcon(
             icon: _imagePaths.icRichToolbar,
-            borderRadius: MobileAppBarComposerWidgetStyle.iconRadius,
             padding: MobileAppBarComposerWidgetStyle.richTextIconPadding,
             backgroundColor: isFormattingOptionsEnabled
               ? MobileAppBarComposerWidgetStyle.selectedBackgroundColor
@@ -70,27 +68,21 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           TMailButtonWidget.fromIcon(
             icon: _imagePaths.icAttachFile,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-            borderRadius: MobileAppBarComposerWidgetStyle.iconRadius,
             backgroundColor: Colors.transparent,
-            padding: MobileAppBarComposerWidgetStyle.iconPadding,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,
             tooltipMessage: AppLocalizations.of(context).attach_file,
             onTapActionCallback: attachFileAction,
           ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-          AbsorbPointer(
-            absorbing: isCodeViewEnabled,
-            child: TMailButtonWidget.fromIcon(
+          if (!isCodeViewEnabled)
+            TMailButtonWidget.fromIcon(
               icon: _imagePaths.icInsertImage,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-              borderRadius: MobileAppBarComposerWidgetStyle.iconRadius,
               backgroundColor: Colors.transparent,
-              padding: MobileAppBarComposerWidgetStyle.iconPadding,
               iconSize: MobileAppBarComposerWidgetStyle.iconSize,
               tooltipMessage: AppLocalizations.of(context).insertImage,
               onTapActionCallback: insertImageAction,
             ),
-          ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
             icon: isSendButtonEnabled
@@ -106,9 +98,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           TMailButtonWidget.fromIcon(
             icon: _imagePaths.icMore,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-            borderRadius: MobileAppBarComposerWidgetStyle.iconRadius,
             backgroundColor: Colors.transparent,
-            padding: MobileAppBarComposerWidgetStyle.iconPadding,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,
             tooltipMessage: AppLocalizations.of(context).more,
             onTapActionAtPositionCallback: openContextMenuAction,
