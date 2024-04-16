@@ -55,12 +55,12 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: master
+      ref: cnb_supported
 
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: memory_fixed_in_cnb
+      ref: migrate-dev-feature
 
   jmap_dart_client:
     git:
