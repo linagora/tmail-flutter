@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 class MobileAppBarComposerWidgetStyle {
   static const double height = 56;
   static const double iconSize = 24;
-  static const double space = 12;
-  static const double iconRadius = 8;
+  static const double space = 4;
   static const double sendButtonIconSize = 30;
   static const double richTextIconSize = 28;
 
