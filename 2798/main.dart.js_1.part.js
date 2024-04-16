@@ -589,7 +589,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 207
+    $signature: 237
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -609,7 +609,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 57
+    $signature: 59
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -777,5 +777,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "TWqjp85RJAzQOW7d5aNpXJXuEh8=");
+})($__dart_deferred_initializers__, "suzEKQ8XQx1UkmjzRCKrQuOQ6Ro=");
 ;
