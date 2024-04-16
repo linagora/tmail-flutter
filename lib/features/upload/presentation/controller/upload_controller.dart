@@ -254,7 +254,7 @@ class UploadController extends BaseController {
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
-        '${AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments}. ${failure.exception ?? ''}',
+        AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments,
         leadingSVGIconColor: Colors.white,
         leadingSVGIcon: imagePaths.icAttachment);
     }

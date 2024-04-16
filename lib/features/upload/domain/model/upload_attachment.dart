@@ -64,7 +64,7 @@ class UploadAttachment with EquatableMixin {
       if (e is DioError && e.type == DioErrorType.cancel) {
         _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
       } else {
-        _updateEvent(Left(ErrorAttachmentUploadState(uploadId: uploadTaskId, exception: e)));
+        _updateEvent(Left(ErrorAttachmentUploadState(uploadId: uploadTaskId)));
       }
     } finally {
       await _progressStateController.close();
