@@ -1026,8 +1026,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: memory_fixed_in_cnb
-      resolved-ref: "0292fa1b9c8bb018b910c1b8248be231b88a97b6"
+      ref: "bugfix/composer-reply-memory-leak"
+      resolved-ref: "7a20f8e924e403eb54f4a6177c3c8ecb0c7b3687"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
