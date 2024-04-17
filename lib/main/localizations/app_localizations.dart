@@ -3851,4 +3851,32 @@ class AppLocalizations {
       name: 'noSuitableBrowserForOIDC'
     );
   }
+
+  String get eventReplyWasSentUnsuccessfully {
+    return Intl.message(
+      'Event reply was sent unsuccessfully!',
+      name: 'eventReplyWasSentUnsuccessfully',
+    );
+  }
+
+  String get youWillAttendThisMeeting {
+    return Intl.message(
+      'You will attend this meeting',
+      name: 'youWillAttendThisMeeting',
+    );
+  }
+
+  String get youWillNotAttendThisMeeting {
+    return Intl.message(
+      'You will not attend this meeting',
+      name: 'youWillNotAttendThisMeeting',
+    );
+  }
+
+  String get youMayAttendThisMeeting {
+    return Intl.message(
+      'You may attend this meeting',
+      name: 'youMayAttendThisMeeting',
+    );
+  }
 }

@@ -36,6 +36,8 @@ import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart'
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
@@ -48,6 +50,7 @@ import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -63,6 +66,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
@@ -119,11 +123,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
   ParseCalendarEventInteractor? _parseCalendarEventInteractor;
+  AcceptCalendarEventInteractor? _acceptCalendarEventInteractor;
 
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
-  final calendarEvent = Rxn<CalendarEvent>();
-  final eventActions = <EventAction>[].obs;
+  final blobCalendarEvent = Rxn<BlobCalendarEvent>();
   final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final emailUnsubscribe = Rxn<EmailUnsubscribe>();
   final attachmentsViewState = RxMap<Id, Either<Failure, Success>>();
@@ -140,6 +144,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
 
   EmailLoaded? get currentEmailLoaded => _currentEmailLoaded;
+
+  bool get calendarEventProcessing => viewState.value is CalendarEventReplying;
+
+  CalendarEvent? get calendarEvent => blobCalendarEvent.value?.calendarEventList.firstOrNull;
+  Id? get _displayingEventBlobId => blobCalendarEvent.value?.blobId;
 
   SingleEmailController(
     this._getEmailContentInteractor,
@@ -212,6 +221,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _showMessageWhenStartingEmailPrinting();
     } else if (success is PrintEmailSuccess) {
       _handlePrintEmailSuccess(success);
+    } else if (success is CalendarEventReplySuccess) {
+      _calendarEventSuccess(success);
     }
   }
 
@@ -234,6 +245,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       emailLoadedViewState.value = Left<Failure, Success>(failure);
     } else if (failure is PrintEmailFailure) {
       _showMessageWhenEmailPrintingFailed(failure);
+    } else if (failure is CalendarEventReplyFailure) {
+      _calendarEventFailure();
     }
   }
 
@@ -373,6 +386,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
     _sendReceiptToSenderInteractor = getBinding<SendReceiptToSenderInteractor>();
     _parseCalendarEventInteractor = getBinding<ParseCalendarEventInteractor>();
+    _acceptCalendarEventInteractor = getBinding<AcceptCalendarEventInteractor>();
   }
 
   void _injectCalendarEventBindings(Session? session, AccountId? accountId) {
@@ -593,8 +607,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _currentEmailLoaded = null;
     attachments.clear();
     attachmentsViewState.value = {};
-    calendarEvent.value = null;
-    eventActions.clear();
+    blobCalendarEvent.value = null;
     emailUnsubscribe.value = null;
     _printEmailAction = null;
     if (isEmailClosing) {
@@ -1465,8 +1478,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
     emailLoadedViewState.value = Right<Failure, Success>(success);
-    calendarEvent.value = success.calendarEventMap.values.first.first;
-    eventActions.value = success.eventActionList;
+    blobCalendarEvent.value = success.blobCalendarEventList.first;
     if (PlatformInfo.isMobile) {
       _enableScrollPageView();
     }
@@ -1670,5 +1682,46 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
        EmailPrint.generate(printEmailAction: action, emailLoaded: emailLoaded)
      )
    );
+  }
+
+  void onCalendarEventReplyAction(EventAction eventAction) {
+    switch (eventAction.actionType) {
+      case EventActionType.yes:
+        _acceptCalendarEventAction();
+        break;
+      default:
+        break;
+    }
+  }
+  
+  void _acceptCalendarEventAction() {
+    if (_acceptCalendarEventInteractor == null || _displayingEventBlobId == null) return;
+
+    if (mailboxDashBoardController.accountId.value != null) {
+      consumeState(_acceptCalendarEventInteractor!.execute(
+        mailboxDashBoardController.accountId.value!,
+        {_displayingEventBlobId!}));
+    } else {
+      consumeState(Stream.value(Left(CalendarEventAcceptFailure())));
+    }
+  }
+
+  void _calendarEventSuccess(CalendarEventReplySuccess success) {
+    if (currentOverlayContext != null && currentContext != null) {
+      final appLocalization = AppLocalizations.of(currentContext!);
+      if (success is CalendarEventAccepted) {
+        appToast.showToastSuccessMessage(
+          currentOverlayContext!,
+          appLocalization.youWillAttendThisMeeting);
+      }
+    }
+  }
+
+  void _calendarEventFailure() {
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
+    }
   }
 }

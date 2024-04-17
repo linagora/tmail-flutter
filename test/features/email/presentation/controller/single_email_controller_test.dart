@@ -9,11 +9,15 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -26,6 +30,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -71,6 +76,7 @@ const fallbackGenerators = {
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<PrintEmailInteractor>(),
+  MockSpec<AcceptCalendarEventInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -103,20 +109,7 @@ void main() {
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
 
-  late SingleEmailController singleEmailController = SingleEmailController(
-    getEmailContentInteractor,
-    markAsEmailReadInteractor,
-    downloadAttachmentsInteractor,
-    deviceManager,
-    exportAttachmentInteractor,
-    moveToMailboxInteractor,
-    markAsStarEmailInteractor,
-    downloadAttachmentForWebInteractor,
-    getAllIdentitiesInteractor,
-    storeOpenedEmailInteractor,
-    viewAttachmentForWebInteractor,
-    printEmailInteractor,
-  );
+  late SingleEmailController singleEmailController;
 
   final testAccountId = AccountId(Id('123'));
   final google = Uri.parse('https://www.google.com');
@@ -148,6 +141,23 @@ void main() {
 
     when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
     when(uuid.v4()).thenReturn(testTaskId);
+  });
+
+  setUp(() {
+    singleEmailController = SingleEmailController(
+      getEmailContentInteractor,
+      markAsEmailReadInteractor,
+      downloadAttachmentsInteractor,
+      deviceManager,
+      exportAttachmentInteractor,
+      moveToMailboxInteractor,
+      markAsStarEmailInteractor,
+      downloadAttachmentForWebInteractor,
+      getAllIdentitiesInteractor,
+      storeOpenedEmailInteractor,
+      viewAttachmentForWebInteractor,
+      printEmailInteractor,
+    );
   });
 
   group('single email controller', () {
@@ -251,5 +261,38 @@ void main() {
         )).called(1);
       },
     );
+  });
+
+  group('calendar event reply test:', () {
+    final blobId = Id('abc123');
+    final calendarEvent = CalendarEvent();
+
+    group('accept test:', () {
+      final acceptCalendarEventInteractor = MockAcceptCalendarEventInteractor();
+
+      test('should call execute on AcceptCalendarEventInteractor '
+      'when onCalendarEventReplyAction is called on EventActionType.yes', () async {
+        // arrange
+        when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
+        when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
+        when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        singleEmailController.onInit();
+        Get.put<AcceptCalendarEventInteractor>(acceptCalendarEventInteractor);
+          mailboxDashboardController.accountId.refresh();
+          singleEmailController.handleSuccessViewState(
+            ParseCalendarEventSuccess([
+              BlobCalendarEvent(
+                blobId: blobId,
+                calendarEventList: [calendarEvent])]));
+
+        // act
+        singleEmailController.onCalendarEventReplyAction(
+          EventAction(EventActionType.yes, ''));
+        await untilCalled(acceptCalendarEventInteractor.execute(any, any));
+
+        // assert
+        verify(acceptCalendarEventInteractor.execute(testAccountId, {blobId})).called(1);
+      });
+    });
   });
 }
