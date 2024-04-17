@@ -286,8 +286,7 @@ void main() {
                 calendarEventList: [calendarEvent])]));
 
         // act
-        singleEmailController.onCalendarEventReplyAction(
-          EventAction(EventActionType.yes, ''));
+        singleEmailController.onCalendarEventReplyAction(EventActionType.yes);
         await untilCalled(acceptCalendarEventInteractor.execute(any, any));
 
         // assert
