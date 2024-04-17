@@ -21,10 +21,14 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final CalendarEvent calendarEvent;
   final OnOpenNewTabAction? onOpenNewTabAction;
   final OnOpenComposerAction? onOpenComposerAction;
+  final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
+  final bool calendarEventReplying;
 
   const CalendarEventInformationWidget({
     super.key,
     required this.calendarEvent,
+    required this.onCalendarEventReplyActionClick,
+    required this.calendarEventReplying,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
   });
@@ -110,8 +114,10 @@ class CalendarEventInformationWidget extends StatelessWidget {
                           organizer: calendarEvent.organizer!,
                         ),
                       ),
-                    const CalendarEventActionButtonWidget(
+                    CalendarEventActionButtonWidget(
                       margin: EdgeInsetsDirectional.zero,
+                      onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
+                      calendarEventReplying: calendarEventReplying,
                     ),
                   ],
                 ),
@@ -178,8 +184,10 @@ class CalendarEventInformationWidget extends StatelessWidget {
                           organizer: calendarEvent.organizer!,
                         ),
                       ),
-                    const CalendarEventActionButtonWidget(
+                    CalendarEventActionButtonWidget(
                       margin: EdgeInsetsDirectional.zero,
+                      onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
+                      calendarEventReplying: calendarEventReplying,
                     ),
                   ],
                 ),

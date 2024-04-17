@@ -4,14 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_action_button_widget_styles.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
+
+typedef OnCalendarEventReplyActionClick = void Function(EventActionType eventActionType);
 
 class CalendarEventActionButtonWidget extends StatelessWidget {
 
   final EdgeInsetsGeometry? margin;
+  final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
+  final bool calendarEventReplying;
 
   const CalendarEventActionButtonWidget({
     super.key,
+    required this.onCalendarEventReplyActionClick,
+    required this.calendarEventReplying,
     this.margin,
   });
 
@@ -30,7 +35,9 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
         children: EventActionType.values
           .map((action) => TMailButtonWidget(
             text: action.getLabelButton(context),
-            backgroundColor: CalendarEventActionButtonWidgetStyles.backgroundColor,
+            backgroundColor: calendarEventReplying
+              ? CalendarEventActionButtonWidgetStyles.loadingBackgroundColor
+              : CalendarEventActionButtonWidgetStyles.backgroundColor,
             borderRadius: CalendarEventActionButtonWidgetStyles.borderRadius,
             padding: CalendarEventActionButtonWidgetStyles.buttonPadding,
             textStyle: const TextStyle(
@@ -45,8 +52,9 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
               width: CalendarEventActionButtonWidgetStyles.borderWidth,
               color: CalendarEventActionButtonWidgetStyles.textColor
             ),
-            // TODO: Handle in part 4
-            onTapActionCallback: () => AppUtils.launchLink(''),
+            onTapActionCallback: calendarEventReplying
+              ? null
+              : () => onCalendarEventReplyActionClick(action),
           ))
           .toList(),
       ),
