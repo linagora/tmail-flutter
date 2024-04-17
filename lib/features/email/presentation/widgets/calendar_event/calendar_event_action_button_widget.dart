@@ -8,12 +8,10 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class CalendarEventActionButtonWidget extends StatelessWidget {
 
-  final List<EventAction> eventActions;
   final EdgeInsetsGeometry? margin;
 
   const CalendarEventActionButtonWidget({
     super.key,
-    required this.eventActions,
     this.margin,
   });
 
@@ -29,9 +27,9 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
       child: Wrap(
         spacing: CalendarEventActionButtonWidgetStyles.space,
         runSpacing: CalendarEventActionButtonWidgetStyles.space,
-        children: eventActions
+        children: EventActionType.values
           .map((action) => TMailButtonWidget(
-            text: action.actionType.getLabelButton(context),
+            text: action.getLabelButton(context),
             backgroundColor: CalendarEventActionButtonWidgetStyles.backgroundColor,
             borderRadius: CalendarEventActionButtonWidgetStyles.borderRadius,
             padding: CalendarEventActionButtonWidgetStyles.buttonPadding,
@@ -47,7 +45,8 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
               width: CalendarEventActionButtonWidgetStyles.borderWidth,
               color: CalendarEventActionButtonWidgetStyles.textColor
             ),
-            onTapActionCallback: () => AppUtils.launchLink(action.link),
+            // TODO: Handle in part 4
+            onTapActionCallback: () => AppUtils.launchLink(''),
           ))
           .toList(),
       ),

@@ -3695,5 +3695,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "eventReplyWasSentUnsuccessfully": "Event reply was sent unsuccessfully!",
+  "@eventReplyWasSentUnsuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillAttendThisMeeting": "You will attend this meeting",
+  "@youWillAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillNotAttendThisMeeting": "You will not attend this meeting",
+  "@youWillNotAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youMayAttendThisMeeting": "You may attend this meeting",
+  "@youMayAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
