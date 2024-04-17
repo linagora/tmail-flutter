@@ -1,9 +1,11 @@
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -16,7 +18,6 @@ import 'package:worker_manager/worker_manager.dart';
 
 void main() async {
   initLogger(() async {
-    WidgetsFlutterBinding.ensureInitialized();
     ThemeUtils.setSystemLightUIStyle();
 
     await Future.wait([
@@ -27,10 +28,14 @@ void main() async {
     ]);
     await HiveCacheConfig.instance.initializeEncryptionKey();
 
+    await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: Map<String, String>.from(dotenv.env));
+    await FcmConfiguration().initialize();
+    await FcmConfiguration().initializeCrashlytics();
+
     setPathUrlStrategy();
 
     runApp(const TMailApp());
-  });
+  }, onError: FcmConfiguration().recordError);
 }
 
 class TMailApp extends StatelessWidget {

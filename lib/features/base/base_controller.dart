@@ -262,7 +262,7 @@ abstract class BaseController extends GetxController
       if (AppConfig.fcmAvailable) {
         final mapEnvData = Map<String, String>.from(dotenv.env);
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
-        await FcmConfiguration.initialize();
+        await FcmConfiguration().initialize();
         FcmInteractorBindings().dependencies();
         FcmService.instance.initialStreamController();
         FcmMessageController.instance.initialize(accountId: accountId, session: session);
