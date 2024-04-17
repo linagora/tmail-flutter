@@ -147,14 +147,14 @@ class EmailView extends GetWidget<SingleEmailController> {
                                   child: Obx(() => _buildEmailMessage(
                                     context: context,
                                     presentationEmail: currentEmail,
-                                    calendarEvent: controller.calendarEvent.value,
+                                    calendarEvent: controller.calendarEvent,
                                     maxBodyHeight: constraints.maxHeight
                                   ))
                                 )
                               );
                             } else {
                               return Obx(() {
-                                final calendarEvent = controller.calendarEvent.value;
+                                final calendarEvent = controller.calendarEvent;
                                 if (currentEmail.hasCalendarEvent && calendarEvent != null) {
                                   return Padding(
                                     padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
@@ -199,14 +199,14 @@ class EmailView extends GetWidget<SingleEmailController> {
                               child: Obx(() => _buildEmailMessage(
                                 context: context,
                                 presentationEmail: currentEmail,
-                                calendarEvent: controller.calendarEvent.value,
+                                calendarEvent: controller.calendarEvent,
                                 maxBodyHeight: constraints.maxHeight
                               ))
                             )
                           );
                         } else {
                           return Obx(() {
-                            final calendarEvent = controller.calendarEvent.value;
+                            final calendarEvent = controller.calendarEvent;
                             if (currentEmail.hasCalendarEvent && calendarEvent != null) {
                               return Padding(
                                 padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
@@ -373,7 +373,6 @@ class EmailView extends GetWidget<SingleEmailController> {
             children: [
               CalendarEventInformationWidget(
                 calendarEvent: calendarEvent,
-                eventActions: controller.eventActions,
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
               ),
@@ -384,7 +383,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                 ),
               CalendarEventDetailWidget(
                 calendarEvent: calendarEvent,
-                eventActions: controller.eventActions,
                 emailContent: controller.currentEmailLoaded?.htmlContent ?? '',
                 isDraggableAppActive: controller.mailboxDashBoardController.isDraggableAppActive,
                 onOpenComposerAction: controller.openNewComposerAction,

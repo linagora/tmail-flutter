@@ -4,12 +4,12 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
-import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/parse/calendar_event_parse_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/parse/calendar_event_parse_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 
 class CalendarEventAPI {
 
@@ -17,7 +17,7 @@ class CalendarEventAPI {
 
   CalendarEventAPI(this._httpClient);
 
-  Future<Map<Id, List<CalendarEvent>>> parse(AccountId accountId, Set<Id> blobIds) async {
+  Future<List<BlobCalendarEvent>> parse(AccountId accountId, Set<Id> blobIds) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final calendarEventParseMethod = CalendarEventParseMethod(accountId, blobIds);
     final calendarEventParseInvocation = requestBuilder.invocation(calendarEventParseMethod);
@@ -31,7 +31,11 @@ class CalendarEventAPI {
       CalendarEventParseResponse.deserialize);
 
     if (calendarEventParseResponse?.parsed?.isNotEmpty == true) {
-      return calendarEventParseResponse!.parsed!;
+      return calendarEventParseResponse!.parsed!.entries
+        .map((entry) => BlobCalendarEvent(
+          blobId: entry.key,
+          calendarEventList: entry.value))
+        .toList();
     } else if (calendarEventParseResponse?.notParsable?.isNotEmpty == true) {
       throw NotParsableCalendarEventException();
     } else if (calendarEventParseResponse?.notFound?.isNotEmpty == true) {
