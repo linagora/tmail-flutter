@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-25T10:51:29.520399",
+  "@@last_modified": "2024-05-03T15:50:22.865437",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3686,6 +3686,30 @@
   },
   "selectAllMessagesOfThisPage": "Select all messages of this page",
   "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "eventReplyWasSentUnsuccessfully": "Event reply was sent unsuccessfully!",
+  "@eventReplyWasSentUnsuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillAttendThisMeeting": "You will attend this meeting",
+  "@youWillAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillNotAttendThisMeeting": "You will not attend this meeting",
+  "@youWillNotAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youMayAttendThisMeeting": "You may attend this meeting",
+  "@youMayAttendThisMeeting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

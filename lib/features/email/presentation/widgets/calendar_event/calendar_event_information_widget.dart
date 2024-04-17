@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
-import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
@@ -20,14 +19,12 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 class CalendarEventInformationWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
-  final List<EventAction> eventActions;
   final OnOpenNewTabAction? onOpenNewTabAction;
   final OnOpenComposerAction? onOpenComposerAction;
 
   const CalendarEventInformationWidget({
     super.key,
     required this.calendarEvent,
-    required this.eventActions,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
   });
@@ -113,11 +110,9 @@ class CalendarEventInformationWidget extends StatelessWidget {
                           organizer: calendarEvent.organizer!,
                         ),
                       ),
-                    if (eventActions.isNotEmpty)
-                      CalendarEventActionButtonWidget(
-                        eventActions: eventActions,
-                        margin: EdgeInsetsDirectional.zero,
-                      ),
+                    const CalendarEventActionButtonWidget(
+                      margin: EdgeInsetsDirectional.zero,
+                    ),
                   ],
                 ),
               )
@@ -183,11 +178,9 @@ class CalendarEventInformationWidget extends StatelessWidget {
                           organizer: calendarEvent.organizer!,
                         ),
                       ),
-                    if (eventActions.isNotEmpty)
-                      CalendarEventActionButtonWidget(
-                        eventActions: eventActions,
-                        margin: EdgeInsetsDirectional.zero,
-                      ),
+                    const CalendarEventActionButtonWidget(
+                      margin: EdgeInsetsDirectional.zero,
+                    ),
                   ],
                 ),
               ))

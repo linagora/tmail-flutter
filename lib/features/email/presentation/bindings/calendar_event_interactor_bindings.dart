@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/calendar_event_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/calendar_event_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/calendar_event_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
@@ -34,6 +35,7 @@ class CalendarEventInteractorBindings extends InteractorsBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => ParseCalendarEventInteractor(Get.find<CalendarEventRepository>()));
+    Get.lazyPut(() => AcceptCalendarEventInteractor(Get.find<CalendarEventRepository>()));
   }
 
   @override
