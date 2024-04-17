@@ -375,6 +375,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                 calendarEvent: calendarEvent,
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
+                onCalendarEventReplyActionClick: controller.onCalendarEventReplyAction,
+                calendarEventReplying: controller.calendarEventProcessing,
               ),
               if (calendarEvent.getTitleEventAction(context, emailAddressSender ?? []).isNotEmpty)
                 CalendarEventActionBannerWidget(
@@ -388,6 +390,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
                 onMailtoDelegateAction: controller.openMailToLink,
+                onCalendarEventReplyActionClick: controller.onCalendarEventReplyAction,
+                calendarEventReplying: controller.calendarEventProcessing,
               ),
             ],
           )

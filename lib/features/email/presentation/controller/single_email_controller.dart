@@ -145,7 +145,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   EmailLoaded? get currentEmailLoaded => _currentEmailLoaded;
 
-  bool get calendarEventProcessing => viewState.value is CalendarEventReplying;
+  bool get calendarEventProcessing => viewState.value.fold(
+    (failure) => false,
+    (success) => success is CalendarEventReplying);
 
   CalendarEvent? get calendarEvent => blobCalendarEvent.value?.calendarEventList.firstOrNull;
   Id? get _displayingEventBlobId => blobCalendarEvent.value?.blobId;
@@ -1684,8 +1686,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
    );
   }
 
-  void onCalendarEventReplyAction(EventAction eventAction) {
-    switch (eventAction.actionType) {
+  void onCalendarEventReplyAction(EventActionType eventActionType) {
+    switch (eventActionType) {
       case EventActionType.yes:
         _acceptCalendarEventAction();
         break;

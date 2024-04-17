@@ -21,11 +21,15 @@ class CalendarEventDetailWidget extends StatelessWidget {
   final OnOpenComposerAction? onOpenComposerAction;
   final bool? isDraggableAppActive;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
+  final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
+  final bool calendarEventReplying;
 
   const CalendarEventDetailWidget({
     super.key,
     required this.calendarEvent,
     required this.emailContent,
+    required this.onCalendarEventReplyActionClick,
+    required this.calendarEventReplying,
     this.isDraggableAppActive,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
@@ -89,7 +93,9 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 organizer: calendarEvent.organizer!,
               ),
             ),
-          const CalendarEventActionButtonWidget(),
+          CalendarEventActionButtonWidget(
+            onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
+            calendarEventReplying: calendarEventReplying),
         ],
       ),
     );

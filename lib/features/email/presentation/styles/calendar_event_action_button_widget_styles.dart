@@ -10,6 +10,7 @@ class CalendarEventActionButtonWidgetStyles {
   static const double minWidth = 80;
 
   static const Color backgroundColor = Colors.transparent;
+  static Color loadingBackgroundColor = Colors.grey.shade300;
   static const Color textColor = AppColor.primaryColor;
 
   static const FontWeight fontWeight = FontWeight.w500;
