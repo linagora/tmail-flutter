@@ -230,7 +230,7 @@ class ConfirmDialogBuilder {
                 ),
               ),
             Padding(
-                padding: _paddingButton ?? const EdgeInsetsDirectional.only(bottom: 16, start: 24, end: 24),
+                padding: _paddingButton ?? const EdgeInsetsDirectional.only(bottom: 16, start: 16, end: 16),
                 child: Row(
                     children: [
                       if (_cancelText.isNotEmpty)
@@ -240,7 +240,7 @@ class ConfirmDialogBuilder {
                             radius: _radiusButton,
                             textStyle: _styleTextCancelButton,
                             action: _onCancelButtonAction)),
-                      if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 16),
+                      if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 8),
                       if (_confirmText.isNotEmpty)
                         Expanded(child: _buildButton(
                             name: _confirmText,
