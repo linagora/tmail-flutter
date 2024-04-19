@@ -607,8 +607,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, B.MaterialTextButton$(20, E.TextStyle_kmC0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, 15, _null, _null, _this.onSubtitleClick, _null, C.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
       }
-      t2 = A._setArrayType([t2, C.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t4);
-      t2.push(C.SizedBox_16_null_null_null);
+      t2 = A._setArrayType([t2, D.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t4);
+      t2.push(D.SizedBox_16_null_null_null);
       return A.Container$(_null, A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
     }
   };
@@ -966,6 +966,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.PopupMenuDivider_null = new B.PopupMenuDivider(null);
+    D.SizedBox_16_null_null_null = new A.SizedBox(16, null, null, null);
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
     D.TextStyle_g3y0 = new A.TextStyle(true, C.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv = new A.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -978,5 +979,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "z8oV7sIIlszl7EDAoWgnZquQgVM=");
+})($__dart_deferred_initializers__, "jW510iWmo/evTlCXyYNG2pfcm/w=");
 ;
