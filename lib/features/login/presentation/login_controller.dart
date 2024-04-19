@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dar
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/login_constants.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
@@ -121,18 +122,18 @@ class LoginController extends ReloadableController {
 
   @override
   void handleFailureViewState(Failure failure) {
+    log('LoginController::handleFailureViewState(): $failure');
     if (failure is GetAuthenticationInfoFailure) {
       getAuthenticatedAccountAction();
     } else if (failure is CheckOIDCIsAvailableFailure ||
         failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCIsAvailableFailure ||
-        failure is GetOIDCConfigurationFailure ||
-        failure is GetTokenOIDCFailure) {
-      if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.dnsLookupForm) {
-        _showPasswordForm();
-      } else {
-        _showCredentialForm();
-      }
+        failure is GetOIDCConfigurationFailure
+    ) {
+      _handleCommonOIDCFailure();
+    } else if (failure is GetTokenOIDCFailure) {
+      _handleNoSuitableBrowserOIDC(failure)
+        .map((stillFailed) => _handleCommonOIDCFailure());
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
     } else if (failure is GetSessionFailure) {
@@ -176,13 +177,11 @@ class LoginController extends ReloadableController {
     if (failure is CheckOIDCIsAvailableFailure ||
         failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
-        failure is GetOIDCIsAvailableFailure ||
-        failure is GetTokenOIDCFailure) {
-      if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.dnsLookupForm) {
-        _showPasswordForm();
-      } else {
-        _showCredentialForm();
-      }
+        failure is GetOIDCIsAvailableFailure) {
+      _handleCommonOIDCFailure();
+    } else if (failure is GetTokenOIDCFailure) {
+      _handleNoSuitableBrowserOIDC(failure)
+        .map((stillFailed) => _handleCommonOIDCFailure());
     } else if (failure is GetSessionFailure) {
       clearAllData();
     } else {
@@ -418,6 +417,22 @@ class LoginController extends ReloadableController {
   void _handleDNSLookupToGetJmapUrlSuccess(DNSLookupToGetJmapUrlSuccess success) {
     onBaseUrlChange(success.jmapUrl);
     _checkOIDCIsAvailable();
+  }
+
+  void _handleCommonOIDCFailure() {
+    if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.dnsLookupForm) {
+      _showPasswordForm();
+    } else {
+      _showCredentialForm();
+    }
+  }
+
+  Option<Failure> _handleNoSuitableBrowserOIDC(GetTokenOIDCFailure failure) {
+    if (failure.exception is NoSuitableBrowserForOIDCException) {
+      return const None();
+    } else {
+      return Some(failure);
+    }
   }
 
   void _showBaseUrlForm() {
