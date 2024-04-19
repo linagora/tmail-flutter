@@ -1178,7 +1178,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
         resultState is GenerateEmailFailure) &&
         context.mounted
     ) {
-      _showConfirmDialogWhenSaveMessageToDraftsFailure(
+      await _showConfirmDialogWhenSaveMessageToDraftsFailure(
         context: context,
         failure: resultState,
         onConfirmAction: () {
@@ -1875,8 +1875,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
     _closeComposerButtonState = ButtonState.disabled;
 
-    if (composerArguments.value == null) {
-      log('ComposerController::handleClickCloseComposer: ARGUMENTS is NULL');
+    if (composerArguments.value == null || !_isEmailBodyLoaded) {
+      log('ComposerController::handleClickCloseComposer: ARGUMENTS is NULL or EMAIL NOT LOADED');
+      _closeComposerButtonState = ButtonState.enabled;
       clearFocus(context);
       _closeComposerAction();
       return;
@@ -1891,15 +1892,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
     if (isChanged && context.mounted) {
       clearFocus(context);
-      _showConfirmDialogSaveMessage(context);
-      return;
-    }
-
-    if (!_isEmailBodyLoaded && context.mounted) {
-      log('ComposerController::handleClickCloseComposer: EDITOR NOT LOADED');
-      _closeComposerButtonState = ButtonState.enabled;
-      clearFocus(context);
-      _closeComposerAction();
+      await _showConfirmDialogSaveMessage(context);
       return;
     }
 
@@ -1910,14 +1903,15 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
   }
 
-  void _showConfirmDialogSaveMessage(BuildContext context) {
-    showConfirmDialogAction(
+  Future<void> _showConfirmDialogSaveMessage(BuildContext context) async {
+    await showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).saveMessage.capitalizeFirstEach,
       AppLocalizations.of(context).warningMessageWhenClickCloseComposer,
       AppLocalizations.of(context).save,
       cancelTitle: AppLocalizations.of(context).discardChanges,
       alignCenter: true,
+      outsideDismissible: false,
       onConfirmAction: () async => await Future.delayed(
         const Duration(milliseconds: 100),
         () => _handleSaveMessageToDraft(context)
@@ -2038,7 +2032,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
         resultState is GenerateEmailFailure) &&
         context.mounted
     ) {
-      _showConfirmDialogWhenSaveMessageToDraftsFailure(
+      await _showConfirmDialogWhenSaveMessageToDraftsFailure(
         context: context,
         failure: resultState
       );
@@ -2106,19 +2100,20 @@ class ComposerController extends BaseController with DragDropFileMixin {
     cancelToken?.cancel([SavingEmailToDraftsCanceledException()]);
   }
 
-  void _showConfirmDialogWhenSaveMessageToDraftsFailure({
+  Future<void> _showConfirmDialogWhenSaveMessageToDraftsFailure({
     required BuildContext context,
     required FeatureFailure failure,
     VoidCallback? onConfirmAction,
     VoidCallback? onCancelAction,
-  }) {
-    showConfirmDialogAction(
+  }) async {
+    await showConfirmDialogAction(
       context,
       title: '',
       AppLocalizations.of(context).warningMessageWhenSaveEmailToDraftsFailure,
       AppLocalizations.of(context).edit,
       cancelTitle: AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
+      outsideDismissible: false,
       onConfirmAction: onConfirmAction ?? () {
         _closeComposerButtonState = ButtonState.enabled;
         _autoFocusFieldWhenLauncher();

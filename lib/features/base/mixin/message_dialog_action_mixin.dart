@@ -21,6 +21,7 @@ mixin MessageDialogActionMixin {
         bool hasCancelButton = true,
         bool showAsBottomSheet = false,
         bool alignCenter = false,
+        bool outsideDismissible = true,
         List<TextSpan>? listTextSpan,
         Widget? icon,
         TextStyle? titleStyle,
@@ -72,6 +73,7 @@ mixin MessageDialogActionMixin {
           ).build()
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        barrierDismissible: outsideDismissible
       );
     } else {
       if (responsiveUtils.isMobile(context)) {
@@ -120,6 +122,7 @@ mixin MessageDialogActionMixin {
             isScrollControlled: true,
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
             backgroundColor: Colors.transparent,
+            isDismissible: outsideDismissible,
             enableDrag: true,
             ignoreSafeArea: false,
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(18))),
@@ -178,6 +181,7 @@ mixin MessageDialogActionMixin {
             .build()
           ),
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          barrierDismissible: outsideDismissible
         );
       }
     }
