@@ -3844,4 +3844,11 @@ class AppLocalizations {
       name: 'selectAllMessagesOfThisPage',
     );
   }
+
+  String get noSuitableBrowserForOIDC {
+    return Intl.message(
+      'No suitable browser for OIDC, please check with your system administrator',
+      name: 'noSuitableBrowserForOIDC'
+    );
+  }
 }

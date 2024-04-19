@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-25T10:51:29.520399",
+  "@@last_modified": "2024-04-19T16:31:35.757887",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3686,6 +3686,12 @@
   },
   "selectAllMessagesOfThisPage": "Select all messages of this page",
   "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noSuitableBrowserForOIDC": "No suitable browser for OIDC, please check with your system administrator",
+  "@noSuitableBrowserForOIDC": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
