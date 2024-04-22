@@ -2,6 +2,7 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/calendar_event_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
@@ -29,6 +30,11 @@ class LocalCalendarEventDataSourceImpl extends CalendarEventDataSource {
   
   @override
   Future<CalendarEventAcceptResponse> acceptEventInvitation(AccountId accountId, Set<Id> blobIds) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<CalendarEventMaybeResponse> maybeEventInvitation(AccountId accountId, Set<Id> blobIds) {
     throw UnimplementedError();
   }
 }
