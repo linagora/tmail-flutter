@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/calendar_event_maybe_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
@@ -51,6 +52,7 @@ import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -124,6 +126,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
   ParseCalendarEventInteractor? _parseCalendarEventInteractor;
   AcceptCalendarEventInteractor? _acceptCalendarEventInteractor;
+  MaybeCalendarEventInteractor? _maybeCalendarEventInteractor;
 
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
@@ -389,6 +392,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _sendReceiptToSenderInteractor = getBinding<SendReceiptToSenderInteractor>();
     _parseCalendarEventInteractor = getBinding<ParseCalendarEventInteractor>();
     _acceptCalendarEventInteractor = getBinding<AcceptCalendarEventInteractor>();
+    _maybeCalendarEventInteractor = getBinding<MaybeCalendarEventInteractor>();
   }
 
   void _injectCalendarEventBindings(Session? session, AccountId? accountId) {
@@ -1691,20 +1695,35 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EventActionType.yes:
         _acceptCalendarEventAction();
         break;
+      case EventActionType.maybe:
+        _maybeCalendarEventAction();
+        break;
       default:
         break;
     }
   }
   
   void _acceptCalendarEventAction() {
-    if (_acceptCalendarEventInteractor == null || _displayingEventBlobId == null) return;
-
-    if (mailboxDashBoardController.accountId.value != null) {
+    if (_acceptCalendarEventInteractor == null
+    || _displayingEventBlobId == null
+    || mailboxDashBoardController.accountId.value == null) {
+      consumeState(Stream.value(Left(CalendarEventAcceptFailure())));
+    } else {
       consumeState(_acceptCalendarEventInteractor!.execute(
         mailboxDashBoardController.accountId.value!,
         {_displayingEventBlobId!}));
+    }
+  }
+
+  void _maybeCalendarEventAction() {
+    if (_maybeCalendarEventInteractor == null
+    || _displayingEventBlobId == null
+    || mailboxDashBoardController.accountId.value == null) {
+      consumeState(Stream.value(Left(CalendarEventMaybeFailure())));
     } else {
-      consumeState(Stream.value(Left(CalendarEventAcceptFailure())));
+      consumeState(_maybeCalendarEventInteractor!.execute(
+        mailboxDashBoardController.accountId.value!,
+        {_displayingEventBlobId!}));
     }
   }
 
