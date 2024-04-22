@@ -80,126 +80,129 @@ class MailboxView extends BaseMailboxView {
   }
 
   Widget _buildListMailbox(BuildContext context) {
+    final mailboxListWidget = SingleChildScrollView(
+      controller: controller.mailboxListScrollController,
+      key: const PageStorageKey('mailbox_list'),
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 16 : 0),
+      child: Column(children: [
+        if (!controller.responsiveUtils.isDesktop(context))
+          Obx(() => UserInformationWidget(
+            userName: controller.mailboxDashBoardController.accountId.value != null
+              ? controller.mailboxDashBoardController.sessionCurrent?.username
+              : null,
+            subtitle: AppLocalizations.of(context).manage_account,
+            onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
+            border: const Border(
+              bottom: BorderSide(
+                color: AppColor.colorDividerHorizontal,
+                width: 0.5,
+              )
+            ),
+          )),
+        Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
+        AppConfig.appGridDashboardAvailable && controller.responsiveUtils.isWebNotDesktop(context)
+          ? buildAppGridDashboard(context, controller.responsiveUtils, controller.imagePaths, controller)
+          : const SizedBox.shrink(),
+        const SizedBox(height: 8),
+        Obx(() {
+          if (controller.defaultMailboxIsNotEmpty) {
+            return _buildMailboxCategory(
+              context,
+              MailboxCategories.exchange,
+              controller.defaultRootNode
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        const SizedBox(height: 8),
+        const Divider(color: AppColor.colorDividerMailbox, height: 1),
+        Padding(
+          padding: const EdgeInsetsDirectional.symmetric(vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: Text(
+                AppLocalizations.of(context).folders,
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold
+                )
+              )),
+              Padding(
+                padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 0 : 12),
+                child: Row(
+                  children: [
+                    TMailButtonWidget.fromIcon(
+                      icon: controller.imagePaths.icSearchBar,
+                      backgroundColor: Colors.transparent,
+                      iconColor: AppColor.primaryColor,
+                      tooltipMessage: AppLocalizations.of(context).searchForFolders,
+                      onTapActionCallback: () => controller.openSearchViewAction(context)
+                    ),
+                    TMailButtonWidget.fromIcon(
+                      icon: controller.imagePaths.icAddNewFolder,
+                      backgroundColor: Colors.transparent,
+                      iconColor: AppColor.primaryColor,
+                      tooltipMessage: AppLocalizations.of(context).newFolder,
+                      onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
+                    ),
+                  ],
+                )
+              ),
+            ]),
+        ),
+        Obx(() {
+          if (controller.personalMailboxIsNotEmpty) {
+            return _buildMailboxCategory(
+                context,
+                MailboxCategories.personalFolders,
+                controller.personalRootNode
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Obx(() {
+          if (controller.teamMailboxesIsNotEmpty) {
+            return _buildMailboxCategory(
+                context,
+                MailboxCategories.teamMailboxes,
+                controller.teamMailboxesRootNode
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        })
+      ])
+    );
     return Stack(
       children: [
-        ScrollbarListView(
-          scrollController: controller.mailboxListScrollController,
-          scrollBehavior: ScrollConfiguration.of(context).copyWith(
-            physics: const BouncingScrollPhysics(),
-            dragDevices: {
-              PointerDeviceKind.touch,
-              PointerDeviceKind.mouse,
-              PointerDeviceKind.trackpad
-            },
-            scrollbars: false
-          ),
-          child: RefreshIndicator(
-            color: AppColor.primaryColor,
-            onRefresh: controller.refreshAllMailbox,
-            child: SingleChildScrollView(
-              controller: controller.mailboxListScrollController,
-              key: const PageStorageKey('mailbox_list'),
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 16 : 0),
-              child: Column(children: [
-                if (!controller.responsiveUtils.isDesktop(context))
-                  Obx(() => UserInformationWidget(
-                    userName: controller.mailboxDashBoardController.accountId.value != null
-                      ? controller.mailboxDashBoardController.sessionCurrent?.username
-                      : null,
-                    subtitle: AppLocalizations.of(context).manage_account,
-                    onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
-                    border: const Border(
-                      bottom: BorderSide(
-                        color: AppColor.colorDividerHorizontal,
-                        width: 0.5,
-                      )
-                    ),
-                  )),
-                Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
-                AppConfig.appGridDashboardAvailable && controller.responsiveUtils.isWebNotDesktop(context)
-                  ? buildAppGridDashboard(context, controller.responsiveUtils, controller.imagePaths, controller)
-                  : const SizedBox.shrink(),
-                const SizedBox(height: 8),
-                Obx(() {
-                  if (controller.defaultMailboxIsNotEmpty) {
-                    return _buildMailboxCategory(
-                      context,
-                      MailboxCategories.exchange,
-                      controller.defaultRootNode
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-                const SizedBox(height: 8),
-                const Divider(color: AppColor.colorDividerMailbox, height: 1),
-                Padding(
-                  padding: EdgeInsetsDirectional.only(
-                    top: 4,
-                    bottom: 4,
-                    start: controller.responsiveUtils.isDesktop(context) ? 0 : 16
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: Text(
-                        AppLocalizations.of(context).folders,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold
-                        )
-                      )),
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 0 : 12),
-                        child: Row(
-                          children: [
-                            TMailButtonWidget.fromIcon(
-                              icon: controller.imagePaths.icSearchBar,
-                              backgroundColor: Colors.transparent,
-                              iconColor: AppColor.primaryColor,
-                              tooltipMessage: AppLocalizations.of(context).searchForFolders,
-                              onTapActionCallback: () => controller.openSearchViewAction(context)
-                            ),
-                            TMailButtonWidget.fromIcon(
-                              icon: controller.imagePaths.icAddNewFolder,
-                              backgroundColor: Colors.transparent,
-                              iconColor: AppColor.primaryColor,
-                              tooltipMessage: AppLocalizations.of(context).newFolder,
-                              onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
-                            ),
-                          ],
-                        )
-                      ),
-                    ]),
-                ),
-                Obx(() {
-                  if (controller.personalMailboxIsNotEmpty) {
-                    return _buildMailboxCategory(
-                      context,
-                      MailboxCategories.personalFolders,
-                      controller.personalRootNode
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-                Obx(() {
-                  if (controller.teamMailboxesIsNotEmpty) {
-                    return _buildMailboxCategory(
-                      context,
-                      MailboxCategories.teamMailboxes,
-                      controller.teamMailboxesRootNode
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                })
-              ])
+        if (!PlatformInfo.isCanvasKit)
+          ScrollbarListView(
+            scrollController: controller.mailboxListScrollController,
+            scrollBehavior: ScrollConfiguration.of(context).copyWith(
+              physics: const BouncingScrollPhysics(),
+              dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
+                PointerDeviceKind.trackpad
+              },
+              scrollbars: false
             ),
+            child: RefreshIndicator(
+              color: AppColor.primaryColor,
+              onRefresh: controller.refreshAllMailbox,
+              child: mailboxListWidget,
+            ),
+          )
+        else
+          ScrollbarListView(
+            scrollController: controller.mailboxListScrollController,
+            child: mailboxListWidget
           ),
-        ),
         Obx(() => controller.mailboxDashBoardController.isDraggingMailbox && controller.activeScrollTop
             ? Align(
                 alignment: Alignment.topCenter,
