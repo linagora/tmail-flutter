@@ -1042,8 +1042,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: migrate-dev-feature
-      resolved-ref: "8fc7590eac82b54d1bfe0892ccc69ccf7e64f4f9"
+      ref: memory_fixed_in_cnb
+      resolved-ref: "72a68209d4dfd92afdde52feb60d31df1c8ef08d"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
