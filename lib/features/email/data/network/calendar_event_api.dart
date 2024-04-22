@@ -8,6 +8,8 @@ import 'package:jmap_dart_client/jmap/mail/calendar/parse/calendar_event_parse_m
 import 'package:jmap_dart_client/jmap/mail/calendar/parse/calendar_event_parse_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_method.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 
@@ -64,5 +66,26 @@ class CalendarEventAPI {
     }
 
     return calendarEventAcceptResponse;
+  }
+
+  Future<CalendarEventMaybeResponse> maybe(AccountId accountId, Set<Id> blobIds) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final calendarEventMaybeMethod = CalendarEventMaybeMethod(
+      accountId,
+      blobIds: blobIds.toList());
+    final calendarEventMaybeInvocation = requestBuilder.invocation(calendarEventMaybeMethod);
+    final response = await (requestBuilder..usings(calendarEventMaybeMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final calendarEventMaybeResponse = response.parse<CalendarEventMaybeResponse>(
+      calendarEventMaybeInvocation.methodCallId,
+      CalendarEventMaybeResponse.deserialize);
+
+    if (calendarEventMaybeResponse == null) {
+      throw NotMaybeableCalendarEventException();
+    }
+
+    return calendarEventMaybeResponse;
   }
 }
