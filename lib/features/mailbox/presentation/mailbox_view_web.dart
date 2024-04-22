@@ -23,6 +23,9 @@ class MailboxView extends BaseMailboxView {
   Widget build(BuildContext context) {
     return Drawer(
         elevation: controller.responsiveUtils.isDesktop(context) ? 0 : 16.0,
+        shape: controller.responsiveUtils.isDesktop(context)
+          ? const RoundedRectangleBorder()
+          : null,
         child: Scaffold(
           backgroundColor: controller.responsiveUtils.isWebDesktop(context)
             ? AppColor.colorBgDesktop
