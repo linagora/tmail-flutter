@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/calendar_event_datasource.dart';
@@ -48,6 +49,36 @@ void main() {
       expect(
         () => calendarEventRepository.acceptEventInvitation(accountId, {blobId}),
         throwsA(isA<NotAcceptableCalendarEventException>()));
+    });
+  });
+
+  group('calendar event maybe repository test:', () {
+    final calendarEventMaybeResponse = CalendarEventMaybeResponse(
+      accountId,
+      null,
+      maybe: [EventId(blobId.value)]);
+
+    test('should return response when data source return response', () async {
+      // arrange
+      when(calendarEventNetworkDataSource.maybeEventInvitation(any, any))
+        .thenAnswer((_) async => calendarEventMaybeResponse);
+
+      // act
+      final response = await calendarEventRepository.maybeEventInvitation(accountId, {blobId});
+      
+      // assert
+      expect(response, calendarEventMaybeResponse);
+    });
+
+    test('should throw exception when data source throw exception', () {
+      // arrange
+      when(calendarEventNetworkDataSource.maybeEventInvitation(any, any))
+        .thenThrow(NotMaybeableCalendarEventException());
+      
+      // assert
+      expect(
+        () => calendarEventRepository.maybeEventInvitation(accountId, {blobId}),
+        throwsA(isA<NotMaybeableCalendarEventException>()));
     });
   });
 }
