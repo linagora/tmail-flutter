@@ -532,7 +532,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "2f84c2ccf5bdec830e07a18bb42338220c0e1279"
+      resolved-ref: "76e83e4469e137758b138ddec42177ca4292f1da"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
