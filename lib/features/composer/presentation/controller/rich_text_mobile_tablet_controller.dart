@@ -11,6 +11,8 @@ import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.
 class RichTextMobileTabletController extends BaseRichTextController {
   HtmlEditorApi? htmlEditorApi;
 
+  final RichTextController richTextController = RichTextController();
+
   void insertImage(InlineImage inlineImage) async {
     if (inlineImage.fileInfo.isShared == true) {
       await htmlEditorApi?.moveCursorAtLastNode();
@@ -40,5 +42,12 @@ class RichTextMobileTabletController extends BaseRichTextController {
     } catch (e) {
       logError('RichTextMobileTabletController::insertImageData:Exception: $e');
     }
+  }
+
+  @override
+  void onClose() {
+    richTextController.dispose();
+    htmlEditorApi = null;
+    super.onClose();
   }
 }
