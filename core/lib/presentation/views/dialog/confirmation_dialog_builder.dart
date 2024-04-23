@@ -29,7 +29,6 @@ class ConfirmDialogBuilder {
   EdgeInsetsGeometry? _marginIcon;
   EdgeInsets? _margin;
   double? _widthDialog;
-  double? _heightDialog;
   double maxWith;
   Alignment? _alignment;
   Color? _backgroundColor;
@@ -117,10 +116,6 @@ class ConfirmDialogBuilder {
     _widthDialog = value;
   }
 
-  void heightDialog(double? value) {
-    _heightDialog = value;
-  }
-
   void alignment(Alignment? alignment) {
     _alignment = alignment;
   }
@@ -168,7 +163,6 @@ class ConfirmDialogBuilder {
   Widget _bodyContent() {
     return Container(
         width: _widthDialog ?? 400,
-        height: _heightDialog,
         constraints: BoxConstraints(maxWidth: maxWith),
         decoration: const BoxDecoration(
           color: Colors.white,
