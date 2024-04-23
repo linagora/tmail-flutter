@@ -324,7 +324,7 @@ const RESOURCES = {"splash/img/light-2x.png": "d8ddaeda9f59609cf6e6e3b5719e1352"
 "assets/fonts/MaterialIcons-Regular.otf": "a989b846e9036e366ad999057b61ef0e",
 "assets/AssetManifest.json": "ffe5c159e54f8d32b5f6856dae71e702",
 "main.dart.js_2.part.js": "963f3eab85f94647e536aefe19adc173",
-"main.dart.js": "d5c8b5cadb4370c6f771a5a50dec287b",
+"main.dart.js": "2d6aa1c7294827ecb4ef1271c5f4d9e0",
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
 "main.dart.js_1.part.js": "277bb2c4a4b51de8de97a43a14cf414e",
 "logout-callback.html": "999326dc9a0f37c9a9a4280b4a35dc51",
