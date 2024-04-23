@@ -305,8 +305,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       markAsEmailRead(selectedEmail, ReadActions.markAsRead, MarkReadAction.tap);
     }
 
-    if (_identitySelected == null) {
+    if (mailboxDashBoardController.listIdentities.isEmpty) {
       _getAllIdentities();
+    } else {
+      _initializeSelectedIdentity(mailboxDashBoardController.listIdentities);
     }
   }
 
@@ -393,17 +395,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _getAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     if (success.identities?.isNotEmpty == true) {
-      if (currentEmail != null) {
-        final currentMailbox = getMailboxContain(currentEmail!);
-        log('SingleEmailController::_getAllIdentitiesSuccess():currentMailbox: $currentMailbox');
-        if (_isBelongToTeamMailboxes(currentMailbox)) {
-          _setUpDefaultIdentityForTeamMailbox(success.identities!, currentMailbox!);
-        } else {
-          _setUpDefaultIdentity(success.identities!);
-        }
+      _initializeSelectedIdentity(success.identities!);
+    }
+  }
+
+  void _initializeSelectedIdentity(List<Identity> identities) {
+    if (currentEmail != null) {
+      final currentMailbox = getMailboxContain(currentEmail!);
+      if (_isBelongToTeamMailboxes(currentMailbox)) {
+        _setUpDefaultIdentityForTeamMailbox(identities, currentMailbox!);
       } else {
-        _setUpDefaultIdentity(success.identities!);
+        _setUpDefaultIdentity(identities);
       }
+    } else {
+      _setUpDefaultIdentity(identities);
     }
   }
 
@@ -597,6 +602,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     eventActions.clear();
     emailUnsubscribe.value = null;
     _printEmailAction = null;
+    _identitySelected = null;
     if (isEmailClosing) {
       emailLoadedViewState.value = Right(UIState.idle);
       viewState.value = Right(UIState.idle);

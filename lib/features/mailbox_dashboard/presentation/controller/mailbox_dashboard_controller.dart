@@ -2523,6 +2523,8 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_handleGetAllIdentitiesSuccess: IDENTITIES_SIZE = ${_identities?.length}');
   }
 
+  List<Identity> get listIdentities => _identities ?? [];
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
