@@ -2535,6 +2535,12 @@ class MailboxDashBoardController extends ReloadableController {
     _fcmService.closeStream();
     applicationManager.releaseUserAgent();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
+    _identities = null;
+    composerArguments = null;
+    outboxMailbox = null;
+    sessionCurrent = null;
+    mapMailboxById = {};
+    mapDefaultMailboxIdByRole = {};
     super.onClose();
   }
 }
