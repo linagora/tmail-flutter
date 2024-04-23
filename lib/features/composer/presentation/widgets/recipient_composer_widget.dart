@@ -149,14 +149,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
             child: FocusScope(
               child: Focus(
                 onFocusChange: (focus) => widget.onFocusEmailAddressChangeAction?.call(widget.prefix, focus),
-                onKey: (focusNode, event) {
-                  if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
-                    widget.nextFocusNode?.requestFocus();
-                    widget.onFocusNextAddressAction?.call();
-                    return KeyEventResult.handled;
-                  }
-                  return KeyEventResult.ignored;
-                },
+                onKey: PlatformInfo.isWeb ? _recipientInputOnKeyListener : null,
                 child: StatefulBuilder(
                   builder: (context, stateSetter) {
                     if (PlatformInfo.isWeb || widget.isTestingForWeb) {
@@ -387,6 +380,15 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
         ]
       ),
     );
+  }
+
+  KeyEventResult _recipientInputOnKeyListener(FocusNode node, RawKeyEvent event) {
+    if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+      widget.nextFocusNode?.requestFocus();
+      widget.onFocusNextAddressAction?.call();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   bool get _isCollapse => _currentListEmailAddress.length > 1 && widget.expandMode == ExpandMode.COLLAPSE;
