@@ -94,7 +94,6 @@ import 'package:universal_html/html.dart' as html;
 class ComposerController extends BaseController with DragDropFileMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  final richTextMobileTabletController = Get.find<RichTextMobileTabletController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
 
@@ -121,7 +120,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   final UploadController uploadController;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
-  final RichTextWebController richTextWebController;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
   final GetAlwaysReadReceiptSettingInteractor _getAlwaysReadReceiptSettingInteractor;
@@ -165,7 +163,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
   StreamSubscription<html.Event>? _subscriptionOnDragLeave;
   StreamSubscription<html.Event>? _subscriptionOnDrop;
 
-  final RichTextController keyboardRichTextController = RichTextController();
+  RichTextMobileTabletController? richTextMobileTabletController;
+  RichTextWebController? richTextWebController;
 
   final ScrollController scrollController = ScrollController();
   final ScrollController scrollControllerEmailAddress = ScrollController();
@@ -194,7 +193,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     this.uploadController,
     this._removeComposerCacheOnWebInteractor,
     this._saveComposerCacheOnWebInteractor,
-    this.richTextWebController,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
     this._getAlwaysReadReceiptSettingInteractor,
@@ -205,14 +203,17 @@ class ComposerController extends BaseController with DragDropFileMixin {
   @override
   void onInit() {
     super.onInit();
-    createFocusNodeInput();
-    scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
-    _listenStreamEvent();
     if (PlatformInfo.isWeb) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _listenBrowserTabRefresh();
       });
+      richTextWebController = getBinding<RichTextWebController>();
+    } else {
+      richTextMobileTabletController = getBinding<RichTextMobileTabletController>();
     }
+    createFocusNodeInput();
+    scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
+    _listenStreamEvent();
     _getAlwaysReadReceiptSetting();
   }
 
@@ -239,6 +240,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     _subscriptionOnDragOver?.cancel();
     _subscriptionOnDragLeave?.cancel();
     _subscriptionOnDrop?.cancel();
+    subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     super.onClose();
   }
 
@@ -266,7 +268,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     bccEmailAddressController.dispose();
     uploadInlineImageWorker.dispose();
     dashboardViewStateWorker.dispose();
-    keyboardRichTextController.dispose();
     scrollController.dispose();
     scrollControllerEmailAddress.removeListener(_scrollControllerEmailAddressListener);
     scrollControllerEmailAddress.dispose();
@@ -295,9 +296,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
     } else if (success is DownloadImageAsBase64Success) {
       final inlineImage = InlineImage(fileInfo: success.fileInfo, base64Uri: success.base64Uri);
       if (PlatformInfo.isWeb) {
-        richTextWebController.insertImage(inlineImage);
+        richTextWebController?.insertImage(inlineImage);
       } else {
-        richTextMobileTabletController.insertImage(inlineImage);
+        richTextMobileTabletController?.insertImage(inlineImage);
       }
       maxWithEditor = null;
     } else if (success is GetAlwaysReadReceiptSettingSuccess) {
@@ -414,15 +415,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   void createFocusNodeInput() {
     toAddressFocusNode = FocusNode();
-    subjectEmailInputFocusNode = FocusNode(
-      onKey: (focus, event) {
-        if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
-          richTextWebController.editorController.setFocus();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      }
-    );
     ccAddressFocusNode = FocusNode();
     bccAddressFocusNode = FocusNode();
     searchIdentitiesFocusNode = FocusNode();
@@ -430,24 +422,36 @@ class ComposerController extends BaseController with DragDropFileMixin {
     ccAddressFocusNodeKeyboard = FocusNode();
     bccAddressFocusNodeKeyboard = FocusNode();
 
-    subjectEmailInputFocusNode?.addListener(() {
-      log('ComposerController::createFocusNodeInput():subjectEmailInputFocusNode: ${subjectEmailInputFocusNode?.hasFocus}');
-      if (subjectEmailInputFocusNode?.hasFocus == true) {
-        if (PlatformInfo.isMobile) {
-          htmlEditorApi?.unfocus();
-        }
-        _collapseAllRecipient();
-        _autoCreateEmailTag();
+    subjectEmailInputFocusNode = FocusNode(
+      onKey: PlatformInfo.isWeb ? _subjectEmailInputOnKeyListener : null
+    );
+    subjectEmailInputFocusNode?.addListener(_subjectEmailInputFocusListener);
+  }
+
+  void _subjectEmailInputFocusListener() {
+    if (subjectEmailInputFocusNode?.hasFocus == true) {
+      if (PlatformInfo.isMobile) {
+        htmlEditorApi?.unfocus();
       }
-    });
+      _collapseAllRecipient();
+      _autoCreateEmailTag();
+    }
+  }
+
+  KeyEventResult _subjectEmailInputOnKeyListener(FocusNode node, RawKeyEvent event) {
+    if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+      richTextWebController?.editorController.setFocus();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 
   void onCreatedMobileEditorAction(BuildContext context, HtmlEditorApi editorApi, String? content) {
     if (identitySelected.value != null) {
       initTextEditor(content);
     }
-    richTextMobileTabletController.htmlEditorApi = editorApi;
-    keyboardRichTextController.onCreateHTMLEditor(
+    richTextMobileTabletController?.htmlEditorApi = editorApi;
+    richTextMobileTabletController?.richTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDown,
       context: context,
@@ -1325,17 +1329,15 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
-    _updateTextForEditor();
+    if (richTextWebController != null && screenDisplayMode.value != ScreenDisplayMode.minimize) {
+      final textCurrent = await richTextWebController!.editorController.getText();
+      richTextWebController!.editorController.setText(textCurrent);
+    }
     screenDisplayMode.value = displayMode;
 
     await Future.delayed(
       const Duration(milliseconds: 300),
       _autoFocusFieldWhenLauncher);
-  }
-
-  void _updateTextForEditor() async {
-    final textCurrent = await richTextWebController.editorController.getText();
-    richTextWebController.editorController.setText(textCurrent);
   }
 
   void deleteComposer() {
@@ -1589,7 +1591,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   Future<void> _applySignature(String signature) async {
     if (PlatformInfo.isWeb) {
-      richTextWebController.editorController.insertSignature(signature);
+      richTextWebController?.editorController.insertSignature(signature);
     } else {
       await htmlEditorApi?.insertSignature(signature, allowCollapsed: false);
     }
@@ -1598,7 +1600,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
   Future<void> _removeSignature() async {
     log('ComposerController::_removeSignature():');
     if (PlatformInfo.isWeb) {
-      richTextWebController.editorController.removeSignature();
+      richTextWebController?.editorController.removeSignature();
     } else {
       await htmlEditorApi?.removeSignature();
     }
@@ -1712,7 +1714,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     } else if (subjectEmailInputController.text.isEmpty) {
       subjectEmailInputFocusNode?.requestFocus();
     } else if (PlatformInfo.isWeb) {
-      richTextWebController.editorController.setFocus();
+      richTextWebController?.editorController.setFocus();
     }
   }
 
@@ -1725,10 +1727,10 @@ class ComposerController extends BaseController with DragDropFileMixin {
   void handleInitHtmlEditorWeb(String initContent) async {
     log('ComposerController::handleInitHtmlEditorWeb:');
     _isEmailBodyLoaded = true;
-    richTextWebController.editorController.setFullScreen();
-    richTextWebController.editorController.setOnDragDropEvent();
+    richTextWebController?.editorController.setFullScreen();
+    richTextWebController?.editorController.setOnDragDropEvent();
     onChangeTextEditorWeb(initContent);
-    richTextWebController.setEnableCodeView();
+    richTextWebController?.setEnableCodeView();
     if (identitySelected.value == null) {
       _getAllIdentities();
     } else {
@@ -1739,8 +1741,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   void handleOnFocusHtmlEditorWeb() {
     FocusManager.instance.primaryFocus?.unfocus();
-    richTextWebController.editorController.setFocus();
-    richTextWebController.closeAllMenuPopup();
+    richTextWebController?.editorController.setFocus();
+    richTextWebController?.closeAllMenuPopup();
   }
 
   void handleOnUnFocusHtmlEditorWeb() {
@@ -1779,7 +1781,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   String? get textEditorWeb => _textEditorWeb;
 
-  HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController.htmlEditorApi;
+  HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController?.htmlEditorApi;
 
   void onChangeTextEditorWeb(String? text) {
     if (identitySelected.value != null) {

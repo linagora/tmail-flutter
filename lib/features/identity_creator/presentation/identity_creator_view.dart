@@ -147,14 +147,14 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
             ? AppColor.colorBackgroundKeyboard
             : AppColor.colorBackgroundKeyboardAndroid,
           isLandScapeMode: controller.responsiveUtils.isLandscapeMobile(context),
-          richTextController: controller.keyboardRichTextController,
+          richTextController: controller.richTextMobileTabletController!.richTextController,
           titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
           titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
           titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
           titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
           insertImage: () => controller.pickImage(context),
         ),
-        richTextController: controller.keyboardRichTextController,
+        richTextController: controller.richTextMobileTabletController!.richTextController,
         paddingChild: EdgeInsets.zero,
         child: responsiveWidget
       );
@@ -311,7 +311,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
       children: [
         if (PlatformInfo.isWeb)
           ToolbarRichTextWebBuilder(
-            richTextWebController: controller.richTextWebController,
+            richTextWebController: controller.richTextWebController!,
             padding: const EdgeInsets.only(bottom: 12),
             extendedOption: [
               Padding(
@@ -344,7 +344,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
   Widget _buildHtmlEditorWeb(BuildContext context, String initContent) {
     return html_editor_browser.HtmlEditor(
       key: const Key('identity_create_editor_web'),
-      controller: controller.richTextWebController.editorController,
+      controller: controller.richTextWebController!.editorController,
       htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
         shouldEnsureVisible: true,
         hint: '',
@@ -361,16 +361,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         onBeforeCommand: controller.updateContentHtmlEditor,
         onChangeContent: controller.updateContentHtmlEditor,
         onInit: () {
-          controller.richTextWebController.editorController.setFullScreen();
+          controller.richTextWebController?.editorController.setFullScreen();
           controller.updateContentHtmlEditor(initContent);
         }, onFocus: () {
           FocusManager.instance.primaryFocus?.unfocus();
           Future.delayed(const Duration(milliseconds: 500), () {
-            controller.richTextWebController.editorController.setFocus();
+            controller.richTextWebController?.editorController.setFocus();
           });
-          controller.richTextWebController.closeAllMenuPopup();
+          controller.richTextWebController?.closeAllMenuPopup();
         },
-        onChangeSelection: controller.richTextWebController.onEditorSettingsChange,
+        onChangeSelection: controller.richTextWebController?.onEditorSettingsChange,
         onChangeCodeview: controller.updateContentHtmlEditor
       ),
     );

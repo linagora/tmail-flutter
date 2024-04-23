@@ -43,9 +43,9 @@ class ComposerView extends GetWidget<ComposerController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Obx(() => MobileResponsiveAppBarComposerWidget(
-                  isCodeViewEnabled: controller.richTextWebController.codeViewEnabled,
-                  isFormattingOptionsEnabled: controller.richTextWebController.isFormattingOptionsEnabled,
-                  openRichToolbarAction: controller.richTextWebController.toggleFormattingOptions,
+                  isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
+                  isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
+                  openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                   isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                   onCloseViewAction: () => controller.handleClickCloseComposer(context),
                   attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
@@ -177,7 +177,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 child: Padding(
                                   padding: ComposerStyle.mobileEditorPadding,
                                   child: Obx(() => WebEditorView(
-                                    editorController: controller.richTextWebController.editorController,
+                                    editorController: controller.richTextWebController!.editorController,
                                     arguments: controller.composerArguments.value,
                                     contentViewState: controller.emailContentsViewState.value,
                                     currentWebContent: controller.textEditorWeb,
@@ -186,8 +186,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onFocus: controller.handleOnFocusHtmlEditorWeb,
                                     onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
                                     onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                    onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                                    onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
+                                    onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
+                                    onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
                                     width: constraints.maxWidth,
                                     height: constraints.maxHeight,
                                     onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
@@ -207,9 +207,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                 }
                               }),
                               Obx(() {
-                                if (controller.richTextWebController.isFormattingOptionsEnabled) {
+                                if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                   return ToolbarRichTextWebBuilder(
-                                    richTextWebController: controller.richTextWebController,
+                                    richTextWebController: controller.richTextWebController!,
                                     padding: ComposerStyle.richToolbarPadding,
                                     decoration: const BoxDecoration(
                                       color: ComposerStyle.richToolbarColor,
@@ -418,7 +418,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         padding: ComposerStyle.desktopEditorPadding,
                                         child: Obx(() {
                                           return WebEditorView(
-                                            editorController: controller.richTextWebController.editorController,
+                                            editorController: controller.richTextWebController!.editorController,
                                             arguments: controller.composerArguments.value,
                                             contentViewState: controller.emailContentsViewState.value,
                                             currentWebContent: controller.textEditorWeb,
@@ -427,8 +427,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                             onFocus: controller.handleOnFocusHtmlEditorWeb,
                                             onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
                                             onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                            onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                                            onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
+                                            onEditorSettings: controller.richTextWebController?.onEditorSettingsChange,
+                                            onEditorTextSizeChanged: controller.richTextWebController?.onEditorTextSizeChanged,
                                             width: constraints.maxWidth,
                                             height: constraints.maxHeight,
                                             onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
@@ -449,9 +449,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                       }
                                     }),
                                     Obx(() {
-                                      if (controller.richTextWebController.isFormattingOptionsEnabled) {
+                                      if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                         return ToolbarRichTextWebBuilder(
-                                          richTextWebController: controller.richTextWebController,
+                                          richTextWebController: controller.richTextWebController!,
                                           padding: ComposerStyle.richToolbarPadding,
                                           decoration: const BoxDecoration(
                                             color: ComposerStyle.richToolbarColor,
@@ -467,12 +467,12 @@ class ComposerView extends GetWidget<ComposerController> {
                               ),
                             ),
                             Obx(() => BottomBarComposerWidget(
-                              isCodeViewEnabled: controller.richTextWebController.codeViewEnabled,
-                              isFormattingOptionsEnabled: controller.richTextWebController.isFormattingOptionsEnabled,
-                              openRichToolbarAction: controller.richTextWebController.toggleFormattingOptions,
+                              isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
+                              isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
+                              openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-                              showCodeViewAction: controller.richTextWebController.toggleCodeView,
+                              showCodeViewAction: controller.richTextWebController!.toggleCodeView,
                               deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
@@ -680,7 +680,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 child: Padding(
                                   padding: ComposerStyle.tabletEditorPadding,
                                   child: Obx(() => WebEditorView(
-                                    editorController: controller.richTextWebController.editorController,
+                                    editorController: controller.richTextWebController!.editorController,
                                     arguments: controller.composerArguments.value,
                                     contentViewState: controller.emailContentsViewState.value,
                                     currentWebContent: controller.textEditorWeb,
@@ -689,8 +689,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onFocus: controller.handleOnFocusHtmlEditorWeb,
                                     onUnFocus: controller.handleOnUnFocusHtmlEditorWeb,
                                     onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                    onEditorSettings: controller.richTextWebController.onEditorSettingsChange,
-                                    onEditorTextSizeChanged: controller.richTextWebController.onEditorTextSizeChanged,
+                                    onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
+                                    onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
                                     width: constraints.maxWidth,
                                     height: constraints.maxHeight,
                                     onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
@@ -710,9 +710,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                 }
                               }),
                               Obx(() {
-                                if (controller.richTextWebController.isFormattingOptionsEnabled) {
+                                if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                   return ToolbarRichTextWebBuilder(
-                                    richTextWebController: controller.richTextWebController,
+                                    richTextWebController: controller.richTextWebController!,
                                     padding: ComposerStyle.richToolbarPadding,
                                     decoration: const BoxDecoration(
                                       color: ComposerStyle.richToolbarColor,
@@ -777,12 +777,12 @@ class ComposerView extends GetWidget<ComposerController> {
                 ),
               ),
               Obx(() => BottomBarComposerWidget(
-                isCodeViewEnabled: controller.richTextWebController.codeViewEnabled,
-                isFormattingOptionsEnabled: controller.richTextWebController.isFormattingOptionsEnabled,
-                openRichToolbarAction: controller.richTextWebController.toggleFormattingOptions,
+                isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
+                isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
+                openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                 attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                 insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-                showCodeViewAction: controller.richTextWebController.toggleCodeView,
+                showCodeViewAction: controller.richTextWebController!.toggleCodeView,
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                 sendMessageAction: () => controller.handleClickSendButton(context),
@@ -833,10 +833,10 @@ class ComposerView extends GetWidget<ComposerController> {
           colorIcon: ComposerStyle.popupItemIconColor,
           padding: ComposerStyle.popupItemPadding,
           selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.richTextWebController.codeViewEnabled,
+          isSelected: controller.richTextWebController?.codeViewEnabled,
           onCallbackAction: () {
             popBack();
-            controller.richTextWebController.toggleCodeView();
+            controller.richTextWebController?.toggleCodeView();
           }
         )
       ),

@@ -67,14 +67,14 @@ class IdentityCreatorController extends BaseController {
   final isMobileEditorFocus = RxBool(false);
   final isCompressingInlineImage = RxBool(false);
 
-  final RichTextController keyboardRichTextController = RichTextController();
-  final RichTextMobileTabletController richTextMobileTabletController = RichTextMobileTabletController();
-  final RichTextWebController richTextWebController = RichTextWebController();
   final TextEditingController inputNameIdentityController = TextEditingController();
   final TextEditingController inputBccIdentityController = TextEditingController();
   final FocusNode inputNameIdentityFocusNode = FocusNode();
   final FocusNode inputBccIdentityFocusNode = FocusNode();
   final ScrollController scrollController = ScrollController();
+
+  RichTextMobileTabletController? richTextMobileTabletController;
+  RichTextWebController? richTextWebController;
 
   String? _nameIdentity;
   String? _contentHtmlEditor;
@@ -110,6 +110,11 @@ class IdentityCreatorController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    if (PlatformInfo.isWeb) {
+      richTextWebController = RichTextWebController();
+    } else {
+      richTextMobileTabletController = RichTextMobileTabletController();
+    }
     log('IdentityCreatorController::onInit():arguments: ${Get.arguments}');
     arguments = Get.arguments;
   }
@@ -132,13 +137,18 @@ class IdentityCreatorController extends BaseController {
   @override
   void onClose() {
     log('IdentityCreatorController::onClose():');
-    keyboardRichTextController.dispose();
     inputNameIdentityFocusNode.dispose();
     inputBccIdentityFocusNode.dispose();
     inputNameIdentityController.dispose();
     inputBccIdentityController.dispose();
     scrollController.dispose();
-    richTextWebController.onClose();
+    if (PlatformInfo.isWeb) {
+      richTextWebController?.onClose();
+      richTextWebController = null;
+    } else {
+      richTextMobileTabletController?.onClose();
+      richTextMobileTabletController = null;
+    }
     super.onClose();
   }
 
@@ -171,7 +181,7 @@ class IdentityCreatorController extends BaseController {
     if (identity?.signatureAsString.isNotEmpty == true) {
       updateContentHtmlEditor(arguments?.identity?.signatureAsString ?? '');
       if (PlatformInfo.isWeb) {
-        richTextWebController.editorController.setText(arguments?.identity?.signatureAsString ?? '');
+        richTextWebController?.editorController.setText(arguments?.identity?.signatureAsString ?? '');
       }
     }
   }
@@ -299,9 +309,9 @@ class IdentityCreatorController extends BaseController {
 
   Future<String?> _getSignatureHtmlText() async {
     if (PlatformInfo.isWeb) {
-      return richTextWebController.editorController.getText();
+      return richTextWebController?.editorController.getText();
     } else {
-      return keyboardRichTextController.htmlEditorApi?.getText();
+      return richTextMobileTabletController?.richTextController.htmlEditorApi?.getText();
     }
   }
 
@@ -421,7 +431,7 @@ class IdentityCreatorController extends BaseController {
 
   void clearFocusEditor(BuildContext context) {
     if (PlatformInfo.isMobile) {
-      keyboardRichTextController.htmlEditorApi?.unfocus();
+      richTextMobileTabletController?.htmlEditorApi?.unfocus();
       KeyboardUtils.hideSystemKeyboardMobile();
     }
     KeyboardUtils.hideKeyboard(context);
@@ -434,15 +444,15 @@ class IdentityCreatorController extends BaseController {
   }
 
   void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
-    richTextMobileTabletController.htmlEditorApi = editorApi;
-    keyboardRichTextController.onCreateHTMLEditor(
+    richTextMobileTabletController?.htmlEditorApi = editorApi;
+    richTextMobileTabletController?.richTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDownOnMobile,
       onFocus: _onFocusHTMLEditorOnMobile,
       context: context
     );
-    keyboardRichTextController.htmlEditorApi?.onFocusOut = () {
-      keyboardRichTextController.hideRichTextView();
+    richTextMobileTabletController?.htmlEditorApi?.onFocusOut = () {
+      richTextMobileTabletController?.richTextController.hideRichTextView();
       isMobileEditorFocus.value = false;
     };
   }
@@ -546,9 +556,9 @@ class IdentityCreatorController extends BaseController {
       }
     } else {
       if (PlatformInfo.isWeb) {
-        richTextWebController.insertImageAsBase64(platformFile: file, maxWidth: maxWidth);
+        richTextWebController?.insertImageAsBase64(platformFile: file, maxWidth: maxWidth);
       } else if (PlatformInfo.isMobile) {
-        richTextMobileTabletController.insertImageData(platformFile: file, maxWidth: maxWidth);
+        richTextMobileTabletController?.insertImageData(platformFile: file, maxWidth: maxWidth);
         if (file.path != null) {
           _deleteCompressedFileOnMobile(file.path!);
         }
