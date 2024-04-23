@@ -214,9 +214,12 @@ class ComposerBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => RichTextMobileTabletController());
+    if (PlatformInfo.isWeb) {
+      Get.lazyPut(() => RichTextWebController());
+    } else {
+      Get.lazyPut(() => RichTextMobileTabletController());
+    }
     Get.lazyPut(() => UploadController(Get.find<UploadAttachmentInteractor>()));
-    Get.lazyPut(() => RichTextWebController());
     Get.lazyPut(() => ComposerController(
       Get.find<LocalFilePickerInteractor>(),
       Get.find<LocalImagePickerInteractor>(),
@@ -225,7 +228,6 @@ class ComposerBindings extends BaseBindings {
       Get.find<UploadController>(),
       Get.find<RemoveComposerCacheOnWebInteractor>(),
       Get.find<SaveComposerCacheOnWebInteractor>(),
-      Get.find<RichTextWebController>(),
       Get.find<DownloadImageAsBase64Interactor>(),
       Get.find<TransformHtmlEmailContentInteractor>(),
       Get.find<GetAlwaysReadReceiptSettingInteractor>(),
@@ -235,9 +237,12 @@ class ComposerBindings extends BaseBindings {
   }
 
   void dispose() {
+    if (PlatformInfo.isWeb) {
+      Get.delete<RichTextWebController>();
+    } else {
+      Get.delete<RichTextMobileTabletController>();
+    }
     Get.delete<UploadController>();
-    Get.delete<RichTextWebController>();
-    Get.delete<RichTextMobileTabletController>();
     Get.delete<ComposerController>();
   }
 }

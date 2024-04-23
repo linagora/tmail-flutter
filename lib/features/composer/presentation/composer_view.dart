@@ -36,7 +36,7 @@ class ComposerView extends GetWidget<ComposerController> {
     return ResponsiveWidget(
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileContainerView(
-        keyboardRichTextController: controller.keyboardRichTextController,
+        keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: () => controller.clearFocus(context),
         onAttachFileAction: () => controller.isNetworkConnectionAvailable
@@ -228,7 +228,7 @@ class ComposerView extends GetWidget<ComposerController> {
         ),
       ),
       tablet: TabletContainerView(
-        keyboardRichTextController: controller.keyboardRichTextController,
+        keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: () => controller.clearFocus(context),
         onAttachFileAction: () => controller.isNetworkConnectionAvailable
