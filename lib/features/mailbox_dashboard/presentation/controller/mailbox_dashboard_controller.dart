@@ -1402,7 +1402,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void goToComposer(ComposerArguments arguments) async {
-    final argumentsWithIdentity = arguments.withIdentity(identities: _identities);
+    final argumentsWithIdentity = arguments.withIdentity(identities: List.from(_identities ?? []));
 
     if (PlatformInfo.isWeb) {
       if (composerOverlayState.value == ComposerOverlayState.inActive) {
