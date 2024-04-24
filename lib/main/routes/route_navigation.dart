@@ -18,8 +18,8 @@ Future<dynamic> pushAndPopAll(String routeName, {dynamic arguments}) async {
   return Get.offAllNamed(routeName, arguments: arguments);
 }
 
-void popBack({dynamic result}) {
-  Get.back(result: result);
+void popBack({dynamic result, bool closeOverlays = false}) {
+  Get.back(closeOverlays: closeOverlays, result: result);
 }
 
 bool canBack(BuildContext context) {

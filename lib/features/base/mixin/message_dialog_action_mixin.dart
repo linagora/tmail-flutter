@@ -22,6 +22,7 @@ mixin MessageDialogActionMixin {
         bool showAsBottomSheet = false,
         bool alignCenter = false,
         bool outsideDismissible = true,
+        bool autoPerformPopBack = true,
         List<TextSpan>? listTextSpan,
         Widget? icon,
         TextStyle? titleStyle,
@@ -59,13 +60,17 @@ mixin MessageDialogActionMixin {
             ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
             ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
             ..onConfirmButtonAction(actionName, () {
-                popBack();
+                if (autoPerformPopBack) {
+                  popBack();
+                }
                 onConfirmAction?.call();
             })
             ..onCancelButtonAction(
                 hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
                 () {
-                  popBack();
+                  if (autoPerformPopBack) {
+                    popBack();
+                  }
                   onCancelAction?.call();
                 }
             )
@@ -106,13 +111,17 @@ mixin MessageDialogActionMixin {
                 ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
                 ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
                 ..onConfirmButtonAction(actionName, () {
-                    popBack();
+                    if (autoPerformPopBack) {
+                      popBack();
+                    }
                     onConfirmAction?.call();
                 })
                 ..onCancelButtonAction(
                     hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
                     () {
-                      popBack();
+                      if (autoPerformPopBack) {
+                        popBack();
+                      }
                       onCancelAction?.call();
                     }
                 )
@@ -136,12 +145,16 @@ mixin MessageDialogActionMixin {
             ..onCancelAction(
                 cancelTitle ?? AppLocalizations.of(context).cancel,
                 () {
-                  popBack();
+                  if (autoPerformPopBack) {
+                    popBack();
+                  }
                   onCancelAction?.call();
                 }
             )
             ..onConfirmAction(actionName, () {
-                popBack();
+                if (autoPerformPopBack) {
+                  popBack();
+                }
                 onConfirmAction?.call();
             })).show();
         }
@@ -167,13 +180,17 @@ mixin MessageDialogActionMixin {
               ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
               ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
               ..onConfirmButtonAction(actionName, () {
-                popBack();
+                if (autoPerformPopBack) {
+                  popBack();
+                }
                 onConfirmAction?.call();
               })
               ..onCancelButtonAction(
                   hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
                   () {
-                    popBack();
+                    if (autoPerformPopBack) {
+                      popBack();
+                    }
                     onCancelAction?.call();
                   }
               )
