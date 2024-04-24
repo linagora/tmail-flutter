@@ -427,6 +427,30 @@ class EmailView extends GetWidget<SingleEmailController> {
                     }),
                   ),
                 );
+              } else if (PlatformInfo.isIOS
+                  && !controller.responsiveUtils.isScreenWithShortestSide(context)) {
+                return Obx(() {
+                  if (controller.isEmailContentHidden.isTrue) {
+                    return const SizedBox.shrink();
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsetsDirectional.symmetric(
+                        vertical: EmailViewStyles.mobileContentVerticalMargin,
+                        horizontal: EmailViewStyles.mobileContentHorizontalMargin
+                      ),
+                      child: LayoutBuilder(builder: (context, constraints) {
+                        return HtmlContentViewer(
+                          contentHtml: allEmailContents,
+                          initialWidth: constraints.maxWidth,
+                          direction: AppUtils.getCurrentDirection(context),
+                          onMailtoDelegateAction: controller.openMailToLink,
+                          onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
+                          onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
+                        );
+                      })
+                    );
+                  }
+                });
               } else {
                 return Padding(
                   padding: const EdgeInsetsDirectional.symmetric(

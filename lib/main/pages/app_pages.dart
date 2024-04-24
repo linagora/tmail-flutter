@@ -85,7 +85,6 @@ class AppPages {
       ...[
         GetPage(
             name: AppRoutes.composer,
-            opaque: false,
             page: () => DeferredWidget(
                 composer.loadLibrary,
                 () => composer.ComposerView()),
