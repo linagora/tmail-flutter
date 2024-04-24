@@ -1340,11 +1340,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
       _autoFocusFieldWhenLauncher);
   }
 
-  void deleteComposer() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    mailboxDashBoardController.closeComposerOverlay();
-  }
-
   void addEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.from:
