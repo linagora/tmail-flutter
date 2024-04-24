@@ -770,6 +770,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
         AppLocalizations.of(context).send_anyway,
         onConfirmAction: () => _handleSendMessages(context),
+        autoPerformPopBack: false,
         title: AppLocalizations.of(context).empty_subject,
         showAsBottomSheet: true,
         icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
@@ -824,9 +825,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
     ) {
       log('ComposerController::_handleSendMessages: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       _sendButtonState = ButtonState.enabled;
-      _closeComposerAction();
+      _closeComposerAction(closeOverlays: true);
       return;
     }
+
+    popBack();
 
     final emailContent = await _getContentInEditor();
     final cancelToken = CancelToken();
@@ -841,7 +844,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     } else if (resultState is SendEmailFailure && resultState.exception is SendingEmailCanceledException) {
       _sendButtonState = ButtonState.enabled;
     } else if ((resultState is SendEmailFailure || resultState is GenerateEmailFailure) && context.mounted) {
-      _showConfirmDialogWhenSendMessageFailure(
+      await _showConfirmDialogWhenSendMessageFailure(
         context: context,
         failure: resultState
       );
@@ -900,27 +903,27 @@ class ComposerController extends BaseController with DragDropFileMixin {
     cancelToken?.cancel([SendingEmailCanceledException()]);
   }
 
-  void _showConfirmDialogWhenSendMessageFailure({
+  Future<void> _showConfirmDialogWhenSendMessageFailure({
     required BuildContext context,
     required FeatureFailure failure
-  }) {
-    showConfirmDialogAction(
+  }) async {
+    await showConfirmDialogAction(
       context,
       title: '',
       AppLocalizations.of(context).warningMessageWhenSendEmailFailure,
       AppLocalizations.of(context).edit,
       cancelTitle: AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
+      outsideDismissible: false,
+      autoPerformPopBack: false,
       onConfirmAction: () {
         _sendButtonState = ButtonState.enabled;
+        popBack();
         _autoFocusFieldWhenLauncher();
       },
-      onCancelAction: () async {
+      onCancelAction: () {
         _sendButtonState = ButtonState.enabled;
-        await Future.delayed(
-          const Duration(milliseconds: 100),
-          _closeComposerAction
-        );
+        _closeComposerAction(closeOverlays: true);
       },
       icon: SvgPicture.asset(
         imagePaths.icQuotasWarning,
@@ -1187,14 +1190,12 @@ class ComposerController extends BaseController with DragDropFileMixin {
         failure: resultState,
         onConfirmAction: () {
           _saveToDraftButtonState = ButtonState.enabled;
+          popBack();
           _autoFocusFieldWhenLauncher();
         },
-        onCancelAction: () async {
+        onCancelAction: () {
           _saveToDraftButtonState = ButtonState.enabled;
-          await Future.delayed(
-            const Duration(milliseconds: 100),
-            _closeComposerAction
-          );
+          _closeComposerAction(closeOverlays: true);
         }
       );
     } else {
@@ -1320,11 +1321,14 @@ class ComposerController extends BaseController with DragDropFileMixin {
     FocusScope.of(context).unfocus();
   }
 
-  void _closeComposerAction({dynamic result}) {
+  void _closeComposerAction({dynamic result, bool closeOverlays = false}) {
     if (PlatformInfo.isWeb) {
+      if (closeOverlays) {
+        popBack();
+      }
       mailboxDashBoardController.closeComposerOverlay(result: result);
     } else {
-      popBack(result: result);
+      popBack(result: result, closeOverlays: closeOverlays);
     }
   }
 
@@ -1916,16 +1920,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
       cancelTitle: AppLocalizations.of(context).discardChanges,
       alignCenter: true,
       outsideDismissible: false,
-      onConfirmAction: () async => await Future.delayed(
-        const Duration(milliseconds: 100),
-        () => _handleSaveMessageToDraft(context)
-      ),
-      onCancelAction: () async {
+      autoPerformPopBack: false,
+      onConfirmAction: () => _handleSaveMessageToDraft(context),
+      onCancelAction: () {
         _closeComposerButtonState = ButtonState.enabled;
-        await Future.delayed(
-          const Duration(milliseconds: 100),
-          _closeComposerAction
-        );
+        _closeComposerAction(closeOverlays: true);
       },
       onCloseButtonAction: () {
         _closeComposerButtonState = ButtonState.enabled;
@@ -2010,9 +2009,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
     ) {
       log('ComposerController::_handleSaveMessageToDraft: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       _closeComposerButtonState = ButtonState.enabled;
-      _closeComposerAction();
+      _closeComposerAction(closeOverlays: true);
       return;
     }
+
+    popBack();
 
     final emailContent = await _getContentInEditor();
     final draftEmailId = _getDraftEmailId();
@@ -2118,16 +2119,15 @@ class ComposerController extends BaseController with DragDropFileMixin {
       cancelTitle: AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
       outsideDismissible: false,
+      autoPerformPopBack: false,
       onConfirmAction: onConfirmAction ?? () {
         _closeComposerButtonState = ButtonState.enabled;
+        popBack();
         _autoFocusFieldWhenLauncher();
       },
-      onCancelAction: onCancelAction ?? () async {
+      onCancelAction: onCancelAction ?? () {
         _closeComposerButtonState = ButtonState.enabled;
-        await Future.delayed(
-          const Duration(milliseconds: 100),
-          _closeComposerAction
-        );
+        _closeComposerAction(closeOverlays: true);
       },
       icon: SvgPicture.asset(
         imagePaths.icQuotasWarning,
