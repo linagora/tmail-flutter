@@ -1276,8 +1276,6 @@ class MailboxDashBoardController extends ReloadableController {
         result is SaveEmailAsDraftsSuccess ||
         result is UpdateEmailDraftsSuccess) {
       consumeState(Stream.value(Right<Failure, Success>(result)));
-    } else if (validateSendingEmailFailedWhenNetworkIsLostOnMobile(result)) {
-      _storeSendingEmailInCaseOfSendingFailureInMobile(result);
     }
 
     await _removeComposerCacheOnWeb();
@@ -1449,8 +1447,6 @@ class MailboxDashBoardController extends ReloadableController {
       } else if (validateSendingEmailFailedWhenNetworkIsLostOnMobile(result)) {
         _storeSendingEmailInCaseOfSendingFailureInMobile(result);
       }
-
-      await _removeComposerCacheOnWeb();
     }
   }
 
