@@ -1563,6 +1563,10 @@ class ComposerController extends BaseController with DragDropFileMixin {
     if (newIdentity.signatureAsString.isNotEmpty == true) {
       await _applySignature(newIdentity.signatureAsString.asSignatureHtml());
     }
+
+    if (PlatformInfo.isMobile) {
+      await htmlEditorApi?.onDocumentChanged();
+    }
   }
 
   void _applyBccEmailAddressFromIdentity(Set<EmailAddress> listEmailAddress) {
