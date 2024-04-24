@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/compose_action_mode.dart';
@@ -1411,7 +1412,31 @@ class MailboxDashBoardController extends ReloadableController {
     } else {
       BackButtonInterceptor.removeByName(AppRoutes.dashboard);
 
-      final result = await push(AppRoutes.composer, arguments: argumentsWithIdentity);
+      bool isTabletPlatform = currentContext != null
+        && !responsiveUtils.isScreenWithShortestSide(currentContext!);
+      dynamic result;
+
+      if (isTabletPlatform) {
+        if (PlatformInfo.isIOS) {
+          dispatchEmailUIAction(HideEmailContentViewAction());
+        }
+
+        result = await Get.to(
+          () => const ComposerView(),
+          binding: ComposerBindings(),
+          opaque: false,
+          arguments: argumentsWithIdentity);
+
+        if (PlatformInfo.isIOS) {
+          await Future.delayed(
+            const Duration(milliseconds: 200),
+            () => dispatchEmailUIAction(ShowEmailContentViewAction()));
+        }
+      } else {
+        result = await push(
+          AppRoutes.composer,
+          arguments: argumentsWithIdentity);
+      }
 
       BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
 
