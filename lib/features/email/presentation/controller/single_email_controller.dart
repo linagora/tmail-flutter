@@ -128,6 +128,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final emailUnsubscribe = Rxn<EmailUnsubscribe>();
   final attachmentsViewState = RxMap<Id, Either<Failure, Success>>();
+  final isEmailContentHidden = RxBool(false);
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -266,6 +267,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailboxDashBoardController.clearEmailUIAction();
       } else if (action is CloseEmailDetailedViewAction) {
         closeEmailView(context: currentContext);
+        mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is HideEmailContentViewAction) {
+        isEmailContentHidden.value = true;
+        mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is ShowEmailContentViewAction) {
+        isEmailContentHidden.value = false;
         mailboxDashBoardController.clearEmailUIAction();
       }
     });
