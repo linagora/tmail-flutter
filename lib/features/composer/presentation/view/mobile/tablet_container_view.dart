@@ -45,7 +45,6 @@ class TabletContainerView extends StatelessWidget {
         child: Scaffold(
           backgroundColor: TabletContainerViewStyle.outSideBackgroundColor,
           body: LayoutBuilder(builder: (context, constraints) {
-            return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
               return KeyboardRichText(
                 richTextController: keyboardRichTextController,
                 keyBroadToolbar: RichTextKeyboardToolBar(
@@ -62,9 +61,7 @@ class TabletContainerView extends StatelessWidget {
                   titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
                   titleBack: AppLocalizations.of(context).format,
                 ),
-                paddingChild: isKeyboardVisible
-                  ? TabletContainerViewStyle.keyboardToolbarPadding
-                  : EdgeInsets.zero,
+                paddingChild: EdgeInsets.zero,
                 child: Center(
                   child: Card(
                     elevation: TabletContainerViewStyle.elevation,
@@ -81,7 +78,6 @@ class TabletContainerView extends StatelessWidget {
                   ),
                 ),
               );
-            });
           })
         ),
       )

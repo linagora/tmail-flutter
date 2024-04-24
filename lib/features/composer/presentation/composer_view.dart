@@ -217,7 +217,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                             ),
                           )),
-                          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom),
+                          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
                         ],
                       ),
                     ),
@@ -369,6 +369,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                         ),
                       )),
+                      SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
                     ],
                   ),
                 )
