@@ -14,8 +14,6 @@ class TabletContainerViewStyle {
     ? AppColor.colorBackgroundKeyboard
     : AppColor.colorBackgroundKeyboardAndroid;
 
-  static const EdgeInsets keyboardToolbarPadding = EdgeInsets.only(bottom: 64);
-
   static EdgeInsetsGeometry getMargin(
     BuildContext context,
     ResponsiveUtils responsiveUtils
