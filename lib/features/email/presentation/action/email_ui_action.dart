@@ -41,3 +41,7 @@ class PrintEmailAction extends EmailUIAction {
   @override
   List<Object?> get props => [context, userEmail, email];
 }
+
+class HideEmailContentViewAction extends EmailUIAction {}
+
+class ShowEmailContentViewAction extends EmailUIAction {}
