@@ -19,15 +19,15 @@ class ResponsiveUtils {
   static const double desktopVerticalMargin = 120.0;
   static const double desktopHorizontalMargin = 200.0;
 
-  bool isScreenWithShortestSide(BuildContext context) => context.mediaQueryShortestSide < minTabletWidth;
+  bool isScreenWithShortestSide(BuildContext context) => getSizeScreenShortestSide(context) < minTabletWidth;
 
-  double getSizeScreenWidth(BuildContext context) => context.width;
+  double getSizeScreenWidth(BuildContext context) => MediaQuery.sizeOf(context).width;
 
-  double getSizeScreenHeight(BuildContext context) => context.height;
+  double getSizeScreenHeight(BuildContext context) => MediaQuery.sizeOf(context).height;
 
-  double getSizeScreenShortestSide(BuildContext context) => context.mediaQueryShortestSide;
+  double getSizeScreenShortestSide(BuildContext context) => MediaQuery.sizeOf(context).shortestSide;
 
-  double getDeviceWidth(BuildContext context) => context.width;
+  double getDeviceWidth(BuildContext context) => MediaQuery.sizeOf(context).width;
 
   bool isMobile(BuildContext context) => getDeviceWidth(context) < minTabletWidth;
 
@@ -46,21 +46,21 @@ class ResponsiveUtils {
   bool isLandscapeMobile(BuildContext context) => isScreenWithShortestSide(context) && isLandscape(context);
 
   bool isLandscapeTablet(BuildContext context) {
-    return context.mediaQueryShortestSide >= minTabletWidth &&
-        context.mediaQueryShortestSide < minDesktopWidth &&
+    return getSizeScreenShortestSide(context) >= minTabletWidth &&
+        getSizeScreenShortestSide(context) < minDesktopWidth &&
         isLandscape(context);
   }
 
   bool isPortraitMobile(BuildContext context) => isScreenWithShortestSide(context) && isPortrait(context);
 
   bool isPortraitTablet(BuildContext context) {
-    return context.mediaQueryShortestSide >= minTabletWidth &&
-        context.mediaQueryShortestSide < minDesktopWidth &&
+    return getSizeScreenShortestSide(context) >= minTabletWidth &&
+        getSizeScreenShortestSide(context) < minDesktopWidth &&
         isPortrait(context);
   }
 
   bool isHeightShortest(BuildContext context) {
-    return MediaQuery.of(context).size.shortestSide < heightShortest;
+    return getSizeScreenShortestSide(context) < heightShortest;
   }
 
   double getMaxWidthToast(BuildContext context) {
