@@ -49,7 +49,6 @@ class MobileContainerView extends StatelessWidget {
           backgroundColor: backgroundColor ?? MobileContainerViewStyle.outSideBackgroundColor,
           resizeToAvoidBottomInset: false,
           body: LayoutBuilder(builder: (context, constraints) {
-            return KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
               return rich_composer.KeyboardRichText(
                 richTextController: keyboardRichTextController,
                 keyBroadToolbar: RichTextKeyboardToolBar(
@@ -66,12 +65,9 @@ class MobileContainerView extends StatelessWidget {
                   titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
                   titleBack: AppLocalizations.of(context).format,
                 ),
-                paddingChild: isKeyboardVisible
-                  ? MobileContainerViewStyle.keyboardToolbarPadding
-                  : EdgeInsets.zero,
+                paddingChild: EdgeInsets.zero,
                 child: childBuilder(context, constraints),
               );
-            });
           })
         ),
       )

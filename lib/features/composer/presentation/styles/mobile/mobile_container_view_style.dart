@@ -8,6 +8,4 @@ class MobileContainerViewStyle {
   static final Color keyboardToolbarBackgroundColor = PlatformInfo.isIOS
     ? AppColor.colorBackgroundKeyboard
     : AppColor.colorBackgroundKeyboardAndroid;
-
-  static const EdgeInsets keyboardToolbarPadding = EdgeInsets.only(bottom: 64);
 }
