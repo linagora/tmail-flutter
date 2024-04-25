@@ -235,8 +235,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.5, horizontal: 16),
                 child: TopBarThreadSelection(
-                  listEmailSelected,
-                  controller.mapMailboxById,
+                  listEmail: listEmailSelected,
+                  mapMailbox: controller.mapMailboxById,
+                  isSelectAllEmailsEnabled: controller.isSelectAllEmailsEnabled.value,
                   onCancelSelection: () =>
                     controller.dispatchAction(CancelSelectionAllEmailAction()),
                   onEmailActionTypeAction: (listEmails, actionType) =>

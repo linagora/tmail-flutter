@@ -912,9 +912,14 @@ class ThreadController extends BaseController with EmailActionController {
     final newEmailList = mailboxDashBoardController.emailsInCurrentMailbox
       .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
       .toList();
+    mailboxDashBoardController.isSelectAllEmailsEnabled.value = false;
     mailboxDashBoardController.updateEmailList(newEmailList);
     mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
     mailboxDashBoardController.listEmailSelected.clear();
+  }
+
+  void enableSelectAllEmails() {
+    mailboxDashBoardController.isSelectAllEmailsEnabled.value = true;
   }
 
   void closeFilterMessageActionSheet() {

@@ -21,16 +21,16 @@ class TopBarThreadSelection extends StatelessWidget{
   final Map<MailboxId, PresentationMailbox> mapMailbox;
   final OnEmailActionTypeAction? onEmailActionTypeAction;
   final VoidCallback? onCancelSelection;
+  final bool isSelectAllEmailsEnabled;
 
-  TopBarThreadSelection(
-    this.listEmail,
-    this.mapMailbox,
-    {
-      super.key,
-      this.onEmailActionTypeAction,
-      this.onCancelSelection,
-    }
-  );
+  TopBarThreadSelection({
+    super.key,
+    required this.listEmail,
+    required this.mapMailbox,
+    required this.isSelectAllEmailsEnabled,
+    this.onEmailActionTypeAction,
+    this.onCancelSelection,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +49,18 @@ class TopBarThreadSelection extends StatelessWidget{
         padding: const EdgeInsets.all(3),
         onTapActionCallback: onCancelSelection
       ),
-      Text(
-        AppLocalizations.of(context).count_email_selected(listEmail.length),
-        style: const TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.w500,
-          color: AppColor.colorTextButton
-        )
-      ),
-      const SizedBox(width: 30),
+      if (!isSelectAllEmailsEnabled)
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: 30),
+          child: Text(
+            AppLocalizations.of(context).count_email_selected(listEmail.length),
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
+              color: AppColor.colorTextButton
+            )
+          ),
+        ),
       TMailButtonWidget.fromIcon(
         icon:  listEmail.isAllEmailRead
           ? imagePaths.icUnread
