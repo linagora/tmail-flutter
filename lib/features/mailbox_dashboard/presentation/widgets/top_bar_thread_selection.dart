@@ -12,6 +12,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnEmailActionTypeAction = Function(List<PresentationEmail> listEmail, EmailActionType actionType);
+typedef OnMoreSelectedEmailAction = Function(RelativeRect position);
 
 class TopBarThreadSelection extends StatelessWidget{
 
@@ -22,6 +23,7 @@ class TopBarThreadSelection extends StatelessWidget{
   final OnEmailActionTypeAction? onEmailActionTypeAction;
   final VoidCallback? onCancelSelection;
   final bool isSelectAllEmailsEnabled;
+  final OnMoreSelectedEmailAction? onMoreSelectedEmailAction;
 
   TopBarThreadSelection({
     super.key,
@@ -30,6 +32,7 @@ class TopBarThreadSelection extends StatelessWidget{
     required this.isSelectAllEmailsEnabled,
     this.onEmailActionTypeAction,
     this.onCancelSelection,
+    this.onMoreSelectedEmailAction,
   });
 
   @override
@@ -147,6 +150,16 @@ class TopBarThreadSelection extends StatelessWidget{
               );
             }
           }
+        ),
+      const Spacer(),
+      if (isSelectAllEmailsEnabled)
+        TMailButtonWidget.fromIcon(
+          icon: imagePaths.icMoreVertical,
+          iconSize: 22,
+          iconColor: AppColor.primaryColor,
+          tooltipMessage: AppLocalizations.of(context).more,
+          backgroundColor: Colors.transparent,
+          onTapActionAtPositionCallback: onMoreSelectedEmailAction
         ),
     ]);
   }
