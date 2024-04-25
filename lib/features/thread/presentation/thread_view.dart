@@ -40,7 +40,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_banner_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_in_mailbox_banner.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -171,19 +171,14 @@ class ThreadView extends GetWidget<ThreadController>
                         _buildMailboxActionProgressBanner(context),
                       if (PlatformInfo.isWeb)
                         Obx(() {
-                          final isSelectionEnabled = controller
-                              .mailboxDashBoardController
-                              .isSelectionEnabled();
-
-                          if (isSelectionEnabled) {
-                            return SelectAllEmailBannerWidget(
-                              limitEmailsInPage: ThreadConstants.defaultLimit
-                                .value
-                                .toInt(),
-                              folderName: controller.mailboxDashBoardController
-                                .selectedMailbox
-                                .value
-                                ?.getDisplayName(context),
+                          if (controller.mailboxDashBoardController.isSelectionEnabled()) {
+                            return SelectAllEmailInMailboxBanner(
+                              limitEmailsInPage: ThreadConstants.defaultLimit.value.toInt(),
+                              totalEmails: controller.mailboxDashBoardController.selectedMailbox.value?.totalEmails?.value.value.toInt() ?? 0,
+                              folderName: controller.mailboxDashBoardController.selectedMailbox.value?.getDisplayName(context)
+                                ?? AppLocalizations.of(context).folder.toLowerCase(),
+                              onSelectAllEmailAction: controller.enableSelectAllEmails,
+                              onClearSelection: controller.cancelSelectEmail
                             );
                           } else {
                             return const SizedBox.shrink();

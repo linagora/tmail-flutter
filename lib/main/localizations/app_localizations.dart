@@ -4521,4 +4521,19 @@ class AppLocalizations {
       args: [total, folderName]
     );
   }
+
+  String mailsInMailboxAreSelected(String folderName) {
+    return Intl.message(
+      'mails in $folderName are selected. ',
+      name: 'mailsInMailboxAreSelected',
+      args: [folderName]
+    );
+  }
+
+  String get clearSelection {
+    return Intl.message(
+      'Clear selection',
+      name: 'clearSelection',
+    );
+  }
 }
