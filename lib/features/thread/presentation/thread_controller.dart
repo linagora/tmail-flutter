@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/presentation/extensions/either_view_state_extension.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -19,6 +20,8 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -79,7 +82,7 @@ import 'package:universal_html/html.dart' as html;
 typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
-class ThreadController extends BaseController with EmailActionController {
+class ThreadController extends BaseController with EmailActionController, PopupMenuWidgetMixin {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -330,6 +333,9 @@ class ThreadController extends BaseController with EmailActionController {
         }
         canSearchMore = true;
         mailboxDashBoardController.emailsInCurrentMailbox.clear();
+      } else if (action is MoreSelectedEmailAction) {
+        showPopupMenuSelectionEmailAction(action.context, action.position);
+        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
@@ -1512,5 +1518,33 @@ class ThreadController extends BaseController with EmailActionController {
             mailboxDashBoardController
                 .selectedMailbox.value!.totalEmails!.value.value
                 .toInt();
+  }
+
+  void showPopupMenuSelectionEmailAction(BuildContext context, RelativeRect position) {
+    final listSelectionEmailActions = [
+      EmailActionType.markAsRead,
+      EmailActionType.markAsUnread,
+      EmailActionType.moveToMailbox,
+      EmailActionType.moveToTrash,
+    ];
+
+    openPopupMenuAction(
+      context,
+      position,
+      listSelectionEmailActions.map((action) => PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: popupItem(
+          action.getIcon(imagePaths),
+          action.getTitle(context),
+          colorIcon: AppColor.colorTextButton,
+          styleName: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.black
+          ),
+          onCallbackAction: () {}
+        )
+      )).toList()
+    );
   }
 }
