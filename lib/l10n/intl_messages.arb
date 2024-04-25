@@ -4297,5 +4297,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "mailsOnThisPageAreSelected": "mails on this page are selected. ",
+  "@mailsOnThisPageAreSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectAllMailInMailbox": "Select all {total} mails in {folderName}",
+  "@selectAllMailInMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "total",
+      "folderName"
+    ],
+    "placeholders": {
+      "total": {},
+      "folderName": {}
+    }
   }
 }

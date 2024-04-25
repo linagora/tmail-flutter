@@ -12,12 +12,14 @@ import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart'
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
@@ -38,6 +40,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -166,6 +169,26 @@ class ThreadView extends GetWidget<ThreadController>
                       }),
                       if (!controller.responsiveUtils.isDesktop(context))
                         _buildMailboxActionProgressBanner(context),
+                      if (PlatformInfo.isWeb)
+                        Obx(() {
+                          final isSelectionEnabled = controller
+                              .mailboxDashBoardController
+                              .isSelectionEnabled();
+
+                          if (isSelectionEnabled) {
+                            return SelectAllEmailBannerWidget(
+                              limitEmailsInPage: ThreadConstants.defaultLimit
+                                .value
+                                .toInt(),
+                              folderName: controller.mailboxDashBoardController
+                                .selectedMailbox
+                                .value
+                                ?.getDisplayName(context),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
                       Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
                       Expanded(
                         child: Container(

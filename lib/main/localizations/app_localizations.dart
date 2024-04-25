@@ -4506,4 +4506,19 @@ class AppLocalizations {
       name: 'downloadAttachmentHasBeenCancelled',
     );
   }
+
+  String get mailsOnThisPageAreSelected {
+    return Intl.message(
+      'mails on this page are selected. ',
+      name: 'mailsOnThisPageAreSelected'
+    );
+  }
+
+  String selectAllMailInMailbox(int total, String folderName) {
+    return Intl.message(
+      'Select all $total mails in $folderName',
+      name: 'selectAllMailInMailbox',
+      args: [total, folderName]
+    );
+  }
 }
