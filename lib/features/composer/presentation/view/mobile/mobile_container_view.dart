@@ -1,7 +1,6 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart' as rich_composer;
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
