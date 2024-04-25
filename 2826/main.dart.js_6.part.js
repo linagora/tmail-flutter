@@ -1024,15 +1024,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     MailboxVisibilityUtils_getPaddingListView(context, responsiveUtils) {
-      var _null = null,
-        t1 = type$.MediaQuery,
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      var t1 = type$.MediaQuery,
+        t2 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data;
       if (t2.size._dx >= 1200)
         return B.EdgeInsets_8_8_8_8;
       else {
-        if (!(A.InheritedModel_inheritFrom(context, _null, t1).data.size._dx < 600))
-          if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-            t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+        if (!(A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size._dx < 600))
+          if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+            t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
             t1 = t1.get$orientation(t1) === B.Orientation_1;
           } else
             t1 = false;
@@ -1045,30 +1044,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     SettingsUtils_getHorizontalPadding(context, responsiveUtils) {
-      if (A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data.size._dx < 600)
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)
         return 16;
       else
         return 32;
     },
     SettingsUtils_getPaddingInFirstLevel(context, responsiveUtils) {
-      if (A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data.size._dx < 600)
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)
         return E.EdgeInsets_16_12_16_12;
       else
         return E.EdgeInsets_32_12_32_12;
     },
     SettingsUtils_getPaddingAppBar(context, responsiveUtils) {
-      var t2, _null = null,
+      var t2,
         t1 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+        t2 = A.InheritedModel_inheritFrom(context, null, t1).data;
         t2 = t2.get$orientation(t2) === B.Orientation_0;
       } else
         t2 = false;
       if (t2)
         return B.EdgeInsets_16_0_16_0;
       else {
-        if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-          t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+        if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+          t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
           t1 = t1.get$orientation(t1) === B.Orientation_1;
         } else
           t1 = false;
@@ -1079,7 +1078,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     SettingsUtils_getMarginViewForSettingDetails(context, responsiveUtils) {
-      if (A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data.size._dx >= 1200)
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200)
         return B.EdgeInsets_16_16_16_16;
       else if (responsiveUtils.isTabletLarge$1(context) || responsiveUtils.isTablet$1(context))
         return E.EdgeInsets_32_16_32_16;
@@ -1088,7 +1087,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     SettingsUtils_getBoxDecorationForContent(context, responsiveUtils) {
       var _null = null,
-        t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+        t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t1.size._dx >= 1200) {
         t1 = A.BorderRadius$circular(16);
         return new A.BoxDecoration(B.Color_4294967295, _null, A.Border_Border$all(B.Color_4293388524, 1), t1, _null, _null, _null, B.BoxShape_0);
@@ -1096,32 +1095,32 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return _null;
     },
     SettingsUtils_getContentBackgroundColor(context, responsiveUtils) {
-      var t1 = A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data;
+      var t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t1.size._dx >= 1200)
         return null;
       else
         return B.Color_4294967295;
     },
     SettingsUtils_getBackgroundColor(context, responsiveUtils) {
-      var t1 = A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data;
+      var t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t1.size._dx >= 1200)
         return B.Color_4294375158;
       else
         return B.Color_4294967295;
     },
     SettingsUtils_getPaddingListRecipientForwarding(context, responsiveUtils) {
-      var t2, _null = null,
+      var t2,
         t1 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+        t2 = A.InheritedModel_inheritFrom(context, null, t1).data;
         t2 = t2.get$orientation(t2) === B.Orientation_0;
       } else
         t2 = false;
       if (t2)
         return B.EdgeInsets_16_0_16_0;
       else {
-        if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-          t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+        if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+          t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
           t1 = t1.get$orientation(t1) === B.Orientation_1;
         } else
           t1 = false;
@@ -1132,18 +1131,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     SettingsUtils_getPaddingTitleHeaderForwarding(context, responsiveUtils) {
-      var t2, _null = null,
+      var t2,
         t1 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+        t2 = A.InheritedModel_inheritFrom(context, null, t1).data;
         t2 = t2.get$orientation(t2) === B.Orientation_0;
       } else
         t2 = false;
       if (t2)
         return E.EdgeInsets_16_12_16_12;
       else {
-        if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-          t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+        if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+          t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
           t1 = t1.get$orientation(t1) === B.Orientation_1;
         } else
           t1 = false;
@@ -1154,18 +1153,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     SettingsUtils_getPaddingKeepLocalSwitchButtonForwarding(context, responsiveUtils) {
-      var t2, _null = null,
+      var t2,
         t1 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+        t2 = A.InheritedModel_inheritFrom(context, null, t1).data;
         t2 = t2.get$orientation(t2) === B.Orientation_0;
       } else
         t2 = false;
       if (t2)
         return D.EdgeInsets_18_14_18_14;
       else {
-        if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-          t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+        if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+          t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
           t1 = t1.get$orientation(t1) === B.Orientation_1;
         } else
           t1 = false;
@@ -1176,18 +1175,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     SettingsUtils_getPaddingInputRecipientForwarding(context, responsiveUtils) {
-      var t2, _null = null,
+      var t2,
         t1 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+        t2 = A.InheritedModel_inheritFrom(context, null, t1).data;
         t2 = t2.get$orientation(t2) === B.Orientation_0;
       } else
         t2 = false;
       if (t2)
         return E.EdgeInsets_16_12_16_12;
       else {
-        if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-          t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+        if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600) {
+          t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
           t1 = t1.get$orientation(t1) === B.Orientation_1;
         } else
           t1 = false;
@@ -1198,14 +1197,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     SettingsUtils_getMarginViewForForwardSettingDetails(context, responsiveUtils) {
-      var t1 = A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data;
+      var t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t1.size._dx >= 1200)
         return B.EdgeInsets_16_16_16_16;
       else
         return B.EdgeInsets_0_0_0_0;
     },
     SettingsUtils_getMarginSettingDetailsView(context, responsiveUtils) {
-      var t1 = A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data;
+      var t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t1.size._dx >= 1200)
         return B.EdgeInsets_16_16_16_16;
       else
@@ -1226,14 +1225,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return D.EdgeInsets_48_16_10_10;
     },
     SettingsUtils_getPaddingAlwaysReadReceiptSetting(context, responsiveUtils) {
-      var t1 = A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data;
+      var t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t1.size._dx >= 1200)
         return B.EdgeInsets_24_24_24_24;
       else
         return B.EdgeInsets_0_0_0_0;
     },
     VacationUtils_getPaddingView(context, responsiveUtils) {
-      if (A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data.size._dx >= 1200)
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200)
         return D.EdgeInsets_20_24_20_24;
       else if (responsiveUtils.isTabletLarge$1(context) || responsiveUtils.isTablet$1(context))
         return D.EdgeInsets_28_24_28_24;
@@ -1898,7 +1897,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
       t2._as(t1.get(_this)).toString;
       t3 = type$.MediaQuery;
-      t4 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t4 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       t4 = t4.size._dx >= 1200 ? B.Color_4294375158 : B.Color_4294967295;
       A.Expando__checkType(_this);
       t5 = C.SettingsUtils_getMarginViewForSettingDetails(context, t2._as(t1.get(_this)).responsiveUtils);
@@ -1908,7 +1907,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = t2._as(t1.get(_this)).responsiveUtils;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t1 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       t1 = t1.size._dx >= 1200 ? 24 : 16;
       return A.Scaffold$(_null, t4, A.Container$(_null, A.SingleChildScrollView$(A.Column$(A._setArrayType([new C.EmailRulesHeaderWidget(new C.EmailRulesView_build_closure(_this, context), t6, t7, _null), new A.SizedBox(_null, t1, _null, _null), _this._email_rules_view$_buildLoadingView$0(), D.ListEmailRulesWidget_null], type$.JSArray_Widget), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, _null, B.ClampingScrollPhysics_null, _null, B.Axis_1), B.Clip_0, _null, _null, _null, _null, _null, _null, t5, _null, _null, _null, 1 / 0), _null, _null, true, _null, _null, _null);
     },
@@ -1921,14 +1920,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var _this = this, _null = null,
         t1 = type$.MediaQuery,
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data.size._dx < 600 ? 16 : 24,
-        t3 = A.InheritedModel_inheritFrom(context, _null, t1).data.size._dx < 600 ? 0 : 24,
+        t2 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size._dx < 600 ? 16 : 24,
+        t3 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size._dx < 600 ? 0 : 24,
         t4 = A._setArrayType([A.Text$(_this.rule.name, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY3, _null, _null, _null, _null, _null), B.Spacer_null], type$.JSArray_Widget);
-      if (!(A.InheritedModel_inheritFrom(context, _null, t1).data.size._dx < 600))
+      if (!(A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size._dx < 600))
         t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_edit_rule.svg", B.Alignment_0_0, A.ColorNullableExtension_asFilter(B.Color_4278221567), B.BoxFit_0, _null, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure(_this, context), _null, _null));
-      if (!(A.InheritedModel_inheritFrom(context, _null, t1).data.size._dx < 600))
+      if (!(A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size._dx < 600))
         t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_delete_rule.svg", B.Alignment_0_0, _null, B.BoxFit_0, _null, _null, _null, _null), _null, _null, _null, new C.EmailRulesItemWidget_build_closure0(_this, context), _null, _null));
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size._dx < 600)
+      if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data.size._dx < 600)
         t4.push(A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_open_edit_rule.svg", B.Alignment_0_0, _null, B.BoxFit_0, _null, _null, _null, _null), B.EdgeInsets_0_0_0_0, _null, _null, new C.EmailRulesItemWidget_build_closure1(_this, context), _null, _null));
       return A.Container$(_null, A.Row$(t4, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, new A.EdgeInsets(t2, 15, t3, 15), _null, _null, _null);
     }
@@ -1950,7 +1949,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         _s33_ = "assets/images/ic_add_new_rule.svg",
         t1 = type$.AppLocalizations,
         t2 = this.createRule;
-      if (!(A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data.size._dx < 600)) {
+      if (!(A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)) {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
         return A.Row$(A._setArrayType([A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _s33_, B.TextDirection_1, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, B.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 130, _null, _null, t2, E.EdgeInsets_8_12_8_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, B.TextStyle_1Gf, _null, _null, _null, _null, false, _null), B.Spacer_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
       } else {
@@ -1988,7 +1987,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
       t9 = type$.MediaQuery;
-      t10 = A.InheritedModel_inheritFrom(context, _null, t9).data;
+      t10 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t9).data;
       if (t10.size._dx >= 1200) {
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
@@ -1999,7 +1998,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = A._setArrayType([], t7);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t9 = A.InheritedModel_inheritFrom(context, _null, t9).data;
+      t9 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t9).data;
       if (!(t9.size._dx >= 1200)) {
         A.Expando__checkType(_this);
         t1 = C.SettingsUtils_getPaddingTitleHeaderForwarding(context, t2._as(t1.get(_this)).responsiveUtils);
@@ -2078,7 +2077,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this._widget.toString;
       t1 = C.SettingsUtils_getPaddingInputRecipientForwarding(context, _this._autocomplete_contact_text_field_with_tags$_responsiveUtils);
       t2 = type$.JSArray_Widget;
-      return A.Container$(_null, A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data.size.get$shortestSide() < 600 ? A.Column$(A._setArrayType([itemTagEditor, B.SizedBox_null_16_null_null, _this._buildAddRecipientButton$2$maxWidth(context, 1 / 0)], t2), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1) : A.Row$(A._setArrayType([A.Expanded$(itemTagEditor, 1), B.SizedBox_12_null_null_null, _this._buildAddRecipientButton$1(context)], t2), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_0, _null, _null, _null, _null, _null, _null, t1, _null, _null, 1 / 0);
+      return A.Container$(_null, A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size.get$shortestSide() < 600 ? A.Column$(A._setArrayType([itemTagEditor, B.SizedBox_null_16_null_null, _this._buildAddRecipientButton$2$maxWidth(context, 1 / 0)], t2), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1) : A.Row$(A._setArrayType([A.Expanded$(itemTagEditor, 1), B.SizedBox_12_null_null_null, _this._buildAddRecipientButton$1(context)], t2), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_0, _null, _null, _null, _null, _null, _null, t1, _null, _null, 1 / 0);
     },
     _autocomplete_contact_text_field_with_tags$_isDuplicatedRecipient$1(inputEmail) {
       var t1;
@@ -2179,7 +2178,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t2, _this = this,
         t1 = _this._framework$_element;
       t1.toString;
-      if (!(A.InheritedModel_inheritFrom(t1, null, type$.MediaQuery).data.size._dx >= 1200)) {
+      if (!(A.InheritedModel_inheritFrom(t1, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200)) {
         t1 = _this._framework$_element;
         t1.toString;
         A.FocusScope_of(t1).unfocus$0();
@@ -2384,11 +2383,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
       t2._as(t1.get(_this)).toString;
       t3 = type$.MediaQuery;
-      t4 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t4 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       t4 = t4.size._dx >= 1200 ? B.Color_4294375158 : B.Color_4294967295;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t5 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t5 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       if (t5.size._dx >= 1200)
         t5 = B.EdgeInsets_24_24_24_24;
       else {
@@ -2398,11 +2397,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t6 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t6 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       t6 = t6.size._dx >= 1200 ? _null : B.Color_4294967295;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t7 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t7 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       if (t7.size._dx >= 1200) {
         t7 = A.BorderRadius$circular(20);
         t7 = new A.BoxDecoration(B.Color_4294967295, _null, A.Border_Border$all(E.Color_1555612108, 1), t7, _null, _null, _null, B.BoxShape_0);
@@ -2410,14 +2409,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t7 = _null;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t8 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t8 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       t9 = A.BorderRadius$circular(t8.size._dx >= 1200 ? 20 : 0);
       t8 = type$._LocalizationsScope;
       t10 = context.dependOnInheritedWidgetOfExactType$1$0(t8).localizationsState._localizations$_locale;
       if (A.Bidi_isRtlLanguage(t10.get$languageCode(t10))) {
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
-        t10 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+        t10 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
         t10 = t10.size._dx >= 1200 ? 24 : 0;
       } else
         t10 = 0;
@@ -2427,7 +2426,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else {
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
-        t1 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+        t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
         t1 = t1.size._dx >= 1200 ? 24 : 0;
       }
       $.$get$Get();
@@ -2473,7 +2472,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C.LanguageRegionOverlay.prototype = {
     build$1(context) {
       var _null = null,
-        t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data,
+        t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data,
         t2 = A.BorderRadius$circular(12),
         t3 = this.listSupportedLanguages;
       return A.Container$(_null, A.ListView$builder(_null, new C.LanguageRegionOverlay_build_closure(this), J.get$length$asx(t3.get$value(t3)), _null, _null, _null, _null, _null, B.Axis_1, true), B.Clip_0, _null, new A.BoxConstraints(0, 1 / 0, 0, t1.size._dy - 80 - 200 - 16), new A.BoxDecoration(B.Color_4294967295, _null, _null, t2, D.List_00, _null, _null, B.BoxShape_0), _null, _null, _null, D.EdgeInsets_0_4_0_24, B.EdgeInsets_8_8_8_8, _null, _null, this.maxWidth);
@@ -2507,7 +2506,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A._setArrayType([], t4);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t6 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+      t6 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t6.size._dx >= 1200)
         B.JSArray_methods.addAll$1(t5, A._setArrayType([B.SizedBox_null_24_null_null, D.MailboxVisibilityHeaderWidget_null, B.SizedBox_null_16_null_null, B.Divider_4CA], t4));
       t5.push(_this._mailbox_visibility_view$_buildLoadingView$0());
@@ -2714,7 +2713,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A._instanceType(_this)._eval$1("GetWidget.S");
       t4._as(t3.get(_this)).toString;
       t5 = type$.MediaQuery;
-      t6 = A.InheritedModel_inheritFrom(context, _null, t5).data;
+      t6 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t5).data;
       if (!(t6.size._dx >= 1200)) {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t6 = A.Intl__message("Twake Mail", _null, "app_name", _null, _null);
@@ -2726,12 +2725,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
-      t6 = A.InheritedModel_inheritFrom(context, _null, t5).data;
+      t6 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t5).data;
       if (!(t6.size._dx >= 1200))
         t2.push(B.Divider_4CA);
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
-      t5 = A.InheritedModel_inheritFrom(context, _null, t5).data;
+      t5 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t5).data;
       t5 = t5.size._dx >= 1200 ? B.Color_4294375158 : B.Color_4294967295;
       t6 = type$.AppLocalizations;
       A.Localizations_of(context, B.Type_AppLocalizations_swi, t6).toString;
@@ -2850,7 +2849,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (this._menuItemSelected === this._menuItem)
         return B.Color_2581915884;
       else {
-        A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).toString;
+        A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).toString;
         return B.Color_0;
       }
     }
@@ -2891,7 +2890,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).toString;
-      t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+      t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       return A.Container$(_null, t1.size._dx >= 1200 ? _this._buildIdentitiesViewWebDesktop$1(context) : _this._buildIdentitiesViewMobile$1(context), B.Clip_0, _null, _null, _null, _null, _null, _null, B.EdgeInsets_24_24_24_24, _null, _null, _null, _null);
     },
     _buildIdentitiesViewMobile$1(context) {
@@ -2942,10 +2941,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var t3, _null = null,
         t1 = type$.MediaQuery,
-        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+        t2 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data;
       t2 = t2.size._dx >= 1200 ? 256 : _null;
       t3 = A.Border_Border$all(B.Color_520093696, 1);
-      t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data;
       return A.Container$(_null, A.ClipRRect$(B.BorderRadius_tLn0, t1.size._dx >= 1200 ? this._buildIdentityViewHorizontal$1(context) : this._buildIdentityViewVertical$1(context), B.Clip_2), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, t3, B.BorderRadius_tLn0, _null, _null, _null, B.BoxShape_0), _null, t2, _null, _null, _null, _null, _null, _null);
     },
     _buildIdentityViewVertical$1(context) {
@@ -2956,7 +2955,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _buildListIdentityView$1(context) {
       var _null = null,
-        t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+        t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       t1 = t1.size._dx >= 1200 ? 320 : _null;
       return A.Container$(_null, new A.Obx(new C.IdentitiesRadioListBuilder__buildListIdentityView_closure(this), _null), B.Clip_0, _null, _null, _null, _null, 256, D.ValueKey_identities_list, _null, D.EdgeInsets_12_12_0_12, _null, _null, t1);
     },
@@ -3025,7 +3024,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = type$.JSArray_Widget,
         t2 = A._setArrayType([], t1),
-        t3 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+        t3 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t3.size._dx >= 1200)
         B.JSArray_methods.addAll$1(t2, A._setArrayType([new C.ProfilesHeaderWidget(_null), A.Container$(_null, _null, B.Clip_0, B.Color_4293190884, _null, _null, _null, 1, _null, _null, _null, _null, _null, _null)], t1));
       t2.push(A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([new C.IdentitiesView(_null)], t1), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, _null, B.ClampingScrollPhysics_null, _null, B.Axis_1), 1));
@@ -3061,7 +3060,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = A._setArrayType([], t6);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data;
+      t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
       if (t1.size._dx >= 1200) {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         B.JSArray_methods.addAll$1(t7, A._setArrayType([A.Text$(A.Intl__message("Vacation", _null, "vacation", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, E.TextStyle_oHY10, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null], t6));
@@ -3086,14 +3085,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
       t2._as(t1.get(_this)).toString;
       t3 = type$.MediaQuery;
-      t4 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+      t4 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data;
       if (t4.size._dx >= 1200) {
         A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         return new A.Align(B.Alignment_1_0, _null, _null, A.buildTextButton(A.Intl__message(_s12_, _null, _s11_, _null, _null), _null, 44, new C.VacationView__buildListButtonAction_closure(_this, context), 10, D.TextStyle_1Gf1, 156), _null);
       } else {
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
-        if (A.InheritedModel_inheritFrom(context, _null, t3).data.size.get$shortestSide() < 600) {
+        if (A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t3).data.size.get$shortestSide() < 600) {
           t1 = A.InheritedModel_inheritFrom(context, _null, t3).data;
           t1 = t1.get$orientation(t1) === B.Orientation_0;
         } else
@@ -3138,7 +3137,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       it.SchedulerBinding__postFrameCallbacks.push(t1.get$_postFrameCallback());
       it.WidgetsBinding__observers.push(t1);
     },
-    $signature: 1674
+    $signature: 1673
   };
   C._FadingEdgeScrollViewState__postFrameCallback_closure.prototype = {
     call$0() {
@@ -3226,7 +3225,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7.toString;
       return new A.LinearGradient(t4, t3, B.TileMode_0, t5, t2, null).createShader$2$textDirection(0, t6, t7.textDirection);
     },
-    $signature: 1675
+    $signature: 1674
   };
   C._RadioState__widgetFillColor_closure.prototype = {
     call$1(states) {
@@ -3372,7 +3371,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Row$(A._setArrayType([t4, B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Always request read receipts with outgoing messages", _null, "emailReadReceiptsToggleDescription", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_ufz, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 106
+    $signature: 102
   };
   C.EmailRulesView_build_closure.prototype = {
     call$0() {
@@ -3397,7 +3396,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 42
   };
   C.EmailRulesView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -3442,7 +3441,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t3._as(t2.get(t1)).listEmailRule;
       return A.ListView$separated(null, new C.ListEmailRulesWidget_build__closure(t1), J.get$length$asx(t2.get$value(t2)), null, B.ScrollViewKeyboardDismissBehavior_0, B.EdgeInsets_0_0_0_0, null, false, false, B.Axis_1, new C.ListEmailRulesWidget_build__closure0(t1), true);
     },
-    $signature: 191
+    $signature: 192
   };
   C.ListEmailRulesWidget_build__closure.prototype = {
     call$2(context, index) {
@@ -3480,7 +3479,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 122
+    $signature: 117
   };
   C.ForwardView_build_closure.prototype = {
     call$0() {
@@ -3557,7 +3556,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 42
   };
   C.ForwardView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -3578,7 +3577,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1676
+    $signature: 1675
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
     call$1(isListEmailEmpty) {
@@ -3622,7 +3621,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t2.get$isEmpty(t2))
         t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure2(t1));
     },
-    $signature: 11
+    $signature: 9
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure2.prototype = {
     call$0() {
@@ -3636,7 +3635,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(item) {
       return this.$this._addEmailAddressToInputFieldAction$2$context$emailAddress(this.context, item.emailAddress);
     },
-    $signature: 589
+    $signature: 588
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure2.prototype = {
     call$1(value) {
@@ -3661,7 +3660,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build___closure(t1, contact));
     },
-    $signature: 194
+    $signature: 177
   };
   C._AutocompleteContactTextFieldWithTagsState_build___closure.prototype = {
     call$0() {
@@ -3684,7 +3683,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(_null, new A.ContactSuggestionBoxItem(suggestionEmailAddress, new C._AutocompleteContactTextFieldWithTagsState_build__closure0(this.$this, context, tagEditorState), _null, B.RoundedRectangleBorder_27D4, _null), B.Clip_0, _null, _null, _null, _null, _null, _null, _null, B.EdgeInsets_12_0_12_0, _null, _null, _null);
     },
-    $signature: 1677
+    $signature: 1676
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure0.prototype = {
     call$1(contact) {
@@ -3694,13 +3693,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.closeSuggestionBox$0();
       t1.resetTextField$0();
     },
-    $signature: 194
+    $signature: 177
   };
   C._AutocompleteContactTextFieldWithTagsState__isDuplicatedRecipient_closure.prototype = {
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 140
+    $signature: 135
   };
   C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure.prototype = {
     call$1(emailAddress) {
@@ -3718,7 +3717,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return B.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 51
+    $signature: 52
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
@@ -3742,7 +3741,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = true;
       return t1;
     },
-    $signature: 51
+    $signature: 52
   };
   C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure.prototype = {
     call$0() {
@@ -3891,7 +3890,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "";
       t1.deleteRecipients$2(this.context, t2);
     },
-    $signature: 1678
+    $signature: 1677
   };
   C.ListEmailForwardsWidget__buildTitleHeader_closure.prototype = {
     call$0() {
@@ -3945,7 +3944,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildDeleteAllButton$1(_this.context));
       return A.Container$(_null, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_0, _null, _null, _null, 44, _null, _null, B.EdgeInsets_0_0_12_0, _null, _null, 1 / 0);
     },
-    $signature: 418
+    $signature: 417
   };
   C.ListEmailForwardsWidget__buildDeleteAllButton_closure.prototype = {
     call$0() {
@@ -3976,7 +3975,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 /= 2;
       return A.ResponsiveWidget$(A.Column$(A._setArrayType([A.Text$(A.Intl__message(_s8_, _null, _s8_0, _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null, new A.SizedBox(t3, _null, t1._buildLanguageMenu$2(context, t3), _null)], t4), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, t5, t1._change_language_button_widget$_responsiveUtils, _null, _null);
     },
-    $signature: 1679
+    $signature: 1678
   };
   C.ChangeLanguageButtonWidget__buildLanguageMenu_closure.prototype = {
     call$0() {
@@ -3989,7 +3988,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.get$value(t2);
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(E.Aligned_2Lz, t1._buildDropDownMenuButton$2(this.context, t5), new A.Obx(new C.ChangeLanguageButtonWidget__buildLanguageMenu__closure0(t1, t5), _null), t2), t4, t3);
     },
-    $signature: 337
+    $signature: 338
   };
   C.ChangeLanguageButtonWidget__buildLanguageMenu__closure.prototype = {
     call$0() {
@@ -4048,7 +4047,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 42
   };
   C.MailboxVisibilityView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -4140,7 +4139,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1;
     },
-    $signature: 298
+    $signature: 299
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure.prototype = {
     call$1(mailboxNode) {
@@ -4352,12 +4351,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2 == null ? null : t2.username;
       return t4.openPopupMenuAction$3(t5, position, t1.popupMenuUserSettingActionTile$3$onLogoutAction(t5, t2, new C.ManageAccountDashBoardView__buildRightHeader___closure(t1)));
     },
-    $signature: 602
+    $signature: 601
   };
   C.ManageAccountDashBoardView__buildRightHeader___closure.prototype = {
     call$0() {
       var t1, t2, t3, t4, t5;
-      A.GetNavigation_back($.$get$Get(), null);
+      A.GetNavigation_back($.$get$Get(), false, null);
       t1 = this.$this;
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -4370,7 +4369,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t3._as(t2.get(t1)).accountId;
       t4.logout$2(t5, t1.get$value(t1));
     },
-    $signature: 11
+    $signature: 9
   };
   C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure.prototype = {
     call$0() {
@@ -4446,7 +4445,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new C.ManageAccountMenuView_build___closure(this.$this, index), null);
     },
-    $signature: 199
+    $signature: 250
   };
   C.ManageAccountMenuView_build___closure.prototype = {
     call$0() {
@@ -4534,7 +4533,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 106
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure2.prototype = {
     call$0() {
@@ -4567,7 +4566,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 106
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure1.prototype = {
     call$0() {
@@ -4600,7 +4599,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 106
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure0.prototype = {
     call$0() {
@@ -4633,7 +4632,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 106
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure.prototype = {
     call$0() {
@@ -4893,7 +4892,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return t1;
     },
-    $signature: 1680
+    $signature: 1679
   };
   C.IdentitiesView__buildIdentitiesViewMobile_closure.prototype = {
     call$0() {
@@ -4958,7 +4957,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(t3._buildListIdentityView$1(t5), 1));
       return A.Row$(t2, B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 1681
+    $signature: 1680
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure.prototype = {
     call$0() {
@@ -5000,13 +4999,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(identitySelected) {
       return this.$this.controller.goToEditIdentity$2(this.context, identitySelected);
     },
-    $signature: 612
+    $signature: 611
   };
   C.IdentitiesRadioListBuilder__buildListIdentityView___closure0.prototype = {
     call$1(identitySelected) {
       return this.$this.controller.openConfirmationDialogDeleteIdentityAction$2(this.context, identitySelected);
     },
-    $signature: 612
+    $signature: 611
   };
   C.IdentitiesRadioListBuilder__buildLoadingView_closure.prototype = {
     call$0() {
@@ -5019,7 +5018,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 42
   };
   C.IdentitiesRadioListBuilder__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -5094,7 +5093,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2, B.Alignment_0_0, _null, B.BoxFit_0, 24, _null, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView__buildVacationFormView__closure8(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 613
+    $signature: 612
   };
   C.VacationView__buildVacationFormView__closure8.prototype = {
     call$0() {
@@ -5134,7 +5133,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       t6 = this.context;
       t7 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(t6, _null, t7).data.size.get$shortestSide() < 600) {
+      if (A.InheritedModel_inheritFrom(t6, B._MediaQueryAspect_0, t7).data.size.get$shortestSide() < 600) {
         t7 = A.InheritedModel_inheritFrom(t6, _null, t7).data;
         t7 = t7.get$orientation(t7) === B.Orientation_0;
       } else
@@ -5207,7 +5206,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(t1, _null, t5));
     },
-    $signature: 167
+    $signature: 183
   };
   C.VacationView__buildVacationFormView__closure4.prototype = {
     call$1(value) {
@@ -5261,7 +5260,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Row$(A._setArrayType([new A.Obx(new C.VacationView__buildVacationFormView__closure3(t1), _null), E.SizedBox_16_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Vacation stops at", _null, "vacationStopsAt", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY3, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null, t2));
     },
-    $signature: 167
+    $signature: 183
   };
   C.VacationView__buildVacationFormView__closure3.prototype = {
     call$0() {
@@ -5283,7 +5282,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2, B.Alignment_0_0, _null, B.BoxFit_0, 24, _null, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView__buildVacationFormView___closure(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 613
+    $signature: 612
   };
   C.VacationView__buildVacationFormView___closure.prototype = {
     call$0() {
@@ -5323,7 +5322,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       t6 = this.context;
       t7 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(t6, _null, t7).data.size.get$shortestSide() < 600) {
+      if (A.InheritedModel_inheritFrom(t6, B._MediaQueryAspect_0, t7).data.size.get$shortestSide() < 600) {
         t7 = A.InheritedModel_inheritFrom(t6, _null, t7).data;
         t7 = t7.get$orientation(t7) === B.Orientation_0;
       } else
@@ -5396,7 +5395,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(!t4, A.Opacity$(t1, _null, t5));
     },
-    $signature: 167
+    $signature: 183
   };
   C.VacationView__buildVacationFormView__closure.prototype = {
     call$1(value) {
@@ -5450,7 +5449,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       t5 = this.context;
       t6 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(t5, _null, t6).data.size.get$shortestSide() < 600) {
+      if (A.InheritedModel_inheritFrom(t5, B._MediaQueryAspect_0, t6).data.size.get$shortestSide() < 600) {
         t6 = A.InheritedModel_inheritFrom(t5, _null, t6).data;
         t6 = t6.get$orientation(t6) === B.Orientation_0;
       } else
@@ -5486,7 +5485,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, t1);
     },
-    $signature: 167
+    $signature: 183
   };
   C.VacationView__buildVacationFormView_closure4.prototype = {
     call$0() {
@@ -5512,7 +5511,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t11.push(A.Center$(A.PointerInterceptor$(t1.buildToolbarRichTextForWeb$3$layoutType(t6, t3._as(t2.get(t1))._richTextControllerForWeb, B.ButtonLayoutType_0)), _null, _null));
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Column$(A._setArrayType([t7, B.SizedBox_null_8_null_null, A.Container$(_null, A.Column$(t11, B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, t9, t8, _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, D.EdgeInsetsDirectional_12_12_12_0, _null, _null, _null)], t10), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, t5));
     },
-    $signature: 167
+    $signature: 183
   };
   C.VacationView__buildListButtonAction_closure.prototype = {
     call$0() {
@@ -5584,7 +5583,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1))._richTextControllerForWeb.editorController._evaluateJavascriptWeb$1$data(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: setFocus"], type$.String, type$.nullable_Object));
     },
-    $signature: 11
+    $signature: 9
   };
   (function aliases() {
     var _ = C.__RadioState_State_TickerProviderStateMixin.prototype;
@@ -5809,5 +5808,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "x9tk0+Dx2eJi8NWUJJxBCUJIX4U=");
+})($__dart_deferred_initializers__, "Qavt7tlqJShGORvKPq2K5C0uEiw=");
 ;
