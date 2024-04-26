@@ -829,7 +829,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
       return;
     }
 
-    popBack();
+    if (Get.isDialogOpen == true) {
+      popBack();
+    }
 
     final emailContent = await _getContentInEditor();
     final cancelToken = CancelToken();
@@ -2031,7 +2033,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
       _closeComposerButtonState = ButtonState.enabled;
-      _closeComposerAction();
     } else if ((resultState is SaveEmailAsDraftsFailure ||
         resultState is UpdateEmailDraftsFailure ||
         resultState is GenerateEmailFailure) &&
