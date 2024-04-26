@@ -65,12 +65,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     super.initState();
     if (PlatformInfo.isAndroid) {
       _gestureRecognizers = {
-        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDuration)),
+        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
         Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
       };
     } else {
       _gestureRecognizers = {
-        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDuration)),
+        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDurationIOS)),
       };
     }
     if (PlatformInfo.isAndroid) {
@@ -211,7 +211,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
       if (!isScrollActivated && PlatformInfo.isIOS) {
         newGestureRecognizers = {
-          Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDuration)),
+          Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDurationIOS)),
           Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer())
         };
       }
@@ -272,7 +272,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     return NavigationActionPolicy.CANCEL;
   }
 
-  Duration? get _longPressGestureDuration => const Duration(milliseconds: 100);
+  Duration? get _longPressGestureDurationIOS => const Duration(milliseconds: 100);
 
   @override
   void dispose() {
