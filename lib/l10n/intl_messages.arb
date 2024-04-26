@@ -4331,5 +4331,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "confirmBulkAction": "Confirm bulk action",
+  "@confirmBulkAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ok": "OK",
+  "@ok": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox": "This action will affect all {total} mails in {folderName}. Are you sure you want to continue?",
+  "@messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "total",
+      "folderName"
+    ],
+    "placeholders": {
+      "total": {},
+      "folderName": {}
+    }
   }
 }
