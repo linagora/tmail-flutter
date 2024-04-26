@@ -3322,7 +3322,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clean": "Nettoyer",
+  "clean": "Vider",
   "@clean": {
     "type": "text",
     "placeholders_order": [],
@@ -3460,7 +3460,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearFolder": "Nettoyer le dossier",
+  "clearFolder": "Vider le dossier",
   "@clearFolder": {
     "type": "text",
     "placeholders_order": [],
