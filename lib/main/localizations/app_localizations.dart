@@ -4536,4 +4536,24 @@ class AppLocalizations {
       name: 'clearSelection',
     );
   }
+
+  String get confirmBulkAction {
+    return Intl.message(
+      'Confirm bulk action',
+      name: 'confirmBulkAction');
+  }
+
+  String get ok {
+    return Intl.message(
+      'OK',
+      name: 'ok');
+  }
+
+  String messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox(int total, String folderName) {
+    return Intl.message(
+      'This action will affect all $total mails in $folderName. Are you sure you want to continue?',
+      name: 'messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox',
+      args: [total, folderName]
+    );
+  }
 }
