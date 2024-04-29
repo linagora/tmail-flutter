@@ -1521,19 +1521,17 @@ class ThreadController extends BaseController with EmailActionController, PopupM
 
   bool validateToShowSelectionEmailsBanner() {
     return mailboxDashBoardController.isSelectionEnabled() &&
-        mailboxDashBoardController.selectedMailbox.value != null &&
-        mailboxDashBoardController.selectedMailbox.value!.totalEmails != null &&
+        selectedMailbox != null &&
+        selectedMailbox!.totalEmails != null &&
         mailboxDashBoardController.listEmailSelected.length <
-            mailboxDashBoardController
-                .selectedMailbox.value!.totalEmails!.value.value
-                .toInt();
+            selectedMailbox!.countTotalEmails;
   }
 
   void showPopupMenuSelectionEmailAction(BuildContext context, RelativeRect position) {
     final listSelectionEmailActions = [
       EmailActionType.markAllAsRead,
       EmailActionType.markAllAsUnread,
-      EmailActionType.moveToMailbox,
+      EmailActionType.moveAll,
       EmailActionType.moveToTrash,
     ];
 
@@ -1603,24 +1601,35 @@ class ThreadController extends BaseController with EmailActionController, PopupM
   }) {
     if (_session == null || _accountId == null) return;
 
-    if (actionType == EmailActionType.markAllAsRead) {
-      cancelSelectEmail();
-      mailboxDashBoardController.markAsReadMailbox(
-        _session!,
-        _accountId!,
-        selectedMailbox.mailboxId!,
-        selectedMailbox.getDisplayName(context),
-        selectedMailbox.countUnreadEmails,
-      );
-    } else if (actionType == EmailActionType.markAllAsUnread) {
-      cancelSelectEmail();
-      mailboxDashBoardController.markAllAsUnreadSelectionAllEmails(
-        _session!,
-        _accountId!,
-        selectedMailbox.mailboxId!,
-        selectedMailbox.getDisplayName(context),
-        selectedMailbox.countReadEmails,
-      );
+    switch(actionType) {
+      case EmailActionType.markAllAsRead:
+        mailboxDashBoardController.markAsReadMailbox(
+          _session!,
+          _accountId!,
+          selectedMailbox.mailboxId!,
+          selectedMailbox.getDisplayName(context),
+          selectedMailbox.countUnreadEmails,
+        );
+        break;
+      case EmailActionType.markAllAsUnread:
+        mailboxDashBoardController.markAllAsUnreadSelectionAllEmails(
+          _session!,
+          _accountId!,
+          selectedMailbox.mailboxId!,
+          selectedMailbox.getDisplayName(context),
+          selectedMailbox.countReadEmails,
+        );
+        break;
+      case EmailActionType.moveAll:
+        mailboxDashBoardController.moveAllSelectionAllEmails(
+          context,
+          _session!,
+          _accountId!,
+          selectedMailbox,
+        );
+        break;
+      default:
+        break;
     }
   }
 }

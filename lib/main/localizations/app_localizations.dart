@@ -4598,4 +4598,39 @@ class AppLocalizations {
         args: [folderName, reason]
     );
   }
+
+  String toastMessageMoveAllSelectionAllEmailsSuccess(String destinationPath) {
+    return Intl.message(
+      'You’ve moved all mails to $destinationPath',
+      name: 'toastMessageMoveAllSelectionAllEmailsSuccess',
+      args: [destinationPath]);
+  }
+
+  String toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure(int count, String destinationPath) {
+    return Intl.message(
+      'You’ve moved $count mails to $destinationPath',
+      name: 'toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure',
+      args: [count, destinationPath]);
+  }
+
+  String toastMessageMoveAllSelectionAllEmailsAllFailure(String destinationPath) {
+    return Intl.message(
+      'All mails could not be moved to $destinationPath',
+      name: 'toastMessageMoveAllSelectionAllEmailsAllFailure',
+      args: [destinationPath]);
+  }
+
+  String toastMessageMoveAllSelectionAllEmailsFailureWithReason(String destinationPath, String reason) {
+    return Intl.message(
+      'All mails could not be moved to $destinationPath. Due "$reason"',
+      name: 'toastMessageMoveAllSelectionAllEmailsFailureWithReason',
+      args: [destinationPath, reason]
+    );
+  }
+
+  String get moveAll {
+    return Intl.message(
+      'Move all',
+      name: 'moveAll');
+  }
 }

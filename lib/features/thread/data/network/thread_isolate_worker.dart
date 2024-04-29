@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_unread_selection_all_emails_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_all_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -259,6 +260,79 @@ class ThreadIsolateWorker {
       logError('ThreadIsolateWorker::markAllAsUnreadForSelectionAllEmails():ERROR: $e');
     }
     log('ThreadIsolateWorker::markAllAsUnreadForSelectionAllEmails():TOTAL_UNREAD: ${emailIdListCompleted.length}');
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    Mailbox destinationMailbox,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) async {
+    List<EmailId> emailIdListCompleted = [];
+
+    try {
+      bool hasMoreEmails = true;
+      UTCDate? lastReceivedDate;
+      EmailId? lastEmailId;
+
+      while (hasMoreEmails) {
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: EmailFilterCondition(
+            inMailbox: currentMailboxId,
+            before: lastReceivedDate,
+          ),
+          sort: {EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)},
+          properties: Properties({
+            EmailProperty.id,
+            EmailProperty.receivedAt,
+          }),
+        );
+
+        List<Email> listEmails = emailResponse.emailList ?? [];
+
+        if (lastEmailId != null) {
+          listEmails.removeWhere((email) => email.id == lastEmailId);
+        }
+
+        log('ThreadIsolateWorker::moveAllSelectionAllEmails: LIST_EMAIL = ${listEmails.length}');
+
+        if (listEmails.isEmpty) {
+          hasMoreEmails = false;
+          break;
+        }
+
+        lastEmailId = listEmails.last.id;
+        lastReceivedDate = listEmails.last.receivedAt;
+
+        final movedEmailIds = await _emailAPI.moveSelectionAllEmailsToFolder(
+          session,
+          accountId,
+          currentMailboxId,
+          destinationMailbox,
+          listEmails.listEmailIds,
+        );
+
+        log('ThreadIsolateWorker::moveAllSelectionAllEmails(): MOVED: ${movedEmailIds.length}');
+        emailIdListCompleted.addAll(movedEmailIds);
+
+        onProgressController.add(
+          dartz.Right(MoveAllSelectionAllEmailsUpdating(
+            total: totalEmails,
+            countMoved: emailIdListCompleted.length,
+          )),
+        );
+      }
+    } catch (e) {
+      log('ThreadIsolateWorker::moveAllSelectionAllEmails(): ERROR: $e');
+    }
+
+    log('ThreadIsolateWorker::moveAllSelectionAllEmails(): TOTAL_MOVED: ${emailIdListCompleted.length}');
     return emailIdListCompleted;
   }
 }
