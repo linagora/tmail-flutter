@@ -10,6 +10,8 @@ import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_reject_method.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_reject_response.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 
@@ -87,5 +89,26 @@ class CalendarEventAPI {
     }
 
     return calendarEventMaybeResponse;
+  }
+
+  Future<CalendarEventRejectResponse> reject(AccountId accountId, Set<Id> blobIds) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final calendarEventRejectMethod = CalendarEventRejectMethod(
+      accountId,
+      blobIds: blobIds.toList());
+    final calendarEventRejectInvocation = requestBuilder.invocation(calendarEventRejectMethod);
+    final response = await (requestBuilder..usings(calendarEventRejectMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final calendarEventRejectResponse = response.parse<CalendarEventRejectResponse>(
+      calendarEventRejectInvocation.methodCallId,
+      CalendarEventRejectResponse.deserialize);
+
+    if (calendarEventRejectResponse == null) {
+      throw NotRejectableCalendarEventException();
+    }
+
+    return calendarEventRejectResponse;
   }
 }
