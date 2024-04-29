@@ -4405,5 +4405,55 @@
       "folderName": {},
       "reason": {}
     }
+  },
+  "toastMessageMoveAllSelectionAllEmailsSuccess": "You’ve moved all mails to {destinationPath}",
+  "@toastMessageMoveAllSelectionAllEmailsSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath"
+    ],
+    "placeholders": {
+      "destinationPath": {}
+    }
+  },
+  "toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure": "You’ve moved {count} mails to {destinationPath}",
+  "@toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "destinationPath"
+    ],
+    "placeholders": {
+      "count": {},
+      "destinationPath": {}
+    }
+  },
+  "toastMessageMoveAllSelectionAllEmailsAllFailure": "All mails could not be moved to {destinationPath}",
+  "@toastMessageMoveAllSelectionAllEmailsAllFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath"
+    ],
+    "placeholders": {
+      "destinationPath": {}
+    }
+  },
+  "toastMessageMoveAllSelectionAllEmailsFailureWithReason": "All mails could not be moved to {destinationPath}. Due \"{reason}\"",
+  "@toastMessageMoveAllSelectionAllEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath",
+      "reason"
+    ],
+    "placeholders": {
+      "destinationPath": {},
+      "reason": {}
+    }
+  },
+  "moveAll": "Move all",
+  "@moveAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

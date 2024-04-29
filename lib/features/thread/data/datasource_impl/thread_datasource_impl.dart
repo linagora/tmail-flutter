@@ -159,4 +159,25 @@ class ThreadDataSourceImpl extends ThreadDataSource {
       );
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    Mailbox destinationMailbox,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.moveAllSelectionAllEmails(
+        session,
+        accountId,
+        currentMailboxId,
+        destinationMailbox,
+        totalEmails,
+        onProgressController,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

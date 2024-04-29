@@ -93,11 +93,11 @@ class TopBarThreadSelection extends StatelessWidget{
        TMailButtonWidget.fromIcon(
          icon: imagePaths.icMove,
          iconSize: 22,
-         tooltipMessage: AppLocalizations.of(context).move,
+         tooltipMessage: _getTooltipMessageForMove(context),
          backgroundColor: Colors.transparent,
          onTapActionCallback: () => onEmailActionTypeAction?.call(
            List.from(listEmail),
-           EmailActionType.moveToMailbox
+           _getActionTypeForMove()
          )
        ),
        TMailButtonWidget.fromIcon(
@@ -187,6 +187,22 @@ class TopBarThreadSelection extends StatelessWidget{
       return listEmail.isAllEmailRead
         ? AppLocalizations.of(context).mark_as_unread
         : AppLocalizations.of(context).mark_as_read;
+    }
+  }
+
+  String _getTooltipMessageForMove(BuildContext context) {
+    if (isSelectAllEmailsEnabled) {
+      return AppLocalizations.of(context).moveAll;
+    } else {
+      return AppLocalizations.of(context).move;
+    }
+  }
+
+  EmailActionType _getActionTypeForMove() {
+    if (isSelectAllEmailsEnabled) {
+      return EmailActionType.moveAll;
+    } else {
+      return EmailActionType.moveToMailbox;
     }
   }
 }

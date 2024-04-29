@@ -136,4 +136,16 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   ) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    Mailbox destinationMailbox,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    throw UnimplementedError();
+  }
 }

@@ -153,6 +153,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.markAllAsRead:
         return imagePaths.icRead;
       case EmailActionType.moveToMailbox:
+      case EmailActionType.moveAll:
         return imagePaths.icMove;
       case EmailActionType.moveToTrash:
         return imagePaths.icDeleteComposer;
@@ -189,6 +190,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).mark_all_as_read;
       case EmailActionType.markAllAsUnread:
         return AppLocalizations.of(context).markAllAsUnread;
+      case EmailActionType.moveAll:
+        return AppLocalizations.of(context).moveAll;
       default:
         return '';
     }

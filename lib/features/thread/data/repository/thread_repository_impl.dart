@@ -449,4 +449,23 @@ class ThreadRepositoryImpl extends ThreadRepository {
       onProgressController,
     );
   }
+
+  @override
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    Mailbox destinationMailbox,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    return mapDataSource[DataSourceType.network]!.moveAllSelectionAllEmails(
+      session,
+      accountId,
+      currentMailboxId,
+      destinationMailbox,
+      totalEmails,
+      onProgressController
+    );
+  }
 }

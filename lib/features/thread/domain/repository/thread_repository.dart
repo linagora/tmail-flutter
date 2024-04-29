@@ -88,4 +88,13 @@ abstract class ThreadRepository {
     int totalEmailRead,
     StreamController<dartz.Either<Failure, Success>> onProgressController,
   );
+
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    Mailbox destinationMailbox,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  );
 }
