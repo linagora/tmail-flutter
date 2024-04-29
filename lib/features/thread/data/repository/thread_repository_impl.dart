@@ -432,4 +432,21 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     return listEmailIdDeleted;
   }
+
+  @override
+  Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailRead,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllAsUnreadForSelectionAllEmails(
+      session,
+      accountId,
+      mailboxId,
+      totalEmailRead,
+      onProgressController,
+    );
+  }
 }

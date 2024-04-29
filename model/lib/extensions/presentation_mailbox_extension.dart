@@ -30,6 +30,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   int get countTotalEmails => totalEmails?.value.value.toInt() ?? 0;
 
+  int get countReadEmails => countTotalEmails > countUnreadEmails ? countTotalEmails - countUnreadEmails : 0;
+
   bool get isInbox => role == PresentationMailbox.roleInbox;
 
   bool get isSpam => role == PresentationMailbox.roleSpam || role == PresentationMailbox.roleJunk;
