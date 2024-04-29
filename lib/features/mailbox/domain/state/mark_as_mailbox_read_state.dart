@@ -5,7 +5,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
-class MarkAsMailboxReadLoading extends UIState {}
+class MarkAsMailboxReadLoading extends LoadingState {}
 
 class UpdatingMarkAsMailboxReadState extends UIState {
 
