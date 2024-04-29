@@ -1522,7 +1522,7 @@ class ThreadController extends BaseController with EmailActionController, PopupM
   bool validateToShowSelectionEmailsBanner() {
     return mailboxDashBoardController.isSelectionEnabled() &&
         selectedMailbox != null &&
-        selectedMailbox!.totalEmails != null &&
+        selectedMailbox!.countTotalEmails > ThreadConstants.maxCountEmails &&
         mailboxDashBoardController.listEmailSelected.length <
             selectedMailbox!.countTotalEmails;
   }
@@ -1532,7 +1532,12 @@ class ThreadController extends BaseController with EmailActionController, PopupM
       EmailActionType.markAllAsRead,
       EmailActionType.markAllAsUnread,
       EmailActionType.moveAll,
-      EmailActionType.moveToTrash,
+      if (selectedMailbox?.isTrash == true ||
+          selectedMailbox?.isSpam == true ||
+          selectedMailbox?.isDrafts == true)
+        EmailActionType.deleteAllPermanently
+      else
+        EmailActionType.moveAllToTrash
     ];
 
     openPopupMenuAction(
@@ -1543,7 +1548,7 @@ class ThreadController extends BaseController with EmailActionController, PopupM
         child: popupItem(
           action.getIcon(imagePaths),
           action.getTitle(context),
-          colorIcon: AppColor.colorTextButton,
+          colorIcon: action.getIconColor(),
           styleName: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 14,
@@ -1622,6 +1627,14 @@ class ThreadController extends BaseController with EmailActionController, PopupM
         break;
       case EmailActionType.moveAll:
         mailboxDashBoardController.moveAllSelectionAllEmails(
+          context,
+          _session!,
+          _accountId!,
+          selectedMailbox,
+        );
+        break;
+      case EmailActionType.moveAllToTrash:
+        mailboxDashBoardController.moveAllToTrashSelectionAllEmails(
           context,
           _session!,
           _accountId!,

@@ -18,10 +18,13 @@ class MoveAllSelectionAllEmailsInteractor {
     Session session,
     AccountId accountId,
     MailboxId currentMailboxId,
-    Mailbox destinationMailbox,
+    MailboxId destinationMailboxId,
     String destinationPath,
     int totalEmails,
     StreamController<Either<Failure, Success>> onProgressController,
+    {
+      bool isDestinationSpamMailbox = false
+    }
   ) async* {
     try {
       yield Right(MoveAllSelectionAllEmailsLoading());
@@ -31,9 +34,10 @@ class MoveAllSelectionAllEmailsInteractor {
         session,
         accountId,
         currentMailboxId,
-        destinationMailbox,
+        destinationMailboxId,
         totalEmails,
-        onProgressController);
+        onProgressController,
+        isDestinationSpamMailbox: isDestinationSpamMailbox);
 
       if (totalEmails == listEmailId.length) {
         yield Right(MoveAllSelectionAllEmailsAllSuccess(destinationPath));

@@ -4633,4 +4633,17 @@ class AppLocalizations {
       'Move all',
       name: 'moveAll');
   }
+
+  String get moveAllToTrash {
+    return Intl.message(
+      'Move all to trash',
+      name: 'moveAllToTrash',
+    );
+  }
+
+  String get deleteAllPermanently {
+    return Intl.message(
+      'Delete all permanently',
+      name: 'deleteAllPermanently');
+  }
 }

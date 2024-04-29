@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
@@ -156,6 +157,8 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.moveAll:
         return imagePaths.icMove;
       case EmailActionType.moveToTrash:
+      case EmailActionType.moveAllToTrash:
+      case EmailActionType.deleteAllPermanently:
         return imagePaths.icDeleteComposer;
       default:
         return '';
@@ -192,8 +195,21 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).markAllAsUnread;
       case EmailActionType.moveAll:
         return AppLocalizations.of(context).moveAll;
+      case EmailActionType.moveAllToTrash:
+        return AppLocalizations.of(context).moveAllToTrash;
+      case EmailActionType.deleteAllPermanently:
+        return AppLocalizations.of(context).deleteAllPermanently;
       default:
         return '';
+    }
+  }
+
+  Color getIconColor() {
+    switch(this) {
+      case EmailActionType.deleteAllPermanently:
+        return AppColor.colorDeletePermanentlyButton;
+      default:
+        return AppColor.primaryColor;
     }
   }
 }

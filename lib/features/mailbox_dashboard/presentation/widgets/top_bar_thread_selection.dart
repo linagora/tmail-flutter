@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -23,6 +24,7 @@ class TopBarThreadSelection extends StatelessWidget{
   final OnEmailActionTypeAction? onEmailActionTypeAction;
   final VoidCallback? onCancelSelection;
   final bool isSelectAllEmailsEnabled;
+  final PresentationMailbox? selectedMailbox;
   final OnMoreSelectedEmailAction? onMoreSelectedEmailAction;
 
   TopBarThreadSelection({
@@ -30,6 +32,7 @@ class TopBarThreadSelection extends StatelessWidget{
     required this.listEmail,
     required this.mapMailbox,
     required this.isSelectAllEmailsEnabled,
+    this.selectedMailbox,
     this.onEmailActionTypeAction,
     this.onCancelSelection,
     this.onMoreSelectedEmailAction,
@@ -37,11 +40,6 @@ class TopBarThreadSelection extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    final canDeletePermanently = listEmail.isAllCanDeletePermanently(mapMailbox);
-    final canSpamAndMove = listEmail.isAllCanSpamAndMove(mapMailbox);
-    final isAllSpam = listEmail.isAllSpam(mapMailbox);
-    final isAllBelongToTheSameMailbox = listEmail.isAllBelongToTheSameMailbox(mapMailbox);
-
     return Row(children: [
       TMailButtonWidget.fromIcon(
         icon: imagePaths.icClose,
@@ -127,24 +125,13 @@ class TopBarThreadSelection extends StatelessWidget{
           icon: imagePaths.icDeleteComposer,
           backgroundColor: Colors.transparent,
           iconSize: 20,
-          iconColor: canDeletePermanently
-            ? AppColor.colorDeletePermanentlyButton
-            : AppColor.primaryColor,
-          tooltipMessage: canDeletePermanently
-            ? AppLocalizations.of(context).delete_permanently
-            : AppLocalizations.of(context).move_to_trash,
+          iconColor: _getIconColorForMoveToTrash(),
+          tooltipMessage: _getTooltipMessageForMoveToTrash(context),
           onTapActionCallback: () {
-            if (canDeletePermanently) {
-              onEmailActionTypeAction?.call(
-                List.from(listEmail),
-                EmailActionType.deletePermanently
-              );
-            } else {
-              onEmailActionTypeAction?.call(
-                List.from(listEmail),
-                EmailActionType.moveToTrash
-              );
-            }
+            onEmailActionTypeAction?.call(
+              List.from(listEmail),
+              _getActionTypeForMoveToTrash(),
+            );
           }
         ),
       const Spacer(),
@@ -159,6 +146,19 @@ class TopBarThreadSelection extends StatelessWidget{
         ),
     ]);
   }
+
+  bool get canDeletePermanently => listEmail.isAllCanDeletePermanently(mapMailbox);
+
+  bool get canDeleteAllPermanently => isSelectAllEmailsEnabled
+      && (selectedMailbox?.isTrash == true
+          || selectedMailbox?.isSpam == true
+          || selectedMailbox?.isDrafts == true);
+
+  bool get canSpamAndMove => listEmail.isAllCanSpamAndMove(mapMailbox);
+
+  bool get isAllSpam => listEmail.isAllSpam(mapMailbox);
+
+  bool get isAllBelongToTheSameMailbox => listEmail.isAllBelongToTheSameMailbox(mapMailbox);
 
   EmailActionType _getActionTypeForMarkAsRead() {
     if (isSelectAllEmailsEnabled) {
@@ -203,6 +203,42 @@ class TopBarThreadSelection extends StatelessWidget{
       return EmailActionType.moveAll;
     } else {
       return EmailActionType.moveToMailbox;
+    }
+  }
+
+  Color _getIconColorForMoveToTrash() {
+    if (canDeleteAllPermanently) {
+      return AppColor.colorDeletePermanentlyButton;
+    } else if (isSelectAllEmailsEnabled) {
+      return AppColor.primaryColor;
+    } else if (canDeletePermanently) {
+      return AppColor.colorDeletePermanentlyButton;
+    } else {
+      return AppColor.primaryColor;
+    }
+  }
+
+  String _getTooltipMessageForMoveToTrash(BuildContext context) {
+    if (canDeleteAllPermanently) {
+      return AppLocalizations.of(context).deleteAllPermanently;
+    } else if (isSelectAllEmailsEnabled) {
+      return AppLocalizations.of(context).moveAllToTrash;
+    } else if (canDeletePermanently) {
+      return AppLocalizations.of(context).delete_permanently;
+    } else {
+      return AppLocalizations.of(context).move_to_trash;
+    }
+  }
+
+  EmailActionType _getActionTypeForMoveToTrash() {
+    if (canDeleteAllPermanently) {
+      return EmailActionType.deleteAllPermanently;
+    } else if (isSelectAllEmailsEnabled) {
+      return EmailActionType.moveAllToTrash;
+    } else if (canDeletePermanently) {
+      return EmailActionType.deletePermanently;
+    } else {
+      return EmailActionType.moveToTrash;
     }
   }
 }

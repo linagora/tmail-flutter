@@ -142,9 +142,12 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     Session session,
     AccountId accountId,
     MailboxId currentMailboxId,
-    Mailbox destinationMailbox,
+    MailboxId destinationMailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController,
+    {
+      bool isDestinationSpamMailbox = false
+    }
   ) {
     throw UnimplementedError();
   }
