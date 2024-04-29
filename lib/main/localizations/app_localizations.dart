@@ -4556,4 +4556,46 @@ class AppLocalizations {
       args: [total, folderName]
     );
   }
+
+  String get markAllAsUnread {
+    return Intl.message(
+      'Mark all as unread',
+      name: 'markAllAsUnread',
+    );
+  }
+
+  String get toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess {
+    return Intl.message(
+      'You’ve marked all mails as unread',
+      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess');
+  }
+
+  String toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure(int count) {
+    return Intl.message(
+      'You’ve marked $count mails as unread',
+      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure',
+      args: [count]);
+  }
+
+  String get toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure {
+    return Intl.message(
+      'All mails could not be marked as unread',
+      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure');
+  }
+
+  String toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason(String reason) {
+    return Intl.message(
+      'All mails could not be marked as unread. Due "$reason"',
+      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason',
+      args: [reason]
+    );
+  }
+
+  String toastMessageMarkAsReadFolderFailureWithReason(String folderName, String reason) {
+    return Intl.message(
+        'Folder "$folderName" could not be marked as read. Due "$reason"',
+        name: 'toastMessageMarkAsReadFolderFailureWithReason',
+        args: [folderName, reason]
+    );
+  }
 }

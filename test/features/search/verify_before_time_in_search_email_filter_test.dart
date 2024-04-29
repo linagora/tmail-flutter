@@ -69,6 +69,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_unread_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
@@ -153,6 +154,7 @@ const fallbackGenerators = {
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
+  MockSpec<MarkAllAsUnreadSelectionAllEmailsInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -208,6 +210,7 @@ void main() {
   late MockGetRestoredDeletedMessageInterator getRestoredDeletedMessageInteractor;
   late MockRemoveComposerCacheOnWebInteractor removeComposerCacheOnWebInteractor;
   late MockGetAllIdentitiesInteractor getAllIdentitiesInteractor;
+  late MockMarkAllAsUnreadSelectionAllEmailsInteractor markAllAsUnreadSelectionAllEmailsInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -300,6 +303,7 @@ void main() {
     getRestoredDeletedMessageInteractor = MockGetRestoredDeletedMessageInterator();
     removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
     getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
+    markAllAsUnreadSelectionAllEmailsInteractor = MockMarkAllAsUnreadSelectionAllEmailsInteractor();
 
     searchController = SearchController(
       mockQuickSearchEmailInteractor,
@@ -344,6 +348,7 @@ void main() {
       getRestoredDeletedMessageInteractor,
       removeComposerCacheOnWebInteractor,
       getAllIdentitiesInteractor,
+      markAllAsUnreadSelectionAllEmailsInteractor,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));

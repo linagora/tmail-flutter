@@ -83,4 +83,7 @@ class MarkAsMailboxReadFailure extends FeatureFailure {
     required this.mailboxDisplayName,
     dynamic exception
   }) : super(exception: exception);
+
+  @override
+  List<Object?> get props => [mailboxDisplayName, ...super.props];
 }

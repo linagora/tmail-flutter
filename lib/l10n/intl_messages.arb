@@ -4355,5 +4355,55 @@
       "total": {},
       "folderName": {}
     }
+  },
+  "markAllAsUnread": "Mark all as unread",
+  "@markAllAsUnread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess": "You’ve marked all mails as unread",
+  "@toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure": "You’ve marked {count} mails as unread",
+  "@toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure": "All mails could not be marked as unread",
+  "@toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason": "All mails could not be marked as unread. Due \"{reason}\"",
+  "@toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "toastMessageMarkAsReadFolderFailureWithReason": "Folder \"{folderName}\" could not be marked as read. Due \"{reason}\"",
+  "@toastMessageMarkAsReadFolderFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName",
+      "reason"
+    ],
+    "placeholders": {
+      "folderName": {},
+      "reason": {}
+    }
   }
 }

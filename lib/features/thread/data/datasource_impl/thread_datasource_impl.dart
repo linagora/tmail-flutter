@@ -140,4 +140,23 @@ class ThreadDataSourceImpl extends ThreadDataSource {
       return email.toPresentationEmail();
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailRead,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.markAllAsUnreadForSelectionAllEmails(
+        session,
+        accountId,
+        mailboxId,
+        totalEmailRead,
+        onProgressController,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

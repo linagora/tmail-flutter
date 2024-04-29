@@ -149,6 +149,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_unread_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
@@ -156,6 +157,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_sta
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_unread_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
@@ -212,6 +214,7 @@ class MailboxDashBoardController extends ReloadableController
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final MarkAllAsUnreadSelectionAllEmailsInteractor _markAllAsUnreadSelectionAllEmailsInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -246,6 +249,7 @@ class MailboxDashBoardController extends ReloadableController
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSelectAllEmailsEnabled = RxBool(false);
+  final viewStateSelectionActionProgress = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -264,12 +268,16 @@ class MailboxDashBoardController extends ReloadableController
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
 
-  final StreamController<Either<Failure, Success>> _progressStateController =
-    StreamController<Either<Failure, Success>>.broadcast();
-  Stream<Either<Failure, Success>> get progressState => _progressStateController.stream;
+  late StreamSubscription _markAsReadMailboxStreamSubscription;
+  late StreamSubscription _refreshActionStreamSubscription;
+  late StreamSubscription _markAllAsUnreadSelectionAllEmailsStreamSubscription;
 
+  final StreamController<Either<Failure, Success>> _markAsReadMailboxStreamController =
+    StreamController<Either<Failure, Success>>.broadcast();
   final StreamController<RefreshActionViewEvent> _refreshActionEventController =
     StreamController<RefreshActionViewEvent>.broadcast();
+  final StreamController<Either<Failure, Success>> _markAllAsUnreadSelectionAllEmailsStreamController =
+    StreamController<Either<Failure, Success>>.broadcast();
 
   final _notificationManager = LocalNotificationManager.instance;
   final _fcmService = FcmService.instance;
@@ -304,6 +312,7 @@ class MailboxDashBoardController extends ReloadableController
     this._getRestoredDeletedMessageInteractor,
     this._removeComposerCacheOnWebInteractor,
     this._getAllIdentitiesInteractor,
+    this._markAllAsUnreadSelectionAllEmailsInteractor,
   );
 
   @override
@@ -440,6 +449,9 @@ class MailboxDashBoardController extends ReloadableController
         [success.emailId],
         markStarAction: success.markStarAction,
       );
+    } else if (success is MarkAllAsUnreadSelectionAllEmailsAllSuccess
+      || success is MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure) {
+      _handleMarkAllAsUnreadSelectionAllEmailsSuccess(success);
     }
   }
 
@@ -472,6 +484,9 @@ class MailboxDashBoardController extends ReloadableController
       toastManager.showMessageFailure(failure);
     } else if (failure is GetComposerCacheFailure) {
       _handleIdentityCache();
+    } else if (failure is MarkAllAsUnreadSelectionAllEmailsFailure
+      || failure is MarkAllAsUnreadSelectionAllEmailsAllFailure) {
+      _handleMarkAllAsUnreadSelectionAllEmailsFailure(failure);
     }
   }
 
@@ -653,13 +668,18 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _registerStreamListener() {
-    progressState.listen((state) {
-      viewStateMailboxActionProgress.value = state;
-    });
+    _markAsReadMailboxStreamSubscription = _markAsReadMailboxStreamController
+      .stream
+      .listen((state) => viewStateMailboxActionProgress.value = state);
 
-    _refreshActionEventController.stream
+    _refreshActionStreamSubscription = _refreshActionEventController.stream
       .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
       .listen(_handleRefreshActionWhenBackToApp);
+
+    _markAllAsUnreadSelectionAllEmailsStreamSubscription =
+      _markAllAsUnreadSelectionAllEmailsStreamController
+        .stream
+        .listen((state) => viewStateSelectionActionProgress.value = state);
 
     _registerLocalNotificationStreamListener();
   }
@@ -1604,7 +1624,7 @@ class MailboxDashBoardController extends ReloadableController
         accountId.value!,
         trashMailboxId,
         totalEmailsInTrash ?? 0,
-        _progressStateController
+        _markAsReadMailboxStreamController,
       ));
     }
   }
@@ -1742,14 +1762,15 @@ class MailboxDashBoardController extends ReloadableController
     final session = sessionCurrent;
     final currentAccountId = accountId.value;
     final mailboxId = selectedMailbox.value?.id;
-    final countEmailsUnread = selectedMailbox.value?.unreadEmails?.value.value ?? 0;
+    final countUnreadEmails = selectedMailbox.value?.countUnreadEmails ?? 0;
+    final displayName = selectedMailbox.value?.getDisplayName(context) ?? '';
     if (session != null && currentAccountId != null && mailboxId != null) {
       markAsReadMailbox(
         session,
         currentAccountId,
         mailboxId,
-        selectedMailbox.value?.getDisplayName(context) ?? '',
-        countEmailsUnread.toInt()
+        displayName,
+        countUnreadEmails,
       );
     }
   }
@@ -1767,7 +1788,7 @@ class MailboxDashBoardController extends ReloadableController
       mailboxId,
       mailboxDisplayName,
       totalEmailsUnread,
-      _progressStateController));
+      _markAsReadMailboxStreamController));
   }
 
   void _markAsReadMailboxSuccess(Success success) {
@@ -2617,7 +2638,7 @@ class MailboxDashBoardController extends ReloadableController
       accountId.value!,
       spamFolderId,
       totalEmails,
-      _progressStateController
+      _markAsReadMailboxStreamController,
     ));
   }
 
@@ -3219,6 +3240,63 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
+  void markAllAsUnreadSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    String mailboxDisplayName,
+    int totalEmailsRead,
+  ) {
+    consumeState(_markAllAsUnreadSelectionAllEmailsInteractor.execute(
+      session,
+      accountId,
+      mailboxId,
+      mailboxDisplayName,
+      totalEmailsRead,
+      _markAllAsUnreadSelectionAllEmailsStreamController
+    ));
+  }
+
+  void _handleMarkAllAsUnreadSelectionAllEmailsSuccess(Success success) {
+    viewStateSelectionActionProgress.value = Right(UIState.idle);
+
+    if (currentContext == null || currentOverlayContext == null) return;
+
+    if (success is MarkAllAsUnreadSelectionAllEmailsAllSuccess) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess,
+        leadingSVGIcon: imagePaths.icUnreadToast,
+      );
+    } else if (success is MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure(success.countEmailsUnread),
+        leadingSVGIcon: imagePaths.icUnreadToast,
+      );
+    }
+  }
+
+  void _handleMarkAllAsUnreadSelectionAllEmailsFailure(Failure failure) {
+    viewStateSelectionActionProgress.value = Right(UIState.idle);
+
+    if (currentContext == null || currentOverlayContext == null) return;
+
+    if (failure is MarkAllAsUnreadSelectionAllEmailsFailure) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason(
+          failure.exception.toString(),
+        ),
+      );
+    } else if (failure is MarkAllAsUnreadSelectionAllEmailsAllFailure) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure,
+      );
+    }
+  }
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
@@ -3234,8 +3312,12 @@ class MailboxDashBoardController extends ReloadableController
       _emailReceiveManager.closeEmailReceiveManagerStream();
       _deepLinkDataStreamSubscription?.cancel();
     }
-    _progressStateController.close();
+    _markAsReadMailboxStreamSubscription.cancel();
+    _markAsReadMailboxStreamController.close();
+    _refreshActionStreamSubscription.cancel();
     _refreshActionEventController.close();
+    _markAllAsUnreadSelectionAllEmailsStreamSubscription.cancel();
+    _markAllAsUnreadSelectionAllEmailsStreamController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
     applicationManager.releaseUserAgent();

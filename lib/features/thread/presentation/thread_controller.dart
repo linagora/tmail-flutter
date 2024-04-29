@@ -1532,7 +1532,7 @@ class ThreadController extends BaseController with EmailActionController, PopupM
   void showPopupMenuSelectionEmailAction(BuildContext context, RelativeRect position) {
     final listSelectionEmailActions = [
       EmailActionType.markAllAsRead,
-      EmailActionType.markAsUnread,
+      EmailActionType.markAllAsUnread,
       EmailActionType.moveToMailbox,
       EmailActionType.moveToTrash,
     ];
@@ -1611,6 +1611,15 @@ class ThreadController extends BaseController with EmailActionController, PopupM
         selectedMailbox.mailboxId!,
         selectedMailbox.getDisplayName(context),
         selectedMailbox.countUnreadEmails,
+      );
+    } else if (actionType == EmailActionType.markAllAsUnread) {
+      cancelSelectEmail();
+      mailboxDashBoardController.markAllAsUnreadSelectionAllEmails(
+        _session!,
+        _accountId!,
+        selectedMailbox.mailboxId!,
+        selectedMailbox.getDisplayName(context),
+        selectedMailbox.countReadEmails,
       );
     }
   }

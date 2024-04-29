@@ -80,4 +80,12 @@ abstract class ThreadRepository {
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
   );
+
+  Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailRead,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  );
 }
