@@ -3547,6 +3547,52 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
+  Future<void> maskAllAsSpamSelectionAllEmails(
+    BuildContext context,
+    Session session,
+    AccountId accountId,
+    PresentationMailbox currentMailbox
+  ) async {
+    final spamMailboxId = getMailboxIdByRole(PresentationMailbox.roleSpam);
+
+    if (spamMailboxId == null) return;
+
+    final spamMailboxPath = mapMailboxById[spamMailboxId]?.getDisplayName(context) ?? '';
+
+    consumeState(_moveAllSelectionAllEmailsInteractor.execute(
+      session,
+      accountId,
+      currentMailbox.id,
+      spamMailboxId,
+      spamMailboxPath,
+      currentMailbox.countTotalEmails,
+      _moveAllSelectionAllEmailsStreamController
+    ));
+  }
+
+  Future<void> allUnSpamSelectionAllEmails(
+    BuildContext context,
+    Session session,
+    AccountId accountId,
+    PresentationMailbox currentMailbox
+  ) async {
+    final inboxMailboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
+
+    if (inboxMailboxId == null) return;
+
+    final inboxMailboxPath = mapMailboxById[inboxMailboxId]?.getDisplayName(context) ?? '';
+
+    consumeState(_moveAllSelectionAllEmailsInteractor.execute(
+      session,
+      accountId,
+      currentMailbox.id,
+      inboxMailboxId,
+      inboxMailboxPath,
+      currentMailbox.countTotalEmails,
+      _moveAllSelectionAllEmailsStreamController
+    ));
+  }
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {

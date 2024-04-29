@@ -1658,6 +1658,22 @@ class ThreadController extends BaseController with EmailActionController, PopupM
           selectedMailbox.countTotalEmails,
         );
         break;
+      case EmailActionType.markAllAsSpam:
+        mailboxDashBoardController.maskAllAsSpamSelectionAllEmails(
+          context,
+          _session!,
+          _accountId!,
+          selectedMailbox,
+        );
+        break;
+      case EmailActionType.allUnSpam:
+        mailboxDashBoardController.allUnSpamSelectionAllEmails(
+          context,
+          _session!,
+          _accountId!,
+          selectedMailbox,
+        );
+        break;
       default:
         break;
     }
