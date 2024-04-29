@@ -294,7 +294,7 @@ class ThreadController extends BaseController with EmailActionController, PopupM
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is HandleEmailActionTypeAction) {
         if (_validateToShowConfirmBulkActionEmailsDialog()) {
-          _showConfirmDialogWhenMakeToActionForSelectionAllEmails();
+          _showConfirmDialogWhenMakeToActionForSelectionAllEmails(actionType: action.emailAction);
         } else {
           pressEmailSelectionAction(
             action.emailAction,
@@ -1531,7 +1531,7 @@ class ThreadController extends BaseController with EmailActionController, PopupM
 
   void showPopupMenuSelectionEmailAction(BuildContext context, RelativeRect position) {
     final listSelectionEmailActions = [
-      EmailActionType.markAsRead,
+      EmailActionType.markAllAsRead,
       EmailActionType.markAsUnread,
       EmailActionType.moveToMailbox,
       EmailActionType.moveToTrash,
@@ -1554,7 +1554,7 @@ class ThreadController extends BaseController with EmailActionController, PopupM
           onCallbackAction: () {
             popBack();
             if (!isSearchActive) {
-              _showConfirmDialogWhenMakeToActionForSelectionAllEmails();
+              _showConfirmDialogWhenMakeToActionForSelectionAllEmails(actionType: action);
             }
           }
         )
@@ -1566,7 +1566,9 @@ class ThreadController extends BaseController with EmailActionController, PopupM
     return mailboxDashBoardController.isSelectAllEmailsEnabled.isTrue;
   }
 
-  Future<void> _showConfirmDialogWhenMakeToActionForSelectionAllEmails() async {
+  Future<void> _showConfirmDialogWhenMakeToActionForSelectionAllEmails({
+    required EmailActionType actionType,
+  }) async {
     final selectedMailbox = mailboxDashBoardController.selectedMailbox.value;
 
     if (currentContext == null || selectedMailbox == null) return;
@@ -1584,6 +1586,32 @@ class ThreadController extends BaseController with EmailActionController, PopupM
         imagePaths.icQuotasWarning,
         colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
       ),
+      onConfirmAction: () {
+        _handleActionsForSelectionAllEmails(
+          context: currentContext!,
+          selectedMailbox: selectedMailbox,
+          actionType: actionType,
+        );
+      }
     );
+  }
+
+  void _handleActionsForSelectionAllEmails({
+    required BuildContext context,
+    required PresentationMailbox selectedMailbox,
+    required EmailActionType actionType
+  }) {
+    if (_session == null || _accountId == null) return;
+
+    if (actionType == EmailActionType.markAllAsRead) {
+      cancelSelectEmail();
+      mailboxDashBoardController.markAsReadMailbox(
+        _session!,
+        _accountId!,
+        selectedMailbox.mailboxId!,
+        selectedMailbox.getDisplayName(context),
+        selectedMailbox.countUnreadEmails,
+      );
+    }
   }
 }

@@ -65,17 +65,13 @@ class TopBarThreadSelection extends StatelessWidget{
           ),
         ),
       TMailButtonWidget.fromIcon(
-        icon:  listEmail.isAllEmailRead
-          ? imagePaths.icUnread
-          : imagePaths.icRead,
-        tooltipMessage: listEmail.isAllEmailRead
-          ? AppLocalizations.of(context).mark_as_unread
-          : AppLocalizations.of(context).mark_as_read,
+        icon: _getIconForMarkAsRead(),
+        tooltipMessage: _getTooltipMessageForMarkAsRead(context),
         backgroundColor: Colors.transparent,
         iconSize: 24,
         onTapActionCallback: () => onEmailActionTypeAction?.call(
           List.from(listEmail),
-          listEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead
+          _getActionTypeForMarkAsRead()
         )
       ),
       TMailButtonWidget.fromIcon(
@@ -162,5 +158,35 @@ class TopBarThreadSelection extends StatelessWidget{
           onTapActionAtPositionCallback: onMoreSelectedEmailAction
         ),
     ]);
+  }
+
+  EmailActionType _getActionTypeForMarkAsRead() {
+    if (isSelectAllEmailsEnabled) {
+      return EmailActionType.markAllAsRead;
+    } else {
+      return listEmail.isAllEmailRead
+        ? EmailActionType.markAsUnread
+        : EmailActionType.markAsRead;
+    }
+  }
+
+  String _getIconForMarkAsRead() {
+    if (isSelectAllEmailsEnabled) {
+      return imagePaths.icRead;
+    } else {
+      return listEmail.isAllEmailRead
+        ? imagePaths.icUnread
+        : imagePaths.icRead;
+    }
+  }
+
+  String _getTooltipMessageForMarkAsRead(BuildContext context) {
+    if (isSelectAllEmailsEnabled) {
+      return AppLocalizations.of(context).mark_all_as_read;
+    } else {
+      return listEmail.isAllEmailRead
+        ? AppLocalizations.of(context).mark_as_unread
+        : AppLocalizations.of(context).mark_as_read;
+    }
   }
 }
