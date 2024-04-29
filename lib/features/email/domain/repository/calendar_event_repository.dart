@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_reject_response.dart';
 
 abstract class CalendarEventRepository {
   Future<List<BlobCalendarEvent>> parse(AccountId accountId, Set<Id> blobIds);
@@ -11,4 +12,6 @@ abstract class CalendarEventRepository {
   Future<CalendarEventAcceptResponse> acceptEventInvitation(AccountId accountId, Set<Id> blobIds);
 
   Future<CalendarEventMaybeResponse> maybeEventInvitation(AccountId accountId, Set<Id> blobIds);
+  
+  Future<CalendarEventRejectResponse> rejectEventInvitation(AccountId accountId, Set<Id> blobIds);
 }
