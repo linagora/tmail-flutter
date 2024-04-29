@@ -73,17 +73,13 @@ class TopBarThreadSelection extends StatelessWidget{
         )
       ),
       TMailButtonWidget.fromIcon(
-        icon: listEmail.isAllEmailStarred
-          ? imagePaths.icUnStar
-          : imagePaths.icStar,
-        tooltipMessage: listEmail.isAllEmailStarred
-          ? AppLocalizations.of(context).un_star
-          : AppLocalizations.of(context).star,
+        icon: _getIconForMarkAsStar(),
+        tooltipMessage: _getTooltipMessageForMarkAsStar(context),
         backgroundColor: Colors.transparent,
         iconSize: 24,
         onTapActionCallback: () => onEmailActionTypeAction?.call(
           List.from(listEmail),
-          listEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
+          _getActionTypeForMarkAsStar()
         )
       ),
     if (canSpamAndMove)
@@ -239,6 +235,37 @@ class TopBarThreadSelection extends StatelessWidget{
       return EmailActionType.deletePermanently;
     } else {
       return EmailActionType.moveToTrash;
+    }
+  }
+
+  String _getIconForMarkAsStar() {
+    if (isSelectAllEmailsEnabled) {
+      return imagePaths.icStar;
+    } else {
+      return listEmail.isAllEmailStarred
+        ? imagePaths.icUnStar
+        : imagePaths.icStar;
+    }
+  }
+
+  String _getTooltipMessageForMarkAsStar(BuildContext context) {
+    if (isSelectAllEmailsEnabled) {
+      return AppLocalizations.of(context).allStarred;
+    } else {
+      return listEmail.isAllEmailStarred
+        ? AppLocalizations.of(context).un_star
+        : AppLocalizations.of(context).star;
+    }
+  }
+
+
+  EmailActionType _getActionTypeForMarkAsStar() {
+    if (isSelectAllEmailsEnabled) {
+      return EmailActionType.markAllAsStarred;
+    } else {
+      return listEmail.isAllEmailStarred
+        ? EmailActionType.unMarkAsStarred
+        : EmailActionType.markAsStarred;
     }
   }
 }

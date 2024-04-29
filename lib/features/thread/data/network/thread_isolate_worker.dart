@@ -19,6 +19,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
+import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger.dart';
@@ -28,6 +29,7 @@ import 'package:tmail_ui_user/features/thread/data/model/empty_mailbox_folder_ar
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_starred_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_unread_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_all_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
@@ -171,7 +173,6 @@ class ThreadIsolateWorker {
         }
 
         log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): ${newEmailList.length}');
-
         if (newEmailList.isNotEmpty) {
           lastEmail = newEmailList.last;
           hasEmails = true;
@@ -379,6 +380,72 @@ class ThreadIsolateWorker {
       logError('ThreadIsolateWorker::deleteAllPermanentlyEmails(): ERROR: $e');
     }
     log('ThreadIsolateWorker::deleteAllPermanentlyEmails(): TOTAL_DELETED_PERMANENTLY: ${emailIdListCompleted.length}');
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> markAllAsStarredForSelectionAllEmails(
+      Session session,
+      AccountId accountId,
+      MailboxId mailboxId,
+      int totalEmails,
+      StreamController<dartz.Either<Failure, Success>> onProgressController,
+      ) async {
+    List<EmailId> emailIdListCompleted = [];
+
+    try {
+      bool hasMoreEmails = true;
+      UTCDate? lastReceivedDate;
+      EmailId? lastEmailId;
+
+      while (hasMoreEmails) {
+        // Fetch emails that are not starred
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: EmailFilterCondition(
+            inMailbox: mailboxId,
+            notKeyword: KeyWordIdentifier.emailFlagged.value,
+            before: lastReceivedDate,
+          ),
+          sort: {EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)},
+          properties: Properties({EmailProperty.id, EmailProperty.receivedAt}),
+        );
+
+        List<Email> listEmails = emailResponse.emailList ?? [];
+
+        if (lastEmailId != null) {
+          listEmails.removeWhere((email) => email.id == lastEmailId);
+        }
+
+        if (listEmails.isEmpty) {
+          hasMoreEmails = false;
+          break;
+        }
+
+        lastEmailId = listEmails.last.id;
+        lastReceivedDate = listEmails.last.receivedAt;
+
+        final starredEmails = await _emailAPI.markAsStar(
+          session,
+          accountId,
+          listEmails.listEmailIds,
+          MarkStarAction.markStar,
+        );
+
+        emailIdListCompleted.addAll(starredEmails.emailIdsSuccess);
+
+        onProgressController.add(
+          dartz.Right(MarkAllAsStarredSelectionAllEmailsUpdating(
+            total: totalEmails,
+            countStarred: emailIdListCompleted.length,
+          )),
+        );
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::markAllAsStarredForSelectionAllEmails(): ERROR: $e');
+    }
+
     return emailIdListCompleted;
   }
 }

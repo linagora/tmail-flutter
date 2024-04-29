@@ -4477,5 +4477,43 @@
     "placeholders": {
       "reason": {}
     }
+  },
+  "allStarred": "All starred",
+  "@allStarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsStarredSelectionAllEmailsSuccess": "You’ve marked all mails as starred",
+  "@toastMessageMarkAllAsStarredSelectionAllEmailsSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure": "You’ve marked {count} mails as starred",
+  "@toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure": "All mails could not be marked as starred",
+  "@toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason": "All mails could not be marked as starred. Due \"{reason}\"",
+  "@toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
   }
 }

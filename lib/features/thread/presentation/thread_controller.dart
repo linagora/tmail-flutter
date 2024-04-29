@@ -1649,6 +1649,15 @@ class ThreadController extends BaseController with EmailActionController, PopupM
           selectedMailbox,
         );
         break;
+      case EmailActionType.markAllAsStarred:
+        mailboxDashBoardController.markAllAsStarredSelectionAllEmails(
+          _session!,
+          _accountId!,
+          selectedMailbox.mailboxId!,
+          selectedMailbox.getDisplayName(context),
+          selectedMailbox.countTotalEmails,
+        );
+        break;
       default:
         break;
     }
