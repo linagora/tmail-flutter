@@ -4654,4 +4654,38 @@ class AppLocalizations {
       args: [reason]
     );
   }
+
+  String get allStarred {
+    return Intl.message(
+      'All starred',
+      name: 'allStarred',
+    );
+  }
+
+  String get toastMessageMarkAllAsStarredSelectionAllEmailsSuccess {
+    return Intl.message(
+      'You’ve marked all mails as starred',
+      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsSuccess');
+  }
+
+  String toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure(int count) {
+    return Intl.message(
+      'You’ve marked $count mails as starred',
+      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure',
+      args: [count]);
+  }
+
+  String get toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure {
+    return Intl.message(
+      'All mails could not be marked as starred',
+      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure');
+  }
+
+  String toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason(String reason) {
+    return Intl.message(
+      'All mails could not be marked as starred. Due "$reason"',
+      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason',
+      args: [reason]
+    );
+  }
 }
