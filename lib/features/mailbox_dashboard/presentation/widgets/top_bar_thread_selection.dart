@@ -95,24 +95,15 @@ class TopBarThreadSelection extends StatelessWidget{
          )
        ),
        TMailButtonWidget.fromIcon(
-         icon: isAllSpam ? imagePaths.icNotSpam : imagePaths.icSpam,
+         icon: _getIconForMoveToSpam(),
          backgroundColor: Colors.transparent,
          iconSize: 24,
-         tooltipMessage: isAllSpam
-           ? AppLocalizations.of(context).un_spam
-           : AppLocalizations.of(context).mark_as_spam,
+         tooltipMessage: _getTooltipMessageForMoveToSpam(context),
          onTapActionCallback: () {
-           if (isAllSpam) {
-             onEmailActionTypeAction?.call(
-               List.from(listEmail),
-               EmailActionType.unSpam
-             );
-           } else {
-             onEmailActionTypeAction?.call(
-               List.from(listEmail.listEmailCanSpam(mapMailbox)),
-               EmailActionType.moveToSpam
-             );
-           }
+           onEmailActionTypeAction?.call(
+             List.from(listEmail.listEmailCanSpam(mapMailbox)),
+             _getActionTypeForMoveToSpam()
+           );
          }
        )
       ],
@@ -266,6 +257,38 @@ class TopBarThreadSelection extends StatelessWidget{
       return listEmail.isAllEmailStarred
         ? EmailActionType.unMarkAsStarred
         : EmailActionType.markAsStarred;
+    }
+  }
+
+  String _getIconForMoveToSpam() {
+    if (isSelectAllEmailsEnabled) {
+      return selectedMailbox?.isSpam == true ? imagePaths.icNotSpam : imagePaths.icSpam;
+    } else {
+      return isAllSpam ? imagePaths.icNotSpam : imagePaths.icSpam;
+    }
+  }
+
+  String _getTooltipMessageForMoveToSpam(BuildContext context) {
+    if (isSelectAllEmailsEnabled) {
+      return selectedMailbox?.isSpam == true
+        ? AppLocalizations.of(context).allUnSpam
+        : AppLocalizations.of(context).markAllAsSpam;
+    } else {
+      return isAllSpam
+        ? AppLocalizations.of(context).un_spam
+        : AppLocalizations.of(context).mark_as_spam;
+    }
+  }
+
+  EmailActionType _getActionTypeForMoveToSpam() {
+    if (isSelectAllEmailsEnabled) {
+      return selectedMailbox?.isSpam == true
+        ? EmailActionType.allUnSpam
+        : EmailActionType.markAllAsSpam;
+    } else {
+      return isAllSpam
+        ? EmailActionType.unSpam
+        : EmailActionType.moveToSpam;
     }
   }
 }
