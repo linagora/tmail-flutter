@@ -319,8 +319,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Future<List<EmailId>> emptyTrashFolder(
-    Session session, 
-    AccountId accountId, 
+    Session session,
+    AccountId accountId,
     MailboxId trashMailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
@@ -411,8 +411,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Future<List<EmailId>> emptySpamFolder(
-    Session session, 
-    AccountId accountId, 
+    Session session,
+    AccountId accountId,
     MailboxId spamMailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
@@ -455,17 +455,21 @@ class ThreadRepositoryImpl extends ThreadRepository {
     Session session,
     AccountId accountId,
     MailboxId currentMailboxId,
-    Mailbox destinationMailbox,
+    MailboxId destinationMailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController,
+    {
+      bool isDestinationSpamMailbox = false
+    }
   ) {
     return mapDataSource[DataSourceType.network]!.moveAllSelectionAllEmails(
       session,
       accountId,
       currentMailboxId,
-      destinationMailbox,
+      destinationMailboxId,
       totalEmails,
-      onProgressController
+      onProgressController,
+      isDestinationSpamMailbox: isDestinationSpamMailbox
     );
   }
 }

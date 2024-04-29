@@ -165,18 +165,22 @@ class ThreadDataSourceImpl extends ThreadDataSource {
     Session session,
     AccountId accountId,
     MailboxId currentMailboxId,
-    Mailbox destinationMailbox,
+    MailboxId destinationMailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController,
+    {
+      bool isDestinationSpamMailbox = false
+    }
   ) {
     return Future.sync(() async {
       return await _threadIsolateWorker.moveAllSelectionAllEmails(
         session,
         accountId,
         currentMailboxId,
-        destinationMailbox,
+        destinationMailboxId,
         totalEmails,
         onProgressController,
+        isDestinationSpamMailbox: isDestinationSpamMailbox
       );
     }).catchError(_exceptionThrower.throwException);
   }

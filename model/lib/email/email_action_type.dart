@@ -34,4 +34,6 @@ enum EmailActionType {
   markAllAsRead,
   markAllAsUnread,
   moveAll,
+  moveAllToTrash,
+  deleteAllPermanently,
 }

@@ -55,7 +55,6 @@ import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/list_id_extension.dart';
-import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
@@ -1018,12 +1017,15 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     MailboxId currentMailboxId,
-    Mailbox destinationMailbox,
+    MailboxId destinationMailboxId,
     List<EmailId> listEmailId,
+    {
+      bool isDestinationSpamMailbox = false
+    }
   ) async {
-    final moveProperties = destinationMailbox.isSpam
-      ? listEmailId.generateMapUpdateObjectMoveToSpam(currentMailboxId, destinationMailbox.id!)
-      : listEmailId.generateMapUpdateObjectMoveToMailbox(currentMailboxId, destinationMailbox.id!);
+    final moveProperties = isDestinationSpamMailbox
+      ? listEmailId.generateMapUpdateObjectMoveToSpam(currentMailboxId, destinationMailboxId)
+      : listEmailId.generateMapUpdateObjectMoveToMailbox(currentMailboxId, destinationMailboxId);
 
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates(moveProperties);

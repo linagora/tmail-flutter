@@ -72,6 +72,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_unread_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_all_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -155,6 +156,7 @@ const fallbackGenerators = {
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<MarkAllAsUnreadSelectionAllEmailsInteractor>(),
+  MockSpec<MoveAllSelectionAllEmailsInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -211,6 +213,7 @@ void main() {
   late MockRemoveComposerCacheOnWebInteractor removeComposerCacheOnWebInteractor;
   late MockGetAllIdentitiesInteractor getAllIdentitiesInteractor;
   late MockMarkAllAsUnreadSelectionAllEmailsInteractor markAllAsUnreadSelectionAllEmailsInteractor;
+  late MockMoveAllSelectionAllEmailsInteractor moveAllSelectionAllEmailsInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -304,6 +307,7 @@ void main() {
     removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
     getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
     markAllAsUnreadSelectionAllEmailsInteractor = MockMarkAllAsUnreadSelectionAllEmailsInteractor();
+    moveAllSelectionAllEmailsInteractor = MockMoveAllSelectionAllEmailsInteractor();
 
     searchController = SearchController(
       mockQuickSearchEmailInteractor,
@@ -349,6 +353,7 @@ void main() {
       removeComposerCacheOnWebInteractor,
       getAllIdentitiesInteractor,
       markAllAsUnreadSelectionAllEmailsInteractor,
+      moveAllSelectionAllEmailsInteractor,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));

@@ -4455,5 +4455,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "moveAllToTrash": "Move all to trash",
+  "@moveAllToTrash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllPermanently": "Delete all permanently",
+  "@deleteAllPermanently": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

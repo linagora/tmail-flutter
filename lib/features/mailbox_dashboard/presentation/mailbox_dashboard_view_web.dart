@@ -248,6 +248,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   listEmail: listEmailSelected,
                   mapMailbox: controller.mapMailboxById,
                   isSelectAllEmailsEnabled: controller.isSelectAllEmailsEnabled.value,
+                  selectedMailbox: controller.selectedMailbox.value,
                   onCancelSelection: () =>
                     controller.dispatchAction(CancelSelectionAllEmailAction()),
                   onEmailActionTypeAction: (listEmails, actionType) =>
