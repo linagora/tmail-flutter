@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_s
 import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
@@ -79,6 +80,7 @@ const fallbackGenerators = {
   MockSpec<PrintEmailInteractor>(),
   MockSpec<AcceptCalendarEventInteractor>(),
   MockSpec<MaybeCalendarEventInteractor>(),
+  MockSpec<RejectCalendarEventInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -320,6 +322,33 @@ void main() {
 
         // assert
         verify(maybeCalendarEventInteractor.execute(testAccountId, {blobId})).called(1);
+      });
+    });
+
+    group('reject test:', () {
+      final rejectCalendarEventInteractor = MockRejectCalendarEventInteractor();
+
+      test('should call execute on RejectCalendarEventInteractor '
+      'when onCalendarEventReplyAction is called on EventActionType.yes', () async {
+        // arrange
+        when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
+        when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
+        when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        singleEmailController.onInit();
+        Get.put<RejectCalendarEventInteractor>(rejectCalendarEventInteractor);
+        mailboxDashboardController.accountId.refresh();
+        singleEmailController.handleSuccessViewState(
+          ParseCalendarEventSuccess([
+            BlobCalendarEvent(
+              blobId: blobId,
+              calendarEventList: [calendarEvent])]));
+        
+        // act
+        singleEmailController.onCalendarEventReplyAction(EventActionType.no);
+        await untilCalled(rejectCalendarEventInteractor.execute(any, any));
+
+        // assert
+        verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId})).called(1);
       });
     });
   });
