@@ -1,13 +1,9 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
-import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:model/user/user_profile.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -34,7 +30,6 @@ class UserInformationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
     return Container(
       padding: padding ?? const EdgeInsetsDirectional.only(start: 16, end: 4, top: 16, bottom: 16),
       decoration: BoxDecoration(border: border),
@@ -75,12 +70,6 @@ class UserInformationWidget extends StatelessWidget {
                 ),
               )
         ])),
-        if (PlatformInfo.isMobile)
-          SvgPicture.asset(
-            DirectionUtils.isDirectionRTLByLanguage(context) ? imagePaths.icBack : imagePaths.icCollapseFolder,
-            fit: BoxFit.fill,
-            colorFilter: AppColor.colorCollapseMailbox.asFilter()
-          ),
         const SizedBox(width: 16),
       ]),
     );
