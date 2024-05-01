@@ -293,11 +293,9 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
           context: context,
           emailAddress: EmailAddress(null, widget.controller?.text)
         );
-        _closeSuggestionBox();
-      } else {
-        _closeSuggestionBox();
-        return;
       }
+      _closeSuggestionBox();
+      return;
     }
 
     if (listEmailAddress.isEmpty) {
