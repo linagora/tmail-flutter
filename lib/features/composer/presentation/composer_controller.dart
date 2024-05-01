@@ -1923,6 +1923,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       alignCenter: true,
       outsideDismissible: false,
       autoPerformPopBack: false,
+      usePopScope: true,
       onConfirmAction: () => _handleSaveMessageToDraft(context),
       onCancelAction: () {
         _closeComposerButtonState = ButtonState.enabled;
@@ -1932,6 +1933,14 @@ class ComposerController extends BaseController with DragDropFileMixin {
         _closeComposerButtonState = ButtonState.enabled;
         popBack();
         _autoFocusFieldWhenLauncher();
+      },
+      onPopInvoked: (didPop) {
+        log('ComposerController::_showConfirmDialogSaveMessage: didPop = $didPop');
+        if (!didPop) {
+          _closeComposerButtonState = ButtonState.enabled;
+          popBack();
+          _autoFocusFieldWhenLauncher();
+        }
       },
       marginIcon: EdgeInsets.zero,
       icon: SvgPicture.asset(

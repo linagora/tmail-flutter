@@ -23,6 +23,7 @@ mixin MessageDialogActionMixin {
         bool alignCenter = false,
         bool outsideDismissible = true,
         bool autoPerformPopBack = true,
+        bool usePopScope = false,
         List<TextSpan>? listTextSpan,
         Widget? icon,
         TextStyle? titleStyle,
@@ -32,102 +33,109 @@ mixin MessageDialogActionMixin {
         Color? actionButtonColor,
         Color? cancelButtonColor,
         EdgeInsetsGeometry? marginIcon,
+        PopInvokedCallback? onPopInvoked,
       }
   ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final imagePaths = Get.find<ImagePaths>();
 
     if (alignCenter) {
+      final childWidget = PointerInterceptor(
+        child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
+          ..key(const Key('confirm_dialog_action'))
+          ..title(title ?? '')
+          ..content(message)
+          ..addIcon(icon)
+          ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
+          ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
+          ..marginIcon(icon != null ? (marginIcon ?? const EdgeInsets.only(top: 24)) : null)
+          ..paddingTitle(icon != null
+              ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
+              : const EdgeInsetsDirectional.symmetric(horizontal: 24)
+          )
+          ..radiusButton(12)
+          ..paddingContent(const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 12))
+          ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 24, left: 24, right: 24))
+          ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
+          ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
+          ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
+          ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+          ..onConfirmButtonAction(actionName, () {
+            if (autoPerformPopBack) {
+              popBack();
+            }
+            onConfirmAction?.call();
+          })
+          ..onCancelButtonAction(
+              hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+                  () {
+                if (autoPerformPopBack) {
+                  popBack();
+                }
+                onCancelAction?.call();
+              }
+          )
+          ..onCloseButtonAction(onCloseButtonAction)
+        ).build()
+      );
       return await Get.dialog(
-        PointerInterceptor(
-          child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
+        usePopScope && PlatformInfo.isMobile
+          ? PopScope(onPopInvoked: onPopInvoked, canPop: false, child: childWidget)
+          : childWidget,
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        barrierDismissible: outsideDismissible
+      );
+    } else {
+      if (responsiveUtils.isMobile(context)) {
+        final childWidget = PointerInterceptor(
+          child: (ConfirmDialogBuilder(
+              imagePaths,
+              showAsBottomSheet: true,
+              listTextSpan: listTextSpan,
+              maxWith: responsiveUtils.getSizeScreenShortestSide(context) - 16
+            )
             ..key(const Key('confirm_dialog_action'))
             ..title(title ?? '')
             ..content(message)
             ..addIcon(icon)
+            ..margin(const EdgeInsets.only(bottom: 42))
+            ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
             ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
             ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-            ..marginIcon(icon != null ? (marginIcon ?? const EdgeInsets.only(top: 24)) : null)
             ..paddingTitle(icon != null
                 ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
                 : const EdgeInsetsDirectional.symmetric(horizontal: 24)
             )
-            ..radiusButton(12)
-            ..paddingContent(const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 12))
-            ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 24, left: 24, right: 24))
+            ..marginIcon(EdgeInsets.zero)
+            ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
+            ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
             ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
             ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
             ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
             ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
             ..onConfirmButtonAction(actionName, () {
-                if (autoPerformPopBack) {
-                  popBack();
-                }
-                onConfirmAction?.call();
+              if (autoPerformPopBack) {
+                popBack();
+              }
+              onConfirmAction?.call();
             })
             ..onCancelButtonAction(
                 hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-                () {
+                    () {
                   if (autoPerformPopBack) {
                     popBack();
                   }
                   onCancelAction?.call();
                 }
             )
-            ..onCloseButtonAction(onCloseButtonAction)
+            ..onCloseButtonAction(onCloseButtonAction ?? () => popBack())
           ).build()
-        ),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        barrierDismissible: outsideDismissible
-      );
-    } else {
-      if (responsiveUtils.isMobile(context)) {
+        );
         if (showAsBottomSheet) {
           return await Get.bottomSheet(
-            PointerInterceptor(
-              child: (ConfirmDialogBuilder(
-                imagePaths,
-                showAsBottomSheet: true,
-                listTextSpan: listTextSpan,
-                maxWith: responsiveUtils.getSizeScreenShortestSide(context) - 16
-              )
-                ..key(const Key('confirm_dialog_action'))
-                ..title(title ?? '')
-                ..content(message)
-                ..addIcon(icon)
-                ..margin(const EdgeInsets.only(bottom: 42))
-                ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
-                ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-                ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-                ..paddingTitle(icon != null
-                    ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
-                    : const EdgeInsetsDirectional.symmetric(horizontal: 24)
-                )
-                ..marginIcon(EdgeInsets.zero)
-                ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-                ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-                ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-                ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-                ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-                ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
-                ..onConfirmButtonAction(actionName, () {
-                    if (autoPerformPopBack) {
-                      popBack();
-                    }
-                    onConfirmAction?.call();
-                })
-                ..onCancelButtonAction(
-                    hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-                    () {
-                      if (autoPerformPopBack) {
-                        popBack();
-                      }
-                      onCancelAction?.call();
-                    }
-                )
-                ..onCloseButtonAction(onCloseButtonAction ?? () => popBack()))
-              .build()
-            ),
+            usePopScope && PlatformInfo.isMobile
+              ? PopScope(onPopInvoked: onPopInvoked, canPop: false, child: childWidget)
+              : childWidget,
             isScrollControlled: true,
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
             backgroundColor: Colors.transparent,
@@ -159,44 +167,47 @@ mixin MessageDialogActionMixin {
             })).show();
         }
       } else {
-        return await Get.dialog(
-          PointerInterceptor(
-            child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
-              ..key(const Key('confirm_dialog_action'))
-              ..title(title ?? '')
-              ..content(message)
-              ..addIcon(icon)
-              ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-              ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-              ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
-              ..paddingTitle(icon != null
-                  ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
-                  : const EdgeInsetsDirectional.symmetric(horizontal: 24))
-              ..marginIcon(EdgeInsets.zero)
-              ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-              ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-              ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-              ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-              ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-              ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
-              ..onConfirmButtonAction(actionName, () {
-                if (autoPerformPopBack) {
-                  popBack();
-                }
-                onConfirmAction?.call();
-              })
-              ..onCancelButtonAction(
-                  hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-                  () {
-                    if (autoPerformPopBack) {
-                      popBack();
-                    }
-                    onCancelAction?.call();
+        final childWidget = PointerInterceptor(
+          child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
+            ..key(const Key('confirm_dialog_action'))
+            ..title(title ?? '')
+            ..content(message)
+            ..addIcon(icon)
+            ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
+            ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
+            ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
+            ..paddingTitle(icon != null
+                ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
+                : const EdgeInsetsDirectional.symmetric(horizontal: 24))
+            ..marginIcon(EdgeInsets.zero)
+            ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
+            ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
+            ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
+            ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
+            ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
+            ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+            ..onConfirmButtonAction(actionName, () {
+              if (autoPerformPopBack) {
+                popBack();
+              }
+              onConfirmAction?.call();
+            })
+            ..onCancelButtonAction(
+                hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+                    () {
+                  if (autoPerformPopBack) {
+                    popBack();
                   }
-              )
-              ..onCloseButtonAction(onCloseButtonAction ?? () => popBack()))
-            .build()
-          ),
+                  onCancelAction?.call();
+                }
+            )
+            ..onCloseButtonAction(onCloseButtonAction ?? () => popBack())
+          ).build()
+        );
+        return await Get.dialog(
+          usePopScope && PlatformInfo.isMobile
+            ? PopScope(onPopInvoked: onPopInvoked, canPop: false, child: childWidget)
+            : childWidget,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           barrierDismissible: outsideDismissible
         );
