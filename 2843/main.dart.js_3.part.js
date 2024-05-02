@@ -10878,7 +10878,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._DesktopTopBarThreadView_StatelessWidget_FilterEmailPopupMenuMixin.prototype = {};
   B.TopBarThreadSelection.prototype = {
     build$1(context) {
-      var t2, t3, t4, t5, t6, _this = this, _null = null,
+      var t2, t3, t4, t5, _this = this, _null = null,
         t1 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
       t2 = type$.JSArray_Widget;
@@ -10892,11 +10892,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t3.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _this._getIconForMarkAsRead$0(), _null, 24, _null, _null, 1 / 0, _null, new B.TopBarThreadSelection_build_closure(_this), _null, _this._getTooltipMessageForMarkAsRead$1(context)));
       t3.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _this._getIconForMarkAsStar$0(), _null, 24, _null, _null, 1 / 0, _null, new B.TopBarThreadSelection_build_closure0(_this), _null, _this._getTooltipMessageForMarkAsStar$1(context)));
-      t5 = _this.listEmail;
-      t6 = _this.mapMailbox;
-      if (B.ListPresentationEmailExtension_isAllCanSpamAndMove(t5, t6))
+      if (t4 ? true : B.ListPresentationEmailExtension_isAllCanSpamAndMove(_this.listEmail, _this.mapMailbox))
         C.JSArray_methods.addAll$1(t3, A._setArrayType([A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_move.svg", _null, 22, _null, _null, 1 / 0, _null, new B.TopBarThreadSelection_build_closure1(_this), _null, _this._getTooltipMessageForMove$1(context)), A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _this._getIconForMoveToSpam$0(), _null, 24, _null, _null, 1 / 0, _null, new B.TopBarThreadSelection_build_closure2(_this), _null, _this._getTooltipMessageForMoveToSpam$1(context))], t2));
-      if (B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox(t5, t6))
+      if (B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox(_this.listEmail, _this.mapMailbox))
         t3.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_delete_composer.svg", _this._getIconColorForMoveToTrash$0(), 20, _null, _null, 1 / 0, _null, new B.TopBarThreadSelection_build_closure3(_this), _null, _this._getTooltipMessageForMoveToTrash$1(context)));
       if (t4) {
         A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
@@ -22954,5 +22952,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "CWUJL+G9dXlJ8Urw0T5qZriIclk=");
+})($__dart_deferred_initializers__, "KXZ960f8lVedEtNu6IvXy10qq9I=");
 ;
