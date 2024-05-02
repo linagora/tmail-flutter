@@ -79,7 +79,11 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_sta
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_starred_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_unread_selection_all_emails_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_starred_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_unread_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_all_email_searched_to_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_all_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -285,6 +289,11 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
         } else if (success is MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure) {
           _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
+        } else if (success is MarkAllSearchAsReadSuccess
+            || success is MarkAllSearchAsUnreadSuccess
+            || success is MarkAllSearchAsStarredSuccess
+            || success is MoveAllEmailSearchedToFolderSuccess) {
+          _refreshMailboxChanges();
         }
       });
     });

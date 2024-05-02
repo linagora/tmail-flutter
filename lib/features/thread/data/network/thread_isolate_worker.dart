@@ -24,6 +24,8 @@ import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/extensions/search_email_filter_request_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/search_email_filter_request.dart';
 import 'package:tmail_ui_user/features/thread/data/model/empty_mailbox_folder_arguments.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
@@ -277,7 +279,7 @@ class ThreadIsolateWorker {
           lastEmailId = listEmail.last.id;
           lastReceivedDate = listEmail.last.receivedAt;
 
-          final listEmailId = await _emailAPI.moveSelectionAllEmailsToFolder(
+          final listEmailId = await _emailAPI.moveAllEmailsToFolderByEmailId(
             session,
             accountId,
             currentMailboxId,
@@ -422,5 +424,170 @@ class ThreadIsolateWorker {
     } else {
       return emailsResponse;
     }
+  }
+
+  Future<List<EmailId>> markAllSearchAsReadOrUnread(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest,
+    ReadActions readActions
+  ) async {
+    List<EmailId> emailIdListCompleted = List.empty(growable: true);
+    try {
+      bool hasEmails = true;
+      EmailId? lastEmailId;
+
+      while (hasEmails) {
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: filterRequest.toEmailFilterConditionByMostRecentSortOrder(),
+          sort: <Comparator>{}..add(
+            EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)
+          ),
+          properties: Properties({
+            EmailProperty.id,
+            EmailProperty.receivedAt,
+          })
+        ).then((response) => _removeDuplicatedLatestEmailFromEmailResponse(
+          emailsResponse: response,
+          latestEmailId: lastEmailId
+        ));
+        final listEmails = emailResponse.emailList;
+
+        if (listEmails == null || listEmails.isEmpty) {
+          hasEmails = false;
+        } else {
+          lastEmailId = listEmails.last.id;
+          UTCDate? lastReceivedDate = listEmails.last.receivedAt;
+          filterRequest = filterRequest.updateBeforeDate(lastReceivedDate);
+
+          final listResult = await _emailAPI.markAsRead(
+            session,
+            accountId,
+            listEmails,
+            readActions
+          );
+
+          emailIdListCompleted.addAll(listResult);
+        }
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::markAllSearchAsReadOrUnread(): ERROR: $e');
+    }
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> markAllSearchAsStarredOrUnStarred(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest,
+    MarkStarAction starAction
+  ) async {
+    List<EmailId> emailIdListCompleted = List.empty(growable: true);
+    try {
+      bool hasEmails = true;
+      EmailId? lastEmailId;
+
+      while (hasEmails) {
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: filterRequest.toEmailFilterConditionByMostRecentSortOrder(),
+          sort: <Comparator>{}..add(
+              EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)
+          ),
+          properties: Properties({
+            EmailProperty.id,
+            EmailProperty.receivedAt,
+          })
+        ).then((response) => _removeDuplicatedLatestEmailFromEmailResponse(
+          emailsResponse: response,
+          latestEmailId: lastEmailId
+        ));
+        final listEmails = emailResponse.emailList;
+
+        if (listEmails == null || listEmails.isEmpty) {
+          hasEmails = false;
+        } else {
+          lastEmailId = listEmails.last.id;
+          UTCDate? lastReceivedDate = listEmails.last.receivedAt;
+          filterRequest = filterRequest.updateBeforeDate(lastReceivedDate);
+
+          final listResult = await _emailAPI.markAsStar(
+            session,
+            accountId,
+            listEmails,
+            starAction
+          );
+
+          emailIdListCompleted.addAll(listResult.listEmailIds);
+        }
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::markAllSearchAsStarredOrUnStarred(): ERROR: $e');
+    }
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> moveAllEmailSearchedToFolder(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest,
+    MailboxId destinationMailboxId,
+    String destinationPath,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) async {
+    List<EmailId> emailIdListCompleted = List.empty(growable: true);
+    try {
+      bool hasEmails = true;
+      EmailId? lastEmailId;
+
+      while (hasEmails) {
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: filterRequest.toEmailFilterConditionByMostRecentSortOrder(),
+          sort: <Comparator>{}..add(
+            EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)
+          ),
+          properties: Properties({
+            EmailProperty.id,
+            EmailProperty.receivedAt,
+            EmailProperty.mailboxIds,
+          })
+        ).then((response) => _removeDuplicatedLatestEmailFromEmailResponse(
+          emailsResponse: response,
+          latestEmailId: lastEmailId
+        ));
+        final listEmails = emailResponse.emailList;
+
+        if (listEmails == null || listEmails.isEmpty) {
+          hasEmails = false;
+        } else {
+          lastEmailId = listEmails.last.id;
+          UTCDate? lastReceivedDate = listEmails.last.receivedAt;
+          filterRequest = filterRequest.updateBeforeDate(lastReceivedDate);
+
+          final listResult = await _emailAPI.moveAllEmailsToFolderByEmail(
+            session,
+            accountId,
+            destinationMailboxId,
+            listEmails,
+            isDestinationSpamMailbox: isDestinationSpamMailbox
+          );
+
+          emailIdListCompleted.addAll(listResult);
+        }
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::markAllSearchToFolder(): ERROR: $e');
+    }
+    return emailIdListCompleted;
   }
 }

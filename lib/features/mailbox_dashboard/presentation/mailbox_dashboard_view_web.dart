@@ -12,9 +12,10 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/email_receive_time_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_bar/desktop_top_bar_thread_view.dart';
@@ -24,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/lo
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/mark_all_as_unread_selection_all_emails_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/mark_mailbox_as_read_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/move_all_selection_all_emails_loading_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/perform_action_search_selection_email_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_bar/top_bar_thread_selection.dart';
@@ -111,6 +113,20 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         ))
                       ]),
                       Expanded(child: Column(children: [
+                        Obx(() => RecoverDeletedMessageLoadingBannerWidget(
+                          isLoading: controller.isRecoveringDeletedMessage.value,
+                          horizontalLoadingWidget: horizontalLoadingWidget,
+                          responsiveUtils: controller.responsiveUtils,
+                        )),
+                        Obx(() => MarkMailboxAsReadLoadingWidget(viewState: controller.viewStateMarkAsReadMailbox.value)),
+                        Obx(() => MarkAllAsUnreadSelectionAllEmailsLoadingWidget(viewState: controller.markAllAsUnreadSelectionAllEmailsViewState.value)),
+                        Obx(() => MoveAllSelectionAllEmailsLoadingWidget(viewState: controller.moveAllSelectionAllEmailsViewState.value)),
+                        Obx(() => DeleteAllPermanentlyEmailsLoadingWidget(viewState: controller.deleteAllPermanentlyEmailsViewState.value)),
+                        Obx(() => MarkAllAsStarredSelectionAllEmailsLoadingWidget(viewState: controller.markAllAsStarredSelectionAllEmailsViewState.value)),
+                        Obx(() => PerformActionSearchSelectionEmailLoadingWidget(viewState: controller.markAllSearchAsReadViewState.value)),
+                        Obx(() => PerformActionSearchSelectionEmailLoadingWidget(viewState: controller.markAllSearchAsUnreadViewState.value)),
+                        Obx(() => PerformActionSearchSelectionEmailLoadingWidget(viewState: controller.markAllSearchAsStarredViewState.value)),
+                        Obx(() => PerformActionSearchSelectionEmailLoadingWidget(viewState: controller.moveAllEmailSearchedToFolderViewState.value)),
                         const SpamReportBannerWebWidget(),
                         QuotasBannerWidget(
                           margin: const EdgeInsetsDirectional.only(end: 16, top: 8),
@@ -146,17 +162,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             return const SizedBox.shrink();
                           }
                         }),
-                        Obx(() => RecoverDeletedMessageLoadingBannerWidget(
-                            isLoading: controller.isRecoveringDeletedMessage.value,
-                            horizontalLoadingWidget: horizontalLoadingWidget,
-                            responsiveUtils: controller.responsiveUtils,
-                        )),
                         _buildListButtonQuickSearchFilter(context),
-                        Obx(() => MarkMailboxAsReadLoadingWidget(viewState: controller.viewStateMarkAsReadMailbox.value)),
-                        Obx(() => MarkAllAsUnreadSelectionAllEmailsLoadingWidget(viewState: controller.markAllAsUnreadSelectionAllEmailsViewState.value)),
-                        Obx(() => MoveAllSelectionAllEmailsLoadingWidget(viewState: controller.moveAllSelectionAllEmailsViewState.value)),
-                        Obx(() => DeleteAllPermanentlyEmailsLoadingWidget(viewState: controller.deleteAllPermanentlyEmailsViewState.value)),
-                        Obx(() => MarkAllAsStarredSelectionAllEmailsLoadingWidget(viewState: controller.markAllAsStarredSelectionAllEmailsViewState.value)),
                         Expanded(child: Obx(() {
                           switch(controller.dashboardRoute.value) {
                             case DashboardRoutes.thread:

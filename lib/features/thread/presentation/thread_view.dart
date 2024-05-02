@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_in_mailbox_banner.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_in_search_banner.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -176,11 +177,17 @@ class ThreadView extends GetWidget<ThreadController>
                         _buildMarkAsMailboxReadLoading(context),
                       if (controller.responsiveUtils.isWebDesktop(context))
                         Obx(() {
-                          if (controller.validateToShowSelectionEmailsBanner()) {
+                          if (controller.validateToShowSelectionEmailsInMailboxBanner()) {
                             return SelectAllEmailInMailboxBanner(
                               limitEmailsInPage: controller.mailboxDashBoardController.listEmailSelected.length,
                               totalEmails: controller.mailboxDashBoardController.selectedMailbox.value!.totalEmails!.value.value.toInt(),
                               folderName: controller.mailboxDashBoardController.selectedMailbox.value!.getDisplayName(context),
+                              onSelectAllEmailAction: controller.enableSelectAllEmails,
+                              onClearSelection: controller.cancelSelectEmail
+                            );
+                          } else if (controller.validateToShowSelectionEmailsInSearchBanner()) {
+                            return SelectAllEmailInSearchBanner(
+                              limitEmailsInPage: controller.mailboxDashBoardController.listEmailSelected.length,
                               onSelectAllEmailAction: controller.enableSelectAllEmails,
                               onClearSelection: controller.cancelSelectEmail
                             );

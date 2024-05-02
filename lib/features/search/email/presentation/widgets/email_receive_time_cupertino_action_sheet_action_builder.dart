@@ -4,7 +4,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/email_receive_time_type.dart';
 
 class EmailReceiveTimeCupertinoActionSheetActionBuilder
     extends CupertinoActionSheetNoIconBuilder<EmailReceiveTimeType> {

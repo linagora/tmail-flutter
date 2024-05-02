@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/search_email_filter_request.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -96,5 +97,34 @@ abstract class ThreadDataSource {
     MailboxId mailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
+  );
+
+  Future<List<EmailId>> markAllSearchAsRead(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  );
+
+  Future<List<EmailId>> markAllSearchAsUnread(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  );
+
+  Future<List<EmailId>> markAllSearchAsStarred(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  );
+
+  Future<List<EmailId>> moveAllEmailSearchedToFolder(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest,
+    MailboxId destinationMailboxId,
+    String destinationPath,
+    {
+      bool isDestinationSpamMailbox = false
+    }
   );
 }

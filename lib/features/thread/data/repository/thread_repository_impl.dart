@@ -21,6 +21,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/search_email_filter_request.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -487,6 +488,66 @@ class ThreadRepositoryImpl extends ThreadRepository {
       mailboxId,
       totalEmails,
       onProgressController
+    );
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsRead(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllSearchAsRead(
+      session,
+      accountId,
+      filterRequest
+    );
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsUnread(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllSearchAsUnread(
+      session,
+      accountId,
+      filterRequest
+    );
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsStarred(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllSearchAsStarred(
+      session,
+      accountId,
+      filterRequest
+    );
+  }
+
+  @override
+  Future<List<EmailId>> moveAllEmailSearchedToFolder(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest,
+    MailboxId destinationMailboxId,
+    String destinationPath,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) {
+    return mapDataSource[DataSourceType.network]!.moveAllEmailSearchedToFolder(
+      session,
+      accountId,
+      filterRequest,
+      destinationMailboxId,
+      destinationPath,
+      isDestinationSpamMailbox: isDestinationSpamMailbox
     );
   }
 }

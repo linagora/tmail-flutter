@@ -1,11 +1,15 @@
 
 import 'package:collection/collection.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/core/extensions/utc_date_extension.dart';
 import 'package:jmap_dart_client/jmap/core/extensions/string_extension.dart';
 import 'package:jmap_dart_client/jmap/core/extensions/unsigned_int_extension.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/email_extension.dart';
 
 extension ListEmailExtension on List<Email> {
 
@@ -33,5 +37,22 @@ extension ListEmailExtension on List<Email> {
         return 0;
       }
     });
+  }
+
+  Map<Id, PatchObject> generateMapUpdateObjectMoveToMailbox(
+    MailboxId destinationMailboxId,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) {
+    final listEmailWithIdNotNull = where((email) => email.id != null).toList();
+
+    return {
+      for (var email in listEmailWithIdNotNull)
+        email.id!.id: email.generateMoveToMailboxActionPath(
+          destinationMailboxId,
+          isDestinationSpamMailbox: isDestinationSpamMailbox
+        )
+    };
   }
 }

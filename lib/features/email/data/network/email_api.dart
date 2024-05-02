@@ -436,9 +436,12 @@ class EmailAPI with HandleSetErrorMixin {
       final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
       final currentSetEmailInvocations = currentExecuteList.map((currentItem) {
 
-        final moveProperties = (moveRequest.moveAction == MoveAction.moving && moveRequest.emailActionType == EmailActionType.moveToSpam)
-            ? currentItem.value.generateMapUpdateObjectMoveToSpam(currentItem.key, moveRequest.destinationMailboxId)
-            : currentItem.value.generateMapUpdateObjectMoveToMailbox(currentItem.key, moveRequest.destinationMailboxId);
+        final moveProperties = currentItem.value.generateMapUpdateObjectMoveToMailbox(
+          currentItem.key,
+          moveRequest.destinationMailboxId,
+          isDestinationSpamMailbox: moveRequest.moveAction == MoveAction.moving
+            && moveRequest.emailActionType == EmailActionType.moveToSpam
+        );
 
         return SetEmailMethod(accountId)
           ..addUpdates(moveProperties);
@@ -779,7 +782,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<List<EmailId>> moveSelectionAllEmailsToFolder(
+  Future<List<EmailId>> moveAllEmailsToFolderByEmailId(
     Session session,
     AccountId accountId,
     MailboxId currentMailboxId,
@@ -789,9 +792,52 @@ class EmailAPI with HandleSetErrorMixin {
       bool isDestinationSpamMailbox = false
     }
   ) async {
-    final moveProperties = isDestinationSpamMailbox
-      ? listEmailId.generateMapUpdateObjectMoveToSpam(currentMailboxId, destinationMailboxId)
-      : listEmailId.generateMapUpdateObjectMoveToMailbox(currentMailboxId, destinationMailboxId);
+    final moveProperties = listEmailId.generateMapUpdateObjectMoveToMailbox(
+      currentMailboxId,
+      destinationMailboxId,
+      isDestinationSpamMailbox: isDestinationSpamMailbox);
+
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(moveProperties);
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder..usings(capabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize
+    );
+
+    final listIdUpdated = setEmailResponse?.updated?.keys.toList();
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (listIdUpdated != null && mapErrors.isEmpty) {
+      final listEmailIdUpdated = listIdUpdated.map((id) => EmailId(id)).toList();
+      return listEmailIdUpdated;
+    } else {
+      throw SetMethodException(mapErrors);
+    }
+  }
+
+  Future<List<EmailId>> moveAllEmailsToFolderByEmail(
+    Session session,
+    AccountId accountId,
+    MailboxId destinationMailboxId,
+    List<Email> listEmail,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) async {
+    final moveProperties = listEmail.generateMapUpdateObjectMoveToMailbox(
+      destinationMailboxId,
+      isDestinationSpamMailbox: isDestinationSpamMailbox);
 
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates(moveProperties);

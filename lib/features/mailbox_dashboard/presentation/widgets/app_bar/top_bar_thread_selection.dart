@@ -139,11 +139,12 @@ class TopBarThreadSelection extends StatelessWidget{
   bool get canDeletePermanently => listEmail.isAllCanDeletePermanently(mapMailbox);
 
   bool get canDeleteAllPermanently => isSelectAllEmailsEnabled
+      && selectedMailbox != null
       && (selectedMailbox?.isTrash == true
           || selectedMailbox?.isSpam == true
           || selectedMailbox?.isDrafts == true);
 
-  bool get canSpamAndMove => listEmail.isAllCanSpamAndMove(mapMailbox);
+  bool get canSpamAndMove => isSelectAllEmailsEnabled ? true : listEmail.isAllCanSpamAndMove(mapMailbox);
 
   bool get isAllSpam => listEmail.isAllSpam(mapMailbox);
 

@@ -13,8 +13,11 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/search_email_filter_request.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -190,6 +193,77 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         mailboxId,
         totalEmails,
         onProgressController,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsRead(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.markAllSearchAsReadOrUnread(
+        session,
+        accountId,
+        filterRequest,
+        ReadActions.markAsRead
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsUnread(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.markAllSearchAsReadOrUnread(
+        session,
+        accountId,
+        filterRequest,
+        ReadActions.markAsUnread
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsStarred(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.markAllSearchAsStarredOrUnStarred(
+        session,
+        accountId,
+        filterRequest,
+        MarkStarAction.markStar
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> moveAllEmailSearchedToFolder(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilterRequest filterRequest,
+    MailboxId destinationMailboxId,
+    String destinationPath,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.moveAllEmailSearchedToFolder(
+        session,
+        accountId,
+        filterRequest,
+        destinationMailboxId,
+        destinationPath,
+        isDestinationSpamMailbox: isDestinationSpamMailbox
       );
     }).catchError(_exceptionThrower.throwException);
   }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-04-29T19:54:23.924948",
+  "@@last_modified": "2024-05-02T01:45:52.404272",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4017,6 +4017,106 @@
       "reason"
     ],
     "placeholders": {
+      "reason": {}
+    }
+  },
+  "allUnSpam": "All UnSpam",
+  "@allUnSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAllAsSpam": "Mark all as spam",
+  "@markAllAsSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectAllMailsThatMatchThisSearch": "Select all mails that match this search",
+  "@selectAllMailsThatMatchThisSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allMailsInThisSearchAreSelected": "All mails in this search are selected. ",
+  "@allMailsInThisSearchAreSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInSearch": "This action will affect all mails in search. Are you sure you want to continue?",
+  "@messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllSearchAsReadSuccess": "You’ve marked all messages in search as read",
+  "@toastMessageMarkAllSearchAsReadSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllSearchAsReadFailureWithReason": "All message in search could not be marked as read. Due \"{reason}\"",
+  "@toastMessageMarkAllSearchAsReadFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "toastMessageMarkAllSearchAsUnreadSuccess": "You’ve marked all messages in search as unread",
+  "@toastMessageMarkAllSearchAsUnreadSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllSearchAsUnreadFailureWithReason": "All message in search could not be marked as unread. Due \"{reason}\"",
+  "@toastMessageMarkAllSearchAsUnreadFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "toastMessageMarkAllSearchAsStarredSuccess": "You’ve marked all messages in search as starred",
+  "@toastMessageMarkAllSearchAsStarredSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllSearchAsStarredFailureWithReason": "All message in search could not be marked as starred. Due \"{reason}\"",
+  "@toastMessageMarkAllSearchAsStarredFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "toastMessageMoveAllEmailSearchedToFolderSuccess": "You’ve moved all mails in search to {destinationPath}",
+  "@toastMessageMoveAllEmailSearchedToFolderSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath"
+    ],
+    "placeholders": {
+      "destinationPath": {}
+    }
+  },
+  "toastMessageMoveAllEmailSearchedToFolderFailureWithReason": "All mails in search could not be moved to {destinationPath}. Due \"{reason}\"",
+  "@toastMessageMoveAllEmailSearchedToFolderFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath",
+      "reason"
+    ],
+    "placeholders": {
+      "destinationPath": {},
       "reason": {}
     }
   }
