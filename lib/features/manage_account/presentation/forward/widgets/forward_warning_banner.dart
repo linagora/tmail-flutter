@@ -3,7 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ForwardWarningBanner extends StatelessWidget {
 
@@ -29,7 +29,7 @@ class ForwardWarningBanner extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Text(
-            AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains,
+            AppConfig.getForwardWarningMessage(context),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontSize: 15,
               color: Colors.black
