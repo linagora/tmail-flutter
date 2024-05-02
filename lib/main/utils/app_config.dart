@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AppConfig {
   static const int limitCharToStartSearch = 3;
@@ -46,5 +48,17 @@ class AppConfig {
     } catch (e) {
       return OIDCConstant.oidcScope;
     }
+  }
+
+  static String getForwardWarningMessage(BuildContext context) {
+    final forwardWarningMessage = dotenv.get(
+        'FORWARD_WARNING_MESSAGE',
+        fallback: AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains);
+
+    if (forwardWarningMessage.trim().isEmpty) {
+      return AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains;
+    }
+
+    return forwardWarningMessage;
   }
 }

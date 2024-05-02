@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_sugg
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnSuggestionContactCallbackAction = Future<List<EmailAddress>> Function(String query);
@@ -365,7 +366,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       context,
       AppLocalizations.of(context).doYouWantToProceed,
       AppLocalizations.of(context).yes,
-      title: AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains,
+      title: AppConfig.getForwardWarningMessage(context),
       cancelTitle: AppLocalizations.of(context).no,
       alignCenter: true,
       onConfirmAction: confirmAction,
