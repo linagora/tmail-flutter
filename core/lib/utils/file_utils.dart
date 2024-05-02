@@ -5,9 +5,12 @@ import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_charset_detector/flutter_charset_detector.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtils {
+  static const String DEFAULT_CHARSET = 'uft-8';
+  static const String TEXT_PLAIN_MIME_TYPE = 'text/plain';
 
   Future<String> _getInternalStorageDirPath({
     required String nameFile,
@@ -120,5 +123,16 @@ class FileUtils {
     final buffer = bytes.buffer;
     final base64Data = base64Encode(Uint8List.view(buffer));
     return base64Data;
+  }
+
+  Future<String> getCharsetFromBytes(Uint8List bytes) async {
+    try {
+      final decodedResult = await CharsetDetector.autoDecode(bytes);
+      log('FileUtils::getCharsetFromBytes: FILE_CHARSET = ${decodedResult.charset}');
+      return decodedResult.charset;
+    } catch (e) {
+      logError('FileUtils::getCharsetFromBytes: Exception: $e');
+      return DEFAULT_CHARSET;
+    }
   }
 }
