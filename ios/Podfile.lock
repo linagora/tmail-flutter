@@ -1,9 +1,9 @@
 PODS:
-  - AppAuth (1.6.2):
-    - AppAuth/Core (= 1.6.2)
-    - AppAuth/ExternalUserAgent (= 1.6.2)
-  - AppAuth/Core (1.6.2)
-  - AppAuth/ExternalUserAgent (1.6.2):
+  - AppAuth (1.7.4):
+    - AppAuth/Core (= 1.7.4)
+    - AppAuth/ExternalUserAgent (= 1.7.4)
+  - AppAuth/Core (1.7.4)
+  - AppAuth/ExternalUserAgent (1.7.4):
     - AppAuth/Core
   - better_open_file (0.0.1):
     - Flutter
@@ -86,7 +86,7 @@ PODS:
     - Flutter
   - Flutter (1.0.0)
   - flutter_appauth (0.0.1):
-    - AppAuth (= 1.6.2)
+    - AppAuth (= 1.7.4)
     - Flutter
   - flutter_downloader (0.0.1):
     - Flutter
@@ -285,7 +285,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
-  AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
+  AppAuth: 182c5b88630569df5acb672720534756c29b3358
   better_open_file: 03cf320415d4d3f46b6e00adc4a567d76c1a399d
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
@@ -303,7 +303,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: e345b219fd15d325f0cf2fef28cb8ce00d851b3f
   fk_user_agent: 1f47ec39291e8372b1d692b50084b0d54103c545
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_appauth: cf9b928962105b2a64a9802585d1c8adaf3e0f46
+  flutter_appauth: 1ce438877bc111c5d8f42da47729909290624886
   flutter_downloader: b7301ae057deadd4b1650dc7c05375f10ff12c39
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inappwebview: db0387fb3c2298997710505e7128eda00d15fc54
