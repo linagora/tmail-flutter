@@ -27,5 +27,13 @@ enum EmailActionType {
   unsubscribe,
   composeFromUnsubscribeMailtoLink,
   archiveMessage,
-  printAll
+  printAll,
+  markAllAsRead,
+  markAllAsUnread,
+  moveAll,
+  moveAllToTrash,
+  deleteAllPermanently,
+  markAllAsStarred,
+  markAllAsSpam,
+  allUnSpam,
 }

@@ -216,10 +216,6 @@ class ImagePaths {
     return AssetsPaths.images + imageName;
   }
 
-  String _getIconPath(String iconName) {
-    return AssetsPaths.icons + iconName;
-  }
-
   String getConfigurationImagePath(String imageName) {
     return AssetsPaths.configurationImages + imageName;
   }

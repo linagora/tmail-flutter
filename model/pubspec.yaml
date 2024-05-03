@@ -33,7 +33,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: cnb_support
+      ref: add-reference-destroy-property
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6

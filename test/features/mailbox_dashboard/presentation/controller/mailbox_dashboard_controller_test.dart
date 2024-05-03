@@ -19,6 +19,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:tmail_ui_user/features/base/toast/app_toast_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
@@ -74,13 +75,17 @@ import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/delete_all_permanently_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_starred_selection_all_emails_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_unread_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_all_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -152,6 +157,10 @@ const fallbackGenerators = {
   MockSpec<SearchEmailInteractor>(),
   MockSpec<SearchMoreEmailInteractor>(),
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
+  MockSpec<MarkAllAsUnreadSelectionAllEmailsInteractor>(),
+  MockSpec<MoveAllSelectionAllEmailsInteractor>(),
+  MockSpec<DeleteAllPermanentlyEmailsInteractor>(),
+  MockSpec<MarkAllAsStarredSelectionAllEmailsInteractor>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -213,6 +222,7 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final applicationManager = MockApplicationManager();
+  final appToastManager = MockAppToastManager();
 
   // mock reloadable controller Get dependencies
   final getSessionInteractor = MockGetSessionInteractor();
@@ -233,6 +243,10 @@ void main() {
   final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
   final removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
+  final markAllAsUnreadSelectionAllEmailsInteractor = MockMarkAllAsUnreadSelectionAllEmailsInteractor();
+  final moveAllSelectionAllEmailsInteractor = MockMoveAllSelectionAllEmailsInteractor();
+  final deleteAllPermanentlyEmailsInteractor = MockDeleteAllPermanentlyEmailsInteractor();
+  final markAllAsStarredSelectionAllEmailsInteractor = MockMarkAllAsStarredSelectionAllEmailsInteractor();
   late MailboxController mailboxController;
 
   // mock thread controller direct dependencies
@@ -280,11 +294,16 @@ void main() {
       Get.put<ResponsiveUtils>(responsiveUtils);
       Get.put<Uuid>(uuid);
       Get.put<ApplicationManager>(applicationManager);
+      Get.put<AppToastManager>(appToastManager);
       Get.put<GetSessionInteractor>(getSessionInteractor);
       Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
       Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
       Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
       Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
+      Get.put<MarkAllAsUnreadSelectionAllEmailsInteractor>(markAllAsUnreadSelectionAllEmailsInteractor);
+      Get.put<MoveAllSelectionAllEmailsInteractor>(moveAllSelectionAllEmailsInteractor);
+      Get.put<DeleteAllPermanentlyEmailsInteractor>(deleteAllPermanentlyEmailsInteractor);
+      Get.put<MarkAllAsStarredSelectionAllEmailsInteractor>(markAllAsStarredSelectionAllEmailsInteractor);
 
       Get.testMode = true;
       PackageInfo.setMockInitialValues(
@@ -329,6 +348,10 @@ void main() {
         getRestoredDeletedMessageInteractor,
         removeComposerCacheOnWebInteractor,
         getAllIdentitiesInteractor,
+        markAllAsUnreadSelectionAllEmailsInteractor,
+        moveAllSelectionAllEmailsInteractor,
+        deleteAllPermanentlyEmailsInteractor,
+        markAllAsStarredSelectionAllEmailsInteractor,
       );
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();

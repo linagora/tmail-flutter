@@ -84,7 +84,7 @@ class SpamReportController extends BaseController {
           accountId,
           spamMailbox.id,
           spamMailbox.getDisplayName(context),
-          spamMailbox.unreadEmails?.value.value.toInt() ?? 0
+          spamMailbox.countUnreadEmails
         );
         _presentationSpamMailbox.value = null;
       }

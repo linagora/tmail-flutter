@@ -164,3 +164,14 @@ class SearchEmailByFromFieldsAction extends DashBoardAction {
 class CloseSearchEmailViewAction extends DashBoardAction {}
 
 class CancelSelectionSearchEmailAction extends DashBoardAction {}
+
+class MoreSelectedEmailAction extends DashBoardAction {
+
+  final BuildContext context;
+  final RelativeRect position;
+
+  MoreSelectedEmailAction(this.context, this.position);
+
+  @override
+  List<Object> get props => [context, position];
+}

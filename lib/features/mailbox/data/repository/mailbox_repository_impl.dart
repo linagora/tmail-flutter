@@ -216,7 +216,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<List<Email>> markAsMailboxRead(
+  Future<List<EmailId>> markAsMailboxRead(
       Session session,
       AccountId accountId,
       MailboxId mailboxId,

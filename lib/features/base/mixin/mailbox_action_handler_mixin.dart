@@ -34,14 +34,13 @@ mixin MailboxActionHandlerMixin {
     final session = dashboardController.sessionCurrent;
     final accountId = dashboardController.accountId.value;
     final mailboxId = presentationMailbox.id;
-    final countEmailsUnread = presentationMailbox.unreadEmails?.value.value ?? 0;
     if (session != null && accountId != null) {
       dashboardController.markAsReadMailbox(
         session,
         accountId,
         mailboxId,
         presentationMailbox.getDisplayName(context),
-        countEmailsUnread.toInt()
+        presentationMailbox.countUnreadEmails
       );
 
       onCallbackAction?.call(context);

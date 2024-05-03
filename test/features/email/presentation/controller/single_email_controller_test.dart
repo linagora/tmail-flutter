@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/toast/app_toast_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
@@ -73,6 +74,7 @@ const fallbackGenerators = {
   MockSpec<Uuid>(),
   MockSpec<PrintEmailInteractor>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<AppToastManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -105,6 +107,7 @@ void main() {
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
   final applicationManager = MockApplicationManager();
+  final appToastManager = MockAppToastManager();
 
   late SingleEmailController singleEmailController = SingleEmailController(
     getEmailContentInteractor,
@@ -149,6 +152,7 @@ void main() {
     Get.put<ResponsiveUtils>(responsiveUtils);
     Get.put<Uuid>(uuid);
     Get.put<ApplicationManager>(applicationManager);
+    Get.put<AppToastManager>(appToastManager);
 
     when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
     when(uuid.v4()).thenReturn(testTaskId);

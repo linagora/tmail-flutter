@@ -505,7 +505,7 @@ packages:
     source: hosted
     version: "6.1.4"
   file_picker:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "."
       ref: "email_supported_5.3.1"
@@ -1131,8 +1131,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: cnb_support
-      resolved-ref: "43e9ae95a2b18f68da6fca5f3027655f070eef6f"
+      ref: add-reference-destroy-property
+      resolved-ref: "9bb94370504cc6eb5a1b0b7180c14c31477be2be"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
@@ -1256,7 +1256,7 @@ packages:
     source: hosted
     version: "2.1.0"
   package_info_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: package_info_plus
       sha256: "7e76fad405b3e4016cd39d08f455a4eb5199723cf594cd1b8916d47140d93017"

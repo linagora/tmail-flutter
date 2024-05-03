@@ -31,7 +31,7 @@ abstract class MailboxRepository {
 
   Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request);
 
-  Future<List<Email>> markAsMailboxRead(
+  Future<List<EmailId>> markAsMailboxRead(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,

@@ -25,6 +25,7 @@ import 'package:model/account/authentication_type.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/toast/app_toast_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -78,6 +79,7 @@ abstract class BaseController extends GetxController
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
   final ApplicationManager applicationManager = Get.find<ApplicationManager>();
+  final AppToastManager appToastManager = Get.find<AppToastManager>();
 
   bool _isFcmEnabled = false;
 

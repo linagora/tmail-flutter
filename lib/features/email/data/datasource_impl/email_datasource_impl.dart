@@ -71,7 +71,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     ReadActions readActions
   ) {
     return Future.sync(() async {
-      return await emailAPI.markAsRead(session, accountId, emails, readActions);
+      return await emailAPI.markAsReadAndGetResult(session, accountId, emails, readActions);
     }).catchError(_exceptionThrower.throwException);
   }
 

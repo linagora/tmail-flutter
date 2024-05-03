@@ -4,7 +4,7 @@ import 'package:model/model.dart';
 
 extension MailboxExtension on Mailbox {
 
-  bool hasRole() => role != null && role!.value.isNotEmpty;
+  bool get isSpam => role == PresentationMailbox.roleSpam;
 
   PresentationMailbox toPresentationMailbox() {
     return PresentationMailbox(

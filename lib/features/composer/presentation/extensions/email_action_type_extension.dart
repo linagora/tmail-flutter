@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
@@ -122,6 +123,7 @@ extension EmailActionTypeExtension on EmailActionType {
   String getIcon(ImagePaths imagePaths) {
     switch(this) {
       case EmailActionType.markAsUnread:
+      case EmailActionType.markAllAsUnread:
         return imagePaths.icUnreadEmail;
       case EmailActionType.unSpam:
         return imagePaths.icNotSpam;
@@ -133,6 +135,16 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icUnsubscribe;
       case EmailActionType.archiveMessage:
         return imagePaths.icMailboxArchived;
+      case EmailActionType.markAsRead:
+      case EmailActionType.markAllAsRead:
+        return imagePaths.icRead;
+      case EmailActionType.moveToMailbox:
+      case EmailActionType.moveAll:
+        return imagePaths.icMove;
+      case EmailActionType.moveToTrash:
+      case EmailActionType.moveAllToTrash:
+      case EmailActionType.deleteAllPermanently:
+        return imagePaths.icDeleteComposer;
       default:
         return '';
     }
@@ -152,8 +164,33 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).unsubscribe;
       case EmailActionType.archiveMessage:
         return AppLocalizations.of(context).archiveMessage;
+      case EmailActionType.markAsRead:
+        return AppLocalizations.of(context).mark_as_read;
+      case EmailActionType.moveToMailbox:
+        return AppLocalizations.of(context).move;
+      case EmailActionType.moveToTrash:
+        return AppLocalizations.of(context).move_to_trash;
+      case EmailActionType.markAllAsRead:
+        return AppLocalizations.of(context).mark_all_as_read;
+      case EmailActionType.markAllAsUnread:
+        return AppLocalizations.of(context).markAllAsUnread;
+      case EmailActionType.moveAll:
+        return AppLocalizations.of(context).moveAll;
+      case EmailActionType.moveAllToTrash:
+        return AppLocalizations.of(context).moveAllToTrash;
+      case EmailActionType.deleteAllPermanently:
+        return AppLocalizations.of(context).deleteAllPermanently;
       default:
         return '';
+    }
+  }
+
+  Color getIconColor() {
+    switch(this) {
+      case EmailActionType.deleteAllPermanently:
+        return AppColor.colorDeletePermanentlyButton;
+      default:
+        return AppColor.primaryColor;
     }
   }
 }

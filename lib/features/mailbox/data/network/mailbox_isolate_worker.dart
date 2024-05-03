@@ -37,7 +37,7 @@ class MailboxIsolateWorker {
 
   MailboxIsolateWorker(this._threadApi, this._emailApi, this._isolateExecutor);
 
-  Future<List<Email>> markAsMailboxRead(
+  Future<List<EmailId>> markAsMailboxRead(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
@@ -68,7 +68,7 @@ class MailboxIsolateWorker {
           ),
           fun1: _handleMarkAsMailboxReadAction,
           notification: (value) {
-            if (value is List<Email>) {
+            if (value is List<EmailId>) {
               log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
               onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
                 mailboxId: mailboxId,
@@ -80,7 +80,7 @@ class MailboxIsolateWorker {
     }
   }
 
-  static Future<List<Email>> _handleMarkAsMailboxReadAction(
+  static Future<List<EmailId>> _handleMarkAsMailboxReadAction(
       MailboxMarkAsReadArguments args,
       TypeSendPort sendPort
   ) async {
@@ -88,7 +88,7 @@ class MailboxIsolateWorker {
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
     await HiveCacheConfig.instance.setUp();
 
-    List<Email> emailListCompleted = List.empty(growable: true);
+    List<EmailId> emailIdListCompleted = List.empty(growable: true);
     try {
       bool mailboxHasEmails = true;
       UTCDate? lastReceivedDate;
@@ -109,7 +109,6 @@ class MailboxIsolateWorker {
                   ..setIsAscending(false)),
               properties: Properties({
                   EmailProperty.id,
-                  EmailProperty.keywords,
                   EmailProperty.receivedAt,
                 }))
             .then((response) {
@@ -138,25 +137,25 @@ class MailboxIsolateWorker {
             ReadActions.markAsRead);
 
           log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.length}');
-          emailListCompleted.addAll(result);
-          sendPort.send(emailListCompleted);
+          emailIdListCompleted.addAll(result);
+          sendPort.send(emailIdListCompleted);
         }
       }
     } catch (e) {
       log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): ERROR: $e');
     }
-    log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): TOTAL_READ: ${emailListCompleted.length}');
-    return emailListCompleted;
+    log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): TOTAL_READ: ${emailIdListCompleted.length}');
+    return emailIdListCompleted;
   }
 
-  Future<List<Email>> _handleMarkAsMailboxReadActionOnWeb(
+  Future<List<EmailId>> _handleMarkAsMailboxReadActionOnWeb(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
     int totalEmailUnread,
     StreamController<Either<Failure, Success>> onProgressController
   ) async {
-    List<Email> emailListCompleted = List.empty(growable: true);
+    List<EmailId> emailIdListCompleted = List.empty(growable: true);
     try {
       bool mailboxHasEmails = true;
       UTCDate? lastReceivedDate;
@@ -177,7 +176,6 @@ class MailboxIsolateWorker {
                       ..setIsAscending(false)),
               properties: Properties({
                   EmailProperty.id,
-                  EmailProperty.keywords,
                   EmailProperty.receivedAt,
               })
             ).then((response) {
@@ -201,18 +199,18 @@ class MailboxIsolateWorker {
 
           final result = await _emailApi.markAsRead(session, accountId, listEmailUnread, ReadActions.markAsRead);
           log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): MARK_READ: ${result.length}');
-          emailListCompleted.addAll(result);
+          emailIdListCompleted.addAll(result);
 
           onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
               mailboxId: mailboxId,
               totalUnread: totalEmailUnread,
-              countRead: emailListCompleted.length)));
+              countRead: emailIdListCompleted.length)));
         }
       }
     } catch (e) {
       log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): ERROR: $e');
     }
-    log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): TOTAL_READ: ${emailListCompleted.length}');
-    return emailListCompleted;
+    log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): TOTAL_READ: ${emailIdListCompleted.length}');
+    return emailIdListCompleted;
   }
 }
