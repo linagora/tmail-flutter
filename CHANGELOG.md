@@ -1,4 +1,14 @@
-## [0.11.3-patch4-13] - 2024-04-05
+## [0.11.3414] - 2024-05-03
+### Fixed
+- FR translation for read receipt
+- #2810 Handle crashed when no browser available for OIDC
+- #2533 Using `pagehide` instead of `beforeunload` to remove listener in composer to prevent memory leak
+- #2835 Fix multiple requests in onError queue make the refreshToken logic failed
+- #2831 Custom message for forwarding warning message
+- #2830 Improve adding recipient in forwarding
+- #2836 Remove button with no effect on mobile
+
+## [0.11.3-patch4-13] - 2024-04-15
 ### Fixed 
 - #2533 Remove iframe listener in composer (memory leak in composer)
 - #2533 Remove file picker memory leak in composer
