@@ -13,13 +13,15 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
   final ExceptionThrower _exceptionThrower;
+  final ExceptionThrower _cacheExceptionThrower;
 
   AuthenticationOIDCDataSourceImpl(
     this._oidcHttpClient,
     this._authenticationClient,
     this._tokenOidcCacheManager,
     this._oidcConfigurationCacheManager,
-    this._exceptionThrower
+    this._exceptionThrower,
+    this._cacheExceptionThrower
   );
 
   @override
@@ -54,28 +56,28 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash) {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.getTokenOidc(tokenIdHash);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_cacheExceptionThrower.throwException);
   }
 
   @override
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc) {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.persistOneTokenOidc(tokenOidc);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_cacheExceptionThrower.throwException);
   }
 
   @override
   Future<OIDCConfiguration> getStoredOidcConfiguration() {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.getOidcConfiguration();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_cacheExceptionThrower.throwException);
   }
 
   @override
   Future<void> persistAuthorityOidc(String authority) {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.persistAuthorityOidc(authority);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_cacheExceptionThrower.throwException);
   }
 
   @override

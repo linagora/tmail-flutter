@@ -33,6 +33,7 @@ abstract class ReloadableController extends BaseController {
     if (failure is GetCredentialFailure ||
         failure is GetStoredTokenOidcFailure ||
         failure is GetAuthenticatedAccountFailure) {
+      log('ReloadableController::handleFailureViewState(): failure: $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
       _handleGetSessionFailure(failure.exception);
