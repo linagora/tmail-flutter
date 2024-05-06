@@ -78,6 +78,7 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<TokenOidcCacheManager>(),
       Get.find<OidcConfigurationCacheManager>(),
       Get.find<RemoteExceptionThrower>(),
+      Get.find<CacheExceptionThrower>(),
     ));
   }
 
