@@ -52,7 +52,7 @@ void main() {
     });
   });
 
-  group('calendar event maybe repository', () {
+  group('calendar event maybe repository test:', () {
     final calendarEventMaybeResponse = CalendarEventMaybeResponse(
       accountId,
       null,
