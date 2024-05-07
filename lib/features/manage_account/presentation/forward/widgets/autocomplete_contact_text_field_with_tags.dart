@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_em
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_input_tag_item.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/exceptions/forward_exception.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -26,7 +28,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnSuggestionContactCallbackAction = Future<List<EmailAddress>> Function(String query);
 typedef OnAddListContactCallbackAction = Function(List<EmailAddress> listEmailAddress);
-typedef OnExceptionAddListContactCallbackAction = Function(bool isListEmpty);
+typedef OnExceptionAddListContactCallbackAction = Function(Exception exception);
 
 class AutocompleteContactTextFieldWithTags extends StatefulWidget {
 
@@ -61,19 +63,12 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
 
   late List<EmailAddress> listEmailAddress;
 
-  Timer? _gapBetweenTagChangedAndFindSuggestion;
   bool lastTagFocused = false;
 
   @override
   void initState() {
     super.initState();
     listEmailAddress = widget.listEmailAddress;
-  }
-
-  @override
-  void dispose() {
-    _gapBetweenTagChangedAndFindSuggestion?.cancel();
-    super.dispose();
   }
 
   @override
@@ -118,7 +113,8 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       ),
       onSubmitted: (value) => _addEmailAddressToInputFieldAction(
         context: context,
-        emailAddress: EmailAddress(null, value)
+        emailAddress: EmailAddress(null, value),
+        isClearInput: true
       ),
       textStyle: const TextStyle(
         color: Colors.black,
@@ -141,16 +137,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
           setState(() => listEmailAddress.remove(contact));
         }
       ),
-      onTagChanged: (value) {
-        _addEmailAddressToInputFieldAction(
-          context: context,
-          emailAddress: EmailAddress(null, value)
-        );
-        _gapBetweenTagChangedAndFindSuggestion = Timer(
-          const Duration(seconds: 1),
-          _handleGapBetweenTagChangedAndFindSuggestion
-        );
-      },
+      onTagChanged: (_) {},
       findSuggestions: _findSuggestions,
       suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
         return Container(
@@ -162,7 +149,8 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
             selectedContactCallbackAction: (contact) {
               _addEmailAddressToInputFieldAction(
                 context: context,
-                emailAddress: contact);
+                emailAddress: contact
+              );
               tagEditorState.closeSuggestionBox();
               tagEditorState.resetTextField();
             },
@@ -211,10 +199,6 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   }
 
   FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
-    if (_gapBetweenTagChangedAndFindSuggestion?.isActive ?? false) {
-      return [];
-    }
-
     final processedQuery = query.trim();
 
     if (processedQuery.isEmpty) {
@@ -260,17 +244,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       .map((emailAddress) => SuggestionEmailAddress(emailAddress, state: SuggestionEmailState.duplicated));
   }
 
-  void _handleGapBetweenTagChangedAndFindSuggestion() {
-    log('_AutocompleteContactTextFieldWithTagsState::_handleGapBetweenTagChangedAndFindSuggestion(): Timeout');
-  }
-
-  bool _isValidAllEmailAddress(List<EmailAddress> addedEmailAddress) {
-    return addedEmailAddress.every((addedMail) => addedMail.emailAddress.isEmail || AppUtils.isEmailLocalhost(addedMail.emailAddress));
-  }
-
-  bool _inputFieldIsEmpty() {
-    return widget.controller?.text.isEmpty == true;
-  }
+  bool _validateListEmailAddressIsValid(List<EmailAddress> listEmailAddress) => listEmailAddress.every(_validateEmailAddressIsValid);
 
   Widget _buildAddRecipientButton(BuildContext context, {double? maxWidth}) {
     return MaterialTextIconButton(
@@ -281,78 +255,165 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       labelColor: Colors.white,
       iconColor: Colors.white,
       minimumSize: Size(maxWidth ?? 167, PlatformInfo.isMobile ? 44 : 54),
-      onTap: _handleAddRecipientAction
+      onTap: () => _handleAddRecipientAction(context)
     );
   }
 
-  void _handleAddRecipientAction() {
-    _hideKeyboardForMobile();
-    if (widget.controller?.text.isNotEmpty == true) {
-      if (!_isDuplicatedRecipient(widget.controller?.text ?? '')) {
-        _addEmailAddressToInputFieldAction(
-          context: context,
-          emailAddress: EmailAddress(null, widget.controller?.text)
-        );
+  void _handleAddRecipientAction(BuildContext context) {
+    KeyboardUtils.hideKeyboard(context);
+
+    final inputText = widget.controller?.text ?? '';
+
+    if (inputText.isNotEmpty) {
+      final emailAddress = EmailAddress(null, inputText);
+
+      if (!_validateEmailAddressIsValid(emailAddress)) {
+        widget.onExceptionCallback?.call(RecipientListWithInvalidEmailsException());
+        _resetInputText();
+        return;
       }
+
+      _validateEmailAddressSameDomain(
+        context: context,
+        emailAddress: emailAddress,
+        confirmAction: () {
+          final newListEmailAddress = List<EmailAddress>.from([...listEmailAddress, emailAddress]);
+
+          widget.onAddContactCallback?.call(newListEmailAddress);
+
+          _resetInputText();
+          if (listEmailAddress.isNotEmpty) {
+            setState(listEmailAddress.clear);
+          }
+        },
+        cancelAction: () {
+          if (listEmailAddress.isNotEmpty) {
+            widget.onAddContactCallback?.call(listEmailAddress);
+            setState(listEmailAddress.clear);
+          }
+          _resetInputText();
+        },
+        sameDomainAction: () {
+          final newListEmailAddress = List<EmailAddress>.from([...listEmailAddress, emailAddress]);
+
+          widget.onAddContactCallback?.call(newListEmailAddress);
+
+          _resetInputText();
+          if (listEmailAddress.isNotEmpty) {
+            setState(listEmailAddress.clear);
+          }
+        },
+        duplicatedRecipientAction: () {
+          if (listEmailAddress.isNotEmpty) {
+            widget.onAddContactCallback?.call(listEmailAddress);
+            setState(listEmailAddress.clear);
+          }
+          _resetInputText();
+        }
+      );
+
       _closeSuggestionBox();
       return;
     }
 
     if (listEmailAddress.isEmpty) {
-      widget.onExceptionCallback?.call(true);
+      widget.onExceptionCallback?.call(RecipientListIsEmptyException());
       return;
     }
 
-    if (_isValidAllEmailAddress(listEmailAddress) && _inputFieldIsEmpty()) {
-      widget.onAddContactCallback?.call(List.from(listEmailAddress));
-      setState(() {
-        widget.controller?.clear();
-        listEmailAddress.clear();
-      });
-    } else {
-      widget.onExceptionCallback?.call(false);
+    if (!_validateListEmailAddressIsValid(listEmailAddress)) {
+      widget.onExceptionCallback?.call(RecipientListWithInvalidEmailsException());
+      return;
     }
+
+    widget.onAddContactCallback?.call(List.from(listEmailAddress));
+
+    _resetInputText();
+    setState(listEmailAddress.clear);
   }
 
-  void _closeSuggestionBox() {
-    keyToEmailTagEditor.currentState?.resetTextField();
-    keyToEmailTagEditor.currentState?.closeSuggestionBox();
+  bool _validateEmailAddressIsValid(EmailAddress emailAddress) {
+    return GetUtils.isEmail(emailAddress.emailAddress)
+      || AppUtils.isEmailLocalhost(emailAddress.emailAddress);
   }
 
-  void _hideKeyboardForMobile() {
-    if (!_responsiveUtils.isDesktop(context)) {
-      FocusScope.of(context).unfocus();
-    }
-  }
-
-  void _addEmailAddressToInputFieldAction({
+  void _validateEmailAddressSameDomain({
     required BuildContext context,
-    required EmailAddress emailAddress
+    required EmailAddress emailAddress,
+    required VoidCallback? confirmAction,
+    required VoidCallback? cancelAction,
+    required VoidCallback? sameDomainAction,
+    required VoidCallback? duplicatedRecipientAction,
   }) {
     if (_isDuplicatedRecipient(emailAddress.emailAddress)) {
+      duplicatedRecipientAction?.call();
       return;
     }
 
-    final validateSameDomain = EmailUtils.isSameDomain(
+    bool isSameDomain = EmailUtils.isSameDomain(
       emailAddress: emailAddress.emailAddress,
       internalDomain: widget.internalDomain
     );
 
-    if (!validateSameDomain) {
+    if (isSameDomain) {
+      sameDomainAction?.call();
+    } else {
       _showWarningDialogWithExternalDomain(
         context: context,
-        confirmAction: () {
-          keyToEmailTagEditor.currentState?.resetTextField();
-          setState(() => listEmailAddress.add(emailAddress));
-        },
-        cancelAction: () {
-          keyToEmailTagEditor.currentState?.resetTextField();
-        }
+        confirmAction: confirmAction,
+        cancelAction: cancelAction
       );
-    } else {
-      keyToEmailTagEditor.currentState?.resetTextField();
-      setState(() => listEmailAddress.add(emailAddress));
     }
+  }
+
+  void _closeSuggestionBox() {
+    keyToEmailTagEditor.currentState?.closeSuggestionBox();
+  }
+
+  void _resetInputText() {
+    keyToEmailTagEditor.currentState?.resetTextField();
+  }
+
+  void _addEmailAddressToInputFieldAction({
+    required BuildContext context,
+    required EmailAddress emailAddress,
+    bool isClearInput = false
+  }) {
+    log('_AutocompleteContactTextFieldWithTagsState::_addEmailAddressToInputFieldAction:emailAddress = $emailAddress');
+    if (!_validateEmailAddressIsValid(emailAddress)) {
+      widget.onExceptionCallback?.call(RecipientListWithInvalidEmailsException());
+      if (isClearInput) {
+        _resetInputText();
+      }
+      return;
+    }
+
+    _validateEmailAddressSameDomain(
+      context: context,
+      emailAddress: emailAddress,
+      confirmAction: () {
+        if (isClearInput) {
+          _resetInputText();
+        }
+        setState(() => listEmailAddress.add(emailAddress));
+      },
+      cancelAction: () {
+        if (isClearInput) {
+          _resetInputText();
+        }
+      },
+      sameDomainAction: () {
+        if (isClearInput) {
+          _resetInputText();
+        }
+        setState(() => listEmailAddress.add(emailAddress));
+      },
+      duplicatedRecipientAction: () {
+        if (isClearInput) {
+          _resetInputText();
+        }
+      }
+    );
   }
 
   void _showWarningDialogWithExternalDomain({

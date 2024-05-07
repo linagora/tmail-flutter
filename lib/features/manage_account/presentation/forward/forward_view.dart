@@ -133,8 +133,8 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
       onAddContactCallback: (listRecipientsSelected) {
         controller.addRecipientAction(context, listRecipientsSelected);
       },
-      onExceptionCallback: (isListEmailEmpty) {
-        controller.handleExceptionCallback(context, isListEmailEmpty);
+      onExceptionCallback: (exception) {
+        controller.handleExceptionCallback(context, exception);
       },
     );
   }
