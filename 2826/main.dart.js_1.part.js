@@ -376,7 +376,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = A.Intl__message("Privacy policy", _null, "privacyPolicy", _null, _null);
       t3 = A.TapGestureRecognizer$(_null, _null);
       t3.onTap = new C.PrivacyLinkWidget_build_closure(this);
-      return A.Column$(A._setArrayType([t2, A.RichText$(_null, _null, _null, B.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t3, _null, _null, E.TextStyle_kmC0, t1), B.TextAlign_4, _null, _null, B._LinearTextScaler_1, B.TextWidthBasis_0)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
+      return A.Column$(A._setArrayType([t2, A.RichText$(_null, _null, B.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t3, _null, _null, E.TextStyle_kmC0, t1), B.TextAlign_4, _null, _null, B._LinearTextScaler_1, B.TextWidthBasis_0)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
     }
   };
   C.LoginInputDecorationBuilder.prototype = {
@@ -778,5 +778,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "TIwrDUzePzdNIwr37ZMWYhkWFao=");
+})($__dart_deferred_initializers__, "8k1gklRjq08xVI7bJnvj/MqaLcA=");
 ;

@@ -1238,6 +1238,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return D.EdgeInsets_28_24_28_24;
       else
         return D.EdgeInsets_12_24_12_24;
+    },
+    AppConfig_getForwardWarningMessage(context) {
+      var value, _null = null,
+        _s116_ = "You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",
+        _s45_ = "messageWarningDialogForForwardsToOtherDomains",
+        t1 = $.$get$dotenv(),
+        t2 = type$.AppLocalizations;
+      A.Localizations_of(context, B.Type_AppLocalizations_swi, t2).toString;
+      value = t1.maybeGet$2$fallback("FORWARD_WARNING_MESSAGE", A.Intl__message(_s116_, _null, _s45_, _null, _null));
+      if (B.JSString_methods.trim$0(value).length === 0) {
+        A.Localizations_of(context, B.Type_AppLocalizations_swi, t2).toString;
+        return A.Intl__message(_s116_, _null, _s45_, _null, _null);
+      }
+      return value;
     }
   },
   D;
@@ -2257,8 +2271,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t2 = A.Intl__message("Do you want to proceed?", null, "doYouWantToProceed", null, null);
               A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
               t3 = A.Intl__message("Yes", null, "yes", null, null);
-              A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
-              t4 = A.Intl__message(string$.You_ar, null, string$.messag, null, null);
+              t4 = C.AppConfig_getForwardWarningMessage(context);
               A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
               t1 = A.Intl__message("No", null, "no", null, null);
               t5 = A.SvgPicture$asset("assets/images/ic_quotas_warning.svg", B.Alignment_0_0, A.ColorNullableExtension_asFilter(B.Color_4293281350), B.BoxFit_1, 40, null, null, 40);
@@ -2349,11 +2362,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.ForwardWarningBanner.prototype = {
     build$1(context) {
-      var t2, t3, _null = null,
-        t1 = A.SvgPicture$asset("assets/images/ic_info_circle_outline.svg", B.Alignment_0_0, A.ColorNullableExtension_asFilter(B.Color_4293281350), B.BoxFit_1, _null, _null, _null, _null);
-      A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      t2 = A.Intl__message(string$.You_ar, _null, string$.messag, _null, _null);
-      t3 = A.Theme_of(context).textTheme.labelSmall;
+      var _null = null,
+        t1 = A.SvgPicture$asset("assets/images/ic_info_circle_outline.svg", B.Alignment_0_0, A.ColorNullableExtension_asFilter(B.Color_4293281350), B.BoxFit_1, _null, _null, _null, _null),
+        t2 = C.AppConfig_getForwardWarningMessage(context),
+        t3 = A.Theme_of(context).textTheme.labelSmall;
       return A.Container$(_null, A.Row$(A._setArrayType([t1, B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t2, _null, _null, _null, _null, _null, _null, _null, _null, t3 == null ? _null : t3.copyWith$2$color$fontSize(B.Color_4278190080, 15), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, _null, _null, D.BoxDecoration_sJO, _null, _null, _null, B.EdgeInsetsDirectional_16_16_16_0, B.EdgeInsets_12_12_12_12, _null, _null, 1 / 0);
     }
   };
@@ -5656,10 +5668,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     Read_r: "Read receipts are notifications that can be sent to and from your users to verify that mail has been read.",
     Sends_: "Sends an automated reply to incoming messages.",
     Show__: "Show/ hide your folders, including your personal folders and team mailboxes.",
-    You_ar: "You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",
     ______x22: '^(([^<>()[\\]\\\\.,;:\\s@"]+(\\.[^<>()[\\]\\\\.,;:\\s@"]+)*)|(".+"))@localhost$',
-    ______x5c: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
-    messag: "messageWarningDialogForForwardsToOtherDomains"
+    ______x5c: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
   };
   var type$ = (function rtii() {
     var findType = A.findType;
@@ -5808,5 +5818,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Qavt7tlqJShGORvKPq2K5C0uEiw=");
+})($__dart_deferred_initializers__, "x4v43tGYDiuY0IBFnGBWoaSxq/Y=");
 ;
