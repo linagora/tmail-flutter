@@ -10,6 +10,7 @@ import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -250,6 +251,24 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
     return Future.sync(() async {
       return await emailAPI.getRestoredDeletedMessage(emailRecoveryActionId);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> downloadMessageAsEML(
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest,
+    Id blobId,
+    String subjectEmail
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.downloadMessageAsEML(
+        accountId,
+        baseDownloadUrl,
+        accountRequest,
+        blobId,
+        subjectEmail);
     }).catchError(_exceptionThrower.throwException);
   }
 }
