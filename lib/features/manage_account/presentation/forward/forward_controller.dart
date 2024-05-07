@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/exceptions/forward_exception.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/add_recipients_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_local_copy_in_forwarding_request.dart';
@@ -319,12 +320,12 @@ class ForwardController extends BaseController {
     );
   }
 
-  void handleExceptionCallback(BuildContext context, bool isListEmailEmpty) {
-    if (isListEmailEmpty) {
+  void handleExceptionCallback(BuildContext context, Exception exception) {
+    if (exception is RecipientListIsEmptyException) {
       appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).emptyListEmailForward);
-    } else {
+    } else if (exception is RecipientListWithInvalidEmailsException) {
       appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).incorrectEmailFormat);
