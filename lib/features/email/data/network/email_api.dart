@@ -47,6 +47,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
@@ -68,9 +69,15 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:uri/uri.dart';
 import 'package:uuid/uuid.dart';
 
 class EmailAPI with HandleSetErrorMixin {
+
+  static const String accountIdProperty = 'accountId';
+  static const String blobIdProperty = 'blobId';
+  static const String nameProperty = 'name';
+  static const String typeProperty = 'type';
 
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
@@ -351,12 +358,12 @@ class EmailAPI with HandleSetErrorMixin {
             headers: headerParam,
             responseType: ResponseType.bytes),
         onReceiveProgress: (downloaded, total) {
-          log('DownloadClient::downloadFileForWeb(): downloaded = $downloaded | total: $total');
+          log('EmailAPI::downloadFileForWeb(): downloaded = $downloaded | total: $total');
           double progress = 0;
-          if (downloaded > 0 && total > downloaded) {
+          if (downloaded > 0 && total >= downloaded) {
             progress = (downloaded / total) * 100;
           }
-          log('DownloadClient::downloadFileForWeb(): progress = ${progress.round()}%');
+          log('EmailAPI::downloadFileForWeb(): progress = ${progress.round()}%');
           onReceiveController.add(Right(DownloadingAttachmentForWeb(
               taskId,
               attachment,
@@ -733,5 +740,66 @@ class EmailAPI with HandleSetErrorMixin {
     } else {
       throw NotFoundEmailRecoveryActionException();
     }
+  }
+
+  Future<void> downloadMessageAsEML(
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest,
+    Id blobId,
+    String subjectEmail,
+  ) async {
+    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
+      ? accountRequest.bearerToken
+      : accountRequest.basicAuth;
+
+    final fileName = subjectEmail.isEmpty
+      ? '${_uuid.v1()}.eml'
+      : '$subjectEmail.eml';
+
+    final downloadUrl = _getDownloadUrl(
+      baseDownloadUrl: baseDownloadUrl,
+      accountId: accountId,
+      blobId: blobId,
+      fileName: fileName,
+      mimeType: Constant.octetStreamMimeType
+    );
+
+    final headerParam = _dioClient.getHeaders();
+    headerParam[HttpHeaders.authorizationHeader] = authentication;
+    headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
+
+    final result = await _dioClient.get(
+      downloadUrl,
+      options: Options(
+        headers: headerParam,
+        responseType: ResponseType.bytes
+      )
+    );
+
+    if (result is Uint8List) {
+      _downloadManager.createAnchorElementDownloadFileWeb(result, fileName);
+    } else {
+      throw NotFoundByteFileDownloadedException();
+    }
+  }
+
+  String _getDownloadUrl({
+    required String baseDownloadUrl,
+    required AccountId accountId,
+    required Id blobId,
+    String? fileName,
+    String? mimeType,
+  }) {
+    final downloadUriTemplate = UriTemplate(baseDownloadUrl);
+    final downloadUri = downloadUriTemplate.expand({
+      accountIdProperty : accountId.asString,
+      blobIdProperty : blobId.value,
+      nameProperty : '$fileName',
+      typeProperty : '$mimeType',
+    });
+    final downloadUriDecoded = Uri.decodeFull(downloadUri);
+    log('EmailAPI::getDownloadUrl:downloadUriDecoded = $downloadUriDecoded');
+    return downloadUriDecoded;
   }
 }

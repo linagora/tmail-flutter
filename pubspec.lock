@@ -1758,7 +1758,7 @@ packages:
     source: hosted
     version: "2.2.2"
   uri:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uri
       sha256: "889eea21e953187c6099802b7b4cf5219ba8f3518f604a1033064d45b1b8268a"

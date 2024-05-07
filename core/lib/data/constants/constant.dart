@@ -3,4 +3,5 @@ class Constant {
   static const contentTypeHeaderDefault = 'application/json';
   static const pdfMimeType = 'application/pdf';
   static const textHtmlMimeType = 'text/html';
+  static const octetStreamMimeType = 'application/octet-stream';
 }

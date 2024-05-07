@@ -5,3 +5,7 @@ class NotFoundEmailContentException implements Exception {}
 class EmptyEmailContentException implements Exception {}
 
 class NotFoundEmailRecoveryActionException implements Exception {}
+
+class NotFoundByteFileDownloadedException implements Exception {}
+
+class NotFoundEmailBlobIdException implements Exception {}

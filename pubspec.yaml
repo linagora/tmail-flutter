@@ -232,6 +232,8 @@ dependencies:
 
   mime: 1.0.4
 
+  uri: 1.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
