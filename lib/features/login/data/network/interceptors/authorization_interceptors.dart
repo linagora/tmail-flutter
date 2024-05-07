@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/authentication_type.dart';
@@ -54,6 +55,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   void _updateNewToken(TokenOIDC newToken) {
     log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
+    FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_updateNewToken', parameters: {'new_token': newToken.token, 'expired_time': newToken.expiredTime.toString()});
     _token = newToken;
   }
 
@@ -85,6 +87,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): TOKEN = ${_token?.expiredTime} | DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
     try {
+      FirebaseAnalytics.instance.logEvent(
+          name: 'AuthorizationIncp_onError',
+          parameters: {
+            'token_expired': _token?.expiredTime.toString(),
+            'dio_error': err.toString(),
+            'method': err.requestOptions.method
+          });
+    } catch (e) {
+      log('AuthorizationInterceptors::onError(): Exception = $e');
+    }
+    try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
       bool isRetryRequest = false;
@@ -94,12 +107,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         tokenOIDC: _token
       )) {
         log('AuthorizationInterceptors::onError:_validateToRefreshToken');
+        FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_onError', parameters: {'event': '_validateToRefreshToken'});
         final newTokenOidc = PlatformInfo.isIOS
           ? await _handleRefreshTokenOnIOSPlatform()
           : await _handleRefreshTokenOnOtherPlatform();
 
+        FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_onError', parameters: {'event': 'completed refresh token'});
+
         if (newTokenOidc.token == _token?.token) {
           log('AuthorizationInterceptors::onError: TokenOIDC duplicated');
+          FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_onError',
+              parameters: {'event': 'TokenOIDC duplicated'});
           return super.onError(err, handler);
         }
 
@@ -111,8 +129,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         tokenOIDC: _token
       )) {
         log('AuthorizationInterceptors::onError:validateToRetryTheRequestWithNewToken');
+        FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_onError', parameters: {'event': '_validateToRetryTheRequestWithNewToken'});
         isRetryRequest = true;
       } else {
+        FirebaseAnalytics.instance.logEvent(
+            name: 'AuthorizationIncp_onError',
+            parameters: {'event': 'Call super.onError if it is not retryRequest'});
         return super.onError(err, handler);
       }
 
@@ -140,16 +162,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           return handler.resolve(response);
         } else {
           log('AuthorizationInterceptors::onError: Perform normal request');
+          FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_onError', parameters: {'event': 'Perform normal request'});
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
 
           final response = await _dio.fetch(requestOptions);
           return handler.resolve(response);
         }
       } else {
+        FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_onError', parameters: {'event': 'Call super.onError if it is not retryRequest'});
         return super.onError(err, handler);
       }
     } catch (e) {
       logError('AuthorizationInterceptors::onError:Exception: $e');
+      FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_onError', parameters: {'Exception': e});
       return super.onError(err.copyWith(error: e), handler);
     }
   }
@@ -223,6 +248,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       userName: currentAccount.userName
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
+    FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_updateCurrentAccount', parameters: {'personal_account': personalAccount.toString()});
 
     return personalAccount;
   }
@@ -257,6 +283,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       _token!.refreshToken
     );
     log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:newToken: $newToken');
+    FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_invokeRfshTknFrServer', parameters: {'new_token': newToken.toString()});
     return newToken;
   }
 
@@ -276,6 +303,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   Future<TokenOIDC> _handleRefreshTokenOnOtherPlatform() async {
     final newToken = await _invokeRefreshTokenFromServer();
+    FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_hndlRfshTknOnOPltf', parameters: {'new_token': newToken.tokenIdHash});
+    FirebaseAnalytics.instance.logEvent(name: 'AuthorizationIncp_hndlRfshTknOnOPltf', parameters: {'new_token': newToken.expiredTime});
     await _updateCurrentAccount(tokenOIDC: newToken);
     return newToken;
   }
