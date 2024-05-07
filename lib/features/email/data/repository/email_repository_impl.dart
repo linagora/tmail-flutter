@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -236,5 +237,21 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<void> printEmail(EmailPrint emailPrint) {
     return _printFileDataSource.printEmail(emailPrint);
+  }
+
+  @override
+  Future<void> downloadMessageAsEML(
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest,
+    Id blobId,
+    String subjectEmail
+  ) {
+    return emailDataSource[DataSourceType.network]!.downloadMessageAsEML(
+      accountId,
+      baseDownloadUrl,
+      accountRequest,
+      blobId,
+      subjectEmail);
   }
 }

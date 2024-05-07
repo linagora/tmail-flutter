@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -115,4 +116,12 @@ abstract class EmailRepository {
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId);
 
   Future<void> printEmail(EmailPrint emailPrint);
+
+  Future<void> downloadMessageAsEML(
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest,
+    Id blobId,
+    String subjectEmail
+  );
 }
