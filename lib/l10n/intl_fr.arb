@@ -3858,7 +3858,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceipts": "Accusés de réception",
+  "emailReadReceipts": "Accusés de lecture",
   "@emailReadReceipts": {
     "type": "text",
     "placeholders_order": [],
