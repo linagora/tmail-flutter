@@ -203,6 +203,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ContactInputTagItem_build_closure: function ContactInputTagItem_build_closure(t0) {
       this.$this = t0;
     },
+    RecipientListIsEmptyException: function RecipientListIsEmptyException() {
+    },
+    RecipientListWithInvalidEmailsException: function RecipientListWithInvalidEmailsException() {
+    },
     AlwaysReadReceiptView: function AlwaysReadReceiptView(t0) {
       this.key = t0;
     },
@@ -328,7 +332,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._autocomplete_contact_text_field_with_tags$_imagePaths = t1;
       _.keyToEmailTagEditor = t2;
       _.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A = $;
-      _._autocomplete_contact_text_field_with_tags$_gapBetweenTagChangedAndFindSuggestion = null;
       _.lastTagFocused = false;
       _._widget = null;
       _._debugLifecycleState = t3;
@@ -365,9 +368,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.contact = t1;
     },
-    _AutocompleteContactTextFieldWithTagsState_build_closure3: function _AutocompleteContactTextFieldWithTagsState_build_closure3(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
+    _AutocompleteContactTextFieldWithTagsState_build_closure3: function _AutocompleteContactTextFieldWithTagsState_build_closure3() {
     },
     _AutocompleteContactTextFieldWithTagsState_build_closure4: function _AutocompleteContactTextFieldWithTagsState_build_closure4(t0) {
       this.$this = t0;
@@ -387,25 +388,49 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0: function _AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0() {
     },
-    _AutocompleteContactTextFieldWithTagsState__isValidAllEmailAddress_closure: function _AutocompleteContactTextFieldWithTagsState__isValidAllEmailAddress_closure() {
+    _AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure: function _AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0: function _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0(t0, t1) {
+      this.$this = t0;
+      this.emailAddress = t1;
     },
     _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure: function _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure(t0) {
       this.$this = t0;
     },
-    _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0(t0, t1) {
+    _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2: function _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2(t0, t1) {
       this.$this = t0;
       this.emailAddress = t1;
+    },
+    _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1: function _AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1(t0) {
+      this.$this = t0;
+    },
+    _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0(t0, t1, t2) {
+      this.$this = t0;
+      this.isClearInput = t1;
+      this.emailAddress = t2;
+    },
+    _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0(t0, t1) {
+      this.$this = t0;
+      this.emailAddress = t1;
+    },
+    _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure(t0, t1) {
+      this.$this = t0;
+      this.isClearInput = t1;
+    },
+    _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2(t0, t1, t2) {
+      this.$this = t0;
+      this.isClearInput = t1;
+      this.emailAddress = t2;
     },
     _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure(t0, t1) {
       this.$this = t0;
       this.emailAddress = t1;
     },
-    _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure(t0) {
-      this.$this = t0;
-    },
     _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1: function _AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1(t0, t1) {
       this.$this = t0;
-      this.emailAddress = t1;
+      this.isClearInput = t1;
     },
     __AutocompleteContactTextFieldWithTagsState_State_MessageDialogActionMixin: function __AutocompleteContactTextFieldWithTagsState_State_MessageDialogActionMixin() {
     },
@@ -1877,6 +1902,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     }
   };
+  C.RecipientListIsEmptyException.prototype = {$isException: 1};
+  C.RecipientListWithInvalidEmailsException.prototype = {$isException: 1};
   C.AlwaysReadReceiptView.prototype = {
     build$1(context) {
       var t2, t3, t4, t5, t6, t7, _this = this, _null = null,
@@ -2081,12 +2108,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.super$State$initState();
       this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A = this._widget.listEmailAddress;
     },
-    dispose$0() {
-      var t1 = this._autocomplete_contact_text_field_with_tags$_gapBetweenTagChangedAndFindSuggestion;
-      if (t1 != null)
-        t1.cancel$0(0);
-      this.super$State$dispose();
-    },
     build$1(context) {
       var t2, itemTagEditor, _this = this, _null = null,
         t1 = _this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
@@ -2094,7 +2115,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = J.get$length$asx(t1.get$value(t1));
       t2 = _this._widget.controller;
       A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      itemTagEditor = A.TagEditor$(false, false, B.Color_4294112245, 12, _null, t2, B.Color_4278221567, B.Duration_150000, false, B.Color_520093696, true, _this.get$_autocomplete_contact_text_field_with_tags$_findSuggestions(), _null, _null, B.Color_4278221567, A.InputDecoration$(_null, B._NoInputBorder_uXA, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_chs2, A.Intl__message("Enter name or email address", _null, "hintInputAutocompleteContact", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.keyToEmailTagEditor, B.TextInputType_5_null_null, t1, 20, new C._AutocompleteContactTextFieldWithTagsState_build_closure(_this), new C._AutocompleteContactTextFieldWithTagsState_build_closure0(_this), _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure1(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure2(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure3(_this, context), _null, B.EdgeInsets_12_0_12_0, false, _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure4(_this), E.EdgeInsets_0_4_0_4, B.EdgeInsets_0_12_0_12, B.Color_4294967295, _null, 350, 16, new C._AutocompleteContactTextFieldWithTagsState_build_closure5(_this), 12, B.TextInputAction_2, B.TextStyle_oHY0, true, type$.SuggestionEmailAddress);
+      itemTagEditor = A.TagEditor$(false, false, B.Color_4294112245, 12, _null, t2, B.Color_4278221567, B.Duration_150000, false, B.Color_520093696, true, _this.get$_autocomplete_contact_text_field_with_tags$_findSuggestions(), _null, _null, B.Color_4278221567, A.InputDecoration$(_null, B._NoInputBorder_uXA, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_chs2, A.Intl__message("Enter name or email address", _null, "hintInputAutocompleteContact", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.keyToEmailTagEditor, B.TextInputType_5_null_null, t1, 20, new C._AutocompleteContactTextFieldWithTagsState_build_closure(_this), new C._AutocompleteContactTextFieldWithTagsState_build_closure0(_this), _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure1(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure2(_this, context), new C._AutocompleteContactTextFieldWithTagsState_build_closure3(), _null, B.EdgeInsets_12_0_12_0, false, _null, new C._AutocompleteContactTextFieldWithTagsState_build_closure4(_this), E.EdgeInsets_0_4_0_4, B.EdgeInsets_0_12_0_12, B.Color_4294967295, _null, 350, 16, new C._AutocompleteContactTextFieldWithTagsState_build_closure5(_this), 12, B.TextInputAction_2, B.TextStyle_oHY0, true, type$.SuggestionEmailAddress);
       _this._widget.toString;
       t1 = C.SettingsUtils_getPaddingInputRecipientForwarding(context, _this._autocomplete_contact_text_field_with_tags$_responsiveUtils);
       t2 = type$.JSArray_Widget;
@@ -2115,7 +2136,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _findSuggestions$body$_AutocompleteContactTextFieldWithTagsState(query) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.List_SuggestionEmailAddress),
-        $async$returnValue, $async$self = this, processedQuery, teamMailSuggestion, t2, addedEmailAddresses, currentTextOnTextField, t1;
+        $async$returnValue, $async$self = this, t1, teamMailSuggestion, t2, addedEmailAddresses, currentTextOnTextField, processedQuery;
       var $async$_autocomplete_contact_text_field_with_tags$_findSuggestions$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
@@ -2123,14 +2144,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           switch ($async$goto) {
             case 0:
               // Function start
-              t1 = $async$self._autocomplete_contact_text_field_with_tags$_gapBetweenTagChangedAndFindSuggestion;
-              t1 = t1 == null ? null : t1._handle != null;
-              if (t1 === true) {
-                $async$returnValue = A._setArrayType([], type$.JSArray_SuggestionEmailAddress);
-                // goto return
-                $async$goto = 1;
-                break;
-              }
               processedQuery = B.JSString_methods.trim$0(query);
               if (processedQuery.length === 0) {
                 $async$returnValue = A._setArrayType([], type$.JSArray_SuggestionEmailAddress);
@@ -2180,43 +2193,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = J.where$1$ax(addedEmailAddress.get$value(addedEmailAddress), new C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure(query));
       return new A.MappedIterable(t1, new C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0(), t1.$ti._eval$1("MappedIterable<1,SuggestionEmailAddress>"));
     },
-    _autocomplete_contact_text_field_with_tags$_handleGapBetweenTagChangedAndFindSuggestion$0() {
-      A.log("_AutocompleteContactTextFieldWithTagsState::_handleGapBetweenTagChangedAndFindSuggestion(): Timeout", B.Level_3);
-    },
-    _isValidAllEmailAddress$1(addedEmailAddress) {
-      return addedEmailAddress.every$1(addedEmailAddress, new C._AutocompleteContactTextFieldWithTagsState__isValidAllEmailAddress_closure());
-    },
     _buildAddRecipientButton$2$maxWidth(context, maxWidth) {
       var t1;
       A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t1 = A.Intl__message("Add recipient", null, "addRecipientButton", null, null);
-      return C.MaterialTextIconButton$(B.Color_4278221567, "assets/images/ic_add_identity.svg", B.Color_4294967295, 24, D.ValueKey_button_add_recipient, t1, B.Color_4294967295, new A.Size(maxWidth == null ? 167 : maxWidth, 54), this.get$_handleAddRecipientAction());
+      return C.MaterialTextIconButton$(B.Color_4278221567, "assets/images/ic_add_identity.svg", B.Color_4294967295, 24, D.ValueKey_button_add_recipient, t1, B.Color_4294967295, new A.Size(maxWidth == null ? 167 : maxWidth, 54), new C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure(this, context));
     },
     _buildAddRecipientButton$1(context) {
       return this._buildAddRecipientButton$2$maxWidth(context, null);
     },
-    _handleAddRecipientAction$0() {
-      var t2, _this = this,
-        t1 = _this._framework$_element;
-      t1.toString;
-      if (!(A.InheritedModel_inheritFrom(t1, null, type$.MediaQuery).data.size._dx >= 1200)) {
-        t1 = _this._framework$_element;
-        t1.toString;
-        A.FocusScope_of(t1).unfocus$0();
-      }
-      t1 = _this._widget.controller._change_notifier$_value.text;
-      if (t1.length !== 0) {
-        if (!_this._autocomplete_contact_text_field_with_tags$_isDuplicatedRecipient$1(t1)) {
-          t1 = _this._framework$_element;
-          t1.toString;
-          t2 = _this._widget.controller._change_notifier$_value.text;
-          _this._addEmailAddressToInputFieldAction$2$context$emailAddress(t1, new A.EmailAddress(null, t2));
+    _handleAddRecipientAction$1(context) {
+      var inputText, emailAddress, t1, _this = this;
+      A.FocusScope_of(context).unfocus$0();
+      inputText = _this._widget.controller._change_notifier$_value.text;
+      if (inputText.length !== 0) {
+        emailAddress = new A.EmailAddress(null, inputText);
+        t1 = A.RegExp_RegExp(string$.______x5c, true, false, false);
+        t1 = t1._nativeRegExp.test(inputText);
+        if (!t1) {
+          t1 = A.RegExp_RegExp(string$.______x22, true, false, false);
+          t1 = t1._nativeRegExp.test(inputText);
+        } else
+          t1 = true;
+        if (!t1) {
+          _this._widget.onExceptionCallback.call$1(new C.RecipientListWithInvalidEmailsException());
+          _this._resetInputText$0();
+          return;
         }
-        t1 = _this.keyToEmailTagEditor;
-        t2 = t1.get$currentState();
-        if (t2 != null)
-          t2.resetTextField$0();
-        t1 = t1.get$currentState();
+        _this._validateEmailAddressSameDomain$6$cancelAction$confirmAction$context$duplicatedRecipientAction$emailAddress$sameDomainAction(new C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure(_this), new C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0(_this, emailAddress), context, new C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1(_this), emailAddress, new C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2(_this, emailAddress));
+        t1 = _this.keyToEmailTagEditor.get$currentState();
         if (t1 != null)
           t1.closeSuggestionBox$0();
         return;
@@ -2224,36 +2229,78 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = _this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
       t1 === $ && A.throwUnnamedLateFieldNI();
       if (t1.get$length(t1) === 0) {
-        _this._widget.onExceptionCallback.call$1(true);
+        _this._widget.onExceptionCallback.call$1(new C.RecipientListIsEmptyException());
         return;
       }
-      if (_this._isValidAllEmailAddress$1(_this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A))
-        t1 = _this._widget.controller._change_notifier$_value.text.length === 0;
-      else
-        t1 = false;
-      t2 = _this._widget;
-      if (t1) {
-        t2.onAddContactCallback.call$1(A.List_List$from(_this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A, true, type$.EmailAddress));
-        _this.setState$1(new C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure(_this));
-      } else
-        t2.onExceptionCallback.call$1(false);
-    },
-    _addEmailAddressToInputFieldAction$2$context$emailAddress(context, emailAddress) {
-      var _this = this,
-        t1 = emailAddress.email,
-        t2 = t1 == null;
-      if (_this._autocomplete_contact_text_field_with_tags$_isDuplicatedRecipient$1(t2 ? "" : t1))
+      t1 = _this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      if (!t1.every$1(t1, _this.get$_validateEmailAddressIsValid())) {
+        _this._widget.onExceptionCallback.call$1(new C.RecipientListWithInvalidEmailsException());
         return;
+      }
+      _this._widget.onAddContactCallback.call$1(A.List_List$from(_this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A, true, type$.EmailAddress));
+      _this._resetInputText$0();
+      t1 = _this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      _this.setState$1(t1.get$clear(t1));
+    },
+    _validateEmailAddressIsValid$1(emailAddress) {
+      var t1 = emailAddress.email,
+        t2 = t1 == null,
+        t3 = t2 ? "" : t1,
+        t4 = A.RegExp_RegExp(string$.______x5c, true, false, false);
+      t3 = t4._nativeRegExp.test(t3);
+      if (!t3) {
+        if (t2)
+          t1 = "";
+        t2 = A.RegExp_RegExp(string$.______x22, true, false, false);
+        t1 = t2._nativeRegExp.test(t1);
+      } else
+        t1 = true;
+      return t1;
+    },
+    _validateEmailAddressSameDomain$6$cancelAction$confirmAction$context$duplicatedRecipientAction$emailAddress$sameDomainAction(cancelAction, confirmAction, context, duplicatedRecipientAction, emailAddress, sameDomainAction) {
+      var t1 = emailAddress.email,
+        t2 = t1 == null;
+      if (this._autocomplete_contact_text_field_with_tags$_isDuplicatedRecipient$1(t2 ? "" : t1)) {
+        duplicatedRecipientAction.call$0();
+        return;
+      }
       if (t2)
         t1 = "";
-      if (!A.EmailUtils_isSameDomain(t1, _this._widget.internalDomain))
-        _this._showWarningDialogWithExternalDomain$3$cancelAction$confirmAction$context(new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure(_this), new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0(_this, emailAddress), context);
-      else {
-        t1 = _this.keyToEmailTagEditor.get$currentState();
-        if (t1 != null)
-          t1.resetTextField$0();
-        _this.setState$1(new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1(_this, emailAddress));
+      if (A.EmailUtils_isSameDomain(t1, this._widget.internalDomain))
+        sameDomainAction.call$0();
+      else
+        this._showWarningDialogWithExternalDomain$3$cancelAction$confirmAction$context(cancelAction, confirmAction, context);
+    },
+    _resetInputText$0() {
+      var t1 = this.keyToEmailTagEditor.get$currentState();
+      if (t1 != null)
+        t1.resetTextField$0();
+    },
+    _addEmailAddressToInputFieldAction$3$context$emailAddress$isClearInput(context, emailAddress, isClearInput) {
+      var t1, t2, t3, t4, _this = this;
+      A.log("_AutocompleteContactTextFieldWithTagsState::_addEmailAddressToInputFieldAction:emailAddress = " + emailAddress.toString$0(0), B.Level_3);
+      t1 = emailAddress.email;
+      t2 = t1 == null;
+      t3 = t2 ? "" : t1;
+      t4 = A.RegExp_RegExp(string$.______x5c, true, false, false);
+      t3 = t4._nativeRegExp.test(t3);
+      if (!t3) {
+        if (t2)
+          t1 = "";
+        t2 = A.RegExp_RegExp(string$.______x22, true, false, false);
+        t1 = t2._nativeRegExp.test(t1);
+      } else
+        t1 = true;
+      if (!t1) {
+        _this._widget.onExceptionCallback.call$1(new C.RecipientListWithInvalidEmailsException());
+        if (isClearInput)
+          _this._resetInputText$0();
+        return;
       }
+      _this._validateEmailAddressSameDomain$6$cancelAction$confirmAction$context$duplicatedRecipientAction$emailAddress$sameDomainAction(new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure(_this, isClearInput), new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0(_this, isClearInput, emailAddress), context, new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1(_this, isClearInput), emailAddress, new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2(_this, isClearInput, emailAddress));
+    },
+    _addEmailAddressToInputFieldAction$2$context$emailAddress(context, emailAddress) {
+      return this._addEmailAddressToInputFieldAction$3$context$emailAddress$isClearInput(context, emailAddress, false);
     },
     _showWarningDialogWithExternalDomain$3$cancelAction$confirmAction$context(cancelAction, confirmAction, context) {
       return this._showWarningDialogWithExternalDomain$body$_AutocompleteContactTextFieldWithTagsState(cancelAction, confirmAction, context);
@@ -3148,14 +3195,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   C._VacationView_GetWidget_RichTextButtonMixin.prototype = {};
-  var typesOffset = hunkHelpers.updateTypes(["~()", "~(Duration)", "~(bool?)", "EmailRulesItemWidget(BuildContext,int)", "List<SuggestionEmailAddress>/(String)", "ContactInputTagItem(BuildContext,int)", "EmailForwardItemWidget(BuildContext,int)", "LanguageRegionOverlay()", "LanguageItemWidget(BuildContext,int)", "AccountMenuItemTileBuilder()", "UserInformationWidget()", "FadingEdgeScrollView()", "IdentityListTileBuilder(BuildContext,int)"]);
+  var typesOffset = hunkHelpers.updateTypes(["~(Duration)", "~()", "~(bool?)", "EmailRulesItemWidget(BuildContext,int)", "List<SuggestionEmailAddress>/(String)", "bool(EmailAddress)", "ContactInputTagItem(BuildContext,int)", "EmailForwardItemWidget(BuildContext,int)", "LanguageRegionOverlay()", "LanguageItemWidget(BuildContext,int)", "AccountMenuItemTileBuilder()", "UserInformationWidget()", "FadingEdgeScrollView()", "IdentityListTileBuilder(BuildContext,int)"]);
   C._FadingEdgeScrollViewState_initState_closure.prototype = {
     call$1(it) {
       var t1 = this.$this;
       it.SchedulerBinding__postFrameCallbacks.push(t1.get$_postFrameCallback());
       it.WidgetsBinding__observers.push(t1);
     },
-    $signature: 1662
+    $signature: 1661
   };
   C._FadingEdgeScrollViewState__postFrameCallback_closure.prototype = {
     call$0() {
@@ -3243,7 +3290,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7.toString;
       return new A.LinearGradient(t4, t3, B.TileMode_0, t5, t2, null).createShader$2$textDirection(0, t6, t7.textDirection);
     },
-    $signature: 1663
+    $signature: 1662
   };
   C._RadioState__widgetFillColor_closure.prototype = {
     call$1(states) {
@@ -3264,7 +3311,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = null;
       return t1 == null ? A.MaterialStateProperty_resolveAs(B._EnabledAndDisabledMouseCursor_SystemMouseCursor_click_clickable, states, type$.MouseCursor) : t1;
     },
-    $signature: 409
+    $signature: 344
   };
   C._RadioDefaultsM3_fillColor_closure.prototype = {
     call$1(states) {
@@ -3296,7 +3343,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t1._onSurfaceVariant;
       return t2 == null ? t1.onSurface : t2;
     },
-    $signature: 10
+    $signature: 11
   };
   C._RadioDefaultsM3_overlayColor_closure.prototype = {
     call$1(states) {
@@ -3330,7 +3377,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return B.Color_0;
     },
-    $signature: 10
+    $signature: 11
   };
   C.BorderButtonField_build_closure.prototype = {
     call$0() {
@@ -3414,7 +3461,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 43
   };
   C.EmailRulesView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -3459,7 +3506,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t3._as(t2.get(t1)).listEmailRule;
       return A.ListView$separated(null, new C.ListEmailRulesWidget_build__closure(t1), J.get$length$asx(t2.get$value(t2)), null, B.ScrollViewKeyboardDismissBehavior_0, B.EdgeInsets_0_0_0_0, null, false, false, B.Axis_1, new C.ListEmailRulesWidget_build__closure0(t1), true);
     },
-    $signature: 167
+    $signature: 182
   };
   C.ListEmailRulesWidget_build__closure.prototype = {
     call$2(context, index) {
@@ -3497,7 +3544,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 111
+    $signature: 98
   };
   C.ForwardView_build_closure.prototype = {
     call$0() {
@@ -3574,7 +3621,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 43
   };
   C.ForwardView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -3595,35 +3642,34 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1664
+    $signature: 1663
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
-    call$1(isListEmailEmpty) {
-      var t3, _null = null,
+    call$1(exception) {
+      var _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t2 = this.context;
-      t3 = type$.AppLocalizations;
-      if (isListEmailEmpty) {
+      if (exception instanceof C.RecipientListIsEmptyException) {
         t1 = t1.appToast;
-        A.Localizations_of(t2, B.Type_AppLocalizations_swi, t3).toString;
+        A.Localizations_of(t2, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t1.showToastErrorMessage$2(t2, A.Intl__message("Please input at least one recipient", _null, "emptyListEmailForward", _null, _null));
-      } else {
+      } else if (exception instanceof C.RecipientListWithInvalidEmailsException) {
         t1 = t1.appToast;
-        A.Localizations_of(t2, B.Type_AppLocalizations_swi, t3).toString;
+        A.Localizations_of(t2, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t1.showToastErrorMessage$2(t2, A.Intl__message("Incorrect email format", _null, "incorrectEmailFormat", _null, _null));
       }
     },
-    $signature: 58
+    $signature: 1664
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure0.prototype = {
     call$1(focused) {
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure1(t1, focused));
     },
-    $signature: 58
+    $signature: 64
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure1.prototype = {
     call$0() {
@@ -3657,7 +3703,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure2.prototype = {
     call$1(value) {
-      return this.$this._addEmailAddressToInputFieldAction$2$context$emailAddress(this.context, new A.EmailAddress(null, value));
+      return this.$this._addEmailAddressToInputFieldAction$3$context$emailAddress$isClearInput(this.context, new A.EmailAddress(null, value), true);
     },
     $signature: 7
   };
@@ -3671,14 +3717,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
       return new C.ContactInputTagItem(t2, index === J.get$length$asx(t3.get$value(t3)) - 1, t1.lastTagFocused, new C._AutocompleteContactTextFieldWithTagsState_build__closure(t1), null);
     },
-    $signature: typesOffset + 5
+    $signature: typesOffset + 6
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure.prototype = {
     call$1(contact) {
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build___closure(t1, contact));
     },
-    $signature: 164
+    $signature: 177
   };
   C._AutocompleteContactTextFieldWithTagsState_build___closure.prototype = {
     call$0() {
@@ -3689,10 +3735,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     $signature: 0
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure3.prototype = {
-    call$1(value) {
-      var t1 = this.$this;
-      t1._addEmailAddressToInputFieldAction$2$context$emailAddress(this.context, new A.EmailAddress(null, value));
-      t1._autocomplete_contact_text_field_with_tags$_gapBetweenTagChangedAndFindSuggestion = A.Timer_Timer(B.Duration_1000000, t1.get$_autocomplete_contact_text_field_with_tags$_handleGapBetweenTagChangedAndFindSuggestion());
+    call$1(_) {
     },
     $signature: 7
   };
@@ -3711,13 +3754,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.closeSuggestionBox$0();
       t1.resetTextField$0();
     },
-    $signature: 164
+    $signature: 177
   };
   C._AutocompleteContactTextFieldWithTagsState__isDuplicatedRecipient_closure.prototype = {
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 157
+    $signature: 140
   };
   C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure.prototype = {
     call$1(emailAddress) {
@@ -3726,7 +3769,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 === $ && A.throwUnnamedLateFieldNI();
       return t1._autocomplete_contact_text_field_with_tags$_toSuggestionEmailAddress$2(emailAddress, t2);
     },
-    $signature: 243
+    $signature: 234
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -3735,49 +3778,126 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return B.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 55
+    $signature: 57
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
       return new A.SuggestionEmailAddress(emailAddress, B.SuggestionEmailState_1);
     },
-    $signature: 243
+    $signature: 234
   };
-  C._AutocompleteContactTextFieldWithTagsState__isValidAllEmailAddress_closure.prototype = {
-    call$1(addedMail) {
-      var t1 = addedMail.email,
-        t2 = t1 == null,
-        t3 = t2 ? "" : t1,
-        t4 = A.RegExp_RegExp(string$.______x5c, true, false, false);
-      t3 = t4._nativeRegExp.test(t3);
-      if (!t3) {
-        if (t2)
-          t1 = "";
-        t2 = A.RegExp_RegExp(string$.______x22, true, false, false);
-        t1 = t2._nativeRegExp.test(t1);
-      } else
-        t1 = true;
-      return t1;
+  C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure.prototype = {
+    call$0() {
+      return this.$this._handleAddRecipientAction$1(this.context);
     },
-    $signature: 55
+    $signature: 0
+  };
+  C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0.prototype = {
+    call$0() {
+      var newListEmailAddress,
+        t1 = this.$this,
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      t2 = A.List_List$of(t2, true, type$.dynamic);
+      t2.push(this.emailAddress);
+      newListEmailAddress = A.List_List$from(t2, true, type$.EmailAddress);
+      t1._widget.onAddContactCallback.call$1(newListEmailAddress);
+      t1._resetInputText$0();
+      t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      if (!t2.get$isEmpty(t2)) {
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+        t1.setState$1(t2.get$clear(t2));
+      }
+    },
+    $signature: 0
   };
   C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure.prototype = {
     call$0() {
-      var t1 = this.$this;
-      t1._widget.controller.super$ValueNotifier$value(0, B.TextEditingValue_cKo);
-      t1 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.set$length(0, 0);
+      var t1 = this.$this,
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      if (!t2.get$isEmpty(t2)) {
+        t1._widget.onAddContactCallback.call$1(t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A);
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+        t1.setState$1(t2.get$clear(t2));
+      }
+      t1._resetInputText$0();
+    },
+    $signature: 0
+  };
+  C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2.prototype = {
+    call$0() {
+      var newListEmailAddress,
+        t1 = this.$this,
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      t2 = A.List_List$of(t2, true, type$.dynamic);
+      t2.push(this.emailAddress);
+      newListEmailAddress = A.List_List$from(t2, true, type$.EmailAddress);
+      t1._widget.onAddContactCallback.call$1(newListEmailAddress);
+      t1._resetInputText$0();
+      t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      if (!t2.get$isEmpty(t2)) {
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+        t1.setState$1(t2.get$clear(t2));
+      }
+    },
+    $signature: 0
+  };
+  C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      if (!t2.get$isEmpty(t2)) {
+        t1._widget.onAddContactCallback.call$1(t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A);
+        t2 = t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+        t1.setState$1(t2.get$clear(t2));
+      }
+      t1._resetInputText$0();
     },
     $signature: 0
   };
   C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0.prototype = {
     call$0() {
-      var t1 = this.$this,
-        t2 = t1.keyToEmailTagEditor.get$currentState();
-      if (t2 != null)
-        t2.resetTextField$0();
-      t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure(t1, this.emailAddress));
+      var t1, _this = this;
+      if (_this.isClearInput)
+        _this.$this._resetInputText$0();
+      t1 = _this.$this;
+      t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0(t1, _this.emailAddress));
+    },
+    $signature: 0
+  };
+  C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0.prototype = {
+    call$0() {
+      var t2,
+        t1 = this.$this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t2 = t1.RxObjectMixin___RxObjectMixin__value_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      J.add$1$ax(t2, this.emailAddress);
+      t2 = t1.NotifyManager_subject;
+      t1 = t1.get$value(t1);
+      t2._rx_stream$_value = t1;
+      t2._notifyData$1(t1);
+      return null;
+    },
+    $signature: 0
+  };
+  C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure.prototype = {
+    call$0() {
+      if (this.isClearInput)
+        this.$this._resetInputText$0();
+    },
+    $signature: 0
+  };
+  C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2.prototype = {
+    call$0() {
+      var t1, _this = this;
+      if (_this.isClearInput)
+        _this.$this._resetInputText$0();
+      t1 = _this.$this;
+      t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure(t1, _this.emailAddress));
     },
     $signature: 0
   };
@@ -3797,27 +3917,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure.prototype = {
-    call$0() {
-      var t1 = this.$this.keyToEmailTagEditor.get$currentState();
-      if (t1 != null)
-        t1.resetTextField$0();
-    },
-    $signature: 0
-  };
   C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1.prototype = {
     call$0() {
-      var t2,
-        t1 = this.$this.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t2 = t1.RxObjectMixin___RxObjectMixin__value_A;
-      t2 === $ && A.throwUnnamedLateFieldNI();
-      J.add$1$ax(t2, this.emailAddress);
-      t2 = t1.NotifyManager_subject;
-      t1 = t1.get$value(t1);
-      t2._rx_stream$_value = t1;
-      t2._notifyData$1(t1);
-      return null;
+      if (this.isClearInput)
+        this.$this._resetInputText$0();
     },
     $signature: 0
   };
@@ -3895,7 +3998,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = $.GetInstance__getInstance = B.C_GetInstance;
       return new C.EmailForwardItemWidget(t4, t6, t5, t2, new C.ListEmailForwardsWidget_build___closure(t1, context), t3.find$1$1$tag(0, null, type$.ImagePaths), null);
     },
-    $signature: typesOffset + 6
+    $signature: typesOffset + 7
   };
   C.ListEmailForwardsWidget_build___closure.prototype = {
     call$1(recipientForward) {
@@ -3962,7 +4065,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildDeleteAllButton$1(_this.context));
       return A.Container$(_null, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_0, _null, _null, _null, 44, _null, _null, B.EdgeInsets_0_0_12_0, _null, _null, 1 / 0);
     },
-    $signature: 415
+    $signature: 416
   };
   C.ListEmailForwardsWidget__buildDeleteAllButton_closure.prototype = {
     call$0() {
@@ -4006,7 +4109,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.get$value(t2);
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(E.Aligned_2Lz, t1._buildDropDownMenuButton$2(this.context, t5), new A.Obx(new C.ChangeLanguageButtonWidget__buildLanguageMenu__closure0(t1, t5), _null), t2), t4, t3);
     },
-    $signature: 332
+    $signature: 335
   };
   C.ChangeLanguageButtonWidget__buildLanguageMenu__closure.prototype = {
     call$0() {
@@ -4027,7 +4130,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = $.GetInstance__getInstance = B.C_GetInstance;
       return new C.LanguageRegionOverlay(t1.listSupportedLanguages, t2, this.maxWidth, t1.get$selectLanguage(), t3.find$1$1$tag(0, null, type$.ResponsiveUtils), null);
     },
-    $signature: typesOffset + 7
+    $signature: typesOffset + 8
   };
   C.ChangeLanguageButtonWidget__buildDropDownMenuButton_closure.prototype = {
     call$0() {
@@ -4042,7 +4145,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1.listSupportedLanguages;
       return new C.LanguageItemWidget(t1.localeSelected, J.$index$asx(t2.get$value(t2), index), t1.onSelectLanguageAction, null);
     },
-    $signature: typesOffset + 8
+    $signature: typesOffset + 9
   };
   C.LanguageItemWidget_build_closure.prototype = {
     call$0() {
@@ -4065,7 +4168,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 43
   };
   C.MailboxVisibilityView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -4157,7 +4260,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1;
     },
-    $signature: 275
+    $signature: 245
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure.prototype = {
     call$1(mailboxNode) {
@@ -4171,7 +4274,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 46
+    $signature: 45
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure0.prototype = {
     call$1(mailboxNode) {
@@ -4185,7 +4288,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 46
+    $signature: 45
   };
   C.MailBoxVisibilityFolderTileBuilder_build_closure.prototype = {
     call$0() {
@@ -4489,7 +4592,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new C.ManageAccountMenuView_build___closure(this.$this, index), null);
     },
-    $signature: 226
+    $signature: 201
   };
   C.ManageAccountMenuView_build___closure.prototype = {
     call$0() {
@@ -4507,7 +4610,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return new C.AccountMenuItemTileBuilder(menuItem, t4, t3._as(t2.get(t1)).get$selectAccountMenuItem(), null);
     },
-    $signature: typesOffset + 9
+    $signature: typesOffset + 10
   };
   C.ManageAccountMenuView_build_closure2.prototype = {
     call$0() {
@@ -4539,7 +4642,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return F.UserInformationWidget$(null, null, C.SettingsUtils_getPaddingInFirstLevel(this.context, t3._as(t2.get(t1)).responsiveUtils), null, E.EdgeInsetsDirectional_16_0_0_0, t4);
     },
-    $signature: typesOffset + 10
+    $signature: typesOffset + 11
   };
   C.SettingsFirstLevelView_build_closure.prototype = {
     call$0() {
@@ -4965,7 +5068,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildListIdentityView$1(t5));
       return A.Column$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     },
-    $signature: 241
+    $signature: 232
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure.prototype = {
     call$0() {
@@ -5022,7 +5125,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.throwExpression(A.Exception_Exception("Child must have controller set"));
       return new C.FadingEdgeScrollView(t2, controller, t2.reverse, t2.scrollDirection, 0.3, 0.3, true, _null);
     },
-    $signature: typesOffset + 11
+    $signature: typesOffset + 12
   };
   C.IdentitiesRadioListBuilder__buildListIdentityView__closure.prototype = {
     call$2(context, index) {
@@ -5032,7 +5135,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t2.identitySelected;
       return new C.IdentityListTileBuilder(J.$index$asx(t3.get$value(t3), index), t4.get$value(t4), t1.imagePaths, t2.get$selectIdentity(), new C.IdentitiesRadioListBuilder__buildListIdentityView___closure(t1, context), new C.IdentitiesRadioListBuilder__buildListIdentityView___closure0(t1, context), null);
     },
-    $signature: typesOffset + 12
+    $signature: typesOffset + 13
   };
   C.IdentitiesRadioListBuilder__buildListIdentityView___closure.prototype = {
     call$1(identitySelected) {
@@ -5057,7 +5160,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 44
+    $signature: 43
   };
   C.IdentitiesRadioListBuilder__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -5099,7 +5202,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.clampDouble(1 / 0, constraints.minHeight, constraints.maxHeight);
       return A.Container$(_null, this.$this._buildSignature$3(context, signatureWidth, 256), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, D.EdgeInsets_8_16_8_16, _null, _null, signatureWidth);
     },
-    $signature: 131
+    $signature: 158
   };
   C.VacationView__buildVacationFormView_closure5.prototype = {
     call$0() {
@@ -5245,7 +5348,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(t1, _null, t5));
     },
-    $signature: 191
+    $signature: 195
   };
   C.VacationView__buildVacationFormView__closure4.prototype = {
     call$1(value) {
@@ -5299,7 +5402,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Row$(A._setArrayType([new A.Obx(new C.VacationView__buildVacationFormView__closure3(t1), _null), B.SizedBox_16_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Vacation stops at", _null, "vacationStopsAt", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_oHY3, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null, t2));
     },
-    $signature: 191
+    $signature: 195
   };
   C.VacationView__buildVacationFormView__closure3.prototype = {
     call$0() {
@@ -5434,7 +5537,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(!t4, A.Opacity$(t1, _null, t5));
     },
-    $signature: 191
+    $signature: 195
   };
   C.VacationView__buildVacationFormView__closure.prototype = {
     call$1(value) {
@@ -5524,7 +5627,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, t1);
     },
-    $signature: 191
+    $signature: 195
   };
   C.VacationView__buildVacationFormView_closure4.prototype = {
     call$0() {
@@ -5550,7 +5653,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t11.push(A.Center$(A.PointerInterceptor$(t1.buildToolbarRichTextForWeb$3$layoutType(t6, t3._as(t2.get(t1))._richTextControllerForWeb, B.ButtonLayoutType_0)), _null, _null));
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Column$(A._setArrayType([t7, B.SizedBox_null_8_null_null, A.Container$(_null, A.Column$(t11, B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, t9, t8, _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, D.EdgeInsetsDirectional_12_12_12_0, _null, _null, _null)], t10), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, t5));
     },
-    $signature: 191
+    $signature: 195
   };
   C.VacationView__buildListButtonAction_closure.prototype = {
     call$0() {
@@ -5634,12 +5737,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var _instance_1_u = hunkHelpers._instance_1u,
       _instance_0_u = hunkHelpers._instance_0u;
     var _;
-    _instance_1_u(_ = C._FadingEdgeScrollViewState.prototype, "get$_postFrameCallback", "_postFrameCallback$1", 1);
-    _instance_0_u(_, "get$_onScroll", "_onScroll$0", 0);
+    _instance_1_u(_ = C._FadingEdgeScrollViewState.prototype, "get$_postFrameCallback", "_postFrameCallback$1", 0);
+    _instance_0_u(_, "get$_onScroll", "_onScroll$0", 1);
     _instance_1_u(C._RadioState.prototype, "get$_radio$_handleChanged", "_radio$_handleChanged$1", 2);
     _instance_1_u(_ = C._AutocompleteContactTextFieldWithTagsState.prototype, "get$_autocomplete_contact_text_field_with_tags$_findSuggestions", "_autocomplete_contact_text_field_with_tags$_findSuggestions$1", 4);
-    _instance_0_u(_, "get$_autocomplete_contact_text_field_with_tags$_handleGapBetweenTagChangedAndFindSuggestion", "_autocomplete_contact_text_field_with_tags$_handleGapBetweenTagChangedAndFindSuggestion$0", 0);
-    _instance_0_u(_, "get$_handleAddRecipientAction", "_handleAddRecipientAction$0", 0);
+    _instance_1_u(_, "get$_validateEmailAddressIsValid", "_validateEmailAddressIsValid$1", 5);
   })();
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
@@ -5649,8 +5751,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(A.StatefulWidget, [C.FadingEdgeScrollView, C.Radio, C.AutocompleteContactTextFieldWithTags]);
     _inheritMany(A.State0, [C.__FadingEdgeScrollViewState_State_WidgetsBindingObserver, C.__RadioState_State_TickerProviderStateMixin, C.__AutocompleteContactTextFieldWithTagsState_State_MessageDialogActionMixin]);
     _inherit(C._FadingEdgeScrollViewState, C.__FadingEdgeScrollViewState_State_WidgetsBindingObserver);
-    _inheritMany(A.Closure, [C._FadingEdgeScrollViewState_initState_closure, C._FadingEdgeScrollViewState_build_closure, C._RadioState__widgetFillColor_closure, C._RadioState_build_closure, C._RadioDefaultsM3_fillColor_closure, C._RadioDefaultsM3_overlayColor_closure, C.EmailRulesView__buildLoadingView__closure, C.EmailRulesView__buildLoadingView__closure0, C.ForwardView__buildLoadingView__closure, C.ForwardView__buildLoadingView__closure0, C.ForwardView__buildAddRecipientsFormWidget_closure, C.ForwardView__buildAddRecipientsFormWidget_closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure2, C._AutocompleteContactTextFieldWithTagsState_build__closure, C._AutocompleteContactTextFieldWithTagsState_build_closure3, C._AutocompleteContactTextFieldWithTagsState_build_closure4, C._AutocompleteContactTextFieldWithTagsState_build__closure0, C._AutocompleteContactTextFieldWithTagsState__isDuplicatedRecipient_closure, C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0, C._AutocompleteContactTextFieldWithTagsState__isValidAllEmailAddress_closure, C.ListEmailForwardsWidget_build___closure, C.MailboxVisibilityView__buildLoadingView__closure, C.MailboxVisibilityView__buildLoadingView__closure0, C.MailboxVisibilityView__buildListChildTileWidget_closure, C.MailboxVisibilityView__buildListChildTileWidget__closure, C.MailboxVisibilityView__buildListChildTileWidget__closure0, C.ManageAccountDashBoardView__buildRightHeader__closure, C.ListRecipientForwardExtension_get_listEmailAddress_closure, C.IdentitiesRadioListBuilder__buildListIdentityView___closure, C.IdentitiesRadioListBuilder__buildListIdentityView___closure0, C.IdentitiesRadioListBuilder__buildLoadingView__closure, C.IdentitiesRadioListBuilder__buildLoadingView__closure0, C.VacationView__buildVacationFormView__closure4, C.VacationView__buildVacationFormView__closure5, C.VacationView__buildVacationFormView__closure6, C.VacationView__buildVacationFormView__closure7, C.VacationView__buildVacationFormView__closure, C.VacationView__buildVacationFormView__closure0, C.VacationView__buildVacationFormView__closure1, C.VacationView__buildVacationFormView__closure2]);
-    _inheritMany(A.Closure0Args, [C._FadingEdgeScrollViewState__postFrameCallback_closure, C._FadingEdgeScrollViewState__onScroll_closure, C._FadingEdgeScrollViewState_didChangeMetrics_closure, C.BorderButtonField_build_closure, C.ContactInputTagItem_build_closure, C.AlwaysReadReceiptView_build_closure, C.AlwaysReadReceiptView_build_closure0, C.EmailRulesView_build_closure, C.EmailRulesView__buildLoadingView_closure, C.EmailRulesItemWidget_build_closure, C.EmailRulesItemWidget_build_closure0, C.EmailRulesItemWidget_build_closure1, C.ListEmailRulesWidget_build_closure, C.ForwardView_build_closure, C.ForwardView_build_closure0, C.ForwardView__buildKeepLocalSwitchButton_closure, C.ForwardView__buildLoadingView_closure, C._AutocompleteContactTextFieldWithTagsState_build__closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure, C._AutocompleteContactTextFieldWithTagsState_build__closure2, C._AutocompleteContactTextFieldWithTagsState_build___closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1, C.EmailForwardItemWidget_build_closure0, C.EmailForwardItemWidget_build_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure0, C.ListEmailForwardsWidget_build_closure, C.ListEmailForwardsWidget__buildTitleHeader_closure, C.ListEmailForwardsWidget__buildDeleteAllButton_closure, C.ChangeLanguageButtonWidget__buildLanguageMenu_closure, C.ChangeLanguageButtonWidget__buildLanguageMenu__closure, C.ChangeLanguageButtonWidget__buildLanguageMenu__closure0, C.ChangeLanguageButtonWidget__buildDropDownMenuButton_closure, C.LanguageItemWidget_build_closure, C.MailboxVisibilityView__buildLoadingView_closure, C.MailboxVisibilityView__buildListMailbox_closure, C.MailboxVisibilityView__buildListMailbox_closure0, C.MailboxVisibilityView__buildListMailbox_closure1, C.MailBoxVisibilityFolderTileBuilder_build_closure, C.MailBoxVisibilityFolderTileBuilder__buildLeadingMailboxItem_closure, C.MailBoxVisibilityFolderTileBuilder__buildSubscribeButton_closure, C.ManageAccountDashBoardView_build_closure4, C.ManageAccountDashBoardView_build_closure, C.ManageAccountDashBoardView_build_closure0, C.ManageAccountDashBoardView_build_closure1, C.ManageAccountDashBoardView_build__closure, C.ManageAccountDashBoardView_build__closure0, C.ManageAccountDashBoardView_build_closure2, C.ManageAccountDashBoardView_build_closure3, C.ManageAccountDashBoardView__buildRightHeader_closure, C.ManageAccountDashBoardView__buildRightHeader___closure, C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure, C.ManageAccountMenuView_build_closure, C.ManageAccountMenuView_build_closure0, C.ManageAccountMenuView_build_closure1, C.ManageAccountMenuView_build___closure, C.ManageAccountMenuView_build_closure2, C.SettingsFirstLevelView_build_closure2, C.SettingsFirstLevelView_build_closure, C.SettingsFirstLevelView_build_closure3, C.SettingsFirstLevelView_build__closure2, C.SettingsFirstLevelView_build_closure4, C.SettingsFirstLevelView_build__closure1, C.SettingsFirstLevelView_build_closure5, C.SettingsFirstLevelView_build__closure0, C.SettingsFirstLevelView_build_closure6, C.SettingsFirstLevelView_build__closure, C.SettingsFirstLevelView_build_closure0, C.SettingsFirstLevelView_build_closure1, C.SettingsFirstLevelView_build_closure7, C.SettingsView_build_closure, C.SettingsView_build__closure, C.SettingsView_build__closure0, C.SettingsView_build_closure0, C.SettingsView__buildAppbar_closure, C.SettingsView__bodySettingsScreen_closure, C.SettingsView__viewDisplayedOfAccountMenuItem_closure, C.AccountMenuItemTileBuilder_build_closure, C.IdentitiesView__buildIdentitiesViewMobile_closure, C.IdentitiesView__buildIdentitiesViewWebDesktop_closure, C.IdentitiesRadioListBuilder__buildIdentityViewVertical_closure, C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure, C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal_closure, C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure, C.IdentitiesRadioListBuilder__buildListIdentityView_closure, C.IdentitiesRadioListBuilder__buildLoadingView_closure, C.IdentityListTileBuilder_build_closure1, C.IdentityListTileBuilder_build_closure, C.IdentityListTileBuilder_build_closure0, C.VacationView__buildVacationFormView_closure5, C.VacationView__buildVacationFormView_closure, C.VacationView__buildVacationFormView__closure8, C.VacationView__buildVacationFormView_closure0, C.VacationView__buildVacationFormView_closure1, C.VacationView__buildVacationFormView__closure3, C.VacationView__buildVacationFormView___closure, C.VacationView__buildVacationFormView_closure2, C.VacationView__buildVacationFormView_closure3, C.VacationView__buildVacationFormView_closure4, C.VacationView__buildListButtonAction_closure, C.VacationView__buildListButtonAction_closure0, C.VacationView__buildListButtonAction_closure1, C.VacationView__buildListButtonAction_closure2, C.VacationView__buildListButtonAction_closure3, C.VacationView__buildMessageHtmlTextEditor_closure, C.VacationView__buildMessageHtmlTextEditor__closure]);
+    _inheritMany(A.Closure, [C._FadingEdgeScrollViewState_initState_closure, C._FadingEdgeScrollViewState_build_closure, C._RadioState__widgetFillColor_closure, C._RadioState_build_closure, C._RadioDefaultsM3_fillColor_closure, C._RadioDefaultsM3_overlayColor_closure, C.EmailRulesView__buildLoadingView__closure, C.EmailRulesView__buildLoadingView__closure0, C.ForwardView__buildLoadingView__closure, C.ForwardView__buildLoadingView__closure0, C.ForwardView__buildAddRecipientsFormWidget_closure, C.ForwardView__buildAddRecipientsFormWidget_closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure2, C._AutocompleteContactTextFieldWithTagsState_build__closure, C._AutocompleteContactTextFieldWithTagsState_build_closure3, C._AutocompleteContactTextFieldWithTagsState_build_closure4, C._AutocompleteContactTextFieldWithTagsState_build__closure0, C._AutocompleteContactTextFieldWithTagsState__isDuplicatedRecipient_closure, C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0, C.ListEmailForwardsWidget_build___closure, C.MailboxVisibilityView__buildLoadingView__closure, C.MailboxVisibilityView__buildLoadingView__closure0, C.MailboxVisibilityView__buildListChildTileWidget_closure, C.MailboxVisibilityView__buildListChildTileWidget__closure, C.MailboxVisibilityView__buildListChildTileWidget__closure0, C.ManageAccountDashBoardView__buildRightHeader__closure, C.ListRecipientForwardExtension_get_listEmailAddress_closure, C.IdentitiesRadioListBuilder__buildListIdentityView___closure, C.IdentitiesRadioListBuilder__buildListIdentityView___closure0, C.IdentitiesRadioListBuilder__buildLoadingView__closure, C.IdentitiesRadioListBuilder__buildLoadingView__closure0, C.VacationView__buildVacationFormView__closure4, C.VacationView__buildVacationFormView__closure5, C.VacationView__buildVacationFormView__closure6, C.VacationView__buildVacationFormView__closure7, C.VacationView__buildVacationFormView__closure, C.VacationView__buildVacationFormView__closure0, C.VacationView__buildVacationFormView__closure1, C.VacationView__buildVacationFormView__closure2]);
+    _inheritMany(A.Closure0Args, [C._FadingEdgeScrollViewState__postFrameCallback_closure, C._FadingEdgeScrollViewState__onScroll_closure, C._FadingEdgeScrollViewState_didChangeMetrics_closure, C.BorderButtonField_build_closure, C.ContactInputTagItem_build_closure, C.AlwaysReadReceiptView_build_closure, C.AlwaysReadReceiptView_build_closure0, C.EmailRulesView_build_closure, C.EmailRulesView__buildLoadingView_closure, C.EmailRulesItemWidget_build_closure, C.EmailRulesItemWidget_build_closure0, C.EmailRulesItemWidget_build_closure1, C.ListEmailRulesWidget_build_closure, C.ForwardView_build_closure, C.ForwardView_build_closure0, C.ForwardView__buildKeepLocalSwitchButton_closure, C.ForwardView__buildLoadingView_closure, C._AutocompleteContactTextFieldWithTagsState_build__closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure, C._AutocompleteContactTextFieldWithTagsState_build__closure2, C._AutocompleteContactTextFieldWithTagsState_build___closure, C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1, C.EmailForwardItemWidget_build_closure0, C.EmailForwardItemWidget_build_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure0, C.ListEmailForwardsWidget_build_closure, C.ListEmailForwardsWidget__buildTitleHeader_closure, C.ListEmailForwardsWidget__buildDeleteAllButton_closure, C.ChangeLanguageButtonWidget__buildLanguageMenu_closure, C.ChangeLanguageButtonWidget__buildLanguageMenu__closure, C.ChangeLanguageButtonWidget__buildLanguageMenu__closure0, C.ChangeLanguageButtonWidget__buildDropDownMenuButton_closure, C.LanguageItemWidget_build_closure, C.MailboxVisibilityView__buildLoadingView_closure, C.MailboxVisibilityView__buildListMailbox_closure, C.MailboxVisibilityView__buildListMailbox_closure0, C.MailboxVisibilityView__buildListMailbox_closure1, C.MailBoxVisibilityFolderTileBuilder_build_closure, C.MailBoxVisibilityFolderTileBuilder__buildLeadingMailboxItem_closure, C.MailBoxVisibilityFolderTileBuilder__buildSubscribeButton_closure, C.ManageAccountDashBoardView_build_closure4, C.ManageAccountDashBoardView_build_closure, C.ManageAccountDashBoardView_build_closure0, C.ManageAccountDashBoardView_build_closure1, C.ManageAccountDashBoardView_build__closure, C.ManageAccountDashBoardView_build__closure0, C.ManageAccountDashBoardView_build_closure2, C.ManageAccountDashBoardView_build_closure3, C.ManageAccountDashBoardView__buildRightHeader_closure, C.ManageAccountDashBoardView__buildRightHeader___closure, C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure, C.ManageAccountMenuView_build_closure, C.ManageAccountMenuView_build_closure0, C.ManageAccountMenuView_build_closure1, C.ManageAccountMenuView_build___closure, C.ManageAccountMenuView_build_closure2, C.SettingsFirstLevelView_build_closure2, C.SettingsFirstLevelView_build_closure, C.SettingsFirstLevelView_build_closure3, C.SettingsFirstLevelView_build__closure2, C.SettingsFirstLevelView_build_closure4, C.SettingsFirstLevelView_build__closure1, C.SettingsFirstLevelView_build_closure5, C.SettingsFirstLevelView_build__closure0, C.SettingsFirstLevelView_build_closure6, C.SettingsFirstLevelView_build__closure, C.SettingsFirstLevelView_build_closure0, C.SettingsFirstLevelView_build_closure1, C.SettingsFirstLevelView_build_closure7, C.SettingsView_build_closure, C.SettingsView_build__closure, C.SettingsView_build__closure0, C.SettingsView_build_closure0, C.SettingsView__buildAppbar_closure, C.SettingsView__bodySettingsScreen_closure, C.SettingsView__viewDisplayedOfAccountMenuItem_closure, C.AccountMenuItemTileBuilder_build_closure, C.IdentitiesView__buildIdentitiesViewMobile_closure, C.IdentitiesView__buildIdentitiesViewWebDesktop_closure, C.IdentitiesRadioListBuilder__buildIdentityViewVertical_closure, C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure, C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal_closure, C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure, C.IdentitiesRadioListBuilder__buildListIdentityView_closure, C.IdentitiesRadioListBuilder__buildLoadingView_closure, C.IdentityListTileBuilder_build_closure1, C.IdentityListTileBuilder_build_closure, C.IdentityListTileBuilder_build_closure0, C.VacationView__buildVacationFormView_closure5, C.VacationView__buildVacationFormView_closure, C.VacationView__buildVacationFormView__closure8, C.VacationView__buildVacationFormView_closure0, C.VacationView__buildVacationFormView_closure1, C.VacationView__buildVacationFormView__closure3, C.VacationView__buildVacationFormView___closure, C.VacationView__buildVacationFormView_closure2, C.VacationView__buildVacationFormView_closure3, C.VacationView__buildVacationFormView_closure4, C.VacationView__buildListButtonAction_closure, C.VacationView__buildListButtonAction_closure0, C.VacationView__buildListButtonAction_closure1, C.VacationView__buildListButtonAction_closure2, C.VacationView__buildListButtonAction_closure3, C.VacationView__buildMessageHtmlTextEditor_closure, C.VacationView__buildMessageHtmlTextEditor__closure]);
     _inherit(C._RadioType, A._Enum);
     _inherit(C.__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin, C.__RadioState_State_TickerProviderStateMixin);
     _inherit(C._RadioState, C.__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin);
@@ -5660,6 +5762,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C.RenderShaderMask, A.RenderProxyBox);
     _inherit(C.ShaderMask, A.SingleChildRenderObjectWidget);
     _inheritMany(A.StatelessWidget, [C.BorderButtonField, C.MaterialTextIconButton, C.TextInputFieldBuilder, C.ContactInputTagItem, C.SettingDetailViewBuilder, C.EmailRulesItemWidget, C.EmailRulesHeaderWidget, C.EmailForwardItemWidget, C.ForwardHeaderWidget, C.ForwardWarningBanner, C.ChangeLanguageButtonWidget, C.LanguageAndRegionHeaderWidget, C.LanguageRegionOverlay, C.LanguageItemWidget, C.MailBoxVisibilityFolderTileBuilder, C.MailboxVisibilityHeaderWidget, C.AccountMenuItemTileBuilder, C.SettingFirstLevelTileBuilder, C.IdentitiesHeaderWidget, C.IdentitiesRadioListBuilder, C.IdentityListTileBuilder, C.SignatureBuilder, C.ProfilesView, C.ProfilesHeaderWidget]);
+    _inheritMany(A.Object, [C.RecipientListIsEmptyException, C.RecipientListWithInvalidEmailsException]);
     _inheritMany(A.GetWidget, [C._AlwaysReadReceiptView_GetWidget_AppLoaderMixin, C._EmailRulesView_GetWidget_AppLoaderMixin, C.ListEmailRulesWidget, C._ForwardView_GetWidget_AppLoaderMixin, C.ListEmailForwardsWidget, C.LanguageAndRegionView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin, C._ManageAccountDashBoardView_GetWidget_UserSettingPopupMenuMixin, C.ManageAccountMenuView, C.SettingsFirstLevelView, C.SettingsView, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin, C._VacationView_GetWidget_RichTextButtonMixin]);
     _inherit(C.AlwaysReadReceiptView, C._AlwaysReadReceiptView_GetWidget_AppLoaderMixin);
     _inherit(C.EmailRulesView, C._EmailRulesView_GetWidget_AppLoaderMixin);
@@ -5686,7 +5789,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixin(C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C._VacationView_GetWidget_RichTextButtonMixin, A.RichTextButtonMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"FadingEdgeScrollView":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_FadingEdgeScrollViewState":{"State0":["FadingEdgeScrollView"],"WidgetsBindingObserver":[]},"Radio":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RadioState":{"State0":["Radio<1>"]},"_RadioPainter":{"Listenable":[]},"ShaderMaskLayer":{"ContainerLayer0":[],"Layer0":[],"DiagnosticableTree":[]},"RenderShaderMask":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"ShaderMask":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"BorderButtonField":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextIconButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextInputFieldBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactInputTagItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AlwaysReadReceiptView":{"GetWidget":["AlwaysReadReceiptController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AlwaysReadReceiptController"},"SettingDetailViewBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesView":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"EmailRulesItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailRulesWidget":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"ForwardView":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"AutocompleteContactTextFieldWithTags":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AutocompleteContactTextFieldWithTagsState":{"State0":["AutocompleteContactTextFieldWithTags"]},"EmailForwardItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardWarningBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailForwardsWidget":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"LanguageAndRegionView":{"GetWidget":["LanguageAndRegionController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LanguageAndRegionController"},"ChangeLanguageButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageAndRegionHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageRegionOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityView":{"GetWidget":["MailboxVisibilityController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxVisibilityController"},"MailBoxVisibilityFolderTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ManageAccountDashBoardView":{"GetWidget":["ManageAccountDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountDashBoardController"},"ManageAccountMenuView":{"GetWidget":["ManageAccountMenuController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountMenuController"},"SettingsFirstLevelView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"SettingsView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"AccountMenuItemTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesView":{"GetWidget":["IdentitiesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"IdentitiesController"},"IdentitiesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesRadioListBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityListTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfilesView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfilesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationView":{"GetWidget":["VacationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"VacationController"},"RadioTheme":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"FadingEdgeScrollView":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_FadingEdgeScrollViewState":{"State0":["FadingEdgeScrollView"],"WidgetsBindingObserver":[]},"Radio":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RadioState":{"State0":["Radio<1>"]},"_RadioPainter":{"Listenable":[]},"ShaderMaskLayer":{"ContainerLayer0":[],"Layer0":[],"DiagnosticableTree":[]},"RenderShaderMask":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"ShaderMask":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"BorderButtonField":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextIconButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextInputFieldBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactInputTagItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientListIsEmptyException":{"Exception":[]},"RecipientListWithInvalidEmailsException":{"Exception":[]},"AlwaysReadReceiptView":{"GetWidget":["AlwaysReadReceiptController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AlwaysReadReceiptController"},"SettingDetailViewBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesView":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"EmailRulesItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailRulesWidget":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"ForwardView":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"AutocompleteContactTextFieldWithTags":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AutocompleteContactTextFieldWithTagsState":{"State0":["AutocompleteContactTextFieldWithTags"]},"EmailForwardItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardWarningBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailForwardsWidget":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"LanguageAndRegionView":{"GetWidget":["LanguageAndRegionController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LanguageAndRegionController"},"ChangeLanguageButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageAndRegionHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageRegionOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityView":{"GetWidget":["MailboxVisibilityController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxVisibilityController"},"MailBoxVisibilityFolderTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ManageAccountDashBoardView":{"GetWidget":["ManageAccountDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountDashBoardController"},"ManageAccountMenuView":{"GetWidget":["ManageAccountMenuController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountMenuController"},"SettingsFirstLevelView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"SettingsView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"AccountMenuItemTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesView":{"GetWidget":["IdentitiesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"IdentitiesController"},"IdentitiesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesRadioListBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityListTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfilesView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfilesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationView":{"GetWidget":["VacationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"VacationController"},"RadioTheme":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   A._Universe_addErasedTypes(init.typeUniverse, JSON.parse('{"__RadioState_State_TickerProviderStateMixin":1,"__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin":1}'));
   var string$ = {
     Creati: "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
@@ -5844,5 +5947,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ytFPrB5KOmhGclVtpxDNoj+aN9k=");
+})($__dart_deferred_initializers__, "W/qtXsiXSe1dRnoOhjxz+nFiPLQ=");
 ;
